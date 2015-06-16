@@ -32,6 +32,8 @@
     </target>
 	
     <target name="doc">
+    	<delete dir="${doc}"/>
+    	
         <javadoc sourcepath="${src}" destdir="${doc}"
             link="http://docs.oracle.com/javase/8/docs/api/"
             version="true" use="true">
@@ -39,5 +41,7 @@
                 <fileset dir="${lib}" includes="**/*.jar"/>
             </classpath>
         </javadoc>
+    
+    	 <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
     </target>
 </project>

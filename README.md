@@ -41,7 +41,7 @@ The Java server implementation of WebRPC allows developers to build web RPC serv
 
 Each of these classes is discussed in more detail below. 
 
-The JAR file for the Java server implementation of WebRPC can be downloaded [here](TBD). Javadoc is available [here](TBD). Java 8 and a servlet container supporting servlet specification 3.1 or later are required.
+The JAR file for the Java server implementation of WebRPC can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). Java 8 and a servlet container supporting servlet specification 3.1 or later are required.
 
 ## RPCService Class
 `RPCService` is the abstract base class for web RPC services. All services must extend this class, and must provide a zero-argument constructor so they can be instantiated by `RPCServlet`, discussed in more detail below.
@@ -243,7 +243,7 @@ The iOS client implementation of WebRPC enables Cocoa Touch applications to cons
 * `RPCService` - invocation proxy for web RPC services
 * `Result` - abstract base class for typed results
 
-The iOS client framework can be downloaded [here](TBD). iOS 8 or later is required.
+The iOS client framework can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). iOS 8 or later is required.
 
 ## RPCService Class
 The `RPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, and uses the `NSJSONSerialization` class to deserialize response content.
@@ -313,4 +313,4 @@ The result of the `getStatistics()` method can be converted to a `Statistics` in
 Note that `initWithDictionary:` does not perform deep initialization. Result classes with nested result properties must override `initWithDictionary:` to properly map the nested values to the appropriate types.
 
 # More Information
-For more information, refer to [the wiki](wiki) or [the issue list](issues).
+For more information, refer to [the wiki](https://github.com/gk-brown/WebRPC/wiki) or [the issue list](https://github.com/gk-brown/WebRPC/issues).
