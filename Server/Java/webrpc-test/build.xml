@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="webrpc-test" default="build">
+	<property file="build.properties"/>
+
+    <property name="src" value="src"/>
+    <property name="lib" value="lib"/>
+    <property name="bin" value="bin"/>
+
+    <target name="build">
+    	<ant dir="../webrpc" target="build" inheritAll="false"/>
+    	
+    	<echo message="Building ${title}..."/>
+    	
+        <delete dir="${bin}"/>
+        <mkdir dir="${bin}"/>
+
+        <javac srcDir="${src}" destDir="${bin}"
+            includejavaruntime="true" includeantruntime="true"
+            encoding="UTF-8" deprecation="true" debug="true"
+            failonerror="true">
+            <classpath>
+            	<fileset dir="../webrpc" includes="*.jar"/>
+            </classpath>
+        	
+        	<compilerarg value="-parameters"/>
+        </javac>
+		
+        <war destfile="${ant.project.name}-${version}.war" webxml="web.xml">
+            <fileset dir="web"/>
+            
+        	<classes dir="${bin}"/>
+        	<classes dir="${src}" includes="**/*.db"/>
+            
+        	<lib dir="../webrpc" includes="*.jar"/>
+        	<lib dir="lib" includes="*.jar"/>
+        </war>
+	</target>
+</project>
