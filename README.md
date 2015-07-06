@@ -24,9 +24,7 @@ Return values may be any JSON type, including string, number, boolean (true/fals
 An HTTP 200 is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
 ## Implementations
-Support currently exists for implementing web RPC services in Java and consuming web RPC services in iOS. Both implementations are discussed in detail below.
-
-Support for other platforms may be added in the future. Contributions are welcome.
+Support currently exists for implementing web RPC services in Java and consuming web RPC services in iOS. Support for other platforms may be added in the future. Contributions are welcome.
 
 # Java Server
 The Java server implementation of WebRPC allows developers to build web RPC services in Java. It is distributed as a JAR file that includes the following classes:
@@ -48,9 +46,11 @@ The JAR file for the Java server implementation of WebRPC can be downloaded [her
 
 Service methods are defined by adding public methods to the service class. All public methods defined by a concrete service class automatically become available for remote execution when the service is published, as described later. Note that overloaded methods are not supported; every method name must be unique. 
 
-Scalar method arguments can be any Java numeric primitive type or `String`. Object wrappers for primitive types are also supported. Multi-value ("vector") arguments may be specified as arrays of any supported scalar type. Variadic ("varargs") arguments are also supported. 
+Scalar method arguments can be any Java numeric primitive type or `String`. Object wrappers for primitive types are also supported. 
 
-Methods must return a Java numeric primitive type, an instance of one of the following reference types, or `void`:
+Multi-value ("vector") arguments may be specified as arrays of any supported scalar type. Variadic ("varargs") arguments are also supported. 
+
+Methods must return a Java numeric primitive type, one of the following reference types, or `void`:
 
 * `java.lang.String`
 * `java.lang.Number`
@@ -58,9 +58,9 @@ Methods must return a Java numeric primitive type, an instance of one of the fol
 * `java.util.List`
 * `java.util.Map`
 
-Nested structures are supported.
+Nested structures (lists and maps) are supported.
 
-`Map` implementations must use `String` values for keys. `List` and `Map` types are not required to support random access; iterability is sufficient. Iterator-only, or "forward-scrolling", implementations can simply throw `UnsupportedOperationException` from collection accessor methods.
+`Map` implementations must use `String` values for keys. `List` and `Map` types are not required to support random access; iterability is sufficient. Iterator-only, or "forward-scrolling", implementations can simply implement the `iterator()` method and throw `UnsupportedOperationException` from collection accessor methods.
 
 ### Auto-Closeable Types
 `List` and `Map` types that implement `java.lang.AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
@@ -126,13 +126,13 @@ Similarly, a GET for either of the following URLs would produce the number 12:
     /math/addVarargs?values=1&values=3&values=7
 
 ## RPCServlet Class
-Web RPC services are "published", or made available, via the `RPCServlet` class. This is the class that is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. 
+Web RPC services are "published", or made available, via the `RPCServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. 
 
 Java objects are mapped to their JSON equivalents as follows:
 
 * `java.lang.String`: string
 * `java.lang.Number` or numeric primitive: number
-* `java.lang.Boolean`: true/false
+* `java.lang.Boolean` or boolean primitive: true/false
 * `java.util.List`: array
 * `java.util.Map`: object
 
