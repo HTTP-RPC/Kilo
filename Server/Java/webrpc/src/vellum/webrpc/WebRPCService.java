@@ -12,15 +12,15 @@
  * limitations under the License.
  */
 
-package vellum.web;
+package vellum.webrpc;
 
 import java.security.Principal;
 import java.util.Locale;
 
 /**
- * Abstract base class for RPC services.
+ * Abstract base class for web RPC services.
  */
-public abstract class RPCService {
+public abstract class WebRPCService {
     private Locale locale = null;
     private Principal userPrincipal = null;
 

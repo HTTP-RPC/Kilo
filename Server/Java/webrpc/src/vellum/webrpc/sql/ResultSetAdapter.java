@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.web.sql;
+package vellum.webrpc.sql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

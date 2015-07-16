@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 
-package vellum.web.test;
+package vellum.webrpc.test;
 
-import vellum.web.Result;
+import vellum.webrpc.Result;
 
 /**
  * Sample statistics Bean class.

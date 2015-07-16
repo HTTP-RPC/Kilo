@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.web;
+package vellum.webrpc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

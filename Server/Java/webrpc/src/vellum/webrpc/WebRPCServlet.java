@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.web;
+package vellum.webrpc;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet that hosts RPC services.
+ * Servlet that hosts web RPC services.
  */
-public class RPCServlet extends HttpServlet {
+public class WebRPCServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     // HTTP servlet request roles
@@ -68,8 +68,8 @@ public class RPCServlet extends HttpServlet {
             throw new ServletException(exception);
         }
 
-        if (!RPCService.class.isAssignableFrom(serviceType)) {
-            throw new ServletException("Service type does not extend " + RPCService.class.getSimpleName() + ".");
+        if (!WebRPCService.class.isAssignableFrom(serviceType)) {
+            throw new ServletException("Service type does not extend " + WebRPCService.class.getSimpleName() + ".");
         }
 
         if (Modifier.isAbstract(serviceType.getModifiers())) {
@@ -137,9 +137,9 @@ public class RPCServlet extends HttpServlet {
         }
 
         // Execute method
-        RPCService service;
+        WebRPCService service;
         try {
-            service = (RPCService)serviceType.newInstance();
+            service = (WebRPCService)serviceType.newInstance();
         } catch (IllegalAccessException | InstantiationException exception) {
             throw new ServletException(exception);
         }

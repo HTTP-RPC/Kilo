@@ -21,10 +21,10 @@
 
 	<servlet>
 		<servlet-name>TestServlet</servlet-name>
-		<servlet-class>vellum.web.RPCServlet</servlet-class>
+		<servlet-class>vellum.webrpc.WebRPCServlet</servlet-class>
         <init-param>
             <param-name>serviceClassName</param-name>
-            <param-value>vellum.web.test.TestService</param-value>
+            <param-value>vellum.webrpc.test.TestService</param-value>
         </init-param>
     </servlet>
 

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.web.test;
+package vellum.webrpc.test;
 
 import java.security.Principal;
 import java.sql.Connection;
@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import vellum.web.RPCService;
-import vellum.web.sql.ResultSetAdapter;
+import vellum.webrpc.WebRPCService;
+import vellum.webrpc.sql.ResultSetAdapter;
 
 /**
  * Test service.
  */
-public class TestService extends RPCService {
+public class TestService extends WebRPCService {
     /**
      * Adds two numbers.
      *

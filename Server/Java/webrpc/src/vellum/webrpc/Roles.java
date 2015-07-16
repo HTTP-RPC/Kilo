@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.web;
+package vellum.webrpc;
 
 /**
  * Interface for determining user role membership.
