@@ -55,7 +55,7 @@ public let WebRPCArgumentsKey = "arguments"
     public private(set) var baseURL: NSURL
 
     /**
-     * Invokes an RPC service method.
+     * Invokes a web RPC service method.
      *
      * :param: methodName The name of the method to invoke.
      * :param: resultHandler A callback that will be invoked upon completion of the method.
@@ -67,7 +67,7 @@ public let WebRPCArgumentsKey = "arguments"
     }
 
     /**
-     * Invokes an RPC service method.
+     * Invokes a web RPC service method.
      *
      * :param: methodName The name of the method to invoke.
      * :param: arguments The method arguments.
