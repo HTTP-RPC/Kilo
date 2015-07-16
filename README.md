@@ -30,8 +30,8 @@ Support currently exists for implementing web RPC services in Java and consuming
 The Java server implementation of WebRPC allows developers to build web RPC services in Java. It is distributed as a JAR file that includes the following classes:
 
 * _`vellum.webrpc`_
-    * `RPCService` - abstract base class for web RPC services
-    * `RPCServlet` - servlet that hosts web RPC services
+    * `WebRPCService` - abstract base class for web RPC services
+    * `WebRPCServlet` - servlet that hosts web RPC services
     * `Result` - abstract base class for custom result types
     * `Roles` - interface for determining user role membership
 * _`vellum.webrpc.sql`_
@@ -41,8 +41,8 @@ Each of these classes is discussed in more detail below.
 
 The JAR file for the Java server implementation of WebRPC can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). Java 8 and a servlet container supporting servlet specification 3.1 or later are required.
 
-## RPCService Class
-`RPCService` is the abstract base class for web RPC services. All services must extend this class, and must provide a zero-argument constructor so they can be instantiated by `RPCServlet`, discussed in more detail below.
+## WebRPCService Class
+`WebRPCService` is the abstract base class for web RPC services. All services must extend this class, and must provide a zero-argument constructor so they can be instantiated by `WebRPCServlet`, discussed in more detail below.
 
 Service methods are defined by adding public methods to the service class. All public methods defined by a concrete service class automatically become available for remote execution when the service is published, as described later. Note that overloaded methods are not supported; every method name must be unique. 
 
@@ -68,7 +68,7 @@ Nested structures (lists and maps) are supported.
 For example, the `ResultSetAdapter` class discussed below wraps an instance of `java.sql.ResultSet` and exposes its contents as an auto-closeable list of map values. Calling `close()` on the list closes the underlying result set, ensuring that database resources are not leaked.
 
 ### Request Metadata
-`RPCService` provides a set of protected methods that allow an extending class to obtain additional information about a request that is not included in the method arguments:
+`WebRPCService` provides a set of protected methods that allow an extending class to obtain additional information about a request that is not included in the method arguments:
 
 * `getLocale()` - returns the locale associated with the current request
 * `getUserPrincipal()` - returns the user principal associated with the current request
@@ -77,11 +77,11 @@ For example, the `ResultSetAdapter` class discussed below wraps an instance of `
 These methods correspond directly to the similarly-named methods defined by the `javax.servlet.http.HttpServletRequest` interface. See the servlet specification for more information on their use.
 
 ### Unit Testing
-`RPCService` defines an additional method that is used to provide a service instance with information about the current request:
+`WebRPCService` defines an additional method that is used to provide a service instance with information about the current request:
 
     protected void initialize(Locale locale, Principal userPrincipal, Roles roles)
 
-This method is called once by `RPCServlet` for each request. However, it can also be used to facilitate unit testing of RPC services. By calling this method, the test framework can simulate a request from an actual RPC client. 
+This method is called once by `WebRPCServlet` for each request. However, it can also be used to facilitate unit testing of RPC services. By calling this method, the test framework can simulate a request from an actual RPC client. 
 
 The `Roles` interface is provided to allow test code to simulate user roles. It is discussed in more detail below. 
 
@@ -125,8 +125,8 @@ Similarly, a GET for either of the following URLs would produce the number 12:
     /math/addArray?values=1&values=3&values=7
     /math/addVarargs?values=1&values=3&values=7
 
-## RPCServlet Class
-Web RPC services are "published", or made available, via the `RPCServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. 
+## WebRPCServlet Class
+Web RPC services are "published", or made available, via the `WebRPCServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. 
 
 Java objects are mapped to their JSON equivalents as follows:
 
@@ -140,7 +140,7 @@ Each servlet instance hosts a single web RPC service. The name of the service ty
 
 	<servlet>
 		<servlet-name>MathServlet</servlet-name>
-		<servlet-class>vellum.web.RPCServlet</servlet-class>
+		<servlet-class>vellum.webrpc.WebRPCServlet</servlet-class>
         <init-param>
             <param-name>serviceClassName</param-name>
             <param-value>com.example.MathService</param-value>
@@ -240,13 +240,13 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
 # iOS Client
 The iOS client implementation of WebRPC enables Cocoa Touch applications to consume web RPC services using a simple callback-based API. It is distributed as a modular framework that includes the following classes, discussed in more detail below:
 
-* `RPCService` - invocation proxy for web RPC services
+* `WebRPCService` - invocation proxy for web RPC services
 * `Result` - abstract base class for typed results
 
 The iOS client framework can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). iOS 8 or later is required.
 
-## RPCService Class
-The `RPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, and uses the `NSJSONSerialization` class to deserialize response content.
+## WebRPCService Class
+The `WebRPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, and uses the `NSJSONSerialization` class to deserialize response content.
 
 Service proxies are initialized via the `initWithSession:baseURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Method names are appended to this URL during method execution.
 
@@ -261,7 +261,7 @@ Although requests are typically processed on a background thread, result handler
 Request security is provided by the the underlying URL session. See the `NSURLSession` documentation for more information.
 
 ### Examples
-The following code snippet demonstrates how `RPCService` can be used to invoke the methods of the hypothetical math service discussed earlier:
+The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier:
 
     // Configure and create session
     var configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -273,7 +273,7 @@ The following code snippet demonstrates how `RPCService` can be used to invoke t
         delegate: self, delegateQueue: delegateQueue)
 
     // Create service and invoke remote methods
-    var service = RPCService(session: session, baseURL: ViewController.baseURL!)
+    var service = WebRPCService(session: session, baseURL: ViewController.baseURL!)
         
     service.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
         // result is 6
