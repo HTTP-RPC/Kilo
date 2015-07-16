@@ -34,7 +34,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var configuration: NSURLSessionConfiguration!
     var session: NSURLSession!
 
-    var service: RPCService!
+    var service: WebRPCService!
 
     static let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-1.0/test/")
 
@@ -116,7 +116,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
         // Initialize service and invoke methods
-        service = RPCService(session: session, baseURL: ViewController.baseURL!)
+        service = WebRPCService(session: session, baseURL: ViewController.baseURL!)
 
         func validate(condition: Bool, error: NSError?, cell: UITableViewCell) {
             if (condition) {

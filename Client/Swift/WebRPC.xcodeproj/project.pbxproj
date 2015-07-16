@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		37727A701AE9C21E007601BB /* WebRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 37727A6F1AE9C21E007601BB /* WebRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		37DAB88E1AE9C2EB0090AE94 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DAB88D1AE9C2EB0090AE94 /* RPCService.swift */; };
+		37DAB88E1AE9C2EB0090AE94 /* WebRPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DAB88D1AE9C2EB0090AE94 /* WebRPCService.swift */; };
 		37F60E531B2C5C9D00ADFAFD /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F60E521B2C5C9D00ADFAFD /* Result.swift */; };
 		37F60E551B2C5CFA00ADFAFD /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F60E541B2C5CFA00ADFAFD /* Statistics.swift */; };
 		3B85A79F1AF650A300263991 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A79E1AF650A300263991 /* AppDelegate.swift */; };
@@ -22,7 +22,7 @@
 		37727A6A1AE9C21E007601BB /* WebRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WebRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		37727A6E1AE9C21E007601BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37727A6F1AE9C21E007601BB /* WebRPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebRPC.h; sourceTree = "<group>"; };
-		37DAB88D1AE9C2EB0090AE94 /* RPCService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
+		37DAB88D1AE9C2EB0090AE94 /* WebRPCService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRPCService.swift; sourceTree = "<group>"; };
 		37F60E521B2C5C9D00ADFAFD /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		37F60E541B2C5CFA00ADFAFD /* Statistics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
 		3B85A79A1AF650A300263991 /* WebRPCTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WebRPCTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,8 +74,8 @@
 			isa = PBXGroup;
 			children = (
 				37727A6F1AE9C21E007601BB /* WebRPC.h */,
-				37DAB88D1AE9C2EB0090AE94 /* RPCService.swift */,
 				37F60E521B2C5C9D00ADFAFD /* Result.swift */,
+				37DAB88D1AE9C2EB0090AE94 /* WebRPCService.swift */,
 				37727A6D1AE9C21E007601BB /* Supporting Files */,
 			);
 			path = WebRPC;
@@ -222,7 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				37F60E531B2C5C9D00ADFAFD /* Result.swift in Sources */,
-				37DAB88E1AE9C2EB0090AE94 /* RPCService.swift in Sources */,
+				37DAB88E1AE9C2EB0090AE94 /* WebRPCService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

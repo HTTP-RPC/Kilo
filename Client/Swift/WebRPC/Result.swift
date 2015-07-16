@@ -19,20 +19,17 @@ import Foundation
  */
 @objc public class Result : NSObject {
     /**
-     * Initializes the result.
-     */
-    public convenience override init() {
-        self.init(dictionary: [String : AnyObject]())
-    }
-
-    /**
      * Initializes the result with the contents of a dictionary object.
      *
-     * :param: dictionary The dictionary containing the initial values.
+     * :param: dictionary A dictionary containing the initial property values.
      */
     public init(dictionary: [String : AnyObject]) {
         super.init()
 
         setValuesForKeysWithDictionary(dictionary)
+    }
+
+    public override func setValue(value: AnyObject?, forUndefinedKey key: String) {
+        // No-op
     }
 }

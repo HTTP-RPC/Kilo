@@ -15,26 +15,26 @@
 import Foundation
 
 /**
- * RPC service error domain.
+ * Web RPC service error domain.
  */
-public let RPCServiceErrorDomain = "RPCServiceErrorDomain"
+public let WebRPCServiceErrorDomain = "RPCServiceErrorDomain"
 
 /**
- * RPC method name key.
+ * Web RPC method name key.
  */
-public let RPCMethodNameKey = "methodName"
+public let WebRPCMethodNameKey = "methodName"
 
 /**
- * RPC argument name key.
+ * Web RPC argument name key.
  */
-public let RPCArgumentsKey = "arguments"
+public let WebRPCArgumentsKey = "arguments"
 
 /**
  * Invocation proxy for web RPC services.
  */
-@objc public class RPCService {
+@objc public class WebRPCService {
     /**
-     * Creates a new RPC service.
+     * Creates a new web RPC service.
      * 
      * :param: session The URL session the service will use to execute HTTP requests.
      * :param: baseURL The base URL of the service.
@@ -119,9 +119,9 @@ public let RPCArgumentsKey = "arguments"
                             result = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &error)
                         }
                     } else {
-                        error = NSError(domain: RPCServiceErrorDomain, code: statusCode, userInfo: [
-                            RPCMethodNameKey: methodName,
-                            RPCArgumentsKey: arguments
+                        error = NSError(domain: WebRPCServiceErrorDomain, code: statusCode, userInfo: [
+                            WebRPCMethodNameKey: methodName,
+                            WebRPCArgumentsKey: arguments
                         ])
                     }
                 }
