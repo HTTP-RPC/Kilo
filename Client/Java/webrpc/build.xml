@@ -3,6 +3,8 @@
 <project name="webrpc" default="build">
     <property file="build.properties"/>
 
+	<property environment="env"/>
+
     <property name="src" value="src"/>
     <property name="bin" value="bin"/>
     <property name="doc" value="doc"/>
@@ -16,6 +18,8 @@
         <javac srcDir="${src}" destDir="${bin}"
             includejavaruntime="true" includeantruntime="true"
             encoding="UTF-8" deprecation="true" debug="true"
+            source="1.7" target="1.7" 
+            bootclasspath="${env.JDK_7}/jre/lib/rt.jar"
             failonerror="true"/>
     	
         <jar basedir="${bin}" destfile="${ant.project.name}-${version}.jar" index="true">
@@ -30,8 +34,9 @@
     	<delete dir="${doc}"/>
     	
         <javadoc sourcepath="${src}" destdir="${doc}"
-            link="http://docs.oracle.com/javase/8/docs/api/"
-            version="true" use="true"/>
+            link="http://docs.oracle.com/javase/7/docs/api/"
+            version="true" use="true"
+            bootclasspath="${env.JDK_7}/jre/lib/rt.jar"/>
     
     	 <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
     </target>
