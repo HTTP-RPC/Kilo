@@ -465,6 +465,9 @@ public class WebRPCService {
 
     /**
      * Returns the service's base URL.
+     *
+     * @return
+     * The service's base URL.
      */
     public URL getBaseURL() {
         return baseURL;
@@ -472,6 +475,9 @@ public class WebRPCService {
 
     /**
      * Returns the executor service that is used to execute requests.
+     *
+     * @return
+     * The executor service that is used to execute requests.
      */
     public ExecutorService getExecutorService() {
         return executorService;
@@ -479,6 +485,9 @@ public class WebRPCService {
 
     /**
      * Returns the dispatcher that is used to dispatch results.
+     *
+     * @return
+     * The dispatcher that is used to dispatch results.
      */
     public Dispatcher getDispatcher() {
         return dispatcher;
