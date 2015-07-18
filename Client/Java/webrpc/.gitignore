@@ -1,1 +1,5 @@
-/bin/
+.settings
+bin
+doc
+webrpc-*.jar
+webrpc-*-javadoc.zip
