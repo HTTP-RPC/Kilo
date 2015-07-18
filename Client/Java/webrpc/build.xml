@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="webrpc" default="build">
+    <property file="build.properties"/>
+
+    <property name="src" value="src"/>
+    <property name="bin" value="bin"/>
+    <property name="doc" value="doc"/>
+
+    <target name="build">
+    	<echo message="Building ${title}..."/>
+    	
+        <delete dir="${bin}"/>
+        <mkdir dir="${bin}"/>
+
+        <javac srcDir="${src}" destDir="${bin}"
+            includejavaruntime="true" includeantruntime="true"
+            encoding="UTF-8" deprecation="true" debug="true"
+            failonerror="true"/>
+    	
+        <jar basedir="${bin}" destfile="${ant.project.name}-${version}.jar" index="true">
+            <manifest>
+                <attribute name="Implementation-Title" value="${title}"/>
+                <attribute name="Implementation-Version" value="${version}"/>
+            </manifest>
+        </jar>
+    </target>
+	
+    <target name="doc">
+    	<delete dir="${doc}"/>
+    	
+        <javadoc sourcepath="${src}" destdir="${doc}"
+            link="http://docs.oracle.com/javase/8/docs/api/"
+            version="true" use="true"/>
+    
+    	 <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
+    </target>
+</project>
