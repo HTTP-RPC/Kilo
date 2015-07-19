@@ -14,27 +14,99 @@
 
 package vellum.webrpc;
 
+import java.net.URL;
 import java.util.HashMap;
-
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WebRPCServiceTest {
-    @Test
-    public void testStatistics() {
-        double count = 3.0;
-        int average = 3;
-        int sum = 9;
+    private static class TestDispatcher implements Dispatcher {
+        @Override
+        public synchronized void dispatchResult(Object result, ResultHandler resultHandler) {
+            resultHandler.execute(result, null);
+        }
 
-        HashMap<String, Object> properties = new HashMap<>();
-        properties.put("count", count);
-        properties.put("average", average);
-        properties.put("sum", sum);
+        @Override
+        public synchronized void dispatchException(Exception exception, ResultHandler resultHandler) {
+            resultHandler.execute(null, exception);
+        }
+    }
 
-        Statistics statistics = new Statistics(properties);
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) throws Exception {
+        ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        Assert.assertEquals(statistics.getCount(), (int)count);
-        Assert.assertEquals(statistics.getAverage(), average, 1e-9);
-        Assert.assertEquals(statistics.getSum(), sum, 1e-9);
+        WebRPCService service = new WebRPCService(new URL("http://localhost:8080/webrpc-test-1.0/test/"),
+            threadPool, new TestDispatcher());
+
+        // TODO Use HTTPS; authenticate user
+
+        HashMap<String, Object> addArguments = new HashMap<>();
+        addArguments.put("a", 2);
+        addArguments.put("b", 4);
+        addArguments.put("values", new Integer[] {1, 2, 3, 4});
+
+        // TODO Pass an array of Argument instead of or in addition to a map?
+
+        service.invoke("add", addArguments, new ResultHandler() {
+            @Override
+            public void execute(Object result, Exception exception) {
+                validate(result, 6.0, exception);
+            }
+        });
+
+        HashMap<String, Object> addArrayArguments = new HashMap<>();
+        addArrayArguments.put("values", new Integer[] {1, 2, 3, 4});
+
+        service.invoke("addArray", addArrayArguments, new ResultHandler() {
+            @Override
+            public void execute(Object result, Exception exception) {
+                validate(result, 10.0, exception);
+            }
+        });
+
+        HashMap<String, Object> addVarargsArguments = new HashMap<>();
+        addVarargsArguments.put("values", new Integer[] {1, 2, 3, 4});
+
+        service.invoke("addVarargs", addVarargsArguments, (result, exception) -> {
+            validate(result, 10.0, exception);
+        });
+
+        // TODO More tests
+
+        HashMap<String, Object> getStatisticsArguments = new HashMap<>();
+        getStatisticsArguments.put("values", new Integer[] {1, 3, 5});
+
+        service.invoke("getStatistics", getStatisticsArguments, (result, exception) -> {
+            HashMap<String, Object> expected = new HashMap<>();
+            expected.put("count", 3L);
+            expected.put("average", 3.0);
+            expected.put("sum", 9.0);
+
+            validate(result, expected, exception);
+
+            Statistics statistics = new Statistics((Map<String, Object>)result);
+
+            System.out.printf("count = %d, sum = %f, average = %f\n",
+                statistics.getCount(),
+                statistics.getSum(),
+                statistics.getAverage());
+        });
+
+        // TODO More tests
+
+        threadPool.shutdown();
+    }
+
+    private static void validate(Object actual, Object expected, Exception exception) {
+        String message;
+        if ((actual == null) ? expected == null : actual.equals(expected)) {
+            message = "OK";
+        } else {
+            message = "FAIL: " + exception.getMessage();
+        }
+
+        System.out.println(message);
     }
 }

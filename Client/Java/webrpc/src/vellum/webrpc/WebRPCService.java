@@ -137,10 +137,6 @@ public class WebRPCService {
                 StringBuilder parameters = new StringBuilder();
 
                 for (Map.Entry<String, Object> entry : arguments.entrySet()) {
-                    if (parameters.length() > 0) {
-                        parameters.append("&");
-                    }
-
                     String key = entry.getKey();
                     Object value = entry.getValue();
 
@@ -160,6 +156,10 @@ public class WebRPCService {
                                 }
                             }
                         } else {
+                            if (parameters.length() > 0) {
+                                parameters.append("&");
+                            }
+
                             parameters.append(key + "=" + URLEncoder.encode(value.toString(), UTF_8_ENCODING));
                         }
                     }
@@ -173,7 +173,9 @@ public class WebRPCService {
                 }
 
                 // Read response
-                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                int status = connection.getResponseCode();
+
+                if (status == HttpURLConnection.HTTP_OK) {
                     try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
                         Charset charset = null;
 
@@ -197,7 +199,7 @@ public class WebRPCService {
                         }
                     }
                 } else {
-                    throw new IOException(connection.getResponseMessage());
+                    throw new IOException(String.format("%d %s", status, connection.getResponseMessage()));
                 }
             } catch (Exception exception) {
                 dispatcher.dispatchException(exception, resultHandler);
