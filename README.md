@@ -11,13 +11,13 @@ For example, a GET request for the following URL might invoke the "add" method o
     
 The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request for the path part of the URL along with a request body containing the query component.
 
-Method parameters may be either scalar (single-value) or vector (multi-value, or "array") types. Parameter values may be any simple type including string, number, or boolean (true/false). As with any HTTP request, values that include reserved characters must be URL-encoded.
+Method parameters may be either scalar (single-value) or vector (multi-value, or list) types. Values may be any simple type including string, number, or boolean (true/false). As with any HTTP request, values that include reserved characters must be URL-encoded.
 
 Multi-value arguments are specified by providing zero or more values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed parameters:
 
     http://example.com/rpc/math/add?value=1&value=2&value=3
 
-The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces an empty (or "null") argument value for that parameter. Omitting all values for a vector parameter produces an empty array argument for the parameter.
+The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces an empty (or "null") argument value for that parameter. Omitting all values for a vector parameter produces an empty list argument for the parameter.
 
 Return values may be any JSON type, including string, number, boolean (true/false), object, array, and null. No content is returned by a method that does not produce a value.
 
@@ -46,9 +46,7 @@ The JAR file for the Java server implementation of WebRPC can be downloaded [her
 
 Service methods are defined by adding public methods to the service class. All public methods defined by a concrete service class automatically become available for remote execution when the service is published, as described later. Note that overloaded methods are not supported; every method name must be unique. 
 
-Scalar method arguments can be any Java numeric primitive type or `String`. Object wrappers for primitive types are also supported. 
-
-Multi-value ("vector") arguments may be specified as arrays of any supported scalar type. Variadic ("varargs") arguments are also supported. 
+Scalar method arguments can be any Java numeric primitive type or `String`. Object wrappers for primitive types are also supported. Multi-value ("vector") arguments may be specified as lists of any supported scalar type; e.g. `List<Double>`.
 
 Methods must return a Java numeric primitive type, one of the following reference types, or `void`:
 
@@ -95,8 +93,8 @@ The following example contains a possible Java implementation of the hypothetica
             return a + b;
         }
 
-        // Adds a list of double values specified in an array
-        public double addArray(double[] values) {
+        // Adds a list of double values specified in a list
+        public double addValues(List<Double> values) {
             if (values == null) {
                 throw new IllegalArgumentException();
             }
@@ -109,21 +107,15 @@ The following example contains a possible Java implementation of the hypothetica
 
             return total;
         }
-
-        // Adds a list of double values specified as varargs
-        public double addVarargs(double... values) {
-            return addArray(values);
-        }
     }
 
 Executing an HTTP GET request for the following URL would produce the number 9 in response:
 
     /math/add?a=6&b=3
     
-Similarly, a GET for either of the following URLs would produce the number 12:
+Similarly, a GET for the following URL would also produce the number 9:
 
-    /math/addArray?values=1&values=3&values=7
-    /math/addVarargs?values=1&values=3&values=7
+    /math/addValues?values=1&values=3&values=5
 
 ## WebRPCServlet Class
 Web RPC services are "published", or made available, via the `WebRPCServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. 
@@ -195,19 +187,19 @@ For example, the following class might be used to represent some simple statisti
 
 A service method that calculates the statistical values and returns them to the caller might look like this:
 
-    public Statistics getStatistics(double... values) {
+    public Statistics getStatistics(List<Double> values) {
         if (values == null) {
             throw new IllegalArgumentException();
         }
 
         Statistics statistics = new Statistics();
 
-        int n = values.length;
+        int n = values.size();
 
         statistics.setCount(n);
 
-        for (int i = 0; i < n; i++) {
-            statistics.setSum(statistics.getSum() + values[i]);
+        for (double value : values) {
+            statistics.setSum(statistics.getSum() + value);
         }
 
         statistics.setAverage(statistics.getSum() / n);
@@ -221,7 +213,7 @@ Executing GET for the following URL:
     
 would produce a result similar to the following:
 
-    {"average":3.0,"count":3,"sum":9.0}    
+    {"average":3.0, "count":3, "sum":9.0}    
 
 ## Roles Interface
 The `Roles` interface provides an abstraction for determining user role membership. It is provided primarily to facilitate unit testing of service methods. It defines a single `isUserInRole()` method that testing frameworks can implement to simulate different user roles. However, a complete discussion of unit testing services is beyond the scope of this document.
@@ -279,12 +271,8 @@ The following code snippet demonstrates how `WebRPCService` can be used to invok
         // result is 6
     }
 
-    service.invoke("addArray", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+    service.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
         // result is 10
-    }
-
-    service.invoke("addVarargs", withArguments: ["values": [1, 3, 5, 7, 9]]) {(result, error) in
-        // result is 25
     }
 
 ## Result Class

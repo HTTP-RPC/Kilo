@@ -127,8 +127,8 @@ public class TestService extends WebRPCService {
 
         statistics.setCount(n);
 
-        for (int i = 0; i < n; i++) {
-            statistics.setSum(statistics.getSum() + values.get(i));
+        for (double value : values) {
+            statistics.setSum(statistics.getSum() + value);
         }
 
         statistics.setAverage(statistics.getSum() / n);
