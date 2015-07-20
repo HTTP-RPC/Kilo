@@ -494,6 +494,8 @@ public class WebRPCService {
     /**
      * Invokes a web RPC service method.
      *
+     * @param <V> The type of the value returned by the method.
+     *
      * @param methodName
      * The name of the method to invoke.
      *
@@ -510,6 +512,8 @@ public class WebRPCService {
 
     /**
      * Invokes a web RPC service method.
+     *
+     * @param <V> The type of the value returned by the method.
      *
      * @param methodName
      * The name of the method to invoke.

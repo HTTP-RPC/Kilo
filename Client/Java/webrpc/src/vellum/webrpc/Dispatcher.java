@@ -21,6 +21,8 @@ public interface Dispatcher {
     /**
      * Dispatches a result.
      *
+     * @param <V> The type of the value returned by the method.
+     *
      * @param result
      * The result to dispatch.
      *
