@@ -22,7 +22,9 @@
                 <fileset dir="${lib}" includes="**/*.jar"/>
             </classpath>
         </javac>
-    	
+
+        <delete dir="." includes="${ant.project.name}-*.jar"/>
+
         <jar basedir="${bin}" destfile="${ant.project.name}-${version}.jar" index="true">
             <manifest>
                 <attribute name="Implementation-Title" value="${title}"/>
@@ -41,7 +43,9 @@
                 <fileset dir="${lib}" includes="**/*.jar"/>
             </classpath>
         </javadoc>
-    
-    	 <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
+
+        <delete dir="." includes="${ant.project.name}-*-javadoc.zip"/>
+
+        <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
     </target>
 </project>

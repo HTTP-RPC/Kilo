@@ -21,7 +21,9 @@
             source="1.7" target="1.7" 
             bootclasspath="${env.JDK_7}/jre/lib/rt.jar"
             failonerror="true"/>
-    	
+
+        <delete dir="." includes="${ant.project.name}-*.jar"/>
+
         <jar basedir="${bin}" destfile="${ant.project.name}-${version}.jar" index="true">
             <manifest>
                 <attribute name="Implementation-Title" value="${title}"/>
@@ -37,7 +39,9 @@
             link="http://docs.oracle.com/javase/7/docs/api/"
             version="true" use="true"
             bootclasspath="${env.JDK_7}/jre/lib/rt.jar"/>
-    
-    	 <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
+
+        <delete dir="." includes="${ant.project.name}-*-javadoc.zip"/>
+
+        <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
     </target>
 </project>
