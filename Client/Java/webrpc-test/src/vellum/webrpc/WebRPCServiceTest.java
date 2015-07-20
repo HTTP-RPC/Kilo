@@ -14,12 +14,24 @@
 
 package vellum.webrpc;
 
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class WebRPCServiceTest {
     private static class TestDispatcher implements Dispatcher {
@@ -35,13 +47,50 @@ public class WebRPCServiceTest {
     }
 
     public static void main(String[] args) throws Exception {
+        // Set global credentials
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            public PasswordAuthentication getPasswordAuthentication () {
+                return new PasswordAuthentication("tomcat", "tomcat".toCharArray());
+            }
+        });
+
+        // Allow self-signed certificates for testing purposes
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
+            }
+        };
+
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
+
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+
+        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession sslSession) {
+                return true;
+            }
+        });
+
+        // Create thread pool
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebRPCService service = new WebRPCService(new URL("http://localhost:8080/webrpc-test-1.0/test/"),
+        // Create service
+        WebRPCService service = new WebRPCService(new URL("https://localhost:8443/webrpc-test-1.0/test/"),
             threadPool, new TestDispatcher());
 
-        // TODO Use HTTPS; authenticate user
-
+        // Add, anonymous inner class
         HashMap<String, Object> addArguments = new HashMap<>();
         addArguments.put("a", 2);
         addArguments.put("b", 4);
@@ -53,6 +102,7 @@ public class WebRPCServiceTest {
             }
         });
 
+        // Add values
         HashMap<String, Object> addValuesArguments = new HashMap<>();
         addValuesArguments.put("values", Arrays.asList(1, 2, 3, 4));
 
@@ -60,8 +110,23 @@ public class WebRPCServiceTest {
             validate(result.doubleValue() == 10.0);
         });
 
-        // TODO More tests
+        // Get characters
+        HashMap<String, Object> getCharactersArguments = new HashMap<>();
+        getCharactersArguments.put("text", "Hello, World!");
 
+        service.invoke("getCharacters", getCharactersArguments, (result, exception) -> {
+            validate(result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
+        });
+
+        // Get selection
+        HashMap<String, Object> getSelectionArguments = new HashMap<>();
+        getSelectionArguments.put("items", Arrays.asList("a", "b", "c", "d"));
+
+        service.invoke("getSelection", getSelectionArguments, (result, exception) -> {
+            validate(result.equals("a, b, c, d"));
+        });
+
+        // Get statistics
         HashMap<String, Object> getStatisticsArguments = new HashMap<>();
         getStatisticsArguments.put("values", Arrays.asList(1, 3, 5));
 
@@ -73,8 +138,50 @@ public class WebRPCServiceTest {
                 && statistics.getSum() == 9.0);
         });
 
-        // TODO More tests
+        // Get test data
+        service.invoke("getTestData", getSelectionArguments, (result, exception) -> {
+            HashMap<String, Object> row1 = new HashMap<>();
+            row1.put("a", "hello");
+            row1.put("b", 1L);
+            row1.put("c", 2.0);
 
+            HashMap<String, Object> row2 = new HashMap<>();
+            row2.put("a", "goodbye");
+            row2.put("b", 2L);
+            row2.put("c", 4.0);
+
+            validate(result.equals(Arrays.asList(row1, row2)));
+        });
+
+        // Get void
+        service.invoke("getVoid", getSelectionArguments, (result, exception) -> {
+            validate(result == null);
+        });
+
+        // Get null
+        service.invoke("getNull", getSelectionArguments, (result, exception) -> {
+            validate(result == null);
+        });
+
+        // Get locale code
+        service.invoke("getLocaleCode", (result, exception) -> {
+            validate(result.equals(Locale.getDefault().toString()));
+        });
+
+        // Get user name
+        service.invoke("getUserName", (result, exception) -> {
+            validate(result.equals("tomcat"));
+        });
+
+        // Is user in role
+        HashMap<String, Object> isUserInRoleArguments = new HashMap<>();
+        isUserInRoleArguments.put("role", "tomcat");
+
+        service.invoke("isUserInRole", isUserInRoleArguments, (result, exception) -> {
+            validate(result.equals(true));
+        });
+
+        // Shut down thread pool
         threadPool.shutdown();
     }
 
