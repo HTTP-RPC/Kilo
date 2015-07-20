@@ -17,11 +17,7 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/addArray?values=1&values=2&values=3&values=4">Add Array</a>
-
-<hr/>
-
-<a href="${pageContext.request.contextPath}/test/addVarargs?values=1&values=3&values=5&values=7&values=9">Add Varargs</a>
+<a href="${pageContext.request.contextPath}/test/addValues?values=1&values=2&values=3&values=4">Add Values</a>
 
 <hr/>
 

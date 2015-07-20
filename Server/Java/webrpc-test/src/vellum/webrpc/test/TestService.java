@@ -55,7 +55,7 @@ public class TestService extends WebRPCService {
      * @return
      * The sum of the given numbers.
      */
-    public double addArray(double[] values) {
+    public double addValues(List<Double> values) {
         if (values == null) {
             throw new IllegalArgumentException();
         }
@@ -67,19 +67,6 @@ public class TestService extends WebRPCService {
         }
 
         return total;
-    }
-
-    /**
-     * Adds a list of numbers.
-     *
-     * @param values
-     * The numbers to add.
-     *
-     * @return
-     * The sum of the given numbers.
-     */
-    public double addVarargs(double... values) {
-        return addArray(values);
     }
 
     /**
@@ -116,7 +103,7 @@ public class TestService extends WebRPCService {
      * @return
      * A string representing the selected items.
      */
-    public String getSelection(String[] items) {
+    public String getSelection(List<String> items) {
         return String.join(", ", items);
     }
 
@@ -129,19 +116,19 @@ public class TestService extends WebRPCService {
      * @return
      * Statistics about the given numbers.
      */
-    public Statistics getStatistics(double... values) {
+    public Statistics getStatistics(List<Double> values) {
         if (values == null) {
             throw new IllegalArgumentException();
         }
 
         Statistics statistics = new Statistics();
 
-        int n = values.length;
+        int n = values.size();
 
         statistics.setCount(n);
 
         for (int i = 0; i < n; i++) {
-            statistics.setSum(statistics.getSum() + values[i]);
+            statistics.setSum(statistics.getSum() + values.get(i));
         }
 
         statistics.setAverage(statistics.getSum() / n);

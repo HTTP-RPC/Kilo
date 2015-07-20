@@ -15,6 +15,7 @@
 package vellum.webrpc;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +45,6 @@ public class WebRPCServiceTest {
         HashMap<String, Object> addArguments = new HashMap<>();
         addArguments.put("a", 2);
         addArguments.put("b", 4);
-        addArguments.put("values", new Integer[] {1, 2, 3, 4});
 
         service.invoke("add", addArguments, new ResultHandler<Number>() {
             @Override
@@ -53,27 +53,17 @@ public class WebRPCServiceTest {
             }
         });
 
-        HashMap<String, Object> addArrayArguments = new HashMap<>();
-        addArrayArguments.put("values", new Integer[] {1, 2, 3, 4});
+        HashMap<String, Object> addValuesArguments = new HashMap<>();
+        addValuesArguments.put("values", Arrays.asList(1, 2, 3, 4));
 
-        service.invoke("addArray", addArrayArguments, new ResultHandler<Number>() {
-            @Override
-            public void execute(Number result, Exception exception) {
-                validate(result.doubleValue() == 10.0);
-            }
-        });
-
-        HashMap<String, Object> addVarargsArguments = new HashMap<>();
-        addVarargsArguments.put("values", new Integer[] {1, 2, 3, 4});
-
-        service.invoke("addVarargs", addVarargsArguments, (Number result, Exception exception) -> {
+        service.invoke("addValues", addValuesArguments, (Number result, Exception exception) -> {
             validate(result.doubleValue() == 10.0);
         });
 
         // TODO More tests
 
         HashMap<String, Object> getStatisticsArguments = new HashMap<>();
-        getStatisticsArguments.put("values", new Integer[] {1, 3, 5});
+        getStatisticsArguments.put("values", Arrays.asList(1, 3, 5));
 
         service.invoke("getStatistics", getStatisticsArguments, (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = new Statistics(result);

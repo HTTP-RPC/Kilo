@@ -141,12 +141,8 @@ public class WebRPCService {
                     Object value = entry.getValue();
 
                     if (value != null) {
-                        if (value instanceof Object[]) {
-                            Object[] values = (Object[])value;
-
-                            for (int i = 0, n = values.length; i < n; i++) {
-                                Object element = values[i];
-
+                        if (value instanceof List<?>) {
+                            for (Object element : (List<?>)value) {
                                 if (element != null) {
                                     if (parameters.length() > 0) {
                                         parameters.append("&");

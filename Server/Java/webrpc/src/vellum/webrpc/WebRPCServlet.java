@@ -16,13 +16,16 @@ package vellum.webrpc;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,19 +118,27 @@ public class WebRPCServlet extends HttpServlet {
             Class<?> type = parameter.getType();
 
             Object argument;
-            if (type.isArray()) {
+            if (type == List.class) {
                 String[] values = request.getParameterValues(name);
 
                 if (values == null) {
                     values = new String[0];
                 }
 
-                Class<?> componentType = type.getComponentType();
+                ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
 
-                argument = Array.newInstance(componentType, values.length);
+                Type elementType = parameterizedType.getActualTypeArguments()[0];
 
-                for (int j = 0; j < values.length; j++) {
-                    Array.set(argument, j, coerce(values[j], componentType));
+                if (elementType instanceof Class<?>) {
+                    ArrayList<Object> list = new ArrayList<>();
+
+                    for (int j = 0; j < values.length; j++) {
+                        list.add(coerce(values[j], (Class<?>)elementType));
+                    }
+
+                    argument = Collections.unmodifiableList(list);
+                } else {
+                    throw new ServletException(elementType.getTypeName() + " is not a supported parameter type.");
                 }
             } else {
                 argument = coerce(request.getParameter(name), type);

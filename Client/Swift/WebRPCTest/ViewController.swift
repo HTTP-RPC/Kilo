@@ -19,8 +19,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var cells: [UITableViewCell]!
 
     var addCell: UITableViewCell!
-    var addArrayCell: UITableViewCell!
-    var addVarargsCell: UITableViewCell!
+    var addValuesCell: UITableViewCell!
     var getCharactersCell: UITableViewCell!
     var getSelectionCell: UITableViewCell!
     var getStatisticsCell: UITableViewCell!
@@ -50,13 +49,9 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         addCell.textLabel!.text = "add()"
         cells.append(addCell)
 
-        addArrayCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        addArrayCell.textLabel!.text = "addArray()"
-        cells.append(addArrayCell)
-
-        addVarargsCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        addVarargsCell.textLabel!.text = "addVarargs()"
-        cells.append(addVarargsCell)
+        addValuesCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
+        addValuesCell.textLabel!.text = "addArray()"
+        cells.append(addValuesCell)
 
         getCharactersCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         getCharactersCell.textLabel!.text = "getCharacters()"
@@ -134,12 +129,8 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
             validate(result as? Int == 6, error, self.addCell)
         }
 
-        service.invoke("addArray", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
-            validate(result as? Int == 10, error, self.addArrayCell)
-        }
-
-        service.invoke("addVarargs", withArguments: ["values": [1, 3, 5, 7, 9]]) {(result, error) in
-            validate(result as? Int == 25, error, self.addVarargsCell)
+        service.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+            validate(result as? Int == 10, error, self.addValuesCell)
         }
 
         service.invoke("getCharacters", withArguments: ["text": "Hello, World!"]) {(result, error) in
