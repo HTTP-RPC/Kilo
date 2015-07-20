@@ -44,7 +44,7 @@ import javax.activation.MimeType;
  */
 public class WebRPCService {
     // Invocation callback
-    private class InvocationCallback implements Callable<Object> {
+    private class InvocationCallback<V> implements Callable<V> {
         // Monitored input stream
         private class MonitoredInputStream extends InputStream {
             private InputStream inputStream;
@@ -99,7 +99,7 @@ public class WebRPCService {
 
         private String methodName;
         private Map<String, Object> arguments;
-        private ResultHandler resultHandler;
+        private ResultHandler<V> resultHandler;
 
         private int c = EOF;
         private LinkedList<Object> collections = new LinkedList<>();
@@ -113,15 +113,15 @@ public class WebRPCService {
 
         private static final String UTF_8_ENCODING = "UTF-8";
 
-        public InvocationCallback(String methodName, Map<String, Object> arguments, ResultHandler resultHandler) {
+        public InvocationCallback(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
             this.methodName = methodName;
             this.arguments = arguments;
             this.resultHandler = resultHandler;
         }
 
         @Override
-        public Object call() throws Exception {
-            Object result;
+        public V call() throws Exception {
+            V result;
             try {
                 // Open URL connection
                 URL methodURL = new URL(baseURL, methodName);
@@ -213,7 +213,7 @@ public class WebRPCService {
         }
 
         @SuppressWarnings("unchecked")
-        private Object readValue(Reader reader) throws IOException {
+        private V readValue(Reader reader) throws IOException {
             c = reader.read();
 
             Object value = null;
@@ -317,7 +317,7 @@ public class WebRPCService {
                 skipWhitespace(reader);
             }
 
-            return value;
+            return (V)value;
         }
 
         private void skipWhitespace(Reader reader) throws IOException {
@@ -508,7 +508,7 @@ public class WebRPCService {
      * A future representing the invocation request.
      */
     @SuppressWarnings("unchecked")
-    public Future<Object> invoke(String methodName, ResultHandler resultHandler) {
+    public <V> Future<V> invoke(String methodName, ResultHandler<V> resultHandler) {
         return invoke(methodName, Collections.EMPTY_MAP, resultHandler);
     }
 
@@ -527,7 +527,7 @@ public class WebRPCService {
      * @return
      * A future representing the invocation request.
      */
-    public Future<Object> invoke(String methodName, Map<String, Object> arguments, ResultHandler resultHandler) {
+    public <V> Future<V> invoke(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
         if (methodName == null) {
             throw new IllegalArgumentException();
         }
@@ -540,6 +540,6 @@ public class WebRPCService {
             throw new IllegalArgumentException();
         }
 
-        return executorService.submit(new InvocationCallback(methodName, arguments, resultHandler));
+        return executorService.submit(new InvocationCallback<>(methodName, arguments, resultHandler));
     }
 }

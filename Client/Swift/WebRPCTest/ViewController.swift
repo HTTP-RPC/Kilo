@@ -151,10 +151,9 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         }
 
         service.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
-            validate(result as? NSDictionary == ["count": 3, "average": 3.0, "sum": 9.0], error, self.getStatisticsCell)
+            let statistics: Statistics? = (error == nil) ? Statistics(dictionary: result as! [String : AnyObject]) : nil
 
-            let statistics = Statistics(dictionary: result as! [String : AnyObject])
-            println("count = \(statistics.count), sum = \(statistics.sum), average = \(statistics.average)")
+            validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, nil, self.getStatisticsCell)
         }
 
         service.invoke("getTestData") {(result, error) in

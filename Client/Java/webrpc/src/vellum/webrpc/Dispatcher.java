@@ -27,7 +27,7 @@ public interface Dispatcher {
      * @param resultHandler
      * The result handler to which the result will be dispatched.
      */
-    public void dispatchResult(Object result, ResultHandler resultHandler);
+    public <V> void dispatchResult(V result, ResultHandler<V> resultHandler);
 
     /**
      * Dispatches an exception.
@@ -38,5 +38,5 @@ public interface Dispatcher {
      * @param resultHandler
      * The result handler to which the exception will be dispatched.
      */
-    public void dispatchException(Exception exception, ResultHandler resultHandler);
+    public void dispatchException(Exception exception, ResultHandler<?> resultHandler);
 }

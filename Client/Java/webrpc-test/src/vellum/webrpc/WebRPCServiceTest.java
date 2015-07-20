@@ -23,17 +23,16 @@ import java.util.concurrent.Executors;
 public class WebRPCServiceTest {
     private static class TestDispatcher implements Dispatcher {
         @Override
-        public synchronized void dispatchResult(Object result, ResultHandler resultHandler) {
+        public synchronized <V> void dispatchResult(V result, ResultHandler<V> resultHandler) {
             resultHandler.execute(result, null);
         }
 
         @Override
-        public synchronized void dispatchException(Exception exception, ResultHandler resultHandler) {
-            resultHandler.execute(null, exception);
+        public synchronized void dispatchException(Exception exception, ResultHandler<?> resultHandler) {
+            System.out.println(exception.getMessage());
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
@@ -47,30 +46,28 @@ public class WebRPCServiceTest {
         addArguments.put("b", 4);
         addArguments.put("values", new Integer[] {1, 2, 3, 4});
 
-        // TODO Pass an array of Argument instead of or in addition to a map?
-
-        service.invoke("add", addArguments, new ResultHandler() {
+        service.invoke("add", addArguments, new ResultHandler<Number>() {
             @Override
-            public void execute(Object result, Exception exception) {
-                validate(result, 6.0, exception);
+            public void execute(Number result, Exception exception) {
+                validate(result.doubleValue() == 6.0);
             }
         });
 
         HashMap<String, Object> addArrayArguments = new HashMap<>();
         addArrayArguments.put("values", new Integer[] {1, 2, 3, 4});
 
-        service.invoke("addArray", addArrayArguments, new ResultHandler() {
+        service.invoke("addArray", addArrayArguments, new ResultHandler<Number>() {
             @Override
-            public void execute(Object result, Exception exception) {
-                validate(result, 10.0, exception);
+            public void execute(Number result, Exception exception) {
+                validate(result.doubleValue() == 10.0);
             }
         });
 
         HashMap<String, Object> addVarargsArguments = new HashMap<>();
         addVarargsArguments.put("values", new Integer[] {1, 2, 3, 4});
 
-        service.invoke("addVarargs", addVarargsArguments, (result, exception) -> {
-            validate(result, 10.0, exception);
+        service.invoke("addVarargs", addVarargsArguments, (Number result, Exception exception) -> {
+            validate(result.doubleValue() == 10.0);
         });
 
         // TODO More tests
@@ -78,20 +75,12 @@ public class WebRPCServiceTest {
         HashMap<String, Object> getStatisticsArguments = new HashMap<>();
         getStatisticsArguments.put("values", new Integer[] {1, 3, 5});
 
-        service.invoke("getStatistics", getStatisticsArguments, (result, exception) -> {
-            HashMap<String, Object> expected = new HashMap<>();
-            expected.put("count", 3L);
-            expected.put("average", 3.0);
-            expected.put("sum", 9.0);
+        service.invoke("getStatistics", getStatisticsArguments, (Map<String, Object> result, Exception exception) -> {
+            Statistics statistics = new Statistics(result);
 
-            validate(result, expected, exception);
-
-            Statistics statistics = new Statistics((Map<String, Object>)result);
-
-            System.out.printf("count = %d, sum = %f, average = %f\n",
-                statistics.getCount(),
-                statistics.getSum(),
-                statistics.getAverage());
+            validate(statistics.getCount() == 3
+                && statistics.getAverage() == 3.0
+                && statistics.getSum() == 9.0);
         });
 
         // TODO More tests
@@ -99,14 +88,7 @@ public class WebRPCServiceTest {
         threadPool.shutdown();
     }
 
-    private static void validate(Object actual, Object expected, Exception exception) {
-        String message;
-        if ((actual == null) ? expected == null : actual.equals(expected)) {
-            message = "OK";
-        } else {
-            message = "FAIL: " + exception.getMessage();
-        }
-
-        System.out.println(message);
+    private static void validate(boolean condition) {
+        System.out.println(condition ? "OK" : "FAIL");
     }
 }

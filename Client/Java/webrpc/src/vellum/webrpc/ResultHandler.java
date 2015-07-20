@@ -17,7 +17,7 @@ package vellum.webrpc;
 /**
  * Interface representing a result handler.
  */
-public interface ResultHandler {
+public interface ResultHandler<V> {
     /**
      * Executes the result handler.
      *
@@ -29,5 +29,5 @@ public interface ResultHandler {
      * An exception representing the error that occurred while invoking the
      * remote method, or <tt>null</tt> if an error did not occur.
      */
-    public void execute(Object result, Exception exception);
+    public void execute(V result, Exception exception);
 }
