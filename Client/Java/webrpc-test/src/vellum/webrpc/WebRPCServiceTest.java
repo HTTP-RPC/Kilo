@@ -83,12 +83,12 @@ public class WebRPCServiceTest {
             }
         });
 
-        // Create thread pool
-        ExecutorService threadPool = Executors.newFixedThreadPool(10);
-
         // Create service
-        WebRPCService service = new WebRPCService(new URL("https://localhost:8443/webrpc-test-1.0/test/"),
-            threadPool, new TestDispatcher());
+        URL baseURL = new URL("https://localhost:8443/webrpc-test-1.0/test/");
+        ExecutorService threadPool = Executors.newFixedThreadPool(10);
+        TestDispatcher testDispatcher = new TestDispatcher();
+
+        WebRPCService service = new WebRPCService(baseURL, threadPool, testDispatcher);
 
         // Add, anonymous inner class
         HashMap<String, Object> addArguments = new HashMap<>();

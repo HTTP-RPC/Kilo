@@ -35,8 +35,6 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
     var service: WebRPCService!
 
-    static let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-1.0/test/")
-
     override func loadView() {
         var tableView = UITableView()
 
@@ -111,7 +109,9 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
         // Initialize service and invoke methods
-        service = WebRPCService(session: session, baseURL: ViewController.baseURL!)
+        let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-1.0/test/")
+
+        service = WebRPCService(session: session, baseURL: baseURL!)
 
         func validate(condition: Bool, error: NSError?, cell: UITableViewCell) {
             if (condition) {
