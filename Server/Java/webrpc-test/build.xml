@@ -6,6 +6,8 @@
     <property name="src" value="src"/>
     <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
+    
+    <property name="warfile" value="${ant.project.name}-${version}.war"/>
 
     <target name="build">
     	<ant dir="../webrpc" target="build" inheritAll="false"/>
@@ -26,7 +28,9 @@
         	<compilerarg value="-parameters"/>
         </javac>
 		
-        <war destfile="${ant.project.name}-${version}.war" webxml="web.xml">
+        <delete dir="." includes="${warfile}"/>
+            
+        <war destfile="${warfile}" webxml="web.xml">
             <fileset dir="web"/>
             
         	<classes dir="${bin}"/>

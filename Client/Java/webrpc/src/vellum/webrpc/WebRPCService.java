@@ -432,7 +432,7 @@ public class WebRPCService {
     private Dispatcher dispatcher;
 
     /**
-     * Creates a new RPC service.
+     * Creates a new web RPC service.
      *
      * @param baseURL
      * The base URL of the service.

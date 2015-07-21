@@ -8,6 +8,11 @@
     <property name="bin" value="bin"/>
     <property name="doc" value="doc"/>
 
+    <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
+    <property name="docfile" value="${ant.project.name}-${version}-javadoc.zip"/>
+    
+    <property name="zipfile" value="${ant.project.name}-server-${version}.zip"/>
+
     <target name="build">
     	<echo message="Building ${title}..."/>
     	
@@ -23,9 +28,9 @@
             </classpath>
         </javac>
 
-        <delete dir="." includes="${ant.project.name}-*.jar"/>
+        <delete dir="." includes="${jarfile}"/>
 
-        <jar basedir="${bin}" destfile="${ant.project.name}-${version}.jar" index="true">
+        <jar basedir="${bin}" destfile="${jarfile}" index="true">
             <manifest>
                 <attribute name="Implementation-Title" value="${title}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
@@ -44,8 +49,13 @@
             </classpath>
         </javadoc>
 
-        <delete dir="." includes="${ant.project.name}-*-javadoc.zip"/>
+        <delete dir="." includes="${docfile}"/>
 
-        <zip destfile="${ant.project.name}-${version}-javadoc.zip" basedir="doc"/>
+        <zip destfile="${docfile}" basedir="doc"/>
+    </target>
+
+    <target name="package" depends="build, doc">
+        <delete dir="." includes="${zipfile}"/>
+        <zip destfile="${zipfile}" basedir="." includes="${jarfile}, ${docfile}"/>
     </target>
 </project>
