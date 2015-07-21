@@ -42,7 +42,7 @@ Each of these classes is discussed in more detail below.
 The JAR file for the Java server implementation of WebRPC can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). Java 8 and a servlet container supporting servlet specification 3.1 or later are required.
 
 ## WebRPCService Class
-`WebRPCService` is the abstract base class for web RPC services. All services must extend this class, and must provide a zero-argument constructor so they can be instantiated by `WebRPCServlet`, discussed in more detail below.
+`WebRPCService` is the abstract base class for web RPC services. All services must extend this class, and must provide a zero-argument constructor so they can be instantiated by `WebRPCServlet`, which is discussed in more detail below.
 
 Service methods are defined by adding public methods to a concrete service class. All public methods defined by the service class automatically become available for remote execution when the service is published, as described later. Note that overloaded methods are not supported; every method name must be unique. 
 
@@ -79,7 +79,7 @@ These methods correspond directly to the similarly-named methods defined by the 
 
     protected void initialize(Locale locale, Principal userPrincipal, Roles roles)
 
-This method is called once by `WebRPCServlet` for each request. However, it can also be used to facilitate unit testing of RPC services. By calling this method, the test framework can simulate a request from an actual RPC client. 
+This method is called once by `WebRPCServlet` for each request. However, it can also be used to facilitate unit testing of RPC services. By calling this method, the test framework can simulate a request from an actual web RPC client. 
 
 The `Roles` interface is provided to allow test code to simulate user roles. It is discussed in more detail below. 
 
@@ -151,7 +151,7 @@ The servlet returns an HTTP 200 status code on successful method completion. If 
 Servlet security is provided by the underlying servlet container. See the Java EE documentation for more information.
 
 ## Result Class
-Although service methods can return instances of `Map` directly, it is often more convenient to work with more strongly-typed data structures in code. The `Result` class provides an abstract base class for custom result types. It implements the `Map` interface and exposes any Bean properties defined by a subclass as entries in the map, allowing custom types to be serialized to JSON. 
+Although service methods can return instances of `Map` directly, it is often preferable to work with more strongly-typed data structures in code. The `Result` class provides an abstract base class for custom result types. It implements the `Map` interface and exposes any Bean properties defined by a subclass as entries in the map, allowing custom types to be serialized to JSON. 
 
 For example, the following class might be used to represent some simple statistical information about a set of values:
 
@@ -207,11 +207,11 @@ A service method that calculates the statistical values and returns them to the 
         return statistics;
     }
 
-Executing GET for this URL:
+Executing GET for this URL would invoke the `getStatistics()` method:
 
     /math/getStatistics?values=1&values=3&values=5
     
-would produce the following result:
+producing the following result:
 
     {"average":3.0, "count":3, "sum":9.0}    
 
@@ -242,14 +242,14 @@ The Java client implementation of WebRPC enables Java-based applications to cons
 
 Each of these classes is discussed in more detail below. 
 
-Note that the `WebRPCService` and `Result` classes provided by the Java client library are not the same classes that are provided by the Java server implementation. They simply share the same names because they serve a similar purpose.
+Note that the `WebRPCService` and `Result` classes provided by the Java client library are not the same as those provided by the Java server implementation. They simply have similar names because they serve a similar purpose.
 
 The JAR file for the Java client implementation of WebRPC can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). Java 7 or later is required.
 
 ## WebRPCService Class
-The `WebRPCService` class acts as a client-side invocation proxy for web RPC services. Internally, it uses an instance of `HttpURLConnection` or subclass to send and receive data. Requests are submitted via HTTP POST.
+The `WebRPCService` class acts as a client-side invocation proxy for web RPC services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. Requests are submitted via HTTP POST.
 
-`WebRPCService` provides a single constructor that takes three arguments:
+`WebRPCService` provides a single constructor that takes the following three arguments:
 
 * `baseURL` - an instance of `java.net.URL` representing the base URL of the service
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
@@ -300,7 +300,7 @@ The `Dispatcher` interface is used to dispatch success or failure notifications 
 
 The first method is called to dispatch the result of a successful remote method invocation. The second is called in case of a failure.
 
-Implementation details will vary by platform. A Swing application might call the `SwingUtilities#invokeAndWait()` method to post a runnable to the event dispatch thread, whereas an Android application might call `Handler.post()` to acheive the same result.
+Implementation details will vary by platform. A Swing application might call the `SwingUtilities#invokeAndWait()` method to post a runnable to the event dispatch thread, whereas an Android application might call `Handler#post()`, an SWT application might call `Display#asyncExec()`, and a JavaFX application might call `Platform.runLater()` to execute code on the UI thread. A dispatcher for a headless application might simply invoke the callback on the current thread.
 
 ### Examples
 The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. Since the example does not have a user interface, a test dispatcher that simply delegates to the handler is used.
@@ -402,15 +402,15 @@ The Swift client implementation of WebRPC enables Cocoa and Cocoa Touch applicat
 The Swift client framework can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). iOS 8 or later is required.
 
 ## WebRPCService Class
-As in the Java client implementation, the `WebRPCService` class serves an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
+As in the Java client implementation, the `WebRPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
 
 Service proxies are initialized via the `initWithSession:baseURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Method names are appended to this URL during method execution.
 
 Remote methods are invoked by calling either `invoke:resultHandler:` or `invoke:withArguments:resultHandler:` on the service proxy. The first version is a convenience method for calling remote methods that don't take any arguments. The second takes a dictionary of argument values to be passed to the remote method. The first method delegates to the second, passing an empty argument dictionary.
 
-Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified an array of any supported scalar type; e.g. `[Double]`.
+Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as an array of any supported scalar type; e.g. `[Double]`.
 
-Both invocation methods take a result handler as the final argument. The result handler is a callback that is invoked upon successful completion of the remote method, but also if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+Both invocation methods take a result handler as the final argument. The result handler is a callback that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
 Both invocation methods return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
