@@ -141,22 +141,21 @@ public class WebRPCService {
                     Object value = entry.getValue();
 
                     if (value != null) {
+                        List<?> values;
                         if (value instanceof List<?>) {
-                            for (Object element : (List<?>)value) {
-                                if (element != null) {
-                                    if (parameters.length() > 0) {
-                                        parameters.append("&");
-                                    }
-
-                                    parameters.append(key + "=" + URLEncoder.encode(element.toString(), UTF_8_ENCODING));
-                                }
-                            }
+                            values = (List<?>)value;
                         } else {
-                            if (parameters.length() > 0) {
-                                parameters.append("&");
-                            }
+                            values = Collections.singletonList(value);
+                        }
 
-                            parameters.append(key + "=" + URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+                        for (Object argument : (List<?>)value) {
+                            if (argument != null) {
+                                if (parameters.length() > 0) {
+                                    parameters.append("&");
+                                }
+
+                                parameters.append(key + "=" + URLEncoder.encode(argument.toString(), UTF_8_ENCODING));
+                            }
                         }
                     }
                 }

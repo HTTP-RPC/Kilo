@@ -14,7 +14,7 @@
 
 #import "NMWebRPCService.h"
 
-NSString * const NMWebRPCServiceErrorDomain = @"NCRPCServiceErrorDomain";
+NSString * const NMWebRPCServiceErrorDomain = @"NMWebRPCServiceErrorDomain";
 
 NSString * const NMWebRPCMethodNameKey = @"methodName";
 NSString * const NMWebRPCArgumentsKey = @"arguments";
@@ -40,8 +40,66 @@ NSString * const NMWebRPCArgumentsKey = @"arguments";
 
 - (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments resultHandler:(void (^)(id, NSError *))resultHandler
 {
-    // TODO
-    return nil;
+    NSURLSessionDataTask *task = nil;
+
+    NSURL *requestURL = [NSURL URLWithString:methodName relativeToURL:_baseURL];
+
+    if (requestURL != nil) {
+        NSMutableString *parameters = [NSMutableString new];
+
+        for (NSString *key in arguments) {
+            id value = [arguments objectForKey:key];
+
+            NSArray *values;
+            if ([value isKindOfClass:[NSArray self]]) {
+                values = (NSArray *)value;
+            } else {
+                values = [NSArray arrayWithObject:value];
+            }
+
+            for (id argument in values) {
+                if ([parameters length] > 0) {
+                    [parameters appendString:@"&"];
+                }
+
+                [parameters appendString:[[argument description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+            }
+        }
+
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: requestURL];
+
+        [request setHTTPMethod:@"POST"];
+        [request setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
+
+        NSOperationQueue *resultHandlerQueue = [NSOperationQueue currentQueue];
+
+        task = [_session dataTaskWithRequest:request completionHandler:^void (NSData *data, NSURLResponse *response, NSError *error) {
+            id result = nil;
+
+            if (error == nil) {
+                NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+
+                if (statusCode == 200) {
+                    if ([data length] > 0) {
+                        result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error: &error];
+                    }
+                } else {
+                    error = [NSError errorWithDomain:NMWebRPCServiceErrorDomain code:statusCode userInfo:@{
+                        NMWebRPCMethodNameKey: methodName,
+                        NMWebRPCArgumentsKey: arguments
+                    }];
+                }
+            }
+
+            [resultHandlerQueue addOperationWithBlock:^void () {
+                resultHandler(result, error);
+            }];
+        }];
+
+        [task resume];
+    }
+
+    return task;
 }
 
 @end
