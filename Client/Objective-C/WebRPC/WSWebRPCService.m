@@ -12,14 +12,14 @@
 // limitations under the License.
 //
 
-#import "NMWebRPCService.h"
+#import "WSWebRPCService.h"
 
-NSString * const NMWebRPCServiceErrorDomain = @"NMWebRPCServiceErrorDomain";
+NSString * const WSWebRPCServiceErrorDomain = @"WSWebRPCServiceErrorDomain";
 
-NSString * const NMWebRPCMethodNameKey = @"methodName";
-NSString * const NMWebRPCArgumentsKey = @"arguments";
+NSString * const WSWebRPCMethodNameKey = @"methodName";
+NSString * const WSWebRPCArgumentsKey = @"arguments";
 
-@implementation NMWebRPCService
+@implementation WSWebRPCService
 
 - (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL
 {
@@ -84,9 +84,9 @@ NSString * const NMWebRPCArgumentsKey = @"arguments";
                         result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error: &error];
                     }
                 } else {
-                    error = [NSError errorWithDomain:NMWebRPCServiceErrorDomain code:statusCode userInfo:@{
-                        NMWebRPCMethodNameKey: methodName,
-                        NMWebRPCArgumentsKey: arguments
+                    error = [NSError errorWithDomain:WSWebRPCServiceErrorDomain code:statusCode userInfo:@{
+                        WSWebRPCMethodNameKey: methodName,
+                        WSWebRPCArgumentsKey: arguments
                     }];
                 }
             }

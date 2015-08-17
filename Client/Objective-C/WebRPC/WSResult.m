@@ -12,18 +12,24 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "WSResult.h"
 
-/**
- * Abstract base class for typed results.
- */
-@interface NMResult : NSObject
+@implementation WSResult
 
-/**
- * Initializes the result with the contents of a dictionary object.
- *
- * @param dictionary A dictionary containing the initial property values.
- */
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary
+{
+    self = [super init];
+
+    if (self) {
+        [self setValuesForKeysWithDictionary:dictionary];
+    }
+
+    return self;
+}
+
+- (void)setValue:(id)value forKey:(NSString *)key
+{
+    // No-op
+}
 
 @end

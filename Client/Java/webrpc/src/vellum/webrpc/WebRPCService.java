@@ -105,7 +105,7 @@ public class WebRPCService {
         private LinkedList<Object> collections = new LinkedList<>();
 
         private static final int EOF = -1;
-        private static final int PAGE_SIZE = 1<<10;
+        private static final int PAGE_SIZE = 1024;
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";

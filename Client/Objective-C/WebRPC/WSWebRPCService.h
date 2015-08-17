@@ -17,22 +17,22 @@
 /**
  * Web RPC service error domain.
  */
-extern NSString * const NMWebRPCServiceErrorDomain;
+extern NSString * const WSWebRPCServiceErrorDomain;
 
 /**
  * Web RPC method name key.
  */
-extern NSString * const NMWebRPCMethodNameKey;
+extern NSString * const WSWebRPCMethodNameKey;
 
 /**
  * Web RPC argument name key.
  */
-extern NSString * const NMWebRPCArgumentsKey;
+extern NSString * const WSWebRPCArgumentsKey;
 
 /**
  * Invocation proxy for web RPC services.
  */
-@interface NMWebRPCService : NSObject
+@interface WSWebRPCService : NSObject
 
 /**
  * Creates a new web RPC service.

@@ -15,7 +15,7 @@
 import Foundation
 import WebRPC
 
-class Statistics: NMResult {
+class Statistics: WSResult {
     var count: Int = 0
     var sum: Double = 0
     var average: Double = 0

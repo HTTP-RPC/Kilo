@@ -396,13 +396,13 @@ Note that the `Result` constructor does not perform deep initialization. Nested 
 # Objective-C/Swift Client
 The Objective-C/Swift client implementation of WebRPC enables Cocoa and Cocoa Touch applications to consume web RPC services. It is distributed as a modular framework that includes the following classes, discussed in more detail below:
 
-* `NMWebRPCService` - invocation proxy for web RPC services
-* `NMResult` - abstract base class for typed results
+* `WSWebRPCService` - invocation proxy for web RPC services
+* `WSResult` - abstract base class for typed results
 
 The Objective-C/Swift client framework can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). iOS 8 or later is required.
 
-## WebRPCService Class
-Similar to the Java client implementation, the `NMWebRPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
+## WSWebRPCService Class
+Similar to the Java version, the `WSWebRPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
 
 Service proxies are initialized via the `initWithSession:baseURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Method names are appended to this URL during method execution.
 
@@ -419,7 +419,7 @@ Although requests are typically processed on a background thread, result handler
 Request security is provided by the the underlying URL session. See the `NSURLSession` documentation for more information.
 
 ### Examples
-The following code snippet demonstrates how `NMWebRPCService` can be used to invoke the methods of the hypothetical math service. It creates an instance of the `NMWebRPCService` class using a default URL session backed by a delegate queue supporting ten concurrent operations. The code then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b" and producing a result of 6. Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments and producing a result of 10:
+The following code snippet demonstrates how `WSWebRPCService` can be used to invoke the methods of the hypothetical math service. It creates an instance of the `WSWebRPCService` class using a default URL session backed by a delegate queue supporting ten concurrent operations. The code then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b" and producing a result of 6. Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments and producing a result of 10:
 
     // Configure session
     configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -432,7 +432,7 @@ The following code snippet demonstrates how `NMWebRPCService` can be used to inv
     // Initialize service and invoke methods
     let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-1.0/test/")
 
-    service = NMWebRPCService(session: session, baseURL: baseURL!)
+    service = WSWebRPCService(session: session, baseURL: baseURL!)
         
     // Add a + b
     service.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
@@ -444,14 +444,14 @@ The following code snippet demonstrates how `NMWebRPCService` can be used to inv
         // result is 10
     }
 
-## Result Class
-Like the Java version, `NMResult` provides an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values.
+## WSResult Class
+Like its Java equivalent, `WSResult` provides an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values.
 
-The only initializer provided by the `NMResult` class is `initWithDictionary:`. This method initializes the result instance with the contents of a dictionary object. Internally, it uses key-value coding (KVC) to set the instance's property values by calling `setValuesForKeysWithDictionary:` on itself. As a result, subclasses of `Result` must be KVC-compliant in order to be initialized properly. See the _Key-Value Programming Guide_ for more information on KVC compliance.
+The only initializer provided by the `WSResult` class is `initWithDictionary:`. This method initializes the result instance with the contents of a dictionary object. Internally, it uses key-value coding (KVC) to set the instance's property values by calling `setValuesForKeysWithDictionary:` on itself. As a result, subclasses of `Result` must be KVC-compliant in order to be initialized properly. See the _Key-Value Programming Guide_ for more information on KVC compliance.
 
 For example, the following Swift class might be used to provide a typed version of the statistical data returned by the `getStatistics()` method discussed earlier:
 
-    class Statistics: NMResult {
+    class Statistics: WSResult {
         var count: Int = 0
         var sum: Double = 0
         var average: Double = 0
