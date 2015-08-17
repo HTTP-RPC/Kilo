@@ -141,14 +141,7 @@ public class WebRPCService {
                     Object value = entry.getValue();
 
                     if (value != null) {
-                        List<?> values;
-                        if (value instanceof List<?>) {
-                            values = (List<?>)value;
-                        } else {
-                            values = Collections.singletonList(value);
-                        }
-
-                        for (Object argument : (List<?>)value) {
+                        for (Object argument : (value instanceof List<?>) ? (List<?>)value : Collections.singletonList(value)) {
                             if (argument != null) {
                                 if (parameters.length() > 0) {
                                     parameters.append("&");

@@ -50,14 +50,7 @@ NSString * const WSWebRPCArgumentsKey = @"arguments";
         for (NSString *key in arguments) {
             id value = [arguments objectForKey:key];
 
-            NSArray *values;
-            if ([value isKindOfClass:[NSArray self]]) {
-                values = (NSArray *)value;
-            } else {
-                values = [NSArray arrayWithObject:value];
-            }
-
-            for (id argument in values) {
+            for (id argument in [value isKindOfClass:[NSArray self]] ? (NSArray *)value : [NSArray arrayWithObject:value]) {
                 if ([parameters length] > 0) {
                     [parameters appendString:@"&"];
                 }
