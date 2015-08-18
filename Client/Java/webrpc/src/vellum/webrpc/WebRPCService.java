@@ -147,7 +147,9 @@ public class WebRPCService {
                                     parameters.append("&");
                                 }
 
-                                parameters.append(key + "=" + URLEncoder.encode(argument.toString(), UTF_8_ENCODING));
+                                parameters.append(key);
+                                parameters.append("=");
+                                parameters.append(URLEncoder.encode(argument.toString(), UTF_8_ENCODING));
                             }
                         }
                     }
