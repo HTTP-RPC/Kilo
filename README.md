@@ -24,7 +24,7 @@ Return values may be any JSON type, including string, number, boolean (true/fals
 An HTTP 200 is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
 ## Implementations
-Support currently exists for implementing web RPC services in Java and consuming services in Java or Objective-C/Swift. Support for other platforms may be added in the future. Contributions are welcome.
+Support currently exists for implementing web RPC services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
 
 # Java Server
 The Java server implementation of WebRPC allows developers to build web RPC services in Java. It is distributed as a JAR file that contains the following classes:
@@ -468,6 +468,40 @@ The result of the `getStatistics()` method can be converted to a `Statistics` in
     }
 
 Note that, as in the Java implementation, `initWithDictionary:` does not perform deep initialization. Result classes with nested result properties must override `initWithDictionary:` to properly map the nested values to the appropriate types.
+
+# JavaScript Client
+The JavaScript client implementation of WebRPC enables HTML-based applications to consume web RPC services. It defines a single `WebRPCService` class, discussed in more detail below. 
+
+The JavaScript WebRPC client is delivered in a single JavaScript source file named `webrpc.js`. It can be downloaded [here](https://github.com/gk-brown/WebRPC/releases).
+
+## WebRPCService Class
+As in the Java and Objective-C/Swift versions, the `WebRPCService` class provides an invocation proxy for remote services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server. Requests are submitted via HTTP POST. 
+
+Service proxies are initialized via the `WebRPCService` constructor, which takes a single `baseURL` argument representing the path to the service. Method names are appended to this URL during method execution.
+
+Remote methods are invoked by calling either `invoke()` or `invokeWithArguments()` on the service proxy. The first version is a convenience method for calling remote methods that don't take any arguments. The second takes an object containing the set of argument values to be passed to the remote method. The first method delegates to the second, passing an empty argument object.
+
+Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as an array of any supported scalar type.
+
+Both invocation methods take a result handler as the final argument. The result handler is a callback that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `null` if the method does not return a value. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
+
+Both invocation methods return the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
+
+### Examples
+The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WebRPCService` class that points to the base service URL of "/webrpc-test-server/test". The code then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b" and producing a result of 6. Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments and producing a result of 10:
+
+    // Initialize service and invoke methods
+    var webRPCService = new WebRPCService("/webrpc-test-server/test");
+
+    // Add
+    webRPCService.invokeWithArguments("add", {a:4, b:2}, function(result, error) {
+        // result is 6
+    });
+
+    // Add values
+    webRPCService.invokeWithArguments("addValues", {values:[1, 2, 3, 4]}, function(result, error) {
+        // result is 10
+    });
 
 # More Information
 For more information, refer to [the wiki](https://github.com/gk-brown/WebRPC/wiki) or [the issue list](https://github.com/gk-brown/WebRPC/issues).
