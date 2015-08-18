@@ -55,6 +55,8 @@ NSString * const WSWebRPCArgumentsKey = @"arguments";
                     [parameters appendString:@"&"];
                 }
 
+                [parameters appendString:key];
+                [parameters appendString:@"="];
                 [parameters appendString:[[argument description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
             }
         }

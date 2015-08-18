@@ -27,7 +27,7 @@
     return self;
 }
 
-- (void)setValue:(id)value forKey:(NSString *)key
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
     // No-op
 }
