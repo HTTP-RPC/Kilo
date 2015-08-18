@@ -192,12 +192,12 @@ public class WebRPCService {
                     throw new IOException(String.format("%d %s", status, connection.getResponseMessage()));
                 }
             } catch (Exception exception) {
-                dispatcher.dispatchException(exception, resultHandler);
+                resultHandler.execute(null, exception);
 
                 throw exception;
             }
 
-            dispatcher.dispatchResult(result, resultHandler);
+            resultHandler.execute(result, null);
 
             return result;
         }
@@ -423,7 +423,6 @@ public class WebRPCService {
 
     private URL baseURL;
     private ExecutorService executorService;
-    private Dispatcher dispatcher;
 
     /**
      * Creates a new web RPC service.
@@ -433,11 +432,8 @@ public class WebRPCService {
      *
      * @param executorService
      * The executor service that will be used to execute requests.
-     *
-     * @param dispatcher
-     * The dispatcher that will be used to dispatch results.
      */
-    public WebRPCService(URL baseURL, ExecutorService executorService, Dispatcher dispatcher) {
+    public WebRPCService(URL baseURL, ExecutorService executorService) {
         if (baseURL == null) {
             throw new IllegalArgumentException();
         }
@@ -446,13 +442,8 @@ public class WebRPCService {
             throw new IllegalArgumentException();
         }
 
-        if (dispatcher == null) {
-            throw new IllegalArgumentException();
-        }
-
         this.baseURL = baseURL;
         this.executorService = executorService;
-        this.dispatcher = dispatcher;
     }
 
     /**
@@ -473,16 +464,6 @@ public class WebRPCService {
      */
     public ExecutorService getExecutorService() {
         return executorService;
-    }
-
-    /**
-     * Returns the dispatcher that is used to dispatch results.
-     *
-     * @return
-     * The dispatcher that is used to dispatch results.
-     */
-    public Dispatcher getDispatcher() {
-        return dispatcher;
     }
 
     /**

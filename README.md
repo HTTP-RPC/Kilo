@@ -1,21 +1,23 @@
 # Overview
 WebRPC is a mechanism for executing remote procedure calls via HTTP. It is an intentionally simple protocol that is designed primarily to address common use cases in web service development. Any platform capable of submitting an HTTP request and consuming a JSON response can be a WebRPC client, and any platform capable of responding to an HTTP request and producing a JSON result can act as a WebRPC server.
 
-WebRPC procedures, or "methods", are encapsulated by a "service", which is a collection of related methods. The service and method names are specified in the path component of the request URL. Method arguments are passed in either the query string for GET requests or in the request body for POST requests. POST requests are encoded using the `application/x-www-form-urlencoded` MIME type, like an HTML form. Other HTTP operations are not supported.
-
-Method results are typically returned as JSON values. However, methods that do not return a value are also supported.
+WebRPC procedures, or "methods", are encapsulated by a "service", which is simply a collection of related methods. The service and method names are specified in the path component of the request URL. Method arguments are passed either via the query string or in the request body, like an HTML form. Method results are typically returned as JSON values, although methods that do not return a value are also supported.
 
 For example, a GET request for the following URL might invoke the "add" method of a hypothetical "math" service:
 
     http://example.com/rpc/math/add?a=1&b=2
     
-The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request for the path part of the URL along with a request body containing the query component.
+The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. 
 
-Method parameters may be either scalar (single-value) or vector (multi-value) types. Values may be any simple type including string, number, or boolean (true/false). As with any HTTP request, values that include reserved characters must be URL-encoded.
+Alternatively, a POST request for `http://example.com/rpc/math/add` with a content type of `application/x-www-form-urlencoded` and a request body of `a=1&b=2` would produce the same result. No other HTTP operations are supported.
 
-Multi-value arguments are specified by providing zero or more values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed parameters:
+Method parameters may be either scalar (single-value) or vector (multi-value) types. Scalar values may be any simple type including string, number, or boolean (true/false). As with any HTTP request, values that include reserved characters must be URL-encoded.
+
+Multi-value arguments are specified by providing zero or more scalar values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed argument values:
 
     http://example.com/rpc/math/add?value=1&value=2&value=3
+
+A GET on this URL would return the value 6 in response.
 
 The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces a null argument value for that parameter. Omitting all values for a vector parameter produces an empty collection argument for the parameter.
 
@@ -24,7 +26,7 @@ Return values may be any JSON type, including string, number, boolean (true/fals
 An HTTP 200 is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
 ## Implementations
-Support currently exists for implementing web RPC services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
+Support currently exists for implementing web RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
 
 # Java Server
 The Java server implementation of WebRPC allows developers to build web RPC services in Java. It is distributed as a JAR file that contains the following classes:
@@ -237,12 +239,11 @@ The Java client implementation of WebRPC enables Java-based applications to cons
 * _`vellum.webrpc`_
     * `WebRPCService` - invocation proxy for web RPC services
     * `ResultHandler` - callback interface for handling results
-    * `Dispatcher` - interface for dispatching results to result handlers
     * `Result` - abstract base class for typed results
 
 Each of these classes is discussed in more detail below. 
 
-Note that the `WebRPCService` and `Result` classes provided by the Java client library are not the same as those provided by the Java server implementation. They simply have similar names because they serve a similar purpose.
+Note that the `WebRPCService` and `Result` classes provided by the Java client library are not the same as those used by the Java server implementation. They simply have similar names because they serve a similar purpose.
 
 The JAR file for the Java client implementation of WebRPC can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). Java 7 or later is required.
 
@@ -253,13 +254,10 @@ The `WebRPCService` class acts as a client-side invocation proxy for web RPC ser
 
 * `baseURL` - an instance of `java.net.URL` representing the base URL of the service
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
-* `dispatcher` - an instance of `vellum.webrpc.Dispatcher` that will be used to dispatch results
 
 The base URL represents the fully-qualified name of the service. Method names are appended to this URL during execution. 
 
 The executor service is used to schedule remote method requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
-
-A dispatcher is used to notify a caller that a remote method has completed. Because executor services often execute tasks on a background thread, an application needs a way to ensure that the handlers are called on the main UI thread. Since Java UI platforms have different ways of invoking code on the main thread, the `Dispatcher` interface is provided as a means of abstracting this behavior. It is discussed in more detail later.
 
 Remote methods are executed by calling the `invoke()` method:
 
@@ -277,7 +275,7 @@ This method takes the following arguments:
 
 Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as a list of any supported scalar type; e.g. `List<Double>`.
 
-The result handler is called upon completion of the method. As noted earlier, it is invoked by the dispatcher provided to the service constructor. The `ResultHandler` interface is discussed in more detail below.
+The result handler is called upon completion of the method. Note that the handler is called on the thread that executed the remote request, which, in most cases, will not be the same thread that called the `invoke()` method. This is discussed in more detail below.
 
 The `invoke()` methods return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
@@ -292,27 +290,17 @@ On successful completion, the first argument contains the result of the remote m
 
 Because `ResultHandler` is a functional interface (i.e. defines only a single method), it can be implemented using a lambda expression in Java 8 or later. Using lambdas can significantly reduce the verbosity and improve the readability of callback handling code. An example is provided later.
 
-### Dispatcher Interface
-The `Dispatcher` interface is used to dispatch success or failure notifications to result handlers. It defines two methods:
-
-    public <V> void dispatchResult(V result, ResultHandler<V> resultHandler);    
-    public void dispatchException(Exception exception, ResultHandler<?> resultHandler);
-
-The first method is called to dispatch the result of a successful remote method invocation. The second is called in case of a failure.
-
-Implementation details will vary by platform. A Swing application might call the `SwingUtilities#invokeAndWait()` method to post a runnable to the event dispatch thread, whereas an Android application might call `Handler#post()`, an SWT application might call `Display#asyncExec()`, and a JavaFX application might call `Platform.runLater()` to execute code on the UI thread. A dispatcher for a headless application might simply invoke the callback on the current thread.
+As noted earlier, the result handler's `execute()` method will generally be invoked on a background thread. However, most user interface toolkits only allow the UI to be updated on the main thread. As a result, handlers will generally need to "post" a message back to the UI thread in order to update the application's state. Implementation details will vary by platform. For example, a Swing application might call `SwingUtilities#invokeAndWait()` to post a runnable to the event dispatch thread, whereas an Android application might call `Handler#post()`, an SWT application might call `Display#asyncExec()`, and a JavaFX application might call `Platform.runLater()` to execute code on the UI thread. 
 
 ### Examples
-The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. Since the example does not have a user interface, a test dispatcher that simply delegates to the handler is used.
+The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. 
 
 The code then invokes the `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:
 
     // Create service
-    URL baseURL = new URL("https://localhost:8443/webrpc-test-1.0/test/");
-    ExecutorService threadPool = Executors.newFixedThreadPool(10);
-    TestDispatcher testDispatcher = new TestDispatcher();
+    URL baseURL = new URL("https://localhost:8443/webrpc-test-server/test/");
 
-    WebRPCService service = new WebRPCService(baseURL, threadPool, testDispatcher);
+    WebRPCService service = new WebRPCService(baseURL, Executors.newFixedThreadPool(10));
 
     // Add a + b
     HashMap<String, Object> addArguments = new HashMap<>();
@@ -430,7 +418,7 @@ The following code snippet demonstrates how `WSWebRPCService` can be used to inv
     session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
     // Initialize service and invoke methods
-    let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-1.0/test/")
+    let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-server/test/")
 
     service = WSWebRPCService(session: session, baseURL: baseURL!)
         
@@ -470,7 +458,7 @@ The result of the `getStatistics()` method can be converted to a `Statistics` in
 Note that, as in the Java implementation, `initWithDictionary:` does not perform deep initialization. Result classes with nested result properties must override `initWithDictionary:` to properly map the nested values to the appropriate types.
 
 # JavaScript Client
-The JavaScript client implementation of WebRPC enables HTML-based applications to consume web RPC services. It defines a single `WebRPCService` class, discussed in more detail below. 
+The JavaScript client implementation of WebRPC enables browser-based applications to consume web RPC services. It defines a single `WebRPCService` class, which is discussed in more detail below. 
 
 The JavaScript WebRPC client is delivered in a single JavaScript source file named `webrpc.js`. It can be downloaded [here](https://github.com/gk-brown/WebRPC/releases).
 
@@ -481,9 +469,9 @@ Service proxies are initialized via the `WebRPCService` constructor, which takes
 
 Remote methods are invoked by calling either `invoke()` or `invokeWithArguments()` on the service proxy. The first version is a convenience method for calling remote methods that don't take any arguments. The second takes an object containing the set of argument values to be passed to the remote method. The first method delegates to the second, passing an empty argument object.
 
-Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as an array of any supported scalar type.
+Scalar arguments can be number, boolean, or string values. Multi-value arguments are specified as an array of scalar values; e.g. `[1, 2, 3]`.
 
-Both invocation methods take a result handler as the final argument. The result handler is a callback that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `null` if the method does not return a value. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
+Both invocation methods take a result handler as the final argument. The result handler is a callback function that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `null` if the method does not return a value. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
 
 Both invocation methods return the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
 

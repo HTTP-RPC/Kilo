@@ -109,7 +109,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
         // Initialize service and invoke methods
-        let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-1.0/test/")
+        let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-server/test/")
 
         service = WSWebRPCService(session: session, baseURL: baseURL!)
 

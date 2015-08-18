@@ -34,18 +34,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class WebRPCServiceTest {
-    private static class TestDispatcher implements Dispatcher {
-        @Override
-        public synchronized <V> void dispatchResult(V result, ResultHandler<V> resultHandler) {
-            resultHandler.execute(result, null);
-        }
-
-        @Override
-        public synchronized void dispatchException(Exception exception, ResultHandler<?> resultHandler) {
-            System.out.println(exception.getMessage());
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         // Set global credentials
         Authenticator.setDefault(new Authenticator() {
@@ -84,11 +72,10 @@ public class WebRPCServiceTest {
         });
 
         // Create service
-        URL baseURL = new URL("https://localhost:8443/webrpc-test-1.0/test/");
+        URL baseURL = new URL("https://localhost:8443/webrpc-test-server/test/");
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
-        TestDispatcher testDispatcher = new TestDispatcher();
 
-        WebRPCService service = new WebRPCService(baseURL, threadPool, testDispatcher);
+        WebRPCService service = new WebRPCService(baseURL, threadPool);
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();
@@ -98,7 +85,7 @@ public class WebRPCServiceTest {
         service.invoke("add", addArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
-                validate(result.doubleValue() == 6.0);
+                validate(exception == null && result.doubleValue() == 6.0);
             }
         });
 
@@ -107,7 +94,7 @@ public class WebRPCServiceTest {
         addValuesArguments.put("values", Arrays.asList(1, 2, 3, 4));
 
         service.invoke("addValues", addValuesArguments, (Number result, Exception exception) -> {
-            validate(result.doubleValue() == 10.0);
+            validate(exception == null && result.doubleValue() == 10.0);
         });
 
         // Get characters
@@ -115,7 +102,7 @@ public class WebRPCServiceTest {
         getCharactersArguments.put("text", "Hello, World!");
 
         service.invoke("getCharacters", getCharactersArguments, (result, exception) -> {
-            validate(result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
+            validate(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Get selection
@@ -123,7 +110,7 @@ public class WebRPCServiceTest {
         getSelectionArguments.put("items", Arrays.asList("a", "b", "c", "d"));
 
         service.invoke("getSelection", getSelectionArguments, (result, exception) -> {
-            validate(result.equals("a, b, c, d"));
+            validate(exception == null && result.equals("a, b, c, d"));
         });
 
         // Get statistics
@@ -150,27 +137,27 @@ public class WebRPCServiceTest {
             row2.put("b", 2L);
             row2.put("c", 4.0);
 
-            validate(result.equals(Arrays.asList(row1, row2)));
+            validate(exception == null && result.equals(Arrays.asList(row1, row2)));
         });
 
         // Get void
         service.invoke("getVoid", getSelectionArguments, (result, exception) -> {
-            validate(result == null);
+            validate(exception == null && result == null);
         });
 
         // Get null
         service.invoke("getNull", getSelectionArguments, (result, exception) -> {
-            validate(result == null);
+            validate(exception == null && result == null);
         });
 
         // Get locale code
         service.invoke("getLocaleCode", (result, exception) -> {
-            validate(result.equals(Locale.getDefault().toString()));
+            validate(exception == null && result.equals(Locale.getDefault().toString()));
         });
 
         // Get user name
         service.invoke("getUserName", (result, exception) -> {
-            validate(result.equals("tomcat"));
+            validate(exception == null && result.equals("tomcat"));
         });
 
         // Is user in role
@@ -178,7 +165,7 @@ public class WebRPCServiceTest {
         isUserInRoleArguments.put("role", "tomcat");
 
         service.invoke("isUserInRole", isUserInRoleArguments, (result, exception) -> {
-            validate(result.equals(true));
+            validate(exception == null && result.equals(true));
         });
 
         // Shut down thread pool
