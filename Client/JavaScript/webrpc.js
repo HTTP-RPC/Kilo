@@ -30,7 +30,7 @@ var WebRPCService = function(baseURL) {
  * @return An XMLHttpRequest object representing the invocation request.
  */
 WebRPCService.prototype.invoke = function(methodName, resultHandler) {
-    return invokeWithArguments(methodName, {}, resultHandler);
+    return this.invokeWithArguments(methodName, {}, resultHandler);
 }
 
 /**

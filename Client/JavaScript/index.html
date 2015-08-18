@@ -19,16 +19,66 @@ limitations under the License.
 <script src="webrpc.js"></script>
 <script>
 function testService() {
-    var webRPCService = new WebRPCService("/webrpc-test-1.0/test");
+    var webRPCService = new WebRPCService("/webrpc-test-server/test");
 
+    // Add
     webRPCService.invokeWithArguments("add", {a:4, b:2}, function(result, error) {
-        // TODO
-        if (error == null) {
-            alert("Succeeded: " + result);
-        } else {
-            alert("Failed: " + error)
-        }
+        validate(result == 6);
     });
+
+    // Add values
+    webRPCService.invokeWithArguments("addValues", {values:[1, 2, 3, 4]}, function(result, error) {
+        validate(result == 10);
+    });
+
+    // Get characters
+    webRPCService.invokeWithArguments("getCharacters", {text:"Hello, World!"}, function(result, error) {
+        validate(JSON.stringify(result) == JSON.stringify(["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));
+    });
+
+    // Get selection
+    webRPCService.invokeWithArguments("getSelection", {items:["a", "b", "c", "d"]}, function(result, error) {
+        validate(result == "a, b, c, d");
+    });
+
+    // Get statistics
+    webRPCService.invokeWithArguments("getStatistics", {values:[1, 3, 5]}, function(result, error) {
+        validate(result.count == 3 && result.average == 3 && result.sum == 9);
+    });
+
+    // Get test data
+    webRPCService.invoke("getTestData", function(result, error) {
+        validate(JSON.stringify(result) == JSON.stringify([{a:"hello", b:1, c:2}, {a:"goodbye", b:2, c:4}]));
+    });
+
+    // Get void
+    webRPCService.invoke("getVoid", function(result, error) {
+        validate(result == null);
+    });
+
+    // Get null
+    webRPCService.invoke("getNull", function(result, error) {
+        validate(result == null);
+    });
+
+    // Get locale code
+    webRPCService.invoke("getLocaleCode", function(result, error) {
+        validate(result == "en_US");
+    });
+
+    // Get user name
+    webRPCService.invoke("getUserName", function(result, error) {
+        validate(result == "tomcat");
+    });
+
+    // Is user in role
+    webRPCService.invokeWithArguments("isUserInRole", {role:"tomcat"}, function(result, error) {
+        validate(result == true);
+    });
+}
+
+function validate(condition) {
+    document.writeln((condition ? "OK" : "FAIL") + "<br/>");
 }
 </script>
 </head>

@@ -90,7 +90,7 @@ public class WebRPCServiceTest {
 
         WebRPCService service = new WebRPCService(baseURL, threadPool, testDispatcher);
 
-        // Add, anonymous inner class
+        // Add
         HashMap<String, Object> addArguments = new HashMap<>();
         addArguments.put("a", 2);
         addArguments.put("b", 4);
