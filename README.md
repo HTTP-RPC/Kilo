@@ -15,9 +15,9 @@ Method parameters may be either scalar (single-value) or vector (multi-value) ty
 
 Multi-value arguments are specified by providing zero or more scalar values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed argument values:
 
-    http://example.com/rpc/math/add?value=1&value=2&value=3
+    http://example.com/rpc/math/add?values=1&values=2&values=3
 
-A GET on this URL would return the value 6 in response.
+A GET for this URL would return the value 6 in response.
 
 The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces a null argument value for that parameter. Omitting all values for a vector parameter produces an empty collection argument for the parameter.
 
