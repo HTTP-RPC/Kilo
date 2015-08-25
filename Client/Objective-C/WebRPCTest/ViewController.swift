@@ -30,11 +30,6 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var getUserNameCell: UITableViewCell!
     var isUserInRoleCell: UITableViewCell!
 
-    var configuration: NSURLSessionConfiguration!
-    var session: NSURLSession!
-
-    var service: WSWebRPCService!
-
     override func loadView() {
         var tableView = UITableView()
 
@@ -99,19 +94,18 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         NSURLCredentialStorage.sharedCredentialStorage().setDefaultCredential(credential, forProtectionSpace: protectionSpace)
 
         // Configure session
-        configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
         configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
 
-        var delegateQueue = NSOperationQueue()
+        let delegateQueue = NSOperationQueue()
         delegateQueue.maxConcurrentOperationCount = 10
 
-        session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+        let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
         // Initialize service and invoke methods
         let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-server/test/")
 
-        service = WSWebRPCService(session: session, baseURL: baseURL!)
+        let service = WSWebRPCService(session: session, baseURL: baseURL!)
 
         func validate(condition: Bool, error: NSError?, cell: UITableViewCell) {
             if (condition) {

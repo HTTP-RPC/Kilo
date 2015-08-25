@@ -89,7 +89,7 @@ The `Roles` interface is provided to allow test code to simulate user roles. It 
 The following example contains a possible Java implementation of the hypothetical "math" service discussed earlier:
 
     // Sample implementation of hypothetical math service
-    public class MathService {
+    public class MathService extends WebRPCService {
         // Adds two numbers
         public double add(double a, double b) {
             return a + b;
@@ -410,18 +410,19 @@ Request security is provided by the the underlying URL session. See the `NSURLSe
 The following code snippet demonstrates how `WSWebRPCService` can be used to invoke the methods of the hypothetical math service. It creates an instance of the `WSWebRPCService` class using a default URL session backed by a delegate queue supporting ten concurrent operations. The code then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b" and producing a result of 6. Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments and producing a result of 10:
 
     // Configure session
-    configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+    let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+    configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
 
-    var delegateQueue = NSOperationQueue()
+    let delegateQueue = NSOperationQueue()
     delegateQueue.maxConcurrentOperationCount = 10
 
-    session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+    let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
     // Initialize service and invoke methods
     let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-server/test/")
 
-    service = WSWebRPCService(session: session, baseURL: baseURL!)
-        
+    let service = WSWebRPCService(session: session, baseURL: baseURL!)
+    
     // Add a + b
     service.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
         // result is 6
