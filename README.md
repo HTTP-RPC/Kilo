@@ -250,7 +250,7 @@ The JAR file for the Java client implementation of WebRPC can be downloaded [her
 ## WebRPCService Class
 The `WebRPCService` class acts as a client-side invocation proxy for web RPC services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. Requests are submitted via HTTP POST.
 
-`WebRPCService` provides a single constructor that takes the following three arguments:
+`WebRPCService` provides a single constructor that takes the following arguments:
 
 * `baseURL` - an instance of `java.net.URL` representing the base URL of the service
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
