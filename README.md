@@ -120,7 +120,7 @@ Similarly, a GET for the following URL would also produce the number 9:
     /math/addValues?values=1&values=3&values=5
 
 ## WebRPCServlet Class
-Web RPC services are "published", or made available, via the `WebRPCServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. 
+Web RPC services are "published", or made available, via the `WebRPCServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the service method, and serializing the return value to JSON. Note that service classes must be compiled with the `-parameters` flag so their parameter names are available at runtime.
 
 Java objects are mapped to their JSON equivalents as follows:
 
