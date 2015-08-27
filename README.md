@@ -217,7 +217,7 @@ producing the following result:
 
     {"average":3.0, "count":3, "sum":9.0}    
 
-### Roles Interface
+## Roles Interface
 The `Roles` interface provides an abstraction for determining user role membership. It is provided primarily to facilitate unit testing of service methods. It defines a single `isUserInRole()` method that a test framework can implement to simulate different user roles. This allows services to be tested without the need to start a servlet container.
 
 For example, the test code could store a mapping of user name to role in a text file and provide an implementation of the `Roles` interface that operates against this data. Individual tests could instantiate a concrete service class and pass an instance of the `Roles` implementation to the service's `initialize()` method, along with the locale and user principal. Once initialized, the service methods could be invoked directly by the unit test, producing the same results as if they had been invoked by the servlet.
@@ -260,7 +260,7 @@ The base URL represents the fully-qualified name of the service. Method names ar
 The executor service is used to schedule remote method requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
 
 Remote methods are executed by calling the `invoke()` method:
-
+    
     public <V> Future<V> invoke(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) { ... }
 
 This method takes the following arguments:
@@ -269,38 +269,40 @@ This method takes the following arguments:
 * `arguments` - an instance of `java.util.Map` containing the arguments to the remote method as key/value pairs
 * `resultHandler` - an instance of `vellum.webrpc.ResultHandler` that will be invoked upon completion of the remote method
 
-`WebRPCService` also provides the following convenience method for calling remote methods that don't take any arguments. It simply delegates to the first method, passing an empty argument map:
-
-    public <V> Future<V> invoke(String methodName, ResultHandler<V> resultHandler) { ... }
+A convenience method for invoking remote methods that don't take any arguments is also provided.
 
 Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as a list of any supported scalar type; e.g. `List<Double>`.
 
-The result handler is called upon completion of the method. Note that the handler is called on the thread that executed the remote request, which, in most cases, will not be the same thread that called the `invoke()` method. This is discussed in more detail below.
-
-The `invoke()` methods return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
-
-Request security provided by the underlying `HttpURLConnection` implementation. See the Javadoc for more information.
-
-### ResultHandler Interface
-The `ResultHandler` interface is the means by which applications are notified when a remote method invocation is complete. It defines a single method, `execute()`, that is called when a remote method call succeeds or fails:
+The result handler is called upon completion of the remote method. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
     public void execute(V result, Exception exception);
 
-On successful completion, the first argument contains the result of the remote method call. The second argument will be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
+On successful completion, the first argument will contain the result of the remote method call. It will be an instance of one of the following types or `null`, depending on the JSON response returned by the server:
 
-Because `ResultHandler` is a functional interface (i.e. defines only a single method), it can be implemented using a lambda expression in Java 8 or later. Using lambdas can significantly reduce the verbosity and improve the readability of callback handling code. An example is provided later.
+* `java.lang.String`: string
+* `java.lang.Number`: number
+* `java.lang.Boolean` true/false
+* `java.util.List`: array
+* `java.util.Map`: object
 
-As noted earlier, the result handler's `execute()` method will generally be invoked on a background thread. However, most user interface toolkits only allow the UI to be updated on the main thread. As a result, handlers will generally need to "post" a message back to the UI thread in order to update the application's state. Implementation details will vary by platform. For example, a Swing application might call `SwingUtilities#invokeAndWait()` to post a runnable to the event dispatch thread, whereas an Android application might call `Handler#post()`, an SWT application might call `Display#asyncExec()`, and a JavaFX application might call `Platform.runLater()` to execute code on the UI thread. 
+The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
+
+Note that a result handler is called on the thread that executed the remote request, which in most cases will not be the main UI thread. However, user interface toolkits generally require UI updates to be performed on the main thread. As a result, handlers typically need to “post” a message back to the UI thread in order to update the application's state. Implementation details will vary by platform. For example, a Swing application might call SwingUtilities#invokeAndWait(), whereas an Android application might call Handler#post(). See the platform documentation for more information.
+
+Both `invoke()` methods return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
+
+Request security provided by the underlying `HttpURLConnection` implementation. See the Javadoc for more information.
 
 ### Examples
-The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. 
+The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. It also supplies a request dispatcher that executes the result handler command on the current thread. In an actual application, handler commands would typically be posted to the UI thread via a platform-specific means such as `SwingUtilities#invokeAndWait()` (Swing), `Platform#invokeLater()` (JavaFX), `Display#asyncExec()` (SWT), or `Handler#post()` (Android). See the platform documentation for more information.
 
-The code then invokes the `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:
+Once the service has been constructed, the code invokes the `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:
 
     // Create service
     URL baseURL = new URL("https://localhost:8443/webrpc-test-server/test/");
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    WebRPCService service = new WebRPCService(baseURL, Executors.newFixedThreadPool(10));
+    WebRPCService service = new WebRPCService(baseURL, executorService);
 
     // Add a + b
     HashMap<String, Object> addArguments = new HashMap<>();
@@ -464,7 +466,7 @@ The JavaScript client implementation of WebRPC enables browser-based application
 The JavaScript WebRPC client is delivered in a single JavaScript source file named `webrpc.js`. It can be downloaded [here](https://github.com/gk-brown/WebRPC/releases).
 
 ## WebRPCService Class
-As in the Java and Objective-C/Swift versions, the `WebRPCService` class provides an invocation proxy for remote services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server. Requests are submitted via HTTP POST. 
+As in the Java and Objective-C/Swift versions, the `WebRPCService` class provides an invocation proxy for remote services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server, and uses `JSON.parse()` to convert the response to an object. Requests are submitted via HTTP POST. 
 
 Service proxies are initialized via the `WebRPCService` constructor, which takes a single `baseURL` argument representing the path to the service. Method names are appended to this URL during method execution.
 
