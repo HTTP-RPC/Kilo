@@ -26,7 +26,6 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +35,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
-import javax.activation.MimeType;
 
 /**
  * Invocation proxy for web RPC services.
@@ -111,6 +108,7 @@ public class WebRPCService {
         private static final String FALSE_KEYWORD = "false";
         private static final String NULL_KEYWORD = "null";
 
+        private static final String CHARSET_KEY = "charset";
         private static final String UTF_8_ENCODING = "UTF-8";
 
         public InvocationCallback(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
@@ -167,24 +165,13 @@ public class WebRPCService {
 
                 if (status == HttpURLConnection.HTTP_OK) {
                     try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                        Charset charset = null;
+                        String charsetName = getCharsetName(connection.getContentType());
 
-                        String contentType = connection.getContentType();
-
-                        if (contentType != null) {
-                            MimeType mimeType = new MimeType(contentType);
-                            String charsetName = mimeType.getParameters().get("charset");
-
-                            if (charsetName != null) {
-                                charset = Charset.forName(charsetName);
-                            }
+                        if (charsetName == null) {
+                            charsetName = UTF_8_ENCODING;
                         }
 
-                        if (charset == null) {
-                            charset = Charset.forName(UTF_8_ENCODING);
-                        }
-
-                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charset))) {
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charsetName))) {
                             result = readValue(reader);
                         }
                     }
@@ -200,6 +187,34 @@ public class WebRPCService {
             resultHandler.execute(result, null);
 
             return result;
+        }
+
+        private String getCharsetName(String contentType) {
+            String charsetName = null;
+
+            if (contentType != null) {
+                int i = contentType.indexOf(CHARSET_KEY);
+
+                if (i != -1) {
+                    i += CHARSET_KEY.length();
+
+                    int n = contentType.length();
+
+                    if (i < n && contentType.charAt(i) == '=') {
+                        int j = contentType.indexOf(";", ++i);
+
+                        if (j == -1) {
+                            j = n;
+                        }
+
+                        if (j > i) {
+                            charsetName = contentType.substring(i, j);
+                        }
+                    }
+                }
+            }
+
+            return charsetName;
         }
 
         @SuppressWarnings("unchecked")
