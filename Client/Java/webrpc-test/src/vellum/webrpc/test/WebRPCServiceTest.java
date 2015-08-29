@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package vellum.webrpc.test;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -32,6 +32,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import vellum.webrpc.ResultHandler;
+import vellum.webrpc.WebRPCService;
 
 public class WebRPCServiceTest {
     public static void main(String[] args) throws Exception {
@@ -118,9 +121,10 @@ public class WebRPCServiceTest {
         getStatisticsArguments.put("values", Arrays.asList(1, 3, 5));
 
         service.invoke("getStatistics", getStatisticsArguments, (Map<String, Object> result, Exception exception) -> {
-            Statistics statistics = new Statistics(result);
+            Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
-            validate(statistics.getCount() == 3
+            validate(statistics != null
+                && statistics.getCount() == 3
                 && statistics.getAverage() == 3.0
                 && statistics.getSum() == 9.0);
         });

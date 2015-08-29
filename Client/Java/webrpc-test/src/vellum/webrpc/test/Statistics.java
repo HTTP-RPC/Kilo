@@ -12,9 +12,11 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package vellum.webrpc.test;
 
 import java.util.Map;
+
+import vellum.webrpc.Result;
 
 public class Statistics extends Result {
     private int count;
