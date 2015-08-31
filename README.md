@@ -287,11 +287,27 @@ On successful completion, the first argument will contain the result of the remo
 
 The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
 
-Note that a result handler is called on the thread that executed the remote request, which in most cases will not be the main UI thread. However, user interface toolkits generally require UI updates to be performed on the main thread. As a result, handlers typically need to “post” a message back to the UI thread in order to update the application's state. Implementation details will vary by platform. For example, a Swing application might call SwingUtilities#invokeAndWait(), whereas an Android application might call Handler#post(). See the platform documentation for more information.
-
 Both `invoke()` methods return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
-Request security provided by the underlying `HttpURLConnection` implementation. See the Javadoc for more information.
+Request security is provided by the underlying `HttpURLConnection` implementation. See the Javadoc for more information.
+
+### Multi-Threading Considerations
+By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
+
+While this can be done in the result handler itself, `WebRPCService` provides a more convenient alternative. The `setResultDispatcher()` method allows an application to specify an instance of `java.util.concurrent.Executor` that will be used to perform all result handler notifications. This is a static method that only needs to be called once at application startup.
+
+For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
+
+    WebRPCService.setResultDispatcher(new Executor() {
+        private Handler handler = new Handler(Looper.getMainLooper());
+
+        @Override
+        public void execute(Runnable command) {
+            handler.post(command);
+        }
+    });
+
+Similar dispatchers can be configured for Swing, JavaFX, or SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ### Examples
 The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. It then invokes the service's `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:

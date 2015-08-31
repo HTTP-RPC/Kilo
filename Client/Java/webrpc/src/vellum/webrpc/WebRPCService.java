@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -41,60 +43,8 @@ import java.util.concurrent.Future;
  */
 public class WebRPCService {
     // Invocation callback
-    private class InvocationCallback<V> implements Callable<V> {
-        // Monitored input stream
-        private class MonitoredInputStream extends InputStream {
-            private InputStream inputStream;
-
-            private int count = 0;
-
-            public MonitoredInputStream(InputStream inputStream) {
-                this.inputStream = inputStream;
-            }
-
-            @Override
-            public int read() throws IOException {
-                int b = inputStream.read();
-
-                if (b != -1 && ++count % PAGE_SIZE == 0 && Thread.currentThread().isInterrupted()) {
-                    throw new InterruptedIOException();
-                }
-
-                return b;
-            }
-
-            @Override
-            public void close() throws IOException {
-                inputStream.close();
-            }
-        }
-
-        // Monitored output stream
-        private class MonitoredOutputStream extends OutputStream {
-            private OutputStream outputStream;
-
-            private int count = 0;
-
-            public MonitoredOutputStream(OutputStream outputStream) {
-                this.outputStream = outputStream;
-            }
-
-            @Override
-            public void write(int b) throws IOException {
-                outputStream.write(b);
-
-                if (++count % PAGE_SIZE == 0 && Thread.currentThread().isInterrupted()) {
-                    throw new InterruptedIOException();
-                }
-            }
-
-            @Override
-            public void close() throws IOException {
-                outputStream.close();
-            }
-        }
-
-        private String methodName;
+    private static class InvocationCallback<V> implements Callable<V> {
+        private URL methodURL;
         private Map<String, Object> arguments;
         private ResultHandler<V> resultHandler;
 
@@ -102,7 +52,6 @@ public class WebRPCService {
         private LinkedList<Object> collections = new LinkedList<>();
 
         private static final int EOF = -1;
-        private static final int PAGE_SIZE = 1024;
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
@@ -111,19 +60,17 @@ public class WebRPCService {
         private static final String CHARSET_KEY = "charset";
         private static final String UTF_8_ENCODING = "UTF-8";
 
-        public InvocationCallback(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
-            this.methodName = methodName;
+        public InvocationCallback(URL methodURL, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
+            this.methodURL = methodURL;
             this.arguments = arguments;
             this.resultHandler = resultHandler;
         }
 
         @Override
         public V call() throws Exception {
-            V result;
+            final V result;
             try {
                 // Open URL connection
-                URL methodURL = new URL(baseURL, methodName);
-
                 HttpURLConnection connection = (HttpURLConnection)methodURL.openConnection();
 
                 connection.setRequestMethod("POST");
@@ -178,13 +125,23 @@ public class WebRPCService {
                 } else {
                     throw new IOException(String.format("%d %s", status, connection.getResponseMessage()));
                 }
-            } catch (Exception exception) {
-                resultHandler.execute(null, exception);
+            } catch (final Exception exception) {
+                resultDispatcher.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultHandler.execute(null, exception);
+                    }
+                });
 
                 throw exception;
             }
 
-            resultHandler.execute(result, null);
+            resultDispatcher.execute(new Runnable() {
+                @Override
+                public void run() {
+                    resultHandler.execute(result, null);
+                }
+            });
 
             return result;
         }
@@ -436,8 +393,69 @@ public class WebRPCService {
         }
     }
 
+    // Monitored input stream
+    private static class MonitoredInputStream extends InputStream {
+        private InputStream inputStream;
+
+        private int count = 0;
+
+        public MonitoredInputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+        }
+
+        @Override
+        public int read() throws IOException {
+            int b = inputStream.read();
+
+            if (b != -1 && ++count % PAGE_SIZE == 0 && Thread.currentThread().isInterrupted()) {
+                throw new InterruptedIOException();
+            }
+
+            return b;
+        }
+
+        @Override
+        public void close() throws IOException {
+            inputStream.close();
+        }
+    }
+
+    // Monitored output stream
+    private static class MonitoredOutputStream extends OutputStream {
+        private OutputStream outputStream;
+
+        private int count = 0;
+
+        public MonitoredOutputStream(OutputStream outputStream) {
+            this.outputStream = outputStream;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            outputStream.write(b);
+
+            if (++count % PAGE_SIZE == 0 && Thread.currentThread().isInterrupted()) {
+                throw new InterruptedIOException();
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            outputStream.close();
+        }
+    }
+
     private URL baseURL;
     private ExecutorService executorService;
+
+    private static Executor resultDispatcher = new Executor() {
+        @Override
+        public void execute(Runnable command) {
+            command.run();
+        }
+    };
+
+    private static final int PAGE_SIZE = 1024;
 
     /**
      * Creates a new web RPC service.
@@ -530,6 +548,34 @@ public class WebRPCService {
             throw new IllegalArgumentException();
         }
 
-        return executorService.submit(new InvocationCallback<>(methodName, arguments, resultHandler));
+        URL methodURL;
+        try {
+            methodURL = new URL(baseURL, methodName);
+        } catch (MalformedURLException exception) {
+            throw new IllegalArgumentException(exception);
+        }
+
+        return executorService.submit(new InvocationCallback<>(methodURL, arguments, resultHandler));
+    }
+
+    /**
+     * Returns the result dispatcher.
+     */
+    public static Executor getResultDispatcher() {
+        return resultDispatcher;
+    }
+
+    /**
+     * Sets the result dispatcher.
+     *
+     * @param resultDispatcher
+     * The result dispatcher.
+     */
+    public static void setResultDispatcher(Executor resultDispatcher) {
+        if (resultDispatcher == null) {
+            throw new IllegalArgumentException();
+        }
+
+        WebRPCService.resultDispatcher = resultDispatcher;
     }
 }
