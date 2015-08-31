@@ -294,9 +294,7 @@ Both `invoke()` methods return an instance of `java.util.concurrent.Future` repr
 Request security provided by the underlying `HttpURLConnection` implementation. See the Javadoc for more information.
 
 ### Examples
-The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. It also supplies a request dispatcher that executes the result handler command on the current thread. In an actual application, handler commands would typically be posted to the UI thread via a platform-specific means such as `SwingUtilities#invokeAndWait()` (Swing), `Platform#invokeLater()` (JavaFX), `Display#asyncExec()` (SWT), or `Handler#post()` (Android). See the platform documentation for more information.
-
-Once the service has been constructed, the code invokes the `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:
+The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. It then invokes the service's `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:
 
     // Create service
     URL baseURL = new URL("https://localhost:8443/webrpc-test-server/test/");
