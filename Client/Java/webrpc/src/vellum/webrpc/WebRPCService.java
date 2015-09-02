@@ -560,6 +560,9 @@ public class WebRPCService {
 
     /**
      * Returns the result dispatcher.
+     *
+     * @return
+     * The result dispatcher.
      */
     public static Executor getResultDispatcher() {
         return resultDispatcher;
