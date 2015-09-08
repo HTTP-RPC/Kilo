@@ -32,5 +32,19 @@
         <servlet-name>TestServlet</servlet-name>
         <url-pattern>/test/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AirConditionerServlet</servlet-name>
+        <servlet-class>vellum.webrpc.WebRPCServlet</servlet-class>
+        <init-param>
+            <param-name>serviceClassName</param-name>
+            <param-value>vellum.webrpc.test.AirConditionerService</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AirConditionerServlet</servlet-name>
+        <url-pattern>/ac/*</url-pattern>
+    </servlet-mapping>
 </web-app>
 
