@@ -36,6 +36,7 @@ import vellum.webrpc.WebRPCService;
 public class MainActivity extends AppCompatActivity {
     private CheckBox addCheckBox;
     private CheckBox addValuesCheckBox;
+    private CheckBox invertValueCheckBox;
     private CheckBox getCharactersCheckBox;
     private CheckBox getSelectionCheckBox;
     private CheckBox getStatisticsCheckBox;
@@ -112,17 +113,18 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        addCheckBox = (CheckBox) findViewById(R.id.add_checkbox);
-        addValuesCheckBox = (CheckBox) findViewById(R.id.add_values_checkbox);
-        getCharactersCheckBox = (CheckBox) findViewById(R.id.get_characters_checkbox);
-        getSelectionCheckBox = (CheckBox) findViewById(R.id.get_selection_checkbox);
-        getStatisticsCheckBox = (CheckBox) findViewById(R.id.get_statistics_checkbox);
-        getTestDataCheckBox = (CheckBox) findViewById(R.id.get_test_data_checkbox);
-        getVoidCheckBox = (CheckBox) findViewById(R.id.get_void_checkbox);
-        getNullCheckBox = (CheckBox) findViewById(R.id.get_null_checkbox);
-        getLocaleCodeCheckBox = (CheckBox) findViewById(R.id.get_locale_code_checkbox);
-        getUserNameCheckBox = (CheckBox) findViewById(R.id.get_user_name_checkbox);
-        isUserInRoleCheckBox = (CheckBox) findViewById(R.id.is_user_in_role_checkbox);
+        addCheckBox = (CheckBox)findViewById(R.id.add_checkbox);
+        addValuesCheckBox = (CheckBox)findViewById(R.id.add_values_checkbox);
+        invertValueCheckBox = (CheckBox)findViewById(R.id.invert_value_checkbox);
+        getCharactersCheckBox = (CheckBox)findViewById(R.id.get_characters_checkbox);
+        getSelectionCheckBox = (CheckBox)findViewById(R.id.get_selection_checkbox);
+        getStatisticsCheckBox = (CheckBox)findViewById(R.id.get_statistics_checkbox);
+        getTestDataCheckBox = (CheckBox)findViewById(R.id.get_test_data_checkbox);
+        getVoidCheckBox = (CheckBox)findViewById(R.id.get_void_checkbox);
+        getNullCheckBox = (CheckBox)findViewById(R.id.get_null_checkbox);
+        getLocaleCodeCheckBox = (CheckBox)findViewById(R.id.get_locale_code_checkbox);
+        getUserNameCheckBox = (CheckBox)findViewById(R.id.get_user_name_checkbox);
+        isUserInRoleCheckBox = (CheckBox)findViewById(R.id.is_user_in_role_checkbox);
     }
 
     @Override
@@ -161,6 +163,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(final Number result, final Exception exception) {
                 addValuesCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);
+            }
+        });
+
+        // Invert value
+        HashMap<String, Object> invertValueArguments = new HashMap<>();
+        invertValueArguments.put("value", true);
+
+        service.invoke("invertValue", invertValueArguments, new ResultHandler<Boolean>() {
+            @Override
+            public void execute(final Boolean result, final Exception exception) {
+                invertValueCheckBox.setChecked(exception == null && result == false);
             }
         });
 

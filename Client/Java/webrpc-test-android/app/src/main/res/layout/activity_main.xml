@@ -19,6 +19,11 @@
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/invert_value_checkbox"
+            android:text="insertValue()"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/get_characters_checkbox"
             android:text="getCharacters()"
             android:enabled="false"

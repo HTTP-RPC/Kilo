@@ -20,6 +20,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
     var addCell: UITableViewCell!
     var addValuesCell: UITableViewCell!
+    var invertValueCell: UITableViewCell!
     var getCharactersCell: UITableViewCell!
     var getSelectionCell: UITableViewCell!
     var getStatisticsCell: UITableViewCell!
@@ -45,6 +46,10 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         addValuesCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         addValuesCell.textLabel!.text = "addArray()"
         cells.append(addValuesCell)
+
+        invertValueCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
+        invertValueCell.textLabel!.text = "invertValue()"
+        cells.append(invertValueCell)
 
         getCharactersCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         getCharactersCell.textLabel!.text = "getCharacters()"
@@ -125,6 +130,10 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
         service.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
             validate(result as? Int == 10, error, self.addValuesCell)
+        }
+
+        service.invoke("invertValue", withArguments: ["value": true]) {(result, error) in
+            validate(result as? Bool == false, error, self.invertValueCell)
         }
 
         service.invoke("getCharacters", withArguments: ["text": "Hello, World!"]) {(result, error) in

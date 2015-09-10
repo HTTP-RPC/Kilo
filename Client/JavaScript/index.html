@@ -31,6 +31,11 @@ function testService() {
         validate(error == null && result == 10);
     });
 
+    // Invert value
+    webRPCService.invokeWithArguments("invertValue", {value:true}, function(result, error) {
+        validate(error == null && result == false);
+    });
+
     // Get characters
     webRPCService.invokeWithArguments("getCharacters", {text:"Hello, World!"}, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify(["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));

@@ -50,14 +50,25 @@ NSString * const WSWebRPCArgumentsKey = @"arguments";
         for (NSString *key in arguments) {
             id value = [arguments objectForKey:key];
 
-            for (id argument in [value isKindOfClass:[NSArray self]] ? (NSArray *)value : [NSArray arrayWithObject:value]) {
+            NSArray *components = [value isKindOfClass:[NSArray self]] ? (NSArray *)value : [NSArray arrayWithObject:value];
+
+            for (id component in components) {
                 if ([parameters length] > 0) {
                     [parameters appendString:@"&"];
                 }
 
+                NSString *argument;
+                if (component == (void *)kCFBooleanTrue) {
+                    argument = @"true";
+                } else if (component == (void *)kCFBooleanFalse) {
+                    argument = @"false";
+                } else {
+                    argument = [component description];
+                }
+
                 [parameters appendString:key];
                 [parameters appendString:@"="];
-                [parameters appendString:[[argument description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                [parameters appendString:[argument stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
             }
         }
 

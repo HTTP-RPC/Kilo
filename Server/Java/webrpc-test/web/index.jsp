@@ -21,6 +21,10 @@
 
 <hr/>
 
+<a href="${pageContext.request.contextPath}/test/invertValue?value=true">Invert Value</a>
+
+<hr/>
+
 <form action="${pageContext.request.contextPath}/test/getCharacters" method="get">
 <table>
 <tr>

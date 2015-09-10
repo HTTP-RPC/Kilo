@@ -100,6 +100,14 @@ public class WebRPCServiceTest {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 
+        // Invert value
+        HashMap<String, Object> invertValueArguments = new HashMap<>();
+        invertValueArguments.put("value", true);
+
+        service.invoke("invertValue", invertValueArguments, (Boolean result, Exception exception) -> {
+            validate(exception == null && result == false);
+        });
+
         // Get characters
         HashMap<String, Object> getCharactersArguments = new HashMap<>();
         getCharactersArguments.put("text", "Hello, World!");
