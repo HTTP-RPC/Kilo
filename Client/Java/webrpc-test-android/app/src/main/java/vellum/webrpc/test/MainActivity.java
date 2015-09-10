@@ -253,7 +253,8 @@ public class MainActivity extends AppCompatActivity {
         service.invoke("getLocaleCode", new ResultHandler<Object>() {
             @Override
             public void execute(final Object result, final Exception exception) {
-                getLocaleCodeCheckBox.setChecked(exception == null && result.equals(Locale.getDefault().toString()));
+                getLocaleCodeCheckBox.setChecked(exception == null && result != null);
+                getLocaleCodeCheckBox.setText(getLocaleCodeCheckBox.getText() + ": " + String.valueOf(result));
             }
         });
 

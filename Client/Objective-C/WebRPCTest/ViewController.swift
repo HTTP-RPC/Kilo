@@ -166,7 +166,9 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         }
 
         service.invoke("getLocaleCode") {(result, error) in
-            validate(result as? String == NSLocale.currentLocale().localeIdentifier, error, self.getLocaleCodeCell)
+            validate(result != nil, error, self.getLocaleCodeCell)
+
+            self.getLocaleCodeCell.detailTextLabel!.text = result as? String
         }
 
         service.invoke("getUserName") {(result, error) in

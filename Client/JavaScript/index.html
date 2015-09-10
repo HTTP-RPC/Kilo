@@ -68,7 +68,8 @@ function testService() {
 
     // Get locale code
     webRPCService.invoke("getLocaleCode", function(result, error) {
-        validate(error == null && result == "en_US");
+        validate(error == null && result != null);
+        document.writeln(result + "<br/>");
     });
 
     // Get user name

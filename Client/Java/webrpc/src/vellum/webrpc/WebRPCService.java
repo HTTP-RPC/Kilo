@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -52,6 +53,8 @@ public class WebRPCService {
         private LinkedList<Object> collections = new LinkedList<>();
 
         private static final int EOF = -1;
+
+        private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
@@ -77,6 +80,12 @@ public class WebRPCService {
 
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
+
+                // Set language
+                Locale locale = Locale.getDefault();
+                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
+
+                connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
 
                 // Create request body
                 StringBuilder parameters = new StringBuilder();
