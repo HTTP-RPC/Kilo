@@ -32,7 +32,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var isUserInRoleCell: UITableViewCell!
 
     override func loadView() {
-        var tableView = UITableView()
+        let tableView = UITableView()
 
         tableView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
         tableView.dataSource = self
@@ -119,64 +119,64 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
                 cell.textLabel!.textColor = UIColor.redColor()
 
                 if (error != nil) {
-                    println(error!.description)
+                    print(error!.description)
                 }
             }
         }
 
         service.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
-            validate(result as? Int == 6, error, self.addCell)
+            validate(result as? Int == 6, error: error, cell: self.addCell)
         }
 
         service.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
-            validate(result as? Int == 10, error, self.addValuesCell)
+            validate(result as? Int == 10, error: error, cell: self.addValuesCell)
         }
 
         service.invoke("invertValue", withArguments: ["value": true]) {(result, error) in
-            validate(result as? Bool == false, error, self.invertValueCell)
+            validate(result as? Bool == false, error: error, cell: self.invertValueCell)
         }
 
         service.invoke("getCharacters", withArguments: ["text": "Hello, World!"]) {(result, error) in
-            validate(result as? NSArray == ["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error, self.getCharactersCell)
+            validate(result as? NSArray == ["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error: error, cell: self.getCharactersCell)
         }
 
         service.invoke("getSelection", withArguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
-            validate(result as? String == "a, b, c, d", error, self.getSelectionCell)
+            validate(result as? String == "a, b, c, d", error: error, cell: self.getSelectionCell)
         }
 
         service.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
             let statistics: Statistics? = (error == nil) ? Statistics(dictionary: result as! [String : AnyObject]) : nil
 
-            validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, nil, self.getStatisticsCell)
+            validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, error: nil, cell: self.getStatisticsCell)
         }
 
         service.invoke("getTestData") {(result, error) in
             validate(result as? NSArray == [
                 ["a": "hello", "b": 1, "c": 2.0],
                 ["a": "goodbye", "b": 2,"c": 4.0]
-            ], error, self.getTestDataCell)
+            ], error: error, cell: self.getTestDataCell)
         }
 
         service.invoke("getVoid") {(result, error) in
-            validate(result == nil, error, self.getVoidCell)
+            validate(result == nil, error: error, cell: self.getVoidCell)
         }
 
         service.invoke("getNull") {(result, error) in
-            validate(result as? NSNull != nil, error, self.getNullCell)
+            validate(result as? NSNull != nil, error: error, cell: self.getNullCell)
         }
 
         service.invoke("getLocaleCode") {(result, error) in
-            validate(result != nil, error, self.getLocaleCodeCell)
+            validate(result != nil, error: error, cell: self.getLocaleCodeCell)
 
             self.getLocaleCodeCell.detailTextLabel!.text = result as? String
         }
 
         service.invoke("getUserName") {(result, error) in
-            validate(result as? String == "tomcat", error, self.getUserNameCell)
+            validate(result as? String == "tomcat", error: error, cell: self.getUserNameCell)
         }
 
         service.invoke("isUserInRole", withArguments: ["role": "tomcat"]) {(result, error) in
-            validate(result as? Bool == true, error, self.isUserInRoleCell)
+            validate(result as? Bool == true, error: error, cell: self.isUserInRoleCell)
         }
     }
 
@@ -195,17 +195,17 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
     // URL session data delegate methods
     func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge,
-        completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential!) -> Void) {
+        completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
         // Allow self-signed certificate
         if (challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust) {
-            completionHandler(NSURLSessionAuthChallengeDisposition.UseCredential, NSURLCredential(forTrust: challenge.protectionSpace.serverTrust))
+            completionHandler(NSURLSessionAuthChallengeDisposition.UseCredential, NSURLCredential(forTrust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(NSURLSessionAuthChallengeDisposition.PerformDefaultHandling, nil)
         }
     }
 
     func URLSession(session: NSURLSession, task: NSURLSessionTask, didReceiveChallenge challenge: NSURLAuthenticationChallenge,
-        completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential!) -> Void) {
+        completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
         // Re-authenticate user
         var credential: NSURLCredential
         if (challenge.previousFailureCount == 0 && challenge.proposedCredential != nil) {
