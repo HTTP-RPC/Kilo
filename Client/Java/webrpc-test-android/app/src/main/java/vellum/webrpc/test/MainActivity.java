@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("add", addArguments, new ResultHandler<Number>() {
             @Override
-            public void execute(final Number result, final Exception exception) {
+            public void execute(Number result, Exception exception) {
                 addCheckBox.setChecked(exception == null && result.intValue() == 6);
             }
         });
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("addValues", addValuesArguments, new ResultHandler<Number>() {
             @Override
-            public void execute(final Number result, final Exception exception) {
+            public void execute(Number result, Exception exception) {
                 addValuesCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);
             }
         });
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("invertValue", invertValueArguments, new ResultHandler<Boolean>() {
             @Override
-            public void execute(final Boolean result, final Exception exception) {
+            public void execute(Boolean result, Exception exception) {
                 invertValueCheckBox.setChecked(exception == null && result == false);
             }
         });
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("getCharacters", getCharactersArguments, new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 getCharactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
             }
         });
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("getSelection", getSelectionArguments, new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 getSelectionCheckBox.setChecked(exception == null && result.equals("a, b, c, d"));
             }
         });
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("getStatistics", getStatisticsArguments, new ResultHandler<Map<String, Object>>() {
             @Override
-            public void execute(final Map<String, Object> result, final Exception exception) {
+            public void execute(Map<String, Object> result, Exception exception) {
                 Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
                 getStatisticsCheckBox.setChecked(statistics != null
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         // Get test data
         service.invoke("getTestData", getSelectionArguments, new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 HashMap<String, Object> row1 = new HashMap<>();
                 row1.put("a", "hello");
                 row1.put("b", 1L);
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
         // Get void
         service.invoke("getVoid", getSelectionArguments, new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 getVoidCheckBox.setChecked(exception == null && result == null);
             }
         });
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         // Get null
         service.invoke("getNull", getSelectionArguments, new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 getNullCheckBox.setChecked(exception == null && result == null);
             }
         });
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
         // Get locale code
         service.invoke("getLocaleCode", new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 getLocaleCodeCheckBox.setChecked(exception == null && result != null);
                 getLocaleCodeCheckBox.setText(getLocaleCodeCheckBox.getText() + ": " + String.valueOf(result));
             }
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         // Get user name
         service.invoke("getUserName", new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 getUserNameCheckBox.setChecked(exception == null && result.equals("tomcat"));
             }
         });
@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
         service.invoke("isUserInRole", isUserInRoleArguments, new ResultHandler<Object>() {
             @Override
-            public void execute(final Object result, final Exception exception) {
+            public void execute(Object result, Exception exception) {
                 isUserInRoleCheckBox.setChecked(exception == null && result.equals(true));
             }
         });
