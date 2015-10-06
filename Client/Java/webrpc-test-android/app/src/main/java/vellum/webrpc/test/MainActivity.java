@@ -16,7 +16,6 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -32,6 +31,8 @@ import javax.net.ssl.X509TrustManager;
 import vellum.webrpc.R;
 import vellum.webrpc.ResultHandler;
 import vellum.webrpc.WebRPCService;
+
+import static vellum.webrpc.Arguments.*;
 
 public class MainActivity extends AppCompatActivity {
     private CheckBox addCheckBox;
@@ -156,10 +157,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Add values
-        HashMap<String, Object> addValuesArguments = new HashMap<>();
-        addValuesArguments.put("values", Arrays.asList(1, 2, 3, 4));
-
-        service.invoke("addValues", addValuesArguments, new ResultHandler<Number>() {
+        service.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 addValuesCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);
@@ -167,10 +165,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Invert value
-        HashMap<String, Object> invertValueArguments = new HashMap<>();
-        invertValueArguments.put("value", true);
-
-        service.invoke("invertValue", invertValueArguments, new ResultHandler<Boolean>() {
+        service.invoke("invertValue", mapOf(entry("value", true)), new ResultHandler<Boolean>() {
             @Override
             public void execute(Boolean result, Exception exception) {
                 invertValueCheckBox.setChecked(exception == null && result == false);
@@ -178,10 +173,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get characters
-        HashMap<String, Object> getCharactersArguments = new HashMap<>();
-        getCharactersArguments.put("text", "Hello, World!");
-
-        service.invoke("getCharacters", getCharactersArguments, new ResultHandler<Object>() {
+        service.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getCharactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
@@ -189,10 +181,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get selection
-        HashMap<String, Object> getSelectionArguments = new HashMap<>();
-        getSelectionArguments.put("items", Arrays.asList("a", "b", "c", "d"));
-
-        service.invoke("getSelection", getSelectionArguments, new ResultHandler<Object>() {
+        service.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getSelectionCheckBox.setChecked(exception == null && result.equals("a, b, c, d"));
@@ -200,10 +189,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get statistics
-        HashMap<String, Object> getStatisticsArguments = new HashMap<>();
-        getStatisticsArguments.put("values", Arrays.asList(1, 3, 5));
-
-        service.invoke("getStatistics", getStatisticsArguments, new ResultHandler<Map<String, Object>>() {
+        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
             @Override
             public void execute(Map<String, Object> result, Exception exception) {
                 Statistics statistics = (exception == null) ? new Statistics(result) : null;
@@ -216,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get test data
-        service.invoke("getTestData", getSelectionArguments, new ResultHandler<Object>() {
+        service.invoke("getTestData", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 HashMap<String, Object> row1 = new HashMap<>();
@@ -234,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get void
-        service.invoke("getVoid", getSelectionArguments, new ResultHandler<Object>() {
+        service.invoke("getVoid", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getVoidCheckBox.setChecked(exception == null && result == null);
@@ -242,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get null
-        service.invoke("getNull", getSelectionArguments, new ResultHandler<Object>() {
+        service.invoke("getNull", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getNullCheckBox.setChecked(exception == null && result == null);
@@ -267,10 +253,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Is user in role
-        HashMap<String, Object> isUserInRoleArguments = new HashMap<>();
-        isUserInRoleArguments.put("role", "tomcat");
-
-        service.invoke("isUserInRole", isUserInRoleArguments, new ResultHandler<Object>() {
+        service.invoke("isUserInRole", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 isUserInRoleCheckBox.setChecked(exception == null && result.equals(true));

@@ -7,7 +7,6 @@ import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,7 +21,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +35,8 @@ import javax.net.ssl.X509TrustManager;
 
 import vellum.webrpc.ResultHandler;
 import vellum.webrpc.WebRPCService;
+
+import static vellum.webrpc.Arguments.*;
 
 public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
     private int temperature = 0;
@@ -165,10 +165,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (buttonView == onSwitch) {
-            HashMap<String, Object> setOnArguments = new HashMap<>();
-            setOnArguments.put("on", onSwitch.isChecked());
-
-            service.invoke("setOn", setOnArguments, new ResultHandler<Map<String, Object>>() {
+            service.invoke("setOn", mapOf(entry("on", onSwitch.isChecked())), new ResultHandler<Map<String, Object>>() {
                 @Override
                 public void execute(Map<String, Object> result, Exception exception) {
                     if (exception != null) {
@@ -192,10 +189,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     }
 
     private void updateUnitTemperature() {
-        HashMap<String, Object> setTemperatureArguments = new HashMap<>();
-        setTemperatureArguments.put("temperature", temperature);
-
-        service.invoke("setTemperature", setTemperatureArguments, new ResultHandler<Void>() {
+        service.invoke("setTemperature", mapOf(entry("temperature", temperature)), new ResultHandler<Void>() {
             @Override
             public void execute(Void result, Exception exception) {
                 if (exception != null) {
@@ -216,10 +210,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
         int fanSpeed = index + 1;
 
-        HashMap<String, Object> setFanSpeedArguments = new HashMap<>();
-        setFanSpeedArguments.put("fanSpeed", fanSpeed);
-
-        service.invoke("setFanSpeed", setFanSpeedArguments, new ResultHandler<Void>() {
+        service.invoke("setFanSpeed", mapOf(entry("fanSpeed", fanSpeed)), new ResultHandler<Void>() {
             @Override
             public void execute(Void result, Exception exception) {
                 if (exception != null) {

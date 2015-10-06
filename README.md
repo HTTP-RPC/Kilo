@@ -239,6 +239,7 @@ The Java client implementation of WebRPC enables Java-based applications to cons
 * _`vellum.webrpc`_
     * `WebRPCService` - invocation proxy for web RPC services
     * `ResultHandler` - callback interface for handling results
+    * `Arguments` - factory methods for simplifying argument map creation
     * `Result` - abstract base class for typed results
 
 Each of these classes is discussed in more detail below. 
@@ -339,6 +340,13 @@ Note that the above example uses an anonymous inner class to implement the resul
     service.invoke("addValues", addValuesArguments, (result, exception) -> {
         // result is 10
     });
+
+Additionally, the `Arguments` class can be used to simplify the creation of the arguments map. Using this class's `mapOf()` and `entry()` methods, the above example can be reduced to the following:
+
+    service.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (result, exception) -> {
+        // result is 10
+    });
+
 
 ## Result Class
 `Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values.

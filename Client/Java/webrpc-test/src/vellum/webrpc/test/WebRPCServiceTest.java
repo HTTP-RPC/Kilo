@@ -34,6 +34,7 @@ import javax.net.ssl.X509TrustManager;
 
 import vellum.webrpc.ResultHandler;
 import vellum.webrpc.WebRPCService;
+import static vellum.webrpc.Arguments.*;
 
 public class WebRPCServiceTest {
     public static void main(String[] args) throws Exception {
@@ -92,42 +93,27 @@ public class WebRPCServiceTest {
         });
 
         // Add values
-        HashMap<String, Object> addValuesArguments = new HashMap<>();
-        addValuesArguments.put("values", Arrays.asList(1, 2, 3, 4));
-
-        service.invoke("addValues", addValuesArguments, (Number result, Exception exception) -> {
+        service.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (Number result, Exception exception) -> {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 
         // Invert value
-        HashMap<String, Object> invertValueArguments = new HashMap<>();
-        invertValueArguments.put("value", true);
-
-        service.invoke("invertValue", invertValueArguments, (Boolean result, Exception exception) -> {
+        service.invoke("invertValue", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
             validate(exception == null && result == false);
         });
 
         // Get characters
-        HashMap<String, Object> getCharactersArguments = new HashMap<>();
-        getCharactersArguments.put("text", "Hello, World!");
-
-        service.invoke("getCharacters", getCharactersArguments, (result, exception) -> {
+        service.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
             validate(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Get selection
-        HashMap<String, Object> getSelectionArguments = new HashMap<>();
-        getSelectionArguments.put("items", Arrays.asList("a", "b", "c", "d"));
-
-        service.invoke("getSelection", getSelectionArguments, (result, exception) -> {
+        service.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), (result, exception) -> {
             validate(exception == null && result.equals("a, b, c, d"));
         });
 
         // Get statistics
-        HashMap<String, Object> getStatisticsArguments = new HashMap<>();
-        getStatisticsArguments.put("values", Arrays.asList(1, 3, 5));
-
-        service.invoke("getStatistics", getStatisticsArguments, (Map<String, Object> result, Exception exception) -> {
+        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
             validate(statistics != null
@@ -137,7 +123,7 @@ public class WebRPCServiceTest {
         });
 
         // Get test data
-        service.invoke("getTestData", getSelectionArguments, (result, exception) -> {
+        service.invoke("getTestData", (result, exception) -> {
             HashMap<String, Object> row1 = new HashMap<>();
             row1.put("a", "hello");
             row1.put("b", 1L);
@@ -152,12 +138,12 @@ public class WebRPCServiceTest {
         });
 
         // Get void
-        service.invoke("getVoid", getSelectionArguments, (result, exception) -> {
+        service.invoke("getVoid", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Get null
-        service.invoke("getNull", getSelectionArguments, (result, exception) -> {
+        service.invoke("getNull", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
@@ -173,10 +159,7 @@ public class WebRPCServiceTest {
         });
 
         // Is user in role
-        HashMap<String, Object> isUserInRoleArguments = new HashMap<>();
-        isUserInRoleArguments.put("role", "tomcat");
-
-        service.invoke("isUserInRole", isUserInRoleArguments, (result, exception) -> {
+        service.invoke("isUserInRole", mapOf(entry("role", "tomcat")), (result, exception) -> {
             validate(exception == null && result.equals(true));
         });
 
