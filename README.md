@@ -330,7 +330,7 @@ The following code snippet demonstrates how `WebRPCService` can be used to invok
         }
     });
 
-Note that the above example uses an anonymous inner class to implement the result handler. In Java 8 or later, a lamba expression can be used instead. For example, the following code executes the `addValues()` method of the service, passing the values 1, 2, 3, and 4 as arguments. The result of executing the method is 10:
+Note that the above example uses an anonymous inner class to implement the result handler. In Java 8 or later, a lambda expression can be used instead. For example, the following code executes the `addValues()` method of the service, passing the values 1, 2, 3, and 4 as arguments. The result of executing the method is 10:
 
     // Add values
     HashMap<String, Object> addValuesArguments = new HashMap<>();
