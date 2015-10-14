@@ -1,5 +1,5 @@
 # Overview
-WebRPC is a mechanism for executing remote procedure calls via HTTP. It is an intentionally simple protocol that is designed primarily to address common use cases in web service development. Any platform capable of submitting an HTTP request and consuming a JSON response can be a WebRPC client, and any platform capable of responding to an HTTP request and producing a JSON result can act as a WebRPC server.
+WebRPC is a mechanism for executing remote procedure calls (RPCs) via HTTP. It is an intentionally simple protocol that is designed primarily to address common use cases in web service development. It offers a more RPC-centric alternative to REST, and a simpler, more web-centric alternative to SOAP. Any platform capable of submitting an HTTP request and consuming a JSON response can be a WebRPC client, and any platform capable of responding to an HTTP request and producing a JSON result can act as a WebRPC server.
 
 WebRPC procedures, or "methods", are encapsulated by a "service", which is simply a collection of related methods. The service and method names are specified in the path component of the request URL. Method arguments are passed either via the query string or in the request body, like an HTML form. Method results are typically returned as JSON values, although methods that do not return a value are also supported.
 
@@ -37,7 +37,7 @@ The Java server implementation of WebRPC allows developers to build web RPC serv
     * `Roles` - interface for determining user role membership
     * `Result` - abstract base class for custom result types
 * _`vellum.webrpc.sql`_
-    * `ResultSetAdapter` - exposes the contents of a JDBC result set as an iterable list, suitable for streaming a JSON response
+    * `ResultSetAdapter` - wrapper class that presents the contents of a JDBC result set as an iterable list, suitable for streaming a JSON response
 
 Each of these classes is discussed in more detail below. 
 
@@ -60,12 +60,12 @@ Methods must return a numeric or boolean primitive type, one of the following re
 
 Nested structures (i.e. list and maps contained within other lists or maps) are supported.
 
-`Map` implementations must use `String` values for keys. `List` and `Map` types are not required to support random access; iterability is sufficient. Iterator-only, or "forward-scrolling", implementations can simply implement the `iterator()` method and throw `UnsupportedOperationException` from collection accessor methods such as `get()` and `size()`.
+`Map` implementations must use `String` values for keys. `List` and `Map` types are not required to support random access; iterability is sufficient. Iterator-only, or "forward-scrolling", implementations (such as the `ResultSetAdapter` class discussed later) can simply implement the `iterator()` method and throw `UnsupportedOperationException` from collection accessor methods such as `get()` and `size()`.
 
 ### Auto-Closeable Types
 `List` and `Map` types that implement `java.lang.AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
 
-For example, the `ResultSetAdapter` class discussed below wraps an instance of `java.sql.ResultSet` and exposes its contents as an auto-closeable list of map values. Calling `close()` on the list closes the underlying result set, ensuring that database resources are not leaked.
+For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as an auto-closeable list of map values. Calling `close()` on the list closes the underlying result set, ensuring that database resources are not leaked.
 
 ### Request Metadata
 `WebRPCService` provides a set of protected methods that allow an extending class to obtain additional information about a request that is not included in the method arguments:
@@ -77,16 +77,16 @@ For example, the `ResultSetAdapter` class discussed below wraps an instance of `
 These methods correspond directly to the similarly-named methods defined by the `javax.servlet.http.HttpServletRequest` interface. See the servlet specification for more information on their use.
 
 ### Unit Testing
-`WebRPCService` defines an additional method that is used to provide a service instance with information about the current request:
+`WebRPCService` defines the following additional method that is used to provide the service with information about the current request:
 
     protected void initialize(Locale locale, Principal userPrincipal, Roles roles)
 
-This method is called once by `WebRPCServlet` for each request. However, it can also be used to facilitate unit testing of RPC services. By calling this method, the test framework can simulate a request from an actual web RPC client. 
+This method is not meant to be called by application code. It is called once per request by `WebRPCServlet`. However, it can also be used to facilitate unit testing of RPC services. By calling this method, the test framework can simulate a request from an actual web RPC client. 
 
 The `Roles` interface is provided to allow test code to simulate user roles. It is discussed in more detail below. 
 
 ### Examples
-The following example contains a possible Java implementation of the hypothetical "math" service discussed earlier:
+The following code example offers one possible implementation of the hypothetical "math" service discussed earlier:
 
     // Sample implementation of hypothetical math service
     public class MathService extends WebRPCService {
@@ -111,11 +111,11 @@ The following example contains a possible Java implementation of the hypothetica
         }
     }
 
-Executing an HTTP GET request for the following URL would produce the number 9 in response:
+Executing a GET request for the following URL would invoke the service's `add()` method, producing the number 9 in response:
 
     /math/add?a=6&b=3
     
-Similarly, a GET for the following URL would also produce the number 9:
+Similarly, a GET for the following URL would invoke the `addValues()` metho, producing the number 9:
 
     /math/addValues?values=1&values=3&values=5
 
@@ -213,17 +213,17 @@ Executing GET for this URL would invoke the `getStatistics()` method:
 
     /math/getStatistics?values=1&values=3&values=5
     
-producing the following result:
+producing the following JSON result in response:
 
     {"average":3.0, "count":3, "sum":9.0}    
 
 ## Roles Interface
-The `Roles` interface provides an abstraction for determining user role membership. It is provided primarily to facilitate unit testing of service methods. It defines a single `isUserInRole()` method that a test framework can implement to simulate different user roles. This allows services to be tested without the need to start a servlet container.
+The `Roles` interface provides an abstraction for determining user role membership. It is not intended to be accessed by application code directly, and is provided primarily to facilitate unit testing of service methods. The interface defines a single `isUserInRole()` method that a test framework can implement to simulate different user roles. This allows services to be tested without the need to start a servlet container.
 
-For example, the test code could store a mapping of user name to role in a text file and provide an implementation of the `Roles` interface that operates against this data. Individual tests could instantiate a concrete service class and pass an instance of the `Roles` implementation to the service's `initialize()` method, along with the locale and user principal. Once initialized, the service methods could be invoked directly by the unit test, producing the same results as if they had been invoked by the servlet.
+For example, a test harness could store a mapping of user name to role in a text file and provide an implementation of the `Roles` interface that operates against this data. Individual tests could instantiate a concrete service class and pass an instance of the `Roles` implementation to the service's `initialize()` method, along with the locale and user principal. Once initialized, the service methods could be invoked directly by the unit test, producing the same results as if they had been invoked by the servlet.
 
 ## ResultSetAdapter Class
-The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a an RPC method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON by the servlet. `ResultSetAdapter` also implements the `AutoCloseable` interface and closes the underlying result set when its `close()` method is called, ensuring that database resources are not leaked.
+The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON by `WebRPCServlet`. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
 
 `ResultSetAdapter` is forward-scrolling only; its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a result set to be returned directly to the caller without any intermediate buffering. The caller can simply execute a JDBC query, pass the resulting result set to the `ResultSetAdapter` constructor, and return the adapter instance:
 
@@ -232,6 +232,8 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
    
         return new ResultSetAdapter(statement.executeQuery("select * from some_table"));
     }
+
+Since the data is written directly to the output stream as it is read from the result set, no intermediate objects are created, significantly reducing the application's memory footprint.
 
 # Java Client
 The Java client implementation of WebRPC enables Java-based applications to consume web RPC services. It is distributed as a JAR file that includes the following classes:
@@ -308,7 +310,7 @@ For example, the following Android-specific code ensures that all result handler
         }
     });
 
-Similar dispatchers can be configured for Swing, JavaFX, or SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
+Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ### Examples
 The following code snippet demonstrates how `WebRPCService` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebRPCService` class and configures it with a pool of ten threads for executing requests. It then invokes the service's `add()` method, passing a value of 2 for "a" and 4 for "b". The result of executing the method is the number 6:
@@ -341,7 +343,7 @@ Note that the above example uses an anonymous inner class to implement the resul
         // result is 10
     });
 
-Additionally, the `Arguments` class can be used to simplify the creation of the arguments map. Using this class's `mapOf()` and `entry()` methods, the above example can be reduced to the following:
+Additionally, the `Arguments` class can be used to simplify the creation of the arguments map. Using this class's `mapOf()` and `entry()` methods (analogous to map or dictionary literals in other languages), the above example can be reduced to the following:
 
     service.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (result, exception) -> {
         // result is 10
@@ -393,9 +395,9 @@ For example, the following Java class might be used to provide a typed version o
         }
     }
 
-The result of the `getStatistics()` method can be converted to a `Statistics` instance as follows:
+The result of the `getStatistics()` method (an instance of `Map<String, Object>`) can be converted to a `Statistics` instance as follows:
 
-    service.invoke("getStatistics", getStatisticsArguments, (Map<String, Object> result, Exception exception) -> {
+    service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
         Statistics statistics = new Statistics(result);
 
         // statistics.getCount() = 3
@@ -414,7 +416,7 @@ The Objective-C/Swift client implementation of WebRPC enables Cocoa and Cocoa To
 The Objective-C/Swift client framework can be downloaded [here](https://github.com/gk-brown/WebRPC/releases). iOS 8 or later is required.
 
 ## WSWebRPCService Class
-Similar to the Java version, the `WSWebRPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
+Like the Java version, the `WSWebRPCService` class serves as an invocation proxy for web RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
 
 Service proxies are initialized via the `initWithSession:baseURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Method names are appended to this URL during method execution.
 
@@ -470,7 +472,7 @@ For example, the following Swift class might be used to provide a typed version 
         var average: Double = 0
     }
 
-The result of the `getStatistics()` method can be converted to a `Statistics` instance as follows:
+The result of the `getStatistics()` method (an instance of `NSDictionary`) can be converted to a `Statistics` instance as follows:
 
     service.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
         let statistics = Statistics(dictionary: result as! [String : AnyObject])
@@ -517,4 +519,4 @@ The following code snippet demonstrates how `WebRPCService` can be used to invok
     });
 
 # More Information
-For more information, refer to [the wiki](https://github.com/gk-brown/WebRPC/wiki) or [the issue list](https://github.com/gk-brown/WebRPC/issues).
+For more information, see [the wiki](https://github.com/gk-brown/WebRPC/wiki) or [the issue list](https://github.com/gk-brown/WebRPC/issues).
