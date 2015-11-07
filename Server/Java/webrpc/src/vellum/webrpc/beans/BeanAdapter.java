@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package vellum.webrpc.beans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,13 +20,17 @@ import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Abstract base class for custom result types.
+ * Exposes the properties of a Java Bean object as a map.
  */
-public abstract class Result extends AbstractMap<String, Object> {
-    private HashMap<String, Method> accessors;
+public class BeanAdapter extends AbstractMap<String, Object> {
+    private Object bean;
+
+    private HashMap<String, Method> accessors = new HashMap<>();
 
     private Set<Entry<String, Object>> entrySet = new AbstractSet<Entry<String, Object>>() {
         @Override
@@ -58,17 +62,25 @@ public abstract class Result extends AbstractMap<String, Object> {
     private static final String IS_PREFIX = "is";
 
     /**
-     * Constructs a new result.
+     * Constructs a new Bean adapter.
+     *
+     * @param bean
+     * The source Bean.
      */
-    public Result() {
-        accessors = new HashMap<>();
+    public BeanAdapter(Object bean) {
+        if (bean == null) {
+            throw new IllegalArgumentException();
+        }
 
-        Method[] methods = getClass().getMethods();
+        this.bean = bean;
+
+        Class<?> type = bean.getClass();
+        Method[] methods = type.getMethods();
 
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (Result.class.isAssignableFrom(method.getDeclaringClass())) {
+            if (type.isAssignableFrom(method.getDeclaringClass())) {
                 String methodName = method.getName();
 
                 String prefix;
@@ -110,9 +122,18 @@ public abstract class Result extends AbstractMap<String, Object> {
 
         Object value;
         try {
-            value = method.invoke(this);
+            value = method.invoke(bean);
         } catch (InvocationTargetException | IllegalAccessException exception) {
             throw new RuntimeException(exception);
+        }
+
+        if (value != null
+            && !(value instanceof String)
+            && !(value instanceof Number)
+            && !(value instanceof Boolean)
+            && !(value instanceof List<?>)
+            && !(value instanceof Map<?, ?>)) {
+            value = new BeanAdapter(value);
         }
 
         return value;

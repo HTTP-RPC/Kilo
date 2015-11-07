@@ -29,7 +29,6 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var getNullCell: UITableViewCell!
     var getLocaleCodeCell: UITableViewCell!
     var getUserNameCell: UITableViewCell!
-    var isUserInRoleCell: UITableViewCell!
 
     override func loadView() {
         let tableView = UITableView()
@@ -82,10 +81,6 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         getUserNameCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         getUserNameCell.textLabel!.text = "getUserName()"
         cells.append(getUserNameCell)
-
-        isUserInRoleCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        isUserInRoleCell.textLabel!.text = "isUserInRole()"
-        cells.append(isUserInRoleCell)
 
         view = tableView
     }
@@ -145,9 +140,11 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         }
 
         service.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
-            let statistics: Statistics? = (error == nil) ? Statistics(dictionary: result as! [String : AnyObject]) : nil
-
-            validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, error: nil, cell: self.getStatisticsCell)
+            validate(result as? NSDictionary == [
+                "count": 3,
+                "sum": 9.0,
+                "average": 3.0
+            ], error: error, cell: self.getStatisticsCell)
         }
 
         service.invoke("getTestData") {(result, error) in
@@ -173,10 +170,6 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
         service.invoke("getUserName") {(result, error) in
             validate(result as? String == "tomcat", error: error, cell: self.getUserNameCell)
-        }
-
-        service.invoke("isUserInRole", withArguments: ["role": "tomcat"]) {(result, error) in
-            validate(result as? Bool == true, error: error, cell: self.isUserInRoleCell)
         }
     }
 

@@ -14,15 +14,16 @@
 
 package vellum.webrpc.test;
 
-import java.security.Principal;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import vellum.webrpc.WebRPCService;
+import vellum.webrpc.beans.BeanAdapter;
 import vellum.webrpc.sql.ResultSetAdapter;
 
 /**
@@ -71,7 +72,7 @@ public class TestService extends WebRPCService {
         return String.join(", ", items);
     }
 
-    public Statistics getStatistics(List<Double> values) {
+    public Map<String, Object> getStatistics(List<Double> values) {
         if (values == null) {
             throw new IllegalArgumentException();
         }
@@ -88,10 +89,10 @@ public class TestService extends WebRPCService {
 
         statistics.setAverage(statistics.getSum() / n);
 
-        return statistics;
+        return new BeanAdapter(statistics);
     }
 
-    public ResultSetAdapter getTestData() throws ClassNotFoundException, SQLException {
+    public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
 
         String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));
@@ -115,14 +116,8 @@ public class TestService extends WebRPCService {
         return locale.getLanguage() + "_" + locale.getCountry();
     }
 
-    public String getUserName() {
-        Principal userPrincipal = getUserPrincipal();
-
-        return (userPrincipal == null) ? null : userPrincipal.getName();
-    }
-
     @Override
-    public boolean isUserInRole(String role) {
-        return super.isUserInRole(role);
+    public String getUserName() {
+        return super.getUserName();
     }
 }

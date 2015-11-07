@@ -14,7 +14,6 @@
 
 package vellum.webrpc;
 
-import java.security.Principal;
 import java.util.Locale;
 
 /**
@@ -22,33 +21,25 @@ import java.util.Locale;
  */
 public abstract class WebRPCService {
     private Locale locale = null;
-    private Principal userPrincipal = null;
-
-    private Roles roles = null;
+    private String userName = null;
 
     /**
      * Initializes the service with information about the current request.
      *
      * @param locale
-     * The request locale.
+     * The locale associated with the current request.
      *
-     * @param userPrincipal
-     * The request user principal, or <tt>null</tt> if the user has not been
-     * authenticated.
-     *
-     * @param roles
-     * The requst roles, or <tt>null</tt> if the user has not been
-     * authenticated.
+     * @param userName
+     * The user name associated with the current request, or <tt>null</tt> if
+     * the request has not been authenticated.
      */
-    protected void initialize(Locale locale, Principal userPrincipal, Roles roles) {
+    protected void initialize(Locale locale, String userName) {
         if (locale == null) {
             throw new IllegalArgumentException();
         }
 
         this.locale = locale;
-        this.userPrincipal = userPrincipal;
-
-        this.roles = roles;
+        this.userName = userName;
     }
 
     /**
@@ -62,28 +53,13 @@ public abstract class WebRPCService {
     }
 
     /**
-     * Returns the user principal associated with the current request.
+     * Returns the user name associated with the current request.
      *
      * @return
-     * The user principal associated with the current request, or <tt>null</tt>
-     * if the user has not been authenticated.
+     * The user name associated with the current request, or <tt>null</tt> if
+     * the user has not been authenticated.
      */
-    protected Principal getUserPrincipal() {
-        return userPrincipal;
-    }
-
-    /**
-     * Verifies that the user making the current request belongs to a given
-     * logical role.
-     *
-     * @param role
-     * The name of the role.
-     *
-     * @return
-     * <tt>true</tt> if the user belongs to the given role; <tt>false</tt> if
-     * the user does not belong to the role or has not been authenticated.
-     */
-    protected boolean isUserInRole(String role) {
-        return (roles == null) ? false : roles.isUserInRole(role);
+    protected String getUserName() {
+        return userName;
     }
 }

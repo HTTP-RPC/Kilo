@@ -14,12 +14,10 @@
 
 package vellum.webrpc.test;
 
-import vellum.webrpc.Result;
-
 /**
  * Sample statistics Bean class.
  */
-public class Statistics extends Result {
+public class Statistics {
     private int count = 0;
     private double sum = 0;
     private double average = 0;

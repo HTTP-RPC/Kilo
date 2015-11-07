@@ -113,13 +113,11 @@ public class WebRPCServiceTest {
         });
 
         // Get statistics
-        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
-            Statistics statistics = (exception == null) ? new Statistics(result) : null;
-
-            validate(statistics != null
-                && statistics.getCount() == 3
-                && statistics.getAverage() == 3.0
-                && statistics.getSum() == 9.0);
+        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Number> result, Exception exception) -> {
+            validate(exception == null
+                && result.get("count").intValue() == 3
+                && result.get("average").doubleValue() == 3.0
+                && result.get("sum").doubleValue() == 9.0);
         });
 
         // Get test data
@@ -156,11 +154,6 @@ public class WebRPCServiceTest {
         // Get user name
         service.invoke("getUserName", (result, exception) -> {
             validate(exception == null && result.equals("tomcat"));
-        });
-
-        // Is user in role
-        service.invoke("isUserInRole", mapOf(entry("role", "tomcat")), (result, exception) -> {
-            validate(exception == null && result.equals(true));
         });
 
         // Shut down thread pool

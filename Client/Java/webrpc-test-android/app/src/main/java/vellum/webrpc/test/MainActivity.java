@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox getNullCheckBox;
     private CheckBox getLocaleCodeCheckBox;
     private CheckBox getUserNameCheckBox;
-    private CheckBox isUserInRoleCheckBox;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         getNullCheckBox = (CheckBox)findViewById(R.id.get_null_checkbox);
         getLocaleCodeCheckBox = (CheckBox)findViewById(R.id.get_locale_code_checkbox);
         getUserNameCheckBox = (CheckBox)findViewById(R.id.get_user_name_checkbox);
-        isUserInRoleCheckBox = (CheckBox)findViewById(R.id.is_user_in_role_checkbox);
     }
 
     @Override
@@ -189,15 +187,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get statistics
-        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
+        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Number>>() {
             @Override
-            public void execute(Map<String, Object> result, Exception exception) {
-                Statistics statistics = (exception == null) ? new Statistics(result) : null;
-
-                getStatisticsCheckBox.setChecked(statistics != null
-                    && statistics.getCount() == 3
-                    && statistics.getAverage() == 3.0
-                    && statistics.getSum() == 9.0);
+            public void execute(Map<String, Number> result, Exception exception) {
+                getStatisticsCheckBox.setChecked(exception == null
+                    && result.get("count").intValue() == 3
+                    && result.get("average").doubleValue() == 3.0
+                    && result.get("sum").doubleValue() == 9.0);
             }
         });
 
@@ -249,14 +245,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(Object result, Exception exception) {
                 getUserNameCheckBox.setChecked(exception == null && result.equals("tomcat"));
-            }
-        });
-
-        // Is user in role
-        service.invoke("isUserInRole", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
-            @Override
-            public void execute(Object result, Exception exception) {
-                isUserInRoleCheckBox.setChecked(exception == null && result.equals(true));
             }
         });
 

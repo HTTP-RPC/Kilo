@@ -23,6 +23,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,20 +40,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class WebRPCServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
-
-    // HTTP servlet request roles
-    private static class HttpServletRequestRoles implements Roles {
-        private HttpServletRequest request;
-
-        public HttpServletRequestRoles(HttpServletRequest request) {
-            this.request = request;
-        }
-
-        @Override
-        public boolean isUserInRole(String role) {
-            return request.isUserInRole(role);
-        }
-    }
 
     private Class<?> serviceType = null;
 
@@ -99,6 +86,10 @@ public class WebRPCServlet extends HttpServlet {
 
         if (method == null) {
             throw new ServletException("Method not found.");
+        }
+
+        if (!WebRPCService.class.isAssignableFrom(method.getDeclaringClass())) {
+            throw new ServletException("Invalid method.");
         }
 
         // Construct arguments
@@ -148,7 +139,9 @@ public class WebRPCServlet extends HttpServlet {
             throw new ServletException(exception);
         }
 
-        service.initialize(request.getLocale(), request.getUserPrincipal(), new HttpServletRequestRoles(request));
+        Principal userPrincipal = request.getUserPrincipal();
+
+        service.initialize(request.getLocale(), (userPrincipal == null) ? null : userPrincipal.getName());
 
         Object result;
         try {

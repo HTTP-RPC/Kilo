@@ -20,5 +20,4 @@ FOUNDATION_EXPORT double WebRPCVersionNumber;
 //! Project version string for WebRPC.
 FOUNDATION_EXPORT const unsigned char WebRPCVersionString[];
 
-#import <WebRPC/WSResult.h>
 #import <WebRPC/WSWebRPCService.h>
