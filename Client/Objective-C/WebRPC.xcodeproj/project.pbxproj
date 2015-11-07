@@ -99,17 +99,9 @@
 				3BCBF0E51B81FE1B00830FBE /* WebRPC.h */,
 				3BCBF12B1B81FF5F00830FBE /* WSWebRPCService.h */,
 				3BCBF12C1B81FF5F00830FBE /* WSWebRPCService.m */,
-				3BCBF0E31B81FE1B00830FBE /* Supporting Files */,
-			);
-			path = WebRPC;
-			sourceTree = "<group>";
-		};
-		3BCBF0E31B81FE1B00830FBE /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
 				3BCBF0E41B81FE1B00830FBE /* Info.plist */,
 			);
-			name = "Supporting Files";
+			path = WebRPC;
 			sourceTree = "<group>";
 		};
 		3BCBF1011B81FEB200830FBE /* WebRPCTest */ = {
@@ -119,17 +111,9 @@
 				3BCBF1061B81FEB200830FBE /* ViewController.swift */,
 				3BCBF10B1B81FEB200830FBE /* Images.xcassets */,
 				3BCBF10D1B81FEB200830FBE /* LaunchScreen.xib */,
-				3BCBF1021B81FEB200830FBE /* Supporting Files */,
-			);
-			path = WebRPCTest;
-			sourceTree = "<group>";
-		};
-		3BCBF1021B81FEB200830FBE /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
 				3BCBF1031B81FEB200830FBE /* Info.plist */,
 			);
-			name = "Supporting Files";
+			path = WebRPCTest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
