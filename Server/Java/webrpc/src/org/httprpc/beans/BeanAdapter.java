@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc.beans;
+package org.httprpc.beans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

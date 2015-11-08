@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package org.httprpc;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -36,9 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet that hosts web RPC services.
+ * Servlet that dispatches HTTP-RPC web service requests.
  */
-public class WebRPCServlet extends HttpServlet {
+public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     private Class<?> serviceType = null;
@@ -57,7 +57,7 @@ public class WebRPCServlet extends HttpServlet {
             throw new ServletException(exception);
         }
 
-        if (!WebRPCService.class.isAssignableFrom(serviceType)) {
+        if (!WebService.class.isAssignableFrom(serviceType)) {
             throw new ServletException("Invalid service type.");
         }
 
@@ -66,7 +66,7 @@ public class WebRPCServlet extends HttpServlet {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (!WebRPCService.class.isAssignableFrom(method.getDeclaringClass())) {
+            if (WebService.class.isAssignableFrom(method.getDeclaringClass())) {
                 this.methods.put(method.getName(), method);
             }
         }
@@ -128,9 +128,9 @@ public class WebRPCServlet extends HttpServlet {
         }
 
         // Execute method
-        WebRPCService service;
+        WebService service;
         try {
-            service = (WebRPCService)serviceType.newInstance();
+            service = (WebService)serviceType.newInstance();
         } catch (IllegalAccessException | InstantiationException exception) {
             throw new ServletException(exception);
         }

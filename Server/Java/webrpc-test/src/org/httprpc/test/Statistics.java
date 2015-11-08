@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc.test;
+package org.httprpc.test;
 
 /**
  * Sample statistics Bean class.

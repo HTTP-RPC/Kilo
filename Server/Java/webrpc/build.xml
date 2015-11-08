@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="webrpc" default="build">
+<project name="httprpc-server" default="build">
     <property file="build.properties"/>
 
     <property name="src" value="src"/>
@@ -11,7 +11,7 @@
     <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
     <property name="docfile" value="${ant.project.name}-${version}-javadoc.zip"/>
     
-    <property name="zipfile" value="${ant.project.name}-server-${version}.zip"/>
+    <property name="zipfile" value="${ant.project.name}-${version}.zip"/>
 
     <target name="build">
     	<echo message="Building ${title}..."/>

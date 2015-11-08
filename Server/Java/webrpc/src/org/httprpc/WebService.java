@@ -12,14 +12,14 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package org.httprpc;
 
 import java.util.Locale;
 
 /**
- * Abstract base class for web RPC services.
+ * Abstract base class for HTTP-RPC web services.
  */
-public abstract class WebRPCService {
+public abstract class WebService {
     private Locale locale = null;
     private String userName = null;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="webrpc-test" default="build">
+<project name="httprpc-server-test" default="build">
 	<property file="build.properties"/>
 
     <property name="src" value="src"/>

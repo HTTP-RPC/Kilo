@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc.test;
+package org.httprpc.test;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import vellum.webrpc.WebRPCService;
-import vellum.webrpc.beans.BeanAdapter;
-import vellum.webrpc.sql.ResultSetAdapter;
+import org.httprpc.WebService;
+import org.httprpc.beans.BeanAdapter;
+import org.httprpc.sql.ResultSetAdapter;
 
 /**
  * Test service.
  */
-public class TestService extends WebRPCService {
+public class TestService extends WebService {
     public double add(double a, double b) {
         return a + b;
     }
