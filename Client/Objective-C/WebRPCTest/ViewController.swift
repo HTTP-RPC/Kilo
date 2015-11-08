@@ -105,7 +105,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         // Initialize service and invoke methods
         let baseURL = NSURL(string: "https://localhost:8443/webrpc-test-server/test/")
 
-        let service = WSWebRPCService(session: session, baseURL: baseURL!)
+        let service = WSWebServiceProxy(session: session, baseURL: baseURL!)
 
         func validate(condition: Bool, error: NSError?, cell: UITableViewCell) {
             if (condition) {

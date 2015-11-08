@@ -14,8 +14,8 @@
 		3BCBF10F1B81FEB200830FBE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3BCBF10D1B81FEB200830FBE /* LaunchScreen.xib */; };
 		3BCBF1221B81FEFC00830FBE /* WebRPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BCBF0E01B81FE1B00830FBE /* WebRPC.framework */; };
 		3BCBF1231B81FEFC00830FBE /* WebRPC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3BCBF0E01B81FE1B00830FBE /* WebRPC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3BCBF12D1B81FF5F00830FBE /* WSWebRPCService.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BCBF12B1B81FF5F00830FBE /* WSWebRPCService.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3BCBF12E1B81FF5F00830FBE /* WSWebRPCService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BCBF12C1B81FF5F00830FBE /* WSWebRPCService.m */; };
+		3BCBF12D1B81FF5F00830FBE /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BCBF12B1B81FF5F00830FBE /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3BCBF12E1B81FF5F00830FBE /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BCBF12C1B81FF5F00830FBE /* WSWebServiceProxy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,8 +52,8 @@
 		3BCBF1061B81FEB200830FBE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		3BCBF10B1B81FEB200830FBE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		3BCBF10E1B81FEB200830FBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		3BCBF12B1B81FF5F00830FBE /* WSWebRPCService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSWebRPCService.h; sourceTree = "<group>"; };
-		3BCBF12C1B81FF5F00830FBE /* WSWebRPCService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSWebRPCService.m; sourceTree = "<group>"; };
+		3BCBF12B1B81FF5F00830FBE /* WSWebServiceProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSWebServiceProxy.h; sourceTree = "<group>"; };
+		3BCBF12C1B81FF5F00830FBE /* WSWebServiceProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSWebServiceProxy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,8 +97,8 @@
 			isa = PBXGroup;
 			children = (
 				3BCBF0E51B81FE1B00830FBE /* WebRPC.h */,
-				3BCBF12B1B81FF5F00830FBE /* WSWebRPCService.h */,
-				3BCBF12C1B81FF5F00830FBE /* WSWebRPCService.m */,
+				3BCBF12B1B81FF5F00830FBE /* WSWebServiceProxy.h */,
+				3BCBF12C1B81FF5F00830FBE /* WSWebServiceProxy.m */,
 				3BCBF0E41B81FE1B00830FBE /* Info.plist */,
 			);
 			path = WebRPC;
@@ -124,7 +124,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BCBF0E61B81FE1B00830FBE /* WebRPC.h in Headers */,
-				3BCBF12D1B81FF5F00830FBE /* WSWebRPCService.h in Headers */,
+				3BCBF12D1B81FF5F00830FBE /* WSWebServiceProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,7 +230,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3BCBF12E1B81FF5F00830FBE /* WSWebRPCService.m in Sources */,
+				3BCBF12E1B81FF5F00830FBE /* WSWebServiceProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

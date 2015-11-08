@@ -13,28 +13,28 @@
 //
 
 /**
- * Creates a new web RPC service.
+ * Creates a new HTTP-RPC service proxy.
  * 
  * @param baseURL The base URL of the service.
  */
-var WebRPCService = function(baseURL) {
+var WebServiceProxy = function(baseURL) {
     this.baseURL = baseURL;
 }
 
 /**
- * Invokes a web RPC service method.
+ * Invokes an HTTP-RPC service method.
  *
  * @param methodName The name of the method to invoke.
  * @param resultHandler A callback that will be invoked upon completion of the method.
  *
  * @return An XMLHttpRequest object representing the invocation request.
  */
-WebRPCService.prototype.invoke = function(methodName, resultHandler) {
+WebServiceProxy.prototype.invoke = function(methodName, resultHandler) {
     return this.invokeWithArguments(methodName, {}, resultHandler);
 }
 
 /**
- * Invokes a web RPC service method.
+ * Invokes an HTTP-RPC service method.
  *
  * @param methodName The name of the method to invoke.
  * @param arguments The method arguments.
@@ -42,7 +42,7 @@ WebRPCService.prototype.invoke = function(methodName, resultHandler) {
  *
  * @return An XMLHttpRequest object representing the invocation request.
  */
-WebRPCService.prototype.invokeWithArguments = function(methodName, arguments, resultHandler) {
+WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, resultHandler) {
     var url = this.baseURL + "/" + methodName;
 
     var parameters = "";

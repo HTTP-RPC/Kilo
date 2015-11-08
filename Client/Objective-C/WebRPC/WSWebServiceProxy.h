@@ -15,35 +15,35 @@
 #import <Foundation/Foundation.h>
 
 /**
- * Web RPC service error domain.
+ * HTTP-RPC web service error domain.
  */
-extern NSString * const WSWebRPCServiceErrorDomain;
+extern NSString * const WSWebServiceErrorDomain;
 
 /**
- * Web RPC method name key.
+ * HTTP-RPC method name key.
  */
-extern NSString * const WSWebRPCMethodNameKey;
+extern NSString * const WSMethodNameKey;
 
 /**
- * Web RPC argument name key.
+ * HTTP-RPC arguments key.
  */
-extern NSString * const WSWebRPCArgumentsKey;
+extern NSString * const WSArgumentsKey;
 
 /**
- * Invocation proxy for web RPC services.
+ * Invocation proxy for HTTP-RPC web services.
  */
-@interface WSWebRPCService : NSObject
+@interface WSWebServiceProxy : NSObject
 
 /**
- * Creates a new web RPC service.
+ * Creates a new HTTP-RPC service proxy.
  * 
- * @param session The URL session the service will use to execute HTTP requests.
+ * @param session The URL session the service proxy will use to execute HTTP requests.
  * @param baseURL The base URL of the service.
  */
 - (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL;
 
 /**
- * The URL session the RPC service uses to execute HTTP requests.
+ * The URL session the service proxy uses to execute HTTP requests.
  */
 @property (nonatomic, readonly) NSURLSession *session;
 
@@ -53,7 +53,7 @@ extern NSString * const WSWebRPCArgumentsKey;
 @property (nonatomic, readonly) NSURL *baseURL;
 
 /**
- * Invokes a web RPC service method.
+ * Invokes an HTTP-RPC service method.
  *
  * @param methodName The name of the method to invoke.
  * @param resultHandler A callback that will be invoked upon completion of the method.
@@ -63,7 +63,7 @@ extern NSString * const WSWebRPCArgumentsKey;
 - (NSURLSessionDataTask *)invoke:(NSString *)methodName resultHandler:(void (^)(id, NSError *))resultHandler;
 
 /**
- * Invokes a web RPC service method.
+ * Invokes an HTTP-RPC service method.
  *
  * @param methodName The name of the method to invoke.
  * @param arguments The method arguments.

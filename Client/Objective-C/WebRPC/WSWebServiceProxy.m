@@ -12,14 +12,14 @@
 // limitations under the License.
 //
 
-#import "WSWebRPCService.h"
+#import "WSWebServiceProxy.h"
 
-NSString * const WSWebRPCServiceErrorDomain = @"WSWebRPCServiceErrorDomain";
+NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
-NSString * const WSWebRPCMethodNameKey = @"methodName";
-NSString * const WSWebRPCArgumentsKey = @"arguments";
+NSString * const WSMethodNameKey = @"methodName";
+NSString * const WSArgumentsKey = @"arguments";
 
-@implementation WSWebRPCService
+@implementation WSWebServiceProxy
 
 - (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL
 {
@@ -90,9 +90,9 @@ NSString * const WSWebRPCArgumentsKey = @"arguments";
                         result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error: &error];
                     }
                 } else {
-                    error = [NSError errorWithDomain:WSWebRPCServiceErrorDomain code:statusCode userInfo:@{
-                        WSWebRPCMethodNameKey: methodName,
-                        WSWebRPCArgumentsKey: arguments
+                    error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
+                        WSMethodNameKey: methodName,
+                        WSArgumentsKey: arguments
                     }];
                 }
             }
