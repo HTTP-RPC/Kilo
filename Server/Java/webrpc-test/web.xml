@@ -21,7 +21,7 @@
 
 	<servlet>
 		<servlet-name>TestServlet</servlet-name>
-		<servlet-class>org.httprpc.RequestHandlerServlet</servlet-class>
+		<servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
         <init-param>
             <param-name>serviceClassName</param-name>
             <param-value>org.httprpc.test.TestService</param-value>
