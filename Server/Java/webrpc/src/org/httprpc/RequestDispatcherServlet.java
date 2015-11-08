@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
  */
-public class RequestHandlerServlet extends HttpServlet {
+public class RequestDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     private Class<?> serviceType = null;
