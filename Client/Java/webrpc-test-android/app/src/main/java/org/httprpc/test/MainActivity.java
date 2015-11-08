@@ -1,4 +1,4 @@
-package vellum.webrpc.test;
+package org.httprpc.test;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -28,11 +28,10 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import vellum.webrpc.R;
-import vellum.webrpc.ResultHandler;
-import vellum.webrpc.WebRPCService;
+import org.httprpc.ResultHandler;
+import org.httprpc.WebServiceProxy;
 
-import static vellum.webrpc.Arguments.*;
+import static org.httprpc.Arguments.*;
 
 public class MainActivity extends AppCompatActivity {
     private CheckBox addCheckBox;
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Set result dispatcher
-        WebRPCService.setResultDispatcher(new Executor() {
+        WebServiceProxy.setResultDispatcher(new Executor() {
             private Handler handler = new Handler(Looper.getMainLooper());
 
             @Override
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebRPCService service = new WebRPCService(baseURL, threadPool);
+        WebServiceProxy service = new WebServiceProxy(baseURL, threadPool);
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();
