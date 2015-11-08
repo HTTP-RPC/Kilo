@@ -10,7 +10,7 @@
     <property name="warfile" value="${ant.project.name}-${version}.war"/>
 
     <target name="build">
-    	<ant dir="../webrpc" target="build" inheritAll="false"/>
+    	<ant dir="../httprpc-server" target="build" inheritAll="false"/>
     	
     	<echo message="Building ${title}..."/>
     	
@@ -22,7 +22,7 @@
             encoding="UTF-8" deprecation="true" debug="true"
             failonerror="true">
             <classpath>
-            	<fileset dir="../webrpc" includes="*.jar"/>
+            	<fileset dir="../httprpc-server" includes="*.jar"/>
             </classpath>
         	
         	<compilerarg value="-parameters"/>
@@ -36,7 +36,7 @@
         	<classes dir="${bin}"/>
         	<classes dir="${src}" includes="**/*.db"/>
             
-        	<lib dir="../webrpc" includes="*.jar"/>
+        	<lib dir="../httprpc-server" includes="*.jar"/>
         	<lib dir="lib" includes="*.jar"/>
         </war>
 	</target>
