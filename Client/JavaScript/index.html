@@ -19,7 +19,7 @@ limitations under the License.
 <script src="httprpc.js"></script>
 <script>
 function testService() {
-    var testServiceProxy = new WebServiceProxy("/webrpc-test-server/test");
+    var testServiceProxy = new WebServiceProxy("/httprpc-test-server/test");
 
     // Add
     testServiceProxy.invokeWithArguments("add", {a:4, b:2}, function(result, error) {
