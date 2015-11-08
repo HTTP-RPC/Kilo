@@ -66,7 +66,7 @@ public class WebRPCServlet extends HttpServlet {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (method.getDeclaringClass() != Object.class) {
+            if (!WebRPCService.class.isAssignableFrom(method.getDeclaringClass())) {
                 this.methods.put(method.getName(), method);
             }
         }
@@ -86,10 +86,6 @@ public class WebRPCServlet extends HttpServlet {
 
         if (method == null) {
             throw new ServletException("Method not found.");
-        }
-
-        if (!WebRPCService.class.isAssignableFrom(method.getDeclaringClass())) {
-            throw new ServletException("Invalid method.");
         }
 
         // Construct arguments
