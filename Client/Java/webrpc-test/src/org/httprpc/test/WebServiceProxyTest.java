@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc.test;
+package org.httprpc.test;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -32,11 +32,12 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import vellum.webrpc.ResultHandler;
-import vellum.webrpc.WebRPCService;
-import static vellum.webrpc.Arguments.*;
+import org.httprpc.ResultHandler;
+import org.httprpc.WebServiceProxy;
 
-public class WebRPCServiceTest {
+import static org.httprpc.Arguments.*;
+
+public class WebServiceProxyTest {
     public static void main(String[] args) throws Exception {
         // Set global credentials
         Authenticator.setDefault(new Authenticator() {
@@ -78,7 +79,7 @@ public class WebRPCServiceTest {
         URL baseURL = new URL("https://localhost:8443/webrpc-test-server/test/");
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebRPCService service = new WebRPCService(baseURL, threadPool);
+        WebServiceProxy service = new WebServiceProxy(baseURL, threadPool);
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();

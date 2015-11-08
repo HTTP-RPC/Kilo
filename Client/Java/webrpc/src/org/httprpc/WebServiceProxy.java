@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package org.httprpc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,9 +40,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * Invocation proxy for web RPC services.
+ * Invocation proxy for HTTP-RPC web services.
  */
-public class WebRPCService {
+public class WebServiceProxy {
     // Invocation callback
     private static class InvocationCallback<V> implements Callable<V> {
         private URL methodURL;
@@ -467,7 +467,7 @@ public class WebRPCService {
     private static final int PAGE_SIZE = 1024;
 
     /**
-     * Creates a new web RPC service.
+     * Creates a new HTTP-RPC service proxy.
      *
      * @param baseURL
      * The base URL of the service.
@@ -475,7 +475,7 @@ public class WebRPCService {
      * @param executorService
      * The executor service that will be used to execute requests.
      */
-    public WebRPCService(URL baseURL, ExecutorService executorService) {
+    public WebServiceProxy(URL baseURL, ExecutorService executorService) {
         if (baseURL == null) {
             throw new IllegalArgumentException();
         }
@@ -509,7 +509,7 @@ public class WebRPCService {
     }
 
     /**
-     * Invokes a web RPC service method.
+     * Invokes an HTTP-RPC service method.
      *
      * @param <V> The type of the value returned by the method.
      *
@@ -528,7 +528,7 @@ public class WebRPCService {
     }
 
     /**
-     * Invokes a web RPC service method.
+     * Invokes an HTTP-RPC service method.
      *
      * @param <V> The type of the value returned by the method.
      *
@@ -588,6 +588,6 @@ public class WebRPCService {
             throw new IllegalArgumentException();
         }
 
-        WebRPCService.resultDispatcher = resultDispatcher;
+        WebServiceProxy.resultDispatcher = resultDispatcher;
     }
 }

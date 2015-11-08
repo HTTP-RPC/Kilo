@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package org.httprpc;
 
 import java.util.Collections;
 import java.util.HashMap;

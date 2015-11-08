@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package vellum.webrpc;
+package org.httprpc;
 
 /**
  * Interface representing a result handler.
