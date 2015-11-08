@@ -1,6 +1,5 @@
 .settings
 bin
 doc
-webrpc-*.jar
-webrpc-*-javadoc.zip
-webrpc-server-*.zip
+httprpc-server-*.jar
+httprpc-server-*.zip

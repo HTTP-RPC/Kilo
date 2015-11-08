@@ -1,3 +1,3 @@
 .settings
 bin
-webrpc-test-*.war
+httprpc-server-test-*.war
