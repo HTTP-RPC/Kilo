@@ -14,8 +14,8 @@
     <property name="zipfile" value="${ant.project.name}-${version}.zip"/>
 
     <target name="build">
-    	<echo message="Building ${title}..."/>
-    	
+        <echo message="Building ${title}..."/>
+        
         <delete dir="${bin}"/>
         <mkdir dir="${bin}"/>
 
@@ -39,8 +39,8 @@
     </target>
 	
     <target name="doc">
-    	<delete dir="${doc}"/>
-    	
+        <delete dir="${doc}"/>
+        
         <javadoc sourcepath="${src}" destdir="${doc}"
             link="http://docs.oracle.com/javase/8/docs/api/"
             version="true" use="true">
