@@ -77,7 +77,7 @@ public class WebServiceProxyTest {
         });
 
         // Create service
-        URL baseURL = new URL("https://localhost:8443/httprpc-test-server/test/");
+        URL baseURL = new URL("https://localhost:8443/httprpc-server-test/test/");
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
         WebServiceProxy service = new WebServiceProxy(baseURL, threadPool);

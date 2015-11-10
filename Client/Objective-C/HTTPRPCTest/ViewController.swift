@@ -103,7 +103,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
         // Initialize service and invoke methods
-        let baseURL = NSURL(string: "https://localhost:8443/httprpc-test-server/test/")
+        let baseURL = NSURL(string: "https://localhost:8443/httprpc-server-test/test/")
 
         let service = WSWebServiceProxy(session: session, baseURL: baseURL!)
 

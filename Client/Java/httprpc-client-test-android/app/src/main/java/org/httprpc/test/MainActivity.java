@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         // Create service
         URL baseURL;
         try {
-            baseURL = new URL("https://10.0.2.2:8443/httprpc-test-server/test/");
+            baseURL = new URL("https://10.0.2.2:8443/httprpc-server-test/test/");
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }

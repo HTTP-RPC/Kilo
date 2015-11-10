@@ -7,7 +7,7 @@
     <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
     
-    <property name="warfile" value="${ant.project.name}-${version}.war"/>
+    <property name="warfile" value="${ant.project.name}.war"/>
 
     <target name="build">
     	<ant dir="../httprpc-server" target="build" inheritAll="false"/>
