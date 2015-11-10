@@ -9,7 +9,7 @@ For example, a GET request for the following URL might invoke the "add" method o
     
 The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request with a content type of `application/x-www-form-urlencoded` and a request body of `a=1&b=2`. No other HTTP operations are supported.
 
-Method parameters may be either scalar (single-value) or vector (multi-value) types. Scalar values may be any simple type including string, number, or boolean (true/false). As with any HTTP request, values that include reserved characters must be URL-encoded.
+Method parameters may be either scalar (single-value) or vector (multi-value) types. Scalar values may be any simple type including string, number, or boolean (true/false). String values are not quoted; however, as with any HTTP request, values that include reserved characters must be URL-encoded.
 
 Multi-value arguments are specified by providing zero or more scalar values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed argument values:
 
