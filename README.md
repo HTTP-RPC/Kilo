@@ -135,7 +135,7 @@ The servlet returns an HTTP 200 status code on successful method completion. If 
 Servlet security is provided by the underlying servlet container. See the Java EE documentation for more information.
 
 ## BeanAdapter Class
-The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON.
+The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON. Nested Bean properties are supported.
 
 For example, the following class might be used to represent some simple statistical information about a set of values:
 
@@ -213,14 +213,11 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
 Since the data is written directly to the output stream as it is read from the result set, no intermediate objects are created, significantly reducing the application's memory footprint.
 
 # Java Client
-The Java client implementation of HTTP-RPC enables Java-based applications to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following classes:
+The Java client implementation of HTTP-RPC enables Java-based applications to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
 
 * _`org.httprpc`_
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
-    * `Arguments` - factory methods for simplifying argument map creation
-
-Each of these classes is discussed in more detail below. 
 
 The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
 
@@ -268,6 +265,22 @@ Both variants of the `invoke()` method return an instance of `java.util.concurre
 
 Request security is provided by the underlying URL connection. See the `HttpURLConnection` documentation for more information.
 
+### Argument Map Creation
+Since the Java programming language does not currently include support for map literals, populating the argument map can sometimes be cumbersome. For example, the following code might be used to create a map of arguments to pass to the service's `add()` method:
+
+    HashMap<String, Object> addArguments = new HashMap<>();
+    addArguments.put("a", 2);
+    addArguments.put("b", 4);
+
+`WebServiceProxy` provides the following static convenience methods to help simplify map creation:
+
+    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) { ... }
+    public static Map.Entry<String, Object> entry(final String key, final Object value) { ... }
+    
+Using the convenience methods, the code that creates the argument map can be reduced to the following:
+
+    mapOf(entry("a", 2), entry("b", 4))
+
 ### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
 
@@ -287,7 +300,7 @@ For example, the following Android-specific code ensures that all result handler
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ### Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the service's `add()` method, passing a value of 2 for "a" and 4 for "b":
+The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
 
     // Create service
     URL baseURL = new URL("https://localhost:8443/httprpc-test-server/test/");
@@ -296,33 +309,29 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to inv
     WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, executorService);
 
     // Add a + b
-    HashMap<String, Object> addArguments = new HashMap<>();
-    addArguments.put("a", 2);
-    addArguments.put("b", 4);
-
-    serviceProxy.invoke("add", addArguments, new ResultHandler<Number>() {
+    serviceProxy.invoke("add", mapOf(entry("a", 2), entry("b", 4)), new ResultHandler<Number>() {
         @Override
         public void execute(Number result, Exception exception) {
             // result is 6
         }
     });
-
-Note that the above example uses an anonymous inner class to implement the result handler. In Java 8 or later, a lambda expression can be used instead. For example, the following code executes the `addValues()` method of the service, passing the values 1, 2, 3, and 4 as arguments:
-
+    
     // Add values
-    HashMap<String, Object> addValuesArguments = new HashMap<>();
-    addValuesArguments.put("values", Arrays.asList(1, 2, 3, 4));
-
-    serviceProxy.invoke("addValues", addValuesArguments, (result, exception) -> {
-        // result is 10
+    serviceProxy.invoke("add", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
+        @Override
+        public void execute(Number result, Exception exception) {
+            // result is 10
+        }
     });
 
-Additionally, the `Arguments` class can be used to simplify the creation of the arguments map. Using this class's `mapOf()` and `entry()` methods (analogous to map or dictionary literals in other languages), the above examples can be reduced to the following:
+Note that, in Java 8 or later, lambda expressions can be used instead of anonymous classes to implement result handlers, reducing the code for invoking the remote methods to the following:
 
+    // Add a + b
     serviceProxy.invoke("add", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
         // result is 6
     });
 
+    // Add values
     serviceProxy.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (result, exception) -> {
         // result is 10
     });

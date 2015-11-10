@@ -35,7 +35,8 @@ import javax.net.ssl.X509TrustManager;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
-import static org.httprpc.Arguments.*;
+import static org.httprpc.WebServiceProxy.mapOf;
+import static org.httprpc.WebServiceProxy.entry;
 
 public class WebServiceProxyTest {
     public static void main(String[] args) throws Exception {
