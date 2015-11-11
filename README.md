@@ -139,7 +139,7 @@ The `BeanAdapter` class allows the contents of a Java Bean object to be returned
 
 For example, the following class might be used to represent some simple statistical information about a set of values:
 
-    public class Statistics extends Result {
+    public class Statistics {
         private int count = 0;
         private double sum = 0;
         private double average = 0;
