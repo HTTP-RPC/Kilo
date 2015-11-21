@@ -187,13 +187,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get statistics
-        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Number>>() {
+        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
             @Override
-            public void execute(Map<String, Number> result, Exception exception) {
-                getStatisticsCheckBox.setChecked(exception == null
-                    && result.get("count").intValue() == 3
-                    && result.get("average").doubleValue() == 3.0
-                    && result.get("sum").doubleValue() == 9.0);
+            public void execute(Map<String, Object> result, Exception exception) {
+                Statistics statistics = (exception == null) ? new Statistics(result) : null;
+
+                getStatisticsCheckBox.setChecked(statistics != null
+                    && statistics.getCount() == 3
+                    && statistics.getAverage() == 3.0
+                    && statistics.getSum() == 9.0);
             }
         });
 
@@ -201,17 +203,10 @@ public class MainActivity extends AppCompatActivity {
         service.invoke("getTestData", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
-                HashMap<String, Object> row1 = new HashMap<>();
-                row1.put("a", "hello");
-                row1.put("b", 1L);
-                row1.put("c", 2.0);
-
-                HashMap<String, Object> row2 = new HashMap<>();
-                row2.put("a", "goodbye");
-                row2.put("b", 2L);
-                row2.put("c", 4.0);
-
-                getTestDataCheckBox.setChecked(exception == null && result.equals(Arrays.asList(row1, row2)));
+                getTestDataCheckBox.setChecked(exception == null && result.equals(Arrays.asList(
+                    mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
+                    mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
+                );
             }
         });
 

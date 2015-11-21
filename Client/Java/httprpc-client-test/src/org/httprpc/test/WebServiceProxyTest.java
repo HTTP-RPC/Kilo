@@ -115,26 +115,21 @@ public class WebServiceProxyTest {
         });
 
         // Get statistics
-        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Number> result, Exception exception) -> {
-            validate(exception == null
-                && result.get("count").intValue() == 3
-                && result.get("average").doubleValue() == 3.0
-                && result.get("sum").doubleValue() == 9.0);
+        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
+            Statistics statistics = (exception == null) ? new Statistics(result) : null;
+
+            validate(statistics != null
+                && statistics.getCount() == 3
+                && statistics.getAverage() == 3.0
+                && statistics.getSum() == 9.0);
         });
 
         // Get test data
         service.invoke("getTestData", (result, exception) -> {
-            HashMap<String, Object> row1 = new HashMap<>();
-            row1.put("a", "hello");
-            row1.put("b", 1L);
-            row1.put("c", 2.0);
-
-            HashMap<String, Object> row2 = new HashMap<>();
-            row2.put("a", "goodbye");
-            row2.put("b", 2L);
-            row2.put("c", 4.0);
-
-            validate(exception == null && result.equals(Arrays.asList(row1, row2)));
+            validate(exception == null && result.equals(Arrays.asList(
+                mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
+                mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
+            );
         });
 
         // Get void
