@@ -218,6 +218,7 @@ The Java client implementation of HTTP-RPC enables Java-based applications to co
 * _`org.httprpc`_
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
+    * `Result` - base class for typed results
 
 The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
 
@@ -299,7 +300,60 @@ For example, the following Android-specific code ensures that all result handler
 
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
-### Examples
+## Result Class
+`Result` is a base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following public methods that can be used to populate Java Bean property values from dictionary entries:
+
+    public void set(String name, Object value) { ... }
+    public void setAll(Map<String, Object> values) { ... }
+
+Additionally, it defines the following protected method that can be overridden to handle missing properties:
+
+    protected void setUndefined(String name, Object value) { ... }
+    
+For example, the following Java class might be used to provide a typed version of the statistical data returned by the `getStatistics()` method discussed earlier:
+
+    public class Statistics extends Result {
+        private int count;
+        private double sum;
+        private double average;
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public double getSum() {
+            return sum;
+        }
+
+        public void setSum(double sum) {
+            this.sum = sum;
+        }
+
+        public double getAverage() {
+            return average;
+        }
+
+        public void setAverage(double average) {
+            this.average = average;
+        }
+    }
+
+The map data returned by `getStatistics()` can be converted to a `Statistics` instance as follows:
+
+    service.invoke("getStatistics", (Map<String, Object> result, Exception exception) -> {
+        Statistics statistics = new Statistics();
+        statistics.setAll(result);
+
+        // statistics.getCount() = 3
+        // statistics.getSum() = 9.0
+        // statistics.getAverage() = 3.0
+    });
+
+## Examples
 The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
 
     // Create service
@@ -358,7 +412,7 @@ Although requests are typically processed on a background thread, result handler
 
 Request security is provided by the the underlying URL session. See the `NSURLSession` documentation for more information.
 
-### Examples
+## Examples
 The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
 
     // Configure session
@@ -403,7 +457,7 @@ Both invocation methods take a result handler as the final argument. The result 
 
 Both methods return the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
 
-### Examples
+## Examples
 The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WebServiceProxy` class that points to the base service URL. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
 
     // Initialize service proxy and invoke methods
