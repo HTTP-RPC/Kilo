@@ -71,6 +71,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private HashMap<String, Method> methods = new HashMap<>();
 
+    @Deprecated
     public static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
 
     @Override
@@ -99,8 +100,13 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        doPost(request, response);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // Look up service method
         String pathInfo = request.getPathInfo();
 
@@ -185,11 +191,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             writeValue(response.getWriter(), result);
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        doGet(request, response);
     }
 
     private static Object coerce(String value, Type type) throws ServletException {
