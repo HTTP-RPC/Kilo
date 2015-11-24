@@ -65,7 +65,7 @@ For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultS
 
 * `getLocale()` - returns the locale associated with the current request
 * `getUserName()` - returns the user name associated with the current request, or `null` if the request was not authenticated
-* `getUserRoles()` - returns the user's roles, or `null` if the request was not authenticated
+* `getUserRoles()` - returns a set representing the roles the user belongs to, or `null` if the request was not authenticated
 
 The values returned by these methods are populated via protected setters, which are called once per request by `RequestDispatcherServlet`. These setters are not meant to be called by application code. However, they can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
 
