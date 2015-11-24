@@ -24,9 +24,11 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +43,35 @@ import javax.servlet.http.HttpServletResponse;
 public class RequestDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
+    // User role set
+    private static class UserRoleSet extends AbstractSet<String> {
+        private HttpServletRequest request;
+
+        public UserRoleSet(HttpServletRequest request) {
+            this.request = request;
+        }
+
+        @Override
+        public boolean contains(Object object) {
+            return request.isUserInRole(object.toString());
+        }
+
+        @Override
+        public int size() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Iterator<String> iterator() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     private Class<?> serviceType = null;
 
     private HashMap<String, Method> methods = new HashMap<>();
 
-    private static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
+    public static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
 
     @Override
     public void init() throws ServletException {
@@ -135,9 +161,14 @@ public class RequestDispatcherServlet extends HttpServlet {
             throw new ServletException(exception);
         }
 
+        service.setLocale(request.getLocale());
+
         Principal userPrincipal = request.getUserPrincipal();
 
-        service.initialize(request.getLocale(), (userPrincipal == null) ? null : userPrincipal.getName());
+        if (userPrincipal != null) {
+            service.setUserName(userPrincipal.getName());
+            service.setUserRoles(new UserRoleSet(request));
+        }
 
         Object result;
         try {

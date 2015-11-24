@@ -15,13 +15,16 @@
 package org.httprpc;
 
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Abstract base class for HTTP-RPC web services.
  */
 public abstract class WebService {
     private Locale locale = null;
+
     private String userName = null;
+    private Set<String> userRoles = null;
 
     /**
      * Initializes the service with information about the current request.
@@ -32,7 +35,11 @@ public abstract class WebService {
      * @param userName
      * The user name associated with the current request, or <tt>null</tt> if
      * the request has not been authenticated.
+     *
+     * @see #setLocale(Locale)
+     * @see #setUserName(String)
      */
+    @Deprecated
     protected void initialize(Locale locale, String userName) {
         if (locale == null) {
             throw new IllegalArgumentException();
@@ -53,6 +60,16 @@ public abstract class WebService {
     }
 
     /**
+     * Sets the locale associated with the current request.
+     *
+     * @param locale
+     * The locale associated with the current request.
+     */
+    protected void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    /**
      * Returns the user name associated with the current request.
      *
      * @return
@@ -61,5 +78,37 @@ public abstract class WebService {
      */
     protected String getUserName() {
         return userName;
+    }
+
+    /**
+     * Sets the user name associated with the current request.
+     *
+     * @param userName
+     * The user name associated with the current request, or <tt>null</tt> if
+     * the request has not been authenticated.
+     */
+    protected void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * Returns the user's roles.
+     *
+     * @return
+     * A set representing the roles the user belongs to.
+     */
+    protected Set<String> getUserRoles() {
+        return userRoles;
+    }
+
+    /**
+     * Sets the user's roles.
+     *
+     * @param roles
+     * A set representing the roles the user belongs to, or <tt>null</tt> if
+     * the request has not been authenticated.
+     */
+    protected void setUserRoles(Set<String> roles) {
+        this.userRoles = roles;
     }
 }

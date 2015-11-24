@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Base class for typed results.
+ * Abstract base class for typed results.
  */
-public class Result {
+public abstract class Result {
     private Map<String, Method> mutators;
 
     private static final String SET_PREFIX = "set";

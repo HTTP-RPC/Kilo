@@ -120,4 +120,8 @@ public class TestService extends WebService {
     public String getUserName() {
         return super.getUserName();
     }
+
+    public boolean isUserInRole(String role) {
+        return getUserRoles().contains(role);
+    }
 }

@@ -92,5 +92,18 @@
 
 <a href="${pageContext.request.contextPath}/test/getUserName">Get User Name</a>
 
+<hr/>
+
+<form action="${pageContext.request.contextPath}/test/isUserInRole" method="get">
+<table>
+<tr>
+<td>Role</td><td><input type="text" name="role" value="tomcat"/></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Is User in Role"/></td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

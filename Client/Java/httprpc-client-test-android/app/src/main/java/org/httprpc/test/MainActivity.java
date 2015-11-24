@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox getNullCheckBox;
     private CheckBox getLocaleCodeCheckBox;
     private CheckBox getUserNameCheckBox;
+    private CheckBox isUserInRoleCheckBox;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         getNullCheckBox = (CheckBox)findViewById(R.id.get_null_checkbox);
         getLocaleCodeCheckBox = (CheckBox)findViewById(R.id.get_locale_code_checkbox);
         getUserNameCheckBox = (CheckBox)findViewById(R.id.get_user_name_checkbox);
+        isUserInRoleCheckBox = (CheckBox)findViewById(R.id.is_user_in_role_checkbox);
     }
 
     @Override
@@ -140,14 +142,14 @@ public class MainActivity extends AppCompatActivity {
 
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy service = new WebServiceProxy(baseURL, threadPool);
+        WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, threadPool);
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();
         addArguments.put("a", 2);
         addArguments.put("b", 4);
 
-        service.invoke("add", addArguments, new ResultHandler<Number>() {
+        serviceProxy.invoke("add", addArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 addCheckBox.setChecked(exception == null && result.intValue() == 6);
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Add values
-        service.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
+        serviceProxy.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 addValuesCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);
@@ -163,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Invert value
-        service.invoke("invertValue", mapOf(entry("value", true)), new ResultHandler<Boolean>() {
+        serviceProxy.invoke("invertValue", mapOf(entry("value", true)), new ResultHandler<Boolean>() {
             @Override
             public void execute(Boolean result, Exception exception) {
                 invertValueCheckBox.setChecked(exception == null && result == false);
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get characters
-        service.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), new ResultHandler<Object>() {
+        serviceProxy.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getCharactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get selection
-        service.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), new ResultHandler<Object>() {
+        serviceProxy.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getSelectionCheckBox.setChecked(exception == null && result.equals("a, b, c, d"));
@@ -187,31 +189,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get statistics
-        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
+        serviceProxy.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
             @Override
             public void execute(Map<String, Object> result, Exception exception) {
                 Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
-                getStatisticsCheckBox.setChecked(statistics != null
-                    && statistics.getCount() == 3
-                    && statistics.getAverage() == 3.0
-                    && statistics.getSum() == 9.0);
+                getStatisticsCheckBox.setChecked(statistics != null && statistics.getCount() == 3 && statistics.getAverage() == 3.0 && statistics.getSum() == 9.0);
             }
         });
 
         // Get test data
-        service.invoke("getTestData", new ResultHandler<Object>() {
+        serviceProxy.invoke("getTestData", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
-                getTestDataCheckBox.setChecked(exception == null && result.equals(Arrays.asList(
-                    mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
-                    mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
-                );
+                getTestDataCheckBox.setChecked(exception == null && result.equals(Arrays.asList(mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)), mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0)))));
             }
         });
 
         // Get void
-        service.invoke("getVoid", new ResultHandler<Object>() {
+        serviceProxy.invoke("getVoid", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getVoidCheckBox.setChecked(exception == null && result == null);
@@ -219,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get null
-        service.invoke("getNull", new ResultHandler<Object>() {
+        serviceProxy.invoke("getNull", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getNullCheckBox.setChecked(exception == null && result == null);
@@ -227,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get locale code
-        service.invoke("getLocaleCode", new ResultHandler<Object>() {
+        serviceProxy.invoke("getLocaleCode", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getLocaleCodeCheckBox.setChecked(exception == null && result != null);
@@ -236,10 +232,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Get user name
-        service.invoke("getUserName", new ResultHandler<Object>() {
+        serviceProxy.invoke("getUserName", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 getUserNameCheckBox.setChecked(exception == null && result.equals("tomcat"));
+            }
+        });
+
+        // Is user in role
+        serviceProxy.invoke("isUserInRole", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
+            @Override
+            public void execute(Object result, Exception exception) {
+                isUserInRoleCheckBox.setChecked(exception == null && result.equals(true));
             }
         });
 

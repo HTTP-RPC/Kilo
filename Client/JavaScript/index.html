@@ -76,6 +76,11 @@ function testService() {
     testServiceProxy.invoke("getUserName", function(result, error) {
         validate(error == null && result == "tomcat");
     });
+
+    // Is user in role
+    testServiceProxy.invokeWithArguments("isUserInRole", {role:"tomcat"}, function(result, error) {
+        validate(error == null && result == true);
+    });
 }
 
 function validate(condition) {

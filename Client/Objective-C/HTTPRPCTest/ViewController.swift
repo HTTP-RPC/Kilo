@@ -29,6 +29,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var getNullCell: UITableViewCell!
     var getLocaleCodeCell: UITableViewCell!
     var getUserNameCell: UITableViewCell!
+    var isUserInRoleCell: UITableViewCell!
 
     override func loadView() {
         let tableView = UITableView()
@@ -82,6 +83,10 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         getUserNameCell.textLabel!.text = "getUserName()"
         cells.append(getUserNameCell)
 
+        isUserInRoleCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
+        isUserInRoleCell.textLabel!.text = "isUserInRole()"
+        cells.append(isUserInRoleCell)
+
         view = tableView
     }
 
@@ -105,7 +110,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         // Initialize service and invoke methods
         let baseURL = NSURL(string: "https://localhost:8443/httprpc-server-test/test/")
 
-        let service = WSWebServiceProxy(session: session, baseURL: baseURL!)
+        let serviceProxy = WSWebServiceProxy(session: session, baseURL: baseURL!)
 
         func validate(condition: Bool, error: NSError?, cell: UITableViewCell) {
             if (condition) {
@@ -119,55 +124,59 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
             }
         }
 
-        service.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
+        serviceProxy.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
             validate(result as? Int == 6, error: error, cell: self.addCell)
         }
 
-        service.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+        serviceProxy.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
             validate(result as? Int == 10, error: error, cell: self.addValuesCell)
         }
 
-        service.invoke("invertValue", withArguments: ["value": true]) {(result, error) in
+        serviceProxy.invoke("invertValue", withArguments: ["value": true]) {(result, error) in
             validate(result as? Bool == false, error: error, cell: self.invertValueCell)
         }
 
-        service.invoke("getCharacters", withArguments: ["text": "Hello, World!"]) {(result, error) in
+        serviceProxy.invoke("getCharacters", withArguments: ["text": "Hello, World!"]) {(result, error) in
             validate(result as? NSArray == ["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error: error, cell: self.getCharactersCell)
         }
 
-        service.invoke("getSelection", withArguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
+        serviceProxy.invoke("getSelection", withArguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
             validate(result as? String == "a, b, c, d", error: error, cell: self.getSelectionCell)
         }
 
-        service.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
+        serviceProxy.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
             let statistics: Statistics? = (error == nil) ? Statistics(dictionary: result as! [String : AnyObject]) : nil
 
             validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, error: error, cell: self.getStatisticsCell)
         }
 
-        service.invoke("getTestData") {(result, error) in
+        serviceProxy.invoke("getTestData") {(result, error) in
             validate(result as? NSArray == [
                 ["a": "hello", "b": 1, "c": 2.0],
                 ["a": "goodbye", "b": 2,"c": 4.0]
             ], error: error, cell: self.getTestDataCell)
         }
 
-        service.invoke("getVoid") {(result, error) in
+        serviceProxy.invoke("getVoid") {(result, error) in
             validate(result == nil, error: error, cell: self.getVoidCell)
         }
 
-        service.invoke("getNull") {(result, error) in
+        serviceProxy.invoke("getNull") {(result, error) in
             validate(result as? NSNull != nil, error: error, cell: self.getNullCell)
         }
 
-        service.invoke("getLocaleCode") {(result, error) in
+        serviceProxy.invoke("getLocaleCode") {(result, error) in
             validate(result != nil, error: error, cell: self.getLocaleCodeCell)
 
             self.getLocaleCodeCell.detailTextLabel!.text = result as? String
         }
 
-        service.invoke("getUserName") {(result, error) in
+        serviceProxy.invoke("getUserName") {(result, error) in
             validate(result as? String == "tomcat", error: error, cell: self.getUserNameCell)
+        }
+
+        serviceProxy.invoke("isUserInRole", withArguments: ["role": "tomcat"]) {(result, error) in
+            validate(result as? Bool == true, error: error, cell: self.isUserInRoleCell)
         }
     }
 

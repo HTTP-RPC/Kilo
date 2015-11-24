@@ -65,12 +65,9 @@ For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultS
 
 * `getLocale()` - returns the locale associated with the current request
 * `getUserName()` - returns the user name associated with the current request, or `null` if the request was not authenticated
+* `getUserRoles()` - returns the user's roles, or `null` if the request was not authenticated
 
-The values returned by these methods are populated via the `initialize()` method, which is called once per request by `RequestDispatcherServlet`:
-
-    protected void initialize(Locale locale, String userName) { ... }
-
-This method is not meant to be called by application code. However, it can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
+The values returned by these methods are populated via protected setters, which are called once per request by `RequestDispatcherServlet`. These setters are not meant to be called by application code. However, they can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
 
 ### Examples
 The following code demonstrates one possible implementation of the hypothetical "math" service discussed earlier:
@@ -218,7 +215,7 @@ The Java client implementation of HTTP-RPC enables Java-based applications to co
 * _`org.httprpc`_
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
-    * `Result` - base class for typed results
+    * `Result` - abstract base class for typed results
 
 The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
 
@@ -301,7 +298,7 @@ For example, the following Android-specific code ensures that all result handler
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ## Result Class
-`Result` is a base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following public methods that can be used to populate Java Bean property values from dictionary entries:
+`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following public methods that can be used to populate Java Bean property values from dictionary entries:
 
     public void set(String name, Object value) { ... }
     public void setAll(Map<String, Object> values) { ... }
@@ -344,7 +341,7 @@ For example, the following Java class might be used to provide a typed version o
 
 The map data returned by `getStatistics()` can be converted to a `Statistics` instance as follows:
 
-    service.invoke("getStatistics", (Map<String, Object> result, Exception exception) -> {
+    serviceProxy.invoke("getStatistics", (Map<String, Object> result, Exception exception) -> {
         Statistics statistics = new Statistics();
         statistics.setAll(result);
 

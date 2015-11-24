@@ -80,14 +80,14 @@ public class WebServiceProxyTest {
         URL baseURL = new URL("https://localhost:8443/httprpc-server-test/test/");
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy service = new WebServiceProxy(baseURL, threadPool);
+        WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, threadPool);
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();
         addArguments.put("a", 2);
         addArguments.put("b", 4);
 
-        service.invoke("add", addArguments, new ResultHandler<Number>() {
+        serviceProxy.invoke("add", addArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 validate(exception == null && result.doubleValue() == 6.0);
@@ -95,27 +95,27 @@ public class WebServiceProxyTest {
         });
 
         // Add values
-        service.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (Number result, Exception exception) -> {
+        serviceProxy.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (Number result, Exception exception) -> {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 
         // Invert value
-        service.invoke("invertValue", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
+        serviceProxy.invoke("invertValue", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
             validate(exception == null && result == false);
         });
 
         // Get characters
-        service.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
+        serviceProxy.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
             validate(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Get selection
-        service.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), (result, exception) -> {
+        serviceProxy.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), (result, exception) -> {
             validate(exception == null && result.equals("a, b, c, d"));
         });
 
         // Get statistics
-        service.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
+        serviceProxy.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
             validate(statistics != null
@@ -125,7 +125,7 @@ public class WebServiceProxyTest {
         });
 
         // Get test data
-        service.invoke("getTestData", (result, exception) -> {
+        serviceProxy.invoke("getTestData", (result, exception) -> {
             validate(exception == null && result.equals(Arrays.asList(
                 mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
                 mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
@@ -133,24 +133,29 @@ public class WebServiceProxyTest {
         });
 
         // Get void
-        service.invoke("getVoid", (result, exception) -> {
+        serviceProxy.invoke("getVoid", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Get null
-        service.invoke("getNull", (result, exception) -> {
+        serviceProxy.invoke("getNull", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Get locale code
-        service.invoke("getLocaleCode", (result, exception) -> {
+        serviceProxy.invoke("getLocaleCode", (result, exception) -> {
             validate(exception == null && result != null);
             System.out.println(result);
         });
 
         // Get user name
-        service.invoke("getUserName", (result, exception) -> {
+        serviceProxy.invoke("getUserName", (result, exception) -> {
             validate(exception == null && result.equals("tomcat"));
+        });
+
+        // Is user in role
+        serviceProxy.invoke("isUserInRole", mapOf(entry("role", "tomcat")), (result, exception) -> {
+            validate(exception == null && result.equals(true));
         });
 
         // Shut down thread pool
