@@ -106,7 +106,7 @@ public class TestService extends WebService {
         // No-op
     }
 
-    public Object getNull() {
+    public String getNull() {
         return null;
     }
 

@@ -24,24 +24,122 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.AbstractList;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.httprpc.beans.BeanAdapter;
+
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
  */
 public class RequestDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
+
+    /**
+     * Method descriptor.
+     */
+    public static final class MethodDescriptor {
+        private Method method;
+
+        private MethodDescriptor(Method method) {
+            this.method = method;
+        }
+
+        /**
+         * Returns the method's name.
+         *
+         * @return
+         * The name of the method.
+         */
+        public String getName() {
+            return method.getName();
+        }
+
+        /**
+         * Returns the method's parameters.
+         *
+         * @return
+         * A list of the method's parameters.
+         */
+        public List<Object> getParameters() {
+            return new ParameterDescriptorList(method.getParameters());
+        }
+
+        /**
+         * Returns the method's return type.
+         *
+         * @return
+         * The type of the value returned by the method, or <tt>null</tt> if
+         * the method does not return a value.
+         */
+        public String getReturns() {
+            return getDescriptorType(method.getReturnType());
+        }
+    }
+
+    /**
+     * Parameter descriptor list.
+     */
+    public static final class ParameterDescriptorList extends AbstractList<Object> {
+        private Parameter[] parameters;
+
+        private ParameterDescriptorList(Parameter[] parameters) {
+            this.parameters = parameters;
+        }
+
+        @Override
+        public Object get(int index) {
+            return new BeanAdapter(new ParameterDescriptor(parameters[index]));
+        }
+
+        @Override
+        public int size() {
+            return parameters.length;
+        }
+    }
+
+    /**
+     * Parameter descriptor.
+     */
+    public static final class ParameterDescriptor {
+        private Parameter parameter;
+
+        private ParameterDescriptor(Parameter parameter) {
+            this.parameter = parameter;
+        }
+
+        /**
+         * Returns the parameter's name.
+         *
+         * @return
+         * The name of the parameter.
+         */
+        public String getName() {
+            return parameter.getName();
+        }
+
+        /**
+         * Returns the parameter's type.
+         *
+         * @return
+         * The type of the parameter.
+         */
+        public String getType() {
+            return getDescriptorType(parameter.getType());
+        }
+    }
 
     // User role set
     private static class UserRoleSet extends AbstractSet<String> {
@@ -69,7 +167,16 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private Class<?> serviceType = null;
 
-    private HashMap<String, Method> methods = new HashMap<>();
+    private TreeMap<String, Method> methodMap = new TreeMap<>();
+
+    private static final String STRING_TYPE = "string";
+    private static final String NUMBER_TYPE = "number";
+    private static final String BOOLEAN_TYPE = "boolean";
+
+    private static final String ARRAY_TYPE = "array";
+    private static final String OBJECT_TYPE = "object";
+
+    private static final String UNSUPPORTED_TYPE = "?";
 
     private static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
 
@@ -93,7 +200,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             Method method = methods[i];
 
             if (serviceType.isAssignableFrom(method.getDeclaringClass())) {
-                this.methods.put(method.getName(), method);
+                methodMap.put(method.getName(), method);
             }
         }
     }
@@ -106,90 +213,123 @@ public class RequestDispatcherServlet extends HttpServlet {
     @Override
     @SuppressWarnings("unchecked")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // Look up service method
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null) {
-            throw new ServletException("Method name not specified.");
-        }
+            // Write method descriptor list
+            LinkedList<Object> methodDescriptorList = new LinkedList<>();
 
-        Method method = methods.get(pathInfo.substring(1));
-
-        if (method == null) {
-            throw new ServletException("Method not found.");
-        }
-
-        // Construct arguments
-        Parameter[] parameters = method.getParameters();
-
-        Object[] arguments = new Object[parameters.length];
-
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
-
-            String name = parameter.getName();
-            Class<?> type = parameter.getType();
-
-            Object argument;
-            if (type == List.class) {
-                String[] values = request.getParameterValues(name);
-
-                List<Object> list;
-                if (values != null) {
-                    ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                    Type elementType = parameterizedType.getActualTypeArguments()[0];
-
-                    int n = values.length;
-
-                    list = new ArrayList<>(n);
-
-                    for (int j = 0; j < n; j++) {
-                        list.add(coerce(values[j], elementType));
-                    }
-                } else {
-                    list = Collections.EMPTY_LIST;
-                }
-
-                argument = list;
-            } else {
-                argument = coerce(request.getParameter(name), type);
+            for (Method method : methodMap.values()) {
+                methodDescriptorList.add(new BeanAdapter(new MethodDescriptor(method)));
             }
 
-            arguments[i] = argument;
+            writeValue(response.getWriter(), methodDescriptorList);
+        } else {
+            // Look up service method
+            Method method = methodMap.get(pathInfo.substring(1));
+
+            if (method == null) {
+                throw new ServletException("Method not found.");
+            }
+
+            // Construct arguments
+            Parameter[] parameters = method.getParameters();
+
+            Object[] arguments = new Object[parameters.length];
+
+            for (int i = 0; i < parameters.length; i++) {
+                Parameter parameter = parameters[i];
+
+                String name = parameter.getName();
+                Class<?> type = parameter.getType();
+
+                Object argument;
+                if (type == List.class) {
+                    String[] values = request.getParameterValues(name);
+
+                    List<Object> list;
+                    if (values != null) {
+                        ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                        Type elementType = parameterizedType.getActualTypeArguments()[0];
+
+                        int n = values.length;
+
+                        list = new ArrayList<>(n);
+
+                        for (int j = 0; j < n; j++) {
+                            list.add(coerce(values[j], elementType));
+                        }
+                    } else {
+                        list = Collections.EMPTY_LIST;
+                    }
+
+                    argument = list;
+                } else {
+                    argument = coerce(request.getParameter(name), type);
+                }
+
+                arguments[i] = argument;
+            }
+
+            // Execute method
+            WebService service;
+            try {
+                service = (WebService)serviceType.newInstance();
+            } catch (IllegalAccessException | InstantiationException exception) {
+                throw new ServletException(exception);
+            }
+
+            service.setLocale(request.getLocale());
+
+            Principal userPrincipal = request.getUserPrincipal();
+
+            if (userPrincipal != null) {
+                service.setUserName(userPrincipal.getName());
+                service.setUserRoles(new UserRoleSet(request));
+            }
+
+            Object result;
+            try {
+                result = method.invoke(service, arguments);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                throw new ServletException(exception);
+            }
+
+            // Write response
+            Class<?> returnType = method.getReturnType();
+
+            if (returnType != Void.TYPE && returnType != Void.class) {
+                response.setContentType(JSON_MIME_TYPE);
+
+                writeValue(response.getWriter(), result);
+            }
+        }
+    }
+
+    private static String getDescriptorType(Class<?> type) {
+        String descriptorType;
+        if (type == String.class) {
+            descriptorType = STRING_TYPE;
+        } else if (type == Byte.TYPE
+            || type == Short.TYPE
+            || type == Integer.TYPE
+            || type == Float.TYPE
+            || type == Double.TYPE
+            || Number.class.isAssignableFrom(type)) {
+            descriptorType = NUMBER_TYPE;
+        } else if (type == Boolean.TYPE || type == Boolean.class) {
+            descriptorType = BOOLEAN_TYPE;
+        } else if (List.class.isAssignableFrom(type)) {
+            descriptorType = ARRAY_TYPE;
+        } else if (Map.class.isAssignableFrom(type)) {
+            descriptorType = OBJECT_TYPE;
+        } else if (type == Void.TYPE || type == Void.class) {
+            descriptorType = null;
+        } else {
+            descriptorType = UNSUPPORTED_TYPE;
         }
 
-        // Execute method
-        WebService service;
-        try {
-            service = (WebService)serviceType.newInstance();
-        } catch (IllegalAccessException | InstantiationException exception) {
-            throw new ServletException(exception);
-        }
-
-        service.setLocale(request.getLocale());
-
-        Principal userPrincipal = request.getUserPrincipal();
-
-        if (userPrincipal != null) {
-            service.setUserName(userPrincipal.getName());
-            service.setUserRoles(new UserRoleSet(request));
-        }
-
-        Object result;
-        try {
-            result = method.invoke(service, arguments);
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            throw new ServletException(exception);
-        }
-
-        // Write response
-        Class<?> returnType = method.getReturnType();
-
-        if (returnType != Void.TYPE && returnType != Void.class) {
-            response.setContentType(JSON_MIME_TYPE);
-
-            writeValue(response.getWriter(), result);
-        }
+        return descriptorType;
     }
 
     private static Object coerce(String value, Type type) throws ServletException {
