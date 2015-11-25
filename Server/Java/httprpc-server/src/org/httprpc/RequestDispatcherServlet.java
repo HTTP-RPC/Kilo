@@ -71,8 +71,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private HashMap<String, Method> methods = new HashMap<>();
 
-    @Deprecated
-    public static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
+    private static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
 
     @Override
     public void init() throws ServletException {
@@ -93,7 +92,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (WebService.class.isAssignableFrom(method.getDeclaringClass())) {
+            if (serviceType.isAssignableFrom(method.getDeclaringClass())) {
                 this.methods.put(method.getName(), method);
             }
         }

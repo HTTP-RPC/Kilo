@@ -22,32 +22,8 @@ import java.util.Set;
  */
 public abstract class WebService {
     private Locale locale = null;
-
     private String userName = null;
     private Set<String> userRoles = null;
-
-    /**
-     * Initializes the service with information about the current request.
-     *
-     * @param locale
-     * The locale associated with the current request.
-     *
-     * @param userName
-     * The user name associated with the current request, or <tt>null</tt> if
-     * the request has not been authenticated.
-     *
-     * @see #setLocale(Locale)
-     * @see #setUserName(String)
-     */
-    @Deprecated
-    protected void initialize(Locale locale, String userName) {
-        if (locale == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.locale = locale;
-        this.userName = userName;
-    }
 
     /**
      * Returns the locale associated with the current request.
@@ -55,7 +31,7 @@ public abstract class WebService {
      * @return
      * The locale associated with the current request.
      */
-    protected Locale getLocale() {
+    public Locale getLocale() {
         return locale;
     }
 
@@ -76,7 +52,7 @@ public abstract class WebService {
      * The user name associated with the current request, or <tt>null</tt> if
      * the user has not been authenticated.
      */
-    protected String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
@@ -97,7 +73,7 @@ public abstract class WebService {
      * @return
      * A set representing the roles the user belongs to.
      */
-    protected Set<String> getUserRoles() {
+    public Set<String> getUserRoles() {
         return userRoles;
     }
 

@@ -61,7 +61,7 @@ Methods must return a numeric or boolean primitive type, one of the following re
 For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as a forward-scrolling, auto-closeable list of map values. Closing the list also closes the underlying result set, ensuring that database resources are not leaked. `ResultSetAdapter` is discussed in more detail later.
 
 ### Request Metadata
-`WebService` provides the following protected methods that allow an extending class to obtain additional information about the current request:
+`WebService` provides the following methods that allow an extending class to obtain additional information about the current request:
 
 * `getLocale()` - returns the locale associated with the current request
 * `getUserName()` - returns the user name associated with the current request, or `null` if the request was not authenticated
