@@ -14,9 +14,11 @@
 
 package org.httprpc.test;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +26,7 @@ import java.util.Map;
 
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
 /**
@@ -92,14 +95,23 @@ public class TestService extends WebService {
         return new BeanAdapter(statistics);
     }
 
-    public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException {
+    public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
         String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));
 
-        Statement statement = DriverManager.getConnection(url).createStatement();
+        String sql = "select * from test where a=:a or b=:b or c=coalesce(:c, 4.0)";
 
-        return new ResultSetAdapter(statement.executeQuery("select * from test"));
+        Parameters parameters = Parameters.parse(new StringReader(sql));
+
+        PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
+
+        parameters.getArguments().put("a", "hello");
+        parameters.getArguments().put("b", 3);
+
+        parameters.apply(statement);
+
+        return new ResultSetAdapter(statement.executeQuery());
     }
 
     public void getVoid() {

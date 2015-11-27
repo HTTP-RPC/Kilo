@@ -109,7 +109,7 @@ public class Parameters {
                 StringBuilder keyBuilder = new StringBuilder();
 
                 while (c != EOF && Character.isJavaIdentifierPart(c)) {
-                    keyBuilder.append(c);
+                    keyBuilder.append((char)c);
 
                     c = sqlReader.read();
                 }
@@ -118,7 +118,7 @@ public class Parameters {
 
                 sqlBuilder.append("?");
             } else {
-                sqlBuilder.append(c);
+                sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
             }
