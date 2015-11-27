@@ -211,7 +211,7 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
 Since the data is written directly to the output stream as it is read from the result set, no intermediate objects are created, significantly reducing the application's memory footprint.
 
 ## Parameters Class
-The `Parameters` class provides a means for executing prepared statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character, similar to [JPA](http://jcp.org/en/jsr/detail?id=317) named parameter syntax. For example:
+The `Parameters` class provides a means for executing prepared statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 
     SELECT * FROM some_table 
     WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
@@ -220,7 +220,7 @@ The `parse()` method is used to create a `Parameters` instance from a SQL statem
 
     Parameters parameters = Parameters.parse(new StringReader(sql));
 
-The `getSQL()` method of the `Parameters` class returns the parsed SQL in standard JDBC syntax:
+The `getSQL()` method of the `Parameters` class returns the parsed SQL in standard JDBC syntax; for example:
 
     SELECT * FROM some_table 
     WHERE column_a = ? OR column_b = ? OR column_c = COALESCE(?, 4.0)
