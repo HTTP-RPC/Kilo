@@ -34,6 +34,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
     * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable to serialization to JSON
 * _`org.httprpc.sql`_
     * `ResultSetAdapter` - wrapper class that presents the contents of a JDBC result set as an iterable list, suitable for streaming to JSON
+    * `Parameters` - class for simplifying execution of prepared statements
 
 Each of these classes is discussed in more detail below. 
 
@@ -208,6 +209,36 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
     }
 
 Since the data is written directly to the output stream as it is read from the result set, no intermediate objects are created, significantly reducing the application's memory footprint.
+
+## Parameters
+The `Parameters` class provides a means for executing prepared statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character, similar to [JPA](http://jcp.org/en/jsr/detail?id=317) named parameter syntax. For example:
+
+    SELECT * FROM some_table 
+    WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
+    
+The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a `java.io.Reader` containing the SQL text as an argument:
+
+    Parameters parameters = Parameters.parse(new StringReader(sql));
+
+The `getSQL()` method of the `Parameters` class returns the parsed SQL in standard JDBC syntax:
+
+    SELECT * FROM some_table 
+    WHERE column_a = ? OR column_b = ? OR column_c = COALESCE(?, 4.0)
+
+This value is used to create the actual prepared statement:
+
+    PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
+
+Arguments are specified via the arguments map and are applied via the `apply()` method:
+
+    parameters.getArguments().put("a", "hello");
+    parameters.getArguments().put("b", 3);
+
+    parameters.apply(statement);
+
+Once applied, the statement can be executed:
+
+    return new ResultSetAdapter(statement.executeQuery());    
 
 # Java Client
 The Java client implementation of HTTP-RPC enables Java-based applications to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
