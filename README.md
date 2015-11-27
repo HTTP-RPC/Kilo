@@ -210,7 +210,7 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
 
 Since the data is written directly to the output stream as it is read from the result set, no intermediate objects are created, significantly reducing the application's memory footprint.
 
-## Parameters
+## Parameters Class
 The `Parameters` class provides a means for executing prepared statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character, similar to [JPA](http://jcp.org/en/jsr/detail?id=317) named parameter syntax. For example:
 
     SELECT * FROM some_table 
