@@ -35,6 +35,7 @@
             
             <classes dir="${bin}"/>
             <classes dir="${src}" includes="**/*.db"/>
+            <classes dir="${src}" includes="**/*.properties"/>
             
             <lib dir="../httprpc-server" includes="*.jar"/>
             <lib dir="${lib}" includes="*.jar"/>

@@ -16,6 +16,7 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -32,6 +33,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -52,9 +55,11 @@ public class RequestDispatcherServlet extends HttpServlet {
      */
     public static final class MethodDescriptor {
         private Method method;
+        private ResourceBundle resourceBundle;
 
-        private MethodDescriptor(Method method) {
+        private MethodDescriptor(Method method, ResourceBundle resourceBundle) {
             this.method = method;
+            this.resourceBundle = resourceBundle;
         }
 
         /**
@@ -68,13 +73,33 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         /**
+         * Returns the method's description.
+         *
+         * @return
+         * A localized description of the method.
+         */
+        public String getDescription() {
+            String description = null;
+
+            if (resourceBundle != null) {
+                try {
+                    description = resourceBundle.getString(method.getName());
+                } catch (MissingResourceException exception) {
+                    // No-op
+                }
+            }
+
+            return description;
+        }
+
+        /**
          * Returns the method's parameters.
          *
          * @return
          * A list of the method's parameters.
          */
         public List<Object> getParameters() {
-            return new ParameterDescriptorList(method.getParameters());
+            return new ParameterDescriptorList(method.getParameters(), resourceBundle);
         }
 
         /**
@@ -94,14 +119,16 @@ public class RequestDispatcherServlet extends HttpServlet {
      */
     public static final class ParameterDescriptorList extends AbstractList<Object> {
         private Parameter[] parameters;
+        private ResourceBundle resourceBundle;
 
-        private ParameterDescriptorList(Parameter[] parameters) {
+        private ParameterDescriptorList(Parameter[] parameters, ResourceBundle resourceBundle) {
             this.parameters = parameters;
+            this.resourceBundle = resourceBundle;
         }
 
         @Override
         public Object get(int index) {
-            return new BeanAdapter(new ParameterDescriptor(parameters[index]));
+            return new BeanAdapter(new ParameterDescriptor(parameters[index], resourceBundle));
         }
 
         @Override
@@ -115,9 +142,11 @@ public class RequestDispatcherServlet extends HttpServlet {
      */
     public static final class ParameterDescriptor {
         private Parameter parameter;
+        private ResourceBundle resourceBundle;
 
-        private ParameterDescriptor(Parameter parameter) {
+        private ParameterDescriptor(Parameter parameter, ResourceBundle resourceBundle) {
             this.parameter = parameter;
+            this.resourceBundle = resourceBundle;
         }
 
         /**
@@ -128,6 +157,28 @@ public class RequestDispatcherServlet extends HttpServlet {
          */
         public String getName() {
             return parameter.getName();
+        }
+
+        /**
+         * Returns the parameters's description.
+         *
+         * @return
+         * A localized description of the parameters.
+         */
+        public String getDescription() {
+            String description = null;
+
+            if (resourceBundle != null) {
+                Executable method = parameter.getDeclaringExecutable();
+
+                try {
+                    description = resourceBundle.getString(method.getName() + "_" + parameter.getName());
+                } catch (MissingResourceException exception) {
+                    // No-op
+                }
+            }
+
+            return description;
         }
 
         /**
@@ -217,10 +268,18 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         if (pathInfo == null) {
             // Write method descriptor list
+            ResourceBundle resourceBundle = null;
+
+            try {
+                resourceBundle = ResourceBundle.getBundle(serviceType.getName());
+            } catch (MissingResourceException exception) {
+                // No-op
+            }
+
             LinkedList<Object> methodDescriptorList = new LinkedList<>();
 
             for (Method method : methodMap.values()) {
-                methodDescriptorList.add(new BeanAdapter(new MethodDescriptor(method)));
+                methodDescriptorList.add(new BeanAdapter(new MethodDescriptor(method, resourceBundle)));
             }
 
             writeValue(response.getWriter(), methodDescriptorList);
