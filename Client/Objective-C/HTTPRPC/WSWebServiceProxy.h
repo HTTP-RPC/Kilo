@@ -14,6 +14,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * HTTP-RPC web service error domain.
  */
@@ -60,7 +62,7 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName resultHandler:(void (^)(id, NSError *))resultHandler;
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
  * Invokes an HTTP-RPC service method.
@@ -71,6 +73,8 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments resultHandler:(void (^)(id, NSError *))resultHandler;
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end
+
+NS_ASSUME_NONNULL_END
