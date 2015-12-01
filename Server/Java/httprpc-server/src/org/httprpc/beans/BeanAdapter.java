@@ -16,6 +16,7 @@ package org.httprpc.beans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.HashMap;
@@ -28,6 +29,80 @@ import java.util.Set;
  * Exposes the properties of a Java Bean object as a map.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
+    // List adapter
+    private static class ListAdapter extends AbstractList<Object> {
+        private List<Object> list;
+
+        public ListAdapter(List<Object> list) {
+            this.list = list;
+        }
+
+        @Override
+        public Object get(int index) {
+            return adapt(list.get(index));
+        }
+
+        @Override
+        public int size() {
+            return list.size();
+        }
+    }
+
+    // Map adapter
+    private static class MapAdapter extends AbstractMap<Object, Object> {
+        private Map<Object, Object> map;
+
+        private Set<Entry<Object, Object>> entrySet = new AbstractSet<Entry<Object, Object>>() {
+            @Override
+            public int size() {
+                return map.size();
+            }
+
+            @Override
+            public Iterator<Entry<Object, Object>> iterator() {
+                return new Iterator<Entry<Object, Object>>() {
+                    private Iterator<Entry<Object, Object>> iterator = map.entrySet().iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public Entry<Object, Object> next() {
+                        return new Entry<Object, Object>() {
+                            private Entry<Object, Object> entry = iterator.next();
+
+                            @Override
+                            public Object getKey() {
+                                return entry.getKey();
+                            }
+
+                            @Override
+                            public Object getValue() {
+                                return adapt(entry.getValue());
+                            }
+
+                            @Override
+                            public Object setValue(Object value) {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+                };
+            }
+        };
+
+        public MapAdapter(Map<Object, Object> map) {
+            this.map = map;
+        }
+
+        @Override
+        public Set<Entry<Object, Object>> entrySet() {
+            return entrySet;
+        }
+    }
+
     private Object bean;
 
     private HashMap<String, Method> accessors = new HashMap<>();
@@ -127,20 +202,45 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new RuntimeException(exception);
         }
 
-        if (value != null
-            && !(value instanceof String)
-            && !(value instanceof Number)
-            && !(value instanceof Boolean)
-            && !(value instanceof List<?>)
-            && !(value instanceof Map<?, ?>)) {
-            value = new BeanAdapter(value);
-        }
-
-        return value;
+        return adapt(value);
     }
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
         return entrySet;
+    }
+
+    /**
+     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
+     * the following types, it is returned as-is:
+     * <ul>
+     * <li>{@link String}</li>
+     * <li>{@link Number}</li>
+     * <li>{@link Boolean}</li>
+     * </ul>
+     * If the value is a {@link List}, it is wrapped in an adapter that will
+     * adapt the list's elements. If the value is a {@link Map}, it is wrapped
+     * in an adapter that will adapt the map's values. Otherwise, the value is
+     * considered a nested Bean and is wrapped in a Bean adapter.
+     *
+     * @param value
+     * The value to adapt.
+     *
+     * @return
+     * The adapted value.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T adapt(Object value) {
+        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
+            if (value instanceof List<?>) {
+                value = new ListAdapter((List<Object>)value);
+            } else if (value instanceof Map<?, ?>) {
+                value = new MapAdapter((Map<Object, Object>)value);
+            } else {
+                value = new BeanAdapter(value);
+            }
+        }
+
+        return (T)value;
     }
 }
