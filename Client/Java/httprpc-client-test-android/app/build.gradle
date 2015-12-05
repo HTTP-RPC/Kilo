@@ -22,6 +22,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.0.0'
-    compile files('libs/httprpc-client-2.0.jar')
-    compile files('libs/httprpc-client-2.1.jar')
+    compile files('libs/httprpc-client-2.2.jar')
 }
