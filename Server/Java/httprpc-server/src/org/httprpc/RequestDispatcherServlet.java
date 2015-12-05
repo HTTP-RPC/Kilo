@@ -282,7 +282,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 methodDescriptorList.add(new BeanAdapter(new MethodDescriptor(method, resourceBundle)));
             }
 
-            writeValue(response.getWriter(), methodDescriptorList);
+            writeValue(response.getWriter(), methodDescriptorList, 0);
         } else {
             // Look up service method
             Method method = methodMap.get(pathInfo.substring(1));
@@ -360,7 +360,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType != Void.TYPE && returnType != Void.class) {
                 response.setContentType(JSON_MIME_TYPE);
 
-                writeValue(response.getWriter(), result);
+                writeValue(response.getWriter(), result, 0);
             }
         }
     }
@@ -420,13 +420,13 @@ public class RequestDispatcherServlet extends HttpServlet {
         return argument;
     }
 
-    private static void writeValue(Writer writer, Object value) throws IOException {
+    private static void writeValue(Writer writer, Object value, int depth) throws IOException {
         if (value == null) {
             writer.append(null);
         } else if (value instanceof String) {
             String string = (String)value;
 
-            writer.append('"');
+            writer.append("\"");
 
             for (int i = 0, n = string.length(); i < n; i++) {
                 char c = string.charAt(i);
@@ -470,7 +470,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
             }
 
-            writer.append('"');
+            writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
         } else {
@@ -478,32 +478,48 @@ public class RequestDispatcherServlet extends HttpServlet {
                 if (value instanceof List<?>) {
                     List<?> list = (List<?>)value;
 
-                    writer.append('[');
+                    writer.append("[");
+
+                    depth++;
 
                     int i = 0;
 
                     for (Object element : list) {
                         if (i > 0) {
-                            writer.append(',');
+                            writer.append(",");
                         }
 
-                        writeValue(writer, element);
+                        writer.append("\n");
+
+                        indent(writer, depth);
+
+                        writeValue(writer, element, depth);
 
                         i++;
                     }
 
-                    writer.append(']');
+                    depth--;
+
+                    writer.append("\n");
+
+                    indent(writer, depth);
+
+                    writer.append("]");
                 } else if (value instanceof Map<?, ?>) {
                     Map<?, ?> map = (Map<?, ?>)value;
 
                     writer.append("{");
 
+                    depth++;
+
                     int i = 0;
 
                     for (Map.Entry<?, ?> entry : map.entrySet()) {
                         if (i > 0) {
-                            writer.append(',');
+                            writer.append(",");
                         }
+
+                        writer.append("\n");
 
                         Object key = entry.getKey();
 
@@ -511,14 +527,20 @@ public class RequestDispatcherServlet extends HttpServlet {
                             throw new IOException("Invalid key type.");
                         }
 
-                        writeValue(writer, key);
+                        indent(writer, depth);
 
-                        writer.append(':');
+                        writer.append("\"" + key + "\": ");
 
-                        writeValue(writer, entry.getValue());
+                        writeValue(writer, entry.getValue(), depth);
 
                         i++;
                     }
+
+                    depth--;
+
+                    writer.append("\n");
+
+                    indent(writer, depth);
 
                     writer.append("}");
                 } else {
@@ -533,6 +555,12 @@ public class RequestDispatcherServlet extends HttpServlet {
                     }
                 }
             }
+        }
+    }
+
+    private static void indent(Writer writer, int depth) throws IOException {
+        for (int i = 0; i < depth; i++) {
+            writer.append("  ");
         }
     }
 }
