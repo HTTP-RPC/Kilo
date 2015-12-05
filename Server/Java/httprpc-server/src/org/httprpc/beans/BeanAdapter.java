@@ -223,6 +223,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * in an adapter that will adapt the map's values. Otherwise, the value is
      * considered a nested Bean and is wrapped in a Bean adapter.
      *
+     * @param <T> The expected type of the adapted value.
+     *
      * @param value
      * The value to adapt.
      *

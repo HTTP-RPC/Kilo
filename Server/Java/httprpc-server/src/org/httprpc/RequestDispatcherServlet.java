@@ -98,7 +98,7 @@ public class RequestDispatcherServlet extends HttpServlet {
          * @return
          * A list of the method's parameters.
          */
-        public List<Object> getParameters() {
+        public ParameterDescriptorList getParameters() {
             return new ParameterDescriptorList(method.getParameters(), resourceBundle);
         }
 
@@ -117,7 +117,7 @@ public class RequestDispatcherServlet extends HttpServlet {
     /**
      * Parameter descriptor list.
      */
-    public static final class ParameterDescriptorList extends AbstractList<Object> {
+    public static final class ParameterDescriptorList extends AbstractList<ParameterDescriptor> {
         private Parameter[] parameters;
         private ResourceBundle resourceBundle;
 
@@ -127,8 +127,8 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         @Override
-        public Object get(int index) {
-            return new BeanAdapter(new ParameterDescriptor(parameters[index], resourceBundle));
+        public ParameterDescriptor get(int index) {
+            return new ParameterDescriptor(parameters[index], resourceBundle);
         }
 
         @Override
@@ -276,13 +276,13 @@ public class RequestDispatcherServlet extends HttpServlet {
                 // No-op
             }
 
-            LinkedList<Object> methodDescriptorList = new LinkedList<>();
+            LinkedList<MethodDescriptor> methodDescriptorList = new LinkedList<>();
 
             for (Method method : methodMap.values()) {
-                methodDescriptorList.add(new BeanAdapter(new MethodDescriptor(method, resourceBundle)));
+                methodDescriptorList.add(new MethodDescriptor(method, resourceBundle));
             }
 
-            writeValue(response.getWriter(), methodDescriptorList, 0);
+            writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptorList), 0);
         } else {
             // Look up service method
             Method method = methodMap.get(pathInfo.substring(1));
