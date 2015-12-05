@@ -271,7 +271,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             ResourceBundle resourceBundle = null;
 
             try {
-                resourceBundle = ResourceBundle.getBundle(serviceType.getName());
+                resourceBundle = ResourceBundle.getBundle(serviceType.getName(), request.getLocale());
             } catch (MissingResourceException exception) {
                 // No-op
             }

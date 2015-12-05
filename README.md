@@ -21,6 +21,63 @@ Return values may be any JSON type, including string, number, boolean (true/fals
 
 An HTTP 200 is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
+Services may return a optional JSON descriptor that documents the methods provided by the service. If supported, a GET request for the base service URL should produce a response of the following form:
+
+    [
+      {
+        "name": "<method name>",
+        "description": "<method description>",
+        "returns": ("string" | "number" | "boolean" | "array" | "object" | null),
+        "parameters": [
+          {
+            "name": "<parameter name>",
+            "description": "<parameter description>",
+            "type": ("string" | "number" | "boolean" | "array")
+          },
+          ...
+        ]
+      },
+      ...
+    ]
+
+For example, a GET for the following URL:
+
+    http://example.com/rpc/math
+
+might produce a response similar to the following:
+
+    [
+      {
+        "name": "add",
+        "description": "Returns the sum of two numbers.",
+        "returns": "number",
+        "parameters": [
+          {
+            "name": "a",
+            "description": "The first number.",
+            "type": "number"
+          },
+          {
+            "name": "b",
+            "description": "The second number.",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "addValues",
+        "description": "Returns the sum of a list of values.",
+        "returns": "number",
+        "parameters": [
+          {
+            "name": "values",
+            "description": "The values to add.",
+            "type": "array"
+          }
+        ]
+      }
+    ]
+    
 ## Implementations
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
 
@@ -131,6 +188,23 @@ A new service instance is created and initialized for each request. `RequestDisp
 The servlet returns an HTTP 200 status code on successful method completion. If any exception is thrown, HTTP 500 is returned.
 
 Servlet security is provided by the underlying servlet container. See the Java EE documentation for more information.
+
+### Service Descriptors
+`RequestDispatcherServlet` will automatically generate a service descriptor document in response to a GET on the service root URL. Localized descriptions for service methods and parameter descriptions can be specified via resource bundles. The resource bundles must have the same name as the service and must be formatted as follows:
+
+    method: <method description>
+    method_parameter1: <parameter 1 description>
+    method_parameter2: <parameter 2 description>
+    ...
+
+For example, localized descriptions for `MathService`'s `add()` and `addValues()` methods might be specified in a file named _MathService.properties_ as follows:
+
+    add: Returns the sum of two numbers.
+    add_a: The first number.
+    add_b: The second number.
+    
+    addValues: Returns the sum of a list of values.
+    addValues_values: The values to add.
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON. Nested Bean properties are supported.
