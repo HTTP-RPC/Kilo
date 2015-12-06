@@ -21,7 +21,7 @@ Return values may be any JSON type, including string, number, boolean (true/fals
 
 An HTTP 200 is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
-Services may return a optional JSON descriptor that documents the methods provided by the service. If supported, a GET request for the base service URL should produce a response of the following form:
+Services may return a optional JSON descriptor that documents the methods provided by the service. If supported, the descriptor should be of the following form, and should be returned by a GET request for the base service URL:
 
     [
       {
@@ -40,11 +40,7 @@ Services may return a optional JSON descriptor that documents the methods provid
       ...
     ]
 
-For example, a GET for the following URL:
-
-    http://example.com/rpc/math
-
-might produce a response similar to the following:
+For example, a descriptor for the hypothetical math service might look something like this:
 
     [
       {
@@ -77,6 +73,10 @@ might produce a response similar to the following:
         ]
       }
     ]
+    
+and could be obtained by a request for the following URL:
+
+    http://example.com/rpc/math
     
 ## Implementations
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
