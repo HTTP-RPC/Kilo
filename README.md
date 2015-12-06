@@ -81,6 +81,8 @@ might produce a response similar to the following:
 ## Implementations
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
 
+For examples and additional information, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+
 # Java Server
 The Java server implementation of HTTP-RPC allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following classes:
 
