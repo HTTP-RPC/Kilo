@@ -1,13 +1,17 @@
-export FRAMEWORK=HTTPRPC
+FRAMEWORK=HTTPRPC
 
-rm -Rf build
-rm $FRAMEWORK.framework.tar.gz
+BUILD=build
+FRAMEWORK_PATH=$FRAMEWORK.framework
 
-xcodebuild -project $FRAMEWORK.xcodeproj -sdk iphonesimulator -target $FRAMEWORK
-xcodebuild -project $FRAMEWORK.xcodeproj -sdk iphoneos -target $FRAMEWORK 
+rm -Rf $BUILD
+rm $FRAMEWORK_PATH.tar.gz
 
-lipo build/Release-iphonesimulator/$FRAMEWORK.framework/$FRAMEWORK build/Release-iphoneos/$FRAMEWORK.framework/$FRAMEWORK -create -output $FRAMEWORK.lipo
+xcodebuild archive -project $FRAMEWORK.xcodeproj -scheme $FRAMEWORK -sdk iphoneos SYMROOT=$BUILD
+xcodebuild build -project $FRAMEWORK.xcodeproj -target $FRAMEWORK -sdk iphonesimulator SYMROOT=$BUILD
 
-mv $FRAMEWORK.lipo build/Release-iphoneos/$FRAMEWORK.framework/$FRAMEWORK
+cp -RL $BUILD/Release-iphoneos $BUILD/Release-universal
 
-tar -czv -C build/Release-iphoneos -f $FRAMEWORK.framework.tar.gz $FRAMEWORK.framework
+lipo -create $BUILD/Release-iphoneos/$FRAMEWORK_PATH/$FRAMEWORK $BUILD/Release-iphonesimulator/$FRAMEWORK_PATH/$FRAMEWORK -output $BUILD/Release-universal/$FRAMEWORK_PATH/$FRAMEWORK
+
+tar -czv -C $BUILD/Release-universal -f $FRAMEWORK.framework.tar.gz $FRAMEWORK_PATH
+
