@@ -497,7 +497,7 @@ Note that, in Java 8 or later, lambda expressions can be used instead of anonymo
 # Objective-C/Swift Client
 The Objective-C/Swift client implementation of HTTP-RPC enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that defines a single `WSWebServiceProxy` class, which is discussed in more detail below. 
 
-The framework for the Objective-C/Swift client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). iOS 8 or later is required.
+The framework for the Objective-C/Swift client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
 
 ## WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests, which are submitted via HTTP POST. It uses the `NSJSONSerialization` class to deserialize response content.
