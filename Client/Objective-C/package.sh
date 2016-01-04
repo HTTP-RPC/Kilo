@@ -4,7 +4,7 @@ BUILD=build
 FRAMEWORK_PATH=$FRAMEWORK.framework
 
 rm -Rf $BUILD
-rm $FRAMEWORK_PATH.tar.gz
+rm -f $FRAMEWORK_PATH.tar.gz
 
 xcodebuild archive -project $FRAMEWORK.xcodeproj -scheme $FRAMEWORK -sdk iphoneos SYMROOT=$BUILD
 xcodebuild build -project $FRAMEWORK.xcodeproj -target $FRAMEWORK -sdk iphonesimulator SYMROOT=$BUILD
