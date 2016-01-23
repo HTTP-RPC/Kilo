@@ -142,7 +142,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws SQLException {
         Statement statement = resultSet.getStatement();
 
         try {
