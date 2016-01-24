@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -28,8 +29,6 @@ import java.util.Map;
 public class Parameters {
     private String sql;
     private LinkedList<String> keys;
-
-    private HashMap<String, Object> arguments = new HashMap<>();
 
     private static final int EOF = -1;
 
@@ -49,26 +48,18 @@ public class Parameters {
     }
 
     /**
-     * Returns the argument map.
-     *
-     * @return
-     * A map containing the parameter values that will be applied to a prepared
-     * statement by the {@link #apply(PreparedStatement)} method.
-     */
-    public Map<String, Object> getArguments() {
-        return arguments;
-    }
-
-    /**
-     * Applies the argument values to a prepared statement.
+     * Applies a set of argument values to a prepared statement.
      *
      * @param statement
      * The prepared statement.
      *
+     * @param arguments
+     * The argument values that will be applied to the prepared statement.
+     *
      * @throws SQLException
      * If an exception occurs while applying the argument values.
      */
-    public void apply(PreparedStatement statement) throws SQLException {
+    public void apply(PreparedStatement statement, Map<String, Object> arguments) throws SQLException {
         int i = 1;
 
         for (String key : keys) {
@@ -125,5 +116,56 @@ public class Parameters {
         }
 
         return new Parameters(sqlBuilder.toString(), keys);
+    }
+
+    /**
+     * Creates a map from a list of entries.
+     *
+     * @param entries
+     * The entries from which the map will be created.
+     *
+     * @return
+     * A map containing the given entries.
+     */
+    @SafeVarargs
+    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) {
+        HashMap<String, Object> map = new HashMap<>();
+
+        for (Map.Entry<String, Object> entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Creates a map entry.
+     *
+     * @param key
+     * The entry's key.
+     *
+     * @param value
+     * The entry's value.
+     *
+     * @return
+     * The map entry.
+     */
+    public static Map.Entry<String, Object> entry(final String key, final Object value) {
+        return new Map.Entry<String, Object>() {
+            @Override
+            public String getKey() {
+                return key;
+            }
+
+            @Override
+            public Object getValue() {
+                return value;
+            }
+
+            @Override
+            public Object setValue(Object value) {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }

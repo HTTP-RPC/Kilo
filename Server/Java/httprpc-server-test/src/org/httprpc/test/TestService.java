@@ -29,6 +29,9 @@ import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
+import static org.httprpc.sql.Parameters.mapOf;
+import static org.httprpc.sql.Parameters.entry;
+
 /**
  * Test service.
  */
@@ -103,13 +106,9 @@ public class TestService extends WebService {
         String sql = "select * from test where a=:a or b=:b or c=coalesce(:c, 4.0)";
 
         Parameters parameters = Parameters.parse(new StringReader(sql));
-
         PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
 
-        parameters.getArguments().put("a", "hello");
-        parameters.getArguments().put("b", 3);
-
-        parameters.apply(statement);
+        parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
 
         return new ResultSetAdapter(statement.executeQuery());
     }

@@ -305,12 +305,22 @@ This value is used to create the actual prepared statement:
 
     PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
 
-Arguments are specified via the arguments map and are applied via the `apply()` method:
+Parameter values are applied to the statement using the `apply()` method. The first argument to this method is the prepared statement, and the second is a map containing the statement arguments:
 
-    parameters.getArguments().put("a", "hello");
-    parameters.getArguments().put("b", 3);
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("a", "hello");
+    arguments.put("b", 3);
+    
+    parameters.apply(statement, arguments);
 
-    parameters.apply(statement);
+Since explicit creation and population of the argument map can be cumbersome, the `Parameters` class provides the following static convenience methods to help simplify map creation:
+
+    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) { ... }
+    public static Map.Entry<String, Object> entry(final String key, final Object value) { ... }
+    
+Using the convenience methods, the code that applies the parameter values can be reduced to the following:
+
+    parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
 
 Once applied, the statement can be executed:
 
@@ -371,20 +381,20 @@ Both variants of the `invoke()` method return an instance of `java.util.concurre
 Request security is provided by the underlying URL connection. See the `HttpURLConnection` documentation for more information.
 
 ### Argument Map Creation
-Since the Java programming language does not currently include support for map literals, populating the argument map can sometimes be cumbersome. For example, the following code might be used to create a map of arguments to pass to the service's `add()` method:
-
-    HashMap<String, Object> addArguments = new HashMap<>();
-    addArguments.put("a", 2);
-    addArguments.put("b", 4);
-
-`WebServiceProxy` provides the following static convenience methods to help simplify map creation:
+Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
     public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) { ... }
     public static Map.Entry<String, Object> entry(final String key, final Object value) { ... }
     
-Using the convenience methods, the code that creates the argument map can be reduced to the following:
+Using these convenience methods, argument map creation can be reduced from this:
 
-    mapOf(entry("a", 2), entry("b", 4))
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("a", 2);
+    arguments.put("b", 4);
+    
+to this:
+
+    Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
 
 ### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
