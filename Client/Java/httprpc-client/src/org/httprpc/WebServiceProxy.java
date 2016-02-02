@@ -27,9 +27,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -570,6 +572,9 @@ public class WebServiceProxy {
     /**
      * Creates a map from a list of entries.
      *
+     * @param <K> The type of the key.
+     * @param <V> The type of the value.
+     *
      * @param entries
      * The entries from which the map will be created.
      *
@@ -577,18 +582,21 @@ public class WebServiceProxy {
      * A map containing the given entries.
      */
     @SafeVarargs
-    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) {
-        HashMap<String, Object> map = new HashMap<>();
+    public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
+        LinkedHashMap<K, V> map = new LinkedHashMap<>();
 
-        for (Map.Entry<String, Object> entry : entries) {
+        for (Map.Entry<K, V> entry : entries) {
             map.put(entry.getKey(), entry.getValue());
         }
 
-        return Collections.unmodifiableMap(map);
+        return map;
     }
 
     /**
      * Creates a map entry.
+     *
+     * @param <K> The type of the key.
+     * @param <V> The type of the value.
      *
      * @param key
      * The entry's key.
@@ -599,23 +607,8 @@ public class WebServiceProxy {
      * @return
      * The map entry.
      */
-    public static Map.Entry<String, Object> entry(final String key, final Object value) {
-        return new Map.Entry<String, Object>() {
-            @Override
-            public String getKey() {
-                return key;
-            }
-
-            @Override
-            public Object getValue() {
-                return value;
-            }
-
-            @Override
-            public Object setValue(Object value) {
-                throw new UnsupportedOperationException();
-            }
-        };
+    public static <K, V> Map.Entry<K, V> entry(K key, V value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
     }
 
     /**

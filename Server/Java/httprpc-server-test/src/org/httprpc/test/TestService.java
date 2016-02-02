@@ -29,9 +29,6 @@ import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
-import static org.httprpc.sql.Parameters.mapOf;
-import static org.httprpc.sql.Parameters.entry;
-
 /**
  * Test service.
  */

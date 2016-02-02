@@ -14,7 +14,10 @@
 
 package org.httprpc;
 
+import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -86,5 +89,47 @@ public abstract class WebService {
      */
     protected void setUserRoles(Set<String> roles) {
         this.userRoles = roles;
+    }
+
+    /**
+     * Creates a map from a list of entries.
+     *
+     * @param <K> The type of the key.
+     * @param <V> The type of the value.
+     *
+     * @param entries
+     * The entries from which the map will be created.
+     *
+     * @return
+     * A map containing the given entries.
+     */
+    @SafeVarargs
+    public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
+        LinkedHashMap<K, V> map = new LinkedHashMap<>();
+
+        for (Map.Entry<K, V> entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
+     * Creates a map entry.
+     *
+     * @param <K> The type of the key.
+     * @param <V> The type of the value.
+     *
+     * @param key
+     * The entry's key.
+     *
+     * @param value
+     * The entry's value.
+     *
+     * @return
+     * The map entry.
+     */
+    public static <K, V> Map.Entry<K, V> entry(K key, V value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
     }
 }

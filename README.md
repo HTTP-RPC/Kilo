@@ -313,7 +313,7 @@ Parameter values are applied to the statement using the `apply()` method. The fi
     
     parameters.apply(statement, arguments);
 
-Since explicit creation and population of the argument map can be cumbersome, the `Parameters` class provides the following static convenience methods to help simplify map creation:
+Since explicit creation and population of the argument map can be cumbersome, the `WebService` class provides the following static convenience methods to help simplify map creation:
 
     public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) { ... }
     public static Map.Entry<String, Object> entry(final String key, final Object value) { ... }
