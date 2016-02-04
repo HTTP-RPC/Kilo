@@ -547,6 +547,7 @@ public class WebServiceProxy {
      * A future representing the invocation request.
      */
     public <V> Future<V> invoke(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
+        // TODO Eliminate ResultHandler interface when Android supports Java 8
         if (methodName == null) {
             throw new IllegalArgumentException();
         }
@@ -572,9 +573,6 @@ public class WebServiceProxy {
     /**
      * Creates a map from a list of entries.
      *
-     * @param <K> The type of the key.
-     * @param <V> The type of the value.
-     *
      * @param entries
      * The entries from which the map will be created.
      *
@@ -582,10 +580,11 @@ public class WebServiceProxy {
      * A map containing the given entries.
      */
     @SafeVarargs
-    public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
-        LinkedHashMap<K, V> map = new LinkedHashMap<>();
+    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) {
+        // TODO Use <K, V> when supported by Android
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
-        for (Map.Entry<K, V> entry : entries) {
+        for (Map.Entry<String, Object> entry : entries) {
             map.put(entry.getKey(), entry.getValue());
         }
 
@@ -594,9 +593,6 @@ public class WebServiceProxy {
 
     /**
      * Creates a map entry.
-     *
-     * @param <K> The type of the key.
-     * @param <V> The type of the value.
      *
      * @param key
      * The entry's key.
@@ -607,7 +603,8 @@ public class WebServiceProxy {
      * @return
      * The map entry.
      */
-    public static <K, V> Map.Entry<K, V> entry(K key, V value) {
+    public static Map.Entry<String, Object> entry(String key, Object value) {
+        // TODO Use <K, V> when supported by Android
         return new AbstractMap.SimpleEntry<>(key, value);
     }
 

@@ -15,6 +15,7 @@
 package org.httprpc;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
@@ -420,7 +421,11 @@ public class RequestDispatcherServlet extends HttpServlet {
         return argument;
     }
 
-    private static void writeValue(Writer writer, Object value, int depth) throws IOException {
+    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
+        if (writer.checkError()) {
+            throw new IOException("Error writing to output stream.");
+        }
+
         if (value == null) {
             writer.append(null);
         } else if (value instanceof String) {
