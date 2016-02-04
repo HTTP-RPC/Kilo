@@ -48,7 +48,7 @@ public class WebServiceProxy {
     // Invocation callback
     private static class InvocationCallback<V> implements Callable<V> {
         private URL methodURL;
-        private Map<String, Object> arguments;
+        private Map<String, ?> arguments;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -65,7 +65,7 @@ public class WebServiceProxy {
         private static final String CHARSET_KEY = "charset";
         private static final String UTF_8_ENCODING = "UTF-8";
 
-        public InvocationCallback(URL methodURL, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(URL methodURL, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
             this.methodURL = methodURL;
             this.arguments = arguments;
             this.resultHandler = resultHandler;
@@ -92,7 +92,7 @@ public class WebServiceProxy {
                 // Create request body
                 StringBuilder parameters = new StringBuilder();
 
-                for (Map.Entry<String, Object> entry : arguments.entrySet()) {
+                for (Map.Entry<String, ?> entry : arguments.entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
 
@@ -546,8 +546,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) {
-        // TODO Eliminate ResultHandler interface when Android supports Java 8
+    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
         if (methodName == null) {
             throw new IllegalArgumentException();
         }
@@ -573,6 +572,8 @@ public class WebServiceProxy {
     /**
      * Creates a map from a list of entries.
      *
+     * @param <K> The type of the key.
+     *
      * @param entries
      * The entries from which the map will be created.
      *
@@ -580,11 +581,10 @@ public class WebServiceProxy {
      * A map containing the given entries.
      */
     @SafeVarargs
-    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) {
-        // TODO Use <K, V> when supported by Android
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
+        LinkedHashMap<K, Object> map = new LinkedHashMap<>();
 
-        for (Map.Entry<String, Object> entry : entries) {
+        for (Map.Entry<K, ?> entry : entries) {
             map.put(entry.getKey(), entry.getValue());
         }
 
@@ -593,6 +593,8 @@ public class WebServiceProxy {
 
     /**
      * Creates a map entry.
+     *
+     * @param <K> The type of the key.
      *
      * @param key
      * The entry's key.
@@ -603,8 +605,7 @@ public class WebServiceProxy {
      * @return
      * The map entry.
      */
-    public static Map.Entry<String, Object> entry(String key, Object value) {
-        // TODO Use <K, V> when supported by Android
+    public static <K> Map.Entry<K, ?> entry(K key, Object value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
 

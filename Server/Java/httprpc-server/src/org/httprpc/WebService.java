@@ -95,7 +95,6 @@ public abstract class WebService {
      * Creates a map from a list of entries.
      *
      * @param <K> The type of the key.
-     * @param <V> The type of the value.
      *
      * @param entries
      * The entries from which the map will be created.
@@ -104,10 +103,10 @@ public abstract class WebService {
      * A map containing the given entries.
      */
     @SafeVarargs
-    public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
-        LinkedHashMap<K, V> map = new LinkedHashMap<>();
+    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
+        LinkedHashMap<K, Object> map = new LinkedHashMap<>();
 
-        for (Map.Entry<K, V> entry : entries) {
+        for (Map.Entry<K, ?> entry : entries) {
             map.put(entry.getKey(), entry.getValue());
         }
 
@@ -118,7 +117,6 @@ public abstract class WebService {
      * Creates a map entry.
      *
      * @param <K> The type of the key.
-     * @param <V> The type of the value.
      *
      * @param key
      * The entry's key.
@@ -129,7 +127,7 @@ public abstract class WebService {
      * @return
      * The map entry.
      */
-    public static <K, V> Map.Entry<K, V> entry(K key, V value) {
+    public static <K> Map.Entry<K, ?> entry(K key, Object value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
 }

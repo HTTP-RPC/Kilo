@@ -57,7 +57,7 @@ public class Parameters {
      * @throws SQLException
      * If an exception occurs while applying the argument values.
      */
-    public void apply(PreparedStatement statement, Map<String, Object> arguments) throws SQLException {
+    public void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
         int i = 1;
 
         for (String key : keys) {
