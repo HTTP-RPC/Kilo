@@ -315,8 +315,8 @@ Parameter values are applied to the statement using the `apply()` method. The fi
 
 Since explicit creation and population of the argument map can be cumbersome, the `WebService` class provides the following static convenience methods to help simplify map creation:
 
-    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) { ... }
-    public static Map.Entry<String, Object> entry(final String key, final Object value) { ... }
+    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
+    public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
     
 Using the convenience methods, the code that applies the parameter values can be reduced to the following:
 
@@ -383,8 +383,8 @@ Request security is provided by the underlying URL connection. See the `HttpURLC
 ### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
-    public static Map<String, Object> mapOf(Map.Entry<String, Object>... entries) { ... }
-    public static Map.Entry<String, Object> entry(final String key, final Object value) { ... }
+    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
+    public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
     
 Using these convenience methods, argument map creation can be reduced from this:
 
@@ -395,6 +395,8 @@ Using these convenience methods, argument map creation can be reduced from this:
 to this:
 
     Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
+    
+A complete example using `WebServiceProxy#invoke()` is shown later.
 
 ### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
