@@ -36,13 +36,15 @@ extern NSString * const WSArgumentsKey;
  */
 @interface WSWebServiceProxy : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+
 /**
  * Creates a new HTTP-RPC service proxy.
  * 
  * @param session The URL session the service proxy will use to execute HTTP requests.
  * @param baseURL The base URL of the service.
  */
-- (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL;
+- (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL NS_DESIGNATED_INITIALIZER;
 
 /**
  * The URL session the service proxy uses to execute HTTP requests.
