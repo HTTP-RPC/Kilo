@@ -91,27 +91,22 @@ public class MarkReader extends Reader {
 
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
-        int c = read();
+        int c = 0;
+        int n = 0;
 
-        int n;
-        if (c != EOF) {
-            n = 0;
+        for (int i = off; i < cbuf.length && n < len; i++) {
+            c = read();
 
-            for (int i = off; i < cbuf.length && n < len; i++) {
-                cbuf[i] = (char)c;
-                n++;
-
-                c = read();
-
-                if (c == EOF) {
-                    break;
-                }
+            if (c == EOF) {
+                break;
             }
-        } else {
-            n = EOF;
+
+            cbuf[i] = (char)c;
+
+            n++;
         }
 
-        return n;
+        return (c == EOF && n == 0) ? EOF : n;
     }
 
     @Override

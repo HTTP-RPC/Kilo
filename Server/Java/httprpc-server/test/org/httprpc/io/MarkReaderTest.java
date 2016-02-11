@@ -23,6 +23,7 @@ import org.junit.Test;
 public class MarkReaderTest {
     @Test
     public void testStartMark() throws IOException {
+        // Test placing a mark on the first character
         String text = "abcdefg";
 
         try (MarkReader reader = new MarkReader(new StringReader(text), 3)) {
@@ -44,6 +45,7 @@ public class MarkReaderTest {
 
     @Test
     public void testEndMark() throws IOException {
+        // Test placing a mark on the last character
         String text = "abcdefg";
 
         try (MarkReader reader = new MarkReader(new StringReader(text), 5)) {
@@ -64,6 +66,7 @@ public class MarkReaderTest {
 
     @Test
     public void testSingleMark() throws IOException {
+        // Test placing a single mark mid-stream
         String text = "abcdefg";
 
         int i = 0, n = text.length();
@@ -96,6 +99,7 @@ public class MarkReaderTest {
 
     @Test
     public void testNestedMarks() throws IOException {
+        // Test placing nested marks mid-stream
         String text = "abcdefghijklmnop";
 
         int i = 0, n = text.length();
@@ -143,6 +147,7 @@ public class MarkReaderTest {
 
     @Test
     public void testEmptyReader() throws IOException {
+        // Test handling of an empty source reader
         try (MarkReader reader = new MarkReader(new StringReader(""), 0)) {
             Assert.assertEquals(reader.read(), -1);
         }
@@ -150,6 +155,7 @@ public class MarkReaderTest {
 
     @Test
     public void testSingleCharacterReader() throws IOException {
+        // Test handling of a single-character source reader
         try (MarkReader reader = new MarkReader(new StringReader("a"), 1)) {
             reader.mark(0);
 
@@ -163,6 +169,7 @@ public class MarkReaderTest {
 
     @Test
     public void testReadBuffer1() throws IOException {
+        // Test reading into a buffer
         String text = "abcdefghijklmnop";
 
         int off = 2, len = 8, n = text.length();
@@ -188,6 +195,7 @@ public class MarkReaderTest {
 
     @Test
     public void testReadBuffer2() throws IOException {
+        // Test reading into a buffer past the end of the stream
         String text = "abcdef";
 
         int n = text.length();
