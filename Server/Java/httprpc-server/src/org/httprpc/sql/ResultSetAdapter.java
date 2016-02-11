@@ -27,7 +27,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
- * Exposes the contents of a JDBC result set as an iterable list of maps.
+ * Class that exposes the contents of a JDBC result set as an iterable list of
+ * maps.
  */
 public class ResultSetAdapter extends AbstractList<Map<String, Object>> implements AutoCloseable {
     private ResultSet resultSet;
