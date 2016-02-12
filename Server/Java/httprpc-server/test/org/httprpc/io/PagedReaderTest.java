@@ -20,13 +20,13 @@ import java.io.StringReader;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class MarkReaderTest {
+public class PagedReaderTest {
     @Test
     public void testStartMark() throws IOException {
         // Test placing a mark on the first character
         String text = "abcdefg";
 
-        try (MarkReader reader = new MarkReader(new StringReader(text), 3)) {
+        try (PagedReader reader = new PagedReader(new StringReader(text), 3)) {
             reader.mark(0);
 
             for (int i = 0, n = text.length(); i < n; i++) {
@@ -48,7 +48,7 @@ public class MarkReaderTest {
         // Test placing a mark on the last character
         String text = "abcdefg";
 
-        try (MarkReader reader = new MarkReader(new StringReader(text), 5)) {
+        try (PagedReader reader = new PagedReader(new StringReader(text), 5)) {
             for (int i = 0, n = text.length() - 1; i < n; i++) {
                 reader.read();
             }
@@ -74,7 +74,7 @@ public class MarkReaderTest {
         int j = text.indexOf('b') + 1;
         int k = text.indexOf('e') + 1;
 
-        try (MarkReader reader = new MarkReader(new StringReader(text), 7)) {
+        try (PagedReader reader = new PagedReader(new StringReader(text), 7)) {
             while (i < j) {
                 Assert.assertEquals(reader.read(), text.charAt(i++));
             }
@@ -108,7 +108,7 @@ public class MarkReaderTest {
         int k = text.indexOf('f') + 1;
         int l = text.indexOf('h') + 1;
 
-        try (MarkReader reader = new MarkReader(new StringReader(text), 7)) {
+        try (PagedReader reader = new PagedReader(new StringReader(text), 7)) {
             while (i < j) {
                 Assert.assertEquals(reader.read(), text.charAt(i++));
             }
@@ -148,7 +148,7 @@ public class MarkReaderTest {
     @Test
     public void testEmptyReader() throws IOException {
         // Test handling of an empty source reader
-        try (MarkReader reader = new MarkReader(new StringReader(""), 0)) {
+        try (PagedReader reader = new PagedReader(new StringReader(""), 0)) {
             Assert.assertEquals(reader.read(), -1);
         }
     }
@@ -156,7 +156,7 @@ public class MarkReaderTest {
     @Test
     public void testSingleCharacterReader() throws IOException {
         // Test handling of a single-character source reader
-        try (MarkReader reader = new MarkReader(new StringReader("a"), 1)) {
+        try (PagedReader reader = new PagedReader(new StringReader("a"), 1)) {
             reader.mark(0);
 
             Assert.assertEquals(reader.read(), 'a');
@@ -174,7 +174,7 @@ public class MarkReaderTest {
 
         int off = 2, len = 8, n = text.length();
 
-        try (MarkReader reader = new MarkReader(new StringReader(text), 3)) {
+        try (PagedReader reader = new PagedReader(new StringReader(text), 3)) {
             char[] cbuf = new char[text.length()];
 
             for (int i = 0; i < off; i++) {
@@ -201,7 +201,7 @@ public class MarkReaderTest {
         int n = text.length();
         int off = n / 2;
 
-        try (MarkReader reader = new MarkReader(new StringReader(text), 1)) {
+        try (PagedReader reader = new PagedReader(new StringReader(text), 1)) {
             char[] cbuf = new char[text.length()];
 
             Assert.assertEquals(reader.read(cbuf, 0, off), off);

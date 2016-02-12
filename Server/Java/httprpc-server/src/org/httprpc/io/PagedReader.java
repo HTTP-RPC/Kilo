@@ -20,17 +20,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * Reader that provides multiple mark support.
+ * Reader that buffers content in pages to provide multiple mark support.
  */
-public class MarkReader extends Reader {
+public class PagedReader extends Reader {
     private Reader reader;
     private int pageSize;
 
     private int position = 0;
     private int count = 0;
-
     private ArrayList<char[]> pages = new ArrayList<>();
-
     private LinkedList<Integer> marks = new LinkedList<>();
 
     private static int DEFAULT_PAGE_SIZE = 1024;
@@ -42,7 +40,7 @@ public class MarkReader extends Reader {
      * @param reader
      * The source reader.
      */
-    public MarkReader(Reader reader) {
+    public PagedReader(Reader reader) {
         this(reader, DEFAULT_PAGE_SIZE);
     }
 
@@ -55,7 +53,7 @@ public class MarkReader extends Reader {
      * @param pageSize
      * The page size.
      */
-    public MarkReader(Reader reader, int pageSize) {
+    public PagedReader(Reader reader, int pageSize) {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
