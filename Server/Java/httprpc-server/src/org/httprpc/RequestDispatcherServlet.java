@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.PagedReader;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -231,6 +232,8 @@ public class RequestDispatcherServlet extends HttpServlet {
     private static final String UNSUPPORTED_TYPE = "?";
 
     private static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
+
+    private static final int EOF = -1;
 
     @Override
     public void init() throws ServletException {
@@ -566,6 +569,170 @@ public class RequestDispatcherServlet extends HttpServlet {
     private static void indent(Writer writer, int depth) throws IOException {
         for (int i = 0; i < depth; i++) {
             writer.append("  ");
+        }
+    }
+
+    private enum MarkerType {
+        SECTION_START,
+        SECTION_END,
+        COMMENT,
+        INCLUDE,
+        VARIABLE
+    }
+
+    private static class Section {
+        public Section(String marker, Iterator<Map<String, ?>> iterator, Map<String, ?> dictionary) {
+            this.marker = marker;
+            this.iterator = iterator;
+
+            this.dictionary = dictionary;
+        }
+
+        private final String marker;
+        private final Iterator<Map<String, ?>> iterator;
+
+        private Map<String, ?> dictionary;
+    }
+
+    private static LinkedList<Section> sections = new LinkedList<>();
+
+    @SuppressWarnings({"unused", "unchecked"})
+    private static void writeTemplate(PrintWriter writer, Map<String, ?> root, Method method, String template)  throws IOException {
+        if (root.isEmpty()) {
+            return;
+        }
+
+        sections.push(new Section(null, Collections.emptyIterator(), root));
+
+        try (PagedReader reader = new PagedReader(null)) { // TODO Open template stream
+            int c = reader.read();
+
+            while (c != EOF) {
+                if (writer.checkError()) {
+                    throw new IOException("Error writing to output stream.");
+                }
+
+                if (c == '{') {
+                    c = reader.read();
+
+                    if (c == '{') {
+                        c = reader.read();
+
+                        MarkerType markerType;
+                        if (c == '#') {
+                            markerType = MarkerType.SECTION_START;
+                        } else if (c == '/') {
+                            markerType = MarkerType.SECTION_END;
+                        } else if (c == '!') {
+                            markerType = MarkerType.COMMENT;
+                        } else if (c == '>') {
+                            markerType = MarkerType.INCLUDE;
+                        } else {
+                            markerType = MarkerType.VARIABLE;
+                        }
+
+                        if (markerType != MarkerType.VARIABLE) {
+                            c = reader.read();
+                        }
+
+                        StringBuilder markerBuilder = new StringBuilder();
+
+                        while (c != '}' && c != EOF) {
+                            markerBuilder.append(c);
+
+                            c = reader.read();
+                        }
+
+                        if (c == EOF) {
+                            throw new IOException("Unexpected end of character stream.");
+                        }
+
+                        c = reader.read();
+
+                        if (c != '}') {
+                            throw new IOException("Improperly terminated marker.");
+                        }
+
+                        String marker = markerBuilder.toString();
+
+                        switch (markerType) {
+                            case SECTION_START: {
+                                Object value = sections.peek().dictionary.get(marker);
+
+                                if (!(value instanceof List<?>)) {
+                                    throw new IOException("Section marker does not refer to a list.");
+                                }
+
+                                Iterator<Map<String, ?>> iterator = ((List<Map<String, ?>>)value).iterator();
+
+                                Map<String, ?> dictionary;
+                                if (iterator.hasNext()) {
+                                    dictionary = iterator.next();
+
+                                    reader.mark(0);
+                                } else {
+                                    dictionary = null;
+                                }
+
+                                sections.push(new Section(marker, iterator, dictionary));
+
+                                break;
+                            }
+
+                            case SECTION_END: {
+                                Section section = sections.peek();
+
+                                if (!section.marker.equals(marker)) {
+                                    throw new IOException("Section markers do not match.");
+                                }
+
+                                if (section.iterator.hasNext()) {
+                                    section.dictionary = section.iterator.next();
+
+                                    reader.reset();
+
+                                    if (section.iterator.hasNext()) {
+                                        reader.mark(0);
+                                    }
+                                } else {
+                                    sections.pop();
+                                }
+
+                                break;
+                            }
+
+                            case COMMENT: {
+                                // No-op
+                                break;
+                            }
+
+                            case INCLUDE: {
+                                throw new IOException("Includes are not currently supported.");
+                            }
+
+                            case VARIABLE: {
+                                Object value = sections.peek().dictionary.get(marker);
+
+                                if (value != null) {
+                                    writer.append(value.toString());
+                                }
+
+                                break;
+                            }
+
+                            default: {
+                                throw new UnsupportedOperationException();
+                            }
+                        }
+                    } else {
+                        writer.append((char)c);
+                    }
+                } else {
+                    writer.append((char)c);
+                }
+
+                c = reader.read();
+            }
         }
     }
 }
