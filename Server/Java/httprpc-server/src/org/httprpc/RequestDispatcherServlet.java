@@ -233,8 +233,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
 
-    private static final int EOF = -1;
-
     @Override
     public void init() throws ServletException {
         String serviceClassName = getServletConfig().getInitParameter("serviceClassName");
@@ -425,6 +423,23 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
+        JSONSerializer serializer = new JSONSerializer();
+
+        serializer.writeValue(writer, value);
+    }
+}
+
+abstract class Serializer<V> {
+    abstract void writeValue(PrintWriter writer, V value) throws IOException;
+}
+
+class JSONSerializer extends Serializer<Object> {
+    @Override
+    void writeValue(PrintWriter writer, Object value) throws IOException {
+        writeValue(writer, value, 0);
+    }
+
+    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
@@ -571,8 +586,10 @@ public class RequestDispatcherServlet extends HttpServlet {
             writer.append("  ");
         }
     }
+}
 
-    private enum MarkerType {
+class TemplateSerializer extends Serializer<Map<String, ?>> {
+    enum MarkerType {
         SECTION_START,
         SECTION_END,
         COMMENT,
@@ -580,7 +597,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         VARIABLE
     }
 
-    private static class Section {
+    static class Section {
         public Section(String marker, Iterator<Map<String, ?>> iterator, Map<String, ?> dictionary) {
             this.marker = marker;
             this.iterator = iterator;
@@ -594,10 +611,13 @@ public class RequestDispatcherServlet extends HttpServlet {
         private Map<String, ?> dictionary;
     }
 
-    private static LinkedList<Section> sections = new LinkedList<>();
+    private static final int EOF = -1;
 
-    @SuppressWarnings({"unused", "unchecked"})
-    private static void writeTemplate(PrintWriter writer, Map<String, ?> root, Method method, String template)  throws IOException {
+    private LinkedList<Section> sections = new LinkedList<>();
+
+    @Override
+    @SuppressWarnings("unchecked")
+    void writeValue(PrintWriter writer, Map<String, ?> root) throws IOException {
         if (root.isEmpty()) {
             return;
         }
