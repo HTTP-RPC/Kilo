@@ -434,12 +434,10 @@ abstract class Serializer<V> {
 }
 
 class JSONSerializer extends Serializer<Object> {
+    int depth = 0;
+
     @Override
     void writeValue(PrintWriter writer, Object value) throws IOException {
-        writeValue(writer, value, 0);
-    }
-
-    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
@@ -516,7 +514,7 @@ class JSONSerializer extends Serializer<Object> {
 
                         indent(writer, depth);
 
-                        writeValue(writer, element, depth);
+                        writeValue(writer, element);
 
                         i++;
                     }
@@ -554,7 +552,7 @@ class JSONSerializer extends Serializer<Object> {
 
                         writer.append("\"" + key + "\": ");
 
-                        writeValue(writer, entry.getValue(), depth);
+                        writeValue(writer, entry.getValue());
 
                         i++;
                     }
@@ -581,7 +579,7 @@ class JSONSerializer extends Serializer<Object> {
         }
     }
 
-    private static void indent(Writer writer, int depth) throws IOException {
+    static void indent(Writer writer, int depth) throws IOException {
         for (int i = 0; i < depth; i++) {
             writer.append("  ");
         }
@@ -598,22 +596,22 @@ class TemplateSerializer extends Serializer<Map<String, ?>> {
     }
 
     static class Section {
-        public Section(String marker, Iterator<Map<String, ?>> iterator, Map<String, ?> dictionary) {
+        Section(String marker, Iterator<Map<String, ?>> iterator, Map<String, ?> dictionary) {
             this.marker = marker;
             this.iterator = iterator;
 
             this.dictionary = dictionary;
         }
 
-        private final String marker;
-        private final Iterator<Map<String, ?>> iterator;
+        final String marker;
+        final Iterator<Map<String, ?>> iterator;
 
-        private Map<String, ?> dictionary;
+        Map<String, ?> dictionary;
     }
 
-    private static final int EOF = -1;
+    static final int EOF = -1;
 
-    private LinkedList<Section> sections = new LinkedList<>();
+    LinkedList<Section> sections = new LinkedList<>();
 
     @Override
     @SuppressWarnings("unchecked")
