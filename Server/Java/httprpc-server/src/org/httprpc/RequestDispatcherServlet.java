@@ -266,6 +266,8 @@ public class RequestDispatcherServlet extends HttpServlet {
     @Override
     @SuppressWarnings("unchecked")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        JSONSerializer serializer = new JSONSerializer();
+
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null) {
@@ -284,7 +286,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 methodDescriptorList.add(new MethodDescriptor(method, resourceBundle));
             }
 
-            writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptorList), 0);
+            serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptorList));
         } else {
             // Look up service method
             Method method = methodMap.get(pathInfo.substring(1));
@@ -362,7 +364,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType != Void.TYPE && returnType != Void.class) {
                 response.setContentType(JSON_MIME_TYPE);
 
-                writeValue(response.getWriter(), result, 0);
+                serializer.writeValue(response.getWriter(), result);
             }
         }
     }
@@ -420,12 +422,6 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         return argument;
-    }
-
-    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
-        JSONSerializer serializer = new JSONSerializer();
-
-        serializer.writeValue(writer, value);
     }
 }
 
@@ -713,6 +709,8 @@ class TemplateSerializer extends Serializer<Map<String, ?>> {
                                         reader.mark(0);
                                     }
                                 } else {
+                                    // TODO Close list if auto-closeable
+
                                     sections.pop();
                                 }
 
