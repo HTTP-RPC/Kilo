@@ -23,57 +23,63 @@ An HTTP 200 is returned on successful completion, and HTTP 500 is returned in th
 
 Services may return a optional JSON descriptor that documents the methods provided by the service. If supported, the descriptor should be of the following form, and should be returned by a GET request for the base service URL:
 
-    [
-      {
-        "name": "<method name>",
-        "description": "<method description>",
-        "returns": ("string" | "number" | "boolean" | "array" | "object" | null),
-        "parameters": [
-          {
-            "name": "<parameter name>",
-            "description": "<parameter description>",
-            "type": ("string" | "number" | "boolean" | "array")
-          },
-          ...
-        ]
-      },
-      ...
-    ]
+    {
+      "name": "<service name>",
+      "methods": [
+        {
+          "name": "<method name>",
+          "description": "<method description>",
+          "returns": ("string" | "number" | "boolean" | "array" | "object" | null),
+          "parameters": [
+            {
+              "name": "<parameter name>",
+              "description": "<parameter description>",
+              "type": ("string" | "number" | "boolean" | "array")
+            },
+            ...
+          ]
+        },
+        ...
+      ]
+    }
 
 For example, a descriptor for the hypothetical math service might look something like this:
 
-    [
-      {
-        "name": "add",
-        "description": "Returns the sum of two numbers.",
-        "returns": "number",
-        "parameters": [
-          {
-            "name": "a",
-            "description": "The first number.",
-            "type": "number"
-          },
-          {
-            "name": "b",
-            "description": "The second number.",
-            "type": "number"
-          }
-        ]
-      },
-      {
-        "name": "addValues",
-        "description": "Returns the sum of a list of values.",
-        "returns": "number",
-        "parameters": [
-          {
-            "name": "values",
-            "description": "The values to add.",
-            "type": "array"
-          }
-        ]
-      }
-    ]
-    
+    {
+      "name": "MathService",
+      "methods": [
+        {
+          "name": "add",
+          "description": "Returns the sum of two numbers.",
+          "returns": "number",
+          "parameters": [
+            {
+              "name": "a",
+              "description": "The first number.",
+              "type": "number"
+            },
+            {
+              "name": "b",
+              "description": "The second number.",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "name": "addValues",
+          "description": "Returns the sum of a list of values.",
+          "returns": "number",
+          "parameters": [
+            {
+              "name": "values",
+              "description": "The values to add.",
+              "type": "array"
+            }
+          ]
+        }
+      ]
+    }
+        
 and could be obtained by a request for the following URL:
 
     http://example.com/rpc/math
