@@ -761,7 +761,7 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                     StringBuilder markerBuilder = new StringBuilder();
 
                     while (c != '}' && c != EOF) {
-                        markerBuilder.append(c);
+                        markerBuilder.append((char)c);
 
                         c = reader.read();
                     }
@@ -851,6 +851,7 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                         }
                     }
                 } else {
+                    writer.append('{');
                     writer.append((char)c);
                 }
             } else {

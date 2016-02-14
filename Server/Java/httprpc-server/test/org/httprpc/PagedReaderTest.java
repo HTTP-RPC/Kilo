@@ -36,10 +36,10 @@ public class PagedReaderTest {
             reader.reset();
 
             for (int i = 0, n = text.length(); i < n; i++) {
-                Assert.assertEquals(reader.read(), text.charAt(i));
+                Assert.assertEquals(text.charAt(i), reader.read());
             }
 
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(-1, reader.read());
         }
     }
 
@@ -55,12 +55,12 @@ public class PagedReaderTest {
 
             reader.mark(0);
 
-            Assert.assertEquals(reader.read(), text.charAt(text.length() - 1));
+            Assert.assertEquals(text.charAt(text.length() - 1), reader.read());
 
             reader.reset();
 
-            Assert.assertEquals(reader.read(), text.charAt(text.length() - 1));
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(text.charAt(text.length() - 1), reader.read());
+            Assert.assertEquals(-1, reader.read());
         }
     }
 
@@ -76,13 +76,13 @@ public class PagedReaderTest {
 
         try (PagedReader reader = new PagedReader(new StringReader(text), 7)) {
             while (i < j) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
             reader.mark(0);
 
             while (i < k) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
             reader.reset();
@@ -90,10 +90,10 @@ public class PagedReaderTest {
             i = j;
 
             while (i < n) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(-1, reader.read());
         }
     }
 
@@ -110,19 +110,19 @@ public class PagedReaderTest {
 
         try (PagedReader reader = new PagedReader(new StringReader(text), 7)) {
             while (i < j) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
             reader.mark(0);
 
             while (i < k) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
             reader.mark(0);
 
             while (i < l) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
             reader.reset();
@@ -130,7 +130,7 @@ public class PagedReaderTest {
             i = k;
 
             while (i < l) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
             reader.reset();
@@ -138,10 +138,10 @@ public class PagedReaderTest {
             i = j;
 
             while (i < n) {
-                Assert.assertEquals(reader.read(), text.charAt(i++));
+                Assert.assertEquals(text.charAt(i++), reader.read());
             }
 
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(-1, reader.read());
         }
     }
 
@@ -149,7 +149,7 @@ public class PagedReaderTest {
     public void testEmptyReader() throws IOException {
         // Test handling of an empty source reader
         try (PagedReader reader = new PagedReader(new StringReader(""), 0)) {
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(-1, reader.read());
         }
     }
 
@@ -159,11 +159,11 @@ public class PagedReaderTest {
         try (PagedReader reader = new PagedReader(new StringReader("a"), 1)) {
             reader.mark(0);
 
-            Assert.assertEquals(reader.read(), 'a');
+            Assert.assertEquals('a', reader.read());
 
             reader.reset();
 
-            Assert.assertEquals(reader.read(), 'a');
+            Assert.assertEquals('a', reader.read());
         }
     }
 
@@ -181,7 +181,7 @@ public class PagedReaderTest {
                 cbuf[i] = (char)reader.read();
             }
 
-            Assert.assertEquals(reader.read(cbuf, off, len), len);
+            Assert.assertEquals(len, reader.read(cbuf, off, len));
 
             for (int i = off + len; i < n; i++) {
                 cbuf[i] = (char)reader.read();
@@ -189,7 +189,7 @@ public class PagedReaderTest {
 
             Assert.assertEquals(text, new String(cbuf));
 
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(-1, reader.read());
         }
     }
 
@@ -204,12 +204,12 @@ public class PagedReaderTest {
         try (PagedReader reader = new PagedReader(new StringReader(text), 1)) {
             char[] cbuf = new char[text.length()];
 
-            Assert.assertEquals(reader.read(cbuf, 0, off), off);
-            Assert.assertEquals(reader.read(cbuf, off, n), off);
+            Assert.assertEquals(off, reader.read(cbuf, 0, off));
+            Assert.assertEquals(off, reader.read(cbuf, off, n));
 
             Assert.assertEquals(text, new String(cbuf));
 
-            Assert.assertEquals(reader.read(), -1);
+            Assert.assertEquals(-1, reader.read());
         }
     }
 }
