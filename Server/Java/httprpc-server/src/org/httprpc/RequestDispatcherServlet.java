@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
@@ -46,8 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.beans.BeanAdapter;
-import org.httprpc.io.NullWriter;
-import org.httprpc.io.PagedReader;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -428,15 +427,127 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 }
 
+class NullWriter extends Writer {
+    @Override
+    public void write(char[] cbuf, int off, int len) {
+        // No-op
+    }
+
+    @Override
+    public void flush() {
+        // No-op
+    }
+
+    @Override
+    public void close() {
+        // No-op
+    }
+}
+
+class PagedReader extends Reader {
+    private Reader reader;
+    private int pageSize;
+
+    private int position = 0;
+    private int count = 0;
+    private ArrayList<char[]> pages = new ArrayList<>();
+    private LinkedList<Integer> marks = new LinkedList<>();
+
+    private static int DEFAULT_PAGE_SIZE = 1024;
+    private static int EOF = -1;
+
+    public PagedReader(Reader reader) {
+        this(reader, DEFAULT_PAGE_SIZE);
+    }
+
+    public PagedReader(Reader reader, int pageSize) {
+        if (reader == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.reader = reader;
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public int read() throws IOException {
+        int c;
+        if (position < count) {
+            c = pages.get(position / pageSize)[position % pageSize];
+
+            position++;
+        } else {
+            c = reader.read();
+
+            if (c != EOF) {
+                if (position / pageSize == pages.size()) {
+                    pages.add(new char[pageSize]);
+                }
+
+                pages.get(pages.size() - 1)[position % pageSize] = (char)c;
+
+                position++;
+                count++;
+            }
+        }
+
+        return c;
+    }
+
+    @Override
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        int c = 0;
+        int n = 0;
+
+        for (int i = off; i < cbuf.length && n < len; i++) {
+            c = read();
+
+            if (c == EOF) {
+                break;
+            }
+
+            cbuf[i] = (char)c;
+
+            n++;
+        }
+
+        return (c == EOF && n == 0) ? EOF : n;
+    }
+
+    @Override
+    public void mark(int readAheadLimit) {
+        marks.push(position);
+    }
+
+    @Override
+    public boolean markSupported() {
+        return true;
+    }
+
+    @Override
+    public void reset() {
+        if (marks.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        position = marks.pop();
+    }
+
+    @Override
+    public void close() throws IOException {
+        reader.close();
+    }
+}
+
 abstract class Serializer<V> {
-    abstract void writeValue(PrintWriter writer, V value) throws IOException;
+    public abstract void writeValue(PrintWriter writer, V value) throws IOException;
 }
 
 class JSONSerializer extends Serializer<Object> {
-    int depth = 0;
+    private int depth = 0;
 
     @Override
-    void writeValue(PrintWriter writer, Object value) throws IOException {
+    public void writeValue(PrintWriter writer, Object value) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
@@ -586,7 +697,7 @@ class JSONSerializer extends Serializer<Object> {
         }
     }
 
-    void indent(Writer writer) throws IOException {
+    private void indent(Writer writer) throws IOException {
         for (int i = 0; i < depth; i++) {
             writer.append("  ");
         }
@@ -594,35 +705,31 @@ class JSONSerializer extends Serializer<Object> {
 }
 
 class TemplateSerializer extends Serializer<Map<?, ?>> {
-    enum MarkerType {
+    private enum MarkerType {
         SECTION_START,
         SECTION_END,
         COMMENT,
         VARIABLE
     }
 
-    Method method;
-    String type;
+    private Class<?> serviceType;
+    private String templateName;
 
-    static final int EOF = -1;
+    private static final int EOF = -1;
 
-    TemplateSerializer(Method method, String type) {
-        this.method = method;
-        this.type = type;
+    public TemplateSerializer(Class<?> serviceType, String templateName) {
+        this.serviceType = serviceType;
+        this.templateName = templateName;
     }
 
     @Override
-    void writeValue(PrintWriter writer, Map<?, ?> value) throws IOException {
-        Class<?> serviceType = method.getDeclaringClass();
-
-        String templateName = serviceType.getSimpleName() + "_" + method.getName() + "." + type;
-
+    public void writeValue(PrintWriter writer, Map<?, ?> value) throws IOException {
         try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
             writeValue(writer, value, new PagedReader(new InputStreamReader(inputStream)));
         }
     }
 
-    void writeValue(PrintWriter writer, Map<?, ?> dictionary, PagedReader reader) throws IOException {
+    private void writeValue(PrintWriter writer, Map<?, ?> dictionary, PagedReader reader) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
