@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,19 @@ public class TemplateSerializerTest {
             dictionary.get("a"),
             dictionary.get("b"),
             dictionary.get("c")), result);
+    }
+
+    @Test
+    public void testEmptySection() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt");
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), mapOf(entry("list", Collections.emptyList())));
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[]", result);
     }
 
     @Test
