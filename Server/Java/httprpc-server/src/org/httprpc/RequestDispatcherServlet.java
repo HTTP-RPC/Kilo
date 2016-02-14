@@ -508,7 +508,7 @@ class JSONSerializer extends Serializer<Object> {
 
                         writer.append("\n");
 
-                        indent(writer, depth);
+                        indent(writer);
 
                         writeValue(writer, element);
 
@@ -519,7 +519,7 @@ class JSONSerializer extends Serializer<Object> {
 
                     writer.append("\n");
 
-                    indent(writer, depth);
+                    indent(writer);
 
                     writer.append("]");
                 } else if (value instanceof Map<?, ?>) {
@@ -544,7 +544,7 @@ class JSONSerializer extends Serializer<Object> {
                             throw new IOException("Invalid key type.");
                         }
 
-                        indent(writer, depth);
+                        indent(writer);
 
                         writer.append("\"" + key + "\": ");
 
@@ -557,7 +557,7 @@ class JSONSerializer extends Serializer<Object> {
 
                     writer.append("\n");
 
-                    indent(writer, depth);
+                    indent(writer);
 
                     writer.append("}");
                 } else {
@@ -575,7 +575,7 @@ class JSONSerializer extends Serializer<Object> {
         }
     }
 
-    static void indent(Writer writer, int depth) throws IOException {
+    void indent(Writer writer) throws IOException {
         for (int i = 0; i < depth; i++) {
             writer.append("  ");
         }
