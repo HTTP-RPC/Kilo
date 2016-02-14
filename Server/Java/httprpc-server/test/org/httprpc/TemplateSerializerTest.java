@@ -52,7 +52,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testSingleElementSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt");
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -75,7 +75,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testMultiElementSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt");
 
         Map<String, ?> dictionary1 = mapOf(
             entry("a", "hello"),
@@ -102,5 +102,30 @@ public class TemplateSerializerTest {
             dictionary2.get("a"),
             dictionary2.get("b"),
             dictionary2.get("c")), result);
+    }
+
+    @Test
+    public void testNestedSection() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section2.txt");
+
+        Map<String, ?> dictionary = mapOf(
+            entry("abc", "ABC"),
+            entry("list1", Arrays.asList(mapOf(
+                entry("def", "DEF"),
+                entry("list2", Arrays.asList(mapOf(
+                    entry("one", 1),
+                    entry("two", 2),
+                    entry("three", 3)
+                )))
+            )))
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), dictionary);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", result);
     }
 }
