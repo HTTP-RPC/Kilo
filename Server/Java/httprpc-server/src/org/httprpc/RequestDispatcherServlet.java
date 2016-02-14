@@ -490,88 +490,96 @@ class JSONSerializer extends Serializer<Object> {
             writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
-        } else {
+        } else if (value instanceof List<?>) {
+            List<?> list = (List<?>)value;
+
             try {
-                if (value instanceof List<?>) {
-                    List<?> list = (List<?>)value;
+                writer.append("[");
 
-                    writer.append("[");
+                depth++;
 
-                    depth++;
+                int i = 0;
 
-                    int i = 0;
-
-                    for (Object element : list) {
-                        if (i > 0) {
-                            writer.append(",");
-                        }
-
-                        writer.append("\n");
-
-                        indent(writer);
-
-                        writeValue(writer, element);
-
-                        i++;
+                for (Object element : list) {
+                    if (i > 0) {
+                        writer.append(",");
                     }
-
-                    depth--;
 
                     writer.append("\n");
 
                     indent(writer);
 
-                    writer.append("]");
-                } else if (value instanceof Map<?, ?>) {
-                    Map<?, ?> map = (Map<?, ?>)value;
+                    writeValue(writer, element);
 
-                    writer.append("{");
-
-                    depth++;
-
-                    int i = 0;
-
-                    for (Map.Entry<?, ?> entry : map.entrySet()) {
-                        if (i > 0) {
-                            writer.append(",");
-                        }
-
-                        writer.append("\n");
-
-                        Object key = entry.getKey();
-
-                        if (!(key instanceof String)) {
-                            throw new IOException("Invalid key type.");
-                        }
-
-                        indent(writer);
-
-                        writer.append("\"" + key + "\": ");
-
-                        writeValue(writer, entry.getValue());
-
-                        i++;
-                    }
-
-                    depth--;
-
-                    writer.append("\n");
-
-                    indent(writer);
-
-                    writer.append("}");
-                } else {
-                    throw new IOException("Invalid value type.");
+                    i++;
                 }
+
+                depth--;
+
+                writer.append("\n");
+
+                indent(writer);
+
+                writer.append("]");
             } finally {
-                if (value instanceof AutoCloseable) {
+                if (list instanceof AutoCloseable) {
                     try {
-                        ((AutoCloseable)value).close();
+                        ((AutoCloseable)list).close();
                     } catch (Exception exception) {
                         throw new IOException(exception);
                     }
                 }
             }
+        } else if (value instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>)value;
+
+            try {
+                writer.append("{");
+
+                depth++;
+
+                int i = 0;
+
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    if (i > 0) {
+                        writer.append(",");
+                    }
+
+                    writer.append("\n");
+
+                    Object key = entry.getKey();
+
+                    if (!(key instanceof String)) {
+                        throw new IOException("Invalid key type.");
+                    }
+
+                    indent(writer);
+
+                    writer.append("\"" + key + "\": ");
+
+                    writeValue(writer, entry.getValue());
+
+                    i++;
+                }
+
+                depth--;
+
+                writer.append("\n");
+
+                indent(writer);
+
+                writer.append("}");
+            } finally {
+                if (map instanceof AutoCloseable) {
+                    try {
+                        ((AutoCloseable)map).close();
+                    } catch (Exception exception) {
+                        throw new IOException(exception);
+                    }
+                }
+            }
+        } else {
+            throw new IOException("Invalid value type.");
         }
     }
 
@@ -681,7 +689,7 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                                         }
                                     }
                                 } else {
-                                    // TODO How to skip ahead to closing marker? Add a skipToMarker() method?
+                                    // TODO Skip to section end marker
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
