@@ -99,6 +99,27 @@ public class RequestDispatcherServlet extends HttpServlet {
      * Method descriptor.
      */
     public static final class MethodDescriptor {
+        // Parameter descriptor list
+        private static class ParameterDescriptorList extends AbstractList<ParameterDescriptor> {
+            private Parameter[] parameters;
+            private ResourceBundle resourceBundle;
+
+            private ParameterDescriptorList(Parameter[] parameters, ResourceBundle resourceBundle) {
+                this.parameters = parameters;
+                this.resourceBundle = resourceBundle;
+            }
+
+            @Override
+            public ParameterDescriptor get(int index) {
+                return new ParameterDescriptor(parameters[index], resourceBundle);
+            }
+
+            @Override
+            public int size() {
+                return parameters.length;
+            }
+        }
+
         private Method method;
         private ResourceBundle resourceBundle;
 
@@ -156,29 +177,6 @@ public class RequestDispatcherServlet extends HttpServlet {
          */
         public String getReturns() {
             return getDescriptorType(method.getReturnType());
-        }
-    }
-
-    /**
-     * Parameter descriptor list.
-     */
-    public static final class ParameterDescriptorList extends AbstractList<ParameterDescriptor> {
-        private Parameter[] parameters;
-        private ResourceBundle resourceBundle;
-
-        private ParameterDescriptorList(Parameter[] parameters, ResourceBundle resourceBundle) {
-            this.parameters = parameters;
-            this.resourceBundle = resourceBundle;
-        }
-
-        @Override
-        public ParameterDescriptor get(int index) {
-            return new ParameterDescriptor(parameters[index], resourceBundle);
-        }
-
-        @Override
-        public int size() {
-            return parameters.length;
         }
     }
 
