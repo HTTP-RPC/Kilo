@@ -803,7 +803,7 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                                             throw new IOException("Invalid dictionary element.");
                                         }
 
-                                        writeValue(writer, (Map<?, ?>)element);
+                                        writeValue(writer, (Map<?, ?>)element, reader);
 
                                         if (i < n - 1) {
                                             reader.reset();
