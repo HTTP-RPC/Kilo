@@ -15,6 +15,8 @@
 package org.httprpc;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Executable;
@@ -44,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.NullWriter;
 import org.httprpc.io.PagedReader;
 
 /**
@@ -598,12 +601,24 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
         VARIABLE
     }
 
+    Method method;
+    String type;
+
     static final int EOF = -1;
+
+    TemplateSerializer(Method method, String type) {
+        this.method = method;
+        this.type = type;
+    }
 
     @Override
     void writeValue(PrintWriter writer, Map<?, ?> value) throws IOException {
-        try (PagedReader reader = new PagedReader(null)) { // TODO Open template stream
-            writeValue(writer, value, reader);
+        Class<?> serviceType = method.getDeclaringClass();
+
+        String templateName = serviceType.getSimpleName() + "_" + method.getName() + "." + type;
+
+        try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
+            writeValue(writer, value, new PagedReader(new InputStreamReader(inputStream)));
         }
     }
 
@@ -689,7 +704,7 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                                         }
                                     }
                                 } else {
-                                    // TODO Skip to section end marker
+                                    writeValue(new PrintWriter(new NullWriter()), Collections.emptyMap(), reader);
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
