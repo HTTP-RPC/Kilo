@@ -582,173 +582,152 @@ class JSONSerializer extends Serializer<Object> {
     }
 }
 
-class TemplateSerializer extends Serializer<Map<String, ?>> {
+class TemplateSerializer extends Serializer<Map<?, ?>> {
     enum MarkerType {
         SECTION_START,
         SECTION_END,
         COMMENT,
-        INCLUDE,
         VARIABLE
-    }
-
-    static class Section {
-        Section(String marker, Iterator<Map<String, ?>> iterator, Map<String, ?> dictionary) {
-            this.marker = marker;
-            this.iterator = iterator;
-
-            this.dictionary = dictionary;
-        }
-
-        final String marker;
-        final Iterator<Map<String, ?>> iterator;
-
-        Map<String, ?> dictionary;
     }
 
     static final int EOF = -1;
 
-    LinkedList<Section> sections = new LinkedList<>();
-
     @Override
-    @SuppressWarnings("unchecked")
-    void writeValue(PrintWriter writer, Map<String, ?> root) throws IOException {
-        if (root.isEmpty()) {
-            return;
+    void writeValue(PrintWriter writer, Map<?, ?> value) throws IOException {
+        try (PagedReader reader = new PagedReader(null)) { // TODO Open template stream
+            writeValue(writer, value, reader);
+        }
+    }
+
+    void writeValue(PrintWriter writer, Map<?, ?> dictionary, PagedReader reader) throws IOException {
+        if (writer.checkError()) {
+            throw new IOException("Error writing to output stream.");
         }
 
-        sections.push(new Section(null, Collections.emptyIterator(), root));
+        int c = reader.read();
 
-        try (PagedReader reader = new PagedReader(null)) { // TODO Open template stream
-            int c = reader.read();
-
-            while (c != EOF) {
-                if (writer.checkError()) {
-                    throw new IOException("Error writing to output stream.");
-                }
+        while (c != EOF) {
+            if (c == '{') {
+                c = reader.read();
 
                 if (c == '{') {
                     c = reader.read();
 
-                    if (c == '{') {
+                    MarkerType markerType;
+                    if (c == '#') {
+                        markerType = MarkerType.SECTION_START;
+                    } else if (c == '/') {
+                        markerType = MarkerType.SECTION_END;
+                    } else if (c == '!') {
+                        markerType = MarkerType.COMMENT;
+                    } else {
+                        markerType = MarkerType.VARIABLE;
+                    }
+
+                    if (markerType != MarkerType.VARIABLE) {
                         c = reader.read();
+                    }
 
-                        MarkerType markerType;
-                        if (c == '#') {
-                            markerType = MarkerType.SECTION_START;
-                        } else if (c == '/') {
-                            markerType = MarkerType.SECTION_END;
-                        } else if (c == '!') {
-                            markerType = MarkerType.COMMENT;
-                        } else if (c == '>') {
-                            markerType = MarkerType.INCLUDE;
-                        } else {
-                            markerType = MarkerType.VARIABLE;
-                        }
+                    StringBuilder markerBuilder = new StringBuilder();
 
-                        if (markerType != MarkerType.VARIABLE) {
-                            c = reader.read();
-                        }
-
-                        StringBuilder markerBuilder = new StringBuilder();
-
-                        while (c != '}' && c != EOF) {
-                            markerBuilder.append(c);
-
-                            c = reader.read();
-                        }
-
-                        if (c == EOF) {
-                            throw new IOException("Unexpected end of character stream.");
-                        }
+                    while (c != '}' && c != EOF) {
+                        markerBuilder.append(c);
 
                         c = reader.read();
+                    }
 
-                        if (c != '}') {
-                            throw new IOException("Improperly terminated marker.");
-                        }
+                    if (c == EOF) {
+                        throw new IOException("Unexpected end of character stream.");
+                    }
 
-                        String marker = markerBuilder.toString();
+                    c = reader.read();
 
-                        switch (markerType) {
-                            case SECTION_START: {
-                                Object value = sections.peek().dictionary.get(marker);
+                    if (c != '}') {
+                        throw new IOException("Improperly terminated marker.");
+                    }
 
-                                if (!(value instanceof List<?>)) {
-                                    throw new IOException("Section marker does not refer to a list.");
-                                }
+                    String marker = markerBuilder.toString();
 
-                                Iterator<Map<String, ?>> iterator = ((List<Map<String, ?>>)value).iterator();
+                    switch (markerType) {
+                        case SECTION_START: {
+                            Object value = dictionary.get(marker);
 
-                                Map<String, ?> dictionary;
-                                if (iterator.hasNext()) {
-                                    dictionary = iterator.next();
-
-                                    reader.mark(0);
-                                } else {
-                                    dictionary = null;
-                                }
-
-                                sections.push(new Section(marker, iterator, dictionary));
-
-                                break;
+                            if (!(value instanceof List<?>)) {
+                                throw new IOException("Invalid section element.");
                             }
 
-                            case SECTION_END: {
-                                Section section = sections.peek();
+                            List<?> list = (List<?>)value;
 
-                                if (!section.marker.equals(marker)) {
-                                    throw new IOException("Section markers do not match.");
-                                }
+                            try {
+                                int n = list.size();
 
-                                if (section.iterator.hasNext()) {
-                                    section.dictionary = section.iterator.next();
-
-                                    reader.reset();
-
-                                    if (section.iterator.hasNext()) {
+                                if (n > 0) {
+                                    if (n > 1) {
                                         reader.mark(0);
                                     }
+
+                                    for (int i = 0; i < n; i++) {
+                                        Object element = list.get(i);
+
+                                        if (!(element instanceof Map<?, ?>)) {
+                                            throw new IOException("Invalid dictionary element.");
+                                        }
+
+                                        writeValue(writer, (Map<?, ?>)element);
+
+                                        if (i < n - 1) {
+                                            reader.reset();
+                                            reader.mark(0);
+                                        }
+                                    }
                                 } else {
-                                    // TODO Close list if auto-closeable
-
-                                    sections.pop();
+                                    // TODO How to skip ahead to closing marker? Add a skipToMarker() method?
                                 }
-
-                                break;
-                            }
-
-                            case COMMENT: {
-                                // No-op
-                                break;
-                            }
-
-                            case INCLUDE: {
-                                throw new IOException("Includes are not currently supported.");
-                            }
-
-                            case VARIABLE: {
-                                Object value = sections.peek().dictionary.get(marker);
-
-                                if (value != null) {
-                                    writer.append(value.toString());
+                            } finally {
+                                if (list instanceof AutoCloseable) {
+                                    try {
+                                        ((AutoCloseable)list).close();
+                                    } catch (Exception exception) {
+                                        throw new IOException(exception);
+                                    }
                                 }
-
-                                break;
                             }
 
-                            default: {
-                                throw new UnsupportedOperationException();
-                            }
+                            break;
                         }
-                    } else {
-                        writer.append((char)c);
+
+                        case SECTION_END: {
+                            // No-op
+                            return;
+                        }
+
+                        case COMMENT: {
+                            // No-op
+                            break;
+                        }
+
+                        case VARIABLE: {
+                            Object value = dictionary.get(marker);
+
+                            if (value != null) {
+                                writer.append(value.toString());
+                            }
+
+                            break;
+                        }
+
+                        default: {
+                            throw new UnsupportedOperationException();
+                        }
                     }
                 } else {
                     writer.append((char)c);
                 }
-
-                c = reader.read();
+            } else {
+                writer.append((char)c);
             }
+
+            c = reader.read();
         }
     }
 }
