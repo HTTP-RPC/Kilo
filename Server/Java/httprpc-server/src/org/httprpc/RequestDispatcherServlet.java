@@ -427,23 +427,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 }
 
-class NullWriter extends Writer {
-    @Override
-    public void write(char[] cbuf, int off, int len) {
-        // No-op
-    }
-
-    @Override
-    public void flush() {
-        // No-op
-    }
-
-    @Override
-    public void close() {
-        // No-op
-    }
-}
-
 class PagedReader extends Reader {
     private Reader reader;
     private int pageSize;
@@ -536,6 +519,23 @@ class PagedReader extends Reader {
     @Override
     public void close() throws IOException {
         reader.close();
+    }
+}
+
+class NullWriter extends Writer {
+    @Override
+    public void write(char[] cbuf, int off, int len) {
+        // No-op
+    }
+
+    @Override
+    public void flush() {
+        // No-op
+    }
+
+    @Override
+    public void close() {
+        // No-op
     }
 }
 
