@@ -823,25 +823,24 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                             List<?> list = (List<?>)value;
 
                             try {
-                                int n = list.size();
+                                Iterator<?> iterator = list.iterator();
 
-                                if (n > 0) {
-                                    if (n > 1) {
-                                        reader.mark(0);
-                                    }
-
-                                    for (int i = 0; i < n; i++) {
-                                        Object element = list.get(i);
+                                if (iterator.hasNext()) {
+                                    while (iterator.hasNext()) {
+                                        Object element = iterator.next();
 
                                         if (!(element instanceof Map<?, ?>)) {
                                             throw new IOException("Invalid dictionary element.");
                                         }
 
+                                        if (iterator.hasNext()) {
+                                            reader.mark(0);
+                                        }
+
                                         writeValue(writer, (Map<?, ?>)element, reader);
 
-                                        if (i < n - 1) {
+                                        if (iterator.hasNext()) {
                                             reader.reset();
-                                            reader.mark(0);
                                         }
                                     }
                                 } else {
@@ -874,6 +873,10 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
                             Object value = dictionary.get(marker);
 
                             if (value != null) {
+                                if (!(value instanceof String || value instanceof Number || value instanceof Boolean)) {
+                                    throw new IOException("Invalid variable element.");
+                                }
+
                                 writer.append(value.toString());
                             }
 
