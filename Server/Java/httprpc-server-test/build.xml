@@ -34,8 +34,7 @@
             <fileset dir="web"/>
             
             <classes dir="${bin}"/>
-            <classes dir="${src}" includes="**/*.db"/>
-            <classes dir="${src}" includes="**/*.properties"/>
+            <classes dir="${src}" excludes="**/*.java"/>
             
             <lib dir="../httprpc-server" includes="*.jar"/>
             <lib dir="${lib}" includes="*.jar"/>

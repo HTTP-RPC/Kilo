@@ -275,8 +275,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     @Override
     @SuppressWarnings("unchecked")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        JSONSerializer serializer = new JSONSerializer();
-
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null) {
@@ -295,8 +293,10 @@ public class RequestDispatcherServlet extends HttpServlet {
                 methodDescriptors.add(new MethodDescriptor(method, resourceBundle));
             }
 
+            // TODO Move content type to Serializer
             response.setContentType(JSON_MIME_TYPE);
 
+            JSONSerializer serializer = new JSONSerializer();
             serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptors));
         } else {
             // Look up service method
@@ -304,14 +304,34 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             Method method = methodMap.get(pathInfo);
 
-            if (method == null) {
+            // TODO Move content type to Serializer
+            Serializer<?> serializer;
+            String contentType;
+            if (method != null) {
+                Class<?> returnType = method.getReturnType();
+
+                if (returnType != Void.TYPE && returnType != Void.class) {
+                    serializer = new JSONSerializer();
+                    contentType = JSON_MIME_TYPE;
+                } else {
+                    serializer = null;
+                    contentType = null;
+                }
+            } else {
                 method = templateMap.get(pathInfo);
 
-                // TODO Create appropriate serializer, content type
-            }
+                if (method == null) {
+                    throw new ServletException("Method not found.");
+                }
 
-            if (method == null) {
-                throw new ServletException("Method not found.");
+                Class<?> returnType = method.getReturnType();
+
+                if (!Map.class.isAssignableFrom(returnType)) {
+                    throw new ServletException("Unsupported template type.");
+                }
+
+                contentType = "text/html"; // TODO Get actual MIME type
+                serializer = new TemplateSerializer(serviceType, pathInfo);
             }
 
             // Construct arguments
@@ -378,12 +398,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             }
 
             // Write response
-            Class<?> returnType = method.getReturnType();
-
-            if (returnType != Void.TYPE && returnType != Void.class) {
-                response.setContentType(JSON_MIME_TYPE);
-
-                serializer.writeValue(response.getWriter(), result);
+            if (serializer != null) {
+                response.setContentType(contentType);
+                ((Serializer<Object>)serializer).writeValue(response.getWriter(), result);
             }
         }
     }
