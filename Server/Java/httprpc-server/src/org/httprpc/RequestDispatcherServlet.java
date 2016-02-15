@@ -55,47 +55,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     /**
-     * Service descriptor.
-     */
-    public static final class ServiceDescriptor {
-        private Class<?> serviceType;
-        private Map<String, Method> methodMap;
-        private ResourceBundle resourceBundle;
-
-        private ServiceDescriptor(Class<?> serviceType, Map<String, Method> methodMap, ResourceBundle resourceBundle) {
-            this.serviceType = serviceType;
-            this.methodMap = methodMap;
-            this.resourceBundle = resourceBundle;
-        }
-
-        /**
-         * Returns the service's name.
-         *
-         * @return
-         * The name of the service.
-         */
-        public String getName() {
-            return serviceType.getSimpleName();
-        }
-
-        /**
-         * Returns the service's methods.
-         *
-         * @return
-         * A list of the service's methods.
-         */
-        public List<MethodDescriptor> getMethods() {
-            LinkedList<MethodDescriptor> methods = new LinkedList<>();
-
-            for (Method method : methodMap.values()) {
-                methods.add(new MethodDescriptor(method, resourceBundle));
-            }
-
-            return methods;
-        }
-    }
-
-    /**
      * Method descriptor.
      */
     public static final class MethodDescriptor {
@@ -312,7 +271,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null) {
-            // Write service descriptor
+            // Write method descriptor list
             ResourceBundle resourceBundle = null;
 
             try {
@@ -321,7 +280,13 @@ public class RequestDispatcherServlet extends HttpServlet {
                 // No-op
             }
 
-            serializer.writeValue(response.getWriter(), new BeanAdapter(new ServiceDescriptor(serviceType, methodMap, resourceBundle)));
+            LinkedList<MethodDescriptor> methodDescriptors = new LinkedList<>();
+
+            for (Method method : methodMap.values()) {
+                methodDescriptors.add(new MethodDescriptor(method, resourceBundle));
+            }
+
+            serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptors));
         } else {
             // Look up service method
             Method method = methodMap.get(pathInfo.substring(1));
