@@ -33,6 +33,7 @@ import java.util.AbstractList;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -222,6 +223,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private TreeMap<String, Method> methodMap = new TreeMap<>();
 
+    private HashMap<String, Method> templateMap = new HashMap<>();
+
     private static final String STRING_TYPE = "string";
     private static final String NUMBER_TYPE = "number";
     private static final String BOOLEAN_TYPE = "boolean";
@@ -254,6 +257,12 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             if (serviceType.isAssignableFrom(method.getDeclaringClass())) {
                 methodMap.put(method.getName(), method);
+
+                Template[] templates = method.getAnnotationsByType(Template.class);
+
+                for (int j = 0; j < templates.length; j++) {
+                    templateMap.put(templates[j].value(), method);
+                }
             }
         }
     }
@@ -286,14 +295,20 @@ public class RequestDispatcherServlet extends HttpServlet {
                 methodDescriptors.add(new MethodDescriptor(method, resourceBundle));
             }
 
-            // TODO Set return type and content type
+            response.setContentType(JSON_MIME_TYPE);
 
             serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptors));
         } else {
             // Look up service method
-            Method method = methodMap.get(pathInfo.substring(1));
+            pathInfo = pathInfo.substring(1);
 
-            // TODO Look up method by template
+            Method method = methodMap.get(pathInfo);
+
+            if (method == null) {
+                method = templateMap.get(pathInfo);
+
+                // TODO Create appropriate serializer, content type
+            }
 
             if (method == null) {
                 throw new ServletException("Method not found.");

@@ -13,7 +13,7 @@ Method parameters may be either scalar (single-value) or vector (multi-value) ty
 
 Multi-value arguments are specified by providing zero or more scalar values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed argument values:
 
-    http://example.com/rpc/math/add?values=1&values=2&values=3
+    http://example.com/rpc/math/addValues?values=1&values=2&values=3
 
 The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces a null argument value for that parameter. Omitting all values for a vector parameter produces an empty collection argument for the parameter.
 
@@ -207,6 +207,8 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
     
     addValues: Returns the sum of a list of values.
     addValues_values: The values to add.
+    
+Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other localizations.
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON. Nested Bean properties are supported.
