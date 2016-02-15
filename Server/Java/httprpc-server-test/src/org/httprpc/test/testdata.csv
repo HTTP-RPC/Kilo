@@ -1,2 +1,3 @@
 a,b,c
-{{#testData}}{{a}},{{b}},{{c}}{{/testData}}
+{{#testData}}{{a}},{{b}},{{c}}
+{{/testData}}

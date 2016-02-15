@@ -16,15 +16,14 @@ package org.httprpc.sql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.AbstractList;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * Class that exposes the contents of a JDBC result set as an iterable list of
@@ -32,101 +31,6 @@ import java.util.Set;
  */
 public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements AutoCloseable {
     private ResultSet resultSet;
-
-    private Map<String, Object> row = new AbstractMap<String, Object>() {
-        private Set<Entry<String, Object>> entrySet = new AbstractSet<Entry<String, Object>>() {
-            @Override
-            public int size() {
-                int size;
-                try {
-                    size = resultSet.getMetaData().getColumnCount();
-                } catch (SQLException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                return size;
-            }
-
-            @Override
-            public Iterator<Entry<String, Object>> iterator() {
-                return new Iterator<Entry<String, Object>>() {
-                    private int index = -1;
-
-                    private Entry<String, Object> entry = new Entry<String, Object>() {
-                        @Override
-                        public String getKey() {
-                            String key;
-                            try {
-                                key = resultSet.getMetaData().getColumnLabel(index + 1);
-                            } catch (SQLException exception) {
-                                throw new RuntimeException();
-                            }
-
-                            return key;
-                        }
-
-                        @Override
-                        public Object getValue() {
-                            Object value;
-                            try {
-                                value = resultSet.getObject(index + 1);
-                            } catch (SQLException exception) {
-                                throw new RuntimeException();
-                            }
-
-                            return value;
-                        }
-
-                        @Override
-                        public Object setValue(Object value) {
-                            throw new UnsupportedOperationException();
-                        }
-                    };
-
-                    @Override
-                    public boolean hasNext() {
-                        return (index < size() - 1);
-                    }
-
-                    @Override
-                    public Entry<String, Object> next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
-
-                        index++;
-
-                        return entry;
-                    }
-                };
-            }
-        };
-
-        @Override
-        public Object get(Object key) {
-            if (key == null) {
-                throw new IllegalArgumentException();
-            }
-
-            Object value;
-            try {
-                value = resultSet.getObject(key.toString());
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return value;
-        }
-
-        @Override
-        public Set<Entry<String, Object>> entrySet() {
-            return entrySet;
-        }
-    };
-
-    private static final int TRUE = 1;
-    private static final int FALSE = 0;
-    private static final int UNKNOWN = -1;
 
     /**
      * Creates a new result set adapter.
@@ -157,7 +61,6 @@ public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements Au
                 } finally {
                     connection.close();
                 }
-
             }
         }
     }
@@ -175,19 +78,19 @@ public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements Au
     @Override
     public Iterator<Map<String, ?>> iterator() {
         return new Iterator<Map<String, ?>>() {
-            private int next = UNKNOWN;
+            private Boolean next = null;
 
             @Override
             public boolean hasNext() {
-                if (next == UNKNOWN) {
+                if (next == null) {
                     try {
-                        next = resultSet.next() ? TRUE : FALSE;
+                        next = resultSet.next() ? Boolean.TRUE : Boolean.FALSE;
                     } catch (SQLException exception) {
                         throw new RuntimeException(exception);
                     }
                 }
 
-                return (next == TRUE);
+                return next.booleanValue();
             }
 
             @Override
@@ -196,7 +99,19 @@ public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements Au
                     throw new NoSuchElementException();
                 }
 
-                next = UNKNOWN;
+                LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+
+                try {
+                    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+
+                    for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
+                        row.put(resultSetMetaData.getColumnLabel(i + 1), resultSet.getObject(i + 1));
+                    }
+                } catch (SQLException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                next = null;
 
                 return row;
             }
