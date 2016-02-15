@@ -30,7 +30,7 @@ import java.util.Set;
  * Class that exposes the contents of a JDBC result set as an iterable list of
  * maps.
  */
-public class ResultSetAdapter extends AbstractList<Map<String, Object>> implements AutoCloseable {
+public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements AutoCloseable {
     private ResultSet resultSet;
 
     private Map<String, Object> row = new AbstractMap<String, Object>() {
@@ -124,9 +124,9 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
         }
     };
 
-    private static final int UNKNOWN = -1;
-    private static final int FALSE = 0;
     private static final int TRUE = 1;
+    private static final int FALSE = 0;
+    private static final int UNKNOWN = -1;
 
     /**
      * Creates a new result set adapter.
@@ -163,7 +163,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
     }
 
     @Override
-    public Map<String, Object> get(int index) {
+    public Map<String, ?> get(int index) {
         throw new UnsupportedOperationException();
     }
 
@@ -173,8 +173,8 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
     }
 
     @Override
-    public Iterator<Map<String, Object>> iterator() {
-        return new Iterator<Map<String, Object>>() {
+    public Iterator<Map<String, ?>> iterator() {
+        return new Iterator<Map<String, ?>>() {
             private int next = UNKNOWN;
 
             @Override

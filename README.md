@@ -277,7 +277,7 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
 
 `ResultSetAdapter` is forward-scrolling only; its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a result set to be returned directly to the caller without any intermediate buffering. The caller can simply execute a JDBC query, pass the resulting result set to the `ResultSetAdapter` constructor, and return the adapter instance:
 
-    public List<Map<String, Object>> getData() throws SQLException {
+    public List<Map<String, ?>> getData() throws SQLException {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from some_table");
         

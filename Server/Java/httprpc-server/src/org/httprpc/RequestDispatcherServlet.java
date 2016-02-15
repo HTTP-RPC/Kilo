@@ -286,10 +286,14 @@ public class RequestDispatcherServlet extends HttpServlet {
                 methodDescriptors.add(new MethodDescriptor(method, resourceBundle));
             }
 
+            // TODO Set return type and content type
+
             serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptors));
         } else {
             // Look up service method
             Method method = methodMap.get(pathInfo.substring(1));
+
+            // TODO Look up method by template
 
             if (method == null) {
                 throw new ServletException("Method not found.");

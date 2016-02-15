@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.httprpc.Template;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
@@ -75,6 +76,7 @@ public class TestService extends WebService {
         return String.join(", ", items);
     }
 
+    @Template("statistics.html")
     public Map<String, Object> getStatistics(List<Double> values) {
         if (values == null) {
             throw new IllegalArgumentException();
@@ -95,7 +97,7 @@ public class TestService extends WebService {
         return new BeanAdapter(statistics);
     }
 
-    public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
+    public List<Map<String, ?>> getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
         String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));
@@ -108,6 +110,12 @@ public class TestService extends WebService {
         parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
 
         return new ResultSetAdapter(statement.executeQuery());
+    }
+
+    @Template("testdata.html")
+    @Template("testdata.csv")
+    public Map<String, ?> getTestDataTemplate() throws ClassNotFoundException, SQLException, IOException {
+        return mapOf(entry("testData", getTestData()));
     }
 
     public void getVoid() {
