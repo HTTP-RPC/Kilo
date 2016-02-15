@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Templates {
     /**
-     * The template annotations.
-     *
      * @return
      * The template annotations.
      */

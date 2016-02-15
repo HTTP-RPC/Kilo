@@ -28,8 +28,6 @@ import java.lang.annotation.Target;
 @Repeatable(Templates.class)
 public @interface Template {
     /**
-     * The name of the template.
-     *
      * @return
      * The template name.
      */

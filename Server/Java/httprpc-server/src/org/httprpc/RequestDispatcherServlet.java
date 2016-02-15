@@ -123,7 +123,7 @@ public class RequestDispatcherServlet extends HttpServlet {
          * @return
          * A list of the method's parameters.
          */
-        public ParameterDescriptorList getParameters() {
+        public List<ParameterDescriptor> getParameters() {
             return new ParameterDescriptorList(method.getParameters(), resourceBundle);
         }
 
