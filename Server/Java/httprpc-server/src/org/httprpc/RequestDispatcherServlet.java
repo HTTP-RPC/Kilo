@@ -234,8 +234,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String UNSUPPORTED_TYPE = "?";
 
-    private static final String JSON_MIME_TYPE = "application/json; charset=UTF-8";
-
     @Override
     public void init() throws ServletException {
         String serviceClassName = getServletConfig().getInitParameter("serviceClassName");
@@ -293,10 +291,9 @@ public class RequestDispatcherServlet extends HttpServlet {
                 methodDescriptors.add(new MethodDescriptor(method, resourceBundle));
             }
 
-            // TODO Move content type to Serializer
-            response.setContentType(JSON_MIME_TYPE);
-
             JSONSerializer serializer = new JSONSerializer();
+
+            response.setContentType(serializer.getContentType());
             serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptors));
         } else {
             // Look up service method
@@ -304,18 +301,14 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             Method method = methodMap.get(pathInfo);
 
-            // TODO Move content type to Serializer
-            Serializer<?> serializer;
-            String contentType;
+            Serializer serializer;
             if (method != null) {
                 Class<?> returnType = method.getReturnType();
 
                 if (returnType != Void.TYPE && returnType != Void.class) {
                     serializer = new JSONSerializer();
-                    contentType = JSON_MIME_TYPE;
                 } else {
                     serializer = null;
-                    contentType = null;
                 }
             } else {
                 method = templateMap.get(pathInfo);
@@ -330,8 +323,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                     throw new ServletException("Unsupported template type.");
                 }
 
-                contentType = "text/html"; // TODO Get actual MIME type
-                serializer = new TemplateSerializer(serviceType, pathInfo);
+                serializer = new TemplateSerializer(serviceType, pathInfo, getServletContext().getMimeType(pathInfo));
             }
 
             // Construct arguments
@@ -399,8 +391,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             // Write response
             if (serializer != null) {
-                response.setContentType(contentType);
-                ((Serializer<Object>)serializer).writeValue(response.getWriter(), result);
+                response.setContentType(serializer.getContentType());
+                serializer.writeValue(response.getWriter(), result);
             }
         }
     }
@@ -573,12 +565,20 @@ class NullWriter extends Writer {
     }
 }
 
-abstract class Serializer<V> {
-    public abstract void writeValue(PrintWriter writer, V value) throws IOException;
+abstract class Serializer {
+    public abstract String getContentType();
+    public abstract void writeValue(PrintWriter writer, Object value) throws IOException;
 }
 
-class JSONSerializer extends Serializer<Object> {
+class JSONSerializer extends Serializer {
     private int depth = 0;
+
+    private static final String JSON_MIME_TYPE = "application/json";
+
+    @Override
+    public String getContentType() {
+        return JSON_MIME_TYPE;
+    }
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
@@ -738,7 +738,7 @@ class JSONSerializer extends Serializer<Object> {
     }
 }
 
-class TemplateSerializer extends Serializer<Map<?, ?>> {
+class TemplateSerializer extends Serializer {
     private enum MarkerType {
         SECTION_START,
         SECTION_END,
@@ -749,17 +749,26 @@ class TemplateSerializer extends Serializer<Map<?, ?>> {
     private Class<?> serviceType;
     private String templateName;
 
+    private String contentType;
+
     private static final int EOF = -1;
 
-    public TemplateSerializer(Class<?> serviceType, String templateName) {
+    public TemplateSerializer(Class<?> serviceType, String templateName, String contentType) {
         this.serviceType = serviceType;
         this.templateName = templateName;
+
+        this.contentType = contentType;
     }
 
     @Override
-    public void writeValue(PrintWriter writer, Map<?, ?> value) throws IOException {
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Override
+    public void writeValue(PrintWriter writer, Object value) throws IOException {
         try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
-            writeValue(writer, value, new PagedReader(new InputStreamReader(inputStream)));
+            writeValue(writer, (Map<?, ?>)value, new PagedReader(new InputStreamReader(inputStream)));
         }
     }
 

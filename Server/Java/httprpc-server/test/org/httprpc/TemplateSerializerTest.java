@@ -29,9 +29,11 @@ import static org.httprpc.WebService.mapOf;
 import static org.httprpc.WebService.entry;
 
 public class TemplateSerializerTest {
+    private static final String PLAIN_TEXT_MIME_TYPE = "text/plain";
+
     @Test
     public void testDictionary() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "dictionary.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -53,7 +55,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testEmptySection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -66,7 +68,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testSingleElementSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -89,7 +91,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testMultiElementSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary1 = mapOf(
             entry("a", "hello"),
@@ -120,7 +122,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testNestedSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section2.txt");
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section2.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
             entry("abc", "ABC"),
