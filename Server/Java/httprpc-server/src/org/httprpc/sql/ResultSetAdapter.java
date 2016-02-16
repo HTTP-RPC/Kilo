@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * Class that exposes the contents of a JDBC result set as an iterable list of
  * maps.
  */
-public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements AutoCloseable {
+public class ResultSetAdapter extends AbstractList<Map<String, Object>> implements AutoCloseable {
     private ResultSet resultSet;
 
     /**
@@ -66,7 +66,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements Au
     }
 
     @Override
-    public Map<String, ?> get(int index) {
+    public Map<String, Object> get(int index) {
         throw new UnsupportedOperationException();
     }
 
@@ -76,8 +76,8 @@ public class ResultSetAdapter extends AbstractList<Map<String, ?>> implements Au
     }
 
     @Override
-    public Iterator<Map<String, ?>> iterator() {
-        return new Iterator<Map<String, ?>>() {
+    public Iterator<Map<String, Object>> iterator() {
+        return new Iterator<Map<String, Object>>() {
             private Boolean next = null;
 
             @Override

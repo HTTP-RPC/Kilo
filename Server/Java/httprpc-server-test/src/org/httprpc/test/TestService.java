@@ -94,7 +94,7 @@ public class TestService extends WebService {
         return new BeanAdapter(statistics);
     }
 
-    public List<Map<String, ?>> getTestData() throws ClassNotFoundException, SQLException, IOException {
+    public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
         String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));

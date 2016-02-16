@@ -770,6 +770,9 @@ class TemplateSerializer extends Serializer {
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
+        // TODO Automatically wrap list values in a map with a default list name (e.g. ".")?
+        // If so, be sure to add unit test and document this.
+
         if (!(value instanceof Map<?, ?>)) {
             throw new IOException("Invalid value type.");
         }
