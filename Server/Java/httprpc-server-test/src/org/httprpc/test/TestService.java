@@ -94,6 +94,8 @@ public class TestService extends WebService {
         return new BeanAdapter(statistics);
     }
 
+    @Template("testdata.html")
+    @Template("testdata.csv")
     public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
@@ -107,12 +109,6 @@ public class TestService extends WebService {
         parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
 
         return new ResultSetAdapter(statement.executeQuery());
-    }
-
-    @Template("testdata.html")
-    @Template("testdata.csv")
-    public Map<String, ?> getTestDataTemplate() throws ClassNotFoundException, SQLException, IOException {
-        return mapOf(entry("testData", getTestData()));
     }
 
     public void getVoid() {

@@ -754,6 +754,8 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
+    private static final String DEFAULT_SECTION_MARKER = ".";
+
     private static final int EOF = -1;
 
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType) {
@@ -770,8 +772,9 @@ class TemplateSerializer extends Serializer {
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
-        // TODO Automatically wrap list values in a map with a default list name (e.g. ".")?
-        // If so, be sure to add unit test and document this.
+        if (value instanceof List<?>) {
+            value = WebService.mapOf(WebService.entry(DEFAULT_SECTION_MARKER, value));
+        }
 
         if (!(value instanceof Map<?, ?>)) {
             throw new IOException("Invalid value type.");

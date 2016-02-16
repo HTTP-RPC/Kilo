@@ -117,4 +117,9 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
             }
         };
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName();
+    }
 }
