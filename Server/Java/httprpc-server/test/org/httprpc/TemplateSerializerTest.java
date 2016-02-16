@@ -144,4 +144,17 @@ public class TemplateSerializerTest {
 
         Assert.assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", result);
     }
+
+    @Test
+    public void testComment() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "comment.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), Collections.emptyMap());
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("><", result);
+    }
 }
