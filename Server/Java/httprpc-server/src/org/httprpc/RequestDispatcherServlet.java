@@ -254,12 +254,16 @@ public class RequestDispatcherServlet extends HttpServlet {
             Method method = methods[i];
 
             if (serviceType.isAssignableFrom(method.getDeclaringClass())) {
-                methodMap.put(method.getName(), method);
+                if (methodMap.put(method.getName(), method) != null) {
+                    throw new ServletException("Duplicate method name.");
+                }
 
                 Template[] templates = method.getAnnotationsByType(Template.class);
 
                 for (int j = 0; j < templates.length; j++) {
-                    templateMap.put(templates[j].value(), method);
+                    if (templateMap.put(templates[j].value(), method) != null) {
+                        throw new ServletException("Duplicate template name.");
+                    }
                 }
             }
         }
@@ -315,12 +319,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                 if (method == null) {
                     throw new ServletException("Method not found.");
-                }
-
-                Class<?> returnType = method.getReturnType();
-
-                if (!Map.class.isAssignableFrom(returnType)) {
-                    throw new ServletException("Unsupported template type.");
                 }
 
                 serializer = new TemplateSerializer(serviceType, pathInfo, getServletContext().getMimeType(pathInfo));
@@ -453,6 +451,7 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 }
 
+// Paged reader
 class PagedReader extends Reader {
     private Reader reader;
     private int pageSize;
@@ -548,6 +547,7 @@ class PagedReader extends Reader {
     }
 }
 
+// Null writer
 class NullWriter extends Writer {
     @Override
     public void write(char[] cbuf, int off, int len) {
@@ -565,11 +565,13 @@ class NullWriter extends Writer {
     }
 }
 
+// Abstract base class for serializers
 abstract class Serializer {
     public abstract String getContentType();
     public abstract void writeValue(PrintWriter writer, Object value) throws IOException;
 }
 
+// JSON serializer
 class JSONSerializer extends Serializer {
     private int depth = 0;
 
@@ -738,6 +740,7 @@ class JSONSerializer extends Serializer {
     }
 }
 
+// Template serializer
 class TemplateSerializer extends Serializer {
     private enum MarkerType {
         SECTION_START,
@@ -767,6 +770,10 @@ class TemplateSerializer extends Serializer {
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
+        if (!(value instanceof Map<?, ?>)) {
+            throw new IOException("Invalid value type.");
+        }
+
         try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
             writeValue(writer, (Map<?, ?>)value, new PagedReader(new InputStreamReader(inputStream)));
         }

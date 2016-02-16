@@ -14,9 +14,6 @@
 
 package org.httprpc.test;
 
-/**
- * Sample statistics Bean class.
- */
 public class Statistics {
     private int count = 0;
     private double sum = 0;

@@ -30,9 +30,6 @@ import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
-/**
- * Test service.
- */
 public class TestService extends WebService {
     public double add(double a, double b) {
         return a + b;
