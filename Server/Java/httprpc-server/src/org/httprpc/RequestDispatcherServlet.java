@@ -754,8 +754,6 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
-    private static final String DEFAULT_MARKER = ".";
-
     private static final int EOF = -1;
 
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType) {
@@ -783,7 +781,7 @@ class TemplateSerializer extends Serializer {
         }
 
         if (!(root instanceof Map<?, ?>)) {
-            root = WebService.mapOf(WebService.entry(DEFAULT_MARKER, root));
+            root = WebService.mapOf(WebService.entry(".", root));
         }
 
         Map<?, ?> dictionary = (Map<?, ?>)root;
@@ -891,7 +889,7 @@ class TemplateSerializer extends Serializer {
 
                         case VARIABLE: {
                             Object value;
-                            if (marker.equals(DEFAULT_MARKER)) {
+                            if (marker.equals(".")) {
                                 value = dictionary.get(marker);
                             } else {
                                 value = dictionary;
