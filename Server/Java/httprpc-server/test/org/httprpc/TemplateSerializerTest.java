@@ -163,6 +163,21 @@ public class TemplateSerializerTest {
     }
 
     @Test
+    public void testPrimitiveSection() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section4.txt", PLAIN_TEXT_MIME_TYPE);
+
+        List<?> value = Arrays.asList("hello", 42, false);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), value);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[(hello)(42)(false)]", result);
+    }
+
+    @Test
     public void testComment() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "comment.txt", PLAIN_TEXT_MIME_TYPE);
 

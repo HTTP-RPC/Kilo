@@ -754,7 +754,7 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
-    private static final String DEFAULT_SECTION_MARKER = ".";
+    private static final String DEFAULT_MARKER = ".";
 
     private static final int EOF = -1;
 
@@ -772,10 +772,8 @@ class TemplateSerializer extends Serializer {
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
-        if (value != null) {
-            try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
-                writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
-            }
+        try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
+            writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
         }
     }
 
@@ -784,12 +782,8 @@ class TemplateSerializer extends Serializer {
             throw new IOException("Error writing to output stream.");
         }
 
-        if (root instanceof List<?>) {
-            root = WebService.mapOf(WebService.entry(DEFAULT_SECTION_MARKER, root));
-        }
-
         if (!(root instanceof Map<?, ?>)) {
-            throw new IOException("Invalid root element.");
+            root = WebService.mapOf(WebService.entry(DEFAULT_MARKER, root));
         }
 
         Map<?, ?> dictionary = (Map<?, ?>)root;
@@ -896,19 +890,24 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case VARIABLE: {
-                            String[] path = marker.split("\\.");
+                            Object value;
+                            if (marker.equals(DEFAULT_MARKER)) {
+                                value = dictionary.get(marker);
+                            } else {
+                                value = dictionary;
 
-                            Object value = dictionary;
+                                String[] path = marker.split("\\.");
 
-                            for (int i = 0; i < path.length; i++) {
-                                if (!(value instanceof Map<?, ?>)) {
-                                    throw new IOException("Invalid path.");
-                                }
+                                for (int i = 0; i < path.length; i++) {
+                                    if (!(value instanceof Map<?, ?>)) {
+                                        throw new IOException("Invalid path.");
+                                    }
 
-                                value = ((Map<?, ?>)value).get(path[i]);
+                                    value = ((Map<?, ?>)value).get(path[i]);
 
-                                if (value == null) {
-                                    break;
+                                    if (value == null) {
+                                        break;
+                                    }
                                 }
                             }
 

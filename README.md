@@ -214,7 +214,7 @@ Additional properties files (e.g. _MathService\_es\_US.properties_) could be pro
 ## Templates
 TODO [Ctemplate](https://google-ctemplate.googlecode.com/svn/trunk/doc/guide.html) sections, comments, variables
 
-TODO [Mustache](https://mustache.github.io) extensions (`#.` section, path notation)
+TODO [Mustache](https://mustache.github.io) extensions (dot, path notation)
 
 TODO `Template` annotation
 
