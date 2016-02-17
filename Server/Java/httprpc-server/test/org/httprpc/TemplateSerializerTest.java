@@ -38,13 +38,9 @@ public class TemplateSerializerTest {
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
             entry("b", 42),
-            entry("c.d", false)
-            // TODO
-            /*
             entry("c", mapOf(
                 entry("d", false)
             ))
-            */
         );
 
         String result;
@@ -53,10 +49,10 @@ public class TemplateSerializerTest {
             result = writer.toString();
         }
 
-        Assert.assertEquals(String.format("{a=%s,b=%s,c.d=%s,e=}",
+        Assert.assertEquals(String.format("{a=%s,b=%s,c.d=%s,e=,f.g=}",
             dictionary.get("a"),
             dictionary.get("b"),
-            dictionary.get("c.d")), result);
+            ((Map<?, ?>)dictionary.get("c")).get("d")), result);
     }
 
     @Test

@@ -896,7 +896,21 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case VARIABLE: {
-                            Object value = dictionary.get(marker);
+                            String[] path = marker.split("\\.");
+
+                            Object value = dictionary;
+
+                            for (int i = 0; i < path.length; i++) {
+                                if (!(value instanceof Map<?, ?>)) {
+                                    throw new IOException("Invalid path.");
+                                }
+
+                                value = ((Map<?, ?>)value).get(path[i]);
+
+                                if (value == null) {
+                                    break;
+                                }
+                            }
 
                             if (value != null) {
                                 if (!(value instanceof String || value instanceof Number || value instanceof Boolean)) {
