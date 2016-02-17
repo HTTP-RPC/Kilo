@@ -32,6 +32,19 @@ public class TemplateSerializerTest {
     private static final String PLAIN_TEXT_MIME_TYPE = "text/plain";
 
     @Test
+    public void testNull() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), null);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("{a=,b=,c.d=,e=,f.g=}", result);
+    }
+
+    @Test
     public void testDictionary() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
 
