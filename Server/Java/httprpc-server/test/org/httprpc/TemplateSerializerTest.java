@@ -41,7 +41,7 @@ public class TemplateSerializerTest {
             result = writer.toString();
         }
 
-        Assert.assertEquals("{a=,b=,c.d=,e=,f.g=}", result);
+        Assert.assertEquals("", result);
     }
 
     @Test

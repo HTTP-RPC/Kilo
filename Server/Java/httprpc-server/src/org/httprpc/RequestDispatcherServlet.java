@@ -770,8 +770,10 @@ class TemplateSerializer extends Serializer {
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
-        try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
-            writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
+        if (value != null) {
+            try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
+                writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
+            }
         }
     }
 
@@ -780,9 +782,7 @@ class TemplateSerializer extends Serializer {
             throw new IOException("Error writing to output stream.");
         }
 
-        if (root == null) {
-            root = Collections.emptyMap();
-        } else if (!(root instanceof Map<?, ?>)) {
+        if (!(root instanceof Map<?, ?>)) {
             root = WebService.mapOf(WebService.entry(".", root));
         }
 
@@ -842,7 +842,9 @@ class TemplateSerializer extends Serializer {
 
                             if (value == null) {
                                 value = Collections.emptyList();
-                            } else if (!(value instanceof List<?>)) {
+                            }
+
+                            if (!(value instanceof List<?>)) {
                                 throw new IOException("Invalid section element.");
                             }
 
@@ -866,7 +868,7 @@ class TemplateSerializer extends Serializer {
                                         }
                                     }
                                 } else {
-                                    writeTemplate(new PrintWriter(new NullWriter()), null, reader);
+                                    writeTemplate(new PrintWriter(new NullWriter()), Collections.emptyMap(), reader);
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
