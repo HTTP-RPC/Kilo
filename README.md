@@ -89,7 +89,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
-    * `Template` and `Templates` - annotations that associate template documents with web service methods
+    * `Template` - annotation that associates a template document with a web service method
 * _`org.httprpc.beans`_
     * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable to serialization to JSON
 * _`org.httprpc.sql`_
@@ -212,7 +212,11 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
 Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other localizations.
 
 ## Templates
-TODO
+TODO [Ctemplate](https://google-ctemplate.googlecode.com/svn/trunk/doc/guide.html), [Mustache](https://mustache.github.io)
+
+TODO Sections (include `#.` notation), comments, variables (include path notation)
+
+TODO `Template` annotation
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON. Nested Bean properties are supported.

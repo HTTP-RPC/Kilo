@@ -38,7 +38,13 @@ public class TemplateSerializerTest {
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
             entry("b", 42),
-            entry("c", false)
+            entry("c.d", false)
+            // TODO
+            /*
+            entry("c", mapOf(
+                entry("d", false)
+            ))
+            */
         );
 
         String result;
@@ -47,10 +53,10 @@ public class TemplateSerializerTest {
             result = writer.toString();
         }
 
-        Assert.assertEquals(String.format("{a=%s,b=%s,c=%s,d=}",
+        Assert.assertEquals(String.format("{a=%s,b=%s,c.d=%s,e=}",
             dictionary.get("a"),
             dictionary.get("b"),
-            dictionary.get("c")), result);
+            dictionary.get("c.d")), result);
     }
 
     @Test
@@ -121,7 +127,7 @@ public class TemplateSerializerTest {
     }
 
     @Test
-    public void testNestedSection() throws IOException {
+    public void testNestedSection1() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section2.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
@@ -143,6 +149,21 @@ public class TemplateSerializerTest {
         }
 
         Assert.assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", result);
+    }
+
+    @Test
+    public void testNestedSection2() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section3.txt", PLAIN_TEXT_MIME_TYPE);
+
+        List<?> value = Arrays.asList(Arrays.asList(Arrays.asList(mapOf(entry("a", "hello")))));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), value);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[[[hello]]]", result);
     }
 
     @Test

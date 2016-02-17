@@ -772,23 +772,27 @@ class TemplateSerializer extends Serializer {
 
     @Override
     public void writeValue(PrintWriter writer, Object value) throws IOException {
-        if (value instanceof List<?>) {
-            value = WebService.mapOf(WebService.entry(DEFAULT_SECTION_MARKER, value));
-        }
-
-        if (!(value instanceof Map<?, ?>)) {
-            throw new IOException("Invalid value type.");
-        }
-
-        try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
-            writeValue(writer, (Map<?, ?>)value, new PagedReader(new InputStreamReader(inputStream)));
+        if (value != null) {
+            try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
+                writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
+            }
         }
     }
 
-    private void writeValue(PrintWriter writer, Map<?, ?> dictionary, PagedReader reader) throws IOException {
+    private void writeTemplate(PrintWriter writer, Object root, PagedReader reader) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
+
+        if (root instanceof List<?>) {
+            root = WebService.mapOf(WebService.entry(DEFAULT_SECTION_MARKER, root));
+        }
+
+        if (!(root instanceof Map<?, ?>)) {
+            throw new IOException("Invalid root element.");
+        }
+
+        Map<?, ?> dictionary = (Map<?, ?>)root;
 
         int c = reader.read();
 
@@ -834,6 +838,10 @@ class TemplateSerializer extends Serializer {
 
                     String marker = markerBuilder.toString();
 
+                    if (marker.length() == 0) {
+                        throw new IOException("Invalid marker.");
+                    }
+
                     switch (markerType) {
                         case SECTION_START: {
                             Object value = dictionary.get(marker);
@@ -851,22 +859,18 @@ class TemplateSerializer extends Serializer {
                                     while (iterator.hasNext()) {
                                         Object element = iterator.next();
 
-                                        if (!(element instanceof Map<?, ?>)) {
-                                            throw new IOException("Invalid dictionary element.");
-                                        }
-
                                         if (iterator.hasNext()) {
                                             reader.mark(0);
                                         }
 
-                                        writeValue(writer, (Map<?, ?>)element, reader);
+                                        writeTemplate(writer, element, reader);
 
                                         if (iterator.hasNext()) {
                                             reader.reset();
                                         }
                                     }
                                 } else {
-                                    writeValue(new PrintWriter(new NullWriter()), Collections.emptyMap(), reader);
+                                    writeTemplate(new PrintWriter(new NullWriter()), Collections.emptyMap(), reader);
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
