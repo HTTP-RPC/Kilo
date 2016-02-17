@@ -212,9 +212,9 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
 Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other localizations.
 
 ## Templates
-TODO [Ctemplate](https://google-ctemplate.googlecode.com/svn/trunk/doc/guide.html), [Mustache](https://mustache.github.io)
+TODO [Ctemplate](https://google-ctemplate.googlecode.com/svn/trunk/doc/guide.html) sections, comments, variables
 
-TODO Sections (include `#.` notation), comments, variables (include path notation)
+TODO [Mustache](https://mustache.github.io) extensions (`#.` section, path notation)
 
 TODO `Template` annotation
 
