@@ -212,16 +212,83 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
 Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other localizations.
 
 ## Templates
-TODO [Ctemplate](https://google-ctemplate.googlecode.com/svn/trunk/doc/guide.html) sections, comments, variables
+Although data produced by an HTTP-RPC web service is typically returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
 
-TODO [Mustache](https://mustache.github.io) extensions (dot, path notation)
+HTTP-RPC templates are based on the [Ctemplate](https://google-ctemplate.googlecode.com/svn/trunk/doc/guide.html) system, which defines a set of "markers" that are replaced with values supplied by a "data dictionary" when the template is processed. The following marker types are supported by HTTP-RPC:
 
-TODO `Template` annotation
+* {{_variable_}} - injects a variable from the data dictionary into the output
+* {{#_section_}}...{{/_section_}} - defines a repeating section of content
+* {{!_comment_}} - defines a comment (informational text that is excluded from the final output)
+
+The value returned by the service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. 
+
+For example, a method that calculates a set of statistical values and returns them to the caller might be defined as follows:
+
+    public Map<String, Object> getStatistics(List<Double> values) { ... }
+    
+A GET for this URL would invoke the `getStatistics()` method, producing a JSON document in response:
+
+    /math/getStatistics?values=1&values=3&values=5
+
+The response document might look something like this:
+
+    {"average":3.0, "count":3, "sum":9.0}  
+
+However, it may be more convenient in some circumstances to return the results to the caller in a different format; for example, as HTML to support a browser-based client application. A simple template for presenting the result data as a web page is shown below:
+
+    <html>
+    <head>
+    <title>Statistics</title>
+    </head>
+    <body>
+    <p>Count: {{count}}</p>
+    <p>Sum: {{sum}}</p>
+    <p>Average: {{average}}</p> 
+    </body>
+    </html>
+
+Note the use of the variable markers for the "count", "sum", and "average" values. At execution time, these markers will be replaced by the corresponding variable values in the data dictionary (i.e. the map value returned by the method).
+
+The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name of the template document that will be applied to the results. For example, if the HTML template above was named _statistics.html_, the `getStatistics()` method would be annotated as follows:
+
+    @Template("statistics.html")
+    public Map<String, Object> getStatistics(List<Double> values) { ... }
+
+With the annotation applied, a GET for the following URL would invoke the `getStatistics()` method and apply the template to the results:
+
+    /math/statistics.html?values=1&values=3&values=5
+
+The markup returned to the caller would appear as follows:
+
+    <html>
+    <head>
+    <title>Statistics</title>
+    </head>
+    <body>
+    <p>Count: 3.0</p>
+    <p>Sum: 9.0</p>
+    <p>Average: 3.0</p> 
+    </body>
+    </html>
+
+TODO In article, include complete implementation of method using BeanAdapter
+
+TODO Multiple templates per method
+
+TODO Path notation
+
+### Sections
+
+TODO
+
+### Dot Notation
+
+TODO
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON. Nested Bean properties are supported.
 
-For example, the following class might be used to represent some simple statistical information about a set of values:
+For example, the statistical data discussed in the previous section might be represented by the following class:
 
     public class Statistics {
         private int count = 0;
@@ -253,7 +320,7 @@ For example, the following class might be used to represent some simple statisti
         }
     }
 
-A service method that calculates the statistical values and returns them to the caller might look like this:
+The implementation of the method that calculates the statistical values and returns them to the caller might look like this:
 
     public Map<String, Object> getStatistics(List<Double> values) {    
         Statistics statistics = new Statistics();
@@ -274,13 +341,7 @@ A service method that calculates the statistical values and returns them to the 
         return new BeanAdapter(statistics);
     }
 
-A GET for this URL would invoke the `getStatistics()` method:
-
-    /math/getStatistics?values=1&values=3&values=5
-
-producing the following JSON result in response:
-
-    {"average":3.0, "count":3, "sum":9.0}  
+Although the values are actually stored in the strongly typed `Statistics` class instance, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
 
 ## ResultSetAdapter Class
 The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON by `RequestDispatcherServlet`. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
