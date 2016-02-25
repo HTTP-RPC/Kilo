@@ -89,7 +89,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
-    * `Template` - annotation that associates a template document with a web service method
+    * `Template` - annotation that associates a template with a web service method
 * _`org.httprpc.beans`_
     * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable to serialization to JSON
 * _`org.httprpc.sql`_
@@ -160,7 +160,7 @@ Similarly, a GET for the following URL would invoke the `addValues()` method, pr
     /math/addValues?values=1&values=3&values=5
 
 ## RequestDispatcherServlet Class
-HTTP-RPC services are "published", or made available, via the `RequestDispatcherServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the specified service method, and serializing the return value to JSON. Note that service classes must be compiled with the `-parameters` flag so their parameter names are available at runtime.
+HTTP-RPC services are published via the `RequestDispatcherServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the specified service method, and serializing the return value to JSON. Note that service classes must be compiled with the `-parameters` flag so their parameter names are available at runtime.
 
 Java objects are mapped to their JSON equivalents as follows:
 
@@ -247,7 +247,7 @@ However, it may be more convenient in some circumstances to return the results t
     </body>
     </html>
 
-Note the use of the variable markers for the "count", "sum", and "average" values. At execution time, these markers will be replaced by the corresponding variable values in the data dictionary (i.e. the map value returned by the method).
+Note the use of the variable markers for the "count", "sum", and "average" values. At execution time, these markers will be replaced by the corresponding values in the data dictionary (i.e. the map value returned by the method).
 
 The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name of the template document that will be applied to the results. For example, if the HTML template above was named _statistics.html_, the `getStatistics()` method would be annotated as follows:
 
@@ -258,7 +258,7 @@ With the annotation applied, a GET for the following URL would invoke the `getSt
 
     /math/statistics.html?values=1&values=3&values=5
 
-The markup returned to the caller would appear as follows:
+This request would generate the following markup:
 
     <html>
     <head>
@@ -270,8 +270,6 @@ The markup returned to the caller would appear as follows:
     <p>Average: 3.0</p> 
     </body>
     </html>
-
-TODO In article, include complete implementation of method using BeanAdapter
 
 TODO Multiple templates per method
 
@@ -286,7 +284,7 @@ TODO
 TODO
 
 ## BeanAdapter Class
-The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any Bean properties defined by the object as entries in the map, allowing custom types to be serialized to JSON. Nested Bean properties are supported.
+The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
 
 For example, the statistical data discussed in the previous section might be represented by the following class:
 
@@ -320,7 +318,7 @@ For example, the statistical data discussed in the previous section might be rep
         }
     }
 
-The implementation of the method that calculates the statistical values and returns them to the caller might look like this:
+Using this class, the implementation of the `getStatistics()` method might look like this:
 
     public Map<String, Object> getStatistics(List<Double> values) {    
         Statistics statistics = new Statistics();
@@ -341,7 +339,13 @@ The implementation of the method that calculates the statistical values and retu
         return new BeanAdapter(statistics);
     }
 
-Although the values are actually stored in the strongly typed `Statistics` class instance, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
+Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
+
+### List and Map Adapters
+
+TODO Discuss BeanAdapter#adapt() (see Javadoc)
+
+TODO Discuss nested Bean properties
 
 ## ResultSetAdapter Class
 The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON by `RequestDispatcherServlet`. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
