@@ -5,7 +5,7 @@ In HTTP-RPC, remote procedures, or "methods", are encapsulated by a "service", w
 
 For example, a GET request for the following URL might invoke the "add" method of a hypothetical "math" service:
 
-    http://example.com/rpc/math/add?a=1&b=2
+    /math/add?a=1&b=2
     
 The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request with a content type of `application/x-www-form-urlencoded` and a request body of `a=1&b=2`. No other HTTP operations are supported.
 
@@ -13,7 +13,7 @@ Method parameters may be either scalar (single-value) or vector (multi-value) ty
 
 Multi-value arguments are specified by providing zero or more scalar values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed argument values:
 
-    http://example.com/rpc/math/addValues?values=1&values=2&values=3
+    /math/addValues?values=1&values=2&values=3
 
 The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces a null argument value for that parameter. Omitting all values for a vector parameter produces an empty collection argument for the parameter.
 
@@ -74,9 +74,7 @@ For example, a descriptor for the hypothetical math service might look something
       }
     ]
         
-and could be obtained by a request for the following URL:
-
-    http://example.com/rpc/math
+and could be obtained by a GET request for `/math`.
     
 ## Implementations
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
@@ -91,7 +89,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
     * `Template` - annotation that associates a template with a web service method
 * _`org.httprpc.beans`_
-    * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable to serialization to JSON
+    * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
 * _`org.httprpc.sql`_
     * `ResultSetAdapter` - wrapper class that presents the contents of a JDBC result set as an iterable list, suitable for streaming to JSON
     * `Parameters` - class for simplifying execution of prepared statements
@@ -115,7 +113,7 @@ Methods must return a numeric or boolean primitive type, one of the following re
 * `java.util.List`
 * `java.util.Map`
 
-`Map` implementations must use `String` values for keys. Nested structures are supported.
+`Map` implementations must use `String` values for keys. Nested structures are supported, but reference cycles are not permitted.
 
 `List` and `Map` types are not required to support random access; iterability is sufficient. Additionally, `List` and `Map` types that implement `java.lang.AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
 
@@ -173,8 +171,8 @@ Java objects are mapped to their JSON equivalents as follows:
 Each servlet instance hosts a single HTTP-RPC service. The name of the service type is passed to the servlet via the "serviceClassName" initialization parameter. For example:
 
 	<servlet>
-		<servlet-name>MathServlet</servlet-name>
-		<servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
+	    <servlet-name>MathServlet</servlet-name>
+	    <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
         <init-param>
             <param-name>serviceClassName</param-name>
             <param-value>com.example.MathService</param-value>
@@ -209,7 +207,7 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
     addValues: Returns the sum of a list of values.
     addValues_values: The values to add.
     
-Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other localizations.
+Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other locales.
 
 ## Templates
 Although data produced by an HTTP-RPC web service is typically returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
@@ -309,7 +307,7 @@ The method might return a data structure similar to the following:
       ]
     }   
 
-In this example, the "items" key refers to a list value, so this key could be used in a template to define a section. For example:
+In this example, "items" refers to a list value, so this key could be used in a template to define a section. For example:
 
     <html>
     <head>
@@ -335,9 +333,9 @@ In this example, the "items" key refers to a list value, so this key could be us
     </body>
     </html>
 
-Note that the "orderID" and "customerID" variables are referenced outside of the section declaration, since they are defined by the data dictionary for the order itself, not by the dictionaries for the line items.
+Note that the "orderID" and "customerID" variables are referenced outside of the section declaration, since they are defined by the data dictionary for the order itself, not by the dictionaries for the individual line items.
 
-If the `getPurchaseOrder()` method is associated with this template (for example, named _order.html_), a GET request for the following URL would execute the method and generate an HTML document reflecting the contents of the order:
+If the `getPurchaseOrder()` method is associated with the preceding template (for example, named _order.html_), a GET request for the following URL would execute the method and generate an HTML document reflecting the contents of the order:
 
     /orders/order.html?orderID=101
 
@@ -372,7 +370,7 @@ The "items" section would be repeated for each item in the list, producing the f
     </html>
 
 #### Dot Notation
-Each section in a template must be backed by a map representing the section's data dictionary. This implies that list elements must always be instances of `java.util.Map`. Unfortunately, this is not always convenient. In the previous example, it was natural to associate the list of order items with the object representing the order itself. However, in many cases it may be more appropriate for a service method to return a list directly, rather than as a property of some parent object.
+Each section in a template must be backed by a map representing the section's data dictionary. This implies that list elements must always be instances of `java.util.Map`. Unfortunately, this is not always convenient. In the previous example, it was natural to associate the list of order items with the object representing the order itself. However, in many cases it may be preferable to return a list directly from a service method, rather than as a property of some parent object.
 
 In order to support this case, HTTP-RPC automatically wraps any list element that is not already a map in a map instance, and assigns a default name of "." to the element. For example, if the method in the previous example had been defined as follows:
 
@@ -395,7 +393,7 @@ it might simply return a list similar to the following:
       ...
     ]
 
-Since the list is no longer accessible via a key in a data dictionary, there would otherwise be no way to refer to it and define a section in the template. However, using dot notation, the template can be defined as follows (note the use of the "." character in the section declaration):
+Since the list is no longer accessible via a key in a data dictionary, there would otherwise be no way to refer to it in the template. However, using dot notation, the template can be defined as follows (note the use of the "." character in the section declaration):
 
     <html>
     <body>
@@ -469,7 +467,7 @@ Further, if a method returns a list of non-map elements, they can be referred to
     </body>
     </html>
     
-For example, if the JSON response to the method contained the following:
+For example, if the JSON response to a method contained the following:
 
     [1, 2, 3, 5, 8, 13, 21]
     
@@ -557,11 +555,11 @@ The `Parameters` class provides a means for executing prepared statements using 
     SELECT * FROM some_table 
     WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
     
-The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a `java.io.Reader` containing the SQL text as an argument:
+The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a `java.io.Reader` containing the SQL text as an argument; for example:
 
     Parameters parameters = Parameters.parse(new StringReader(sql));
 
-The `getSQL()` method of the `Parameters` class returns the parsed SQL in standard JDBC syntax; for example:
+The `getSQL()` method of the `Parameters` class returns the parsed SQL in standard JDBC syntax:
 
     SELECT * FROM some_table 
     WHERE column_a = ? OR column_b = ? OR column_c = COALESCE(?, 4.0)
@@ -682,7 +680,7 @@ For example, the following Android-specific code ensures that all result handler
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ## Result Class
-`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following public methods that can be used to populate Java Bean property values from dictionary entries:
+`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following public methods that can be used to populate Java Bean property values from map entries:
 
     public void set(String name, Object value) { ... }
     public void setAll(Map<String, Object> values) { ... }
@@ -729,9 +727,10 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
         Statistics statistics = new Statistics();
         statistics.setAll(result);
 
-        // statistics.getCount() = 3
-        // statistics.getSum() = 9.0
-        // statistics.getAverage() = 3.0
+        // Prints 3, 9.0, and 3.0
+        System.out.println(statistics.getCount());
+        System.out.println(statistics.getSum());
+        System.out.println(statistics.getAverage());
     });
 
 ## Examples
@@ -855,4 +854,4 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to inv
     });
 
 # More Information
-For more information, see [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki) or [the issue list](https://github.com/gk-brown/HTTP-RPC/issues).
+For more information, refer to [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki) or [the issue list](https://github.com/gk-brown/HTTP-RPC/issues).
