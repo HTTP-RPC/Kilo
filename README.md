@@ -343,7 +343,6 @@ If the `getPurchaseOrder()` method is associated with this template (for example
 
 The "items" section would be repeated for each item in the list, producing the following output:
 
-
     <html>
     <head>
         <title>Order #101</title>
@@ -372,10 +371,109 @@ The "items" section would be repeated for each item in the list, producing the f
     </body>
     </html>
 
-### Dot Notation
-Each section in a template, including the root, must be backed by a map representing the section's data dictionary. This implies that list elements must always be instances of `java.util.Map`. Unfortunately, this is not always convenient. In the previous example, it was natural to associate the list of order items (which are represented by object values in the JSON response) with the object representing the order itself. However, it may be more appropriate for a service method to return a list directly, rather than as a property of some parent object.
+#### Dot Notation
+Each section in a template must be backed by a map representing the section's data dictionary. This implies that list elements must always be instances of `java.util.Map`. Unfortunately, this is not always convenient. In the previous example, it was natural to associate the list of order items with the object representing the order itself. However, in many cases it may be more appropriate for a service method to return a list directly, rather than as a property of some parent object.
 
-TODO
+In order to support this case, HTTP-RPC automatically wraps any list element that is not already a map in a map instance, and assigns a default name of "." to the element. For example, if the method in the previous example had been defined as follows:
+
+    @Template("orderitems.html")
+    public List<Object> getPurchaseOrderItems(int orderID) { ... }
+
+it might simply return a list similar to the following:
+
+    [
+      {
+        "itemID": 1,
+        "description": "Item 1",          
+        "quantity": 3
+      },
+      {
+        "itemID": 2,
+        "description": "Item 2",
+        "quantity": 1
+      },
+      ...
+    ]
+
+Since the list is no longer accessible via a key in a data dictionary, there would otherwise be no way to refer to it and define a section in the template. However, using dot notation, the template can be defined as follows (note the use of the "." character in the section declaration):
+
+    <html>
+    <body>
+    <table>
+        <tr>
+            <td>Item #</td>
+            <td>Description</td>
+            <td>Quantity</td>
+        </tr>
+        {{#.}}
+        <tr>
+            <td>{{itemID}}</td>
+            <td>{{description}}</td>
+            <td>{{quantity}}</td>
+        </tr>
+        {{/.}}
+    </table>
+    </body>
+    </html>
+
+Executing a GET for _orderitems.html_ with an order ID of 101 would produce the following response:
+
+    <html>
+    <body>
+    <table>
+        <tr>
+            <td>Item #</td>
+            <td>Description</td>
+            <td>Quantity</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Item 1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Item 2</td>
+            <td>1</td>
+        </tr>
+        ...
+    </table>
+    </body>
+    </html>
+
+Dot notation isn't limited to lists and sections - it can also be used in variable markers. For example, the following template could be used to generate a simple HTML response to the `add()` method discussed earlier, which returns a single `double` value:
+
+    <html>
+    <body>
+    <p>{{.}}</p>
+    </body>
+    </html>
+    
+If the result of the add operation was the number `8`, the resulting output would look like this:
+
+    <html>
+    <body>
+    <p>8</p>
+    </body>
+    </html>
+
+Further, if a method returns a list of non-map elements, they can be referred to within a section as follows:
+
+    <html>
+    <body>
+    <table>
+    {{#.}}
+    <tr><td>{{.}}</td></tr>
+    {{/.}}
+    </table>
+    </body>
+    </html>
+    
+For example, if the JSON response to the method contained the following:
+
+    [1, 2, 3, 5, 8, 13, 21]
+    
+the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list. 
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
