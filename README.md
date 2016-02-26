@@ -19,7 +19,7 @@ The order in which parameters are specified does not matter. Omitting a value fo
 
 Return values may be any JSON type, including string, number, boolean (true/false), object, array, and null. No content is returned by a method that does not produce a value.
 
-An HTTP 200 is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
+An HTTP 200 status is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
 Services may return a optional JSON descriptor that documents the methods provided by the service. If supported, the descriptor should be of the following form, and should be returned by a GET request for the base service URL:
 
@@ -40,7 +40,7 @@ Services may return a optional JSON descriptor that documents the methods provid
       ...
     ]
 
-For example, a descriptor for the hypothetical math service might look something like this:
+For example, a descriptor for the hypothetical math service could be obtained by a GET request for `/math`, and might look something like this:
 
     [
       {
@@ -74,8 +74,6 @@ For example, a descriptor for the hypothetical math service might look something
       }
     ]
         
-and could be obtained by a GET request for `/math`.
-    
 ## Implementations
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
 
@@ -129,7 +127,7 @@ For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultS
 The values returned by these methods are populated via protected setters, which are called once per request by `RequestDispatcherServlet`. These setters are not meant to be called by application code. However, they can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
 
 ### Examples
-The following code demonstrates one possible implementation of the hypothetical "math" service discussed earlier:
+The following code demonstrates one possible implementation of the hypothetical math service discussed earlier:
 
     public class MathService extends WebService {
         // Add a + b
@@ -158,7 +156,7 @@ Similarly, a GET for the following URL would invoke the `addValues()` method, pr
     /math/addValues?values=1&values=3&values=5
 
 ## RequestDispatcherServlet Class
-HTTP-RPC services are published via the `RequestDispatcherServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the specified service method, and serializing the return value to JSON. Note that service classes must be compiled with the `-parameters` flag so their parameter names are available at runtime.
+HTTP-RPC services are published via the `RequestDispatcherServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the specified method, and serializing the return value to JSON. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 Java objects are mapped to their JSON equivalents as follows:
 
@@ -207,7 +205,7 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
     addValues: Returns the sum of a list of values.
     addValues_values: The values to add.
     
-Additional properties files (e.g. _MathService\_es\_US.properties_) could be provided to support other locales.
+Additional resources could be provided to support other locales.
 
 ## Templates
 Although data produced by an HTTP-RPC web service is typically returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
@@ -251,7 +249,7 @@ However, it may be more convenient in some circumstances to return the results t
 
 Note the use of the variable markers for the "count", "sum", and "average" values. At execution time, these markers will be replaced by the corresponding values in the data dictionary (i.e. the map value returned by the method). Variable markers can be used to refer to any `String`, `Number`, or `Boolean` value. If a property returns `null`, the marker is replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "foo.bar".
 
-The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name of the template document that will be applied to the results. For example, if the HTML template above was named _statistics.html_, the `getStatistics()` method would be annotated as follows:
+The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name of the template that will be applied to the results. For example, if the HTML template above was named _statistics.html_, the `getStatistics()` method would be annotated as follows:
 
     @Template("statistics.html")
     public Map<String, Object> getStatistics(List<Double> values) { ... }
@@ -282,11 +280,12 @@ Note that it is possible to associate multiple templates with a single service m
 ### Sections
 If a value in a data dictionary is an instance of `java.util.List`, the value's key can be used as a section marker. Content between the section start and end markers is repeated once for each element in the list. If the list is empty or the value of the key is `null`, the section's content is excluded from the output.
 
-For example, a method that returns information about a purchase order might be defined as follows:
+For example, a hypothetical "orders" service might provide a method that returns detail information about a purchase order:
 
+    @Template("order.html")
     public Map<String, Object> getPurchaseOrder(int orderID) { ... }
     
-The method might return a data structure similar to the following:
+This method might return a data structure similar to the following:
 
     {   
       "orderID": 101,
@@ -307,7 +306,7 @@ The method might return a data structure similar to the following:
       ]
     }   
 
-In this example, "items" refers to a list value, so this key could be used in a template to define a section. For example:
+Since "items" refers to a list value, this key could be used to define a section within a template. For example:
 
     <html>
     <head>
@@ -335,7 +334,7 @@ In this example, "items" refers to a list value, so this key could be used in a 
 
 Note that the "orderID" and "customerID" variables are referenced outside of the section declaration, since they are defined by the data dictionary for the order itself, not by the dictionaries for the individual line items.
 
-If the `getPurchaseOrder()` method is associated with the preceding template (for example, named _order.html_), a GET request for the following URL would execute the method and generate an HTML document reflecting the contents of the order:
+A GET request for the following URL would execute the `getPurchaseOrder()` method and generate an HTML document reflecting the contents of the order:
 
     /orders/order.html?orderID=101
 
@@ -393,7 +392,7 @@ it might simply return a list similar to the following:
       ...
     ]
 
-Since the list is no longer accessible via a key in a data dictionary, there would otherwise be no way to refer to it in the template. However, using dot notation, the template can be defined as follows (note the use of the "." character in the section declaration):
+Since the list is no longer accessible via a key in a data dictionary, there would otherwise be no way to refer to it in the template. However, using dot notation, the template can be defined as follows:
 
     <html>
     <body>
@@ -471,7 +470,7 @@ For example, if the JSON response to a method contained the following:
 
     [1, 2, 3, 5, 8, 13, 21]
     
-the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list. 
+the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
@@ -531,9 +530,7 @@ Using this class, an implementation of the `getStatistics()` method might look l
 
 Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
 
-Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. 
-
-The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed.
+Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed.
 
 See the Javadoc for the `BeanAdapter` class for more information.
 
