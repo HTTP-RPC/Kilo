@@ -147,7 +147,7 @@ The following code demonstrates one possible implementation of the hypothetical 
         }
     }
 
-Executing a GET request for the following URL would invoke the service's `add()` method, producing the number 5 in response:
+A GET request for this URL would invoke the service's `add()` method, producing the number 5 in response:
 
     /math/add?a=2&b=3
     
@@ -254,7 +254,7 @@ The `Template` annotation is used to associate a template document with a method
     @Template("statistics.html")
     public Map<String, Object> getStatistics(List<Double> values) { ... }
 
-With the annotation applied, a GET for the following URL would invoke the `getStatistics()` method and apply the template to the results:
+With the annotation applied, a GET for this URL would invoke the `getStatistics()` method and apply the template to the results:
 
     /math/statistics.html?values=1&values=3&values=5
 
