@@ -230,24 +230,28 @@ A GET for this URL would invoke the `getStatistics()` method, producing a JSON d
 
     /math/getStatistics?values=1&values=3&values=5
 
-The response document might look something like this:
+The response might look something like this:
 
-    {"average":3.0, "count":3, "sum":9.0}  
+    {
+      "average":3.0, 
+      "count":3, 
+      "sum":9.0
+    }
 
 However, it may be more convenient in some circumstances to return the results to the caller in a different format; for example, as HTML to support a browser-based client application. A simple template for presenting the result data as a web page is shown below:
 
     <html>
     <head>
-    <title>Statistics</title>
+        <title>Statistics</title>
     </head>
     <body>
-    <p>Count: {{count}}</p>
-    <p>Sum: {{sum}}</p>
-    <p>Average: {{average}}</p> 
+        <p>Count: {{count}}</p>
+        <p>Sum: {{sum}}</p>
+        <p>Average: {{average}}</p> 
     </body>
     </html>
 
-Note the use of the variable markers for the "count", "sum", and "average" values. At execution time, these markers will be replaced by the corresponding values in the data dictionary (i.e. the map value returned by the method).
+Note the use of the variable markers for the "count", "sum", and "average" values. At execution time, these markers will be replaced by the corresponding values in the data dictionary (i.e. the map value returned by the method). Variable markers can be used to refer to any `String`, `Number`, or `Boolean` value. If a property returns `null`, the marker is replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "foo.bar".
 
 The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name of the template document that will be applied to the results. For example, if the HTML template above was named _statistics.html_, the `getStatistics()` method would be annotated as follows:
 
@@ -262,31 +266,121 @@ This request would generate the following markup:
 
     <html>
     <head>
-    <title>Statistics</title>
+        <title>Statistics</title>
     </head>
     <body>
-    <p>Count: 3.0</p>
-    <p>Sum: 9.0</p>
-    <p>Average: 3.0</p> 
+        <p>Count: 3.0</p>
+        <p>Sum: 9.0</p>
+        <p>Average: 3.0</p> 
     </body>
     </html>
 
-TODO Multiple templates per method
+Note that it is possible to associate multiple templates with a single service method. For example, the following code adds an additional XML template document to the `getStatistics()` method:
 
-TODO Path notation
+    @Template("statistics.html")
+    @Template("statistics.xml")
+    public Map<String, Object> getStatistics(List<Double> values) { ... }
 
 ### Sections
+If a value in a data dictionary is an instance of `java.util.List`, the value's key can be used as a section marker. Content between the section start and end markers is repeated once for each element in the list. If the list is empty or the value of the key is `null`, the section's content is excluded from the output.
 
-TODO
+For example, a method that returns information about a purchase order might be defined as follows:
+
+    public Map<String, Object> getPurchaseOrder(int orderID) { ... }
+    
+The method might return a data structure similar to the following:
+
+    {   
+      "orderID": 101,
+      "customerID": "xyz-1234",
+      "date": "2016-2-25",
+      "items": [
+        {
+          "itemID": 1,
+          "description": "Item 1",          
+          "quantity": 3
+        },
+        {
+          "itemID": 2,
+          "description": "Item 2",
+          "quantity": 1
+        },
+        ...
+      ]
+    }   
+
+In this example, the "items" key refers to a list value, so this key could be used in a template to define a section. For example:
+
+    <html>
+    <head>
+        <title>Order #{{orderID}}</title>
+    </head>
+    <body>
+    <p>Customer ID: {{customerID}}</p>
+    <p>Date: {{date}}</p>
+    <table>
+        <tr>
+            <td>Item #</td>
+            <td>Description</td>
+            <td>Quantity</td>
+        </tr>
+        {{#items}}
+        <tr>
+            <td>{{itemID}}</td>
+            <td>{{description}}</td>
+            <td>{{quantity}}</td>
+        </tr>
+        {{/items}}
+    </table>
+    </body>
+    </html>
+
+Note that the "orderID" and "customerID" variables are referenced outside of the section declaration, since they are defined by the data dictionary for the order itself, not by the dictionaries for the line items.
+
+If the `getPurchaseOrder()` method is associated with this template (for example, named _order.html_), a GET request for the following URL would execute the method and generate an HTML document reflecting the contents of the order:
+
+    /orders/order.html?orderID=101
+
+The "items" section would be repeated for each item in the list, producing the following output:
+
+
+    <html>
+    <head>
+        <title>Order #101</title>
+    </head>
+    <body>
+    <p>Customer ID: xyz-1234</p>
+    <p>Date: 2016-2-25</p>
+    <table>
+        <tr>
+            <td>Item #</td>
+            <td>Description</td>
+            <td>Quantity</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Item 1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Item 2</td>
+            <td>1</td>
+        </tr>
+        ...
+    </table>
+    </body>
+    </html>
 
 ### Dot Notation
+Each section in a template, including the root, must be backed by a map representing the section's data dictionary. This implies that list elements must always be instances of `java.util.Map`. Unfortunately, this is not always convenient. In the previous example, it was natural to associate the list of order items (which are represented by object values in the JSON response) with the object representing the order itself. However, it may be more appropriate for a service method to return a list directly, rather than as a property of some parent object.
 
 TODO
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
 
-For example, the statistical data discussed in the previous section might be represented by the following class:
+For example, the statistical data discussed in the previous section might be represented by the following Bean class:
 
     public class Statistics {
         private int count = 0;
@@ -318,7 +412,7 @@ For example, the statistical data discussed in the previous section might be rep
         }
     }
 
-Using this class, the implementation of the `getStatistics()` method might look like this:
+Using this class, an implementation of the `getStatistics()` method might look like this:
 
     public Map<String, Object> getStatistics(List<Double> values) {    
         Statistics statistics = new Statistics();
@@ -341,11 +435,11 @@ Using this class, the implementation of the `getStatistics()` method might look 
 
 Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
 
-### List and Map Adapters
+Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. 
 
-TODO Discuss BeanAdapter#adapt() (see Javadoc)
+The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed.
 
-TODO Discuss nested Bean properties
+See the Javadoc for the `BeanAdapter` class for more information.
 
 ## ResultSetAdapter Class
 The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON by `RequestDispatcherServlet`. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
