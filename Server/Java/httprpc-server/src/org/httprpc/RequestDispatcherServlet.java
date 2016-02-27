@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.AbstractCollection;
 import java.util.AbstractList;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -46,6 +48,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import org.httprpc.beans.BeanAdapter;
 
@@ -219,6 +222,65 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
+    // Attachment collection
+    private static class AttachmentCollection extends AbstractCollection<Attachment> {
+        private HttpServletRequest request;
+
+        public AttachmentCollection(HttpServletRequest request) {
+            this.request = request;
+        }
+
+        @Override
+        public int size() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Iterator<Attachment> iterator() {
+            Iterator<Attachment> iterator;
+            try {
+                iterator = new Iterator<Attachment>() {
+                    private Iterator<Part> parts = request.getParts().iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return parts.hasNext();
+                    }
+
+                    @Override
+                    public Attachment next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
+
+                        return new Attachment() {
+                            private Part part = parts.next();
+
+                            @Override
+                            public String getName() {
+                                return part.getName();
+                            }
+
+                            @Override
+                            public String getContentType() {
+                                return part.getContentType();
+                            }
+
+                            @Override
+                            public InputStream getInputStream() throws IOException {
+                                return part.getInputStream();
+                            }
+                        };
+                    }
+                };
+            } catch (IOException | ServletException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return iterator;
+        }
+    }
+
     private Class<?> serviceType = null;
 
     private TreeMap<String, Method> methodMap = new TreeMap<>();
@@ -233,6 +295,8 @@ public class RequestDispatcherServlet extends HttpServlet {
     private static final String OBJECT_TYPE = "object";
 
     private static final String UNSUPPORTED_TYPE = "?";
+
+    private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
 
     @Override
     public void init() throws ServletException {
@@ -379,6 +443,17 @@ public class RequestDispatcherServlet extends HttpServlet {
                 service.setUserName(userPrincipal.getName());
                 service.setUserRoles(new UserRoleSet(request));
             }
+
+            String contentType = request.getContentType();
+
+            Iterable<Attachment> attachments;
+            if (contentType != null && contentType.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
+                attachments = new AttachmentCollection(request);
+            } else {
+                attachments = Collections.emptyList();
+            }
+
+            service.setAttachments(attachments);
 
             Object result;
             try {
