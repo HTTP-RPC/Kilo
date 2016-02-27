@@ -84,6 +84,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
+    * `Attachment` - interface representing an attachment
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
     * `Template` - annotation that associates a template with a web service method
 * _`org.httprpc.beans`_
@@ -123,6 +124,7 @@ For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultS
 * `getLocale()` - returns the locale associated with the current request
 * `getUserName()` - returns the user name associated with the current request, or `null` if the request was not authenticated
 * `getUserRoles()` - returns a set representing the roles the user belongs to, or `null` if the request was not authenticated
+* `getAttachments()` - returns the attachments associated with the current request
 
 The values returned by these methods are populated via protected setters, which are called once per request by `RequestDispatcherServlet`. These setters are not meant to be called by application code. However, they can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
 
