@@ -39,6 +39,14 @@ public interface Attachment {
     public String getContentType();
 
     /**
+     * Returns the size of the attachment.
+     *
+     * @return
+     * The attachment's size.
+     */
+    public long getSize();
+
+    /**
      * Returns the content of the attachment as an input stream.
      *
      * @return

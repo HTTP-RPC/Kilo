@@ -141,17 +141,22 @@ public class TestService extends WebService {
         LinkedList<Object> sizes = new LinkedList<>();
 
         for (Attachment attachment : getAttachments()) {
-            int size = 0;
+            long bytes = 0;
+            long checksum = 0;
 
             try (InputStream inputStream = attachment.getInputStream()) {
-                while (inputStream.read() != -1) {
-                    size++;
+                int b;
+                while ((b = inputStream.read()) != -1) {
+                    bytes++;
+                    checksum += b;
                 }
             }
 
             sizes.add(mapOf(entry("name", attachment.getName()),
                 entry("contentType", attachment.getContentType()),
-                entry("size", size)));
+                entry("size", attachment.getSize()),
+                entry("bytes", bytes),
+                entry("checksum", checksum)));
         }
 
         return sizes;

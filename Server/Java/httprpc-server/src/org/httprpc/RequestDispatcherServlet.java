@@ -269,6 +269,11 @@ public class RequestDispatcherServlet extends HttpServlet {
                             }
 
                             @Override
+                            public long getSize() {
+                                return part.getSize();
+                            }
+
+                            @Override
                             public InputStream getInputStream() throws IOException {
                                 return part.getInputStream();
                             }
