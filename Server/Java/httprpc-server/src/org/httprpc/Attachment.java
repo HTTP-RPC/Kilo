@@ -43,6 +43,9 @@ public interface Attachment {
      *
      * @return
      * The attachment's content as an input stream.
+     *
+     * @throws IOException
+     * If an exception occurs while retrieving the content.
      */
     public InputStream getInputStream() throws IOException;
 }

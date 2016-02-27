@@ -15,15 +15,18 @@
 package org.httprpc.test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.httprpc.Attachment;
 import org.httprpc.Template;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
@@ -132,5 +135,25 @@ public class TestService extends WebService {
 
     public boolean isUserInRole(String role) {
         return getUserRoles().contains(role);
+    }
+
+    public List<Object> getAttachmentInfo() throws IOException {
+        LinkedList<Object> sizes = new LinkedList<>();
+
+        for (Attachment attachment : getAttachments()) {
+            int size = 0;
+
+            try (InputStream inputStream = attachment.getInputStream()) {
+                while (inputStream.read() != -1) {
+                    size++;
+                }
+            }
+
+            sizes.add(mapOf(entry("name", attachment.getName()),
+                entry("contentType", attachment.getContentType()),
+                entry("size", size)));
+        }
+
+        return sizes;
     }
 }

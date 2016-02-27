@@ -45,6 +45,7 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,6 +56,7 @@ import org.httprpc.beans.BeanAdapter;
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
  */
+@MultipartConfig
 public class RequestDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
@@ -447,7 +449,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             String contentType = request.getContentType();
 
             Iterable<Attachment> attachments;
-            if (contentType != null && contentType.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
+            if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA_MIME_TYPE)) {
                 attachments = new AttachmentCollection(request);
             } else {
                 attachments = Collections.emptyList();
@@ -673,10 +675,13 @@ class JSONSerializer extends Serializer {
             for (int i = 0, n = string.length(); i < n; i++) {
                 char c = string.charAt(i);
 
+                if (Character.isISOControl(c)) {
+                    throw new IOException("Invalid character.");
+                }
+
                 switch (c) {
                     case '"':
-                    case '\\':
-                    case '/': {
+                    case '\\': {
                         writer.append("\\" + c);
                         break;
                     }

@@ -325,6 +325,7 @@ public class WebServiceProxy {
                         c = '\t';
                     } else if (c == 'u') {
                         StringBuilder unicodeValueBuilder = new StringBuilder();
+
                         while (c != EOF && unicodeValueBuilder.length() < 4) {
                             c = reader.read();
                             unicodeValueBuilder.append((char)c);
@@ -335,10 +336,9 @@ public class WebServiceProxy {
                         }
 
                         String unicodeValue = unicodeValueBuilder.toString();
+
                         c = (char)Integer.parseInt(unicodeValue, 16);
-                    } else if (c != '\\'
-                        && c != '/'
-                        && c != '"') {
+                    } else if (c != '"' && c != '\\' && c != '/') {
                         throw new IOException("Unsupported escape sequence in input stream.");
                     }
                 }
