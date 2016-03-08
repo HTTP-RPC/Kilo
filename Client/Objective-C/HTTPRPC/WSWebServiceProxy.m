@@ -47,28 +47,46 @@ NSString * const WSArgumentsKey = @"arguments";
     if (requestURL != nil) {
         NSMutableString *parameters = [NSMutableString new];
 
-        for (NSString *key in arguments) {
-            id value = [arguments objectForKey:key];
+        for (NSString *name in arguments) {
+            id value = [arguments objectForKey:name];
 
-            NSArray *components = [value isKindOfClass:[NSArray self]] ? (NSArray *)value : [NSArray arrayWithObject:value];
+            NSArray *values;
+            if ([value isKindOfClass:[NSArray self]]) {
+                values = (NSArray *)value;
+            } else if ([value isKindOfClass:[NSDictionary self]]) {
+                NSDictionary *dictionary = (NSDictionary *)value;
 
-            for (id component in components) {
+                NSMutableArray *entries = [NSMutableArray new];
+
+                for (NSString *key in dictionary) {
+                    [entries addObject:[NSString stringWithFormat:@"%@:%@",
+                        [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
+                        [[[dictionary objectForKey:key] description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
+                }
+
+                values = entries;
+            } else {
+                values = [NSArray arrayWithObject:value];
+            }
+
+            for (NSUInteger i = 0, n = [values count]; i < n; i++) {
                 if ([parameters length] > 0) {
                     [parameters appendString:@"&"];
                 }
 
-                NSString *argument;
-                if (component == (void *)kCFBooleanTrue) {
-                    argument = @"true";
-                } else if (component == (void *)kCFBooleanFalse) {
-                    argument = @"false";
+                id element = [values objectAtIndex:i];
+
+                if (element == (void *)kCFBooleanTrue) {
+                    element = @"true";
+                } else if (element == (void *)kCFBooleanFalse) {
+                    element = @"false";
                 } else {
-                    argument = [component description];
+                    element = [element description];
                 }
 
-                [parameters appendString:key];
+                [parameters appendString:[name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
                 [parameters appendString:@"="];
-                [parameters appendString:[argument stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                [parameters appendString:[element stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
             }
         }
 

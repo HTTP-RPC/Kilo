@@ -23,6 +23,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var invertValueCell: UITableViewCell!
     var getCharactersCell: UITableViewCell!
     var getSelectionCell: UITableViewCell!
+    var getMapCell: UITableViewCell!
     var getStatisticsCell: UITableViewCell!
     var getTestDataCell: UITableViewCell!
     var getVoidCell: UITableViewCell!
@@ -58,6 +59,10 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         getSelectionCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         getSelectionCell.textLabel!.text = "getSelection()"
         cells.append(getSelectionCell)
+
+        getMapCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
+        getMapCell.textLabel!.text = "getMap()"
+        cells.append(getMapCell)
 
         getStatisticsCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         getStatisticsCell.textLabel!.text = "getStatistics()"
@@ -142,6 +147,12 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
         serviceProxy.invoke("getSelection", withArguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
             validate(result as? String == "a, b, c, d", error: error, cell: self.getSelectionCell)
+        }
+
+        let map = ["a": 123, "b": 456, "c": 789];
+
+        serviceProxy.invoke("getMap", withArguments: ["map": map]) {(result, error) in
+            validate(result as? NSDictionary == map, error: error, cell: self.getMapCell)
         }
 
         serviceProxy.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in

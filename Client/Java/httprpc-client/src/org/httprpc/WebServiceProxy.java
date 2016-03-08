@@ -63,6 +63,7 @@ public class WebServiceProxy {
         private static final String NULL_KEYWORD = "null";
 
         private static final String CHARSET_KEY = "charset";
+
         private static final String UTF_8_ENCODING = "UTF-8";
 
         public InvocationCallback(URL methodURL, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
@@ -92,22 +93,47 @@ public class WebServiceProxy {
                 // Create request body
                 StringBuilder parameters = new StringBuilder();
 
-                for (Map.Entry<String, ?> entry : arguments.entrySet()) {
-                    String key = entry.getKey();
-                    Object value = entry.getValue();
+                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                    String name = argument.getKey();
 
-                    if (value != null) {
-                        for (Object argument : (value instanceof List<?>) ? (List<?>)value : Collections.singletonList(value)) {
-                            if (argument != null) {
-                                if (parameters.length() > 0) {
-                                    parameters.append("&");
-                                }
+                    if (name == null) {
+                        continue;
+                    }
 
-                                parameters.append(key);
-                                parameters.append("=");
-                                parameters.append(URLEncoder.encode(argument.toString(), UTF_8_ENCODING));
-                            }
+                    Object value = argument.getValue();
+
+                    List<?> values;
+                    if (value instanceof List<?>) {
+                        values = (List<?>)value;
+                    } else if (value instanceof Map<?, ?>) {
+                        Map<?, ?> map = (Map<?, ?>)value;
+
+                        ArrayList<Object> entries = new ArrayList<>(map.size());
+
+                        for (Map.Entry<?, ?> entry : map.entrySet()) {
+                            entries.add(URLEncoder.encode(String.valueOf(entry.getKey()), UTF_8_ENCODING)
+                                + ":" + URLEncoder.encode(String.valueOf(entry.getValue()), UTF_8_ENCODING));
                         }
+
+                        values = entries;
+                    } else {
+                        values = Collections.singletonList(value);
+                    }
+
+                    for (int i = 0, n = values.size(); i < n; i++) {
+                        Object element = values.get(i);
+
+                        if (element == null) {
+                            continue;
+                        }
+
+                        if (parameters.length() > 0) {
+                            parameters.append("&");
+                        }
+
+                        parameters.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                        parameters.append("=");
+                        parameters.append(URLEncoder.encode(element.toString(), UTF_8_ENCODING));
                     }
                 }
 

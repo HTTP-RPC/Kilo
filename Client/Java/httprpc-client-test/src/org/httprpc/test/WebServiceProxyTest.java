@@ -114,6 +114,13 @@ public class WebServiceProxyTest {
             validate(exception == null && result.equals("a, b, c, d"));
         });
 
+        // Get map
+        Map<String, ?> map = mapOf(entry("a", 123L), entry("b", 456L), entry("c", 789L));
+
+        serviceProxy.invoke("getMap", mapOf(entry("map", map)), (result, exception) -> {
+            validate(exception == null && result.equals(map));
+        });
+
         // Get statistics
         serviceProxy.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;

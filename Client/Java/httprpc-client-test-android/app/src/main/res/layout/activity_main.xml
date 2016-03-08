@@ -34,6 +34,11 @@
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/get_map_checkbox"
+            android:text="getMap()"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/get_statistics_checkbox"
             android:text="getStatistics()"
             android:enabled="false"

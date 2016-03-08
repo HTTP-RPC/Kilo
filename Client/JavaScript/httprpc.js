@@ -47,19 +47,34 @@ WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, 
 
     var parameters = "";
 
-    for (key in arguments) {
-        var value = arguments[key];
-
-        var values = (value instanceof Array) ? value : [value];
-
+    for (name in arguments) {
+        var value = arguments[name];
+        
+        var values;
+        if (value instanceof Array) {
+            values = value;
+        } else if (value instanceof Object) {
+            values = [];
+            
+            for (key in value) {
+                values.push(encodeURIComponent(key) + ":" + encodeURIComponent(value[key]));
+            }
+        } else {
+            values = [value];
+        }
+        
         for (var i = 0; i < values.length; i++) {
-            var argument = values[i];
+            var element = values[i];
+
+            if (element == null) {
+                continue;
+            }
 
             if (parameters.length > 0) {
                 parameters += "&";
             }
-
-            parameters += key + "=" + encodeURIComponent(argument);
+            
+            parameters += encodeURIComponent(name) + "=" + encodeURIComponent(element);
         }
     }
 

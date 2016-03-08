@@ -76,6 +76,10 @@ public class TestService extends WebService {
         return String.join(", ", items);
     }
 
+    public Map<String, Integer> getMap(Map<String, Integer> map) {
+        return map;
+    }
+
     @Template("statistics.html")
     public Map<String, Object> getStatistics(List<Double> values) {
         if (values == null) {

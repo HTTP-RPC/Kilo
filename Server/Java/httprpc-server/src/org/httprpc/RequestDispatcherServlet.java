@@ -28,6 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -305,6 +307,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
 
+    private static final String UTF_8_ENCODING = "UTF-8";
+
     @Override
     public void init() throws ServletException {
         String serviceClassName = getServletConfig().getInitParameter("serviceClassName");
@@ -427,6 +431,33 @@ public class RequestDispatcherServlet extends HttpServlet {
                     }
 
                     argument = list;
+                } else if (type == Map.class) {
+                    String[] values = request.getParameterValues(name);
+
+                    Map<String, Object> map;
+                    if (values != null) {
+                        ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                        Type valueType = parameterizedType.getActualTypeArguments()[1];
+
+                        map = new LinkedHashMap<>();
+
+                        for (int j = 0, n = values.length; j < n; j++) {
+                            String[] entry = values[j].split(":");
+
+                            if (entry.length != 2) {
+                                throw new ServletException("Invalid map entry.");
+                            }
+
+                            String key = URLDecoder.decode(entry[0], UTF_8_ENCODING);
+                            String value = URLDecoder.decode(entry[1], UTF_8_ENCODING);
+
+                            map.put(key, coerce(value, valueType));
+                        }
+                    } else {
+                        map = Collections.EMPTY_MAP;
+                    }
+
+                    argument = map;
                 } else {
                     argument = coerce(request.getParameter(name), type);
                 }

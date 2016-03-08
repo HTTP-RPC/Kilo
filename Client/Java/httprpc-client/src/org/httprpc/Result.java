@@ -128,11 +128,11 @@ public abstract class Result {
     /**
      * Sets a group of property values.
      *
-     * @param values
+     * @param map
      * A map containing the property values to set.
      */
-    public void setAll(Map<String, Object> values) {
-        for (Map.Entry<String, Object> entry : values.entrySet()) {
+    public void setAll(Map<String, Object> map) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
             set(entry.getKey(), entry.getValue());
         }
     }

@@ -59,6 +59,10 @@
 
 <hr/>
 
+<a href="${pageContext.request.contextPath}/test/getMap?map=a:123&map=b:456&map=c:789">Get Map</a>
+
+<hr/>
+
 <form action="${pageContext.request.contextPath}/test/getStatistics" method="post">
 <table> 
 <tr>
