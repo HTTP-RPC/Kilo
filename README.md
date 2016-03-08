@@ -9,15 +9,19 @@ For example, a GET request for the following URL might invoke the "add" method o
     
 The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request with a content type of `application/x-www-form-urlencoded` and a request body of `a=1&b=2`. No other HTTP operations are supported.
 
-Method parameters may be either scalar (single-value) or vector (multi-value) types. Scalar values may be any simple type including string, number, or boolean (true/false). String values are not quoted; however, as with any HTTP request, values that include reserved characters must be URL-encoded.
+Method arguments may be any simple type, including number, boolean, and string. Indexed and keyed collections of simple types are also supported. As with any HTTP request, values that include reserved characters must be URL-encoded.
 
-Multi-value arguments are specified by providing zero or more scalar values for a given parameter. For example, the add method above could be modified to accept a list of numbers to add rather than two fixed argument values:
+Indexed collection arguments are specified by providing zero or more values for a given parameter. For example, the "add" method above could be modified to accept a list of numbers to add rather than two fixed argument values:
 
     /math/addValues?values=1&values=2&values=3
+    
+Values for keyed collections are represented as a colon-delimited key/value pair; for example:
 
-The order in which parameters are specified does not matter. Omitting a value for a scalar parameter produces a null argument value for that parameter. Omitting all values for a vector parameter produces an empty collection argument for the parameter.
+    /math/translate?point1=x:5&point1=y:10&point2=x:2&point2=y:4
 
-Return values may be any JSON type, including string, number, boolean (true/false), object, array, and null. No content is returned by a method that does not produce a value.
+Omitting a value for a simple parameter type produces a null argument value for that parameter. Omitting all values for a collection parameter produces an empty collection argument for the parameter.
+
+Methods may return any valid JSON type including number, boolean, string, array, and object. No content is returned by a method that does not produce a value.
 
 An HTTP 200 status is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
 
@@ -102,13 +106,13 @@ The JAR file for the Java server implementation of HTTP-RPC can be downloaded [h
 
 Service methods are defined by adding public methods to a concrete service implementation. All public methods defined by the class automatically become available for remote execution when the service is published, as described in the next section. Note that overloaded methods are not supported; every method name must be unique. 
 
-Scalar method arguments can be any numeric primitive type, a boolean primitive, or `String`. Object wrappers for primitive types are also supported. Multi-value ("vector") arguments are specified as lists of any supported scalar type; e.g. `List<Double>`.
+Method arguments may numeric primitive, a boolean primitive, or `String`. Object wrappers for primitive types are also supported. Indexed collection arguments are specified as lists of any supported simple type (e.g. `List<Double>`), and keyed collections are specified as maps (e.g. `Map<String, Integer>`). Map arguments must use `String` values for keys.
 
-Methods must return a numeric or boolean primitive type, one of the following reference types, or `void`:
+Methods may return any numeric or boolean primitive type, one of the following reference types, or `void`:
 
-* `java.lang.String`
 * `java.lang.Number`
 * `java.lang.Boolean`
+* `java.lang.String`
 * `java.util.List`
 * `java.util.Map`
 
@@ -162,9 +166,9 @@ HTTP-RPC services are published via the `RequestDispatcherServlet` class. This c
 
 Java objects are mapped to their JSON equivalents as follows:
 
-* `java.lang.String`: string
 * `java.lang.Number` or numeric primitive: number
 * `java.lang.Boolean` or boolean primitive: true/false
+* `java.lang.String`: string
 * `java.util.List`: array
 * `java.util.Map`: object
 
@@ -622,7 +626,7 @@ This method takes the following arguments:
 
 A convenience method for invoking remote methods that don't take any arguments is also provided.
 
-Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as a list of any supported scalar type; e.g. `List<Double>`.
+Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as lists of any supported simple type (e.g. `List<Double>`), and keyed collections are specified as maps (e.g. `Map<String, Integer>`). Map arguments must use `String` values for keys.
 
 The result handler is called upon completion of the remote method. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
@@ -781,7 +785,7 @@ Service proxies are initialized via the `initWithSession:baseURL:` method, which
 
 Remote methods are invoked by calling either `invoke:resultHandler:` or `invoke:withArguments:resultHandler:` on the service proxy. The first version is a convenience method for calling remote methods that don't take any arguments. The second takes a dictionary of argument values to be passed to the remote method. The first method delegates to the second, passing an empty argument dictionary.
 
-Scalar arguments can be any numeric type, a boolean, or a string. Multi-value arguments are specified as an array of any supported scalar type; e.g. `[Double]`.
+Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as arrays of any supported simple type (e.g. `[Double]`), and keyed collections are specified as dictionaries (e.g. `[String: Int]`). Dictionary arguments must use `String` values for keys.
 
 Both invocation methods take a result handler as the final argument. The result handler is a callback that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
@@ -830,7 +834,7 @@ Service proxies are initialized via the `WebServiceProxy` constructor, which tak
 
 Remote methods are invoked by calling either `invoke()` or `invokeWithArguments()` on the service proxy. The first version is a convenience method for calling remote methods that don't take any arguments. The second takes an object containing the set of argument values to be passed to the remote method. The first method delegates to the second, passing an empty argument object.
 
-Scalar arguments can be number, boolean, or string values. Multi-value arguments are specified as an array of scalar values; e.g. `[1, 2, 3]`.
+Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as arrays of any supported simple type (e.g. `[2.0, 4.5, 3.1]`), and keyed collections are specified as objects (e.g. `{"a":1, "b":2, "c":3}`).
 
 Both invocation methods take a result handler as the final argument. The result handler is a callback function that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `null` if the method does not return a value. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
 
