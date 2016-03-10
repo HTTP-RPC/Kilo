@@ -203,5 +203,59 @@ public class TemplateSerializerTest {
         Assert.assertEquals("><", result);
     }
 
-    // TODO Add modifier tests (format, URL, markup, and CSV)
+    @Test
+    public void testFormatModifier() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "format.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), 4.5);
+            result = writer.toString();
+        }
+
+        // TODO
+        Assert.assertEquals("?", result);
+    }
+
+    @Test
+    public void testURLEscapeModifier() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "url.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), ""); // TODO
+            result = writer.toString();
+        }
+
+        // TODO
+        Assert.assertEquals("?", result);
+    }
+
+    @Test
+    public void testMarkupEscapeModifier() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "markup.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), ""); // TODO
+            result = writer.toString();
+        }
+
+        // TODO
+        Assert.assertEquals("?", result);
+    }
+
+    @Test
+    public void testCSVEscapeModifier() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "csv.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), ""); // TODO
+            result = writer.toString();
+        }
+
+        // TODO
+        Assert.assertEquals("?", result);
+    }
 }
