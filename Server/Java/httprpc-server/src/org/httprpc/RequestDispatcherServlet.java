@@ -1200,9 +1200,9 @@ class CSVEscapeModifier implements Modifier {
             char c = string.charAt(i);
 
             if (c == '\\') {
-                resultBuilder.append("\\");
+                resultBuilder.append("\\\\");
             } else if (c == '"') {
-                resultBuilder.append("\"");
+                resultBuilder.append("\\\"");
             } else {
                 resultBuilder.append(c);
             }

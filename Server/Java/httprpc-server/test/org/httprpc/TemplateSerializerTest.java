@@ -213,8 +213,7 @@ public class TemplateSerializerTest {
             result = writer.toString();
         }
 
-        // TODO
-        Assert.assertEquals("?", result);
+        Assert.assertEquals("4.50", result);
     }
 
     @Test
@@ -223,12 +222,11 @@ public class TemplateSerializerTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            templateSerializer.writeValue(new PrintWriter(writer), ""); // TODO
+            templateSerializer.writeValue(new PrintWriter(writer), "abc:def&xyz");
             result = writer.toString();
         }
 
-        // TODO
-        Assert.assertEquals("?", result);
+        Assert.assertEquals("abc%3Adef%26xyz", result);
     }
 
     @Test
@@ -237,12 +235,11 @@ public class TemplateSerializerTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            templateSerializer.writeValue(new PrintWriter(writer), ""); // TODO
+            templateSerializer.writeValue(new PrintWriter(writer), "a<b>c&d\"e");
             result = writer.toString();
         }
 
-        // TODO
-        Assert.assertEquals("?", result);
+        Assert.assertEquals("a&lt;b&gt;c&amp;d&quot;e", result);
     }
 
     @Test
@@ -251,11 +248,10 @@ public class TemplateSerializerTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            templateSerializer.writeValue(new PrintWriter(writer), ""); // TODO
+            templateSerializer.writeValue(new PrintWriter(writer), "a\\b\"c");
             result = writer.toString();
         }
 
-        // TODO
-        Assert.assertEquals("?", result);
+        Assert.assertEquals("a\\\\b\\\"c", result);
     }
 }
