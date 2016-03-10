@@ -202,4 +202,6 @@ public class TemplateSerializerTest {
 
         Assert.assertEquals("><", result);
     }
+
+    // TODO Add modifier tests (format, URL, markup, and CSV)
 }

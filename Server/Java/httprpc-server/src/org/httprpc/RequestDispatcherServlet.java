@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
@@ -29,6 +30,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -441,7 +444,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                         map = new LinkedHashMap<>();
 
-                        for (int j = 0, n = values.length; j < n; j++) {
+                        for (int j = 0; j < values.length; j++) {
                             String[] entry = values[j].split(":");
 
                             if (entry.length != 2) {
@@ -870,6 +873,48 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
+    private static HashMap<String, Modifier> modifiers = new HashMap<>();
+
+    static {
+        Properties mappings = new Properties();
+
+        mappings.put("format", FormatModifier.class.getName());
+        mappings.put("^url", URLEscapeModifier.class.getName());
+        mappings.put("^html", MarkupEscapeModifier.class.getName());
+        mappings.put("^xml", MarkupEscapeModifier.class.getName());
+        mappings.put("^csv", CSVEscapeModifier.class.getName());
+
+        try (InputStream inputStream = TemplateSerializer.class.getResourceAsStream("/META-INF/httprpc/modifiers.properties")) {
+            if (inputStream != null) {
+                mappings.load(inputStream);
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        for (Map.Entry<Object, Object> mapping : mappings.entrySet()) {
+            String name = mapping.getKey().toString();
+
+            Class<?> type;
+            try {
+                type = Class.forName(mapping.getValue().toString());
+            } catch (ClassNotFoundException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            if (type != null && Modifier.class.isAssignableFrom(type)) {
+                Modifier modifier;
+                try {
+                    modifier = (Modifier)type.newInstance();
+                } catch (IllegalAccessException | InstantiationException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                modifiers.put(name, modifier);
+            }
+        }
+    }
+
     private static final int EOF = -1;
 
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType) {
@@ -1010,13 +1055,17 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case VARIABLE: {
+                            String[] components = marker.split(":");
+
+                            String key = components[0];
+
                             Object value;
-                            if (marker.equals(".")) {
-                                value = dictionary.get(marker);
+                            if (key.equals(".")) {
+                                value = dictionary.get(key);
                             } else {
                                 value = dictionary;
 
-                                String[] path = marker.split("\\.");
+                                String[] path = key.split("\\.");
 
                                 for (int i = 0; i < path.length; i++) {
                                     if (!(value instanceof Map<?, ?>)) {
@@ -1034,6 +1083,29 @@ class TemplateSerializer extends Serializer {
                             if (value != null) {
                                 if (!(value instanceof String || value instanceof Number || value instanceof Boolean)) {
                                     throw new IOException("Invalid variable element.");
+                                }
+
+                                if (components.length > 1) {
+                                    for (int i = 1; i < components.length; i++) {
+                                        String component = components[i];
+
+                                        int j = component.indexOf('=');
+
+                                        String name, argument;
+                                        if (j == -1) {
+                                            name = component;
+                                            argument = null;
+                                        } else {
+                                            name = component.substring(0, j);
+                                            argument = component.substring(j + 1);
+                                        }
+
+                                        Modifier modifier = modifiers.get(name);
+
+                                        if (modifier != null) {
+                                            value = modifier.apply(value, argument);
+                                        }
+                                    }
                                 }
 
                                 writer.append(value.toString());
@@ -1056,5 +1128,86 @@ class TemplateSerializer extends Serializer {
 
             c = reader.read();
         }
+    }
+}
+
+// Format modifier
+class FormatModifier implements Modifier {
+    @Override
+    public Object apply(Object value, String argument) {
+        if (argument == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format(argument, value);
+    }
+}
+
+// URL escape modifier
+class URLEscapeModifier implements Modifier {
+    private static final String UTF_8_ENCODING = "UTF-8";
+
+    @Override
+    public Object apply(Object value, String argument) {
+        String result;
+        try {
+            result = URLEncoder.encode(value.toString(), UTF_8_ENCODING);
+        } catch (UnsupportedEncodingException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        return result;
+    }
+}
+
+// Markup escape modifier
+class MarkupEscapeModifier implements Modifier {
+    @Override
+    public Object apply(Object value, String argument) {
+        StringBuilder resultBuilder = new StringBuilder();
+
+        String string = value.toString();
+
+        for (int i = 0, n = string.length(); i < n; i++) {
+            char c = string.charAt(i);
+
+            if (c == '<') {
+                resultBuilder.append("&lt;");
+            } else if (c == '>') {
+                resultBuilder.append("&gt;");
+            } else if (c == '&') {
+                resultBuilder.append("&amp;");
+            } else if (c == '"') {
+                resultBuilder.append("&quot;");
+            } else {
+                resultBuilder.append(c);
+            }
+        }
+
+        return resultBuilder.toString();
+    }
+}
+
+// CSV escape modifier
+class CSVEscapeModifier implements Modifier {
+    @Override
+    public Object apply(Object value, String argument) {
+        StringBuilder resultBuilder = new StringBuilder();
+
+        String string = value.toString();
+
+        for (int i = 0, n = string.length(); i < n; i++) {
+            char c = string.charAt(i);
+
+            if (c == '\\') {
+                resultBuilder.append("\\");
+            } else if (c == '"') {
+                resultBuilder.append("\"");
+            } else {
+                resultBuilder.append(c);
+            }
+        }
+
+        return resultBuilder.toString();
     }
 }

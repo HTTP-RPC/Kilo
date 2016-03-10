@@ -102,6 +102,7 @@ public class TestService extends WebService {
     }
 
     @Template("testdata.html")
+    @Template("testdata.xml")
     @Template("testdata.csv")
     public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");

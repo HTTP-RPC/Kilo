@@ -86,6 +86,7 @@
 
 <p>
 <a href="${pageContext.request.contextPath}/test/testdata.html">testdata.html</a><br>
+<a href="${pageContext.request.contextPath}/test/testdata.xml">testdata.xml</a><br>
 <a href="${pageContext.request.contextPath}/test/testdata.csv">testdata.csv</a><br>
 </p>
 
