@@ -221,6 +221,7 @@ HTTP-RPC templates are based on the [Ctemplate](https://google-ctemplate.googlec
 
 * {{_variable_}} - injects a variable from the data dictionary into the output
 * {{#_section_}}...{{/_section_}} - defines a repeating section of content
+* {{>_include_}} - imports content specified by another template
 * {{!_comment_}} - defines a comment (informational text that is excluded from the final output)
 
 The value returned by the service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. 
@@ -478,6 +479,39 @@ For example, if the JSON response to a method contained the following:
     [1, 2, 3, 5, 8, 13, 21]
     
 the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
+
+### Includes
+Includes import content defined by another template. They are used to define reusable content modules. 
+
+Includes inherit their context from the calling template. For example, the earlier list example could be rewritten as follows using includes:
+
+    <html>
+    <head>
+        <title>Order #{{orderID}}</title>
+    </head>
+    <body>
+    <p>Customer ID: {{customerID}}</p>
+    <p>Date: {{date}}</p>
+    <table>
+        <tr>
+            <td>Item #</td>
+            <td>Description</td>
+            <td>Quantity</td>
+        </tr>
+        {{#items}}
+            {{>orderitem.html}}
+        {{/items}}
+    </table>
+    </body>
+    </html>
+
+The contents of _orderitem.html_ would be repeated for each item in the list:
+
+    <tr>
+        <td>{{itemID}}</td>
+        <td>{{description}}</td>
+        <td>{{quantity}}</td>
+    </tr>
 
 ### Modifiers
 The Ctemplate specification defines a syntax for applying an optional set of modifiers to a variable. Modifiers are specified as follows:
