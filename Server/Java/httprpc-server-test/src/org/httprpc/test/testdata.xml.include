@@ -1,0 +1,3 @@
+<a>{{a:test:^xml}}</a>
+<b>{{b:format=0x%04x}}</b>
+<c>{{c:format=%.4f}}</c>
