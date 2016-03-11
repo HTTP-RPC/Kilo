@@ -1075,16 +1075,19 @@ class TemplateSerializer extends Serializer {
 
                                     include = new PagedReader(new InputStreamReader(inputStream));
 
-                                    writeTemplate(writer, dictionary, include);
-
                                     includes.put(marker, include);
+
+                                    writeTemplate(writer, dictionary, include);
                                 }
                             } else {
+                                if (include == reader) {
+                                    throw new IOException("Include recursion is not supported.");
+                                }
+
                                 include.reset();
 
                                 writeTemplate(writer, dictionary, include);
                             }
-
 
                             break;
                         }

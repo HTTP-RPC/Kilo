@@ -280,4 +280,11 @@ public class TemplateSerializerTest {
 
         Assert.assertEquals("[(a)(b)(c)]", result);
     }
+
+    @Test(expected=IOException.class)
+    public void testRecursion() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "recursion.txt", PLAIN_TEXT_MIME_TYPE);
+
+        templateSerializer.writeValue(new PrintWriter(new NullWriter()), Collections.emptyList());
+    }
 }
