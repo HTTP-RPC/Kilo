@@ -1077,14 +1077,12 @@ class TemplateSerializer extends Serializer {
 
                                     writeTemplate(writer, dictionary, include);
 
-                                    include.reset();
-
                                     includes.put(marker, include);
                                 }
                             } else {
-                                writeTemplate(writer, dictionary, include);
-
                                 include.reset();
+
+                                writeTemplate(writer, dictionary, include);
                             }
 
 
