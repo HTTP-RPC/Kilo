@@ -91,6 +91,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
     * `Attachment` - interface representing an attachment
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
     * `Template` - annotation that associates a template with a web service method
+    * `Modifier` - interface representing a template modifier
 * _`org.httprpc.beans`_
     * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
 * _`org.httprpc.sql`_
@@ -374,7 +375,7 @@ The "items" section would be repeated for each item in the list, producing the f
     </body>
     </html>
 
-#### Dot Notation
+### Dot Notation
 Each section in a template must be backed by a map representing the section's data dictionary. This implies that list elements must always be instances of `java.util.Map`. Unfortunately, this is not always convenient. In the previous example, it was natural to associate the list of order items with the object representing the order itself. However, in many cases it may be preferable to return a list directly from a service method, rather than as a property of some parent object.
 
 In order to support this case, HTTP-RPC automatically wraps any list element that is not already a map in a map instance, and assigns a default name of "." to the element. For example, if the method in the previous example had been defined as follows:
@@ -477,6 +478,48 @@ For example, if the JSON response to a method contained the following:
     [1, 2, 3, 5, 8, 13, 21]
     
 the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
+
+### Modifiers
+The Ctemplate specification defines a syntax for applying an optional set of modifiers to a variable. Modifiers are specified as follows:
+
+    {{variable:modifier1:modifier2:modifier3=argument:...}}
+    
+Modifiers are used to transform the variable's representation before it is written to the output stream; for example, to apply an escape sequence. Modifiers are invoked from left to right in the order in which they are specified.
+
+HTTP-RPC provides the following modifiers by default:
+
+* `format` - applies a format string, such as `%.2f`
+* `^url` - applies URL encoding to a value
+* `^html` - applies HTML encoding to a value
+* `^xml` - applies XML encoding to a value (equivalent to `^html`)
+* `^csv` - applies CSV encoding to a value
+
+For example, the following marker applies a format string to a value and then URL-encodes the result:
+
+    {{value:format=0x%04x:^url}}
+
+Applications may also define their own custom modifiers. Modifiers are created by implementing the `org.httprpc.Modifier` interface, which defines the following method:
+
+    public Object apply(Object value, String argument);
+    
+The first argument to this method represents the value to be modified, and the second is an optional, modifier-specific value containing the text following the `=` character in the modifier string. If an argument is not specified, the value of `argument` will be null.
+
+For example, the following class implements a modifier that converts values to uppercase:
+
+    public class UppercaseModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument) {
+            return value.toString().toUpperCase();
+        }
+    }
+
+Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template processors.
+
+Custom modifiers are registered with the HTTP-RPC runtime via a properties file. Keys in this file represent modifier names, and values represent the fully-qualified name of the implementing class. The file must be named _/META-INF/httprpc/modifiers.properties_ and must be available on the application's classpath. 
+
+For example, the following _modifiers.properties_ file associates the `upper` modifier with the `UpperCaseModifier` class:
+
+    upper=com.example.UpperCaseModifier
 
 ## BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
