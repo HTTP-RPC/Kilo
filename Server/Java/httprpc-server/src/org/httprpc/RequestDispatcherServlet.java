@@ -864,6 +864,7 @@ class TemplateSerializer extends Serializer {
     private enum MarkerType {
         SECTION_START,
         SECTION_END,
+        INCLUDE,
         COMMENT,
         VARIABLE
     }
@@ -963,6 +964,8 @@ class TemplateSerializer extends Serializer {
                         markerType = MarkerType.SECTION_START;
                     } else if (c == '/') {
                         markerType = MarkerType.SECTION_END;
+                    } else if (c == '>') {
+                        markerType = MarkerType.INCLUDE;
                     } else if (c == '!') {
                         markerType = MarkerType.COMMENT;
                     } else {
@@ -1047,6 +1050,14 @@ class TemplateSerializer extends Serializer {
                         case SECTION_END: {
                             // No-op
                             return;
+                        }
+
+                        case INCLUDE: {
+                            try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
+                                writeTemplate(writer, dictionary, new PagedReader(new InputStreamReader(inputStream)));
+                            }
+
+                            break;
                         }
 
                         case COMMENT: {

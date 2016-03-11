@@ -254,4 +254,30 @@ public class TemplateSerializerTest {
 
         Assert.assertEquals("a\\\\b\\\"c", result);
     }
+
+    @Test
+    public void testSimpleInclude() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "master1.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), "hello");
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("(hello)", result);
+    }
+
+    @Test
+    public void testSectionInclude() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "master2.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), Arrays.asList("a", "b", "c"));
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[(a)(b)(c)]", result);
+    }
 }
