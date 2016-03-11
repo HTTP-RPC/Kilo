@@ -568,7 +568,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 }
 
 // Paged reader
-// TODO Remove any unnecessary methods
 class PagedReader extends Reader {
     private Reader reader;
     private int pageSize;
@@ -644,6 +643,11 @@ class PagedReader extends Reader {
         }
 
         return (c == EOF && n == 0) ? EOF : n;
+    }
+
+    @Override
+    public boolean ready() throws IOException {
+        return (position < count) || reader.ready();
     }
 
     @Override
@@ -887,43 +891,40 @@ class TemplateSerializer extends Serializer {
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
     static {
-        // TODO Populate map with default instances directly
-        Properties mappings = new Properties();
-
-        mappings.put("format", FormatModifier.class.getName());
-        mappings.put("^url", URLEscapeModifier.class.getName());
-        mappings.put("^html", MarkupEscapeModifier.class.getName());
-        mappings.put("^xml", MarkupEscapeModifier.class.getName());
-        mappings.put("^csv", CSVEscapeModifier.class.getName());
+        modifiers.put("format", new FormatModifier());
+        modifiers.put("^url", new URLEscapeModifier());
+        modifiers.put("^html", new MarkupEscapeModifier());
+        modifiers.put("^xml", new MarkupEscapeModifier());
+        modifiers.put("^csv", new CSVEscapeModifier());
 
         try (InputStream inputStream = TemplateSerializer.class.getResourceAsStream("/META-INF/httprpc/modifiers.properties")) {
             if (inputStream != null) {
-                mappings.load(inputStream);
+                Properties mappings = new Properties();
+
+                for (Map.Entry<Object, Object> mapping : mappings.entrySet()) {
+                    String name = mapping.getKey().toString();
+
+                    Class<?> type;
+                    try {
+                        type = Class.forName(mapping.getValue().toString());
+                    } catch (ClassNotFoundException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    if (type != null && Modifier.class.isAssignableFrom(type)) {
+                        Modifier modifier;
+                        try {
+                            modifier = (Modifier)type.newInstance();
+                        } catch (IllegalAccessException | InstantiationException exception) {
+                            throw new RuntimeException(exception);
+                        }
+
+                        modifiers.put(name, modifier);
+                    }
+                }
             }
         } catch (IOException exception) {
             throw new RuntimeException(exception);
-        }
-
-        for (Map.Entry<Object, Object> mapping : mappings.entrySet()) {
-            String name = mapping.getKey().toString();
-
-            Class<?> type;
-            try {
-                type = Class.forName(mapping.getValue().toString());
-            } catch (ClassNotFoundException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            if (type != null && Modifier.class.isAssignableFrom(type)) {
-                Modifier modifier;
-                try {
-                    modifier = (Modifier)type.newInstance();
-                } catch (IllegalAccessException | InstantiationException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                modifiers.put(name, modifier);
-            }
         }
     }
 
