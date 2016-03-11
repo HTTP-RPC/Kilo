@@ -1075,11 +1075,11 @@ class TemplateSerializer extends Serializer {
 
                                     include = new PagedReader(new InputStreamReader(inputStream));
 
-                                    includes.put(marker, include);
-
                                     writeTemplate(writer, dictionary, include);
 
                                     include.reset();
+
+                                    includes.put(marker, include);
                                 }
                             } else {
                                 writeTemplate(writer, dictionary, include);
