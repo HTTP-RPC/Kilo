@@ -568,12 +568,16 @@ public class RequestDispatcherServlet extends HttpServlet {
 }
 
 // Paged reader
+// TODO Remove any unnecessary methods
 class PagedReader extends Reader {
     private Reader reader;
     private int pageSize;
 
     private int position = 0;
     private int count = 0;
+
+    private boolean endOfFile = false;
+
     private ArrayList<char[]> pages = new ArrayList<>();
     private LinkedList<Integer> marks = new LinkedList<>();
 
@@ -600,7 +604,7 @@ class PagedReader extends Reader {
             c = pages.get(position / pageSize)[position % pageSize];
 
             position++;
-        } else {
+        } else if (!endOfFile) {
             c = reader.read();
 
             if (c != EOF) {
@@ -612,7 +616,11 @@ class PagedReader extends Reader {
 
                 position++;
                 count++;
+            } else {
+                endOfFile = true;
             }
+        } else {
+            c = EOF;
         }
 
         return c;
@@ -651,10 +659,10 @@ class PagedReader extends Reader {
     @Override
     public void reset() {
         if (marks.isEmpty()) {
-            throw new IllegalStateException();
+            position = 0;
+        } else {
+            position = marks.pop();
         }
-
-        position = marks.pop();
     }
 
     @Override
@@ -874,9 +882,12 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
+    private HashMap<String, PagedReader> includes = new HashMap<>();
+
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
     static {
+        // TODO Populate map with default instances directly
         Properties mappings = new Properties();
 
         mappings.put("format", FormatModifier.class.getName());
@@ -1053,9 +1064,28 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case INCLUDE: {
-                            try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
-                                writeTemplate(writer, dictionary, new PagedReader(new InputStreamReader(inputStream)));
+                            PagedReader include = includes.get(marker);
+
+                            if (include == null) {
+                                try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
+                                    if (inputStream == null) {
+                                        throw new IOException("Include not found.");
+                                    }
+
+                                    include = new PagedReader(new InputStreamReader(inputStream));
+
+                                    includes.put(marker, include);
+
+                                    writeTemplate(writer, dictionary, include);
+
+                                    include.reset();
+                                }
+                            } else {
+                                writeTemplate(writer, dictionary, include);
+
+                                include.reset();
                             }
+
 
                             break;
                         }
