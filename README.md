@@ -222,7 +222,7 @@ HTTP-RPC templates are based on the [Ctemplate](https://google-ctemplate.googlec
 * {{_variable_}} - injects a variable from the data dictionary into the output
 * {{#_section_}}...{{/_section_}} - defines a repeating section of content
 * {{>_include_}} - imports content specified by another template
-* {{!_comment_}} - defines a comment (informational text that is excluded from the final output)
+* {{!_comment_}} - defines a comment
 
 The value returned by the service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. 
 
@@ -481,14 +481,34 @@ For example, if the JSON response to a method contained the following:
 the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
 
 ### Includes
-Includes import content defined by another template. They are used to define reusable content modules. For example... TODO
+Includes import content defined by another template. They can be used to define reusable content modules. 
 
-Includes inherit their context from the calling template... TODO
+Includes inherit their context from the calling template, so they can also include markers. For example, the `<head>` section of the _orders.html_ template discussed earlier could be rewritten using includes as follows:
 
-Note that includes do not support recursion.
+    <html>
+    {{>head.html}}
+    <body>
+    ...
+    </body>
+    </html>
+
+The content of the `<head>` section is placed in _head.html_ so it can be reused by other templates:
+
+    <head>
+        <title>Order #{{orderID}}</title>
+    </head>
+
+However, the result of processing this version of _orders.html_ will be the same as the original version.
 
 ### Comments
-TODO
+Comment markers simply define a block of text that is excluded from the final output. They are generally used to provide informational text to the reader of the source template. For example:
+
+    {{! This is the head section }}
+    <head>
+        <title>Order #{{orderID}}</title>
+    </head>
+
+When the template is processed, only the content between the `<head>` and `</head>` tags will be included in the output.
 
 ### Modifiers
 The Ctemplate specification defines a syntax for applying an optional set of modifiers to a variable. Modifiers are specified as follows:
