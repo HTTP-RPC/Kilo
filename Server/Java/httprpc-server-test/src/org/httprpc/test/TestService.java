@@ -21,6 +21,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -78,6 +79,32 @@ public class TestService extends WebService {
 
     public Map<String, Integer> getMap(Map<String, Integer> map) {
         return map;
+    }
+
+    public Map<String, Object> getTree() {
+        TreeNode root = new TreeNode(null, false);
+
+        TreeNode winter = new TreeNode("Winter", false);
+        winter.getChildren().addAll(Arrays.asList(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
+
+        root.getChildren().add(winter);
+
+        TreeNode spring = new TreeNode("Spring", false);
+        spring.getChildren().addAll(Arrays.asList(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
+
+        root.getChildren().add(spring);
+
+        TreeNode summer = new TreeNode("Summer", false);
+        summer.getChildren().addAll(Arrays.asList(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
+
+        root.getChildren().add(summer);
+
+        TreeNode fall = new TreeNode("Fall", false);
+        fall.getChildren().addAll(Arrays.asList(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
+
+        root.getChildren().add(fall);
+
+        return new BeanAdapter(root);
     }
 
     @Template("statistics.html")

@@ -63,6 +63,10 @@
 
 <hr/>
 
+<a href="${pageContext.request.contextPath}/test/getTree">Get Tree</a>
+
+<hr/>
+
 <form action="${pageContext.request.contextPath}/test/getStatistics" method="post">
 <table> 
 <tr>
