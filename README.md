@@ -7,7 +7,7 @@ For example, a GET request for the following URL might invoke the "add" method o
 
     /math/add?a=1&b=2
     
-The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request with a content type of `application/x-www-form-urlencoded` and a request body of `a=1&b=2`. No other HTTP operations are supported.
+The values 1 and 2 are passed as the "a" and "b" arguments to the method, respectively, with the service returning the value 3 in response. Alternatively, the same result could be obtained by submitting a POST request with a content type of `application/x-www-form-urlencoded` and a request body of `a=1&b=2`.
 
 Method arguments may be any simple type, including number, boolean, and string. Indexed and keyed collections of simple types are also supported. As with any HTTP request, values that include reserved characters must be URL-encoded.
 
@@ -15,7 +15,7 @@ Indexed collection arguments are specified by providing zero or more values for 
 
     /math/addValues?values=1&values=2&values=3
     
-Values for keyed collections are represented as a colon-delimited key/value pair; for example:
+Elements of keyed collections are represented as colon-delimited key/value pairs. For example, the following URL represents a method that accepts two keyed collection arguments named `point1` and `point2`. Each argument contains an `x` and a `y` value:
 
     /math/translate?point1=x:5&point1=y:10&point2=x:2&point2=y:4
 
@@ -23,9 +23,9 @@ Omitting a value for a simple parameter type produces a null argument value for 
 
 Methods may return any valid JSON type including number, boolean, string, array, and object. No content is returned by a method that does not produce a value.
 
-An HTTP 200 status is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors. No other HTTP status codes are supported.
+An HTTP 200 status is returned on successful completion, and HTTP 500 is returned in the case of an error (i.e. an exception). Note that exceptions are intended to represent unexpected failures, not application-specific errors.
 
-Services may return a optional JSON descriptor that documents the methods provided by the service. If supported, the descriptor should be of the following form, and should be returned by a GET request for the base service URL:
+Services may return an optional JSON descriptor that documents the methods provided by the service. If supported, the descriptor should be of the following form, and should be returned by a GET request for the base service URL:
 
     [
       {
@@ -492,7 +492,7 @@ Includes inherit their context from the calling template, so they can also inclu
     </body>
     </html>
 
-The content of the `<head>` section is placed in _head.html_ so it can also be used by other templates:
+The content of the `<head>` section is placed in _head.html_ so it can also be referenced by other templates:
 
     <head>
         <title>Order #{{orderID}}</title>
@@ -512,7 +512,7 @@ A service method that returns such a structure might be defined as follows:
     @Template("tree.html")
     public Map<String, Object> getTree() { ... }
 
-A simple template for generating a HTML representation of the tree (_tree.html_) might looks like this:
+A simple template for generating an HTML representation of the tree (_tree.html_) might looks like this:
 
     <html>
     <body>
@@ -548,9 +548,9 @@ The Ctemplate specification defines a syntax for applying an optional set of mod
 
     {{variable:modifier1:modifier2:modifier3=argument:...}}
     
-Modifiers are used to transform the variable's representation before it is written to the output stream; for example, to apply an escape sequence. Modifiers are invoked from left to right in the order in which they are specified.
+Modifiers are used to transform the variable's representation before it is written to the output stream; for example, to apply an escape sequence. Modifiers are invoked from left to right, in the order in which they are specified.
 
-HTTP-RPC provides the following modifiers by default:
+HTTP-RPC provides the following set of standard modifiers:
 
 * `format` - applies a format string, such as `%.2f`
 * `^url` - applies URL encoding to a value
@@ -643,7 +643,26 @@ Using this class, an implementation of the `getStatistics()` method might look l
 
 Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
 
-Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed.
+Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. 
+
+For example, the `getTree()` method discussed earlier could be implemented using `BeanAdapter` as follows:
+
+    @Template("tree.html")
+    public Map<String, Object> getTree() {
+        TreeNode root = new TreeNode();
+        ...
+
+        return new BeanAdapter(root);
+    }
+
+The `TreeNode` instances returned by `getChildren()` will be recursively adapted:
+
+    public class TreeNode {
+        public String getName() { ... }    
+        public List<TreeNode> getChildren() { ... }
+    }
+
+The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed.
 
 See the Javadoc for the `BeanAdapter` class for more information.
 
