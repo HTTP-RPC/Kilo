@@ -481,7 +481,7 @@ For example, if the JSON response to a method contained the following:
 the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
 
 ### Includes
-Includes import content defined by another template. They can be used to define reusable content modules. 
+Includes import content defined by another template. They can be used to create reusable content modules. 
 
 Includes inherit their context from the calling template, so they can also include markers. For example, the `<head>` section of the _orders.html_ template discussed earlier could be rewritten using includes as follows:
 
@@ -492,13 +492,46 @@ Includes inherit their context from the calling template, so they can also inclu
     </body>
     </html>
 
-The content of the `<head>` section is placed in _head.html_ so it can be reused by other templates:
+The content of the `<head>` section is placed in _head.html_ so it can also be used by other templates:
 
     <head>
         <title>Order #{{orderID}}</title>
     </head>
 
-However, the result of processing this version of _orders.html_ will be the same as the original version.
+The result of processing this version of _orders.html_ will be the same as the original.
+
+Includes can also be used to facilitate recursion. For example, the following class could be used to create a tree structure:
+
+    public class TreeNode {
+        public String getName() { ... }    
+        public List<TreeNode> getChildren() { ... }
+    }
+
+A service method that returns such a structure might be defined as follows:
+
+    @Template("tree.html")
+    public Map<String, Object> getTree() { ... }
+
+A simple template for generating a HTML representation of the tree (_tree.html_) might looks like this:
+
+    <html>
+    <body>
+    {{>treenode.html}}
+    </body>
+    </html>
+
+This template includes _treenode.html_, which recursively includes itself:
+
+    <ul>
+    {{#children}}
+    <li>
+    <p>{{name}}</p>
+    {{>treenode.html}}
+    </li>
+    {{/children}}
+    </ul>
+
+The output of processing _tree.html_ would be a collection of nested unordered list elements representing each of the nodes in the tree.
 
 ### Comments
 Comment markers simply define a block of text that is excluded from the final output. They are generally used to provide informational text to the reader of the source template. For example:
