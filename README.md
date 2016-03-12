@@ -481,37 +481,14 @@ For example, if the JSON response to a method contained the following:
 the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
 
 ### Includes
-Includes import content defined by another template. They are used to define reusable content modules. 
+Includes import content defined by another template. They are used to define reusable content modules. For example... TODO
 
-Includes inherit their context from the calling template. For example, the earlier list example could be rewritten as follows using includes:
+Includes inherit their context from the calling template... TODO
 
-    <html>
-    <head>
-        <title>Order #{{orderID}}</title>
-    </head>
-    <body>
-    <p>Customer ID: {{customerID}}</p>
-    <p>Date: {{date}}</p>
-    <table>
-        <tr>
-            <td>Item #</td>
-            <td>Description</td>
-            <td>Quantity</td>
-        </tr>
-        {{#items}}
-            {{>orderitem.html}}
-        {{/items}}
-    </table>
-    </body>
-    </html>
+Note that includes do not support recursion.
 
-The contents of _orderitem.html_ would be repeated for each item in the list:
-
-    <tr>
-        <td>{{itemID}}</td>
-        <td>{{description}}</td>
-        <td>{{quantity}}</td>
-    </tr>
+### Comments
+TODO
 
 ### Modifiers
 The Ctemplate specification defines a syntax for applying an optional set of modifiers to a variable. Modifiers are specified as follows:

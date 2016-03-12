@@ -1,3 +1,0 @@
-<td>{{a:test=lower:^html}}</td>
-<td>{{b:format=0x%04x}}</td>
-<td>{{c:format=%.4f}}</td>

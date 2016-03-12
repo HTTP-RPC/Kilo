@@ -886,8 +886,6 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
-    private HashMap<String, PagedReader> includes = new HashMap<>();
-
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
     static {
@@ -946,6 +944,10 @@ class TemplateSerializer extends Serializer {
     public void writeValue(PrintWriter writer, Object value) throws IOException {
         if (value != null) {
             try (InputStream inputStream = serviceType.getResourceAsStream(templateName)) {
+                if (inputStream == null) {
+                    throw new IOException("Template not found.");
+                }
+
                 writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
             }
         }
@@ -1065,28 +1067,12 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case INCLUDE: {
-                            PagedReader include = includes.get(marker);
-
-                            if (include == null) {
-                                try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
-                                    if (inputStream == null) {
-                                        throw new IOException("Include not found.");
-                                    }
-
-                                    include = new PagedReader(new InputStreamReader(inputStream));
-
-                                    includes.put(marker, include);
-
-                                    writeTemplate(writer, dictionary, include);
-                                }
-                            } else {
-                                if (include == reader) {
-                                    throw new IOException("Include recursion is not supported.");
+                            try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
+                                if (inputStream == null) {
+                                    throw new IOException("Include not found.");
                                 }
 
-                                include.reset();
-
-                                writeTemplate(writer, dictionary, include);
+                                writeTemplate(writer, dictionary, new PagedReader(new InputStreamReader(inputStream)));
                             }
 
                             break;

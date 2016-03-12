@@ -18,7 +18,11 @@ td {
 <td>b</td>
 <td>c</td>
 </tr>
-{{#.}}<tr>{{>testdata.html.include}}</tr>{{/.}}
+{{#.}}<tr>
+<td>{{a:test=lower:^html}}</td>
+<td>{{b:format=0x%04x}}</td>
+<td>{{c:format=%.4f}}</td>
+</tr>{{/.}}
 </table>
 </body>
 </html>
