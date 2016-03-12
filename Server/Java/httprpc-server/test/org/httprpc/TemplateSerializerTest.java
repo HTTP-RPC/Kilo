@@ -176,6 +176,19 @@ public class TemplateSerializerTest {
     }
 
     @Test
+    public void testNestedEmptySection() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section3.txt", PLAIN_TEXT_MIME_TYPE);
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), Collections.emptyList());
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[]", result);
+    }
+
+    @Test
     public void testPrimitiveSection() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section4.txt", PLAIN_TEXT_MIME_TYPE);
 
