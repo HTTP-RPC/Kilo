@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
+import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +48,7 @@ import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -675,6 +677,24 @@ class PagedReader extends Reader {
     }
 }
 
+// Empty reader
+class EmptyReader extends Reader {
+    @Override
+    public int read(char cbuf[], int off, int len) {
+        return -1;
+    }
+
+    @Override
+    public void reset() {
+        // No-op
+    }
+
+    @Override
+    public void close() {
+        // No-op
+    }
+}
+
 // Null writer
 class NullWriter extends Writer {
     @Override
@@ -886,7 +906,9 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
-    private HashMap<String, PagedReader> includes = new HashMap<>();
+    private Map<String, Reader> includes = new HashMap<>();
+
+    private LinkedList<Map<String, Reader>> context = new LinkedList<>();
 
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
@@ -955,7 +977,7 @@ class TemplateSerializer extends Serializer {
         }
     }
 
-    private void writeTemplate(PrintWriter writer, Object root, PagedReader reader) throws IOException {
+    private void writeTemplate(PrintWriter writer, Object root, Reader reader) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
@@ -1018,6 +1040,8 @@ class TemplateSerializer extends Serializer {
 
                     switch (markerType) {
                         case SECTION_START: {
+                            context.push(includes);
+
                             Object value = dictionary.get(marker);
 
                             if (value == null) {
@@ -1034,6 +1058,8 @@ class TemplateSerializer extends Serializer {
                                 Iterator<?> iterator = list.iterator();
 
                                 if (iterator.hasNext()) {
+                                    includes = new HashMap<>();
+
                                     while (iterator.hasNext()) {
                                         Object element = iterator.next();
 
@@ -1048,6 +1074,18 @@ class TemplateSerializer extends Serializer {
                                         }
                                     }
                                 } else {
+                                    includes = new AbstractMap<String, Reader>() {
+                                        @Override
+                                        public Reader get(Object key) {
+                                            return new EmptyReader();
+                                        }
+
+                                        @Override
+                                        public Set<Entry<String, Reader>> entrySet() {
+                                            throw new UnsupportedOperationException();
+                                        }
+                                    };
+
                                     writeTemplate(new PrintWriter(new NullWriter()), Collections.emptyMap(), reader);
                                 }
                             } finally {
@@ -1060,6 +1098,8 @@ class TemplateSerializer extends Serializer {
                                 }
                             }
 
+                            includes = context.pop();
+
                             break;
                         }
 
@@ -1069,7 +1109,7 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case INCLUDE: {
-                            PagedReader include = includes.get(marker);
+                            Reader include = includes.get(marker);
 
                             if (include == null) {
                                 try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {

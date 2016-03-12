@@ -33,7 +33,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testNull() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -46,7 +46,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testDictionary() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "dictionary.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -70,7 +70,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testEmptySection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -83,7 +83,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testSingleElementSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -106,7 +106,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testMultiElementSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section1.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary1 = mapOf(
             entry("a", "hello"),
@@ -137,7 +137,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testNestedSection1() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section2.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section2.txt", PLAIN_TEXT_MIME_TYPE);
 
         Map<String, ?> dictionary = mapOf(
             entry("abc", "ABC"),
@@ -162,7 +162,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testNestedSection2() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section3.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section3.txt", PLAIN_TEXT_MIME_TYPE);
 
         List<?> value = Arrays.asList(Arrays.asList(Arrays.asList(mapOf(entry("a", "hello")))));
 
@@ -177,7 +177,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testNestedEmptySection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section3.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section3.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -190,7 +190,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testPrimitiveSection() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "section4.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "section4.txt", PLAIN_TEXT_MIME_TYPE);
 
         List<?> value = Arrays.asList("hello", 42, false);
 
@@ -205,7 +205,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testComment() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "comment.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "comment.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -218,7 +218,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testFormatModifier() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "format.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "format.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -231,7 +231,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testURLEscapeModifier() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "url.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "url.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -244,7 +244,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testMarkupEscapeModifier() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "markup.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "markup.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -257,7 +257,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testCSVEscapeModifier() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "csv.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "csv.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -270,7 +270,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testSimpleInclude() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "master1.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "master1.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -283,7 +283,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testSectionInclude() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(WebService.class, "master2.txt", PLAIN_TEXT_MIME_TYPE);
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "master2.txt", PLAIN_TEXT_MIME_TYPE);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -292,5 +292,45 @@ public class TemplateSerializerTest {
         }
 
         Assert.assertEquals("[(a)(b)(c)]", result);
+    }
+
+    @Test
+    public void testRecursion() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "recursion.txt", PLAIN_TEXT_MIME_TYPE);
+
+        List<?> list = Arrays.asList(
+            Arrays.asList(
+                Arrays.asList(), Arrays.asList()
+            ),
+            Arrays.asList(
+                Arrays.asList(), Arrays.asList(), Arrays.asList()
+            ),
+            Arrays.asList(
+                Arrays.asList()
+            )
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), list);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[[[][]][[][][]][[]]]", result);
+    }
+
+    @Test
+    public void testEmptyRecursion() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializer.class, "recursion.txt", PLAIN_TEXT_MIME_TYPE);
+
+        List<?> list = Collections.EMPTY_LIST;
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), list);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("[]", result);
     }
 }

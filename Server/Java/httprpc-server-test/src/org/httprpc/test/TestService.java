@@ -81,8 +81,9 @@ public class TestService extends WebService {
         return map;
     }
 
+    @Template("tree.html")
     public Map<String, Object> getTree() {
-        TreeNode root = new TreeNode(null, false);
+        TreeNode root = new TreeNode("Seasons", false);
 
         TreeNode winter = new TreeNode("Winter", false);
         winter.getChildren().addAll(Arrays.asList(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
