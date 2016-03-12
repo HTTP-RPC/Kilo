@@ -886,6 +886,8 @@ class TemplateSerializer extends Serializer {
 
     private String contentType;
 
+    private HashMap<String, PagedReader> includes = new HashMap<>();
+
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
     static {
@@ -1067,12 +1069,24 @@ class TemplateSerializer extends Serializer {
                         }
 
                         case INCLUDE: {
-                            try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
-                                if (inputStream == null) {
-                                    throw new IOException("Include not found.");
-                                }
+                            PagedReader include = includes.get(marker);
 
-                                writeTemplate(writer, dictionary, new PagedReader(new InputStreamReader(inputStream)));
+                            if (include == null) {
+                                try (InputStream inputStream = serviceType.getResourceAsStream(marker)) {
+                                    if (inputStream == null) {
+                                        throw new IOException("Include not found.");
+                                    }
+
+                                    include = new PagedReader(new InputStreamReader(inputStream));
+
+                                    writeTemplate(writer, dictionary, include);
+
+                                    includes.put(marker, include);
+                                }
+                            } else {
+                                include.reset();
+
+                                writeTemplate(writer, dictionary, include);
                             }
 
                             break;
