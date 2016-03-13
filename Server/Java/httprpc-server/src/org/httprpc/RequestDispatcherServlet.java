@@ -972,6 +972,8 @@ class TemplateSerializer extends Serializer {
                     throw new IOException("Template not found.");
                 }
 
+                // TODO Load resource bundle for template name
+
                 writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
             }
         }

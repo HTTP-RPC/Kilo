@@ -40,6 +40,11 @@ NSString * const WSArgumentsKey = @"arguments";
 
 - (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments resultHandler:(void (^)(id, NSError *))resultHandler
 {
+    return [self invoke:methodName withArguments:arguments attachments:[NSDictionary new] resultHandler:resultHandler];
+}
+
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments attachments:(NSDictionary *)attachments resultHandler:(void (^)(id, NSError *))resultHandler
+{
     NSURLSessionDataTask *task = nil;
 
     NSURL *requestURL = [NSURL URLWithString:methodName relativeToURL:_baseURL];
@@ -94,6 +99,13 @@ NSString * const WSArgumentsKey = @"arguments";
 
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
+
+        for (NSString *name in attachments) {
+            NSURL *url = [attachments objectForKey:name];
+
+            // TODO
+            NSLog(@"%@: %@", name, url);
+        }
 
         NSOperationQueue *resultHandlerQueue = [NSOperationQueue currentQueue];
 

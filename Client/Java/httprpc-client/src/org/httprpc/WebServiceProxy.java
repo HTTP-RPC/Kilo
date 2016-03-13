@@ -16,6 +16,7 @@ package org.httprpc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,6 +50,7 @@ public class WebServiceProxy {
     private static class InvocationCallback<V> implements Callable<V> {
         private URL methodURL;
         private Map<String, ?> arguments;
+        private Map<String, File> attachments;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -66,9 +68,10 @@ public class WebServiceProxy {
 
         private static final String UTF_8_ENCODING = "UTF-8";
 
-        public InvocationCallback(URL methodURL, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, File> attachments, ResultHandler<V> resultHandler) {
             this.methodURL = methodURL;
             this.arguments = arguments;
+            this.attachments = attachments;
             this.resultHandler = resultHandler;
         }
 
@@ -142,6 +145,15 @@ public class WebServiceProxy {
                     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
                         writer.write(parameters.toString());
                     }
+                }
+
+                // Attachments
+                for (Map.Entry<String, File> attachment : attachments.entrySet()) {
+                    String name = attachment.getKey();
+                    File file = attachment.getValue();
+
+                    // TODO
+                    System.out.printf("%s: %s\n", name, file);
                 }
 
                 // Read response
@@ -572,12 +584,41 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
+    @SuppressWarnings("unchecked")
     public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        return invoke(methodName, arguments, Collections.EMPTY_MAP, resultHandler);
+    }
+
+    /**
+     * Invokes an HTTP-RPC service method.
+     *
+     * @param <V> The type of the value returned by the method.
+     *
+     * @param methodName
+     * The name of the method to invoke.
+     *
+     * @param arguments
+     * The method arguments.
+     *
+     * @param attachments
+     * The method attachments.
+     *
+     * @param resultHandler
+     * A callback that will be invoked upon completion of the method.
+     *
+     * @return
+     * A future representing the invocation request.
+     */
+    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, Map<String, File> attachments, ResultHandler<V> resultHandler) {
         if (methodName == null) {
             throw new IllegalArgumentException();
         }
 
         if (arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (attachments == null) {
             throw new IllegalArgumentException();
         }
 
@@ -592,7 +633,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException(exception);
         }
 
-        return executorService.submit(new InvocationCallback<>(methodURL, arguments, resultHandler));
+        return executorService.submit(new InvocationCallback<>(methodURL, arguments, attachments, resultHandler));
     }
 
     /**

@@ -64,7 +64,8 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
  * Invokes an HTTP-RPC service method.
@@ -75,7 +76,24 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+    withArguments:(NSDictionary<NSString *, id> *)arguments
+    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+
+/**
+ * Invokes an HTTP-RPC service method.
+ *
+ * @param methodName The name of the method to invoke.
+ * @param arguments The method arguments.
+ * @param attachments The method attachments.
+ * @param resultHandler A callback that will be invoked upon completion of the method.
+ *
+ * @return A session data task representing the invocation request.
+ */
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+    withArguments:(NSDictionary<NSString *, id> *)arguments
+    attachments:(NSDictionary<NSString *, NSURL *> *)attachments
+    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end
 
