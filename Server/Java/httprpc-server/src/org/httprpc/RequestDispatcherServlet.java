@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -380,6 +381,8 @@ public class RequestDispatcherServlet extends HttpServlet {
             response.setContentType(serializer.getContentType());
             serializer.writeValue(response.getWriter(), BeanAdapter.adapt(methodDescriptors));
         } else {
+            Locale locale = request.getLocale();
+
             // Look up service method
             pathInfo = pathInfo.substring(1);
 
@@ -401,7 +404,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                     throw new ServletException("Method not found.");
                 }
 
-                serializer = new TemplateSerializer(serviceType, pathInfo, getServletContext().getMimeType(pathInfo));
+                serializer = new TemplateSerializer(serviceType, pathInfo, getServletContext().getMimeType(pathInfo), locale);
             }
 
             // Construct arguments
@@ -478,7 +481,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 throw new ServletException(exception);
             }
 
-            service.setLocale(request.getLocale());
+            service.setLocale(locale);
 
             Principal userPrincipal = request.getUserPrincipal();
 
@@ -897,6 +900,7 @@ class TemplateSerializer extends Serializer {
         SECTION_START,
         SECTION_END,
         INCLUDE,
+        RESOURCE,
         COMMENT,
         VARIABLE
     }
@@ -905,6 +909,10 @@ class TemplateSerializer extends Serializer {
     private String templateName;
 
     private String contentType;
+
+    private Locale locale;
+
+    private ResourceBundle resourceBundle = null;
 
     private Map<String, Reader> includes = new HashMap<>();
 
@@ -952,11 +960,13 @@ class TemplateSerializer extends Serializer {
 
     private static final int EOF = -1;
 
-    public TemplateSerializer(Class<?> serviceType, String templateName, String contentType) {
+    public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale) {
         this.serviceType = serviceType;
         this.templateName = templateName;
 
         this.contentType = contentType;
+
+        this.locale = locale;
     }
 
     @Override
@@ -972,7 +982,17 @@ class TemplateSerializer extends Serializer {
                     throw new IOException("Template not found.");
                 }
 
-                // TODO Load resource bundle for template name
+                int i = templateName.lastIndexOf(".");
+
+                if (i != -1 ) {
+                    String baseName = serviceType.getPackage().getName() + "." + templateName.substring(0, i);
+
+                    try {
+                        resourceBundle = ResourceBundle.getBundle(baseName, locale);
+                    } catch (MissingResourceException exception) {
+                        // No-op
+                    }
+                }
 
                 writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
             }
@@ -1006,6 +1026,8 @@ class TemplateSerializer extends Serializer {
                         markerType = MarkerType.SECTION_END;
                     } else if (c == '>') {
                         markerType = MarkerType.INCLUDE;
+                    } else if (c == '@') {
+                        markerType = MarkerType.RESOURCE;
                     } else if (c == '!') {
                         markerType = MarkerType.COMMENT;
                     } else {
@@ -1130,6 +1152,19 @@ class TemplateSerializer extends Serializer {
 
                                 writeTemplate(writer, dictionary, include);
                             }
+
+                            break;
+                        }
+
+                        case RESOURCE: {
+                            String value;
+                            if (resourceBundle != null) {
+                                value = resourceBundle.getString(marker);
+                            } else {
+                                value = marker;
+                            }
+
+                            writer.append(value);
 
                             break;
                         }
