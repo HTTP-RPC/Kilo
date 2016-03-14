@@ -284,6 +284,8 @@ Note that it is possible to associate multiple templates with a single service m
     @Template("statistics.html")
     @Template("statistics.xml")
     public Map<String, Object> getStatistics(List<Double> values) { ... }
+    
+Also note that template file names must include an extension so the servlet container can correctly determine the MIME type of the content.
 
 ### Sections
 If a value in a data dictionary is an instance of `java.util.List`, the value's key can be used as a section marker. Content between the section start and end markers is repeated once for each element in the list. If the list is empty or the value of the key is `null`, the section's content is excluded from the output.

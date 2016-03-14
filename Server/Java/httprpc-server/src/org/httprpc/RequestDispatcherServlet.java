@@ -404,7 +404,13 @@ public class RequestDispatcherServlet extends HttpServlet {
                     throw new ServletException("Method not found.");
                 }
 
-                serializer = new TemplateSerializer(serviceType, pathInfo, getServletContext().getMimeType(pathInfo), locale);
+                String contentType = getServletContext().getMimeType(pathInfo);
+
+                if (contentType == null) {
+                    throw new ServletException("Unable to determine content type.");
+                }
+
+                serializer = new TemplateSerializer(serviceType, pathInfo, contentType, locale);
             }
 
             // Construct arguments
@@ -907,15 +913,12 @@ class TemplateSerializer extends Serializer {
 
     private Class<?> serviceType;
     private String templateName;
-
     private String contentType;
-
     private Locale locale;
 
     private ResourceBundle resourceBundle = null;
 
     private Map<String, Reader> includes = new HashMap<>();
-
     private LinkedList<Map<String, Reader>> context = new LinkedList<>();
 
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
@@ -963,9 +966,7 @@ class TemplateSerializer extends Serializer {
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale) {
         this.serviceType = serviceType;
         this.templateName = templateName;
-
         this.contentType = contentType;
-
         this.locale = locale;
     }
 
@@ -984,14 +985,16 @@ class TemplateSerializer extends Serializer {
 
                 int i = templateName.lastIndexOf(".");
 
-                if (i != -1 ) {
-                    String baseName = serviceType.getPackage().getName() + "." + templateName.substring(0, i);
+                if (i == -1) {
+                    throw new IllegalStateException();
+                }
 
-                    try {
-                        resourceBundle = ResourceBundle.getBundle(baseName, locale);
-                    } catch (MissingResourceException exception) {
-                        // No-op
-                    }
+                String baseName = serviceType.getPackage().getName() + "." + templateName.substring(0, i);
+
+                try {
+                    resourceBundle = ResourceBundle.getBundle(baseName, locale);
+                } catch (MissingResourceException exception) {
+                    // No-op
                 }
 
                 writeTemplate(writer, value, new PagedReader(new InputStreamReader(inputStream)));
