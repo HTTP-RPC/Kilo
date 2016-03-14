@@ -222,6 +222,7 @@ HTTP-RPC templates are based on the [Ctemplate](https://google-ctemplate.googlec
 * {{_variable_}} - injects a variable from the data dictionary into the output
 * {{#_section_}}...{{/_section_}} - defines a repeating section of content
 * {{>_include_}} - imports content specified by another template
+* {{@_resource_}} - injects a value from a resource bundle into the output
 * {{!_comment_}} - defines a comment
 
 The value returned by the service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. 
@@ -535,6 +536,33 @@ This template includes _treenode.html_, which recursively includes itself:
 
 The output of processing _tree.html_ would be a collection of nested unordered list elements representing each of the nodes in the tree.
 
+### Resources
+A resource marker injects a value from a resource bundle into the output stream, allowing static template content to be localized. At execution time, the template processor looks for a resource bundle with the same base name as the template minus the template's extension, using the locale specified by the current HTTP request. If the bundle exists, it is used to provide localized string resources for the markers specified in the template.
+
+For example, the descriptive text from the _statistics.html_ template discussed earlier could be extracted into a file named _statistics\_en.properties_ as shown below:
+
+    title=Statistics
+    count=Count
+    sum=Sum
+    average=Average
+
+The template itself could be updated to refer to these values as follows:
+
+    <html>
+    <head>
+        <title>{{@title}}</title>
+    </head>
+    <body>
+        <p>{{@@count}}: {{count}}</p>
+        <p>{{@sum}}: {{sum}}</p>
+        <p>{{@average}}: {{average}}</p> 
+    </body>
+    </html>
+
+When the template is processed, the resource markers will be replaced with their corresponding values from the resource bundle. For an HTTP request coming from an English-speaking locale, the output will be identical to the earlier, non-localized version.
+
+Note that, if a resource bundle with the expected name does not exist, or if a marker refers to a non-existent key, the marker name itself will be written to the output stream in place of the localized value.
+    
 ### Comments
 Comment markers simply define a block of text that is excluded from the final output. They are generally used to provide informational text to the reader of the source template. For example:
 
