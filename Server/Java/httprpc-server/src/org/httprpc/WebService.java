@@ -15,7 +15,10 @@
 package org.httprpc;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -115,7 +118,21 @@ public abstract class WebService {
     }
 
     /**
-     * Creates a map from a list of entries.
+     * Creates a list from a variable length array of elements.
+     *
+     * @param elements
+     * The elements from which the list will be created.
+     *
+     * @return
+     * An immutable list containing the given elements.
+     */
+    @SafeVarargs
+    public static List<?> listOf(Object...elements) {
+        return Collections.unmodifiableList(Arrays.asList(elements));
+    }
+
+    /**
+     * Creates a map from a variable length array of map entries.
      *
      * @param <K> The type of the key.
      *
@@ -123,7 +140,7 @@ public abstract class WebService {
      * The entries from which the map will be created.
      *
      * @return
-     * A map containing the given entries.
+     * An immutable map containing the given entries.
      */
     @SafeVarargs
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
@@ -133,7 +150,7 @@ public abstract class WebService {
             map.put(entry.getKey(), entry.getValue());
         }
 
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     /**
@@ -148,9 +165,9 @@ public abstract class WebService {
      * The entry's value.
      *
      * @return
-     * The map entry.
+     * An immutable map entry containing the key/value pair.
      */
     public static <K> Map.Entry<K, ?> entry(K key, Object value) {
-        return new AbstractMap.SimpleEntry<>(key, value);
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 }

@@ -30,6 +30,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,7 +51,7 @@ public class WebServiceProxy {
     private static class InvocationCallback<V> implements Callable<V> {
         private URL methodURL;
         private Map<String, ?> arguments;
-        private Map<String, File> attachments;
+        private Map<String, List<File>> attachments;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -68,7 +69,7 @@ public class WebServiceProxy {
 
         private static final String UTF_8_ENCODING = "UTF-8";
 
-        public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, File> attachments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, List<File>> attachments, ResultHandler<V> resultHandler) {
             this.methodURL = methodURL;
             this.arguments = arguments;
             this.attachments = attachments;
@@ -148,9 +149,9 @@ public class WebServiceProxy {
                 }
 
                 // Attachments
-                for (Map.Entry<String, File> attachment : attachments.entrySet()) {
+                for (Map.Entry<String, List<File>> attachment : attachments.entrySet()) {
                     String name = attachment.getKey();
-                    File file = attachment.getValue();
+                    List<File> file = attachment.getValue();
 
                     // TODO
                     System.out.printf("%s: %s\n", name, file);
@@ -609,7 +610,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, Map<String, File> attachments, ResultHandler<V> resultHandler) {
+    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, Map<String, List<File>> attachments, ResultHandler<V> resultHandler) {
         if (methodName == null) {
             throw new IllegalArgumentException();
         }
@@ -637,7 +638,21 @@ public class WebServiceProxy {
     }
 
     /**
-     * Creates a map from a list of entries.
+     * Creates a list from a variable length array of elements.
+     *
+     * @param elements
+     * The elements from which the list will be created.
+     *
+     * @return
+     * An immutable list containing the given elements.
+     */
+    @SafeVarargs
+    public static List<?> listOf(Object...elements) {
+        return Collections.unmodifiableList(Arrays.asList(elements));
+    }
+
+    /**
+     * Creates a map from a variable length array of map entries.
      *
      * @param <K> The type of the key.
      *
@@ -645,7 +660,7 @@ public class WebServiceProxy {
      * The entries from which the map will be created.
      *
      * @return
-     * A map containing the given entries.
+     * An immutable map containing the given entries.
      */
     @SafeVarargs
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
@@ -655,7 +670,7 @@ public class WebServiceProxy {
             map.put(entry.getKey(), entry.getValue());
         }
 
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     /**
@@ -670,10 +685,10 @@ public class WebServiceProxy {
      * The entry's value.
      *
      * @return
-     * The map entry.
+     * An immutable map entry containing the key/value pair.
      */
     public static <K> Map.Entry<K, ?> entry(K key, Object value) {
-        return new AbstractMap.SimpleEntry<>(key, value);
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 
     /**

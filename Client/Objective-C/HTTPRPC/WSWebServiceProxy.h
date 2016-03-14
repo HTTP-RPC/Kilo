@@ -92,7 +92,7 @@ extern NSString * const WSArgumentsKey;
  */
 - (NSURLSessionDataTask *)invoke:(NSString *)methodName
     withArguments:(NSDictionary<NSString *, id> *)arguments
-    attachments:(NSDictionary<NSString *, NSURL *> *)attachments
+    attachments:(NSDictionary<NSString *, NSArray<NSURL *> *> *)attachments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end
