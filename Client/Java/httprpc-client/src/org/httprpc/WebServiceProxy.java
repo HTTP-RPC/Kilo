@@ -58,8 +58,6 @@ public class WebServiceProxy {
 
         private static final int EOF = -1;
 
-        private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
-
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
         private static final String NULL_KEYWORD = "null";
@@ -91,69 +89,72 @@ public class WebServiceProxy {
                 Locale locale = Locale.getDefault();
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
+                connection.setRequestProperty("Accept-Language", acceptLanguage);
 
-                // Create request body
-                StringBuilder parameters = new StringBuilder();
+                if (attachments.size() == 0) {
+                    // Construct parameter list
+                    StringBuilder parameters = new StringBuilder();
 
-                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                    String name = argument.getKey();
+                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                        String name = argument.getKey();
 
-                    if (name == null) {
-                        continue;
-                    }
-
-                    Object value = argument.getValue();
-
-                    List<?> values;
-                    if (value instanceof List<?>) {
-                        values = (List<?>)value;
-                    } else if (value instanceof Map<?, ?>) {
-                        Map<?, ?> map = (Map<?, ?>)value;
-
-                        ArrayList<Object> entries = new ArrayList<>(map.size());
-
-                        for (Map.Entry<?, ?> entry : map.entrySet()) {
-                            entries.add(URLEncoder.encode(String.valueOf(entry.getKey()), UTF_8_ENCODING)
-                                + ":" + URLEncoder.encode(String.valueOf(entry.getValue()), UTF_8_ENCODING));
-                        }
-
-                        values = entries;
-                    } else {
-                        values = Collections.singletonList(value);
-                    }
-
-                    for (int i = 0, n = values.size(); i < n; i++) {
-                        Object element = values.get(i);
-
-                        if (element == null) {
+                        if (name == null) {
                             continue;
                         }
 
-                        if (parameters.length() > 0) {
-                            parameters.append("&");
+                        Object value = argument.getValue();
+
+                        List<?> values;
+                        if (value instanceof List<?>) {
+                            values = (List<?>)value;
+                        } else if (value instanceof Map<?, ?>) {
+                            Map<?, ?> map = (Map<?, ?>)value;
+
+                            ArrayList<Object> entries = new ArrayList<>(map.size());
+
+                            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                                entries.add(URLEncoder.encode(String.valueOf(entry.getKey()), UTF_8_ENCODING)
+                                    + ":" + URLEncoder.encode(String.valueOf(entry.getValue()), UTF_8_ENCODING));
+                            }
+
+                            values = entries;
+                        } else {
+                            values = Collections.singletonList(value);
                         }
 
-                        parameters.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                        parameters.append("=");
-                        parameters.append(URLEncoder.encode(element.toString(), UTF_8_ENCODING));
+                        for (int i = 0, n = values.size(); i < n; i++) {
+                            Object element = values.get(i);
+
+                            if (element == null) {
+                                continue;
+                            }
+
+                            if (parameters.length() > 0) {
+                                parameters.append("&");
+                            }
+
+                            parameters.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                            parameters.append("=");
+                            parameters.append(URLEncoder.encode(element.toString(), UTF_8_ENCODING));
+                        }
                     }
-                }
 
-                // Write request body
-                try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                        writer.write(parameters.toString());
+                    // Write request body
+                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                            writer.write(parameters.toString());
+                        }
                     }
-                }
+                } else {
+                    // TODO Set content type to "multipart/form-data"
 
-                // Attachments
-                for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
-                    String name = attachment.getKey();
-                    List<URL> file = attachment.getValue();
+                    for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
+                        String name = attachment.getKey();
+                        List<URL> file = attachment.getValue();
 
-                    // TODO
-                    System.out.printf("%s: %s\n", name, file);
+                        // TODO
+                        System.out.printf("%s: %s\n", name, file);
+                    }
                 }
 
                 // Read response

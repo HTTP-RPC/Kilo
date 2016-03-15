@@ -50,61 +50,66 @@ NSString * const WSArgumentsKey = @"arguments";
     NSURL *requestURL = [NSURL URLWithString:methodName relativeToURL:_baseURL];
 
     if (requestURL != nil) {
-        NSMutableString *parameters = [NSMutableString new];
-
-        for (NSString *name in arguments) {
-            id value = [arguments objectForKey:name];
-
-            NSArray *values;
-            if ([value isKindOfClass:[NSArray self]]) {
-                values = (NSArray *)value;
-            } else if ([value isKindOfClass:[NSDictionary self]]) {
-                NSDictionary *dictionary = (NSDictionary *)value;
-
-                NSMutableArray *entries = [NSMutableArray new];
-
-                for (NSString *key in dictionary) {
-                    [entries addObject:[NSString stringWithFormat:@"%@:%@",
-                        [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
-                        [[[dictionary objectForKey:key] description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
-                }
-
-                values = entries;
-            } else {
-                values = [NSArray arrayWithObject:value];
-            }
-
-            for (NSUInteger i = 0, n = [values count]; i < n; i++) {
-                if ([parameters length] > 0) {
-                    [parameters appendString:@"&"];
-                }
-
-                id element = [values objectAtIndex:i];
-
-                if (element == (void *)kCFBooleanTrue) {
-                    element = @"true";
-                } else if (element == (void *)kCFBooleanFalse) {
-                    element = @"false";
-                } else {
-                    element = [element description];
-                }
-
-                [parameters appendString:[name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-                [parameters appendString:@"="];
-                [parameters appendString:[element stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-            }
-        }
-
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: requestURL];
 
         [request setHTTPMethod:@"POST"];
-        [request setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
 
-        for (NSString *name in attachments) {
-            NSURL *url = [attachments objectForKey:name];
+        if ([attachments count] == 0) {
+            NSMutableString *parameters = [NSMutableString new];
 
-            // TODO
-            NSLog(@"%@: %@", name, url);
+            for (NSString *name in arguments) {
+                id value = [arguments objectForKey:name];
+
+                NSArray *values;
+                if ([value isKindOfClass:[NSArray self]]) {
+                    values = (NSArray *)value;
+                } else if ([value isKindOfClass:[NSDictionary self]]) {
+                    NSDictionary *dictionary = (NSDictionary *)value;
+
+                    NSMutableArray *entries = [NSMutableArray new];
+
+                    for (NSString *key in dictionary) {
+                        [entries addObject:[NSString stringWithFormat:@"%@:%@",
+                            [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
+                            [[[dictionary objectForKey:key] description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
+                    }
+
+                    values = entries;
+                } else {
+                    values = [NSArray arrayWithObject:value];
+                }
+
+                for (NSUInteger i = 0, n = [values count]; i < n; i++) {
+                    if ([parameters length] > 0) {
+                        [parameters appendString:@"&"];
+                    }
+
+                    id element = [values objectAtIndex:i];
+
+                    if (element == (void *)kCFBooleanTrue) {
+                        element = @"true";
+                    } else if (element == (void *)kCFBooleanFalse) {
+                        element = @"false";
+                    } else {
+                        element = [element description];
+                    }
+
+                    [parameters appendString:[name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                    [parameters appendString:@"="];
+                    [parameters appendString:[element stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                }
+            }
+
+            [request setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
+        } else {
+            // TODO Set content type to "multipart/form-data"
+
+            for (NSString *name in attachments) {
+                NSURL *url = [attachments objectForKey:name];
+
+                // TODO
+                NSLog(@"%@: %@", name, url);
+            }
         }
 
         NSOperationQueue *resultHandlerQueue = [NSOperationQueue currentQueue];

@@ -311,8 +311,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String UNSUPPORTED_TYPE = "?";
 
-    private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-
     private static final String UTF_8_ENCODING = "UTF-8";
 
     @Override
@@ -499,7 +497,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             String contentType = request.getContentType();
 
             Iterable<Attachment> attachments;
-            if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA_MIME_TYPE)) {
+            if (contentType != null && contentType.startsWith("multipart/form-data")) {
                 attachments = new AttachmentCollection(request);
             } else {
                 attachments = Collections.emptyList();
