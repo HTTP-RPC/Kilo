@@ -142,7 +142,7 @@
 <form action="${pageContext.request.contextPath}/test/getAttachmentInfo" method="post" enctype="multipart/form-data">
 <table>
 <tr>
-<td>File 1</td><td><input type="file" name="files" multiple/></td>
+<td>Files</td><td><input type="file" name="files" multiple/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit" value="Get Attachment Info"/></td>

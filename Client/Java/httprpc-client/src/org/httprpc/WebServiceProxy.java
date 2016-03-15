@@ -16,7 +16,6 @@ package org.httprpc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,7 +50,7 @@ public class WebServiceProxy {
     private static class InvocationCallback<V> implements Callable<V> {
         private URL methodURL;
         private Map<String, ?> arguments;
-        private Map<String, List<File>> attachments;
+        private Map<String, List<URL>> attachments;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -69,7 +68,7 @@ public class WebServiceProxy {
 
         private static final String UTF_8_ENCODING = "UTF-8";
 
-        public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, List<File>> attachments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
             this.methodURL = methodURL;
             this.arguments = arguments;
             this.attachments = attachments;
@@ -149,9 +148,9 @@ public class WebServiceProxy {
                 }
 
                 // Attachments
-                for (Map.Entry<String, List<File>> attachment : attachments.entrySet()) {
+                for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
                     String name = attachment.getKey();
-                    List<File> file = attachment.getValue();
+                    List<URL> file = attachment.getValue();
 
                     // TODO
                     System.out.printf("%s: %s\n", name, file);
@@ -610,7 +609,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, Map<String, List<File>> attachments, ResultHandler<V> resultHandler) {
+    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
         if (methodName == null) {
             throw new IllegalArgumentException();
         }
