@@ -40,10 +40,6 @@ public class TestService extends WebService {
     }
 
     public double addValues(List<Double> values) {
-        if (values == null) {
-            throw new IllegalArgumentException();
-        }
-
         double total = 0;
 
         for (double value : values) {
@@ -58,16 +54,16 @@ public class TestService extends WebService {
     }
 
     public List<String> getCharacters(String text) {
-        if (text == null) {
-            throw new IllegalArgumentException();
-        }
+        List<String> characters = null;
 
-        int n = text.length();
+        if (text != null) {
+            int n = text.length();
 
-        ArrayList<String> characters = new ArrayList<>(n);
+            characters = new ArrayList<>(n);
 
-        for (int i = 0; i < n; i++) {
-            characters.add(Character.toString(text.charAt(i)));
+            for (int i = 0; i < n; i++) {
+                characters.add(Character.toString(text.charAt(i)));
+            }
         }
 
         return characters;
@@ -110,18 +106,14 @@ public class TestService extends WebService {
 
     @Template("statistics.html")
     public Map<String, Object> getStatistics(List<Double> values) {
-        if (values == null) {
-            throw new IllegalArgumentException();
-        }
-
         Statistics statistics = new Statistics();
 
         int n = values.size();
 
         statistics.setCount(n);
 
-        for (double value : values) {
-            statistics.setSum(statistics.getSum() + value);
+        for (int i = 0; i < n; i++) {
+            statistics.setSum(statistics.getSum() + values.get(i));
         }
 
         statistics.setAverage(statistics.getSum() / n);
