@@ -332,7 +332,8 @@ public class RequestDispatcherServlet extends HttpServlet {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (serviceType.isAssignableFrom(method.getDeclaringClass())) {
+            if (serviceType.isAssignableFrom(method.getDeclaringClass())
+                && !java.lang.reflect.Modifier.isStatic(method.getModifiers())) {
                 if (methodMap.put(method.getName(), method) != null) {
                     throw new ServletException("Duplicate method name.");
                 }
