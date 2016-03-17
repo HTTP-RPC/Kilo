@@ -743,9 +743,7 @@ class JSONSerializer extends Serializer {
             throw new IOException("Error writing to output stream.");
         }
 
-        if (value == null) {
-            writer.append(null);
-        } else if (value instanceof String) {
+        if (value instanceof String) {
             String string = (String)value;
 
             writer.append("\"");
@@ -887,7 +885,7 @@ class JSONSerializer extends Serializer {
                 }
             }
         } else {
-            throw new IOException("Invalid value type.");
+            writer.append(null);
         }
     }
 
@@ -1201,11 +1199,7 @@ class TemplateSerializer extends Serializer {
                                 }
                             }
 
-                            if (value != null) {
-                                if (!(value instanceof String || value instanceof Number || value instanceof Boolean)) {
-                                    throw new IOException("Invalid variable element.");
-                                }
-
+                            if (value instanceof String || value instanceof Number || value instanceof Boolean) {
                                 if (components.length > 1) {
                                     for (int i = 1; i < components.length; i++) {
                                         String component = components[i];
