@@ -12,24 +12,21 @@
  * limitations under the License.
  */
 
-package org.httprpc.beans;
+package org.httprpc.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that exposes the properties of a Java Bean object as a map.
+ * Class that exposes the contents of a cursor as an iterable list of values.
  */
-public class BeanAdapter extends AbstractMap<String, Object> {
+public class CursorAdapter extends AbstractList<Object> implements AutoCloseable {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
         private List<Object> list;
@@ -104,111 +101,58 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private Object bean;
-
-    private HashMap<String, Method> accessors = new HashMap<>();
-
-    private Set<Entry<String, Object>> entrySet = new AbstractSet<Entry<String, Object>>() {
-        @Override
-        public int size() {
-            return accessors.size();
-        }
-
-        @Override
-        public Iterator<Entry<String, Object>> iterator() {
-            return new Iterator<Entry<String, Object>>() {
-                private Iterator<String> keys = accessors.keySet().iterator();
-
-                @Override
-                public boolean hasNext() {
-                    return keys.hasNext();
-                }
-
-                @Override
-                public Entry<String, Object> next() {
-                    String key = keys.next();
-
-                    return new SimpleImmutableEntry<>(key, get(key));
-                }
-            };
-        }
-    };
-
-    private static final String GET_PREFIX = "get";
-    private static final String IS_PREFIX = "is";
+    private Iterator<?> cursor;
 
     /**
-     * Constructs a new Bean adapter.
+     * Constructs a new cursor adapter.
      *
-     * @param bean
-     * The source Bean.
+     * @param cursor
+     * The source cursor. If the cursor's type implements {@link AutoCloseable},
+     * it will be automatically closed when the adapter is closed.
      */
-    public BeanAdapter(Object bean) {
-        if (bean == null) {
+    public CursorAdapter(Iterator<?> cursor) {
+        if (cursor == null) {
             throw new IllegalArgumentException();
         }
 
-        this.bean = bean;
+        this.cursor = cursor;
+    }
 
-        Class<?> type = bean.getClass();
-        Method[] methods = type.getMethods();
+    @Override
+    public Map<String, Object> get(int index) {
+        throw new UnsupportedOperationException();
+    }
 
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException();
+    }
 
-            if (type.isAssignableFrom(method.getDeclaringClass())) {
-                String methodName = method.getName();
-
-                String prefix;
-                if (methodName.startsWith(GET_PREFIX)) {
-                    prefix = GET_PREFIX;
-                } else if (methodName.startsWith(IS_PREFIX)) {
-                    prefix = IS_PREFIX;
-                } else {
-                    prefix = null;
-                }
-
-                if (prefix != null)  {
-                    int j = prefix.length();
-                    int n = methodName.length();
-
-                    if (j < n && method.getParameterCount() == 0) {
-                        char c = methodName.charAt(j++);
-
-                        if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                            c = Character.toLowerCase(c);
-                        }
-
-                        String key = c + methodName.substring(j);
-
-                        accessors.put(key, method);
-                    }
-                }
+    @Override
+    public Iterator<Object> iterator() {
+        return new Iterator<Object>() {
+            @Override
+            public boolean hasNext() {
+                return cursor.hasNext();
             }
+
+            @Override
+            public Object next() {
+                return adapt(cursor.next());
+            }
+        };
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (cursor instanceof AutoCloseable) {
+            ((AutoCloseable)cursor).close();
         }
     }
 
     @Override
-    public Object get(Object key) {
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
-
-        Method method = accessors.get(key);
-
-        Object value;
-        try {
-            value = method.invoke(bean);
-        } catch (InvocationTargetException | IllegalAccessException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        return adapt(value);
-    }
-
-    @Override
-    public Set<Entry<String, Object>> entrySet() {
-        return entrySet;
+    public String toString() {
+        return getClass().getName();
     }
 
     /**
@@ -223,8 +167,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * representation via {@link Date#getTime()}. If the value is a
      * {@link List}, it is wrapped in an adapter that will adapt the list's
      * elements. If the value is a {@link Map}, it is wrapped in an adapter
-     * that will adapt the map's values. Otherwise, the value is considered a
-     * nested Bean and is wrapped in a Bean adapter.
+     * that will adapt the map's values.  Otherwise, it is converted to a
+     * {@link String}.
      *
      * @param <T> The expected type of the adapted value.
      *
@@ -244,7 +188,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (value instanceof Map<?, ?>) {
                 value = new MapAdapter((Map<Object, Object>)value);
             } else {
-                value = new BeanAdapter(value);
+                value = value.toString();
             }
         }
 

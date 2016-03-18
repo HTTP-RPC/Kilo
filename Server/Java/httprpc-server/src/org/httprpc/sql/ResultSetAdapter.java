@@ -105,6 +105,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
                     for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
+                        // TODO If the value is a Date, convert it to long
                         row.put(resultSetMetaData.getColumnLabel(i + 1), resultSet.getObject(i + 1));
                     }
                 } catch (SQLException exception) {
