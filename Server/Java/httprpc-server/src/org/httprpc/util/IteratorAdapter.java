@@ -24,9 +24,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that exposes the contents of a cursor as an iterable list of values.
+ * Class that exposes the contents of an iterator as an iterable list of
+ * values.
  */
-public class CursorAdapter extends AbstractList<Object> implements AutoCloseable {
+public class IteratorAdapter extends AbstractList<Object> implements AutoCloseable {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
         private List<Object> list;
@@ -101,21 +102,22 @@ public class CursorAdapter extends AbstractList<Object> implements AutoCloseable
         }
     }
 
-    private Iterator<?> cursor;
+    private Iterator<?> iterator;
 
     /**
-     * Constructs a new cursor adapter.
+     * Constructs a new iterator adapter.
      *
-     * @param cursor
-     * The source cursor. If the cursor's type implements {@link AutoCloseable},
-     * it will be automatically closed when the adapter is closed.
+     * @param iterator
+     * The source iterator. If the iterator's type implements
+     * {@link AutoCloseable}, it will be automatically closed when the adapter
+     * is closed.
      */
-    public CursorAdapter(Iterator<?> cursor) {
-        if (cursor == null) {
+    public IteratorAdapter(Iterator<?> iterator) {
+        if (iterator == null) {
             throw new IllegalArgumentException();
         }
 
-        this.cursor = cursor;
+        this.iterator = iterator;
     }
 
     @Override
@@ -133,20 +135,20 @@ public class CursorAdapter extends AbstractList<Object> implements AutoCloseable
         return new Iterator<Object>() {
             @Override
             public boolean hasNext() {
-                return cursor.hasNext();
+                return iterator.hasNext();
             }
 
             @Override
             public Object next() {
-                return adapt(cursor.next());
+                return adapt(iterator.next());
             }
         };
     }
 
     @Override
     public void close() throws Exception {
-        if (cursor instanceof AutoCloseable) {
-            ((AutoCloseable)cursor).close();
+        if (iterator instanceof AutoCloseable) {
+            ((AutoCloseable)iterator).close();
         }
     }
 
