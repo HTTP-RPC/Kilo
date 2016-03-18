@@ -29,6 +29,17 @@ import java.util.NoSuchElementException;
 /**
  * Class that exposes the contents of a JDBC result set as an iterable list of
  * maps.
+ * <p>
+ * If a column's value is <tt>null</tt> or an instance of one of the following
+ * types, it is returned as-is:
+ * <ul>
+ * <li>{@link String}</li>
+ * <li>{@link Number}</li>
+ * <li>{@link Boolean}</li>
+ * </ul>
+ * If the value is a {@link Date}, it is converted to its numeric
+ * representation via {@link Date#getTime()}. Otherwise, it is converted to a
+ * {@link String}.
  */
 public class ResultSetAdapter extends AbstractList<Map<String, Object>> implements AutoCloseable {
     private ResultSet resultSet;

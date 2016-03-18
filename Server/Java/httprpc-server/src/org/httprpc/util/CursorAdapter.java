@@ -167,7 +167,7 @@ public class CursorAdapter extends AbstractList<Object> implements AutoCloseable
      * representation via {@link Date#getTime()}. If the value is a
      * {@link List}, it is wrapped in an adapter that will adapt the list's
      * elements. If the value is a {@link Map}, it is wrapped in an adapter
-     * that will adapt the map's values.  Otherwise, it is converted to a
+     * that will adapt the map's values. Otherwise, it is converted to a
      * {@link String}.
      *
      * @param <T> The expected type of the adapted value.
