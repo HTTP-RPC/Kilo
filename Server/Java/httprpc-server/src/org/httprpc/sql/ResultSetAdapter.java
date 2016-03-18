@@ -20,6 +20,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.AbstractList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -105,8 +106,18 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
                     for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
-                        // TODO If the value is a Date, convert it to long
-                        row.put(resultSetMetaData.getColumnLabel(i + 1), resultSet.getObject(i + 1));
+                        String key = resultSetMetaData.getColumnLabel(i + 1);
+                        Object value = resultSet.getObject(i + 1);
+
+                        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
+                            if (value instanceof Date) {
+                                value = ((Date)value).getTime();
+                            } else {
+                                value = value.toString();
+                            }
+                        }
+
+                        row.put(key, value);
                     }
                 } catch (SQLException exception) {
                     throw new RuntimeException(exception);
