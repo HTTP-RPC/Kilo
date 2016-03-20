@@ -97,6 +97,8 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
 * _`org.httprpc.sql`_
     * `ResultSetAdapter` - wrapper class that presents the contents of a JDBC result set as an iterable list, suitable for streaming to JSON
     * `Parameters` - class for simplifying execution of prepared statements
+* _`org.httprpc.util`_
+    * `IteratorAdapter` - wrapper class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
 
 Each of these classes is discussed in more detail below. 
 
@@ -586,6 +588,7 @@ HTTP-RPC provides the following set of standard modifiers:
 * `^url` - applies URL encoding to a value
 * `^html` - applies HTML encoding to a value
 * `^xml` - applies XML encoding to a value (equivalent to `^html`)
+* `^json` - applies JSON encoding to a value
 * `^csv` - applies CSV encoding to a value
 
 For example, the following marker applies a format string to a value and then URL-encodes the result:
@@ -747,6 +750,13 @@ Using the convenience methods, the code that applies the parameter values can be
 Once applied, the statement can be executed:
 
     return new ResultSetAdapter(statement.executeQuery());    
+
+## IteratorAdapter Class
+The `IteratorAdapter` class allows the content of an arbitrary cursor to be efficiently returned from a service method. This class implements the `List` interface and adapts each element produced by the iterator for serialization to JSON, including nested `List` and `Map` structures. Like `ResultSetAdapter`, `IteratorAdapter` implements the `AutoCloseable` interface. If the underlying iterator type also implements `AutoCloseable`, `IteratorAdapter` will ensure that the underlying cursor is closed so that resources are not leaked.
+
+As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a cursor to be returned directly to the caller without any intermediate buffering.
+
+`IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
 
 # Java Client
 The Java client implementation of HTTP-RPC enables Java-based applications to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:

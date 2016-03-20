@@ -120,13 +120,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
                         String key = resultSetMetaData.getColumnLabel(i + 1);
                         Object value = resultSet.getObject(i + 1);
 
-                        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
-                            if (value instanceof Date) {
-                                value = ((Date)value).getTime();
-                            } else {
-                                value = value.toString();
-                            }
-                        }
+// TODO adapt()
 
                         row.put(key, value);
                     }
@@ -144,5 +138,38 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
     @Override
     public String toString() {
         return getClass().getName();
+    }
+
+    /**
+     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
+     * the following types, it is returned as-is:
+     * <ul>
+     * <li>{@link String}</li>
+     * <li>{@link Number}</li>
+     * <li>{@link Boolean}</li>
+     * </ul>
+     * If the value is a {@link Date}, it is converted to its numeric
+     * representation via {@link Date#getTime()}. Otherwise, it is converted to
+     * a {@link String}.
+     *
+     * @param <T> The expected type of the adapted value.
+     *
+     * @param value
+     * The value to adapt.
+     *
+     * @return
+     * The adapted value.
+     */
+    @SuppressWarnings("unchecked")
+    protected static <T> T adapt(Object value) {
+        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
+            if (value instanceof Date) {
+                value = ((Date)value).getTime();
+            } else {
+                value = value.toString();
+            }
+        }
+
+        return (T)value;
     }
 }

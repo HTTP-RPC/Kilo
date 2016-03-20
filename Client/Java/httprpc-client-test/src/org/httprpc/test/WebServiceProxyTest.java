@@ -19,7 +19,6 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +34,7 @@ import javax.net.ssl.X509TrustManager;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
+import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
@@ -95,7 +95,7 @@ public class WebServiceProxyTest {
         });
 
         // Add values
-        serviceProxy.invoke("addValues", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), (Number result, Exception exception) -> {
+        serviceProxy.invoke("addValues", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 
@@ -106,11 +106,11 @@ public class WebServiceProxyTest {
 
         // Get characters
         serviceProxy.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
-            validate(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
+            validate(exception == null && result.equals(listOf("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Get selection
-        serviceProxy.invoke("getSelection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), (result, exception) -> {
+        serviceProxy.invoke("getSelection", mapOf(entry("items", listOf("a", "b", "c", "d"))), (result, exception) -> {
             validate(exception == null && result.equals("a, b, c, d"));
         });
 
@@ -122,7 +122,7 @@ public class WebServiceProxyTest {
         });
 
         // Get statistics
-        serviceProxy.invoke("getStatistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
+        serviceProxy.invoke("getStatistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
             validate(statistics != null
@@ -133,7 +133,7 @@ public class WebServiceProxyTest {
 
         // Get test data
         serviceProxy.invoke("getTestData", (result, exception) -> {
-            validate(exception == null && result.equals(Arrays.asList(
+            validate(exception == null && result.equals(listOf(
                 mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
                 mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
             );

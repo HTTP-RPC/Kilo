@@ -17,7 +17,6 @@ package org.httprpc;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +25,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.httprpc.WebService.listOf;
 import static org.httprpc.WebService.mapOf;
 import static org.httprpc.WebService.entry;
 
@@ -95,7 +95,7 @@ public class TemplateSerializerTest {
             entry("b", 1L),
             entry("c", 2.0));
 
-        List<?> list = Arrays.asList(dictionary);
+        List<?> list = listOf(dictionary);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -124,7 +124,7 @@ public class TemplateSerializerTest {
             entry("b", 2L),
             entry("c", 4.0));
 
-        List<?> list = Arrays.asList(dictionary1, dictionary2);
+        List<?> list = listOf(dictionary1, dictionary2);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -148,9 +148,9 @@ public class TemplateSerializerTest {
 
         Map<String, ?> dictionary = mapOf(
             entry("abc", "ABC"),
-            entry("list1", Arrays.asList(mapOf(
+            entry("list1", listOf(mapOf(
                 entry("def", "DEF"),
-                entry("list2", Arrays.asList(mapOf(
+                entry("list2", listOf(mapOf(
                     entry("one", 1),
                     entry("two", 2),
                     entry("three", 3)
@@ -172,7 +172,7 @@ public class TemplateSerializerTest {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section3.txt",
             PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
 
-        List<?> value = Arrays.asList(Arrays.asList(Arrays.asList(mapOf(entry("a", "hello")))));
+        List<?> value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -202,7 +202,7 @@ public class TemplateSerializerTest {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section4.txt",
             PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
 
-        List<?> value = Arrays.asList("hello", 42, false);
+        List<?> value = listOf("hello", 42, false);
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -318,7 +318,7 @@ public class TemplateSerializerTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            templateSerializer.writeValue(new PrintWriter(writer), Arrays.asList("a", "b", "c"));
+            templateSerializer.writeValue(new PrintWriter(writer), listOf("a", "b", "c"));
             result = writer.toString();
         }
 
@@ -330,15 +330,15 @@ public class TemplateSerializerTest {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "recursion.txt",
             PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
 
-        List<?> list = Arrays.asList(
-            Arrays.asList(
-                Arrays.asList(), Arrays.asList()
+        List<?> list = listOf(
+            listOf(
+                listOf(), listOf()
             ),
-            Arrays.asList(
-                Arrays.asList(), Arrays.asList(), Arrays.asList()
+            listOf(
+                listOf(), listOf(), listOf()
             ),
-            Arrays.asList(
-                Arrays.asList()
+            listOf(
+                listOf()
             )
         );
 

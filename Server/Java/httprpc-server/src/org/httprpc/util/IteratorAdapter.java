@@ -181,7 +181,7 @@ public class IteratorAdapter extends AbstractList<Object> implements AutoCloseab
      * The adapted value.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T adapt(Object value) {
+    protected static <T> T adapt(Object value) {
         if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
             if (value instanceof Date) {
                 value = ((Date)value).getTime();
