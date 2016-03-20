@@ -754,45 +754,20 @@ class JSONSerializer extends Serializer {
             for (int i = 0, n = string.length(); i < n; i++) {
                 char c = string.charAt(i);
 
-                if (Character.isISOControl(c)) {
-                    throw new IOException("Invalid character.");
-                }
-
-                switch (c) {
-                    case '"':
-                    case '\\': {
-                        writer.append("\\" + c);
-                        break;
-                    }
-
-                    case '\b': {
-                        writer.append("\\b");
-                        break;
-                    }
-
-                    case '\f': {
-                        writer.append("\\f");
-                        break;
-                    }
-
-                    case '\n': {
-                        writer.append("\\n");
-                        break;
-                    }
-
-                    case '\r': {
-                        writer.append("\\r");
-                        break;
-                    }
-
-                    case '\t': {
-                        writer.append("\\t");
-                        break;
-                    }
-
-                    default: {
-                        writer.append(c);
-                    }
+                if (c == '"' || c == '\\') {
+                    writer.append("\\" + c);
+                } else if (c == '\b') {
+                    writer.append("\\b");
+                } else if (c == '\f') {
+                    writer.append("\\f");
+                } else if (c == '\n') {
+                    writer.append("\\n");
+                } else if (c == '\r') {
+                    writer.append("\\r");
+                } else if (c == '\t') {
+                    writer.append("\\t");
+                } else {
+                    writer.append(c);
                 }
             }
 
@@ -927,6 +902,7 @@ class TemplateSerializer extends Serializer {
         modifiers.put("^url", new URLEscapeModifier());
         modifiers.put("^html", new MarkupEscapeModifier());
         modifiers.put("^xml", new MarkupEscapeModifier());
+        modifiers.put("^json", new JSONEscapeModifier());
         modifiers.put("^csv", new CSVEscapeModifier());
 
         try (InputStream inputStream = TemplateSerializer.class.getResourceAsStream("/META-INF/httprpc/modifiers.properties")) {
@@ -1310,6 +1286,38 @@ class MarkupEscapeModifier implements Modifier {
     }
 }
 
+// JSON escape modifier
+class JSONEscapeModifier implements Modifier {
+    @Override
+    public Object apply(Object value, String argument) {
+        StringBuilder resultBuilder = new StringBuilder();
+
+        String string = value.toString();
+
+        for (int i = 0, n = string.length(); i < n; i++) {
+            char c = string.charAt(i);
+
+            if (c == '"' || c == '\\') {
+                resultBuilder.append("\\" + c);
+            } else if (c == '\b') {
+                resultBuilder.append("\\b");
+            } else if (c == '\f') {
+                resultBuilder.append("\\f");
+            } else if (c == '\n') {
+                resultBuilder.append("\\n");
+            } else if (c == '\r') {
+                resultBuilder.append("\\r");
+            } else if (c == '\t') {
+                resultBuilder.append("\\t");
+            } else {
+                resultBuilder.append(c);
+            }
+        }
+
+        return resultBuilder.toString();
+    }
+}
+
 // CSV escape modifier
 class CSVEscapeModifier implements Modifier {
     @Override
@@ -1321,10 +1329,8 @@ class CSVEscapeModifier implements Modifier {
         for (int i = 0, n = string.length(); i < n; i++) {
             char c = string.charAt(i);
 
-            if (c == '\\') {
-                resultBuilder.append("\\\\");
-            } else if (c == '"') {
-                resultBuilder.append("\\\"");
+            if (c == '"' || c == '\\') {
+                resultBuilder.append("\\" + c);
             } else {
                 resultBuilder.append(c);
             }

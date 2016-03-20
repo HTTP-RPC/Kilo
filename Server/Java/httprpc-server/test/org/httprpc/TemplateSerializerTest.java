@@ -270,6 +270,20 @@ public class TemplateSerializerTest {
     }
 
     @Test
+    public void testJSONEscapeModifier() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "json.txt",
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), "\"\\\b\f\n\r\t");
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", result);
+    }
+
+    @Test
     public void testCSVEscapeModifier() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "csv.txt",
             PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
