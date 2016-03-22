@@ -197,13 +197,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         Method method = accessors.get(key);
 
         Object value;
-        try {
-            value = method.invoke(bean);
-        } catch (InvocationTargetException | IllegalAccessException exception) {
-            throw new RuntimeException(exception);
+        if (method != null) {
+            try {
+                value = adapt(method.invoke(bean));
+            } catch (InvocationTargetException | IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+        } else {
+            value = null;
         }
 
-        return adapt(value);
+        return value;
     }
 
     @Override
