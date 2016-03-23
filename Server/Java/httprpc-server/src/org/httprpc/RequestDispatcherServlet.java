@@ -32,12 +32,15 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -1233,11 +1236,36 @@ class TemplateSerializer extends Serializer {
 class FormatModifier implements Modifier {
     @Override
     public Object apply(Object value, String argument) {
-        if (argument == null) {
-            throw new IllegalArgumentException();
+        Object result;
+        if (argument != null) {
+            if (argument.equals("currency")) {
+                result = NumberFormat.getCurrencyInstance().format(value);
+            } else if (argument.equals("percent")) {
+                result = NumberFormat.getPercentInstance().format(value);
+            } else if (argument.equals("fullDate")) {
+                result = DateFormat.getDateInstance(DateFormat.FULL).format(new Date((Long)value));
+            } else if (argument.equals("longDate")) {
+                result = DateFormat.getDateInstance(DateFormat.LONG).format(new Date((Long)value));
+            } else if (argument.equals("mediumDate")) {
+                result = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date((Long)value));
+            } else if (argument.equals("shortDate")) {
+                result = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date((Long)value));
+            } else if (argument.equals("fullTime")) {
+                result = DateFormat.getTimeInstance(DateFormat.FULL).format(new Date((Long)value));
+            } else if (argument.equals("longTime")) {
+                result = DateFormat.getTimeInstance(DateFormat.LONG).format(new Date((Long)value));
+            } else if (argument.equals("mediumTime")) {
+                result = DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date((Long)value));
+            } else if (argument.equals("shortTime")) {
+                result = DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date((Long)value));
+            } else {
+                result = String.format(argument, value);
+            }
+        } else {
+            result = value;
         }
 
-        return String.format(argument, value);
+        return result;
     }
 }
 
