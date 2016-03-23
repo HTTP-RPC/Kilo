@@ -58,51 +58,38 @@ NSString * const WSArgumentsKey = @"arguments";
             NSMutableString *parameters = [NSMutableString new];
 
             for (NSString *name in arguments) {
-                id value = [arguments objectForKey:name];
-
-                NSArray *values;
-                if ([value isKindOfClass:[NSArray self]]) {
-                    values = (NSArray *)value;
-                } else if ([value isKindOfClass:[NSDictionary self]]) {
-                    NSDictionary *dictionary = (NSDictionary *)value;
-
-                    NSMutableArray *entries = [NSMutableArray new];
-
-                    for (NSString *key in dictionary) {
-                        [entries addObject:[NSString stringWithFormat:@"%@:%@",
-                            [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
-                            [[[dictionary objectForKey:key] description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
-                    }
-
-                    values = entries;
-                } else {
-                    values = [NSArray arrayWithObject:value];
-                }
+                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
                 for (NSUInteger i = 0, n = [values count]; i < n; i++) {
                     if ([parameters length] > 0) {
                         [parameters appendString:@"&"];
                     }
 
-                    id element = [values objectAtIndex:i];
-
-                    if (element == (void *)kCFBooleanTrue) {
-                        element = @"true";
-                    } else if (element == (void *)kCFBooleanFalse) {
-                        element = @"false";
-                    } else {
-                        element = [element description];
-                    }
+                    NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
 
                     [parameters appendString:[name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
                     [parameters appendString:@"="];
-                    [parameters appendString:[element stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                    [parameters appendString:[value stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
                 }
             }
 
             [request setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
         } else {
-            // TODO Set content type to "multipart/form-data"
+            NSString *boundary = [[NSUUID new] UUIDString];
+            NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+
+            [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+
+            for (NSString *name in arguments) {
+                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+
+                for (id element in values) {
+                    NSString *value = [WSWebServiceProxy parameterValueForElement:element];
+
+                    // TODO
+                    NSLog(@"%@", value);
+                }
+            }
 
             for (NSString *name in attachments) {
                 NSArray *urls = [attachments objectForKey:name];
@@ -143,6 +130,42 @@ NSString * const WSArgumentsKey = @"arguments";
     }
 
     return task;
+}
+
++ (NSArray *)parameterValuesForArgument:(id)argument {
+    NSArray *values;
+    if ([argument isKindOfClass:[NSArray self]]) {
+        values = (NSArray *)argument;
+    } else if ([argument isKindOfClass:[NSDictionary self]]) {
+        NSDictionary *dictionary = (NSDictionary *)argument;
+
+        NSMutableArray *entries = [NSMutableArray new];
+
+        for (NSString *key in dictionary) {
+            [entries addObject:[NSString stringWithFormat:@"%@:%@",
+                [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
+                [[[dictionary objectForKey:key] description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
+        }
+
+        values = entries;
+    } else {
+        values = [NSArray arrayWithObject:argument];
+    }
+
+    return values;
+}
+
++ (NSString *)parameterValueForElement:(id)element {
+    id value;
+    if (element == (void *)kCFBooleanTrue) {
+        value = @"true";
+    } else if (element == (void *)kCFBooleanFalse) {
+        value = @"false";
+    } else {
+        value = [element description];
+    }
+
+    return value;
 }
 
 @end
