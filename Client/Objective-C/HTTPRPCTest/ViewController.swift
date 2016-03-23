@@ -31,6 +31,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
     var getLocaleCodeCell: UITableViewCell!
     var getUserNameCell: UITableViewCell!
     var isUserInRoleCell: UITableViewCell!
+    var getAttachmentInfoCell: UITableViewCell!
 
     override func loadView() {
         let tableView = UITableView()
@@ -91,6 +92,10 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         isUserInRoleCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
         isUserInRoleCell.textLabel!.text = "isUserInRole()"
         cells.append(isUserInRoleCell)
+
+        getAttachmentInfoCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
+        getAttachmentInfoCell.textLabel!.text = "getAttachmentInfoCell()"
+        cells.append(getAttachmentInfoCell)
 
         view = tableView
     }
@@ -188,6 +193,15 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
         serviceProxy.invoke("isUserInRole", withArguments: ["role": "tomcat"]) {(result, error) in
             validate(result as? Bool == true, error: error, cell: self.isUserInRoleCell)
+        }
+
+        let mainBundle = NSBundle.mainBundle()
+        let textTestURL = mainBundle.URLForResource("test", withExtension: "txt")!
+        let imageTestURL = mainBundle.URLForResource("test", withExtension: "jpg")!
+
+        serviceProxy.invoke("getAttachmentInfo", withArguments:[:], attachments:["test": [textTestURL, imageTestURL]]) {(result, error) in
+            // TODO Validate response properties
+            validate(result != nil, error: error, cell: self.getAttachmentInfoCell)
         }
     }
 

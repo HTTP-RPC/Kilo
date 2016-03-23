@@ -15,7 +15,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +33,7 @@ import javax.net.ssl.X509TrustManager;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
+import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox getLocaleCodeCheckBox;
     private CheckBox getUserNameCheckBox;
     private CheckBox isUserInRoleCheckBox;
+    private CheckBox getAttachmentInfoCheckBox;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         getLocaleCodeCheckBox = (CheckBox)findViewById(R.id.get_locale_code_checkbox);
         getUserNameCheckBox = (CheckBox)findViewById(R.id.get_user_name_checkbox);
         isUserInRoleCheckBox = (CheckBox)findViewById(R.id.is_user_in_role_checkbox);
+        getAttachmentInfoCheckBox = (CheckBox)findViewById(R.id.get_attachment_info_checkbox);
     }
 
     @Override
@@ -256,6 +261,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(Object result, Exception exception) {
                 isUserInRoleCheckBox.setChecked(exception == null && result.equals(true));
+            }
+        });
+
+        // Get attachment info
+        Map<String, ?> arguments = Collections.emptyMap();
+
+        URL textTestURL = getClass().getResource("/assets/test.txt");
+        URL imageTestURL = getClass().getResource("/assets/test.jpg");
+
+        Map<String, ?> attachments = mapOf(entry("test", listOf(textTestURL, imageTestURL)));
+
+        serviceProxy.invoke("getAttachmentInfo", arguments, (Map<String, List<URL>>)attachments, new ResultHandler<Object>() {
+            @Override
+            public void execute(Object result, Exception exception) {
+                // TODO Validate response properties
+                getAttachmentInfoCheckBox.setChecked(exception == null && result != null);
             }
         });
 

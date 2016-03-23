@@ -105,10 +105,12 @@ NSString * const WSArgumentsKey = @"arguments";
             // TODO Set content type to "multipart/form-data"
 
             for (NSString *name in attachments) {
-                NSURL *url = [attachments objectForKey:name];
+                NSArray *urls = [attachments objectForKey:name];
 
-                // TODO
-                NSLog(@"%@: %@", name, url);
+                for (NSURL *url in urls) {
+                    // TODO
+                    NSLog(@"%@: %@", name, url);
+                }
             }
         }
 

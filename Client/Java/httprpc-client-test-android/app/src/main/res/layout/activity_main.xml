@@ -74,6 +74,11 @@
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/get_attachment_info_checkbox"
+            android:text="getAttachmentInfo()"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </ScrollView>
 

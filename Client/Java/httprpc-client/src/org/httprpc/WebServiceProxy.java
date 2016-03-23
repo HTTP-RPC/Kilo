@@ -150,10 +150,14 @@ public class WebServiceProxy {
 
                     for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
                         String name = attachment.getKey();
-                        List<URL> file = attachment.getValue();
+                        List<URL> urls = attachment.getValue();
 
-                        // TODO
-                        System.out.printf("%s: %s\n", name, file);
+                        // TODO Handle null list
+
+                        for (URL url : urls) {
+                            // TODO Handle null element
+                            System.out.printf("%s: %s\n", name, url);
+                        }
                     }
                 }
 
