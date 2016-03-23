@@ -584,7 +584,7 @@ Modifiers are used to transform the variable's representation before it is writt
 
 HTTP-RPC provides the following set of standard modifiers:
 
-* `format` - applies a format string, such as `%.2f`
+* `format` - applies a format string
 * `^url` - applies URL encoding to a value
 * `^html` - applies HTML encoding to a value
 * `^xml` - applies XML encoding to a value (equivalent to `^html`)
@@ -594,6 +594,25 @@ HTTP-RPC provides the following set of standard modifiers:
 For example, the following marker applies a format string to a value and then URL-encodes the result:
 
     {{value:format=0x%04x:^url}}
+
+In addition to `printf()`-style formatting, the following locale-specific named formatters are also supported by the `format` modifier:
+
+* Numeric values
+  * `currency` - applies a currency format
+  * `percent` - applies a percent format
+* Long values
+  * `shortDate` - applies a short date format
+  * `mediumDate` - applies a medium date format
+  * `longDate` - applies a long date format
+  * `fullDate` - applies a full date format
+  * `shortTime` - applies a short time format
+  * `mediumTime` - applies a medium time format
+  * `longTime` - applies a long time format
+  * `fullTime` - applies a full time format
+
+For example, the following marker applies a medium date format to a long value named "date":
+
+    {{date:format=mediumDate}}
 
 Applications may also define their own custom modifiers. Modifiers are created by implementing the `org.httprpc.Modifier` interface, which defines the following method:
 
