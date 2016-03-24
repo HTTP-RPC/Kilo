@@ -106,14 +106,13 @@ NSString * const kCRLF = @"\r\n";
             [request setHTTPBody:[parameters UTF8Data]];
         } else {
             NSString *boundary = [[NSUUID new] UUIDString];
-            NSString *contentType = [NSString stringWithFormat:@"%@%@", kMultipartFormDataMIMEType,
-                [NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
+            NSString *contentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
 
             [request addValue:contentType forHTTPHeaderField:kContentTypeField];
 
             NSMutableData *body = [NSMutableData new];
 
-            NSData *boundaryData = [[NSString stringWithFormat:@"--%@\r\n", boundary] UTF8Data];
+            NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
 
             NSString *contentDispositionFormat = @"Content-Disposition: form-data; name=\"%@\"";
 
@@ -142,17 +141,17 @@ NSString * const kCRLF = @"\r\n";
 
                     [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
                     [body appendData:[[NSString stringWithFormat:filenameParameterFormat, [url filePathURL]] UTF8Data]];
-                    [body appendData:[@"\r\n" UTF8Data]];
+                    [body appendData:[kCRLF UTF8Data]];
 
                     [body appendData:octetStreamContentTypeData];
-                    [body appendData:[@"\r\n" UTF8Data]];
+                    [body appendData:[kCRLF UTF8Data]];
 
                     [body appendData:[NSData dataWithContentsOfURL:url]];
-                    [body appendData:[@"\r\n" UTF8Data]];
+                    [body appendData:[kCRLF UTF8Data]];
                 }
             }
 
-            [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] UTF8Data]];
+            [body appendData:[[NSString stringWithFormat:@"--%@--%@", boundary, kCRLF] UTF8Data]];
 
             [request setHTTPBody:body];
         }
