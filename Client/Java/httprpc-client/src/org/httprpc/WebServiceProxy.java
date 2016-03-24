@@ -92,6 +92,8 @@ public class WebServiceProxy {
                 connection.setRequestProperty("Accept-Language", acceptLanguage);
 
                 if (attachments.size() == 0) {
+                    // TODO Set content type to "application/x-www-form-urlencoded"
+
                     // Construct parameter list
                     StringBuilder parameters = new StringBuilder();
 

@@ -19,6 +19,27 @@ NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 NSString * const WSMethodNameKey = @"methodName";
 NSString * const WSArgumentsKey = @"arguments";
 
+NSString * const kContentTypeField = @"Content-Type";
+
+NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencoded";
+
+NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
+NSString * const kBoundaryParameterFormat = @"; boundary=%@";
+
+NSString * const kOctetStreamMIMEType = @"application/octet-stream";
+
+NSString * const kContentDispositionHeader = @"Content-Disposition: form-data";
+NSString * const kNameParameterFormat = @"; name=\"%@\"";
+NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
+
+NSString * const kCRLF = @"\r\n";
+
+@interface NSString (HTTPRPC)
+
+- (NSData *)UTF8Data;
+
+@end
+
 @implementation WSWebServiceProxy
 
 - (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL
@@ -55,6 +76,8 @@ NSString * const WSArgumentsKey = @"arguments";
         [request setHTTPMethod:@"POST"];
 
         if ([attachments count] == 0) {
+            [request addValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
+
             NSMutableString *parameters = [NSMutableString new];
 
             for (NSString *name in arguments) {
@@ -78,7 +101,7 @@ NSString * const WSArgumentsKey = @"arguments";
             NSString *boundary = [[NSUUID new] UUIDString];
             NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
 
-            [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+            [request addValue:contentType forHTTPHeaderField:kContentTypeField];
 
             NSMutableData *body = [NSMutableData new];
 
@@ -191,6 +214,15 @@ NSString * const WSArgumentsKey = @"arguments";
     }
 
     return value;
+}
+
+@end
+
+@implementation NSString (HTTPRPC)
+
+- (NSData *)UTF8Data
+{
+    return [self dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 @end
