@@ -94,7 +94,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         cells.append(isUserInRoleCell)
 
         getAttachmentInfoCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getAttachmentInfoCell.textLabel!.text = "getAttachmentInfoCell()"
+        getAttachmentInfoCell.textLabel!.text = "getAttachmentInfo()"
         cells.append(getAttachmentInfoCell)
 
         view = tableView
