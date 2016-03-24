@@ -201,8 +201,9 @@ NSString * const kCRLF = @"\r\n";
         NSMutableArray *entries = [NSMutableArray new];
 
         for (NSString *key in dictionary) {
-            [entries addObject:[NSString stringWithFormat:@"%@:%@", [key URLEncodedString],
-                [[[dictionary objectForKey:key] description] URLEncodedString]]];
+            id value = [self parameterValueForElement:[dictionary objectForKey:key]];
+
+            [entries addObject:[NSString stringWithFormat:@"%@:%@", [key URLEncodedString], [value URLEncodedString]]];
         }
 
         values = entries;
@@ -214,6 +215,8 @@ NSString * const kCRLF = @"\r\n";
 }
 
 + (NSString *)parameterValueForElement:(id)element {
+    NSAssert([element isKindOfClass:[NSNumber self]] || [element isKindOfClass:[NSString self]], @"Invalid collection element.");
+
     id value;
     if (element == (void *)kCFBooleanTrue) {
         value = @"true";
