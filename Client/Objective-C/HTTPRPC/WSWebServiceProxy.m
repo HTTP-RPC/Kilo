@@ -80,25 +80,48 @@ NSString * const WSArgumentsKey = @"arguments";
 
             [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
 
+            NSMutableData *body = [NSMutableData new];
+
+            NSData * const kBoundaryData = [[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
+
+            NSString * const kContentDispositionFormat = @"Content-Disposition: form-data; name=\"%@\"";
+
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
                 for (id element in values) {
                     NSString *value = [WSWebServiceProxy parameterValueForElement:element];
 
-                    // TODO
-                    NSLog(@"%@", value);
+                    [body appendData:kBoundaryData];
+
+                    [body appendData:[[NSString stringWithFormat:kContentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:@"\r\n%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
                 }
             }
+
+            NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
+
+            NSData * const kOctetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" dataUsingEncoding:NSUTF8StringEncoding];
 
             for (NSString *name in attachments) {
                 NSArray *urls = [attachments objectForKey:name];
 
                 for (NSURL *url in urls) {
-                    // TODO
-                    NSLog(@"%@: %@", name, url);
+                    [body appendData:kBoundaryData];
+
+                    [body appendData:[[NSString stringWithFormat:kContentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url filePathURL]] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:kOctetStreamContentTypeData];
+                    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+
+                    [body appendData:[NSData dataWithContentsOfURL:url]];
                 }
             }
+
+            [body appendData:kBoundaryData];
+
+            [request setHTTPBody:body];
         }
 
         NSOperationQueue *resultHandlerQueue = [NSOperationQueue currentQueue];
