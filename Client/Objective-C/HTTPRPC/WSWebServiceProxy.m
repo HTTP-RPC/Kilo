@@ -82,9 +82,9 @@ NSString * const WSArgumentsKey = @"arguments";
 
             NSMutableData *body = [NSMutableData new];
 
-            NSData * const kBoundaryData = [[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *boundaryData = [[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
 
-            NSString * const kContentDispositionFormat = @"Content-Disposition: form-data; name=\"%@\"";
+            NSString *contentDispositionFormat = @"Content-Disposition: form-data; name=\"%@\"";
 
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
@@ -92,27 +92,28 @@ NSString * const WSArgumentsKey = @"arguments";
                 for (id element in values) {
                     NSString *value = [WSWebServiceProxy parameterValueForElement:element];
 
-                    [body appendData:kBoundaryData];
+                    [body appendData:boundaryData];
 
-                    [body appendData:[[NSString stringWithFormat:kContentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
                     [body appendData:[[NSString stringWithFormat:@"\r\n\r\n%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
                 }
             }
 
-            NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
+            NSString *filenameParameterFormat = @"; filename=\"%@\"";
 
-            NSData * const kOctetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *octetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" dataUsingEncoding:NSUTF8StringEncoding];
 
             for (NSString *name in attachments) {
                 NSArray *urls = [attachments objectForKey:name];
 
                 for (NSURL *url in urls) {
-                    [body appendData:kBoundaryData];
+                    [body appendData:boundaryData];
 
-                    [body appendData:[[NSString stringWithFormat:kContentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
-                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url filePathURL]] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:filenameParameterFormat, [url filePathURL]] dataUsingEncoding:NSUTF8StringEncoding]];
                     [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-                    [body appendData:kOctetStreamContentTypeData];
+
+                    [body appendData:octetStreamContentTypeData];
                     [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
 
                     [body appendData:[NSData dataWithContentsOfURL:url]];
