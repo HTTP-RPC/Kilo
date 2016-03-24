@@ -179,8 +179,14 @@ public class WebServiceProxyTest {
         serviceProxy.invoke("getAttachmentInfo", arguments, (Map<String, List<URL>>)attachments, new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
-                // TODO Validate response properties
-                validate(exception == null && result != null);
+                List<Map<String, Object>> attachmentInfo = (List<Map<String, Object>>)result;
+
+                Map<String, Object> textInfo = attachmentInfo.get(0);
+                Map<String, Object> imageInfo = attachmentInfo.get(1);
+
+                validate(exception == null
+                    && textInfo.get("size").equals(26L) && textInfo.get("checksum").equals(2412L)
+                    && imageInfo.get("size").equals(10392L) && imageInfo.get("checksum").equals(1038036L));
             }
         });
 

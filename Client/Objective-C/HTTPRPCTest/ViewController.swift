@@ -201,6 +201,7 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
 
         serviceProxy.invoke("getAttachmentInfo", withArguments:[:], attachments:["test": [textTestURL, imageTestURL]]) {(result, error) in
             let attachmentInfo = result as! [[String: AnyObject]];
+
             let textInfo = attachmentInfo[0];
             let imageInfo = attachmentInfo[1];
             
