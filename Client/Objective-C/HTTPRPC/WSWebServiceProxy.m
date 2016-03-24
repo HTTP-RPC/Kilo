@@ -215,7 +215,7 @@ NSString * const kCRLF = @"\r\n";
 }
 
 + (NSString *)parameterValueForElement:(id)element {
-    NSAssert([element isKindOfClass:[NSNumber self]] || [element isKindOfClass:[NSString self]], @"Invalid collection element.");
+    NSAssert([element isKindOfClass:[NSString self]] || [element isKindOfClass:[NSNumber self]], @"Invalid collection element.");
 
     id value;
     if (element == (void *)kCFBooleanTrue) {

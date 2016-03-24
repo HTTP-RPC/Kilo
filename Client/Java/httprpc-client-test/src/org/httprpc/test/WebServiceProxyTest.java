@@ -19,7 +19,9 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +41,7 @@ import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 public class WebServiceProxyTest {
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
         // Set global credentials
         Authenticator.setDefault(new Authenticator() {
@@ -163,6 +166,22 @@ public class WebServiceProxyTest {
         // Is user in role
         serviceProxy.invoke("isUserInRole", mapOf(entry("role", "tomcat")), (result, exception) -> {
             validate(exception == null && result.equals(true));
+        });
+
+        // Get attachment info
+        Map<String, ?> arguments = Collections.emptyMap();
+
+        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
+        Map<String, ?> attachments = mapOf(entry("test", listOf(textTestURL, imageTestURL)));
+
+        serviceProxy.invoke("getAttachmentInfo", arguments, (Map<String, List<URL>>)attachments, new ResultHandler<Object>() {
+            @Override
+            public void execute(Object result, Exception exception) {
+                // TODO Validate response properties
+                validate(exception == null && result != null);
+            }
         });
 
         // Shut down thread pool

@@ -23,6 +23,7 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,6 +59,13 @@ public class WebServiceProxy {
 
         private static final int EOF = -1;
 
+        private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
+
+        private static final String CONTENT_TYPE_KEY = "Content-Type";
+
+        private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
+        private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
         private static final String NULL_KEYWORD = "null";
@@ -89,10 +97,10 @@ public class WebServiceProxy {
                 Locale locale = Locale.getDefault();
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                connection.setRequestProperty("Accept-Language", acceptLanguage);
+                connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
 
                 if (attachments.size() == 0) {
-                    // TODO Set content type to "application/x-www-form-urlencoded"
+                    connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
                     // Construct parameter list
                     StringBuilder parameters = new StringBuilder();
@@ -104,25 +112,7 @@ public class WebServiceProxy {
                             continue;
                         }
 
-                        Object value = argument.getValue();
-
-                        List<?> values;
-                        if (value instanceof List<?>) {
-                            values = (List<?>)value;
-                        } else if (value instanceof Map<?, ?>) {
-                            Map<?, ?> map = (Map<?, ?>)value;
-
-                            ArrayList<Object> entries = new ArrayList<>(map.size());
-
-                            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                                entries.add(URLEncoder.encode(String.valueOf(entry.getKey()), UTF_8_ENCODING)
-                                    + ":" + URLEncoder.encode(String.valueOf(entry.getValue()), UTF_8_ENCODING));
-                            }
-
-                            values = entries;
-                        } else {
-                            values = Collections.singletonList(value);
-                        }
+                        List<?> values = getParameterValues(argument.getValue());
 
                         for (int i = 0, n = values.size(); i < n; i++) {
                             Object element = values.get(i);
@@ -135,9 +125,11 @@ public class WebServiceProxy {
                                 parameters.append("&");
                             }
 
+                            String value = getParameterValue(element);
+
                             parameters.append(URLEncoder.encode(name, UTF_8_ENCODING));
                             parameters.append("=");
-                            parameters.append(URLEncoder.encode(element.toString(), UTF_8_ENCODING));
+                            parameters.append(URLEncoder.encode(value, UTF_8_ENCODING));
                         }
                     }
 
@@ -148,16 +140,43 @@ public class WebServiceProxy {
                         }
                     }
                 } else {
-                    // TODO Set content type to "multipart/form-data"
+                    connection.setRequestProperty(CONTENT_TYPE_KEY, MULTIPART_FORM_DATA_MIME_TYPE);
+
+                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                        String name = argument.getKey();
+
+                        if (name == null) {
+                            continue;
+                        }
+
+                        List<?> values = getParameterValues(argument.getValue());
+
+                        for (Object element : values) {
+                            if (element == null) {
+                                continue;
+                            }
+
+                            String value = getParameterValue(element);
+
+                            // TODO
+                            System.out.printf("%s: %s\n", name, value);
+                        }
+                    }
 
                     for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
                         String name = attachment.getKey();
                         List<URL> urls = attachment.getValue();
 
-                        // TODO Handle null list
+                        if (urls == null) {
+                            continue;
+                        }
 
                         for (URL url : urls) {
-                            // TODO Handle null element
+                            if (url == null) {
+                                continue;
+                            }
+
+                            // TODO
                             System.out.printf("%s: %s\n", name, url);
                         }
                     }
@@ -446,6 +465,49 @@ public class WebServiceProxy {
             }
 
             return (i == n);
+        }
+
+        private static List<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
+            List<?> values;
+            if (argument instanceof List<?>) {
+                values = (List<?>)argument;
+            } else if (argument instanceof Map<?, ?>) {
+                Map<?, ?> map = (Map<?, ?>)argument;
+
+                ArrayList<Object> entries = new ArrayList<>(map.size());
+
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    Object key = entry.getKey();
+
+                    if (key == null) {
+                        continue;
+                    }
+
+                    Object value = entry.getValue();
+
+                    if (value == null) {
+                        continue;
+                    }
+
+                    entries.add(String.format("%s:%s",
+                        URLEncoder.encode(key.toString(), UTF_8_ENCODING),
+                        URLEncoder.encode(getParameterValue(value), UTF_8_ENCODING)));
+                }
+
+                values = entries;
+            } else {
+                values = Collections.singletonList(argument);
+            }
+
+            return values;
+        }
+
+        private static String getParameterValue(Object element) {
+            if (!(element instanceof String || element instanceof Number || element instanceof Boolean)) {
+                throw new IllegalArgumentException("Invalid collection element.");
+            }
+
+            return element.toString();
         }
     }
 
