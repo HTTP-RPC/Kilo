@@ -207,7 +207,7 @@ public class WebServiceProxy {
                                     writer.append(String.format(NAME_PARAMETER_FORMAT, name));
 
                                     String path = url.getPath();
-                                    String file = path.substring(path.lastIndexOf('/'));
+                                    String file = path.substring(path.lastIndexOf('/') + 1);
                                     writer.append(String.format(FILENAME_PARAMETER_FORMAT, file));
 
                                     writer.append(CRLF);
