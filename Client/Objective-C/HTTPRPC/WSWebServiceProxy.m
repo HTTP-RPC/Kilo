@@ -37,6 +37,7 @@ NSString * const kCRLF = @"\r\n";
 @interface NSString (HTTPRPC)
 
 - (NSData *)UTF8Data;
+- (NSString *)URLEncodedString;
 
 @end
 
@@ -54,17 +55,23 @@ NSString * const kCRLF = @"\r\n";
     return self;
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName resultHandler:(void (^)(id, NSError *))resultHandler
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+    resultHandler:(void (^)(id, NSError *))resultHandler
 {
     return [self invoke:methodName withArguments:[NSDictionary new] resultHandler:resultHandler];
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments resultHandler:(void (^)(id, NSError *))resultHandler
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+    withArguments:(NSDictionary *)arguments
+    resultHandler:(void (^)(id, NSError *))resultHandler
 {
     return [self invoke:methodName withArguments:arguments attachments:[NSDictionary new] resultHandler:resultHandler];
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName withArguments:(NSDictionary *)arguments attachments:(NSDictionary *)attachments resultHandler:(void (^)(id, NSError *))resultHandler
+- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+    withArguments:(NSDictionary *)arguments
+    attachments:(NSDictionary *)attachments
+    resultHandler:(void (^)(id, NSError *))resultHandler
 {
     NSURLSessionDataTask *task = nil;
 
@@ -90,22 +97,23 @@ NSString * const kCRLF = @"\r\n";
 
                     NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
 
-                    [parameters appendString:[name stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                    [parameters appendString:[name URLEncodedString]];
                     [parameters appendString:@"="];
-                    [parameters appendString:[value stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+                    [parameters appendString:[value URLEncodedString]];
                 }
             }
 
-            [request setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
+            [request setHTTPBody:[parameters UTF8Data]];
         } else {
             NSString *boundary = [[NSUUID new] UUIDString];
-            NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+            NSString *contentType = [NSString stringWithFormat:@"%@%@", kMultipartFormDataMIMEType,
+                [NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
 
             [request addValue:contentType forHTTPHeaderField:kContentTypeField];
 
             NSMutableData *body = [NSMutableData new];
 
-            NSData *boundaryData = [[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *boundaryData = [[NSString stringWithFormat:@"--%@\r\n", boundary] UTF8Data];
 
             NSString *contentDispositionFormat = @"Content-Disposition: form-data; name=\"%@\"";
 
@@ -117,14 +125,14 @@ NSString * const kCRLF = @"\r\n";
 
                     [body appendData:boundaryData];
 
-                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
-                    [body appendData:[[NSString stringWithFormat:@"\r\n\r\n%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
+                    [body appendData:[[NSString stringWithFormat:@"\r\n\r\n%@\r\n", value] UTF8Data]];
                 }
             }
 
             NSString *filenameParameterFormat = @"; filename=\"%@\"";
 
-            NSData *octetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *octetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" UTF8Data];
 
             for (NSString *name in attachments) {
                 NSArray *urls = [attachments objectForKey:name];
@@ -132,19 +140,19 @@ NSString * const kCRLF = @"\r\n";
                 for (NSURL *url in urls) {
                     [body appendData:boundaryData];
 
-                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
-                    [body appendData:[[NSString stringWithFormat:filenameParameterFormat, [url filePathURL]] dataUsingEncoding:NSUTF8StringEncoding]];
-                    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
+                    [body appendData:[[NSString stringWithFormat:filenameParameterFormat, [url filePathURL]] UTF8Data]];
+                    [body appendData:[@"\r\n" UTF8Data]];
 
                     [body appendData:octetStreamContentTypeData];
-                    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[@"\r\n" UTF8Data]];
 
                     [body appendData:[NSData dataWithContentsOfURL:url]];
-                    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[@"\r\n" UTF8Data]];
                 }
             }
 
-            [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] UTF8Data]];
 
             [request setHTTPBody:body];
         }
@@ -190,9 +198,8 @@ NSString * const kCRLF = @"\r\n";
         NSMutableArray *entries = [NSMutableArray new];
 
         for (NSString *key in dictionary) {
-            [entries addObject:[NSString stringWithFormat:@"%@:%@",
-                [key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
-                [[[dictionary objectForKey:key] description] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
+            [entries addObject:[NSString stringWithFormat:@"%@:%@", [key URLEncodedString],
+                [[[dictionary objectForKey:key] description] URLEncodedString]]];
         }
 
         values = entries;
@@ -223,6 +230,11 @@ NSString * const kCRLF = @"\r\n";
 - (NSData *)UTF8Data
 {
     return [self dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)URLEncodedString
+{
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 @end
