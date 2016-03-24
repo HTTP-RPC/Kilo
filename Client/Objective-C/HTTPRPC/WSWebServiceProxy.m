@@ -132,7 +132,7 @@ NSString * const kCRLF = @"\r\n";
                 }
             }
 
-            NSData *octetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" UTF8Data];
+            NSData *octetStreamContentTypeData = [[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, kOctetStreamMIMEType, kCRLF] UTF8Data];
 
             for (NSString *name in attachments) {
                 NSArray *urls = [attachments objectForKey:name];
