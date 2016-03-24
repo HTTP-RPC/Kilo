@@ -114,7 +114,7 @@ NSString * const kCRLF = @"\r\n";
 
             NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
 
-            NSString *contentDispositionFormat = @"Content-Disposition: form-data; name=\"%@\"";
+            NSData *contentDispositionHeaderData = [kContentDispositionHeader UTF8Data];
 
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
@@ -124,7 +124,9 @@ NSString * const kCRLF = @"\r\n";
 
                     [body appendData:boundaryData];
 
-                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
+                    [body appendData:contentDispositionHeaderData];
+                    [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
+
                     [body appendData:[kCRLF UTF8Data]];
                     [body appendData:[kCRLF UTF8Data]];
                     [body appendData:[value UTF8Data]];
@@ -140,7 +142,8 @@ NSString * const kCRLF = @"\r\n";
                 for (NSURL *url in urls) {
                     [body appendData:boundaryData];
 
-                    [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
+                    [body appendData:contentDispositionHeaderData];
+                    [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
                     [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url filePathURL]] UTF8Data]];
                     [body appendData:[kCRLF UTF8Data]];
 
