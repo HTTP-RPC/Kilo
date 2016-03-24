@@ -216,6 +216,8 @@ public class WebServiceProxy {
                                     writer.append(octetStreamContentTypeData);
                                     writer.append(CRLF);
 
+                                    writer.flush();
+
                                     try (InputStream inputStream = url.openStream()) {
                                         int b;
                                         while ((b = inputStream.read()) != EOF) {
