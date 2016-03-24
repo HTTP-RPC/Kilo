@@ -67,13 +67,13 @@ public class WebServiceProxy {
         private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
 
         private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-        private static final String BOUNDARY_PARAMETER_FORMAT = "; boundary=%@";
+        private static final String BOUNDARY_PARAMETER_FORMAT = "; boundary=%s";
 
         private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
 
         private static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition: form-data";
-        private static final String NAME_PARAMETER_FORMAT = "; name=\"%@\"";
-        private static final String FILENAME_PARAMETER_FORMAT = "; filename=\"%@\"";
+        private static final String NAME_PARAMETER_FORMAT = "; name=\"%s\"";
+        private static final String FILENAME_PARAMETER_FORMAT = "; filename=\"%s\"";
 
         private static final String CRLF = "\r\n";
 
