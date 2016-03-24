@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -64,7 +65,17 @@ public class WebServiceProxy {
         private static final String CONTENT_TYPE_KEY = "Content-Type";
 
         private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
+
         private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+        private static final String BOUNDARY_PARAMETER_FORMAT = "; boundary=%@";
+
+        private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
+
+        private static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition: form-data";
+        private static final String NAME_PARAMETER_FORMAT = "; name=\"%@\"";
+        private static final String FILENAME_PARAMETER_FORMAT = "; filename=\"%@\"";
+
+        private static final String CRLF = "\r\n";
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
@@ -140,44 +151,80 @@ public class WebServiceProxy {
                         }
                     }
                 } else {
-                    connection.setRequestProperty(CONTENT_TYPE_KEY, MULTIPART_FORM_DATA_MIME_TYPE);
+                    String boundary = UUID.randomUUID().toString();
+                    String contentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
 
-                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                        String name = argument.getKey();
+                    connection.setRequestProperty(CONTENT_TYPE_KEY, contentType);
 
-                        if (name == null) {
-                            continue;
-                        }
+                    String boundaryData = String.format("--%s%s", boundary, CRLF);
+                    String octetStreamContentTypeData = String.format("%s: %s%s", CONTENT_TYPE_KEY, OCTET_STREAM_MIME_TYPE, CRLF);
 
-                        List<?> values = getParameterValues(argument.getValue());
+                    // Write request body
+                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                                String name = argument.getKey();
 
-                        for (Object element : values) {
-                            if (element == null) {
-                                continue;
+                                if (name == null) {
+                                    continue;
+                                }
+
+                                List<?> values = getParameterValues(argument.getValue());
+
+                                for (Object element : values) {
+                                    if (element == null) {
+                                        continue;
+                                    }
+
+                                    String value = getParameterValue(element);
+
+                                    writer.append(boundaryData);
+
+                                    writer.append(CONTENT_DISPOSITION_HEADER);
+                                    writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+
+                                    writer.append(CRLF);
+                                    writer.append(CRLF);
+                                    writer.append(value);
+                                    writer.append(CRLF);
+                                }
                             }
 
-                            String value = getParameterValue(element);
+                            for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
+                                String name = attachment.getKey();
+                                List<URL> urls = attachment.getValue();
 
-                            // TODO
-                            System.out.printf("%s: %s\n", name, value);
-                        }
-                    }
+                                if (urls == null) {
+                                    continue;
+                                }
 
-                    for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
-                        String name = attachment.getKey();
-                        List<URL> urls = attachment.getValue();
+                                for (URL url : urls) {
+                                    if (url == null) {
+                                        continue;
+                                    }
 
-                        if (urls == null) {
-                            continue;
-                        }
+                                    writer.append(CONTENT_DISPOSITION_HEADER);
+                                    writer.append(String.format(NAME_PARAMETER_FORMAT, name));
 
-                        for (URL url : urls) {
-                            if (url == null) {
-                                continue;
+                                    String path = url.getPath();
+                                    String file = path.substring(path.lastIndexOf('/'));
+                                    writer.append(String.format(FILENAME_PARAMETER_FORMAT, file));
+
+                                    writer.append(CRLF);
+                                    writer.append(octetStreamContentTypeData);
+
+                                    try (InputStream inputStream = url.openStream()) {
+                                        int b;
+                                        while ((b = inputStream.read()) != EOF) {
+                                            outputStream.write(b);
+                                        }
+                                    }
+
+                                    writer.append(CRLF);
+                                }
                             }
 
-                            // TODO
-                            System.out.printf("%s: %s\n", name, url);
+                            writer.append(String.format("--%s--%s", boundary, CRLF));
                         }
                     }
                 }
