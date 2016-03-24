@@ -125,11 +125,12 @@ NSString * const kCRLF = @"\r\n";
                     [body appendData:boundaryData];
 
                     [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
-                    [body appendData:[[NSString stringWithFormat:@"\r\n\r\n%@\r\n", value] UTF8Data]];
+                    [body appendData:[kCRLF UTF8Data]];
+                    [body appendData:[kCRLF UTF8Data]];
+                    [body appendData:[value UTF8Data]];
+                    [body appendData:[kCRLF UTF8Data]];
                 }
             }
-
-            NSString *filenameParameterFormat = @"; filename=\"%@\"";
 
             NSData *octetStreamContentTypeData = [@"Content-Type: application/octet-stream\r\n" UTF8Data];
 
@@ -140,7 +141,7 @@ NSString * const kCRLF = @"\r\n";
                     [body appendData:boundaryData];
 
                     [body appendData:[[NSString stringWithFormat:contentDispositionFormat, name] UTF8Data]];
-                    [body appendData:[[NSString stringWithFormat:filenameParameterFormat, [url filePathURL]] UTF8Data]];
+                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url filePathURL]] UTF8Data]];
                     [body appendData:[kCRLF UTF8Data]];
 
                     [body appendData:octetStreamContentTypeData];
