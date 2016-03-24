@@ -116,6 +116,7 @@ NSString * const WSArgumentsKey = @"arguments";
                     [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
 
                     [body appendData:[NSData dataWithContentsOfURL:url]];
+                    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
                 }
             }
 
