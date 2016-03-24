@@ -95,7 +95,7 @@ NSString * const WSArgumentsKey = @"arguments";
                     [body appendData:kBoundaryData];
 
                     [body appendData:[[NSString stringWithFormat:kContentDispositionFormat, name] dataUsingEncoding:NSUTF8StringEncoding]];
-                    [body appendData:[[NSString stringWithFormat:@"\r\n%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:@"\r\n\r\n%@\r\n", value] dataUsingEncoding:NSUTF8StringEncoding]];
                 }
             }
 
@@ -119,7 +119,7 @@ NSString * const WSArgumentsKey = @"arguments";
                 }
             }
 
-            [body appendData:kBoundaryData];
+            [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
 
             [request setHTTPBody:body];
         }
