@@ -162,8 +162,8 @@ public class TestService extends WebService {
         return getUserRoles().contains(role);
     }
 
-    public List<Object> getAttachmentInfo() throws IOException {
-        LinkedList<Object> sizes = new LinkedList<>();
+    public List<Map<String, ?>> getAttachmentInfo() throws IOException {
+        LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (Attachment attachment : getAttachments()) {
             long bytes = 0;
@@ -177,13 +177,13 @@ public class TestService extends WebService {
                 }
             }
 
-            sizes.add(mapOf(entry("name", attachment.getName()),
+            attachmentInfo.add(mapOf(entry("name", attachment.getName()),
                 entry("contentType", attachment.getContentType()),
                 entry("size", attachment.getSize()),
                 entry("bytes", bytes),
                 entry("checksum", checksum)));
         }
 
-        return sizes;
+        return attachmentInfo;
     }
 }

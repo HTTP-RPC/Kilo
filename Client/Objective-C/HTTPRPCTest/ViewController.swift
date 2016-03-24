@@ -200,8 +200,13 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         let imageTestURL = mainBundle.URLForResource("test", withExtension: "jpg")!
 
         serviceProxy.invoke("getAttachmentInfo", withArguments:[:], attachments:["test": [textTestURL, imageTestURL]]) {(result, error) in
-            // TODO Validate response properties
-            validate(result != nil, error: error, cell: self.getAttachmentInfoCell)
+            let attachmentInfo = result as! [[String: AnyObject]];
+            let textInfo = attachmentInfo[0];
+            let imageInfo = attachmentInfo[1];
+            
+            validate(textInfo["size"] as! Int == 26 && textInfo["checksum"] as! Int == 2412
+                && imageInfo["size"] as! Int == 10392 && imageInfo["checksum"] as! Int == 1038036,
+                error: error, cell: self.getAttachmentInfoCell)
         }
     }
 

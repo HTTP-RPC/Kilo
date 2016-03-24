@@ -144,7 +144,7 @@ NSString * const kCRLF = @"\r\n";
 
                     [body appendData:contentDispositionHeaderData];
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
-                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url filePathURL]] UTF8Data]];
+                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url lastPathComponent]] UTF8Data]];
                     [body appendData:[kCRLF UTF8Data]];
 
                     [body appendData:octetStreamContentTypeData];
