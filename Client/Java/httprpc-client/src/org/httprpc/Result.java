@@ -16,7 +16,6 @@ package org.httprpc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,16 +23,17 @@ import java.util.Map;
  * Abstract base class for typed results.
  */
 public abstract class Result {
-    private Map<String, Method> mutators;
+    private HashMap<String, Method> setters = new HashMap<>();
 
     private static final String SET_PREFIX = "set";
 
     /**
      * Constructs a result.
+     *
+     * @param properties
+     * A map containing the property values to set.
      */
-    public Result() {
-        HashMap<String, Method> mutators = new HashMap<>();
-
+    public Result(Map<String, Object> properties) {
         Method[] methods = getClass().getMethods();
 
         for (int i = 0; i < methods.length; i++) {
@@ -56,17 +56,20 @@ public abstract class Result {
 
                         String key = c + methodName.substring(j);
 
-                        mutators.put(key, method);
+                        setters.put(key, method);
                     }
                 }
             }
         }
 
-        this.mutators = Collections.unmodifiableMap(mutators);
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            setProperty(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
-     * Sets a property value.
+     * Sets a property value. Numeric values will be automatically coerced to
+     * the appropriate type.
      *
      * @param name
      * The property name.
@@ -74,8 +77,8 @@ public abstract class Result {
      * @param value
      * The property value.
      */
-    public void set(String name, Object value) {
-        Method method = mutators.get(name);
+    protected void setProperty(String name, Object value) {
+        Method method = setters.get(name);
 
         if (method != null) {
             if (value instanceof Number) {
@@ -111,7 +114,7 @@ public abstract class Result {
     }
 
     /**
-     * Called by {@link #set(String, Object)} when a setter is not found for a
+     * Called by {@link #setProperty(String, Object)} when a setter is not found for a
      * given property. The default implementation throws an
      * <tt>{@link IllegalArgumentException}</tt>.
      *
@@ -123,17 +126,5 @@ public abstract class Result {
      */
     protected void setUndefined(String name, Object value) {
         throw new IllegalArgumentException(String.format("Property \"%s\" is not defined.", name));
-    }
-
-    /**
-     * Sets a group of property values.
-     *
-     * @param map
-     * A map containing the property values to set.
-     */
-    public void setAll(Map<String, Object> map) {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            set(entry.getKey(), entry.getValue());
-        }
     }
 }

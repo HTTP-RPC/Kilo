@@ -24,7 +24,7 @@ public class Statistics extends Result {
     private double average;
 
     public Statistics(Map<String, Object> properties) {
-        setAll(properties);
+        super(properties);
     }
 
     public int getCount() {

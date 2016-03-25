@@ -106,18 +106,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private Object bean;
 
-    private HashMap<String, Method> accessors = new HashMap<>();
+    private HashMap<String, Method> getters = new HashMap<>();
 
     private Set<Entry<String, Object>> entrySet = new AbstractSet<Entry<String, Object>>() {
         @Override
         public int size() {
-            return accessors.size();
+            return getters.size();
         }
 
         @Override
         public Iterator<Entry<String, Object>> iterator() {
             return new Iterator<Entry<String, Object>>() {
-                private Iterator<String> keys = accessors.keySet().iterator();
+                private Iterator<String> keys = getters.keySet().iterator();
 
                 @Override
                 public boolean hasNext() {
@@ -181,7 +181,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                         String key = c + methodName.substring(j);
 
-                        accessors.put(key, method);
+                        getters.put(key, method);
                     }
                 }
             }
@@ -194,7 +194,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        Method method = accessors.get(key);
+        Method method = getters.get(key);
 
         Object value;
         if (method != null) {

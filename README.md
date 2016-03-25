@@ -868,14 +868,9 @@ For example, the following Android-specific code ensures that all result handler
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ## Result Class
-`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following public methods that can be used to populate Java Bean property values from map entries:
+`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following constructor that is used to populate Java Bean property values from map entries:
 
-    public void set(String name, Object value) { ... }
-    public void setAll(Map<String, Object> values) { ... }
-
-Additionally, it defines the following protected method that can be overridden to handle missing properties:
-
-    protected void setUndefined(String name, Object value) { ... }
+    public Result(Map<String, Object> properties) { ... }
     
 For example, the following Java class might be used to provide a typed version of the statistical data returned by the `getStatistics()` method discussed earlier:
 
@@ -883,6 +878,10 @@ For example, the following Java class might be used to provide a typed version o
         private int count;
         private double sum;
         private double average;
+
+        public Statistics(Map<String, Object> properties) {
+            super(properties);
+        }
 
         public int getCount() {
             return count;
@@ -912,8 +911,7 @@ For example, the following Java class might be used to provide a typed version o
 The map data returned by `getStatistics()` can be converted to a `Statistics` instance as follows:
 
     serviceProxy.invoke("getStatistics", (Map<String, Object> result, Exception exception) -> {
-        Statistics statistics = new Statistics();
-        statistics.setAll(result);
+        Statistics statistics = new Statistics(result);
 
         // Prints 3, 9.0, and 3.0
         System.out.println(statistics.getCount());
