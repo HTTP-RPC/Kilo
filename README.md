@@ -15,7 +15,7 @@ Indexed collection arguments are specified by providing zero or more values for 
 
     /math/addValues?values=1&values=2&values=3
     
-Elements of keyed collections are represented as colon-delimited key/value pairs. For example, the following URL represents a method that accepts two keyed collection arguments named `point1` and `point2`. Each argument contains an `x` and a `y` value:
+Elements of keyed collections are represented as colon-delimited key/value pairs. For example, the following URL might represent a method named "translate" that accepts two keyed collection arguments named "point1" and "point2". The argument values themselves each contain an "x" and a "y" element:
 
     /math/translate?point1=x:5&point1=y:10&point2=x:2&point2=y:4
 
@@ -109,7 +109,7 @@ The JAR file for the Java server implementation of HTTP-RPC can be downloaded [h
 
 Service methods are defined by adding public methods to a concrete service implementation. All public methods defined by the class automatically become available for remote execution when the service is published, as described in the next section. Note that overloaded methods are not supported; every method name must be unique. 
 
-Method arguments may numeric primitive, a boolean primitive, or `String`. Object wrappers for primitive types are also supported. Indexed collection arguments are specified as lists of any supported simple type (e.g. `List<Double>`), and keyed collections are specified as maps (e.g. `Map<String, Integer>`). Map arguments must use `String` values for keys.
+Method arguments may be any numeric primitive, a boolean primitive, or `String`. Object wrappers for primitive types are also supported. Indexed collection arguments are specified as lists of any supported simple type (e.g. `List<Double>`), and keyed collections are specified as maps (e.g. `Map<String, Integer>`). Map arguments must use `String` values for keys.
 
 Methods may return any numeric or boolean primitive type, one of the following reference types, or `void`:
 
@@ -123,7 +123,7 @@ Methods may return any numeric or boolean primitive type, one of the following r
 
 `List` and `Map` types are not required to support random access; iterability is sufficient. Additionally, `List` and `Map` types that implement `java.lang.AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
 
-For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as a forward-scrolling, auto-closeable list of map values. Closing the list also closes the underlying result set, ensuring that database resources are not leaked. `ResultSetAdapter` is discussed in more detail later.
+For example, the `org.httprpc.sql.ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as a forward-scrolling, auto-closeable list of map values. Closing the list also closes the underlying result set, ensuring that database resources are not leaked. `ResultSetAdapter` is discussed in more detail later.
 
 ### Request Metadata
 `WebService` provides the following methods that allow an extending class to obtain additional information about the current request:
@@ -213,7 +213,7 @@ For example, localized descriptions for `MathService`'s `add()` and `addValues()
     
     addValues: Returns the sum of a list of values.
     addValues_values: The values to add.
-    
+
 Additional resources could be provided to support other locales.
 
 ## Templates
@@ -389,7 +389,7 @@ In order to support this case, HTTP-RPC automatically wraps any list element tha
     @Template("orderitems.html")
     public List<Object> getPurchaseOrderItems(int orderID) { ... }
 
-it might simply return a list similar to the following:
+it might return a list similar to the following:
 
     [
       {
@@ -486,7 +486,7 @@ For example, if the JSON response to a method contained the following:
 the generated HTML would contain a table containing seven rows, each with a single cell containing the corresponding value from the list.
 
 ### Includes
-Includes import content defined by another template. They can be used to create reusable content modules. 
+Includes import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers.
 
 Includes inherit their context from the calling template, so they can also include markers. For example, the `<head>` section of the _orders.html_ template discussed earlier could be rewritten using includes as follows:
 
@@ -676,20 +676,17 @@ Using this class, an implementation of the `getStatistics()` method might look l
 
     public Map<String, Object> getStatistics(List<Double> values) {    
         Statistics statistics = new Statistics();
-    
+
         int n = values.size();
-    
+
         statistics.setCount(n);
-    
-        double sum = 0;
-        
-        for (double value : values) {
-            sum += value;
+
+        for (int i = 0; i < n; i++) {
+            statistics.setSum(statistics.getSum() + values.get(i));
         }
-    
-        statistics.setSum(sum);
-        statistics.setAverage(sum / n);
-    
+
+        statistics.setAverage(statistics.getSum() / n);
+
         return new BeanAdapter(statistics);
     }
 
@@ -707,19 +704,17 @@ For example, the `getTree()` method discussed earlier could be implemented using
         return new BeanAdapter(root);
     }
 
-The `TreeNode` instances returned by `getChildren()` will be recursively adapted:
+The `TreeNode` instances returned by the `getChildren()` method will be recursively adapted:
 
     public class TreeNode {
         public String getName() { ... }    
         public List<TreeNode> getChildren() { ... }
     }
 
-The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed.
-
-See the Javadoc for the `BeanAdapter` class for more information.
+The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed. See the Javadoc for the `BeanAdapter` class for more information.
 
 ## ResultSetAdapter Class
-The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON by `RequestDispatcherServlet`. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
+The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
 
 `ResultSetAdapter` is forward-scrolling only; its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a result set to be returned directly to the caller without any intermediate buffering. The caller can simply execute a JDBC query, pass the resulting result set to the `ResultSetAdapter` constructor, and return the adapter instance:
 
@@ -832,11 +827,11 @@ The result handler is called upon completion of the remote method. `ResultHandle
 
 On successful completion, the first argument will contain the result of the remote method call. It will be an instance of one of the following types or `null`, depending on the content of the JSON response returned by the server:
 
-* `java.lang.String`: string
-* `java.lang.Number`: number
-* `java.lang.Boolean` true/false
-* `java.util.List`: array
-* `java.util.Map`: object
+* string: `java.lang.String`
+* number: `java.lang.Number`
+* true/false: `java.lang.Boolean`
+* array: `java.util.List`
+* object: `java.util.Map`
 
 The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
 
@@ -1006,9 +1001,9 @@ Method arguments can be any numeric type, a boolean, or a string. Indexed collec
 
 Attachments are specified a dictionary of URL arrays. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
 
-The result handler is called upon completion of the remote method. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+The result handler callback is called upon completion of the remote method. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
-All three variants of the method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+All three variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 Although requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
