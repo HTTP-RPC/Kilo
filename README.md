@@ -801,17 +801,30 @@ The executor service is used to schedule remote method requests. Internally, req
 
 Remote methods are executed by calling the `invoke()` method:
     
-    public <V> Future<V> invoke(String methodName, Map<String, Object> arguments, ResultHandler<V> resultHandler) { ... }
+    public <V> Future<V> invoke(String methodName, 
+        Map<String, ?> arguments, 
+        Map<String, List<URL>> attachments, 
+        ResultHandler<V> resultHandler) { ... }
 
 This method takes the following arguments:
 
 * `methodName` - the name of the remote method to invoke
-* `arguments` - an instance of `java.util.Map` containing the arguments to the remote method as key/value pairs
+* `arguments` - a map containing the method arguments as key/value pairs
+* `attachments` - a map containing any attachments to the method
 * `resultHandler` - an instance of `org.httprpc.ResultHandler` that will be invoked upon completion of the remote method
 
-A convenience method for invoking remote methods that don't take any arguments is also provided.
+The following convenience methods are also provided:
+
+    public <V> Future<V> invoke(String methodName, 
+        ResultHandler<V> resultHandler) { ... }
+    
+    public <V> Future<V> invoke(String methodName, 
+        Map<String, ?> arguments, 
+        ResultHandler<V> resultHandler) { ... }
 
 Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as lists of any supported simple type (e.g. `List<Double>`), and keyed collections are specified as maps (e.g. `Map<String, Integer>`). Map arguments must use `String` values for keys.
+
+Attachments are specified a map of URL lists. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
 
 The result handler is called upon completion of the remote method. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
@@ -827,7 +840,7 @@ On successful completion, the first argument will contain the result of the remo
 
 The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
 
-Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
+All variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
 Request security is provided by the underlying URL connection. See the `HttpURLConnection` documentation for more information.
 
@@ -966,13 +979,36 @@ The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC service
 
 Service proxies are initialized via the `initWithSession:baseURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Method names are appended to this URL during method execution.
 
-Remote methods are invoked by calling either `invoke:resultHandler:` or `invoke:withArguments:resultHandler:` on the service proxy. The first version is a convenience method for calling remote methods that don't take any arguments. The second takes a dictionary of argument values to be passed to the remote method. The first method delegates to the second, passing an empty argument dictionary.
+Remote methods are executed by calling the `invoke:withArguments:attachments:resultHandler:` method:
+    
+    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
+        withArguments:(NSDictionary *)arguments
+        attachments:(NSDictionary *)attachments
+        resultHandler:(void (^)(id, NSError *))resultHandler;
+
+This method takes the following arguments:
+
+* `methodName` - the name of the remote method to invoke
+* `arguments` - a dictionary containing the method arguments as key/value pairs
+* `attachments` - a dictionary containing any attachments to the method
+* `resultHandler` - a callback that will be invoked upon completion of the method
+
+The following convenience methods are also provided:
+
+    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
+        resultHandler:(void (^)(id, NSError *))resultHandler;
+    
+    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
+        withArguments:(NSDictionary *)arguments
+        resultHandler:(void (^)(id, NSError *))resultHandler;
 
 Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as arrays of any supported simple type (e.g. `[Double]`), and keyed collections are specified as dictionaries (e.g. `[String: Int]`). Dictionary arguments must use `String` values for keys.
 
-Both invocation methods take a result handler as the final argument. The result handler is a callback that is invoked upon successful completion of the remote method, as well as if the method call fails. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+Attachments are specified a dictionary of URL arrays. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
 
-Both methods return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+The result handler is called upon completion of the remote method. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+
+All three variants of the method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 Although requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
