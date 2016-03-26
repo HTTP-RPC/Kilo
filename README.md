@@ -102,7 +102,7 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
 
 Each of these classes is discussed in more detail below. 
 
-The JAR file for the Java server implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 and a servlet container supporting servlet specification 3.1 or later are required.
+The JAR file for the Java server implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 and a servlet container supporting servlet specification 3.0 (e.g. Tomcat 7) or later are required.
 
 ## WebService Class
 `WebService` is an abstract base class for HTTP-RPC web services. All services must extend this class and must provide a public, zero-argument constructor.
