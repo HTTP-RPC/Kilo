@@ -281,7 +281,9 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, Object> imageInfo = attachmentInfo.get(1);
 
                 getAttachmentInfoCheckBox.setChecked(exception == null
+                    && textInfo.get("contentType").equals("text/plain")
                     && textInfo.get("size").equals(26L) && textInfo.get("checksum").equals(2412L)
+                    && imageInfo.get("contentType").equals("image/jpeg")
                     && imageInfo.get("size").equals(10392L) && imageInfo.get("checksum").equals(1038036L));
             }
         });
