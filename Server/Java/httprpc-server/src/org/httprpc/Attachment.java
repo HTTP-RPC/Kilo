@@ -31,6 +31,14 @@ public interface Attachment {
     public String getName();
 
     /**
+     * Returns the file name associated with the attachment.
+     *
+     * @return
+     * The attachment's file name.
+     */
+    public String getFileName();
+
+    /**
      * Returns the content type of the attachment.
      *
      * @return

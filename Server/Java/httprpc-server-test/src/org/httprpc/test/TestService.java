@@ -178,6 +178,7 @@ public class TestService extends WebService {
             }
 
             attachmentInfo.add(mapOf(entry("name", attachment.getName()),
+                entry("fileName", attachment.getFileName()),
                 entry("contentType", attachment.getContentType()),
                 entry("size", attachment.getSize()),
                 entry("bytes", bytes),

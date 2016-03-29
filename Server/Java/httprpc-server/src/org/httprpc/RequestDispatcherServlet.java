@@ -275,6 +275,11 @@ public class RequestDispatcherServlet extends HttpServlet {
                             }
 
                             @Override
+                            public String getFileName() {
+                                return part.getSubmittedFileName();
+                            }
+
+                            @Override
                             public String getContentType() {
                                 return part.getContentType();
                             }
