@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -152,12 +153,11 @@ public class WebServiceProxy {
                     }
                 } else {
                     String boundary = UUID.randomUUID().toString();
-                    String contentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
+                    String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
 
-                    connection.setRequestProperty(CONTENT_TYPE_KEY, contentType);
+                    connection.setRequestProperty(CONTENT_TYPE_KEY, requestContentType);
 
                     String boundaryData = String.format("--%s%s", boundary, CRLF);
-                    String octetStreamContentTypeData = String.format("%s: %s%s", CONTENT_TYPE_KEY, OCTET_STREAM_MIME_TYPE, CRLF);
 
                     // Write request body
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
@@ -209,11 +209,18 @@ public class WebServiceProxy {
                                     writer.append(String.format(NAME_PARAMETER_FORMAT, name));
 
                                     String path = url.getPath();
-                                    String file = path.substring(path.lastIndexOf('/') + 1);
-                                    writer.append(String.format(FILENAME_PARAMETER_FORMAT, file));
+                                    String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                                    writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
                                     writer.append(CRLF);
 
-                                    writer.append(octetStreamContentTypeData);
+                                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                                    if (attachmentContentType == null) {
+                                        attachmentContentType = OCTET_STREAM_MIME_TYPE;
+                                    }
+
+                                    writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
                                     writer.append(CRLF);
 
                                     writer.flush();

@@ -14,6 +14,8 @@
 
 #import "WSWebServiceProxy.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
+
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
 NSString * const WSMethodNameKey = @"methodName";
@@ -106,9 +108,9 @@ NSString * const kCRLF = @"\r\n";
             [request setHTTPBody:[parameters UTF8Data]];
         } else {
             NSString *boundary = [[NSUUID new] UUIDString];
-            NSString *contentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
+            NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
 
-            [request addValue:contentType forHTTPHeaderField:kContentTypeField];
+            [request addValue:requestContentType forHTTPHeaderField:kContentTypeField];
 
             NSMutableData *body = [NSMutableData new];
 
@@ -134,8 +136,6 @@ NSString * const kCRLF = @"\r\n";
                 }
             }
 
-            NSData *octetStreamContentTypeData = [[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, kOctetStreamMIMEType, kCRLF] UTF8Data];
-
             for (NSString *name in attachments) {
                 NSArray *urls = [attachments objectForKey:name];
 
@@ -144,10 +144,24 @@ NSString * const kCRLF = @"\r\n";
 
                     [body appendData:contentDispositionHeaderData];
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
-                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, [url lastPathComponent]] UTF8Data]];
+
+                    NSString *filename = [url lastPathComponent];
+
+                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
                     [body appendData:[kCRLF UTF8Data]];
 
-                    [body appendData:octetStreamContentTypeData];
+                    CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
+                    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
+
+                    NSString *attachmentContentType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+
+                    CFRelease(uti);
+
+                    if (attachmentContentType == nil) {
+                        attachmentContentType = kOctetStreamMIMEType;
+                    }
+
+                    [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
                     [body appendData:[kCRLF UTF8Data]];
 
                     [body appendData:[NSData dataWithContentsOfURL:url]];

@@ -205,7 +205,9 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
             let textInfo = attachmentInfo[0];
             let imageInfo = attachmentInfo[1];
             
-            validate(textInfo["size"] as! Int == 26 && textInfo["checksum"] as! Int == 2412
+            validate(textInfo["contentType"] as! String == "text/plain"
+                && textInfo["size"] as! Int == 26 && textInfo["checksum"] as! Int == 2412
+                && imageInfo["contentType"] as! String == "image/jpeg"
                 && imageInfo["size"] as! Int == 10392 && imageInfo["checksum"] as! Int == 1038036,
                 error: error, cell: self.getAttachmentInfoCell)
         }
