@@ -6,7 +6,7 @@
     <display-name>HTTP-RPC Server Examples</display-name>
     
     <listener>  
-        <listener-class>org.gkbrown.hibernate.HibernateSessionFactoryManager</listener-class>
+        <listener-class>org.httprpc.examples.hibernate.HibernateSessionFactoryManager</listener-class>
     </listener>  
 
     <listener>  
@@ -18,7 +18,7 @@
         <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
         <init-param>
             <param-name>serviceClassName</param-name>
-            <param-value>org.gkbrown.hibernate.EventService</param-value>
+            <param-value>org.httprpc.examples.hibernate.EventService</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

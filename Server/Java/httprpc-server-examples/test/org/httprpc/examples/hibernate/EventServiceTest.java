@@ -12,42 +12,39 @@
  * limitations under the License.
  */
 
-package org.httprpc.examples.mongodb;
+package org.httprpc.examples.hibernate;
 
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.httprpc.util.IteratorAdapter;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class RestaurantServiceTest {
+public class EventServiceTest {
     @BeforeClass
     public static void startup() {
-        new MongoClientManager().contextInitialized(null);
+        new HibernateSessionFactoryManager().contextInitialized(null);
     }
 
     @AfterClass
     public static void shutdown() {
-        new MongoClientManager().contextDestroyed(null);
+        new HibernateSessionFactoryManager().contextDestroyed(null);
     }
 
     @Test
-    public void testRestaurantSearch() throws Exception {
-        RestaurantService service = new RestaurantService();
+    public void eventServiceTest() {
+        EventService service = new EventService();
 
-        int i = 0;
+        service.createEvent("A");
+        service.createEvent("B");
+        service.createEvent("C");
 
-        try (IteratorAdapter results = service.searchRestaurants("10075")) {
-            Iterator<?> iterator = results.iterator();
+        List<Map<String, Object>> events = service.getEvents();
 
-            while (iterator.hasNext()) {
-                iterator.next();
-                i++;
-            }
-        }
-
-        Assert.assertEquals(99, i);
+        Assert.assertEquals("A", events.get(0).get("title"));
+        Assert.assertEquals("B", events.get(1).get("title"));
+        Assert.assertEquals("C", events.get(2).get("title"));
     }
 }

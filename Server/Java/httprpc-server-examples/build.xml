@@ -26,7 +26,8 @@
                 <fileset dir="../httprpc-server/api" includes="*.jar"/>
                 
                 <fileset dir="${lib}">
-                    <filename name="mongo-java-driver-*.jar"/>
+                    <include name="hibernate-core-*.jar"/>
+                    <include name="mongo-java-driver-*.jar"/>
                 </fileset>
             </classpath>
             
