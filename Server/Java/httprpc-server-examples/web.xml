@@ -10,7 +10,7 @@
     </listener>  
 
     <listener>  
-        <listener-class>org.gkbrown.mongo.MongoClientManager</listener-class>
+        <listener-class>org.httprpc.examples.mongodb.MongoClientManager</listener-class>
     </listener>  
 
     <servlet>
@@ -28,7 +28,7 @@
         <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
         <init-param>
             <param-name>serviceClassName</param-name>
-            <param-value>org.gkbrown.mongo.RestaurantService</param-value>
+            <param-value>org.httprpc.examples.mongodb.RestaurantService</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

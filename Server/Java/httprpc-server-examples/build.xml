@@ -24,6 +24,10 @@
             <classpath>
                 <fileset dir="../httprpc-server" includes="*.jar"/>
                 <fileset dir="../httprpc-server/api" includes="*.jar"/>
+                
+                <fileset dir="${lib}">
+                    <filename name="mongo-java-driver-*.jar"/>
+                </fileset>
             </classpath>
             
             <compilerarg value="-parameters"/>
