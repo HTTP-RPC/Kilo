@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+    version="3.1">
+    <display-name>HTTP-RPC Server Examples</display-name>
+    
+    <listener>  
+        <listener-class>org.gkbrown.hibernate.HibernateSessionFactoryManager</listener-class>
+    </listener>  
+
+    <listener>  
+        <listener-class>org.gkbrown.mongo.MongoClientManager</listener-class>
+    </listener>  
+
+    <servlet>
+        <servlet-name>EventServlet</servlet-name>
+        <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>serviceClassName</param-name>
+            <param-value>org.gkbrown.hibernate.EventService</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>RestaurantServlet</servlet-name>
+        <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>serviceClassName</param-name>
+            <param-value>org.gkbrown.mongo.RestaurantService</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>EventServlet</servlet-name>
+        <url-pattern>/events/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RestaurantServlet</servlet-name>
+        <url-pattern>/restaurants/*</url-pattern>
+    </servlet-mapping>
+</web-app>
+
