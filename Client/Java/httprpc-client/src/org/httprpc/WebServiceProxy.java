@@ -245,13 +245,13 @@ public class WebServiceProxy {
                 int status = connection.getResponseCode();
 
                 if (status == HttpURLConnection.HTTP_OK) {
+                    String charsetName = getCharsetName(connection.getContentType());
+
+                    if (charsetName == null) {
+                        charsetName = UTF_8_ENCODING;
+                    }
+
                     try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                        String charsetName = getCharsetName(connection.getContentType());
-
-                        if (charsetName == null) {
-                            charsetName = UTF_8_ENCODING;
-                        }
-
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charsetName))) {
                             result = readValue(reader);
                         }
