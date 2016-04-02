@@ -120,9 +120,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
                         String key = resultSetMetaData.getColumnLabel(i + 1);
                         Object value = resultSet.getObject(i + 1);
 
-// TODO adapt()
-
-                        row.put(key, value);
+                        row.put(key, adapt(value));
                     }
                 } catch (SQLException exception) {
                     throw new RuntimeException(exception);

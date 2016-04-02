@@ -4,14 +4,24 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
     version="3.1">
     <display-name>HTTP-RPC Server Examples</display-name>
-    
-    <listener>  
-        <listener-class>org.httprpc.examples.hibernate.HibernateSessionFactoryManager</listener-class>
-    </listener>  
 
-    <listener>  
+    <listener>
+        <listener-class>org.httprpc.examples.hibernate.HibernateSessionFactoryManager</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>org.httprpc.examples.mongodb.MongoClientManager</listener-class>
-    </listener>  
+    </listener>
+
+    <servlet>
+        <servlet-name>PetServlet</servlet-name>
+        <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>serviceClassName</param-name>
+            <param-value>org.httprpc.examples.mysql.PetService</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>EventServlet</servlet-name>
@@ -32,6 +42,11 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PetServlet</servlet-name>
+        <url-pattern>/pets/*</url-pattern>
+    </servlet-mapping>    
 
     <servlet-mapping>
         <servlet-name>EventServlet</servlet-name>
