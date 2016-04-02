@@ -888,7 +888,6 @@ class TemplateSerializer extends Serializer {
         SECTION_START,
         SECTION_END,
         INCLUDE,
-        RESOURCE,
         COMMENT,
         VARIABLE
     }
@@ -945,6 +944,9 @@ class TemplateSerializer extends Serializer {
     }
 
     private static final int EOF = -1;
+
+    private static final String CONTEXT_PREFIX = "$";
+    private static final String RESOURCE_PREFIX = "@";
 
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale) {
         this.serviceType = serviceType;
@@ -1012,8 +1014,6 @@ class TemplateSerializer extends Serializer {
                         markerType = MarkerType.SECTION_END;
                     } else if (c == '>') {
                         markerType = MarkerType.INCLUDE;
-                    } else if (c == '@') {
-                        markerType = MarkerType.RESOURCE;
                     } else if (c == '!') {
                         markerType = MarkerType.COMMENT;
                     } else {
@@ -1142,19 +1142,6 @@ class TemplateSerializer extends Serializer {
                             break;
                         }
 
-                        case RESOURCE: {
-                            String value;
-                            if (resourceBundle != null) {
-                                value = resourceBundle.getString(marker);
-                            } else {
-                                value = marker;
-                            }
-
-                            writer.append(value);
-
-                            break;
-                        }
-
                         case COMMENT: {
                             // No-op
                             break;
@@ -1168,6 +1155,13 @@ class TemplateSerializer extends Serializer {
                             Object value;
                             if (key.equals(".")) {
                                 value = dictionary.get(key);
+                            } else if (key.startsWith(CONTEXT_PREFIX)) {
+                                // TODO
+                                value = null;
+                            } else if (key.startsWith(RESOURCE_PREFIX)) {
+                                key = key.substring(RESOURCE_PREFIX.length());
+
+                                value = (resourceBundle == null) ? key : resourceBundle.getString(key);
                             } else {
                                 value = dictionary;
 
