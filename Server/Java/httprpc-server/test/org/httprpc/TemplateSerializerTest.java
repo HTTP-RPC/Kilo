@@ -369,7 +369,7 @@ public class TemplateSerializerTest {
 
     @Test
     public void testResource() throws IOException {
-        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource.txt",
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource1.txt",
             PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
 
         String result;
@@ -379,5 +379,63 @@ public class TemplateSerializerTest {
         }
 
         Assert.assertEquals("value:hello", result);
+    }
+
+    @Test
+    public void testMissingResourceKey() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource2.txt",
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), "hello");
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("label:hello", result);
+    }
+
+    @Test
+    public void testMissingResourceBundle() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource3.txt",
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), "hello");
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("label:hello", result);
+    }
+
+    @Test
+    public void testContextProperty() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "context.txt",
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+
+        templateSerializer.getContext().put("a", "A");
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), "B");
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("A/B", result);
+    }
+
+    @Test
+    public void testMissingContextProperty() throws IOException {
+        TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "context.txt",
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            templateSerializer.writeValue(new PrintWriter(writer), "B");
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("a/B", result);
     }
 }

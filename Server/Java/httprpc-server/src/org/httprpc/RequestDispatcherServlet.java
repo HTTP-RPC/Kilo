@@ -897,10 +897,12 @@ class TemplateSerializer extends Serializer {
     private String contentType;
     private Locale locale;
 
+    private HashMap<String, Object> context = new HashMap<>();
+
     private ResourceBundle resourceBundle = null;
 
     private Map<String, Reader> includes = new HashMap<>();
-    private LinkedList<Map<String, Reader>> context = new LinkedList<>();
+    private LinkedList<Map<String, Reader>> history = new LinkedList<>();
 
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
@@ -945,8 +947,8 @@ class TemplateSerializer extends Serializer {
 
     private static final int EOF = -1;
 
-    private static final String CONTEXT_PREFIX = "$";
     private static final String RESOURCE_PREFIX = "@";
+    private static final String CONTEXT_PREFIX = "$";
 
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale) {
         this.serviceType = serviceType;
@@ -958,6 +960,10 @@ class TemplateSerializer extends Serializer {
     @Override
     public String getContentType() {
         return contentType;
+    }
+
+    public Map<String, Object> getContext() {
+        return context;
     }
 
     @Override
@@ -1050,7 +1056,7 @@ class TemplateSerializer extends Serializer {
 
                     switch (markerType) {
                         case SECTION_START: {
-                            context.push(includes);
+                            history.push(includes);
 
                             Object value = dictionary.get(marker);
 
@@ -1108,7 +1114,7 @@ class TemplateSerializer extends Serializer {
                                 }
                             }
 
-                            includes = context.pop();
+                            includes = history.pop();
 
                             break;
                         }
@@ -1155,13 +1161,31 @@ class TemplateSerializer extends Serializer {
                             Object value;
                             if (key.equals(".")) {
                                 value = dictionary.get(key);
-                            } else if (key.startsWith(CONTEXT_PREFIX)) {
-                                // TODO
-                                value = null;
                             } else if (key.startsWith(RESOURCE_PREFIX)) {
                                 key = key.substring(RESOURCE_PREFIX.length());
 
-                                value = (resourceBundle == null) ? key : resourceBundle.getString(key);
+                                if (resourceBundle != null) {
+                                    try {
+                                        value = resourceBundle.getString(key);
+                                    } catch (MissingResourceException exception) {
+                                        value = null;
+                                    }
+                                } else {
+                                    value = null;
+                                }
+
+                                if (value == null) {
+                                    value = key;
+                                }
+
+                            } else if (key.startsWith(CONTEXT_PREFIX)) {
+                                key = key.substring(CONTEXT_PREFIX.length());
+
+                                value = context.get(key);
+
+                                if (value == null) {
+                                    value = key;
+                                }
                             } else {
                                 value = dictionary;
 

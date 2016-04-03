@@ -306,15 +306,22 @@ The template itself could be updated to refer to these values as shown below:
         <title>{{@title}}</title>
     </head>
     <body>
-        <p>{{@@count}}: {{count}}</p>
+        <p>{{@count}}: {{count}}</p>
         <p>{{@sum}}: {{sum}}</p>
         <p>{{@average}}: {{average}}</p> 
     </body>
     </html>
 
-When the template is processed, the resource markers will be replaced with their corresponding values from the resource bundle.
+When the template is processed, the resource references will be replaced with their corresponding values from the resource bundle.
 
-Note that, if a resource bundle with the expected name does not exist, or if a marker refers to a non-existent key in the resource bundle, the marker name itself will be written to the output stream in place of the localized value.
+Note that, if a resource bundle with the expected name does not exist, or if the variable refers to a non-existent key in the resource bundle, the resource key will be written to the output stream in place of the localized value.
+
+### Context Properties
+If a variable name begins with a `$` character, it is considered a context property reference.
+
+TODO
+
+If the variable refers to a non-existent context property, the property name will be written to the output stream in place of the property value.
 
 ### Sections
 If a value in a data dictionary is an instance of `java.util.List`, the value's key can be used as a section marker. Content between the section start and end markers is repeated once for each element in the list. If the list is empty or the value of the key is `null`, the section's content is excluded from the output.
