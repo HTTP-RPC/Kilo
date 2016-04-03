@@ -35,7 +35,7 @@ public class TemplateSerializerTest {
     @Test
     public void testNull() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "dictionary.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -49,7 +49,7 @@ public class TemplateSerializerTest {
     @Test
     public void testDictionary() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "dictionary.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -74,7 +74,7 @@ public class TemplateSerializerTest {
     @Test
     public void testEmptySection() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section1.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -88,7 +88,7 @@ public class TemplateSerializerTest {
     @Test
     public void testSingleElementSection() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section1.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -112,7 +112,7 @@ public class TemplateSerializerTest {
     @Test
     public void testMultiElementSection() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section1.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         Map<String, ?> dictionary1 = mapOf(
             entry("a", "hello"),
@@ -144,7 +144,7 @@ public class TemplateSerializerTest {
     @Test
     public void testNestedSection1() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section2.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         Map<String, ?> dictionary = mapOf(
             entry("abc", "ABC"),
@@ -170,7 +170,7 @@ public class TemplateSerializerTest {
     @Test
     public void testNestedSection2() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section3.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         List<?> value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
@@ -186,7 +186,7 @@ public class TemplateSerializerTest {
     @Test
     public void testNestedEmptySection() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section3.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -200,7 +200,7 @@ public class TemplateSerializerTest {
     @Test
     public void testPrimitiveSection() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "section4.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         List<?> value = listOf("hello", 42, false);
 
@@ -216,7 +216,7 @@ public class TemplateSerializerTest {
     @Test
     public void testComment() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "comment.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -230,7 +230,7 @@ public class TemplateSerializerTest {
     @Test
     public void testFormatModifier() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "format.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -244,7 +244,7 @@ public class TemplateSerializerTest {
     @Test
     public void testURLEscapeModifier() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "url.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -258,7 +258,7 @@ public class TemplateSerializerTest {
     @Test
     public void testMarkupEscapeModifier() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "markup.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -272,7 +272,7 @@ public class TemplateSerializerTest {
     @Test
     public void testJSONEscapeModifier() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "json.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -286,7 +286,7 @@ public class TemplateSerializerTest {
     @Test
     public void testCSVEscapeModifier() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "csv.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -300,7 +300,7 @@ public class TemplateSerializerTest {
     @Test
     public void testSimpleInclude() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "master1.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -314,7 +314,7 @@ public class TemplateSerializerTest {
     @Test
     public void testSectionInclude() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "master2.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -328,7 +328,7 @@ public class TemplateSerializerTest {
     @Test
     public void testRecursion() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "recursion.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         List<?> list = listOf(
             listOf(
@@ -354,7 +354,7 @@ public class TemplateSerializerTest {
     @Test
     public void testEmptyRecursion() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "recursion.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         List<?> list = Collections.EMPTY_LIST;
 
@@ -370,7 +370,7 @@ public class TemplateSerializerTest {
     @Test
     public void testResource() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource1.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -384,7 +384,7 @@ public class TemplateSerializerTest {
     @Test
     public void testMissingResourceKey() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource2.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -398,7 +398,7 @@ public class TemplateSerializerTest {
     @Test
     public void testMissingResourceBundle() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "resource3.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -412,9 +412,7 @@ public class TemplateSerializerTest {
     @Test
     public void testContextProperty() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "context.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
-
-        templateSerializer.getContext().put("a", "A");
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.singletonMap("a", "A"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -428,7 +426,7 @@ public class TemplateSerializerTest {
     @Test
     public void testMissingContextProperty() throws IOException {
         TemplateSerializer templateSerializer = new TemplateSerializer(TemplateSerializerTest.class, "context.txt",
-            PLAIN_TEXT_MIME_TYPE, Locale.getDefault());
+            PLAIN_TEXT_MIME_TYPE, Locale.getDefault(), Collections.emptyMap());
 
         String result;
         try (StringWriter writer = new StringWriter()) {

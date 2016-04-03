@@ -417,7 +417,14 @@ public class RequestDispatcherServlet extends HttpServlet {
                     throw new ServletException("Unable to determine content type.");
                 }
 
-                serializer = new TemplateSerializer(serviceType, pathInfo, contentType, locale);
+                HashMap<String, Object> context = new HashMap<>();
+
+                context.put("scheme", request.getScheme());
+                context.put("serverName", request.getServerName());
+                context.put("serverPort", request.getServerPort());
+                context.put("contextPath", request.getContextPath());
+
+                serializer = new TemplateSerializer(serviceType, pathInfo, contentType, locale, context);
             }
 
             // Construct arguments
@@ -896,8 +903,7 @@ class TemplateSerializer extends Serializer {
     private String templateName;
     private String contentType;
     private Locale locale;
-
-    private HashMap<String, Object> context = new HashMap<>();
+    private Map<String, Object> context;
 
     private ResourceBundle resourceBundle = null;
 
@@ -950,20 +956,17 @@ class TemplateSerializer extends Serializer {
     private static final String RESOURCE_PREFIX = "@";
     private static final String CONTEXT_PREFIX = "$";
 
-    public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale) {
+    public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale, Map<String, Object> context) {
         this.serviceType = serviceType;
         this.templateName = templateName;
         this.contentType = contentType;
         this.locale = locale;
+        this.context = context;
     }
 
     @Override
     public String getContentType() {
         return contentType;
-    }
-
-    public Map<String, Object> getContext() {
-        return context;
     }
 
     @Override
@@ -999,7 +1002,7 @@ class TemplateSerializer extends Serializer {
         }
 
         if (!(root instanceof Map<?, ?>)) {
-            root = WebService.mapOf(WebService.entry(".", root));
+            root = Collections.singletonMap(".", root);
         }
 
         Map<?, ?> dictionary = (Map<?, ?>)root;
