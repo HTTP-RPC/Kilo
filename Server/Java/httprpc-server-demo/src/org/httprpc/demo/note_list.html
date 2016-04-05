@@ -4,7 +4,7 @@
 <head>
 <body>
 {{#.}}
-<p><a href="note_detail.html?id={{id:^url}}">{{subject}}</a>, {{date}}</p>
+<p><a href="note_detail.html?id={{id:^url}}">{{subject}}</a>, {{date:format=shortDate}}, {{date:format=shortTime}}</p>
 {{/.}}
 </body>
 </html>

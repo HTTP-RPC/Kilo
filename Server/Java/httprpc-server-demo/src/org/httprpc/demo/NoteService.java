@@ -14,6 +14,9 @@
 
 package org.httprpc.demo;
 
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +27,15 @@ import org.httprpc.WebService;
  * Simple note management service demo.
  */
 public class NoteService extends WebService {
+    private static LinkedHashMap<Integer, Map<String, ?>> notes = new LinkedHashMap<>();
+
+    private static int nextNoteID = 1;
+
+    private static final String ID_KEY = "id";
+    private static final String DATE_KEY = "date";
+    private static final String SUBJECT_KEY = "subject";
+    private static final String BODY_KEY = "body";
+
     /**
      * Adds a note to the database.
      *
@@ -34,7 +46,16 @@ public class NoteService extends WebService {
      * The note body.
      */
     public void addNote(String subject, String body) {
-        // TODO
+        synchronized (notes) {
+            notes.put(nextNoteID, mapOf(
+                entry(ID_KEY, nextNoteID),
+                entry(DATE_KEY, new Date().getTime()),
+                entry(SUBJECT_KEY, subject),
+                entry(BODY_KEY, body))
+            );
+
+            nextNoteID++;
+        }
     }
 
     /**
@@ -44,7 +65,9 @@ public class NoteService extends WebService {
      * The note ID.
      */
     public void deleteNote(int id) {
-        // TODO
+        synchronized (notes) {
+            notes.remove(id);
+        }
     }
 
     /**
@@ -55,8 +78,19 @@ public class NoteService extends WebService {
      */
     @Template("note_list.html")
     public List<Map<String, ?>> listNotes() {
-        // TODO
-        return null;
+        LinkedList<Map<String, ?>> noteList = new LinkedList<>();
+
+        synchronized (notes) {
+            for (Map<String, ?> note : notes.values()) {
+                noteList.add(mapOf(
+                    entry(ID_KEY, note.get(ID_KEY)),
+                    entry(DATE_KEY, note.get(DATE_KEY)),
+                    entry(SUBJECT_KEY, note.get(SUBJECT_KEY))
+                ));
+            }
+        }
+
+        return noteList;
     }
 
     /**
@@ -70,7 +104,11 @@ public class NoteService extends WebService {
      */
     @Template("note_detail.html")
     public Map<String, ?> getNoteDetail(int id) {
-        // TODO
-        return null;
+        Map<String, ?> noteDetail;
+        synchronized (notes) {
+            noteDetail = notes.get(id);
+        }
+
+        return noteDetail;
     }
 }
