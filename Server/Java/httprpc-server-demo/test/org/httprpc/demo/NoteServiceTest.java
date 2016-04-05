@@ -14,11 +14,6 @@
 
 package org.httprpc.demo;
 
-import org.httprpc.WebService;
-
-/**
- * Demo service.
- */
-public class DemoService extends WebService {
+public class NoteServiceTest {
     // TODO
 }
