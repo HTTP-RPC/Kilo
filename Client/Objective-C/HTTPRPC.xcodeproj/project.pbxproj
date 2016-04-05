@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		371C21631CB449BA000CF22B /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
+		371C21641CB449BA000CF22B /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		371C21661CB449D4000CF22B /* View.xml in Resources */ = {isa = PBXBuildFile; fileRef = 371C21651CB449D4000CF22B /* View.xml */; };
 		375218E51BF00B6600ACFFD1 /* HTTPRPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3798614C1BF009D60063212E /* HTTPRPC.framework */; };
 		375218E61BF00B6600ACFFD1 /* HTTPRPC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3798614C1BF009D60063212E /* HTTPRPC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		379861501BF009D60063212E /* HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 3798614F1BF009D60063212E /* HTTPRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -39,6 +42,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				375218E61BF00B6600ACFFD1 /* HTTPRPC.framework in Embed Frameworks */,
+				371C21641CB449BA000CF22B /* MarkupKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -46,6 +50,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		371C21621CB449BA000CF22B /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
+		371C21651CB449D4000CF22B /* View.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = View.xml; sourceTree = "<group>"; };
 		3798614C1BF009D60063212E /* HTTPRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTTPRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3798614F1BF009D60063212E /* HTTPRPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPRPC.h; sourceTree = "<group>"; };
 		379861511BF009D60063212E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -75,6 +81,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				375218E51BF00B6600ACFFD1 /* HTTPRPC.framework in Frameworks */,
+				371C21631CB449BA000CF22B /* MarkupKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +91,7 @@
 		379861421BF009D60063212E = {
 			isa = PBXGroup;
 			children = (
+				371C21621CB449BA000CF22B /* MarkupKit.framework */,
 				3798614E1BF009D60063212E /* HTTPRPC */,
 				379861601BF00AB00063212E /* HTTPRPCTest */,
 				3798614D1BF009D60063212E /* Products */,
@@ -115,6 +123,7 @@
 			children = (
 				379861611BF00AB00063212E /* AppDelegate.swift */,
 				379861631BF00AB00063212E /* ViewController.swift */,
+				371C21651CB449D4000CF22B /* View.xml */,
 				37CF338A1C00A48D00F84C89 /* Statistics.swift */,
 				379861681BF00AB00063212E /* Assets.xcassets */,
 				3798616A1BF00AB00063212E /* LaunchScreen.storyboard */,
@@ -228,6 +237,7 @@
 			files = (
 				3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */,
 				37F954D11CA2B6570058B927 /* test.jpg in Resources */,
+				371C21661CB449D4000CF22B /* View.xml in Resources */,
 				37F954CF1CA2B5970058B927 /* test.txt in Resources */,
 				379861691BF00AB00063212E /* Assets.xcassets in Resources */,
 			);
@@ -405,6 +415,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = HTTPRPCTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -419,6 +433,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = HTTPRPCTest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

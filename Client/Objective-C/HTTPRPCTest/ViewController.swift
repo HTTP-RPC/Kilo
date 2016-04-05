@@ -13,91 +13,28 @@
 //
 
 import UIKit
+import MarkupKit
 import HTTPRPC
 
-class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataDelegate {
-    var cells: [UITableViewCell]!
-
-    var addCell: UITableViewCell!
-    var addValuesCell: UITableViewCell!
-    var invertValueCell: UITableViewCell!
-    var getCharactersCell: UITableViewCell!
-    var getSelectionCell: UITableViewCell!
-    var getMapCell: UITableViewCell!
-    var getStatisticsCell: UITableViewCell!
-    var getTestDataCell: UITableViewCell!
-    var getVoidCell: UITableViewCell!
-    var getNullCell: UITableViewCell!
-    var getLocaleCodeCell: UITableViewCell!
-    var getUserNameCell: UITableViewCell!
-    var isUserInRoleCell: UITableViewCell!
-    var getAttachmentInfoCell: UITableViewCell!
+class ViewController: UITableViewController, NSURLSessionDataDelegate {
+    weak var addCell: UITableViewCell!
+    weak var addValuesCell: UITableViewCell!
+    weak var invertValueCell: UITableViewCell!
+    weak var getCharactersCell: UITableViewCell!
+    weak var getSelectionCell: UITableViewCell!
+    weak var getMapCell: UITableViewCell!
+    weak var getStatisticsCell: UITableViewCell!
+    weak var getTestDataCell: UITableViewCell!
+    weak var getVoidCell: UITableViewCell!
+    weak var getNullCell: UITableViewCell!
+    weak var getLocaleCodeCell: UITableViewCell!
+    weak var getUserNameCell: UITableViewCell!
+    weak var isUserInRoleCell: UITableViewCell!
+    weak var getAttachmentInfoCell: UITableViewCell!
 
     override func loadView() {
-        let tableView = UITableView()
-
-        tableView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
-        tableView.dataSource = self
-
-        cells = [];
-
-        addCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        addCell.textLabel!.text = "add()"
-        cells.append(addCell)
-
-        addValuesCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        addValuesCell.textLabel!.text = "addArray()"
-        cells.append(addValuesCell)
-
-        invertValueCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        invertValueCell.textLabel!.text = "invertValue()"
-        cells.append(invertValueCell)
-
-        getCharactersCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getCharactersCell.textLabel!.text = "getCharacters()"
-        cells.append(getCharactersCell)
-
-        getSelectionCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getSelectionCell.textLabel!.text = "getSelection()"
-        cells.append(getSelectionCell)
-
-        getMapCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getMapCell.textLabel!.text = "getMap()"
-        cells.append(getMapCell)
-
-        getStatisticsCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getStatisticsCell.textLabel!.text = "getStatistics()"
-        cells.append(getStatisticsCell)
-
-        getTestDataCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getTestDataCell.textLabel!.text = "getTestData()"
-        cells.append(getTestDataCell)
-
-        getVoidCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getVoidCell.textLabel!.text = "getVoid()"
-        cells.append(getVoidCell)
-
-        getNullCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getNullCell.textLabel!.text = "getNull()"
-        cells.append(getNullCell)
-
-        getLocaleCodeCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getLocaleCodeCell.textLabel!.text = "getLocaleCode()"
-        cells.append(getLocaleCodeCell)
-
-        getUserNameCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getUserNameCell.textLabel!.text = "getUserName()"
-        cells.append(getUserNameCell)
-
-        isUserInRoleCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        isUserInRoleCell.textLabel!.text = "isUserInRole()"
-        cells.append(isUserInRoleCell)
-
-        getAttachmentInfoCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: nil)
-        getAttachmentInfoCell.textLabel!.text = "getAttachmentInfo()"
-        cells.append(getAttachmentInfoCell)
-
-        view = tableView
+        // Load view from markup
+        view = LMViewBuilder.viewWithName("View", owner: self, root: nil)
     }
 
     override func viewDidLoad() {
@@ -213,20 +150,12 @@ class ViewController: UIViewController, UITableViewDataSource, NSURLSessionDataD
         }
     }
 
-    // Table view delegate methods
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        tableView.contentInset = UIEdgeInsets(top: topLayoutGuide.length, left: 0, bottom: bottomLayoutGuide.length, right: 0)
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cells.count
-    }
-
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        return cells[indexPath.row]
-    }
-
-    // URL session data delegate methods
     func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge,
         completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
         // Allow self-signed certificate
