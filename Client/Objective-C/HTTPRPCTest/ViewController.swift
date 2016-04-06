@@ -17,20 +17,20 @@ import MarkupKit
 import HTTPRPC
 
 class ViewController: UITableViewController, NSURLSessionDataDelegate {
-    weak var addCell: UITableViewCell!
-    weak var addValuesCell: UITableViewCell!
-    weak var invertValueCell: UITableViewCell!
-    weak var getCharactersCell: UITableViewCell!
-    weak var getSelectionCell: UITableViewCell!
-    weak var getMapCell: UITableViewCell!
-    weak var getStatisticsCell: UITableViewCell!
-    weak var getTestDataCell: UITableViewCell!
-    weak var getVoidCell: UITableViewCell!
-    weak var getNullCell: UITableViewCell!
-    weak var getLocaleCodeCell: UITableViewCell!
-    weak var getUserNameCell: UITableViewCell!
-    weak var isUserInRoleCell: UITableViewCell!
-    weak var getAttachmentInfoCell: UITableViewCell!
+    @IBOutlet weak var addCell: UITableViewCell!
+    @IBOutlet weak var addValuesCell: UITableViewCell!
+    @IBOutlet weak var invertValueCell: UITableViewCell!
+    @IBOutlet weak var getCharactersCell: UITableViewCell!
+    @IBOutlet weak var getSelectionCell: UITableViewCell!
+    @IBOutlet weak var getMapCell: UITableViewCell!
+    @IBOutlet weak var getStatisticsCell: UITableViewCell!
+    @IBOutlet weak var getTestDataCell: UITableViewCell!
+    @IBOutlet weak var getVoidCell: UITableViewCell!
+    @IBOutlet weak var getNullCell: UITableViewCell!
+    @IBOutlet weak var getLocaleCodeCell: UITableViewCell!
+    @IBOutlet weak var getUserNameCell: UITableViewCell!
+    @IBOutlet weak var isUserInRoleCell: UITableViewCell!
+    @IBOutlet weak var getAttachmentInfoCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
