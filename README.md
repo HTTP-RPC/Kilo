@@ -79,9 +79,7 @@ For example, a descriptor for the hypothetical math service could be obtained by
     ]
         
 ## Implementations
-Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Support for other platforms may be added in the future. Contributions are welcome.
-
-For examples and additional information, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki). For questions and general feedback, please visit the [discussion forum](https://disqus.com/home/channel/httprpc/).
+Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. For examples and additional information, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki). For questions and general feedback, please visit the [discussion forum](https://disqus.com/home/channel/httprpc/).
 
 # Java Server
 The Java server implementation of HTTP-RPC allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following classes:
