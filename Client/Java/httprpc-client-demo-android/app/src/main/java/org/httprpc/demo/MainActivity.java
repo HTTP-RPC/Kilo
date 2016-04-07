@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package httprpc.org.http_rpcdemo;
+package org.httprpc.demo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
