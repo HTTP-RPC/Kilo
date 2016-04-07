@@ -18,7 +18,6 @@
 		375218E61BF00B6600ACFFD1 /* HTTPRPC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3798614C1BF009D60063212E /* HTTPRPC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		37543EE01CB67E1A00006F16 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37543EDF1CB67E1A00006F16 /* AppDelegate.swift */; };
 		37543EE21CB67E1A00006F16 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37543EE11CB67E1A00006F16 /* ViewController.swift */; };
-		37543EE51CB67E1A00006F16 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37543EE31CB67E1A00006F16 /* Main.storyboard */; };
 		37543EE71CB67E1A00006F16 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37543EE61CB67E1A00006F16 /* Assets.xcassets */; };
 		37543EEA1CB67E1A00006F16 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37543EE81CB67E1A00006F16 /* LaunchScreen.storyboard */; };
 		379861501BF009D60063212E /* HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 3798614F1BF009D60063212E /* HTTPRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -28,6 +27,7 @@
 		379861641BF00AB00063212E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379861631BF00AB00063212E /* ViewController.swift */; };
 		379861691BF00AB00063212E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 379861681BF00AB00063212E /* Assets.xcassets */; };
 		3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3798616A1BF00AB00063212E /* LaunchScreen.storyboard */; };
+		37BE077C1CB680E900B6F67A /* View.xml in Resources */ = {isa = PBXBuildFile; fileRef = 37BE077B1CB680E900B6F67A /* View.xml */; };
 		37CF338B1C00A48D00F84C89 /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CF338A1C00A48D00F84C89 /* Statistics.swift */; };
 		37F954CF1CA2B5970058B927 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 37F954CE1CA2B5970058B927 /* test.txt */; };
 		37F954D11CA2B6570058B927 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 37F954D01CA2B6570058B927 /* test.jpg */; };
@@ -83,7 +83,6 @@
 		37543EDD1CB67E1A00006F16 /* HTTPRPCDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HTTPRPCDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37543EDF1CB67E1A00006F16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		37543EE11CB67E1A00006F16 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		37543EE41CB67E1A00006F16 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		37543EE61CB67E1A00006F16 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		37543EE91CB67E1A00006F16 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		37543EEB1CB67E1A00006F16 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -98,6 +97,7 @@
 		379861681BF00AB00063212E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3798616B1BF00AB00063212E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3798616D1BF00AB00063212E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		37BE077B1CB680E900B6F67A /* View.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = View.xml; sourceTree = "<group>"; };
 		37CF338A1C00A48D00F84C89 /* Statistics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
 		37F954CE1CA2B5970058B927 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		37F954D01CA2B6570058B927 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
@@ -137,7 +137,7 @@
 			children = (
 				37543EDF1CB67E1A00006F16 /* AppDelegate.swift */,
 				37543EE11CB67E1A00006F16 /* ViewController.swift */,
-				37543EE31CB67E1A00006F16 /* Main.storyboard */,
+				37BE077B1CB680E900B6F67A /* View.xml */,
 				37543EE61CB67E1A00006F16 /* Assets.xcassets */,
 				37543EE81CB67E1A00006F16 /* LaunchScreen.storyboard */,
 				37543EEB1CB67E1A00006F16 /* Info.plist */,
@@ -311,8 +311,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				37543EEA1CB67E1A00006F16 /* LaunchScreen.storyboard in Resources */,
+				37BE077C1CB680E900B6F67A /* View.xml in Resources */,
 				37543EE71CB67E1A00006F16 /* Assets.xcassets in Resources */,
-				37543EE51CB67E1A00006F16 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,14 +381,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		37543EE31CB67E1A00006F16 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				37543EE41CB67E1A00006F16 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		37543EE81CB67E1A00006F16 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -419,7 +411,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = HTTPRPCDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.httprpc.HTTPRPCDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -438,7 +430,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = HTTPRPCDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.httprpc.HTTPRPCDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

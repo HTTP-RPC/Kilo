@@ -38,6 +38,8 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad();
+        
         // Set invalid user credentials
         let credential = NSURLCredential(user: "tomcatx", password: "tomcat", persistence: NSURLCredentialPersistence.ForSession);
         let protectionSpace = NSURLProtectionSpace(host: "localhost", port: 8443, protocol: "https", realm: "tomcat",
