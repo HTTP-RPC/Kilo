@@ -13,17 +13,50 @@
 //
 
 import UIKit
-import MarkupKit
 import HTTPRPC
 
 class ViewController: UITableViewController {
-    override func loadView() {
-        view = LMViewBuilder.viewWithName("View", owner: self, root: nil)
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "HTTP-RPC Demo"
+        title = "Notes" // TODO i81n
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
+            target: self, action: #selector(ViewController.add))
+
+        edgesForExtendedLayout = UIRectEdge.None
+    }
+
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // TODO Refresh list
+    }
+
+    func add() {
+        presentViewController(UINavigationController(rootViewController:AddViewController()), animated: true, completion: nil)
+    }
+
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        // TODO
+        return 0
+    }
+
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // TODO
+        return 0
+    }
+
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        // TODO Reuse identifier
+        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+
+        // TODO
+
+        return cell
+    }
+
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        // TODO
     }
 }
