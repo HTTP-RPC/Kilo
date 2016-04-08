@@ -13,18 +13,26 @@
 //
 
 import UIKit
+import MarkupKit
 import HTTPRPC
 
-class ViewController: UITableViewController {
+class MainViewController: UITableViewController {
+    override func loadView() {
+        view = LMViewBuilder.viewWithName("MainView", owner: self, root: nil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Notes" // TODO i81n
+        title = NSBundle.mainBundle().localizedStringForKey("notes", value: nil, table: nil)
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
-            target: self, action: #selector(ViewController.add))
+            target: self, action: #selector(MainViewController.add))
 
         edgesForExtendedLayout = UIRectEdge.None
+
+        tableView.dataSource = self
+        tableView.delegate = self
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -33,30 +41,25 @@ class ViewController: UITableViewController {
         // TODO Refresh list
     }
 
-    func add() {
-        presentViewController(UINavigationController(rootViewController:AddViewController()), animated: true, completion: nil)
-    }
-
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // TODO
-        return 0
+        return tableView.numberOfSections
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // TODO
-        return 0
+        return tableView.numberOfRowsInSection(section)
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        // TODO Reuse identifier
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
-
         // TODO
-
-        return cell
+        return tableView.cellForRowAtIndexPath(indexPath)!
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         // TODO
+    }
+
+    func add() {
+        presentViewController(UINavigationController(rootViewController:AddNoteViewController()), animated: true, completion: nil)
     }
 }

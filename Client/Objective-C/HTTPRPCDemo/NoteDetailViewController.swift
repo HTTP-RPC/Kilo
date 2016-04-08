@@ -13,21 +13,25 @@
 //
 
 import UIKit
+import MarkupKit
+import HTTPRPC
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
+class NoteDetailViewController: UITableViewController {
+    override func loadView() {
+        view = LMViewBuilder.viewWithName("NoteDetailView", owner: self, root: nil)
+    }
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        window = UIWindow()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        window!.rootViewController = UINavigationController(rootViewController: MainViewController())
+        title = NSBundle.mainBundle().localizedStringForKey("noteDetail", value: nil, table: nil)
 
-        window!.backgroundColor = UIColor.whiteColor()
-        window!.frame = UIScreen.mainScreen().bounds
+        edgesForExtendedLayout = UIRectEdge.None
+    }
 
-        window!.makeKeyAndVisible()
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
 
-        return true
+        // TODO
     }
 }
