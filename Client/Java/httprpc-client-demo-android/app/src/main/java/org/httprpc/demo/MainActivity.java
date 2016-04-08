@@ -14,6 +14,7 @@
 
 package org.httprpc.demo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -35,13 +36,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        // TODO Refresh list
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         boolean result;
         switch (id) {
             case R.id.add_note_item: {
-                // TODO
+                startActivity(new Intent(this, AddNoteActivity.class));
 
                 result = true;
 
