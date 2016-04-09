@@ -66,7 +66,7 @@
 		</data>
 		<key>Headers/LMTableView.h</key>
 		<data>
-		g/NEv0V8+aOVpsrT1esIFKKIiyY=
+		ZCho+feFBgBnLAAAtj40FiEIYjA=
 		</data>
 		<key>Headers/LMTableViewCell.h</key>
 		<data>
@@ -78,7 +78,7 @@
 		</data>
 		<key>Headers/MarkupKit.h</key>
 		<data>
-		RE3hpwWpZEbSHlequEFTxUag0uQ=
+		jFLOenmpb3iF/OtI6k1a9v7I3og=
 		</data>
 		<key>Headers/NSString+Markup.h</key>
 		<data>
@@ -87,14 +87,6 @@
 		<key>Headers/UIButton+Markup.h</key>
 		<data>
 		dy/Z0Q2RF+a/KYBil8qYhJZAwNI=
-		</data>
-		<key>Headers/UICollectionView+Markup.h</key>
-		<data>
-		RZObtXHb1mFL7Q+9N/bbjQBXI6E=
-		</data>
-		<key>Headers/UICollectionViewFlowLayout+Markup.h</key>
-		<data>
-		yGy6VGUpkFOssvg9wWzBcnOfk10=
 		</data>
 		<key>Headers/UIPickerView+Markup.h</key>
 		<data>
@@ -118,7 +110,7 @@
 		</data>
 		<key>Headers/UITableView+Markup.h</key>
 		<data>
-		0eXRYey9bT4todRa5SMW1/DgFRE=
+		OPGJrb6nRXyi+H7tTCjyFljgLZk=
 		</data>
 		<key>Headers/UITableViewCell+Markup.h</key>
 		<data>
@@ -142,7 +134,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		oheSYc0l5BR7zDQ4UOVN3PGadpk=
+		8/tR6ZIuUP8SYFHVgNp1AxZxtKg=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -152,145 +144,368 @@
 	<key>files2</key>
 	<dict>
 		<key>Headers/CALayer+Markup.h</key>
-		<data>
-		3g9J5GVUk0Xo/Rb+qhMBNI/gmJ4=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			3g9J5GVUk0Xo/Rb+qhMBNI/gmJ4=
+			</data>
+			<key>hash2</key>
+			<data>
+			CA5p00E5/iGGEqpTZUdh6Forj1npe9GigdxCAjNirG0=
+			</data>
+		</dict>
 		<key>Headers/LMBoxView.h</key>
-		<data>
-		XcvZKbj7yeNxYiDZlvJSvsbZXUo=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			XcvZKbj7yeNxYiDZlvJSvsbZXUo=
+			</data>
+			<key>hash2</key>
+			<data>
+			k066i6YExa5HjCDqWAd01evQmNryZDGghvwLuP7K9i4=
+			</data>
+		</dict>
 		<key>Headers/LMCollectionViewCell.h</key>
-		<data>
-		5pjnxAaI2fk/e1MScPO3orTYykc=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			5pjnxAaI2fk/e1MScPO3orTYykc=
+			</data>
+			<key>hash2</key>
+			<data>
+			S6ZoLbtnhHuwCwshVi4eR7r0rZ7B01no4dC/jASX2RQ=
+			</data>
+		</dict>
 		<key>Headers/LMColumnView.h</key>
-		<data>
-		2abdeDM1++lpJMKs5Anu1Zp+g7I=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			2abdeDM1++lpJMKs5Anu1Zp+g7I=
+			</data>
+			<key>hash2</key>
+			<data>
+			FRZ0KwrxEOMfnEcvoEUYeXtaP9Z1g8YS3+ODpF7zB8A=
+			</data>
+		</dict>
 		<key>Headers/LMGradientView.h</key>
-		<data>
-		Hh39uCipE96My4WG/42+pKKWl2s=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			Hh39uCipE96My4WG/42+pKKWl2s=
+			</data>
+			<key>hash2</key>
+			<data>
+			qNhQ75QSVbxGG/q72mlXpBLHhK/W9MiYvgEMmlq3YQo=
+			</data>
+		</dict>
 		<key>Headers/LMLayerView.h</key>
-		<data>
-		/02MDH3YiXSfFmBoxRsD2W5Jaxw=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			/02MDH3YiXSfFmBoxRsD2W5Jaxw=
+			</data>
+			<key>hash2</key>
+			<data>
+			qK0vF7hgtm0sNuPO1PpZhvMN0UpbzD6MrQngbuciOWA=
+			</data>
+		</dict>
 		<key>Headers/LMLayoutView.h</key>
-		<data>
-		iRMWPj9m9Y5KCA3SmCq8HoFu8Vc=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			iRMWPj9m9Y5KCA3SmCq8HoFu8Vc=
+			</data>
+			<key>hash2</key>
+			<data>
+			zNyYQYapoZcl0KsvIMJHGdKJweWtT7AWOMrJsbODyrU=
+			</data>
+		</dict>
 		<key>Headers/LMLinearGradientView.h</key>
-		<data>
-		h0FJkigJSx6NxpUm54B9z83eIag=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			h0FJkigJSx6NxpUm54B9z83eIag=
+			</data>
+			<key>hash2</key>
+			<data>
+			zkxTXLilXqoQyXAgkEdifBq9Vu3ZI62irToanZ198Lg=
+			</data>
+		</dict>
 		<key>Headers/LMPageView.h</key>
-		<data>
-		Tnh20gdf4QiopaCFa5Xd0JxXP58=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			Tnh20gdf4QiopaCFa5Xd0JxXP58=
+			</data>
+			<key>hash2</key>
+			<data>
+			PT3jGTTcxqbawArluUHhnFk85DbUpUkcs55ja47AgOA=
+			</data>
+		</dict>
 		<key>Headers/LMPickerView.h</key>
-		<data>
-		IlHe8vI3KLU8CaZoNHht1bX/xTo=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			IlHe8vI3KLU8CaZoNHht1bX/xTo=
+			</data>
+			<key>hash2</key>
+			<data>
+			XxAtxZfp0lj69/PXljh23I828U42oEyuJs3XJahn/dk=
+			</data>
+		</dict>
 		<key>Headers/LMPlayerView.h</key>
-		<data>
-		OLuFgBDd3x/jwnWU0J8sg1wVEJM=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			OLuFgBDd3x/jwnWU0J8sg1wVEJM=
+			</data>
+			<key>hash2</key>
+			<data>
+			51ez6vcS9TBghJCwPZFvD5Yu3X26RbfGvRtIeFWooSk=
+			</data>
+		</dict>
 		<key>Headers/LMRadialGradientView.h</key>
-		<data>
-		+DaXaUyF22lEaNXh0/V80gKO2Og=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			+DaXaUyF22lEaNXh0/V80gKO2Og=
+			</data>
+			<key>hash2</key>
+			<data>
+			adVljRnhpSIkEkSSmQDAM34xl74qDP+ShCCi6ds8iZ8=
+			</data>
+		</dict>
 		<key>Headers/LMRowView.h</key>
-		<data>
-		Lhf/O9cWul/LO6EWzIdHiW/JpVI=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			Lhf/O9cWul/LO6EWzIdHiW/JpVI=
+			</data>
+			<key>hash2</key>
+			<data>
+			emMup0NtXL1z9XQvVHksh+U+hk4ZgPoQJM6Qj6m567A=
+			</data>
+		</dict>
 		<key>Headers/LMScrollView.h</key>
-		<data>
-		bSabePgdNslu1PhsPghbDySNHvo=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			bSabePgdNslu1PhsPghbDySNHvo=
+			</data>
+			<key>hash2</key>
+			<data>
+			3nRlvnErEw8IganIeiuwgBMxXFuEjqurXr/V8zO4z4s=
+			</data>
+		</dict>
 		<key>Headers/LMSpacer.h</key>
-		<data>
-		3V7KC1YEPBYtIL+XtwAN8F04ocg=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			3V7KC1YEPBYtIL+XtwAN8F04ocg=
+			</data>
+			<key>hash2</key>
+			<data>
+			m50sEhEj0idRyt2uOSBHJlhBJF6KHU7JzM7SUfTEocg=
+			</data>
+		</dict>
 		<key>Headers/LMTableView.h</key>
-		<data>
-		g/NEv0V8+aOVpsrT1esIFKKIiyY=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			ZCho+feFBgBnLAAAtj40FiEIYjA=
+			</data>
+			<key>hash2</key>
+			<data>
+			9n0z9PdUoDy6zMJ1UpiA17Q+oBxo7QmkJPL72UBMl8Q=
+			</data>
+		</dict>
 		<key>Headers/LMTableViewCell.h</key>
-		<data>
-		TV+lU4YVeKJZl5Hwys7QtUTlPjM=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			TV+lU4YVeKJZl5Hwys7QtUTlPjM=
+			</data>
+			<key>hash2</key>
+			<data>
+			Qkfa6ldw4EXXUzqBEb4vn6sMQaLhBVydd1y+Y0BJzRk=
+			</data>
+		</dict>
 		<key>Headers/LMViewBuilder.h</key>
-		<data>
-		rYZAoO9sOTlrMMwaU2ygUx1G0r8=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			rYZAoO9sOTlrMMwaU2ygUx1G0r8=
+			</data>
+			<key>hash2</key>
+			<data>
+			f1+uu8iHC5GzNTHXQnIXHQ4E+OA/16IF4OZYE/qYK9Y=
+			</data>
+		</dict>
 		<key>Headers/MarkupKit.h</key>
-		<data>
-		RE3hpwWpZEbSHlequEFTxUag0uQ=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			jFLOenmpb3iF/OtI6k1a9v7I3og=
+			</data>
+			<key>hash2</key>
+			<data>
+			XsBfymkKo/kX66gXYpKt2+/MktML71pGo82Di5rbN2E=
+			</data>
+		</dict>
 		<key>Headers/NSString+Markup.h</key>
-		<data>
-		64bj+vaS3i4so6prcYsd+y3vAdg=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			64bj+vaS3i4so6prcYsd+y3vAdg=
+			</data>
+			<key>hash2</key>
+			<data>
+			MHAS51Y3zBelCcroScmZdDcJeajycQL+O3/HUs4ENJ8=
+			</data>
+		</dict>
 		<key>Headers/UIButton+Markup.h</key>
-		<data>
-		dy/Z0Q2RF+a/KYBil8qYhJZAwNI=
-		</data>
-		<key>Headers/UICollectionView+Markup.h</key>
-		<data>
-		RZObtXHb1mFL7Q+9N/bbjQBXI6E=
-		</data>
-		<key>Headers/UICollectionViewFlowLayout+Markup.h</key>
-		<data>
-		yGy6VGUpkFOssvg9wWzBcnOfk10=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			dy/Z0Q2RF+a/KYBil8qYhJZAwNI=
+			</data>
+			<key>hash2</key>
+			<data>
+			CHkNjPZgas65rtkprRwzgNA5RlFKvVBfFyXh8Gd/5W0=
+			</data>
+		</dict>
 		<key>Headers/UIPickerView+Markup.h</key>
-		<data>
-		xElIhOpK1zi89pC5amatY7R8IHo=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			xElIhOpK1zi89pC5amatY7R8IHo=
+			</data>
+			<key>hash2</key>
+			<data>
+			aitOhxm1Ap7TrHU5W5KC0dk2wu7npQ7osqUlfhxPG3c=
+			</data>
+		</dict>
 		<key>Headers/UIProgressView+Markup.h</key>
-		<data>
-		Y8PzAwukxjyMRkbhqCMOPec8PU8=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			Y8PzAwukxjyMRkbhqCMOPec8PU8=
+			</data>
+			<key>hash2</key>
+			<data>
+			Qneu8DkT62CM2AKKbKVqsZams7XbTnHMMO3nhk6vG40=
+			</data>
+		</dict>
 		<key>Headers/UIScrollView+Markup.h</key>
-		<data>
-		kjIFCoQwWN31fIXbBtfy01MmhS8=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			kjIFCoQwWN31fIXbBtfy01MmhS8=
+			</data>
+			<key>hash2</key>
+			<data>
+			HnACNU6n1p2Njs2o4Hd735coL1HWa09Mrd7lrumZbGE=
+			</data>
+		</dict>
 		<key>Headers/UISegmentedControl+Markup.h</key>
-		<data>
-		oLWBjsxT3ol2RRiDuBg80STUm3E=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			oLWBjsxT3ol2RRiDuBg80STUm3E=
+			</data>
+			<key>hash2</key>
+			<data>
+			7OJVHe6QCEGN5VAaa0xiDCjABNiyEdd2gfLg1Y0xYbI=
+			</data>
+		</dict>
 		<key>Headers/UIStackView+Markup.h</key>
-		<data>
-		3hioi9q9MEZpt7p+LEbsfuxDQCw=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			3hioi9q9MEZpt7p+LEbsfuxDQCw=
+			</data>
+			<key>hash2</key>
+			<data>
+			S+J1ZGCD4FXaUBzOK8f1ft4zHqUr9qV/fVs6yP2OO5c=
+			</data>
+		</dict>
 		<key>Headers/UITableView+Markup.h</key>
-		<data>
-		0eXRYey9bT4todRa5SMW1/DgFRE=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			OPGJrb6nRXyi+H7tTCjyFljgLZk=
+			</data>
+			<key>hash2</key>
+			<data>
+			qwy4hDTLMP3hwA7OD/rak0+JaA5W7aetmIfNKGhSJVM=
+			</data>
+		</dict>
 		<key>Headers/UITableViewCell+Markup.h</key>
-		<data>
-		mNvZ+FOMfexT9GVP0ubUEKdzcyU=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			mNvZ+FOMfexT9GVP0ubUEKdzcyU=
+			</data>
+			<key>hash2</key>
+			<data>
+			OxorDoqvbdCdN7bVDjiHgWwR+Nc6G0SzxayPSl1a16w=
+			</data>
+		</dict>
 		<key>Headers/UITextField+Markup.h</key>
-		<data>
-		TkxvB3eTfZPMQrOSiNJn42GFanc=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			TkxvB3eTfZPMQrOSiNJn42GFanc=
+			</data>
+			<key>hash2</key>
+			<data>
+			p+MQL6L1FRtQ11puskA+qKbRD2LBVT4QFCozSXkvhHs=
+			</data>
+		</dict>
 		<key>Headers/UIToolbar+Markup.h</key>
-		<data>
-		KwQ6Tj8s6u7KXKjdt+62pYl/iUE=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			KwQ6Tj8s6u7KXKjdt+62pYl/iUE=
+			</data>
+			<key>hash2</key>
+			<data>
+			I8NNifL7oml1q1WkfqyIE0b4cKcz8HW6fmbVfOozfEE=
+			</data>
+		</dict>
 		<key>Headers/UIView+Markup.h</key>
-		<data>
-		enlQeAhJdQe/ab1GI9NltnaNiZI=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			enlQeAhJdQe/ab1GI9NltnaNiZI=
+			</data>
+			<key>hash2</key>
+			<data>
+			bPvY3cjRIYA/XCpueSwGHo6fMYb9WuRSV17GB80MNRE=
+			</data>
+		</dict>
 		<key>Headers/UIVisualEffectView+Markup.h</key>
-		<data>
-		OkCX5z08l5PlgHjtgppLhQ9STiY=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			OkCX5z08l5PlgHjtgppLhQ9STiY=
+			</data>
+			<key>hash2</key>
+			<data>
+			UqJY3K5YFnhPTm3rCQODnNcULsZ1g+12RD+LwVbiZLM=
+			</data>
+		</dict>
 		<key>Modules/module.modulemap</key>
-		<data>
-		t/or1n0dnFIb8sMpPvQh6+QGVWM=
-		</data>
+		<dict>
+			<key>hash</key>
+			<data>
+			t/or1n0dnFIb8sMpPvQh6+QGVWM=
+			</data>
+			<key>hash2</key>
+			<data>
+			S1sH4wJ7tPj+BcpfqujSPsclsOD9i4NyxSnZqB1T0kc=
+			</data>
+		</dict>
 	</dict>
 	<key>rules</key>
 	<dict>

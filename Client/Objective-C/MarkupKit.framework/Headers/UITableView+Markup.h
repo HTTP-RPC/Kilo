@@ -19,16 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UITableView (Markup)
 
 /**
- * Creates a plain table view.
- */
-+ (UITableView *)plainTableView;
-
-/**
- * Creates a grouped table view.
- */
-+ (UITableView *)groupedTableView;
-
-/**
  * Returns the name of a section.
  *
  * @param section The section index.
