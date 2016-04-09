@@ -17,20 +17,20 @@ import MarkupKit
 import HTTPRPC
 
 class ViewController: UITableViewController, NSURLSessionDataDelegate {
-    @IBOutlet weak var addCell: UITableViewCell!
-    @IBOutlet weak var addValuesCell: UITableViewCell!
-    @IBOutlet weak var invertValueCell: UITableViewCell!
-    @IBOutlet weak var getCharactersCell: UITableViewCell!
-    @IBOutlet weak var getSelectionCell: UITableViewCell!
-    @IBOutlet weak var getMapCell: UITableViewCell!
-    @IBOutlet weak var getStatisticsCell: UITableViewCell!
-    @IBOutlet weak var getTestDataCell: UITableViewCell!
-    @IBOutlet weak var getVoidCell: UITableViewCell!
-    @IBOutlet weak var getNullCell: UITableViewCell!
-    @IBOutlet weak var getLocaleCodeCell: UITableViewCell!
-    @IBOutlet weak var getUserNameCell: UITableViewCell!
-    @IBOutlet weak var isUserInRoleCell: UITableViewCell!
-    @IBOutlet weak var getAttachmentInfoCell: UITableViewCell!
+    @IBOutlet var addCell: UITableViewCell!
+    @IBOutlet var addValuesCell: UITableViewCell!
+    @IBOutlet var invertValueCell: UITableViewCell!
+    @IBOutlet var getCharactersCell: UITableViewCell!
+    @IBOutlet var getSelectionCell: UITableViewCell!
+    @IBOutlet var getMapCell: UITableViewCell!
+    @IBOutlet var getStatisticsCell: UITableViewCell!
+    @IBOutlet var getTestDataCell: UITableViewCell!
+    @IBOutlet var getVoidCell: UITableViewCell!
+    @IBOutlet var getNullCell: UITableViewCell!
+    @IBOutlet var getLocaleCodeCell: UITableViewCell!
+    @IBOutlet var getUserNameCell: UITableViewCell!
+    @IBOutlet var isUserInRoleCell: UITableViewCell!
+    @IBOutlet var getAttachmentInfoCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
