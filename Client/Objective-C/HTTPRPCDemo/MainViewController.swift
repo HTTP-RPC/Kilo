@@ -17,6 +17,13 @@ import MarkupKit
 import HTTPRPC
 
 class MainViewController: UITableViewController {
+    var notes: [[String: AnyObject]] = []
+
+    // TODO Move this to AppDelegate; see PDB example
+    var serviceProxy: WSWebServiceProxy!
+
+    static let NoteCellIdentifier = "noteCell"
+
     override func loadView() {
         view = LMViewBuilder.viewWithName("MainView", owner: self, root: nil)
     }
@@ -33,6 +40,8 @@ class MainViewController: UITableViewController {
 
         tableView.dataSource = self
         tableView.delegate = self
+
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: MainViewController.NoteCellIdentifier)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -46,13 +55,16 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // TODO
-        return tableView.numberOfRowsInSection(section)
+        return notes.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        // TODO
-        return tableView.cellForRowAtIndexPath(indexPath)!
+        let cell = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)!
+
+        cell.textLabel!.text = notes[indexPath.row]["subject"] as? String
+        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+
+        return cell
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
