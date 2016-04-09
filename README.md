@@ -642,7 +642,7 @@ For example, the following class implements a modifier that converts values to u
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template processors.
 
-Custom modifiers are registered with the HTTP-RPC runtime via a properties file. Keys in this file represent modifier names, and values represent the fully-qualified name of the implementing class. The file must be named _/META-INF/httprpc/modifiers.properties_ and must be available on the application's classpath. 
+Custom modifiers are registered with the HTTP-RPC runtime via a properties file. Keys in this file represent modifier names, and values represent the fully qualified name of the implementing class. The file must be named _/META-INF/httprpc/modifiers.properties_ and must be available on the application's classpath. 
 
 For example, the following _modifiers.properties_ file associates the `upper` modifier with the `UpperCaseModifier` class:
 
@@ -801,7 +801,7 @@ The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC 
 * `baseURL` - an instance of `java.net.URL` representing the base URL of the service
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
 
-The base URL represents the fully-qualified name of the service. Method names are appended to this URL during execution. 
+The base URL represents the fully qualified name of the service. Method names are appended to this URL during execution. 
 
 The executor service is used to schedule remote method requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
 
@@ -884,7 +884,7 @@ For example, the following Android-specific code ensures that all result handler
         }
     });
 
-Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command-line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
+Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ## Result Class
 `Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following constructor that is used to populate Java Bean property values from map entries:
