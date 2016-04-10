@@ -17,29 +17,19 @@ import MarkupKit
 import HTTPRPC
 
 class MainViewController: UITableViewController {
+    var listNotesTask: NSURLSessionDataTask!
+
     var notes: [[String: AnyObject]] = []
 
-    // TODO Move this to AppDelegate; see PDB example
-    var serviceProxy: WSWebServiceProxy!
-
     static let NoteCellIdentifier = "noteCell"
-
-    override func loadView() {
-        view = LMViewBuilder.viewWithName("MainView", owner: self, root: nil)
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSBundle.mainBundle().localizedStringForKey("notes", value: nil, table: nil)
+        title = "Notes"
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
             target: self, action: #selector(MainViewController.add))
-
-        edgesForExtendedLayout = UIRectEdge.None
-
-        tableView.dataSource = self
-        tableView.delegate = self
 
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: MainViewController.NoteCellIdentifier)
     }
@@ -47,11 +37,35 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
-        // TODO Refresh list
+        listNotesTask = AppDelegate.serviceProxy.invoke("listNotes") {(result, error) in
+            if (error == nil) {
+                self.notes = result as! [[String: AnyObject]]
+
+                self.tableView.reloadData()
+            } else {
+                let alertController = UIAlertController(title: error!.domain,
+                    message: error!.localizedDescription,
+                    preferredStyle: .Alert)
+
+                alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+
+                self.presentViewController(alertController, animated: true, completion: nil)
+            }
+
+            self.listNotesTask = nil
+        }
+    }
+
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if (listNotesTask != nil) {
+            listNotesTask.cancel()
+        }
     }
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return tableView.numberOfSections
+        return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -68,7 +82,7 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        // TODO
+        // TODO Push note detail view controller
     }
 
     func add() {

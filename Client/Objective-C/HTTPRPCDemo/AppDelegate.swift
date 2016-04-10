@@ -13,10 +13,31 @@
 //
 
 import UIKit
+import HTTPRPC
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    private(set) static var serviceProxy: WSWebServiceProxy!
+
     var window: UIWindow?
+
+    func application(application: UIApplication, willFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
+        // Create the URL session
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
+
+        let delegateQueue = NSOperationQueue()
+        delegateQueue.maxConcurrentOperationCount = 10
+
+        let session = NSURLSession(configuration: configuration, delegate: nil, delegateQueue: delegateQueue)
+
+        // Initialize the web service proxy
+        let baseURL = NSURL(string: "http://localhost:8080/httprpc-server-demo/notes/")
+
+        AppDelegate.serviceProxy = WSWebServiceProxy(session: session, baseURL: baseURL!)
+
+        return true
+    }
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         window = UIWindow()
