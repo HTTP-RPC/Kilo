@@ -26,9 +26,6 @@ class AddNoteViewController: UITableViewController {
 
         title = NSBundle.mainBundle().localizedStringForKey("addNote", value: nil, table: nil)
 
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain,
-            target: nil, action: nil)
-
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel,
             target: self, action: #selector(AddNoteViewController.cancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done,
