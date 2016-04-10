@@ -26,7 +26,7 @@ class MainViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Notes"
+        title = NSBundle.mainBundle().localizedStringForKey("notes", value: nil, table: nil)
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
             target: self, action: #selector(MainViewController.add))
@@ -47,7 +47,8 @@ class MainViewController: UITableViewController {
                     message: error!.localizedDescription,
                     preferredStyle: .Alert)
 
-                alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                alertController.addAction(UIAlertAction(title: NSBundle.mainBundle().localizedStringForKey("ok", value: nil, table: nil),
+                    style: .Default, handler: nil))
 
                 self.presentViewController(alertController, animated: true, completion: nil)
             }
@@ -82,7 +83,11 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        // TODO Push note detail view controller
+        let noteDetailViewController = NoteDetailViewController()
+
+        noteDetailViewController.noteID = notes[indexPath.row]["id"] as! Int
+
+        navigationController!.pushViewController(noteDetailViewController, animated: true)
     }
 
     func add() {

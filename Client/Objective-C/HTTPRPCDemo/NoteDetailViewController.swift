@@ -17,6 +17,8 @@ import MarkupKit
 import HTTPRPC
 
 class NoteDetailViewController: UITableViewController {
+    var noteID: Int!
+
     override func loadView() {
         view = LMViewBuilder.viewWithName("NoteDetailView", owner: self, root: nil)
     }
@@ -25,8 +27,6 @@ class NoteDetailViewController: UITableViewController {
         super.viewDidLoad()
 
         title = NSBundle.mainBundle().localizedStringForKey("noteDetail", value: nil, table: nil)
-
-        edgesForExtendedLayout = UIRectEdge.None
     }
 
     override func viewWillAppear(animated: Bool) {
