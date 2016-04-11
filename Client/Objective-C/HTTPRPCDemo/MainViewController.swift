@@ -73,7 +73,7 @@ class MainViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let message = notes[indexPath.row]["message"] as? String
-        let date = NSDate(timeIntervalSince1970: notes[indexPath.row]["date"] as! Double)
+        let date = NSDate(timeIntervalSince1970: notes[indexPath.row]["date"] as! Double / 1000)
 
         var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)
 
