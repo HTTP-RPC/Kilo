@@ -15,5 +15,7 @@ limitations under the License.
 -->
 
 <LMTableView style="groupedTableView">
-    <!-- TODO -->
+    <LMTableViewCell>
+        <UITextView id="messageTextView" height="240" font="System 14"/>
+    </LMTableViewCell>
 </LMTableView>

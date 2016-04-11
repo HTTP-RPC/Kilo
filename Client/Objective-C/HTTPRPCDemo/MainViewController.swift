@@ -88,11 +88,9 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath) {
-        
-    }
-
-    override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
-        // TODO Delete row and reload table
+        if (editingStyle == .Delete) {
+            // TODO Delete the row; reload table data when complete
+        }
     }
 
     func add() {

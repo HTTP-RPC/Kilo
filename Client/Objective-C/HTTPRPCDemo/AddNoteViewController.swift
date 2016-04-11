@@ -17,6 +17,8 @@ import MarkupKit
 import HTTPRPC
 
 class AddNoteViewController: UITableViewController {
+    var messageTextView: UITextView!
+    
     override func loadView() {
         view = LMViewBuilder.viewWithName("AddNoteView", owner: self, root: nil)
     }
@@ -37,7 +39,7 @@ class AddNoteViewController: UITableViewController {
     }
 
     func done() {
-        // TODO
+        // TODO Add the row; dismiss controller when complete
 
         dismissViewControllerAnimated(true, completion: nil)
     }
