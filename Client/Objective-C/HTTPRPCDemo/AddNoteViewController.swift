@@ -39,8 +39,16 @@ class AddNoteViewController: UITableViewController {
     }
 
     func done() {
-        // TODO Add the row; dismiss controller when complete
+        AppDelegate.serviceProxy.invoke("addNote", withArguments: ["message": messageTextView.text]) {(result, error) in
+            // TODO If the controller has been dismissed, ignore
 
-        dismissViewControllerAnimated(true, completion: nil)
+            if (error == nil) {
+                self.dismissViewControllerAnimated(true, completion: nil)
+            } else {
+                // TODO Handle error
+            }
+        }
+
+
     }
 }
