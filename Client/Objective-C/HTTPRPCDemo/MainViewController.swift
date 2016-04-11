@@ -90,6 +90,14 @@ class MainViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath) {
         if (editingStyle == .Delete) {
             // TODO Delete the row; reload table data when complete
+
+            tableView.beginUpdates()
+
+            notes.removeAtIndex(indexPath.row)
+
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+
+            tableView.endUpdates()
         }
     }
 
