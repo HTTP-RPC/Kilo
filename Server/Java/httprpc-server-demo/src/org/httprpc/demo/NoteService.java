@@ -33,25 +33,20 @@ public class NoteService extends WebService {
 
     private static final String ID_KEY = "id";
     private static final String DATE_KEY = "date";
-    private static final String SUBJECT_KEY = "subject";
-    private static final String BODY_KEY = "body";
+    private static final String MESSAGE_KEY = "message";
 
     /**
      * Adds a note to the database.
      *
-     * @param subject
-     * The note subject.
-     *
-     * @param body
-     * The note body.
+     * @param message
+     * The note text.
      */
-    public void addNote(String subject, String body) {
+    public void addNote(String message) {
         synchronized (notes) {
             notes.put(nextNoteID, mapOf(
                 entry(ID_KEY, nextNoteID),
                 entry(DATE_KEY, new Date().getTime()),
-                entry(SUBJECT_KEY, subject),
-                entry(BODY_KEY, body))
+                entry(MESSAGE_KEY, message))
             );
 
             nextNoteID++;
@@ -85,30 +80,11 @@ public class NoteService extends WebService {
                 noteList.add(mapOf(
                     entry(ID_KEY, note.get(ID_KEY)),
                     entry(DATE_KEY, note.get(DATE_KEY)),
-                    entry(SUBJECT_KEY, note.get(SUBJECT_KEY))
+                    entry(MESSAGE_KEY, note.get(MESSAGE_KEY))
                 ));
             }
         }
 
         return noteList;
-    }
-
-    /**
-     * Retrieves a note detail.
-     *
-     * @param id
-     * The note ID.
-     *
-     * @return
-     * The note detail.
-     */
-    @Template("note_detail.html")
-    public Map<String, ?> getNoteDetail(int id) {
-        Map<String, ?> noteDetail;
-        synchronized (notes) {
-            noteDetail = notes.get(id);
-        }
-
-        return noteDetail;
     }
 }

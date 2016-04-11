@@ -76,18 +76,9 @@ class MainViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)!
 
-        cell.textLabel!.text = notes[indexPath.row]["subject"] as? String
-        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+        cell.textLabel!.text = notes[indexPath.row]["message"] as? String
 
         return cell
-    }
-
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let noteDetailViewController = NoteDetailViewController()
-
-        noteDetailViewController.noteID = notes[indexPath.row]["id"] as! Int
-
-        navigationController!.pushViewController(noteDetailViewController, animated: true)
     }
 
     func add() {

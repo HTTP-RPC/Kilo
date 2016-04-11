@@ -4,7 +4,11 @@
 <head>
 <body>
 {{#.}}
-<p><a href="note_detail.html?id={{id:^url}}">{{subject}}</a>, {{date:format=shortDate}}, {{date:format=shortTime}}</p>
+<p>
+<em>{{date:format=longDate}}, {{date:format=shortTime}}</em>
+<br/>
+{{message}}
+</p>
 {{/.}}
 </body>
 </html>
