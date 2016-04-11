@@ -87,6 +87,14 @@ class MainViewController: UITableViewController {
         return cell
     }
 
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath) {
+        
+    }
+
+    override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+        // TODO Delete row and reload table
+    }
+
     func add() {
         presentViewController(UINavigationController(rootViewController:AddNoteViewController()), animated: true, completion: nil)
     }
