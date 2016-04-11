@@ -17,8 +17,6 @@ import MarkupKit
 import HTTPRPC
 
 class MainViewController: UITableViewController {
-    var listNotesTask: NSURLSessionDataTask!
-
     var notes: [[String: AnyObject]] = []
 
     static let NoteCellIdentifier = "noteCell"
@@ -35,31 +33,16 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
-        listNotesTask = AppDelegate.serviceProxy.invoke("listNotes") {(result, error) in
+        AppDelegate.serviceProxy.invoke("listNotes") {(result, error) in
+            // TODO If the controller has been dismissed, ignore
+
             if (error == nil) {
                 self.notes = result as! [[String: AnyObject]]
 
                 self.tableView.reloadData()
             } else {
-                let alertController = UIAlertController(title: error!.domain,
-                    message: error!.localizedDescription,
-                    preferredStyle: .Alert)
-
-                alertController.addAction(UIAlertAction(title: NSBundle.mainBundle().localizedStringForKey("ok", value: nil, table: nil),
-                    style: .Default, handler: nil))
-
-                self.presentViewController(alertController, animated: true, completion: nil)
+                // TODO Handle error
             }
-
-            self.listNotesTask = nil
-        }
-    }
-
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if (listNotesTask != nil) {
-            listNotesTask.cancel()
         }
     }
 
@@ -89,15 +72,21 @@ class MainViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath) {
         if (editingStyle == .Delete) {
-            // TODO Delete the row; reload table data when complete
+            let id = notes[indexPath.row]["id"] as! Int
 
-            tableView.beginUpdates()
+            AppDelegate.serviceProxy.invoke("deleteNote", withArguments: ["id": id]) {(result, error) in
+                // TODO If the controller has been dismissed, ignore
 
-            notes.removeAtIndex(indexPath.row)
+                if (error == nil) {
+                    self.notes.removeAtIndex(indexPath.row)
 
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-
-            tableView.endUpdates()
+                    tableView.beginUpdates()
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                    tableView.endUpdates()
+                } else {
+                    // TODO Handle error
+                }
+            }
         }
     }
 
