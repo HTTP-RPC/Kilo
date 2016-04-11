@@ -30,8 +30,6 @@ class MainViewController: UITableViewController {
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
             target: self, action: #selector(MainViewController.add))
-
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: MainViewController.NoteCellIdentifier)
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -74,9 +72,17 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)!
+        let message = notes[indexPath.row]["message"] as? String
+        let date = NSDate(timeIntervalSince1970: notes[indexPath.row]["date"] as! Double)
 
-        cell.textLabel!.text = notes[indexPath.row]["message"] as? String
+        var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)
+
+        if (cell == nil) {
+            cell = UITableViewCell(style: .Subtitle, reuseIdentifier: MainViewController.NoteCellIdentifier)
+        }
+
+        cell.textLabel!.text = message
+        cell.detailTextLabel!.text = NSDateFormatter.localizedStringFromDate(date, dateStyle: .ShortStyle, timeStyle: .MediumStyle)
 
         return cell
     }

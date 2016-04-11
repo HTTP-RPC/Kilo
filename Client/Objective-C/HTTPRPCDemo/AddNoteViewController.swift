@@ -30,8 +30,6 @@ class AddNoteViewController: UITableViewController {
             target: self, action: #selector(AddNoteViewController.cancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done,
             target: self, action: #selector(AddNoteViewController.done))
-
-        edgesForExtendedLayout = UIRectEdge.None
     }
 
     func cancel() {
