@@ -20,10 +20,5 @@
             android:name="org.httprpc.demo.AddNoteActivity"
             android:label="@string/add_note">
         </activity>
-
-        <activity
-            android:name="org.httprpc.demo.NoteDetailActivity"
-            android:label="@string/note_detail">
-        </activity>
     </application>
 </manifest>

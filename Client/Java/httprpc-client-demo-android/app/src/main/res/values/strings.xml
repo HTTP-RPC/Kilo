@@ -3,7 +3,6 @@
 
     <string name="add_note">Add Note</string>
     <string name="delete">Delete</string>
-    <string name="note_detail">Note Detail</string>
 
     <string name="ok">OK</string>
 </resources>
