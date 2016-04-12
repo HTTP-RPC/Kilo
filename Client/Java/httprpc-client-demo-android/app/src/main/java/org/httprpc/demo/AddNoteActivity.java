@@ -16,14 +16,56 @@ package org.httprpc.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import org.httprpc.ResultHandler;
+
+import static org.httprpc.WebServiceProxy.entry;
+import static org.httprpc.WebServiceProxy.mapOf;
 
 public class AddNoteActivity extends AppCompatActivity {
+    private EditText messageEditText;
+
+    private static String TAG = AddNoteActivity.class.getName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_add_note);
-    }
 
-    // TODO
+        messageEditText = (EditText)findViewById(R.id.message_edit_text);
+
+        Button cancelButton = (Button)findViewById(R.id.cancel_button);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        Button okButton = (Button) findViewById(R.id.ok_button);
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = messageEditText.getText().toString();
+
+                NotesApplication.getServiceProxy().invoke("addNote", mapOf(entry("message", message)), new ResultHandler<Void>() {
+                    @Override
+                    public void execute(Void result, Exception exception) {
+                        if (exception == null) {
+                            finish();
+                        } else {
+                            Log.e(TAG, exception.getMessage());
+                        }
+                    }
+                });
+            }
+        });
+    }
 }

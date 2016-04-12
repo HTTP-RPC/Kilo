@@ -2,4 +2,6 @@
     <string name="app_name">Notes</string>
     <string name="add_note">Add Note</string>
     <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>
