@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,6 +35,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static org.httprpc.WebServiceProxy.mapOf;
+import static org.httprpc.WebServiceProxy.entry;
 
 public class MainActivity extends AppCompatActivity {
     private ListView noteListView;
@@ -104,11 +106,23 @@ public class MainActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Delete current selection
+                final int position = noteListView.getCheckedItemPosition();
 
-                noteListAdapter.notifyDataSetChanged();
+                int id = ((Number)noteList.get(position).get("id")).intValue();
 
-                deleteButton.setEnabled(false);
+                NotesApplication.getServiceProxy().invoke("deleteNote", mapOf(entry("id", id)), new ResultHandler<Void>() {
+                    @Override
+                    public void execute(Void result, Exception exception) {
+                        if (exception == null) {
+                            noteList.remove(position);
+                            noteListAdapter.notifyDataSetChanged();
+
+                            deleteButton.setEnabled(false);
+                        } else {
+                            Log.e(TAG, exception.getMessage());
+                        }
+                    }
+                });
             }
         });
     }
@@ -126,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteButton.setEnabled(false);
 
-        NotesApplication.getServiceProxy().invoke("listNotes", Collections.EMPTY_MAP, new ResultHandler<List<Map<String, Object>>>() {
+        NotesApplication.getServiceProxy().invoke("listNotes", new ResultHandler<List<Map<String, Object>>>() {
             @Override
             public void execute(List<Map<String, Object>> result, Exception exception) {
                 if (exception == null) {
