@@ -28,20 +28,20 @@ class MainViewController: UITableViewController {
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
             target: self, action: #selector(MainViewController.add))
+
+        tableView.estimatedRowHeight = 2
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
         AppDelegate.serviceProxy.invoke("listNotes") {(result, error) in
-            // TODO If the controller has been dismissed, ignore
-
             if (error == nil) {
                 self.notes = result as! [[String: AnyObject]]
 
                 self.tableView.reloadData()
             } else {
-                // TODO Handle error
+                NSLog(error!.localizedDescription)
             }
         }
     }
@@ -65,6 +65,8 @@ class MainViewController: UITableViewController {
         }
 
         cell.textLabel!.text = message
+        cell.textLabel!.numberOfLines = 0
+
         cell.detailTextLabel!.text = NSDateFormatter.localizedStringFromDate(date, dateStyle: .ShortStyle, timeStyle: .MediumStyle)
 
         return cell
@@ -75,8 +77,6 @@ class MainViewController: UITableViewController {
             let id = notes[indexPath.row]["id"] as! Int
 
             AppDelegate.serviceProxy.invoke("deleteNote", withArguments: ["id": id]) {(result, error) in
-                // TODO If the controller has been dismissed, ignore
-
                 if (error == nil) {
                     self.notes.removeAtIndex(indexPath.row)
 
@@ -84,7 +84,7 @@ class MainViewController: UITableViewController {
                     tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
                     tableView.endUpdates()
                 } else {
-                    // TODO Handle error
+                    NSLog(error!.localizedDescription)
                 }
             }
         }

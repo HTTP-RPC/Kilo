@@ -34,21 +34,23 @@ class AddNoteViewController: UITableViewController {
             target: self, action: #selector(AddNoteViewController.done))
     }
 
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+
+        messageTextView.becomeFirstResponder()
+    }
+
     func cancel() {
         dismissViewControllerAnimated(true, completion: nil)
     }
 
     func done() {
         AppDelegate.serviceProxy.invoke("addNote", withArguments: ["message": messageTextView.text]) {(result, error) in
-            // TODO If the controller has been dismissed, ignore
-
             if (error == nil) {
                 self.dismissViewControllerAnimated(true, completion: nil)
             } else {
-                // TODO Handle error
+                NSLog(error!.localizedDescription)
             }
         }
-
-
     }
 }
