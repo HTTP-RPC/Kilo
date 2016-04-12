@@ -17,7 +17,7 @@ import MarkupKit
 import HTTPRPC
 
 class MainViewController: UITableViewController {
-    var notes: [[String: AnyObject]] = []
+    var noteList: [[String: AnyObject]] = []
 
     static let NoteCellIdentifier = "noteCell"
 
@@ -37,7 +37,7 @@ class MainViewController: UITableViewController {
 
         AppDelegate.serviceProxy.invoke("listNotes") {(result, error) in
             if (error == nil) {
-                self.notes = result as! [[String: AnyObject]]
+                self.noteList = result as! [[String: AnyObject]]
 
                 self.tableView.reloadData()
             } else {
@@ -51,12 +51,12 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notes.count
+        return noteList.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let message = notes[indexPath.row]["message"] as? String
-        let date = NSDate(timeIntervalSince1970: notes[indexPath.row]["date"] as! Double / 1000)
+        let message = noteList[indexPath.row]["message"] as? String
+        let date = NSDate(timeIntervalSince1970: noteList[indexPath.row]["date"] as! Double / 1000)
 
         var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)
 
@@ -74,11 +74,11 @@ class MainViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath) {
         if (editingStyle == .Delete) {
-            let id = notes[indexPath.row]["id"] as! Int
+            let id = noteList[indexPath.row]["id"] as! Int
 
             AppDelegate.serviceProxy.invoke("deleteNote", withArguments: ["id": id]) {(result, error) in
                 if (error == nil) {
-                    self.notes.removeAtIndex(indexPath.row)
+                    self.noteList.removeAtIndex(indexPath.row)
 
                     tableView.beginUpdates()
                     tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)

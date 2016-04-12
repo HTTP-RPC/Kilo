@@ -18,13 +18,14 @@ limitations under the License.
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ListView android:id="@+id/note_list_view"
+    <TextView android:id="@+id/message_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:textSize="16sp"/>
 
-    <Button android:id="@+id/delete_button"
+    <TextView android:id="@+id/date_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"/>
+        android:textSize="12sp"
+        android:lines="1"/>
 </LinearLayout>

@@ -38,7 +38,7 @@ public class NotesApplication extends Application {
 
         URL baseURL;
         try {
-            baseURL = new URL("http://localhost:8080/httprpc-server-demo/notes/");
+            baseURL = new URL("http://10.0.2.2:8080/httprpc-server-demo/notes/");
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }
