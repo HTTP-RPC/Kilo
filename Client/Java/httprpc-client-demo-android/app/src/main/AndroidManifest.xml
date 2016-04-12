@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.httprpc.demo" >
+    package="org.httprpc.demo">
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
+        android:name="org.httprpc.demo.NotesApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
