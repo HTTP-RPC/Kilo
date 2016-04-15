@@ -38,12 +38,12 @@ typedef NS_ENUM(NSInteger, LMTableViewSelectionMode) {
 /**
  * Creates a plain table view.
  */
-+ (UITableView *)plainTableView;
++ (LMTableView *)plainTableView;
 
 /**
  * Creates a grouped table view.
  */
-+ (UITableView *)groupedTableView;
++ (LMTableView *)groupedTableView;
 
 /**
  * Inserts a new section.
