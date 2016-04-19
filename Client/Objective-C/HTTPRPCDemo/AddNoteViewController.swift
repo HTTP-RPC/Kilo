@@ -20,7 +20,7 @@ class AddNoteViewController: UITableViewController {
     var messageTextView: UITextView!
     
     override func loadView() {
-        view = LMViewBuilder.viewWithName("AddNoteView", owner: self, root: nil)
+        view = LMViewBuilder.viewWithName("AddNoteViewController", owner: self, root: nil)
     }
 
     override func viewDidLoad() {

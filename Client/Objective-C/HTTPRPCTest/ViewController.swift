@@ -34,7 +34,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
 
     override func loadView() {
         // Load view from markup
-        view = LMViewBuilder.viewWithName("View", owner: self, root: nil)
+        view = LMViewBuilder.viewWithName("ViewController", owner: self, root: nil)
     }
 
     override func viewDidLoad() {

@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		371C21631CB449BA000CF22B /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
 		371C21641CB449BA000CF22B /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		371C21661CB449D4000CF22B /* View.xml in Resources */ = {isa = PBXBuildFile; fileRef = 371C21651CB449D4000CF22B /* View.xml */; };
+		371C21661CB449D4000CF22B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 371C21651CB449D4000CF22B /* ViewController.xml */; };
 		3741BFDB1CB67E8800CCEA5F /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
 		3741BFDC1CB67E8800CCEA5F /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3741BFDE1CB67E8C00CCEA5F /* HTTPRPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3798614C1BF009D60063212E /* HTTPRPC.framework */; };
@@ -21,7 +21,7 @@
 		37543EE71CB67E1A00006F16 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37543EE61CB67E1A00006F16 /* Assets.xcassets */; };
 		37543EEA1CB67E1A00006F16 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37543EE81CB67E1A00006F16 /* LaunchScreen.storyboard */; };
 		377A31801CB700D9002E314A /* AddNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377A317F1CB700D9002E314A /* AddNoteViewController.swift */; };
-		377A31821CB701BF002E314A /* AddNoteView.xml in Resources */ = {isa = PBXBuildFile; fileRef = 377A31811CB701BF002E314A /* AddNoteView.xml */; };
+		377A31821CB701BF002E314A /* AddNoteViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 377A31811CB701BF002E314A /* AddNoteViewController.xml */; };
 		379861501BF009D60063212E /* HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 3798614F1BF009D60063212E /* HTTPRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		379861591BF00A0E0063212E /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 379861571BF00A0E0063212E /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3798615A1BF00A0E0063212E /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 379861581BF00A0E0063212E /* WSWebServiceProxy.m */; };
@@ -81,7 +81,7 @@
 
 /* Begin PBXFileReference section */
 		371C21621CB449BA000CF22B /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
-		371C21651CB449D4000CF22B /* View.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = View.xml; sourceTree = "<group>"; };
+		371C21651CB449D4000CF22B /* ViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ViewController.xml; sourceTree = "<group>"; };
 		37543EDD1CB67E1A00006F16 /* HTTPRPCDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HTTPRPCDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37543EDF1CB67E1A00006F16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		37543EE11CB67E1A00006F16 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -89,7 +89,7 @@
 		37543EE91CB67E1A00006F16 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		37543EEB1CB67E1A00006F16 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		377A317F1CB700D9002E314A /* AddNoteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddNoteViewController.swift; sourceTree = "<group>"; };
-		377A31811CB701BF002E314A /* AddNoteView.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AddNoteView.xml; sourceTree = "<group>"; };
+		377A31811CB701BF002E314A /* AddNoteViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AddNoteViewController.xml; sourceTree = "<group>"; };
 		3798614C1BF009D60063212E /* HTTPRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTTPRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3798614F1BF009D60063212E /* HTTPRPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPRPC.h; sourceTree = "<group>"; };
 		379861511BF009D60063212E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -142,7 +142,7 @@
 				37543EDF1CB67E1A00006F16 /* AppDelegate.swift */,
 				37543EE11CB67E1A00006F16 /* MainViewController.swift */,
 				377A317F1CB700D9002E314A /* AddNoteViewController.swift */,
-				377A31811CB701BF002E314A /* AddNoteView.xml */,
+				377A31811CB701BF002E314A /* AddNoteViewController.xml */,
 				37543EE61CB67E1A00006F16 /* Assets.xcassets */,
 				37543EE81CB67E1A00006F16 /* LaunchScreen.storyboard */,
 				37543EEB1CB67E1A00006F16 /* Info.plist */,
@@ -188,7 +188,7 @@
 			children = (
 				379861611BF00AB00063212E /* AppDelegate.swift */,
 				379861631BF00AB00063212E /* ViewController.swift */,
-				371C21651CB449D4000CF22B /* View.xml */,
+				371C21651CB449D4000CF22B /* ViewController.xml */,
 				37CF338A1C00A48D00F84C89 /* Statistics.swift */,
 				379861681BF00AB00063212E /* Assets.xcassets */,
 				3798616A1BF00AB00063212E /* LaunchScreen.storyboard */,
@@ -318,7 +318,7 @@
 			files = (
 				37543EEA1CB67E1A00006F16 /* LaunchScreen.storyboard in Resources */,
 				37DC1B5B1CB7DDAE0080F0DE /* Localizable.strings in Resources */,
-				377A31821CB701BF002E314A /* AddNoteView.xml in Resources */,
+				377A31821CB701BF002E314A /* AddNoteViewController.xml in Resources */,
 				37543EE71CB67E1A00006F16 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,7 +336,7 @@
 			files = (
 				3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */,
 				37F954D11CA2B6570058B927 /* test.jpg in Resources */,
-				371C21661CB449D4000CF22B /* View.xml in Resources */,
+				371C21661CB449D4000CF22B /* ViewController.xml in Resources */,
 				37F954CF1CA2B5970058B927 /* test.txt in Resources */,
 				379861691BF00AB00063212E /* Assets.xcassets in Resources */,
 			);
