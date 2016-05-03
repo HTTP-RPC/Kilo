@@ -17,6 +17,17 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * Baseline options.
+ */
+typedef NS_ENUM(NSInteger, LMBaseline) {
+    /** First baseline. */
+	LMBaselineFirst,
+
+    /** Last baseline. */
+	LMBaselineLast
+};
+
+/**
  * Layout view that arranges subviews horizontally in a row.
  */
 @interface LMRowView : LMBoxView
@@ -26,6 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
  * <code>NO</code>.
  */
 @property (nonatomic) BOOL alignToBaseline;
+
+/**
+ * The baseline to which subviews will be aligned when aligning to baseline.
+ * By default, subviews will be aligned to the first baseline.
+ */
+@property (nonatomic) LMBaseline baseline;
 
 @end
 
