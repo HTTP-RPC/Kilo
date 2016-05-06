@@ -19,11 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIButton (Markup)
 
 /**
- * Creates a custom button.
- */
-+ (UIButton *)customButton;
-
-/**
  * Creates a system button.
  */
 + (UIButton *)systemButton;
@@ -49,104 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIButton *)contactAddButton;
 
 /**
- * The button's normal title.
+ * The button's title.
  */
-@property (nonatomic, nullable) NSString *normalTitle;
+@property (nonatomic, nullable) NSString *title;
 
 /**
- * The button's normal title color.
+ * The button's image.
  */
-@property (nonatomic, nullable) UIColor *normalTitleColor;
-
-/**
- * The button's normal title shadow color.
- */
-@property (nonatomic, nullable) UIColor *normalTitleShadowColor;
-
-/**
- * The button's normal image.
- */
-@property (nonatomic, nullable) UIImage *normalImage;
-
-/**
- * The button's normal background image.
- */
-@property (nonatomic, nullable) UIImage *normalBackgroundImage;
-
-/**
- * The button's highlighted title.
- */
-@property (nonatomic, nullable) NSString *highlightedTitle;
-
-/**
- * The button's highlighted title color.
- */
-@property (nonatomic, nullable) UIColor *highlightedTitleColor;
-
-/**
- * The button's highlighted title shadow color.
- */
-@property (nonatomic, nullable) UIColor *highlightedTitleShadowColor;
-
-/**
- * The button's highlighted image.
- */
-@property (nonatomic, nullable) UIImage *highlightedImage;
-
-/**
- * The button's highlighted background image.
- */
-@property (nonatomic, nullable) UIImage *highlightedBackgroundImage;
-
-/**
- * The button's disabled title.
- */
-@property (nonatomic, nullable) NSString *disabledTitle;
-
-/**
- * The button's disabled title color.
- */
-@property (nonatomic, nullable) UIColor *disabledTitleColor;
-
-/**
- * The button's disabled title shadow color.
- */
-@property (nonatomic, nullable) UIColor *disabledTitleShadowColor;
-
-/**
- * The button's disabled image.
- */
-@property (nonatomic, nullable) UIImage *disabledImage;
-
-/**
- * The button's disabled background image.
- */
-@property (nonatomic, nullable) UIImage *disabledBackgroundImage;
-
-/**
- * The button's selected title.
- */
-@property (nonatomic, nullable) NSString *selectedTitle;
-
-/**
- * The button's selected title color.
- */
-@property (nonatomic, nullable) UIColor *selectedTitleColor;
-
-/**
- * The button's selected title shadow color.
- */
-@property (nonatomic, nullable) UIColor *selectedTitleShadowColor;
-
-/**
- * The button's selected image.
- */
-@property (nonatomic, nullable) UIImage *selectedImage;
-
-/**
- * The button's selected background image.
- */
-@property (nonatomic, nullable) UIImage *selectedBackgroundImage;
+@property (nonatomic, nullable) UIImage *image;
 
 /**
  * The top content edge inset.
@@ -167,6 +72,46 @@ NS_ASSUME_NONNULL_BEGIN
  * The right content edge inset.
  */
 @property (nonatomic) CGFloat contentEdgeInsetRight;
+
+/**
+ * The top title edge inset.
+ */
+@property (nonatomic) CGFloat titleEdgeInsetTop;
+
+/**
+ * The left title edge inset.
+ */
+@property (nonatomic) CGFloat titleEdgeInsetLeft;
+
+/**
+ * The bottom title edge inset.
+ */
+@property (nonatomic) CGFloat titleEdgeInsetBottom;
+
+/**
+ * The right title edge inset.
+ */
+@property (nonatomic) CGFloat titleEdgeInsetRight;
+
+/**
+ * The top image edge inset.
+ */
+@property (nonatomic) CGFloat imageEdgeInsetTop;
+
+/**
+ * The left image edge inset.
+ */
+@property (nonatomic) CGFloat imageEdgeInsetLeft;
+
+/**
+ * The bottom image edge inset.
+ */
+@property (nonatomic) CGFloat imageEdgeInsetBottom;
+
+/**
+ * The right image edge inset.
+ */
+@property (nonatomic) CGFloat imageEdgeInsetRight;
 
 @end
 

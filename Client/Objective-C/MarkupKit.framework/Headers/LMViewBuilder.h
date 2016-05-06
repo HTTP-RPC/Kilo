@@ -50,14 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable UIFont *)fontValue:(NSString *)value;
 
-/**
- * Applies a set of property values to a view.
- *
- * @param properties The property values to apply.
- * @param view The view whose property values will be set.
- */
-+ (void)applyPropertyValues:(NSDictionary<NSString *, id> *)properties toView:(UIView *)view;
-
 @end
 
 NS_ASSUME_NONNULL_END
