@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<LMTableView style="plainTableView" estimatedSectionHeaderHeight="0" estimatedSectionFooterHeight="0">
+<LMTableView>
     <UITableViewCell style="value1TableViewCell" id="addCell" textLabel.text="add()"/>
     <UITableViewCell style="value1TableViewCell" id="addValuesCell" textLabel.text="addValues()"/>
     <UITableViewCell style="value1TableViewCell" id="invertValueCell" textLabel.text="invertValue()"/>
