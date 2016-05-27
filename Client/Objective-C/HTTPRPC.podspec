@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = 'HTTP-RPC'
+  s.name             = 'HTTPRPC'
   s.version          = '2.8'
   s.summary          = 'Cross-platform RPC over HTTP'
   s.description      = <<-DESC
