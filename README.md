@@ -792,6 +792,8 @@ The Java client implementation of HTTP-RPC enables Java-based applications to co
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
     * `Result` - abstract base class for typed results
+    * `Authentication` - interface for authenticating requests
+    * `BasicAuthentication` - authentication implementation supporting basic HTTP authentication
 
 The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
 
@@ -849,8 +851,6 @@ On successful completion, the first argument will contain the result of the remo
 The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
 
 All variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
-
-Request security is provided by the underlying URL connection. See the `HttpURLConnection` documentation for more information.
 
 ### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
@@ -940,6 +940,21 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
         System.out.println(statistics.getAverage());
     });
 
+## Authentication
+Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials.
+
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `org.httprpc.Authentication` interface defines a single method that is used to authenticate each request submitted by a proxy instance:
+
+    public interface Authentication {
+        public void authenticate(HttpURLConnection connection);
+    }
+
+Authentication providers are associated with a proxy instance via the `setAuthentication()` method of the `WebServiceProxy` class. For example, the following code associates an instance of `org.httprpc.BasicAuthentication` with a service proxy:
+
+    serviceProxy.setAuthentication(new BasicAuthentication("username", "password"));
+
+The `BasicAuthentication` class is provided by the HTTP-RPC Java client library. Applications may provide custom implementations of the `Authentication` interface to support other authentication schemes.
+
 ## Examples
 The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
 
@@ -978,7 +993,11 @@ Note that, in Java 8 or later, lambda expressions can be used instead of anonymo
     });
 
 # Objective-C/Swift Client
-The Objective-C/Swift client implementation of HTTP-RPC enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that defines a single `WSWebServiceProxy` class, which is discussed in more detail below. 
+The Objective-C/Swift client implementation of HTTP-RPC enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that includes the following types, discussed in more detail below:
+
+* `WSWebServiceProxy` - invocation proxy for HTTP-RPC services
+* `WSAuthentication` - interface for authenticating requests
+* `WSBasicAuthentication` - authentication implementation supporting basic HTTP authentication
 
 The framework for the Objective-C/Swift client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
 
@@ -1020,7 +1039,18 @@ All three variants of the `invoke` method return an instance of `NSURLSessionDat
 
 Although requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
-Request security is provided by the the underlying URL session. See the `NSURLSession` documentation for more information.
+## Authentication
+Although it is possible to use the `URLSession:task:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDataDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
+
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `WSAuthentication` protocol defines a single method that is used to authenticate each request submitted by a proxy instance:
+
+    - (void)authenticate:(NSMutableURLRequest *)request;
+
+Authentication providers are associated with a proxy instance via the `authentication` property of the `WSWebServiceProxy` class. For example, the following code associates an instance of `WSBasicAuthentication` with a service proxy:
+
+    serviceProxy.authentication = WSBasicAuthentication(username: "username", password: "password")
+
+The `WSBasicAuthentication` class is provided by the HTTP-RPC framework. Applications may provide custom implementations of the `WSAuthentication` protocol to support other authentication schemes.
 
 ## Examples
 The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
