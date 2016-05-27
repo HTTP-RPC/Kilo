@@ -12,6 +12,10 @@
 		<data>
 		XcvZKbj7yeNxYiDZlvJSvsbZXUo=
 		</data>
+		<key>Headers/LMCollectionView.h</key>
+		<data>
+		Dj10rm3Xd6WIuxh/p6h8Q8iOF/4=
+		</data>
 		<key>Headers/LMCollectionViewCell.h</key>
 		<data>
 		5pjnxAaI2fk/e1MScPO3orTYykc=
@@ -78,15 +82,35 @@
 		</data>
 		<key>Headers/MarkupKit.h</key>
 		<data>
-		jFLOenmpb3iF/OtI6k1a9v7I3og=
+		wYzcS4W1HQmK9/5Di4/Ulk+4UuE=
+		</data>
+		<key>Headers/NSObject+Markup.h</key>
+		<data>
+		X4oI/Hkq0VF+jWygGd/2+XKdnyM=
 		</data>
 		<key>Headers/NSString+Markup.h</key>
 		<data>
 		64bj+vaS3i4so6prcYsd+y3vAdg=
 		</data>
+		<key>Headers/UIActivityIndicatorView+Markup.h</key>
+		<data>
+		zLU9AbeBwOsFEWvgEWMrzBfT0hk=
+		</data>
 		<key>Headers/UIButton+Markup.h</key>
 		<data>
 		wkptqdhoLtQd357ILIT8iRcaXNE=
+		</data>
+		<key>Headers/UICollectionViewFlowLayout+Markup.h</key>
+		<data>
+		yGy6VGUpkFOssvg9wWzBcnOfk10=
+		</data>
+		<key>Headers/UIControl+Markup.h</key>
+		<data>
+		7cY0ydNrbQT6m3TbTj2lchurWyY=
+		</data>
+		<key>Headers/UIDatePicker+Markup.h</key>
+		<data>
+		G3ahmic11j0VuwnGFFL2XudLEwY=
 		</data>
 		<key>Headers/UIPickerView+Markup.h</key>
 		<data>
@@ -99,6 +123,10 @@
 		<key>Headers/UIScrollView+Markup.h</key>
 		<data>
 		kjIFCoQwWN31fIXbBtfy01MmhS8=
+		</data>
+		<key>Headers/UISearchBar+Markup.h</key>
+		<data>
+		JXF1dXSTu/5LbSNqFb2WZp0bjLo=
 		</data>
 		<key>Headers/UISegmentedControl+Markup.h</key>
 		<data>
@@ -134,7 +162,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		sJ2DC+6Q0BY76OCJuvk7vw7Iiqg=
+		pMhO1/NeARw3S3rJWTyBVV5t25k=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -163,6 +191,17 @@
 			<key>hash2</key>
 			<data>
 			k066i6YExa5HjCDqWAd01evQmNryZDGghvwLuP7K9i4=
+			</data>
+		</dict>
+		<key>Headers/LMCollectionView.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Dj10rm3Xd6WIuxh/p6h8Q8iOF/4=
+			</data>
+			<key>hash2</key>
+			<data>
+			3c+qFLPX3uxCyPJh+jEupVZLqNjYB8OZl9LEwvwCBPg=
 			</data>
 		</dict>
 		<key>Headers/LMCollectionViewCell.h</key>
@@ -345,11 +384,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			jFLOenmpb3iF/OtI6k1a9v7I3og=
+			wYzcS4W1HQmK9/5Di4/Ulk+4UuE=
 			</data>
 			<key>hash2</key>
 			<data>
-			XsBfymkKo/kX66gXYpKt2+/MktML71pGo82Di5rbN2E=
+			jLjya1dFzOuUl0jGzaOIjlSBzJiYczooi7EebPcjys0=
+			</data>
+		</dict>
+		<key>Headers/NSObject+Markup.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			X4oI/Hkq0VF+jWygGd/2+XKdnyM=
+			</data>
+			<key>hash2</key>
+			<data>
+			OSWxkFIhMh4sa1+OzJHEQz81uaSHjGuqfGUAEdsQlWQ=
 			</data>
 		</dict>
 		<key>Headers/NSString+Markup.h</key>
@@ -363,6 +413,17 @@
 			MHAS51Y3zBelCcroScmZdDcJeajycQL+O3/HUs4ENJ8=
 			</data>
 		</dict>
+		<key>Headers/UIActivityIndicatorView+Markup.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			zLU9AbeBwOsFEWvgEWMrzBfT0hk=
+			</data>
+			<key>hash2</key>
+			<data>
+			ZwuLepNzGrnoyzK1fEtReUd5o6LiT/lMR5hXJ+f7RCU=
+			</data>
+		</dict>
 		<key>Headers/UIButton+Markup.h</key>
 		<dict>
 			<key>hash</key>
@@ -372,6 +433,39 @@
 			<key>hash2</key>
 			<data>
 			3zRG0IYG+uFIdcL4qvZAetAL5LbhX/tIwWEsIE69nG0=
+			</data>
+		</dict>
+		<key>Headers/UICollectionViewFlowLayout+Markup.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			yGy6VGUpkFOssvg9wWzBcnOfk10=
+			</data>
+			<key>hash2</key>
+			<data>
+			k8dkvp+QLM5gsiy2FCk8/po8Bgj4ru8vGYFfEZ+zAtI=
+			</data>
+		</dict>
+		<key>Headers/UIControl+Markup.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			7cY0ydNrbQT6m3TbTj2lchurWyY=
+			</data>
+			<key>hash2</key>
+			<data>
+			ih/GHqahxvY9jYLybU1e6R4sfX1ylzQjGeN7JMvt9mc=
+			</data>
+		</dict>
+		<key>Headers/UIDatePicker+Markup.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			G3ahmic11j0VuwnGFFL2XudLEwY=
+			</data>
+			<key>hash2</key>
+			<data>
+			tm4nP76uGftz/bVKzQFtTOuH0lSkp+HXkwA8aVKzLYE=
 			</data>
 		</dict>
 		<key>Headers/UIPickerView+Markup.h</key>
@@ -405,6 +499,17 @@
 			<key>hash2</key>
 			<data>
 			HnACNU6n1p2Njs2o4Hd735coL1HWa09Mrd7lrumZbGE=
+			</data>
+		</dict>
+		<key>Headers/UISearchBar+Markup.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			JXF1dXSTu/5LbSNqFb2WZp0bjLo=
+			</data>
+			<key>hash2</key>
+			<data>
+			UIWLazATKRtBWiGI8UzpIrvUlfpAqc6fD66HdKVfad0=
 			</data>
 		</dict>
 		<key>Headers/UISegmentedControl+Markup.h</key>
