@@ -20,9 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CheckBox;
 
-import java.net.Authenticator;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +42,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.httprpc.BasicAuthentication;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
@@ -70,14 +69,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     static {
-        // Set global credentials
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("tomcat", "tomcat".toCharArray());
-            }
-        });
-
         // Allow self-signed certificates for testing purposes
         X509TrustManager trustManager = new X509TrustManager() {
             @Override
@@ -164,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
         WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, threadPool);
+
+        // Set credentials
+        serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();
