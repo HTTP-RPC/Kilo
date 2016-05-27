@@ -941,7 +941,7 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
     });
 
 ## Authentication
-Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials.
+Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
 HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `org.httprpc.Authentication` interface defines a single method that is used to authenticate each request submitted by a proxy instance:
 
