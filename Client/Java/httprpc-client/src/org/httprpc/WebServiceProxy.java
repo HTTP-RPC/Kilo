@@ -50,7 +50,7 @@ import java.util.concurrent.Future;
  */
 public class WebServiceProxy {
     // Invocation callback
-    private static class InvocationCallback<V> implements Callable<V> {
+    private class InvocationCallback<V> implements Callable<V> {
         private URL methodURL;
         private Map<String, ?> arguments;
         private Map<String, List<URL>> attachments;
@@ -84,8 +84,6 @@ public class WebServiceProxy {
 
         private static final String CHARSET_KEY = "charset";
 
-        private static final String UTF_8_ENCODING = "UTF-8";
-
         public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
             this.methodURL = methodURL;
             this.arguments = arguments;
@@ -110,6 +108,11 @@ public class WebServiceProxy {
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
                 connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
+
+                // Authenticate request
+                if (authentication != null) {
+                    authentication.authenticate(connection);
+                }
 
                 if (attachments.size() == 0) {
                     connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
@@ -525,49 +528,6 @@ public class WebServiceProxy {
 
             return (i == n);
         }
-
-        private static List<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
-            List<?> values;
-            if (argument instanceof List<?>) {
-                values = (List<?>)argument;
-            } else if (argument instanceof Map<?, ?>) {
-                Map<?, ?> map = (Map<?, ?>)argument;
-
-                ArrayList<Object> entries = new ArrayList<>(map.size());
-
-                for (Map.Entry<?, ?> entry : map.entrySet()) {
-                    Object key = entry.getKey();
-
-                    if (key == null) {
-                        continue;
-                    }
-
-                    Object value = entry.getValue();
-
-                    if (value == null) {
-                        continue;
-                    }
-
-                    entries.add(String.format("%s:%s",
-                        URLEncoder.encode(key.toString(), UTF_8_ENCODING),
-                        URLEncoder.encode(getParameterValue(value), UTF_8_ENCODING)));
-                }
-
-                values = entries;
-            } else {
-                values = Collections.singletonList(argument);
-            }
-
-            return values;
-        }
-
-        private static String getParameterValue(Object element) {
-            if (!(element instanceof String || element instanceof Number || element instanceof Boolean)) {
-                throw new IllegalArgumentException("Invalid collection element.");
-            }
-
-            return element.toString();
-        }
     }
 
     // Monitored input stream
@@ -625,6 +585,8 @@ public class WebServiceProxy {
     private URL baseURL;
     private ExecutorService executorService;
 
+    private Authentication authentication = null;
+
     private static Executor resultDispatcher = new Executor() {
         @Override
         public void execute(Runnable command) {
@@ -633,6 +595,8 @@ public class WebServiceProxy {
     };
 
     private static final int PAGE_SIZE = 1024;
+
+    private static final String UTF_8_ENCODING = "UTF-8";
 
     /**
      * Creates a new HTTP-RPC service proxy.
@@ -674,6 +638,27 @@ public class WebServiceProxy {
      */
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    /**
+     * Returns the service proxy's authentication provider.
+     *
+     * @return
+     * The service proxy's authentication provider.
+     */
+    public Authentication getAuthentication() {
+        return authentication;
+    }
+
+    /**
+     * Sets the service proxy's authentication provider.
+     *
+     * @param authentication
+     * The service proxy's authentication provider, or <tt>null</tt> for no
+     * authentication provider.
+     */
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
     }
 
     /**
@@ -840,5 +825,48 @@ public class WebServiceProxy {
         }
 
         WebServiceProxy.resultDispatcher = resultDispatcher;
+    }
+
+    private static List<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
+        List<?> values;
+        if (argument instanceof List<?>) {
+            values = (List<?>)argument;
+        } else if (argument instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>)argument;
+
+            ArrayList<Object> entries = new ArrayList<>(map.size());
+
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                Object key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                Object value = entry.getValue();
+
+                if (value == null) {
+                    continue;
+                }
+
+                entries.add(String.format("%s:%s",
+                    URLEncoder.encode(key.toString(), UTF_8_ENCODING),
+                    URLEncoder.encode(getParameterValue(value), UTF_8_ENCODING)));
+            }
+
+            values = entries;
+        } else {
+            values = Collections.singletonList(argument);
+        }
+
+        return values;
+    }
+
+    private static String getParameterValue(Object element) {
+        if (!(element instanceof String || element instanceof Number || element instanceof Boolean)) {
+            throw new IllegalArgumentException("Invalid collection element.");
+        }
+
+        return element.toString();
     }
 }

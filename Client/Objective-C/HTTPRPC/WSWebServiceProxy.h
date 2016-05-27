@@ -14,6 +14,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "WSAuthentication.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -55,6 +57,11 @@ extern NSString * const WSArgumentsKey;
  * The base URL of the service.
  */
 @property (nonatomic, readonly) NSURL *baseURL;
+
+/**
+ * The service proxy's authentication provider.
+ */
+@property (nonatomic, nullable) id<WSAuthentication> authentication;
 
 /**
  * Invokes an HTTP-RPC service method.

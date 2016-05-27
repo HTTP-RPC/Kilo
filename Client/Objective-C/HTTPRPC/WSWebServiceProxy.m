@@ -13,6 +13,7 @@
 //
 
 #import "WSWebServiceProxy.h"
+#import "NSString+HTTPRPC.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
@@ -35,13 +36,6 @@ NSString * const kNameParameterFormat = @"; name=\"%@\"";
 NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
 
 NSString * const kCRLF = @"\r\n";
-
-@interface NSString (HTTPRPC)
-
-- (NSData *)UTF8Data;
-- (NSString *)URLEncodedString;
-
-@end
 
 @implementation WSWebServiceProxy
 
@@ -84,9 +78,17 @@ NSString * const kCRLF = @"\r\n";
 
         [request setHTTPMethod:@"POST"];
 
-        if ([attachments count] == 0) {
-            [request addValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
+        // Authenticate request
+        id<WSAuthentication> authentication = [self authentication];
 
+        if (authentication != nil) {
+            [authentication authenticate:request];
+        }
+
+        if ([attachments count] == 0) {
+            [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
+
+            // Construct parameter list
             NSMutableString *parameters = [NSMutableString new];
 
             for (NSString *name in arguments) {
@@ -110,8 +112,9 @@ NSString * const kCRLF = @"\r\n";
             NSString *boundary = [[NSUUID new] UUIDString];
             NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
 
-            [request addValue:requestContentType forHTTPHeaderField:kContentTypeField];
+            [request setValue:requestContentType forHTTPHeaderField:kContentTypeField];
 
+            // Construct multi-part form data
             NSMutableData *body = [NSMutableData new];
 
             NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
@@ -174,6 +177,7 @@ NSString * const kCRLF = @"\r\n";
             [request setHTTPBody:body];
         }
 
+        // Execute request
         NSOperationQueue *resultHandlerQueue = [NSOperationQueue currentQueue];
 
         task = [_session dataTaskWithRequest:request completionHandler:^void (NSData *data, NSURLResponse *response, NSError *error) {
@@ -245,16 +249,3 @@ NSString * const kCRLF = @"\r\n";
 
 @end
 
-@implementation NSString (HTTPRPC)
-
-- (NSData *)UTF8Data
-{
-    return [self dataUsingEncoding:NSUTF8StringEncoding];
-}
-
-- (NSString *)URLEncodedString
-{
-    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-}
-
-@end

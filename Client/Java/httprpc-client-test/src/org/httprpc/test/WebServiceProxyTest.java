@@ -14,8 +14,6 @@
 
 package org.httprpc.test;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -33,6 +31,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.httprpc.BasicAuthentication;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
@@ -43,14 +42,6 @@ import static org.httprpc.WebServiceProxy.entry;
 public class WebServiceProxyTest {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
-        // Set global credentials
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication () {
-                return new PasswordAuthentication("tomcat", "tomcat".toCharArray());
-            }
-        });
-
         // Allow self-signed certificates for testing purposes
         X509TrustManager trustManager = new X509TrustManager() {
             @Override
@@ -84,6 +75,9 @@ public class WebServiceProxyTest {
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
         WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, threadPool);
+
+        // Set credentials
+        serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
 
         // Add
         HashMap<String, Object> addArguments = new HashMap<>();

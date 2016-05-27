@@ -14,12 +14,9 @@
 
 #import <Foundation/Foundation.h>
 
-//! Project version number for HTTPRPC.
-FOUNDATION_EXPORT double HTTPRPCVersionNumber;
+@interface NSString (HTTPRPC)
 
-//! Project version string for HTTPRPC.
-FOUNDATION_EXPORT const unsigned char HTTPRPCVersionString[];
+- (NSData *)UTF8Data;
+- (NSString *)URLEncodedString;
 
-#import <HTTPRPC/WSAuthentication.h>
-#import <HTTPRPC/WSBasicAuthentication.h>
-#import <HTTPRPC/WSWebServiceProxy.h>
+@end

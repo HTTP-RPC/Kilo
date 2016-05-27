@@ -12,14 +12,18 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "NSString+HTTPRPC.h"
 
-//! Project version number for HTTPRPC.
-FOUNDATION_EXPORT double HTTPRPCVersionNumber;
+@implementation NSString (HTTPRPC)
 
-//! Project version string for HTTPRPC.
-FOUNDATION_EXPORT const unsigned char HTTPRPCVersionString[];
+- (NSData *)UTF8Data
+{
+    return [self dataUsingEncoding:NSUTF8StringEncoding];
+}
 
-#import <HTTPRPC/WSAuthentication.h>
-#import <HTTPRPC/WSBasicAuthentication.h>
-#import <HTTPRPC/WSWebServiceProxy.h>
+- (NSString *)URLEncodedString
+{
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+}
+
+@end

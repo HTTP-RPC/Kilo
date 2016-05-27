@@ -1084,4 +1084,4 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to inv
     });
 
 # More Information
-For more information, refer to [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki) or [the issue list](https://github.com/gk-brown/HTTP-RPC/issues).
+For additional information and examples, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).

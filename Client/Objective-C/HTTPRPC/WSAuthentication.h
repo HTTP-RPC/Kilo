@@ -14,12 +14,12 @@
 
 #import <Foundation/Foundation.h>
 
-//! Project version number for HTTPRPC.
-FOUNDATION_EXPORT double HTTPRPCVersionNumber;
+NS_ASSUME_NONNULL_BEGIN
 
-//! Project version string for HTTPRPC.
-FOUNDATION_EXPORT const unsigned char HTTPRPCVersionString[];
+@protocol WSAuthentication <NSObject>
 
-#import <HTTPRPC/WSAuthentication.h>
-#import <HTTPRPC/WSBasicAuthentication.h>
-#import <HTTPRPC/WSWebServiceProxy.h>
+- (void)authenticate:(NSMutableURLRequest *)request;
+
+@end
+
+NS_ASSUME_NONNULL_END
