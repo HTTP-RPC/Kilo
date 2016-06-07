@@ -152,6 +152,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
+    private static final String JSON_MIME_TYPE = "application/json";
+
     @Override
     public void init() throws ServletException {
         String serviceClassName = getServletConfig().getInitParameter("serviceClassName");
@@ -305,10 +307,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             Class<?> returnType = method.getReturnType();
 
             if (returnType != Void.TYPE && returnType != Void.class) {
-                JSONSerializer serializer = new JSONSerializer();
+                response.setContentType(JSON_MIME_TYPE);
 
-                response.setContentType(serializer.getContentType());
-                serializer.writeValue(response.getWriter(), result);
+                writeValue(response.getWriter(), result, 0);
             }
         }
     }
@@ -341,19 +342,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         return argument;
     }
-}
 
-// JSON serializer
-class JSONSerializer {
-    private int depth = 0;
-
-    private static final String JSON_MIME_TYPE = "application/json";
-
-    public String getContentType() {
-        return JSON_MIME_TYPE;
-    }
-
-    public void writeValue(PrintWriter writer, Object value) throws IOException {
+    public void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
@@ -405,9 +395,9 @@ class JSONSerializer {
 
                     writer.append("\n");
 
-                    indent(writer);
+                    indent(writer, depth);
 
-                    writeValue(writer, element);
+                    writeValue(writer, element, depth);
 
                     i++;
                 }
@@ -416,7 +406,7 @@ class JSONSerializer {
 
                 writer.append("\n");
 
-                indent(writer);
+                indent(writer, depth);
 
                 writer.append("]");
             } finally {
@@ -451,11 +441,11 @@ class JSONSerializer {
                         throw new IOException("Invalid key type.");
                     }
 
-                    indent(writer);
+                    indent(writer, depth);
 
                     writer.append("\"" + key + "\": ");
 
-                    writeValue(writer, entry.getValue());
+                    writeValue(writer, entry.getValue(), depth);
 
                     i++;
                 }
@@ -464,7 +454,7 @@ class JSONSerializer {
 
                 writer.append("\n");
 
-                indent(writer);
+                indent(writer, depth);
 
                 writer.append("}");
             } finally {
@@ -481,7 +471,7 @@ class JSONSerializer {
         }
     }
 
-    private void indent(Writer writer) throws IOException {
+    private static void indent(Writer writer, int depth) throws IOException {
         for (int i = 0; i < depth; i++) {
             writer.append("  ");
         }
