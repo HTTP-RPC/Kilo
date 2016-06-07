@@ -62,6 +62,11 @@ public class WebServiceProxy {
 
         private static final int EOF = -1;
 
+        private static final String GET_METHOD = "GET";
+        private static final String POST_METHOD = "POST";
+        private static final String PUT_METHOD = "PUT";
+        private static final String DELETE_METHOD = "DELETE";
+
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
         private static final String CONTENT_TYPE_KEY = "Content-Type";
@@ -97,37 +102,11 @@ public class WebServiceProxy {
         public V call() throws Exception {
             final V result;
             try {
-                // TODO Construct parameters if GET/DELETE, or POST/PUT and attachment count == 0
+                // Construct parameter list
+                String parameterList = null;
 
-                // TODO If GET, append parameters to URL
-
-                // Open URL connection
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-                connection.setRequestMethod(method);
-
-                connection.setDoInput(true);
-
-                // TODO POST/PUT only
-                connection.setDoOutput(true);
-
-                // Set language
-                Locale locale = Locale.getDefault();
-                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
-
-                connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
-
-                // Authenticate request
-                if (authentication != null) {
-                    authentication.authenticate(connection);
-                }
-
-                if (attachments.size() == 0) {
-                    // TODO POST/PUT only
-                    connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
-
-                    // Construct parameter list
-                    StringBuilder parameters = new StringBuilder();
+                if (method.equalsIgnoreCase(GET_METHOD) || method.equalsIgnoreCase(DELETE_METHOD) || attachments.size() == 0) {
+                    StringBuilder parameterListBuilder = new StringBuilder();
 
                     for (Map.Entry<String, ?> argument : arguments.entrySet()) {
                         String name = argument.getKey();
@@ -145,112 +124,140 @@ public class WebServiceProxy {
                                 continue;
                             }
 
-                            if (parameters.length() > 0) {
-                                parameters.append("&");
+                            if (parameterListBuilder.length() > 0) {
+                                parameterListBuilder.append("&");
                             }
 
                             String value = getParameterValue(element);
 
-                            parameters.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                            parameters.append("=");
-                            parameters.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                            parameterListBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                            parameterListBuilder.append("=");
+                            parameterListBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                         }
                     }
 
-                    // Write request body
-                    // TODO POST/PUT only
-                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                            writer.write(parameters.toString());
-                        }
+                    parameterList = parameterListBuilder.toString();
+
+                    // Append parameter list to URL
+                    if (method.equalsIgnoreCase(GET_METHOD) || method.equalsIgnoreCase(DELETE_METHOD)) {
+                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + parameterList);
                     }
-                } else {
-                    // TODO POST/PUT only
-                    String boundary = UUID.randomUUID().toString();
-                    String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
+                }
 
-                    connection.setRequestProperty(CONTENT_TYPE_KEY, requestContentType);
+                // Open URL connection
+                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
-                    String boundaryData = String.format("--%s%s", boundary, CRLF);
+                connection.setRequestMethod(method);
 
-                    // Write request body
-                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                                String name = argument.getKey();
+                // Set language
+                Locale locale = Locale.getDefault();
+                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                                if (name == null) {
-                                    continue;
-                                }
+                connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
 
-                                List<?> values = getParameterValues(argument.getValue());
+                // Authenticate request
+                if (authentication != null) {
+                    authentication.authenticate(connection);
+                }
 
-                                for (Object element : values) {
-                                    if (element == null) {
-                                        continue;
-                                    }
+                // Write request body
+                if (method.equalsIgnoreCase(POST_METHOD) || method.equalsIgnoreCase(PUT_METHOD)) {
+                    connection.setDoOutput(true);
 
-                                    String value = getParameterValue(element);
+                    if (attachments.size() == 0) {
+                        connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
-                                    writer.append(boundaryData);
-
-                                    writer.append(CONTENT_DISPOSITION_HEADER);
-                                    writer.append(String.format(NAME_PARAMETER_FORMAT, name));
-
-                                    writer.append(CRLF);
-                                    writer.append(CRLF);
-                                    writer.append(value);
-                                    writer.append(CRLF);
-                                }
+                        try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                                writer.write(parameterList);
                             }
+                        }
+                    } else {
+                        String boundary = UUID.randomUUID().toString();
+                        String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
 
-                            for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
-                                String name = attachment.getKey();
-                                List<URL> urls = attachment.getValue();
+                        connection.setRequestProperty(CONTENT_TYPE_KEY, requestContentType);
 
-                                if (urls == null) {
-                                    continue;
-                                }
+                        String boundaryData = String.format("--%s%s", boundary, CRLF);
 
-                                for (URL url : urls) {
-                                    if (url == null) {
+                        try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                                    String name = argument.getKey();
+
+                                    if (name == null) {
                                         continue;
                                     }
 
-                                    writer.append(boundaryData);
+                                    List<?> values = getParameterValues(argument.getValue());
 
-                                    writer.append(CONTENT_DISPOSITION_HEADER);
-                                    writer.append(String.format(NAME_PARAMETER_FORMAT, name));
-
-                                    String path = url.getPath();
-                                    String filename = path.substring(path.lastIndexOf('/') + 1);
-
-                                    writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
-                                    writer.append(CRLF);
-
-                                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                                    if (attachmentContentType == null) {
-                                        attachmentContentType = OCTET_STREAM_MIME_TYPE;
-                                    }
-
-                                    writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
-                                    writer.append(CRLF);
-
-                                    writer.flush();
-
-                                    try (InputStream inputStream = url.openStream()) {
-                                        int b;
-                                        while ((b = inputStream.read()) != EOF) {
-                                            outputStream.write(b);
+                                    for (Object element : values) {
+                                        if (element == null) {
+                                            continue;
                                         }
+
+                                        String value = getParameterValue(element);
+
+                                        writer.append(boundaryData);
+
+                                        writer.append(CONTENT_DISPOSITION_HEADER);
+                                        writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+
+                                        writer.append(CRLF);
+                                        writer.append(CRLF);
+                                        writer.append(value);
+                                        writer.append(CRLF);
+                                    }
+                                }
+
+                                for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
+                                    String name = attachment.getKey();
+                                    List<URL> urls = attachment.getValue();
+
+                                    if (urls == null) {
+                                        continue;
                                     }
 
-                                    writer.append(CRLF);
-                                }
-                            }
+                                    for (URL url : urls) {
+                                        if (url == null) {
+                                            continue;
+                                        }
 
-                            writer.append(String.format("--%s--%s", boundary, CRLF));
+                                        writer.append(boundaryData);
+
+                                        writer.append(CONTENT_DISPOSITION_HEADER);
+                                        writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+
+                                        String path = url.getPath();
+                                        String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                                        writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
+                                        writer.append(CRLF);
+
+                                        String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                                        if (attachmentContentType == null) {
+                                            attachmentContentType = OCTET_STREAM_MIME_TYPE;
+                                        }
+
+                                        writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
+                                        writer.append(CRLF);
+
+                                        writer.flush();
+
+                                        try (InputStream inputStream = url.openStream()) {
+                                            int b;
+                                            while ((b = inputStream.read()) != EOF) {
+                                                outputStream.write(b);
+                                            }
+                                        }
+
+                                        writer.append(CRLF);
+                                    }
+                                }
+
+                                writer.append(String.format("--%s--%s", boundary, CRLF));
+                            }
                         }
                     }
                 }
