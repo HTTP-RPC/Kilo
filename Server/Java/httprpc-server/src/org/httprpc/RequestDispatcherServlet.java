@@ -343,7 +343,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         return argument;
     }
 
-    public void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
+    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
