@@ -64,8 +64,6 @@
 <hr/>
 
 <a href="${pageContext.request.contextPath}/test/getTree">Get Tree</a>
-<br/>
-<a href="${pageContext.request.contextPath}/test/tree.html">tree.html</a>
 
 <hr/>
 
@@ -82,15 +80,9 @@
 </table>
 </form>
 
-<a href="${pageContext.request.contextPath}/test/statistics.html?values=1&values=3&values=5">statistics.html</a>
-
 <hr/>
 
 <a href="${pageContext.request.contextPath}/test/getTestData">Get Test Data</a>
-<br/>
-<a href="${pageContext.request.contextPath}/test/testdata.html">testdata.html</a><br>
-<a href="${pageContext.request.contextPath}/test/testdata.xml">testdata.xml</a><br>
-<a href="${pageContext.request.contextPath}/test/testdata.csv">testdata.csv</a><br>
 
 <hr/>
 
