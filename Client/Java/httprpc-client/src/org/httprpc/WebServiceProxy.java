@@ -102,11 +102,11 @@ public class WebServiceProxy {
         public V call() throws Exception {
             final V result;
             try {
-                // Construct parameter list
-                String parameterList = null;
+                // Construct query
+                String query = null;
 
                 if (method.equalsIgnoreCase(GET_METHOD) || method.equalsIgnoreCase(DELETE_METHOD) || attachments.size() == 0) {
-                    StringBuilder parameterListBuilder = new StringBuilder();
+                    StringBuilder queryBuilder = new StringBuilder();
 
                     for (Map.Entry<String, ?> argument : arguments.entrySet()) {
                         String name = argument.getKey();
@@ -124,23 +124,23 @@ public class WebServiceProxy {
                                 continue;
                             }
 
-                            if (parameterListBuilder.length() > 0) {
-                                parameterListBuilder.append("&");
+                            if (queryBuilder.length() > 0) {
+                                queryBuilder.append("&");
                             }
 
                             String value = getParameterValue(element);
 
-                            parameterListBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                            parameterListBuilder.append("=");
-                            parameterListBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                            queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                            queryBuilder.append("=");
+                            queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                         }
                     }
 
-                    parameterList = parameterListBuilder.toString();
+                    query = queryBuilder.toString();
 
-                    // Append parameter list to URL
+                    // Append query to URL
                     if (method.equalsIgnoreCase(GET_METHOD) || method.equalsIgnoreCase(DELETE_METHOD)) {
-                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + parameterList);
+                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
                     }
                 }
 
@@ -169,7 +169,7 @@ public class WebServiceProxy {
 
                         try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                                writer.write(parameterList);
+                                writer.write(query);
                             }
                         }
                     } else {

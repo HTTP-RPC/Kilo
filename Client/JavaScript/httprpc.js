@@ -45,6 +45,7 @@ WebServiceProxy.prototype.invoke = function(methodName, resultHandler) {
 WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, resultHandler) {
     var url = this.baseURL + "/" + methodName;
 
+    // TODO Rename to query
     var parameters = "";
 
     for (name in arguments) {
@@ -94,6 +95,7 @@ WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, 
         }
     }
 
+    // TODO If this is a GET or DELETE request, append the parameter list to the
     request.open("POST", url, true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     request.send(parameters);

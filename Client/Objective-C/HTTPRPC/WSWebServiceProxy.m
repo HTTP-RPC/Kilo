@@ -89,6 +89,7 @@ NSString * const kCRLF = @"\r\n";
             [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
 
             // Construct parameter list
+            // TODO Rename to query
             NSMutableString *parameters = [NSMutableString new];
 
             for (NSString *name in arguments) {
