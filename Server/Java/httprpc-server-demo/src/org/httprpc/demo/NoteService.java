@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.httprpc.Template;
 import org.httprpc.WebService;
 
 /**
@@ -71,7 +70,6 @@ public class NoteService extends WebService {
      * @return
      * A list of all notes.
      */
-    @Template("note_list.html")
     public List<Map<String, ?>> listNotes() {
         LinkedList<Map<String, ?>> noteList = new LinkedList<>();
 

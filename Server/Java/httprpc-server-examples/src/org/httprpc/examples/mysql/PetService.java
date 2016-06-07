@@ -20,7 +20,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.httprpc.Template;
 import org.httprpc.WebService;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
@@ -48,7 +47,6 @@ public class PetService extends WebService {
      * @return
      * A list of pets belonging to the given owner.
      */
-    @Template("pet_search.html")
     public ResultSetAdapter searchPets(String owner) throws SQLException, IOException {
         Parameters parameters = Parameters.parse(new InputStreamReader(getClass().getResourceAsStream("pet_search.sql")));
         PreparedStatement statement = DriverManager.getConnection(DB_URL).prepareStatement(parameters.getSQL());
