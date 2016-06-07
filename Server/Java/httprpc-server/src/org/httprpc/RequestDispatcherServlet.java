@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -35,7 +36,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -148,7 +148,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private Class<?> serviceType = null;
 
-    private HashMap<String, Method> methodMap = new HashMap<>();
+    private Map<String, Map<String, Method>> methodMaps = new HashMap<>();
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
@@ -173,33 +173,47 @@ public class RequestDispatcherServlet extends HttpServlet {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (serviceType.isAssignableFrom(method.getDeclaringClass())
-                && !java.lang.reflect.Modifier.isStatic(method.getModifiers())) {
-                methodMap.put(method.getName(), method);
+            if (!Modifier.isStatic(method.getModifiers())) {
+                RPC rpc = method.getAnnotation(RPC.class);
+
+                if (rpc != null) {
+                    String path = rpc.path();
+
+                    Map<String, Method> methodMap = methodMaps.get(path);
+
+                    if (methodMap == null) {
+                        methodMap = new HashMap<>();
+
+                        methodMaps.put(path, methodMap);
+                    }
+
+                    methodMap.put(rpc.method().toLowerCase(), method);
+                }
             }
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        doPost(request, response);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException ,IOException {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
-            Locale locale = request.getLocale();
-
             // Look up service method
             pathInfo = pathInfo.substring(1);
 
-            Method method = methodMap.get(pathInfo);
+            Map<String, Method> methodMap = methodMaps.get(pathInfo);
+
+            if (methodMap == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
+            Method method = methodMap.get(request.getMethod().toLowerCase());
 
             if (method == null) {
-                throw new ServletException("Method not found.");
+                response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
             }
 
             // Construct arguments
@@ -248,7 +262,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                             String[] entry = values[j].split(":");
 
                             if (entry.length != 2) {
-                                throw new ServletException("Invalid map entry.");
+                                throw new IllegalArgumentException("Invalid map entry.");
                             }
 
                             String key = URLDecoder.decode(entry[0], UTF_8_ENCODING);
@@ -268,7 +282,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 arguments[i] = argument;
             }
 
-            // Execute method
+            // Configure service
             WebService service;
             try {
                 service = (WebService)serviceType.newInstance();
@@ -276,7 +290,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 throw new ServletException(exception);
             }
 
-            service.setLocale(locale);
+            service.setLocale(request.getLocale());
 
             Principal userPrincipal = request.getUserPrincipal();
 
@@ -296,6 +310,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             service.setAttachments(attachments);
 
+            // Execute method
             Object result;
             try {
                 result = method.invoke(service, arguments);
