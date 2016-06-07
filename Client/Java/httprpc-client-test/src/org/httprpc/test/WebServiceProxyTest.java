@@ -84,7 +84,7 @@ public class WebServiceProxyTest {
         addArguments.put("a", 2);
         addArguments.put("b", 4);
 
-        serviceProxy.invoke("add", addArguments, new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "add", addArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 validate(exception == null && result.doubleValue() == 6.0);
@@ -92,34 +92,34 @@ public class WebServiceProxyTest {
         });
 
         // Add values
-        serviceProxy.invoke("addValues", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
+        serviceProxy.invoke("GET", "addValues", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 
         // Invert value
-        serviceProxy.invoke("invertValue", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
+        serviceProxy.invoke("GET", "invertValue", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
             validate(exception == null && result == false);
         });
 
         // Get characters
-        serviceProxy.invoke("getCharacters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
+        serviceProxy.invoke("GET", "getCharacters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
             validate(exception == null && result.equals(listOf("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Get selection
-        serviceProxy.invoke("getSelection", mapOf(entry("items", listOf("a", "b", "c", "d"))), (result, exception) -> {
+        serviceProxy.invoke("POST", "getSelection", mapOf(entry("items", listOf("a", "b", "c", "d"))), (result, exception) -> {
             validate(exception == null && result.equals("a, b, c, d"));
         });
 
         // Get map
         Map<String, ?> map = mapOf(entry("a", 123L), entry("b", 456L), entry("c", 789L));
 
-        serviceProxy.invoke("getMap", mapOf(entry("map", map)), (result, exception) -> {
+        serviceProxy.invoke("GET", "getMap", mapOf(entry("map", map)), (result, exception) -> {
             validate(exception == null && result.equals(map));
         });
 
         // Get statistics
-        serviceProxy.invoke("getStatistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
+        serviceProxy.invoke("POST", "getStatistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
             validate(statistics != null
@@ -129,7 +129,7 @@ public class WebServiceProxyTest {
         });
 
         // Get test data
-        serviceProxy.invoke("getTestData", (result, exception) -> {
+        serviceProxy.invoke("GET", "getTestData", (result, exception) -> {
             validate(exception == null && result.equals(listOf(
                 mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
                 mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
@@ -137,28 +137,28 @@ public class WebServiceProxyTest {
         });
 
         // Get void
-        serviceProxy.invoke("getVoid", (result, exception) -> {
+        serviceProxy.invoke("GET", "getVoid", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Get null
-        serviceProxy.invoke("getNull", (result, exception) -> {
+        serviceProxy.invoke("GET", "getNull", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Get locale code
-        serviceProxy.invoke("getLocaleCode", (result, exception) -> {
+        serviceProxy.invoke("GET", "getLocaleCode", (result, exception) -> {
             validate(exception == null && result != null);
             System.out.println(result);
         });
 
         // Get user name
-        serviceProxy.invoke("getUserName", (result, exception) -> {
+        serviceProxy.invoke("GET", "getUserName", (result, exception) -> {
             validate(exception == null && result.equals("tomcat"));
         });
 
         // Is user in role
-        serviceProxy.invoke("isUserInRole", mapOf(entry("role", "tomcat")), (result, exception) -> {
+        serviceProxy.invoke("GET", "isUserInRole", mapOf(entry("role", "tomcat")), (result, exception) -> {
             validate(exception == null && result.equals(true));
         });
 
@@ -170,7 +170,7 @@ public class WebServiceProxyTest {
 
         Map<String, ?> attachments = mapOf(entry("test", listOf(textTestURL, imageTestURL)));
 
-        serviceProxy.invoke("getAttachmentInfo", arguments, (Map<String, List<URL>>)attachments, new ResultHandler<Object>() {
+        serviceProxy.invoke("POST", "getAttachmentInfo", arguments, (Map<String, List<URL>>)attachments, new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 List<Map<String, Object>> attachmentInfo = (List<Map<String, Object>>)result;

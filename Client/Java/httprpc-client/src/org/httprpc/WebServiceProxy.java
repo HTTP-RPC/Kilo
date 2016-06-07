@@ -51,7 +51,8 @@ import java.util.concurrent.Future;
 public class WebServiceProxy {
     // Invocation callback
     private class InvocationCallback<V> implements Callable<V> {
-        private URL methodURL;
+        private String method;
+        private URL url;
         private Map<String, ?> arguments;
         private Map<String, List<URL>> attachments;
         private ResultHandler<V> resultHandler;
@@ -84,8 +85,9 @@ public class WebServiceProxy {
 
         private static final String CHARSET_KEY = "charset";
 
-        public InvocationCallback(URL methodURL, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
-            this.methodURL = methodURL;
+        public InvocationCallback(String method, URL url, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
+            this.method = method;
+            this.url = url;
             this.arguments = arguments;
             this.attachments = attachments;
             this.resultHandler = resultHandler;
@@ -95,12 +97,18 @@ public class WebServiceProxy {
         public V call() throws Exception {
             final V result;
             try {
-                // Open URL connection
-                HttpURLConnection connection = (HttpURLConnection)methodURL.openConnection();
+                // TODO Construct parameters if GET/DELETE, or POST/PUT and attachment count == 0
 
-                connection.setRequestMethod("POST");
+                // TODO If GET, append parameters to URL
+
+                // Open URL connection
+                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+                connection.setRequestMethod(method);
 
                 connection.setDoInput(true);
+
+                // TODO POST/PUT only
                 connection.setDoOutput(true);
 
                 // Set language
@@ -115,6 +123,7 @@ public class WebServiceProxy {
                 }
 
                 if (attachments.size() == 0) {
+                    // TODO POST/PUT only
                     connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
                     // Construct parameter list
@@ -149,12 +158,14 @@ public class WebServiceProxy {
                     }
 
                     // Write request body
+                    // TODO POST/PUT only
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
                             writer.write(parameters.toString());
                         }
                     }
                 } else {
+                    // TODO POST/PUT only
                     String boundary = UUID.randomUUID().toString();
                     String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
 
@@ -666,8 +677,11 @@ public class WebServiceProxy {
      *
      * @param <V> The type of the value returned by the method.
      *
-     * @param methodName
-     * The name of the method to invoke.
+     * @param method
+     * The HTTP verb associated with the remote method.
+     *
+     * @param path
+     * The path associated with the remote method.
      *
      * @param resultHandler
      * A callback that will be invoked upon completion of the method.
@@ -676,8 +690,8 @@ public class WebServiceProxy {
      * A future representing the invocation request.
      */
     @SuppressWarnings("unchecked")
-    public <V> Future<V> invoke(String methodName, ResultHandler<V> resultHandler) {
-        return invoke(methodName, Collections.EMPTY_MAP, resultHandler);
+    public <V> Future<V> invoke(String method, String path, ResultHandler<V> resultHandler) {
+        return invoke(method, path, Collections.EMPTY_MAP, resultHandler);
     }
 
     /**
@@ -685,8 +699,11 @@ public class WebServiceProxy {
      *
      * @param <V> The type of the value returned by the method.
      *
-     * @param methodName
-     * The name of the method to invoke.
+     * @param method
+     * The HTTP verb associated with the remote method.
+     *
+     * @param path
+     * The path associated with the remote method.
      *
      * @param arguments
      * The method arguments.
@@ -698,8 +715,8 @@ public class WebServiceProxy {
      * A future representing the invocation request.
      */
     @SuppressWarnings("unchecked")
-    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
-        return invoke(methodName, arguments, Collections.EMPTY_MAP, resultHandler);
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        return invoke(method, path, arguments, Collections.EMPTY_MAP, resultHandler);
     }
 
     /**
@@ -707,8 +724,11 @@ public class WebServiceProxy {
      *
      * @param <V> The type of the value returned by the method.
      *
-     * @param methodName
-     * The name of the method to invoke.
+     * @param method
+     * The HTTP verb associated with the remote method.
+     *
+     * @param path
+     * The path associated with the remote method.
      *
      * @param arguments
      * The method arguments.
@@ -722,8 +742,12 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String methodName, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
-        if (methodName == null) {
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
+        if (method == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (path == null) {
             throw new IllegalArgumentException();
         }
 
@@ -739,14 +763,14 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        URL methodURL;
+        URL url;
         try {
-            methodURL = new URL(baseURL, methodName);
+            url = new URL(baseURL, path);
         } catch (MalformedURLException exception) {
             throw new IllegalArgumentException(exception);
         }
 
-        return executorService.submit(new InvocationCallback<>(methodURL, arguments, attachments, resultHandler));
+        return executorService.submit(new InvocationCallback<>(method, url, arguments, attachments, resultHandler));
     }
 
     /**
