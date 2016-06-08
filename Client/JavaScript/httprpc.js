@@ -24,29 +24,18 @@ var WebServiceProxy = function(baseURL) {
 /**
  * Invokes an HTTP-RPC service method.
  *
- * @param methodName The name of the method to invoke.
- * @param resultHandler A callback that will be invoked upon completion of the method.
- *
- * @return An XMLHttpRequest object representing the invocation request.
- */
-WebServiceProxy.prototype.invoke = function(methodName, resultHandler) {
-    return this.invokeWithArguments(methodName, {}, resultHandler);
-}
-
-/**
- * Invokes an HTTP-RPC service method.
- *
- * @param methodName The name of the method to invoke.
+ * @param method The HTTP verb associated with the remote method.
+ * @param path The path associated with the remote method.
  * @param arguments The method arguments.
  * @param resultHandler A callback that will be invoked upon completion of the method.
  *
  * @return An XMLHttpRequest object representing the invocation request.
  */
-WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, resultHandler) {
-    var url = this.baseURL + "/" + methodName;
+WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandler) {
+    var url = this.baseURL + "/" + path;
 
-    // TODO Rename to query
-    var parameters = "";
+    // TODO Update logic to handle GET, POST, PUT, and DELETE verbs
+    var query = "";
 
     for (name in arguments) {
         var value = arguments[name];
@@ -71,11 +60,11 @@ WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, 
                 continue;
             }
 
-            if (parameters.length > 0) {
-                parameters += "&";
+            if (query.length > 0) {
+                query += "&";
             }
             
-            parameters += encodeURIComponent(name) + "=" + encodeURIComponent(element);
+            query += encodeURIComponent(name) + "=" + encodeURIComponent(element);
         }
     }
 
@@ -95,10 +84,11 @@ WebServiceProxy.prototype.invokeWithArguments = function(methodName, arguments, 
         }
     }
 
-    // TODO If this is a GET or DELETE request, append the parameter list to the
-    request.open("POST", url, true);
+    request.open(method, url, true); // TODO Verify method signature
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    request.send(parameters);
+
+    // TODO POST/PUT only
+    request.send(query);
 
     return request;
 }

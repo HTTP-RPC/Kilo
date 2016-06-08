@@ -22,70 +22,70 @@ function testService() {
     var serviceProxy = new WebServiceProxy("/httprpc-server-test/test");
 
     // Add
-    serviceProxy.invokeWithArguments("add", {a:4, b:2}, function(result, error) {
+    serviceProxy.invoke("GET", "add", {a:4, b:2}, function(result, error) {
         validate(error == null && result == 6);
     });
 
     // Add values
-    serviceProxy.invokeWithArguments("addValues", {values:[1, 2, 3, 4]}, function(result, error) {
+    serviceProxy.invoke("GET", "addValues", {values:[1, 2, 3, 4]}, function(result, error) {
         validate(error == null && result == 10);
     });
 
     // Invert value
-    serviceProxy.invokeWithArguments("invertValue", {value:true}, function(result, error) {
+    serviceProxy.invoke("GET", "invertValue", {value:true}, function(result, error) {
         validate(error == null && result == false);
     });
 
     // Get characters
-    serviceProxy.invokeWithArguments("getCharacters", {text:"Hello, World!"}, function(result, error) {
+    serviceProxy.invoke("GET", "getCharacters", {text:"Hello, World!"}, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify(["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));
     });
 
     // Get selection
-    serviceProxy.invokeWithArguments("getSelection", {items:["a", "b", "c", "d"]}, function(result, error) {
+    serviceProxy.invoke("POST", "getSelection", {items:["a", "b", "c", "d"]}, function(result, error) {
         validate(error == null && result == "a, b, c, d");
     });
 
     // Get map
     var map = {"a":123, "b":456, "c":789};
 
-    serviceProxy.invokeWithArguments("getMap", {"map":map}, function(result, error) {
+    serviceProxy.invoke("GET", "getMap", {"map":map}, function(result, error) {
         validate(error == null && JSON.stringify(result) == JSON.stringify(map));
     });
 
     // Get statistics
-    serviceProxy.invokeWithArguments("getStatistics", {values:[1, 3, 5]}, function(result, error) {
+    serviceProxy.invoke("POST", "getStatistics", {values:[1, 3, 5]}, function(result, error) {
         validate(error == null && result.count == 3 && result.average == 3 && result.sum == 9);
     });
 
     // Get test data
-    serviceProxy.invoke("getTestData", function(result, error) {
+    serviceProxy.invoke("GET", "getTestData", function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify([{a:"hello", b:1, c:2}, {a:"goodbye", b:2, c:4}]));
     });
 
     // Get void
-    serviceProxy.invoke("getVoid", function(result, error) {
+    serviceProxy.invoke("GET", "getVoid", function(result, error) {
         validate(error == null && result == null);
     });
 
     // Get null
-    serviceProxy.invoke("getNull", function(result, error) {
+    serviceProxy.invoke("GET", "getNull", function(result, error) {
         validate(error == null && result == null);
     });
 
     // Get locale code
-    serviceProxy.invoke("getLocaleCode", function(result, error) {
+    serviceProxy.invoke("GET", "getLocaleCode", function(result, error) {
         validate(error == null && result != null);
         document.writeln(result + "<br/>");
     });
 
     // Get user name
-    serviceProxy.invoke("getUserName", function(result, error) {
+    serviceProxy.invoke("GET", "getUserName", function(result, error) {
         validate(error == null && result == "tomcat");
     });
 
     // Is user in role
-    serviceProxy.invokeWithArguments("isUserInRole", {role:"tomcat"}, function(result, error) {
+    serviceProxy.invoke("GET", "isUserInRole", {role:"tomcat"}, function(result, error) {
         validate(error == null && result == true);
     });
 }
