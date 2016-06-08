@@ -21,11 +21,6 @@ var WebServiceProxy = function(baseURL) {
     this.baseURL = baseURL;
 }
 
-WebServiceProxy.GET_METHOD = "GET";
-WebServiceProxy.POST_METHOD = "POST";
-WebServiceProxy.PUT_METHOD = "PUT";
-WebServiceProxy.DELETE_METHOD = "DELETE";
-
 /**
  * Invokes an HTTP-RPC service method.
  *
@@ -72,11 +67,6 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
-    if (method.toLowerCase() == WebServiceProxy.GET_METHOD.toLowerCase()
-        || method.toLowerCase() == WebServiceProxy.DELETE_METHOD.toLowerCase()) {
-        url += "?" + query;
-    }
-
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function() {
@@ -93,13 +83,12 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
-    request.open(method, url, true);
-    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    if (method.toLowerCase() == WebServiceProxy.GET_METHOD.toLowerCase()
-        || method.toLowerCase() == WebServiceProxy.DELETE_METHOD.toLowerCase()) {
+    if (method.toLowerCase() == "get" || method.toLowerCase() == "delete") {
+        request.open(method, url + "?" + query, true);
         request.send();
     } else {
+        request.open(method, url, true);
+        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.send(query);
     }
 
