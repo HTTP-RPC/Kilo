@@ -23,6 +23,11 @@ NSString * const WSMethodKey = @"method";
 NSString * const WSPathKey = @"path";
 NSString * const WSArgumentsKey = @"arguments";
 
+NSString * const kGetMethod = @"GET";
+NSString * const kPostMethod = @"POST";
+NSString * const kPutMethod = @"PUT";
+NSString * const kDeleteMethod = @"DELETE";
+
 NSString * const kContentTypeField = @"Content-Type";
 
 NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencoded";
@@ -72,26 +77,14 @@ NSString * const kCRLF = @"\r\n";
 {
     NSURLSessionDataTask *task = nil;
 
-    // TODO Update logic to handle GET, POST, PUT, and DELETE verbs    
-    NSURL *requestURL = [NSURL URLWithString:path relativeToURL:_baseURL];
+    NSURL *url = [NSURL URLWithString:path relativeToURL:_baseURL];
 
-    if (requestURL != nil) {
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: requestURL];
+    if (url != nil) {
+        // Construct query
+        NSMutableString *query = nil;
 
-        [request setHTTPMethod:method];
-
-        // Authenticate request
-        id<WSAuthentication> authentication = [self authentication];
-
-        if (authentication != nil) {
-            [authentication authenticate:request];
-        }
-
-        if ([attachments count] == 0) {
-            [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
-
-            // Construct query
-            NSMutableString *query = [NSMutableString new];
+        if ([method isEqual:kGetMethod] || [method isEqual:kDeleteMethod] || [attachments count] == 0) {
+            query = [NSMutableString new];
 
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
@@ -109,74 +102,96 @@ NSString * const kCRLF = @"\r\n";
                 }
             }
 
-            [request setHTTPBody:[query UTF8Data]];
-        } else {
-            NSString *boundary = [[NSUUID new] UUIDString];
-            NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
-
-            [request setValue:requestContentType forHTTPHeaderField:kContentTypeField];
-
-            // Construct multi-part form data
-            NSMutableData *body = [NSMutableData new];
-
-            NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
-
-            NSData *contentDispositionHeaderData = [kContentDispositionHeader UTF8Data];
-
-            for (NSString *name in arguments) {
-                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
-
-                for (id element in values) {
-                    NSString *value = [WSWebServiceProxy parameterValueForElement:element];
-
-                    [body appendData:boundaryData];
-
-                    [body appendData:contentDispositionHeaderData];
-                    [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
-
-                    [body appendData:[kCRLF UTF8Data]];
-                    [body appendData:[kCRLF UTF8Data]];
-                    [body appendData:[value UTF8Data]];
-                    [body appendData:[kCRLF UTF8Data]];
-                }
+            // Append query to URL
+            if ([method isEqual:kGetMethod] || [method isEqual:kDeleteMethod]) {
+                url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
             }
+        }
 
-            for (NSString *name in attachments) {
-                NSArray *urls = [attachments objectForKey:name];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: url];
 
-                for (NSURL *url in urls) {
-                    [body appendData:boundaryData];
+        [request setHTTPMethod:method];
 
-                    [body appendData:contentDispositionHeaderData];
-                    [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
+        // Authenticate request
+        id<WSAuthentication> authentication = [self authentication];
 
-                    NSString *filename = [url lastPathComponent];
+        if (authentication != nil) {
+            [authentication authenticate:request];
+        }
 
-                    [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
-                    [body appendData:[kCRLF UTF8Data]];
+        // Write request body
+        if ([method isEqual:kPostMethod] || [method isEqual:kPutMethod]) {
+            if ([attachments count] == 0) {
+                [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
 
-                    CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
-                    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
+                [request setHTTPBody:[query UTF8Data]];
+            } else {
+                NSString *boundary = [[NSUUID new] UUIDString];
+                NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
 
-                    NSString *attachmentContentType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+                [request setValue:requestContentType forHTTPHeaderField:kContentTypeField];
 
-                    CFRelease(uti);
+                NSMutableData *body = [NSMutableData new];
 
-                    if (attachmentContentType == nil) {
-                        attachmentContentType = kOctetStreamMIMEType;
+                NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
+
+                NSData *contentDispositionHeaderData = [kContentDispositionHeader UTF8Data];
+
+                for (NSString *name in arguments) {
+                    NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+
+                    for (id element in values) {
+                        NSString *value = [WSWebServiceProxy parameterValueForElement:element];
+
+                        [body appendData:boundaryData];
+
+                        [body appendData:contentDispositionHeaderData];
+                        [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
+
+                        [body appendData:[kCRLF UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
+                        [body appendData:[value UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
                     }
-
-                    [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
-                    [body appendData:[kCRLF UTF8Data]];
-
-                    [body appendData:[NSData dataWithContentsOfURL:url]];
-                    [body appendData:[kCRLF UTF8Data]];
                 }
+
+                for (NSString *name in attachments) {
+                    NSArray *urls = [attachments objectForKey:name];
+
+                    for (NSURL *url in urls) {
+                        [body appendData:boundaryData];
+
+                        [body appendData:contentDispositionHeaderData];
+                        [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
+
+                        NSString *filename = [url lastPathComponent];
+
+                        [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
+
+                        CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
+                        CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
+
+                        NSString *attachmentContentType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+
+                        CFRelease(uti);
+
+                        if (attachmentContentType == nil) {
+                            attachmentContentType = kOctetStreamMIMEType;
+                        }
+
+                        [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
+
+                        [body appendData:[NSData dataWithContentsOfURL:url]];
+                        [body appendData:[kCRLF UTF8Data]];
+                    }
+                }
+
+                [body appendData:[[NSString stringWithFormat:@"--%@--%@", boundary, kCRLF] UTF8Data]];
+
+                [request setHTTPBody:body];
             }
-
-            [body appendData:[[NSString stringWithFormat:@"--%@--%@", boundary, kCRLF] UTF8Data]];
-
-            [request setHTTPBody:body];
         }
 
         // Execute request
