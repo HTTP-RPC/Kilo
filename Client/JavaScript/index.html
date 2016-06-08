@@ -59,28 +59,28 @@ function testService() {
     });
 
     // Get test data
-    serviceProxy.invoke("GET", "getTestData", function(result, error) {
+    serviceProxy.invoke("GET", "getTestData", {}, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify([{a:"hello", b:1, c:2}, {a:"goodbye", b:2, c:4}]));
     });
 
     // Get void
-    serviceProxy.invoke("GET", "getVoid", function(result, error) {
+    serviceProxy.invoke("GET", "getVoid", {}, function(result, error) {
         validate(error == null && result == null);
     });
 
     // Get null
-    serviceProxy.invoke("GET", "getNull", function(result, error) {
+    serviceProxy.invoke("GET", "getNull", {}, function(result, error) {
         validate(error == null && result == null);
     });
 
     // Get locale code
-    serviceProxy.invoke("GET", "getLocaleCode", function(result, error) {
+    serviceProxy.invoke("GET", "getLocaleCode", {}, function(result, error) {
         validate(error == null && result != null);
         document.writeln(result + "<br/>");
     });
 
     // Get user name
-    serviceProxy.invoke("GET", "getUserName", function(result, error) {
+    serviceProxy.invoke("GET", "getUserName", {}, function(result, error) {
         validate(error == null && result == "tomcat");
     });
 

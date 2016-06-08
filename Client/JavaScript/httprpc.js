@@ -19,12 +19,12 @@
  */
 var WebServiceProxy = function(baseURL) {
     this.baseURL = baseURL;
-
-    var GET_METHOD = "GET";
-    var POST_METHOD = "POST";
-    var PUT_METHOD = "PUT";
-    var DELETE_METHOD = "DELETE";
 }
+
+WebServiceProxy.GET_METHOD = "GET";
+WebServiceProxy.POST_METHOD = "POST";
+WebServiceProxy.PUT_METHOD = "PUT";
+WebServiceProxy.DELETE_METHOD = "DELETE";
 
 /**
  * Invokes an HTTP-RPC service method.
@@ -39,8 +39,6 @@ var WebServiceProxy = function(baseURL) {
 WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandler) {
     var url = this.baseURL + "/" + path;
 
-    // TODO Update logic to handle GET, POST, PUT, and DELETE verbs
-    // TODO Be sure to call toLowerCase() on the verb
     var query = "";
 
     for (name in arguments) {
@@ -74,6 +72,11 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
+    if (method.toLowerCase() == WebServiceProxy.GET_METHOD.toLowerCase()
+        || method.toLowerCase() == WebServiceProxy.DELETE_METHOD.toLowerCase()) {
+        url += "?" + query;
+    }
+
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function() {
@@ -90,11 +93,15 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
-    request.open(method, url, true); // TODO Verify method signature
+    request.open(method, url, true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    // TODO POST/PUT only
-    request.send(query);
+    if (method.toLowerCase() == WebServiceProxy.GET_METHOD.toLowerCase()
+        || method.toLowerCase() == WebServiceProxy.DELETE_METHOD.toLowerCase()) {
+        request.send();
+    } else {
+        request.send(query);
+    }
 
     return request;
 }
