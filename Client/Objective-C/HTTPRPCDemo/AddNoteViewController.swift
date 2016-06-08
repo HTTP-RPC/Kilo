@@ -45,7 +45,8 @@ class AddNoteViewController: UITableViewController {
     }
 
     func done() {
-        AppDelegate.serviceProxy.invoke("addNote", withArguments: ["message": messageTextView.text]) {(result, error) in
+        // TODO Use POST method, "notes" path
+        AppDelegate.serviceProxy.invoke("POST", path: "addNote", arguments: ["message": messageTextView.text]) {(result, error) in
             if (error == nil) {
                 self.dismissViewControllerAnimated(true, completion: nil)
             } else {

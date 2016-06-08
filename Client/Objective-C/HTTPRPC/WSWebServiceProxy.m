@@ -19,7 +19,8 @@
 
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
-NSString * const WSMethodNameKey = @"methodName";
+NSString * const WSMethodKey = @"method";
+NSString * const WSPathKey = @"path";
 NSString * const WSArgumentsKey = @"arguments";
 
 NSString * const kContentTypeField = @"Content-Type";
@@ -51,32 +52,33 @@ NSString * const kCRLF = @"\r\n";
     return self;
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
-    return [self invoke:methodName withArguments:[NSDictionary new] resultHandler:resultHandler];
+    return [self invoke:method path:path arguments:[NSDictionary new] resultHandler:resultHandler];
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName
-    withArguments:(NSDictionary *)arguments
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary *)arguments
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
-    return [self invoke:methodName withArguments:arguments attachments:[NSDictionary new] resultHandler:resultHandler];
+    return [self invoke:method path:path arguments:arguments attachments:[NSDictionary new] resultHandler:resultHandler];
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName
-    withArguments:(NSDictionary *)arguments
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary *)arguments
     attachments:(NSDictionary *)attachments
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
     NSURLSessionDataTask *task = nil;
 
-    NSURL *requestURL = [NSURL URLWithString:methodName relativeToURL:_baseURL];
+    // TODO Update logic to handle GET, POST, PUT, and DELETE verbs    
+    NSURL *requestURL = [NSURL URLWithString:path relativeToURL:_baseURL];
 
     if (requestURL != nil) {
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: requestURL];
 
-        [request setHTTPMethod:@"POST"];
+        [request setHTTPMethod:method];
 
         // Authenticate request
         id<WSAuthentication> authentication = [self authentication];
@@ -88,27 +90,26 @@ NSString * const kCRLF = @"\r\n";
         if ([attachments count] == 0) {
             [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
 
-            // Construct parameter list
-            // TODO Rename to query
-            NSMutableString *parameters = [NSMutableString new];
+            // Construct query
+            NSMutableString *query = [NSMutableString new];
 
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
                 for (NSUInteger i = 0, n = [values count]; i < n; i++) {
-                    if ([parameters length] > 0) {
-                        [parameters appendString:@"&"];
+                    if ([query length] > 0) {
+                        [query appendString:@"&"];
                     }
 
                     NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
 
-                    [parameters appendString:[name URLEncodedString]];
-                    [parameters appendString:@"="];
-                    [parameters appendString:[value URLEncodedString]];
+                    [query appendString:[name URLEncodedString]];
+                    [query appendString:@"="];
+                    [query appendString:[value URLEncodedString]];
                 }
             }
 
-            [request setHTTPBody:[parameters UTF8Data]];
+            [request setHTTPBody:[query UTF8Data]];
         } else {
             NSString *boundary = [[NSUUID new] UUIDString];
             NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
@@ -193,8 +194,7 @@ NSString * const kCRLF = @"\r\n";
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
-                        WSMethodNameKey: methodName,
-                        WSArgumentsKey: arguments
+                        WSMethodKey: method, WSPathKey: path, WSArgumentsKey: arguments
                     }];
                 }
             }

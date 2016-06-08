@@ -70,46 +70,46 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Add
-        serviceProxy.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
+        serviceProxy.invoke("GET", path: "add", arguments: ["a": 2, "b": 4]) {(result, error) in
             validate(result as? Int == 6, error: error, cell: self.addCell)
         }
 
         // Add values
-        serviceProxy.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+        serviceProxy.invoke("GET", path: "addValues", arguments: ["values": [1, 2, 3, 4]]) {(result, error) in
             validate(result as? Int == 10, error: error, cell: self.addValuesCell)
         }
 
         // Invert value
-        serviceProxy.invoke("invertValue", withArguments: ["value": true]) {(result, error) in
+        serviceProxy.invoke("GET", path: "invertValue", arguments: ["value": true]) {(result, error) in
             validate(result as? Bool == false, error: error, cell: self.invertValueCell)
         }
 
         // Get characters
-        serviceProxy.invoke("getCharacters", withArguments: ["text": "Hello, World!"]) {(result, error) in
+        serviceProxy.invoke("GET", path: "getCharacters", arguments: ["text": "Hello, World!"]) {(result, error) in
             validate(result as? NSArray == ["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error: error, cell: self.getCharactersCell)
         }
 
         // Get selection
-        serviceProxy.invoke("getSelection", withArguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
+        serviceProxy.invoke("POST", path: "getSelection", arguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
             validate(result as? String == "a, b, c, d", error: error, cell: self.getSelectionCell)
         }
 
         // Get map
         let map = ["a": 123, "b": 456, "c": 789];
 
-        serviceProxy.invoke("getMap", withArguments: ["map": map]) {(result, error) in
+        serviceProxy.invoke("GET", path: "getMap", arguments: ["map": map]) {(result, error) in
             validate(result as? NSDictionary == map, error: error, cell: self.getMapCell)
         }
 
         // Get statistics
-        serviceProxy.invoke("getStatistics", withArguments: ["values": [1, 3, 5]]) {(result, error) in
+        serviceProxy.invoke("POST", path: "getStatistics", arguments: ["values": [1, 3, 5]]) {(result, error) in
             let statistics: Statistics? = (error == nil) ? Statistics(dictionary: result as! [String : AnyObject]) : nil
 
             validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, error: error, cell: self.getStatisticsCell)
         }
 
         // Get test data
-        serviceProxy.invoke("getTestData") {(result, error) in
+        serviceProxy.invoke("GET", path: "getTestData") {(result, error) in
             validate(result as? NSArray == [
                 ["a": "hello", "b": 1, "c": 2.0],
                 ["a": "goodbye", "b": 2,"c": 4.0]
@@ -117,29 +117,29 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Get void
-        serviceProxy.invoke("getVoid") {(result, error) in
+        serviceProxy.invoke("GET", path: "getVoid") {(result, error) in
             validate(result == nil, error: error, cell: self.getVoidCell)
         }
 
         // Get null
-        serviceProxy.invoke("getNull") {(result, error) in
+        serviceProxy.invoke("GET", path: "getNull") {(result, error) in
             validate(result as? NSNull != nil, error: error, cell: self.getNullCell)
         }
 
         // Get locale code
-        serviceProxy.invoke("getLocaleCode") {(result, error) in
+        serviceProxy.invoke("GET", path: "getLocaleCode") {(result, error) in
             validate(result != nil, error: error, cell: self.getLocaleCodeCell)
 
             self.getLocaleCodeCell.detailTextLabel!.text = result as? String
         }
 
         // Get user name
-        serviceProxy.invoke("getUserName") {(result, error) in
+        serviceProxy.invoke("GET", path: "getUserName") {(result, error) in
             validate(result as? String == "tomcat", error: error, cell: self.getUserNameCell)
         }
 
         // Is user in role
-        serviceProxy.invoke("isUserInRole", withArguments: ["role": "tomcat"]) {(result, error) in
+        serviceProxy.invoke("GET", path: "isUserInRole", arguments: ["role": "tomcat"]) {(result, error) in
             validate(result as? Bool == true, error: error, cell: self.isUserInRoleCell)
         }
 
@@ -148,7 +148,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         let textTestURL = mainBundle.URLForResource("test", withExtension: "txt")!
         let imageTestURL = mainBundle.URLForResource("test", withExtension: "jpg")!
 
-        serviceProxy.invoke("getAttachmentInfo", withArguments:[:], attachments:["test": [textTestURL, imageTestURL]]) {(result, error) in
+        serviceProxy.invoke("POST", path: "getAttachmentInfo", arguments:[:], attachments:["test": [textTestURL, imageTestURL]]) {(result, error) in
             let attachmentInfo = result as! [[String: AnyObject]];
 
             let textInfo = attachmentInfo[0];

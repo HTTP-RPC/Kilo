@@ -35,7 +35,8 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
-        AppDelegate.serviceProxy.invoke("listNotes") {(result, error) in
+        // TODO Use GET method, "notes" path
+        AppDelegate.serviceProxy.invoke("GET", path: "listNotes") {(result, error) in
             if (error == nil) {
                 self.noteList = result as! [[String: AnyObject]]
 
@@ -76,7 +77,8 @@ class MainViewController: UITableViewController {
         if (editingStyle == .Delete) {
             let id = noteList[indexPath.row]["id"] as! Int
 
-            AppDelegate.serviceProxy.invoke("deleteNote", withArguments: ["id": id]) {(result, error) in
+            // TODO Use DELETE method, "notes" path
+            AppDelegate.serviceProxy.invoke("POST", path: "deleteNote", arguments: ["id": id]) {(result, error) in
                 if (error == nil) {
                     self.noteList.removeAtIndex(indexPath.row)
 

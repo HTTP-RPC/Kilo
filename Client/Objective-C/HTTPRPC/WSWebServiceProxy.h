@@ -24,9 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString * const WSWebServiceErrorDomain;
 
 /**
- * HTTP-RPC method name key.
+ * HTTP-RPC method key.
  */
-extern NSString * const WSMethodNameKey;
+extern NSString * const WSMethodKey;
+
+/**
+ * HTTP-RPC path key.
+ */
+extern NSString * const WSPathKey;
 
 /**
  * HTTP-RPC arguments key.
@@ -66,39 +71,42 @@ extern NSString * const WSArgumentsKey;
 /**
  * Invokes an HTTP-RPC service method.
  *
- * @param methodName The name of the method to invoke.
+ * @param method The HTTP verb associated with the remote method.
+ * @param path The path associated with the remote method.
  * @param resultHandler A callback that will be invoked upon completion of the method.
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
  * Invokes an HTTP-RPC service method.
  *
- * @param methodName The name of the method to invoke.
+ * @param method The HTTP verb associated with the remote method.
+ * @param path The path associated with the remote method.
  * @param arguments The method arguments.
  * @param resultHandler A callback that will be invoked upon completion of the method.
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName
-    withArguments:(NSDictionary<NSString *, id> *)arguments
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
  * Invokes an HTTP-RPC service method.
  *
- * @param methodName The name of the method to invoke.
+ * @param method The HTTP verb associated with the remote method.
+ * @param path The path associated with the remote method.
  * @param arguments The method arguments.
  * @param attachments The method attachments.
  * @param resultHandler A callback that will be invoked upon completion of the method.
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)methodName
-    withArguments:(NSDictionary<NSString *, id> *)arguments
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary<NSString *, id> *)arguments
     attachments:(NSDictionary<NSString *, NSArray<NSURL *> *> *)attachments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
