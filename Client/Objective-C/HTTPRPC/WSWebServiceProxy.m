@@ -83,7 +83,9 @@ NSString * const kCRLF = @"\r\n";
         // Construct query
         NSMutableString *query = nil;
 
-        if ([method isEqual:kGetMethod] || [method isEqual:kDeleteMethod] || [attachments count] == 0) {
+        if ([method caseInsensitiveCompare:kGetMethod] == NSOrderedSame
+            || [method caseInsensitiveCompare:kDeleteMethod] == NSOrderedSame
+            || [attachments count] == 0) {
             query = [NSMutableString new];
 
             for (NSString *name in arguments) {
@@ -103,7 +105,8 @@ NSString * const kCRLF = @"\r\n";
             }
 
             // Append query to URL
-            if ([method isEqual:kGetMethod] || [method isEqual:kDeleteMethod]) {
+            if ([method caseInsensitiveCompare:kGetMethod] == NSOrderedSame
+                || [method caseInsensitiveCompare:kDeleteMethod] == NSOrderedSame) {
                 url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
             }
         }
@@ -120,7 +123,8 @@ NSString * const kCRLF = @"\r\n";
         }
 
         // Write request body
-        if ([method isEqual:kPostMethod] || [method isEqual:kPutMethod]) {
+        if ([method caseInsensitiveCompare:kPostMethod] == NSOrderedSame
+            || [method caseInsensitiveCompare:kPutMethod] == NSOrderedSame) {
             if ([attachments count] == 0) {
                 [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
 

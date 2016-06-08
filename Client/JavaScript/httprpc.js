@@ -19,6 +19,11 @@
  */
 var WebServiceProxy = function(baseURL) {
     this.baseURL = baseURL;
+
+    var GET_METHOD = "GET";
+    var POST_METHOD = "POST";
+    var PUT_METHOD = "PUT";
+    var DELETE_METHOD = "DELETE";
 }
 
 /**
@@ -35,6 +40,7 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
     var url = this.baseURL + "/" + path;
 
     // TODO Update logic to handle GET, POST, PUT, and DELETE verbs
+    // TODO Be sure to call toLowerCase() on the verb
     var query = "";
 
     for (name in arguments) {
