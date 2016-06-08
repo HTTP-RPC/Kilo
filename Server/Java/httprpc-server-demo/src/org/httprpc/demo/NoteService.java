@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.httprpc.RPC;
 import org.httprpc.WebService;
 
 /**
@@ -40,6 +41,7 @@ public class NoteService extends WebService {
      * @param message
      * The note text.
      */
+    @RPC(method="POST", path="notes")
     public void addNote(String message) {
         synchronized (notes) {
             notes.put(nextNoteID, mapOf(
@@ -58,6 +60,7 @@ public class NoteService extends WebService {
      * @param id
      * The note ID.
      */
+    @RPC(method="DELETE", path="notes")
     public void deleteNote(int id) {
         synchronized (notes) {
             notes.remove(id);
@@ -70,6 +73,7 @@ public class NoteService extends WebService {
      * @return
      * A list of all notes.
      */
+    @RPC(method="GET", path="notes")
     public List<Map<String, ?>> listNotes() {
         LinkedList<Map<String, ?>> noteList = new LinkedList<>();
 

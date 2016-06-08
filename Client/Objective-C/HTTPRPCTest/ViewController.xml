@@ -15,18 +15,18 @@ limitations under the License.
 -->
 
 <LMTableView>
-    <UITableViewCell style="value1TableViewCell" id="addCell" textLabel.text="add()"/>
-    <UITableViewCell style="value1TableViewCell" id="addValuesCell" textLabel.text="addValues()"/>
-    <UITableViewCell style="value1TableViewCell" id="invertValueCell" textLabel.text="invertValue()"/>
-    <UITableViewCell style="value1TableViewCell" id="getCharactersCell" textLabel.text="getCharacters()"/>
-    <UITableViewCell style="value1TableViewCell" id="getSelectionCell" textLabel.text="getSelection()"/>
-    <UITableViewCell style="value1TableViewCell" id="getMapCell" textLabel.text="getMap()"/>
-    <UITableViewCell style="value1TableViewCell" id="getStatisticsCell" textLabel.text="getStatistics()"/>
-    <UITableViewCell style="value1TableViewCell" id="getTestDataCell" textLabel.text="getTestData()"/>
-    <UITableViewCell style="value1TableViewCell" id="getVoidCell" textLabel.text="getVoid()"/>
-    <UITableViewCell style="value1TableViewCell" id="getNullCell" textLabel.text="getNull()"/>
-    <UITableViewCell style="value1TableViewCell" id="getLocaleCodeCell" textLabel.text="getLocaleCode()"/>
-    <UITableViewCell style="value1TableViewCell" id="getUserNameCell" textLabel.text="getUserName()"/>
-    <UITableViewCell style="value1TableViewCell" id="isUserInRoleCell" textLabel.text="isUserInRole()"/>
-    <UITableViewCell style="value1TableViewCell" id="getAttachmentInfoCell" textLabel.text="getAttachmentInfo()"/>
+    <UITableViewCell style="value1TableViewCell" id="sumCell" textLabel.text="Sum"/>
+    <UITableViewCell style="value1TableViewCell" id="sumAllCell" textLabel.text="Sum All"/>
+    <UITableViewCell style="value1TableViewCell" id="inverseCell" textLabel.text="Inverse"/>
+    <UITableViewCell style="value1TableViewCell" id="charactersCell" textLabel.text="Characters"/>
+    <UITableViewCell style="value1TableViewCell" id="selectionCell" textLabel.text="Selection"/>
+    <UITableViewCell style="value1TableViewCell" id="mapCell" textLabel.text="Map"/>
+    <UITableViewCell style="value1TableViewCell" id="statisticsCell" textLabel.text="Statistics"/>
+    <UITableViewCell style="value1TableViewCell" id="testDataCell" textLabel.text="Test Data"/>
+    <UITableViewCell style="value1TableViewCell" id="voidCell" textLabel.text="Void"/>
+    <UITableViewCell style="value1TableViewCell" id="nullCell" textLabel.text="Null"/>
+    <UITableViewCell style="value1TableViewCell" id="localeCodeCell" textLabel.text="Locale Code"/>
+    <UITableViewCell style="value1TableViewCell" id="userNameCell" textLabel.text="User Name"/>
+    <UITableViewCell style="value1TableViewCell" id="userRoleStatusCell" textLabel.text="User Role Status"/>
+    <UITableViewCell style="value1TableViewCell" id="attachmentInfoCell" textLabel.text="Attachment Info"/>
 </LMTableView>

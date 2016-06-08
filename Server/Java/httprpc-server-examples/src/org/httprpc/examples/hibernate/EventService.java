@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.httprpc.RPC;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 
@@ -33,6 +34,7 @@ public class EventService extends WebService {
      * @param name
      * The name of the event.
      */
+    @RPC(method="POST", path="events")
     public void createEvent(String title) {
         SessionFactory sessionFactory = HibernateSessionFactoryManager.getSessionFactory();
 
@@ -49,6 +51,7 @@ public class EventService extends WebService {
      * @return
      * The list of events.
      */
+    @RPC(method="GET", path="events")
     public List<Map<String, Object>> getEvents() {
         SessionFactory sessionFactory = HibernateSessionFactoryManager.getSessionFactory();
 

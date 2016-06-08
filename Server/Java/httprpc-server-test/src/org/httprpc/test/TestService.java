@@ -35,13 +35,13 @@ import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
 public class TestService extends WebService {
-    @RPC(method="GET", path="add")
-    public double add(double a, double b) {
+    @RPC(method="GET", path="sum")
+    public double getSum(double a, double b) {
         return a + b;
     }
 
-    @RPC(method="GET", path="addValues")
-    public double addValues(List<Double> values) {
+    @RPC(method="GET", path="sumAll")
+    public double getSumAll(List<Double> values) {
         double total = 0;
 
         for (double value : values) {
@@ -51,12 +51,12 @@ public class TestService extends WebService {
         return total;
     }
 
-    @RPC(method="GET", path="invertValue")
-    public boolean invertValue(boolean value) {
+    @RPC(method="GET", path="inverse")
+    public boolean getInverse(boolean value) {
         return !value;
     }
 
-    @RPC(method="GET", path="getCharacters")
+    @RPC(method="GET", path="characters")
     public List<String> getCharacters(String text) {
         List<String> characters = null;
 
@@ -73,17 +73,17 @@ public class TestService extends WebService {
         return characters;
     }
 
-    @RPC(method="POST", path="getSelection")
+    @RPC(method="POST", path="selection")
     public String getSelection(List<String> items) {
         return String.join(", ", items);
     }
 
-    @RPC(method="GET", path="getMap")
+    @RPC(method="GET", path="map")
     public Map<String, Integer> getMap(Map<String, Integer> map) {
         return map;
     }
 
-    @RPC(method="GET", path="getTree")
+    @RPC(method="GET", path="tree")
     public Map<String, Object> getTree() {
         TreeNode root = new TreeNode("Seasons", false);
 
@@ -110,7 +110,7 @@ public class TestService extends WebService {
         return new BeanAdapter(root);
     }
 
-    @RPC(method="POST", path="getStatistics")
+    @RPC(method="POST", path="statistics")
     public Map<String, Object> getStatistics(List<Double> values) {
         Statistics statistics = new Statistics();
 
@@ -127,7 +127,7 @@ public class TestService extends WebService {
         return new BeanAdapter(statistics);
     }
 
-    @RPC(method="GET", path="getTestData")
+    @RPC(method="GET", path="testData")
     public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
@@ -143,17 +143,17 @@ public class TestService extends WebService {
         return new ResultSetAdapter(statement.executeQuery());
     }
 
-    @RPC(method="GET", path="getVoid")
+    @RPC(method="GET", path="void")
     public void getVoid() {
         // No-op
     }
 
-    @RPC(method="GET", path="getNull")
+    @RPC(method="GET", path="null")
     public String getNull() {
         return null;
     }
 
-    @RPC(method="GET", path="getLocaleCode")
+    @RPC(method="GET", path="localeCode")
     public String getLocaleCode() {
         Locale locale = getLocale();
 
@@ -161,17 +161,17 @@ public class TestService extends WebService {
     }
 
     @Override
-    @RPC(method="GET", path="getUserName")
+    @RPC(method="GET", path="userName")
     public String getUserName() {
         return super.getUserName();
     }
 
-    @RPC(method="GET", path="isUserInRole")
-    public boolean isUserInRole(String role) {
+    @RPC(method="GET", path="userRoleStatus")
+    public boolean getUserRoleStatus(String role) {
         return getUserRoles().contains(role);
     }
 
-    @RPC(method="POST", path="getAttachmentInfo")
+    @RPC(method="POST", path="attachmentInfo")
     public List<Map<String, ?>> getAttachmentInfo() throws IOException {
         LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
