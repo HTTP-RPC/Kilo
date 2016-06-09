@@ -3,29 +3,29 @@
 <title>Test Form</title>
 </head>
 <body>
-<form action="${pageContext.request.contextPath}/test/add" method="get">
+<form action="${pageContext.request.contextPath}/test/sum" method="get">
 <table>
 <tr>
 <td>A</td><td><input type="text" name="a" value="2" size="4"/></td>
 <td>B</td><td><input type="text" name="b" value="4" size="4"/></td>
 </tr>
 <tr>
-<td colspan="2"><input type="submit" value="Add"/></td>
+<td colspan="2"><input type="submit" value="Get Sum"/></td>
 </tr>
 </table>
 </form>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/addValues?values=1&values=2&values=3&values=4">Add Values</a>
+<a href="${pageContext.request.contextPath}/test/sumAll?values=1&values=2&values=3&values=4">Sum All</a>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/invertValue?value=true">Invert Value</a>
+<a href="${pageContext.request.contextPath}/test/inverse?value=true">Inverse</a>
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/getCharacters" method="get">
+<form action="${pageContext.request.contextPath}/test/characters" method="get">
 <table>
 <tr>
 <td>Text</td><td><input type="text" name="text" value="Hello, World!"/></td>
@@ -38,7 +38,7 @@
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/getSelection" method="post">
+<form action="${pageContext.request.contextPath}/test/selection" method="post">
 <table>
 <tr>
 <td style="vertical-align:top">Items</td>
@@ -59,15 +59,15 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getMap?map=a:123&map=b:456&map=c:789">Get Map</a>
+<a href="${pageContext.request.contextPath}/test/map?map=a:123&map=b:456&map=c:789">Map</a>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getTree">Get Tree</a>
+<a href="${pageContext.request.contextPath}/test/tree">Tree</a>
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/getStatistics" method="post">
+<form action="${pageContext.request.contextPath}/test/statistics" method="post">
 <table> 
 <tr>
 <td>Value 1</td><td><input type="text" name="values" value="1" size="4"/></td>
@@ -82,62 +82,33 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getTestData">Get Test Data</a>
+<a href="${pageContext.request.contextPath}/test/testData">Test Data</a>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getVoid">Get Void</a>
+<a href="${pageContext.request.contextPath}/test/void">Void</a>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getNull">Get Null</a>
+<a href="${pageContext.request.contextPath}/test/null">Null</a>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getLocaleCode">Get Locale Code</a>
+<a href="${pageContext.request.contextPath}/test/localeCode">Locale Code</a>
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/getUserName">Get User Name</a>
+<a href="${pageContext.request.contextPath}/test/userName">User Name</a>
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/isUserInRole" method="get">
+<form action="${pageContext.request.contextPath}/test/userRoleStatus" method="get">
 <table>
 <tr>
 <td>Role</td><td><input type="text" name="role" value="tomcat"/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit" value="Is User in Role"/></td>
-</tr>
-</table>
-</form>
-
-<hr/>
-
-<form action="${pageContext.request.contextPath}/test/getAttachmentInfo" method="post" enctype="multipart/form-data">
-<table>
-<tr>
-<td>File 1</td><td><input type="file" name="file1"/></td>
-</tr>
-<tr>
-<td>File 2</td><td><input type="file" name="file2"/></td>
-</tr>
-<tr>
-<td colspan="2"><input type="submit" value="Get Attachment Info"/></td>
-</tr>
-</table>
-</form>
-
-<hr/>
-
-<form action="${pageContext.request.contextPath}/test/getAttachmentInfo" method="post" enctype="multipart/form-data">
-<table>
-<tr>
-<td>Files</td><td><input type="file" name="files" multiple/></td>
-</tr>
-<tr>
-<td colspan="2"><input type="submit" value="Get Attachment Info"/></td>
 </tr>
 </table>
 </form>

@@ -83,13 +83,13 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
-    if (method.toLowerCase() == "get" || method.toLowerCase() == "delete") {
-        request.open(method, url + "?" + query, true);
-        request.send();
-    } else {
+    if (method.toLowerCase() == "post") {
         request.open(method, url, true);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.send(query);
+    } else {
+        request.open(method, url + "?" + query, true);
+        request.send();
     }
 
     return request;
