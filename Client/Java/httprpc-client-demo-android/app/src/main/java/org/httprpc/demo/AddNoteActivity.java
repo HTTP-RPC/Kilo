@@ -55,7 +55,7 @@ public class AddNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = messageEditText.getText().toString();
 
-                NotesApplication.getServiceProxy().invoke("addNote", mapOf(entry("message", message)), new ResultHandler<Void>() {
+                NotesApplication.getServiceProxy().invoke("POST", "notes", mapOf(entry("message", message)), new ResultHandler<Void>() {
                     @Override
                     public void execute(Void result, Exception exception) {
                         if (exception == null) {

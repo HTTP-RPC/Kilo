@@ -31,11 +31,11 @@ Support currently exists for implementing HTTP-RPC services in Java, and consumi
 I am always looking for ways to improve HTTP-RPC. If you have any suggestions, please [let me know](mailto:gk_brown@verizon.net?subject=HTTP-RPC).
 
 # Java Server
-The Java server implementation of HTTP-RPC allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following classes:
+The Java server implementation of HTTP-RPC allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following types:
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
-    * `Attachment` - interface representing an attachment
+    * `RPC` - annotation that specifies a remote procedure call
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
 * _`org.httprpc.beans`_
     * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
@@ -76,7 +76,6 @@ For example, the `org.httprpc.sql.ResultSetAdapter` class wraps an instance of `
 * `getLocale()` - returns the locale associated with the current request
 * `getUserName()` - returns the user name associated with the current request, or `null` if the request was not authenticated
 * `getUserRoles()` - returns a set representing the roles the user belongs to, or `null` if the request was not authenticated
-* `getAttachments()` - returns the attachments associated with the current request
 
 The values returned by these methods are populated via protected setters, which are called once per request by `RequestDispatcherServlet`. These setters are not meant to be called by application code. However, they can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
 
@@ -304,14 +303,12 @@ Remote methods are executed by calling the `invoke()` method:
     
     public <V> Future<V> invoke(String methodName, 
         Map<String, ?> arguments, 
-        Map<String, List<URL>> attachments, 
         ResultHandler<V> resultHandler) { ... }
 
 This method takes the following arguments:
 
 * `methodName` - the name of the remote method to invoke
 * `arguments` - a map containing the method arguments as key/value pairs
-* `attachments` - a map containing any attachments to the method
 * `resultHandler` - an instance of `org.httprpc.ResultHandler` that will be invoked upon completion of the remote method
 
 The following convenience methods are also provided:
@@ -324,8 +321,6 @@ The following convenience methods are also provided:
         ResultHandler<V> resultHandler) { ... }
 
 Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as lists of any supported simple type (e.g. `List<Double>`), and keyed collections are specified as maps (e.g. `Map<String, Integer>`). Map arguments must use `String` values for keys.
-
-Attachments are specified a map of URL lists. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
 
 The result handler is called upon completion of the remote method. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
@@ -497,18 +492,16 @@ The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC service
 
 Service proxies are initialized via the `initWithSession:baseURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Method names are appended to this URL during method execution.
 
-Remote methods are executed by calling the `invoke:withArguments:attachments:resultHandler:` method:
+Remote methods are executed by calling the `invoke:withArguments:resultHandler:` method:
     
     - (NSURLSessionDataTask *)invoke:(NSString *)methodName
         withArguments:(NSDictionary *)arguments
-        attachments:(NSDictionary *)attachments
         resultHandler:(void (^)(id, NSError *))resultHandler;
 
 This method takes the following arguments:
 
 * `methodName` - the name of the remote method to invoke
 * `arguments` - a dictionary containing the method arguments as key/value pairs
-* `attachments` - a dictionary containing any attachments to the method
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
 The following convenience methods are also provided:
@@ -521,8 +514,6 @@ The following convenience methods are also provided:
         resultHandler:(void (^)(id, NSError *))resultHandler;
 
 Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as arrays of any supported simple type (e.g. `[Double]`), and keyed collections are specified as dictionaries (e.g. `[String: Int]`). Dictionary arguments must use `String` values for keys.
-
-Attachments are specified a dictionary of URL arrays. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
 
 The result handler callback is called upon completion of the remote method. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the method call fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
