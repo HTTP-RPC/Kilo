@@ -303,6 +303,7 @@
 					};
 					3798614B1BF009D60063212E = {
 						CreatedOnToolsVersion = 7.1;
+						DevelopmentTeam = FBUU23VBFN;
 					};
 					3798615E1BF00AB00063212E = {
 						CreatedOnToolsVersion = 7.1;
