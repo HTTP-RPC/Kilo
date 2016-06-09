@@ -32,8 +32,6 @@ public abstract class WebService {
     private String userName = null;
     private Set<String> userRoles = null;
 
-    private Iterable<Attachment> attachments = null;
-
     /**
      * Returns the locale associated with the current request.
      *
@@ -95,26 +93,6 @@ public abstract class WebService {
      */
     protected void setUserRoles(Set<String> roles) {
         this.userRoles = roles;
-    }
-
-    /**
-     * Returns the attachments associated with the current request.
-     *
-     * @return
-     * The attachments associated with the current request.
-     */
-    public Iterable<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    /**
-     * Sets the attachments associated with the current request.
-     *
-     * @param attachments
-     * The attachments associated with the current request.
-     */
-    protected void setAttachments(Iterable<Attachment> attachments) {
-        this.attachments = attachments;
     }
 
     /**

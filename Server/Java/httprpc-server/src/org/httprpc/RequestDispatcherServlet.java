@@ -15,7 +15,6 @@
 package org.httprpc;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +27,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.Principal;
-import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,14 +35,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -74,75 +70,6 @@ public class RequestDispatcherServlet extends HttpServlet {
         @Override
         public Iterator<String> iterator() {
             throw new UnsupportedOperationException();
-        }
-    }
-
-    // Attachment collection
-    private static class AttachmentCollection extends AbstractCollection<Attachment> {
-        private HttpServletRequest request;
-
-        public AttachmentCollection(HttpServletRequest request) {
-            this.request = request;
-        }
-
-        @Override
-        public int size() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Iterator<Attachment> iterator() {
-            Iterator<Attachment> iterator;
-            try {
-                iterator = new Iterator<Attachment>() {
-                    private Iterator<Part> parts = request.getParts().iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return parts.hasNext();
-                    }
-
-                    @Override
-                    public Attachment next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
-
-                        return new Attachment() {
-                            private Part part = parts.next();
-
-                            @Override
-                            public String getName() {
-                                return part.getName();
-                            }
-
-                            @Override
-                            public String getFileName() {
-                                return part.getSubmittedFileName();
-                            }
-
-                            @Override
-                            public String getContentType() {
-                                return part.getContentType();
-                            }
-
-                            @Override
-                            public long getSize() {
-                                return part.getSize();
-                            }
-
-                            @Override
-                            public InputStream getInputStream() throws IOException {
-                                return part.getInputStream();
-                            }
-                        };
-                    }
-                };
-            } catch (IOException | ServletException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return iterator;
         }
     }
 
@@ -298,17 +225,6 @@ public class RequestDispatcherServlet extends HttpServlet {
                 service.setUserName(userPrincipal.getName());
                 service.setUserRoles(new UserRoleSet(request));
             }
-
-            String contentType = request.getContentType();
-
-            Iterable<Attachment> attachments;
-            if (contentType != null && contentType.startsWith("multipart/form-data")) {
-                attachments = new AttachmentCollection(request);
-            } else {
-                attachments = Collections.emptyList();
-            }
-
-            service.setAttachments(attachments);
 
             // Execute method
             Object result;

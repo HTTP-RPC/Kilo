@@ -15,19 +15,16 @@
 package org.httprpc.test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.httprpc.Attachment;
 import org.httprpc.RPC;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
@@ -169,32 +166,5 @@ public class TestService extends WebService {
     @RPC(method="GET", path="userRoleStatus")
     public boolean getUserRoleStatus(String role) {
         return getUserRoles().contains(role);
-    }
-
-    @RPC(method="POST", path="attachmentInfo")
-    public List<Map<String, ?>> getAttachmentInfo() throws IOException {
-        LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
-
-        for (Attachment attachment : getAttachments()) {
-            long bytes = 0;
-            long checksum = 0;
-
-            try (InputStream inputStream = attachment.getInputStream()) {
-                int b;
-                while ((b = inputStream.read()) != -1) {
-                    bytes++;
-                    checksum += b;
-                }
-            }
-
-            attachmentInfo.add(mapOf(entry("name", attachment.getName()),
-                entry("fileName", attachment.getFileName()),
-                entry("contentType", attachment.getContentType()),
-                entry("size", attachment.getSize()),
-                entry("bytes", bytes),
-                entry("checksum", checksum)));
-        }
-
-        return attachmentInfo;
     }
 }
