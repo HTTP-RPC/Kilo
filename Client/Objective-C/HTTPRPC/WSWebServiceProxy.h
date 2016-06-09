@@ -90,24 +90,7 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-    arguments:(NSDictionary<NSString *, id> *)arguments
-    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
-
-/**
- * Invokes an HTTP-RPC service method.
- *
- * @param method The HTTP verb associated with the remote method.
- * @param path The path associated with the remote method.
- * @param arguments The method arguments.
- * @param attachments The method attachments.
- * @param resultHandler A callback that will be invoked upon completion of the method.
- *
- * @return A session data task representing the invocation request.
- */
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-    arguments:(NSDictionary<NSString *, id> *)arguments
-    attachments:(NSDictionary<NSString *, NSArray<NSURL *> *> *)attachments
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path arguments:(NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end

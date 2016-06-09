@@ -17,9 +17,7 @@ package org.httprpc.test;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,7 +38,6 @@ import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 public class WebServiceProxyTest {
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
         // Allow self-signed certificates for testing purposes
         X509TrustManager trustManager = new X509TrustManager() {
@@ -160,30 +157,6 @@ public class WebServiceProxyTest {
         // User role status
         serviceProxy.invoke("GET", "userRoleStatus", mapOf(entry("role", "tomcat")), (result, exception) -> {
             validate(exception == null && result.equals(true));
-        });
-
-        // Attachment info
-        Map<String, ?> arguments = Collections.emptyMap();
-
-        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
-        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
-
-        Map<String, ?> attachments = mapOf(entry("test", listOf(textTestURL, imageTestURL)));
-
-        serviceProxy.invoke("POST", "attachmentInfo", arguments, (Map<String, List<URL>>)attachments, new ResultHandler<Object>() {
-            @Override
-            public void execute(Object result, Exception exception) {
-                List<Map<String, Object>> attachmentInfo = (List<Map<String, Object>>)result;
-
-                Map<String, Object> textInfo = attachmentInfo.get(0);
-                Map<String, Object> imageInfo = attachmentInfo.get(1);
-
-                validate(exception == null
-                    && textInfo.get("contentType").equals("text/plain")
-                    && textInfo.get("size").equals(26L) && textInfo.get("checksum").equals(2412L)
-                    && imageInfo.get("contentType").equals("image/jpeg")
-                    && imageInfo.get("size").equals(10392L) && imageInfo.get("checksum").equals(1038036L));
-            }
         });
 
         // Shut down thread pool

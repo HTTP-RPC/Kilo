@@ -27,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -54,7 +52,6 @@ public class WebServiceProxy {
         private String method;
         private URL url;
         private Map<String, ?> arguments;
-        private Map<String, List<URL>> attachments;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -62,27 +59,12 @@ public class WebServiceProxy {
 
         private static final int EOF = -1;
 
-        private static final String GET_METHOD = "GET";
         private static final String POST_METHOD = "POST";
-        private static final String PUT_METHOD = "PUT";
-        private static final String DELETE_METHOD = "DELETE";
 
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
         private static final String CONTENT_TYPE_KEY = "Content-Type";
-
         private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
-
-        private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-        private static final String BOUNDARY_PARAMETER_FORMAT = "; boundary=%s";
-
-        private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
-
-        private static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition: form-data";
-        private static final String NAME_PARAMETER_FORMAT = "; name=\"%s\"";
-        private static final String FILENAME_PARAMETER_FORMAT = "; filename=\"%s\"";
-
-        private static final String CRLF = "\r\n";
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
@@ -90,11 +72,10 @@ public class WebServiceProxy {
 
         private static final String CHARSET_KEY = "charset";
 
-        public InvocationCallback(String method, URL url, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(String method, URL url, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
             this.method = method;
             this.url = url;
             this.arguments = arguments;
-            this.attachments = attachments;
             this.resultHandler = resultHandler;
         }
 
@@ -103,45 +84,41 @@ public class WebServiceProxy {
             final V result;
             try {
                 // Construct query
-                String query = null;
+                StringBuilder queryBuilder = new StringBuilder();
 
-                if (method.equalsIgnoreCase(GET_METHOD) || method.equalsIgnoreCase(DELETE_METHOD) || attachments.size() == 0) {
-                    StringBuilder queryBuilder = new StringBuilder();
+                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                    String name = argument.getKey();
 
-                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                        String name = argument.getKey();
+                    if (name == null) {
+                        continue;
+                    }
 
-                        if (name == null) {
+                    List<?> values = getParameterValues(argument.getValue());
+
+                    for (int i = 0, n = values.size(); i < n; i++) {
+                        Object element = values.get(i);
+
+                        if (element == null) {
                             continue;
                         }
 
-                        List<?> values = getParameterValues(argument.getValue());
-
-                        for (int i = 0, n = values.size(); i < n; i++) {
-                            Object element = values.get(i);
-
-                            if (element == null) {
-                                continue;
-                            }
-
-                            if (queryBuilder.length() > 0) {
-                                queryBuilder.append("&");
-                            }
-
-                            String value = getParameterValue(element);
-
-                            queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                            queryBuilder.append("=");
-                            queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                        if (queryBuilder.length() > 0) {
+                            queryBuilder.append("&");
                         }
-                    }
 
-                    query = queryBuilder.toString();
+                        String value = getParameterValue(element);
 
-                    // Append query to URL
-                    if (method.equalsIgnoreCase(GET_METHOD) || method.equalsIgnoreCase(DELETE_METHOD)) {
-                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
+                        queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                        queryBuilder.append("=");
+                        queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                     }
+                }
+
+                String query = queryBuilder.toString();
+
+                // Append query to URL
+                if (!method.equalsIgnoreCase(POST_METHOD)) {
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
                 }
 
                 // Open URL connection
@@ -161,103 +138,13 @@ public class WebServiceProxy {
                 }
 
                 // Write request body
-                if (method.equalsIgnoreCase(POST_METHOD) || method.equalsIgnoreCase(PUT_METHOD)) {
+                if (method.equalsIgnoreCase(POST_METHOD)) {
                     connection.setDoOutput(true);
+                    connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
-                    if (attachments.size() == 0) {
-                        connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
-
-                        try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                                writer.write(query);
-                            }
-                        }
-                    } else {
-                        String boundary = UUID.randomUUID().toString();
-                        String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
-
-                        connection.setRequestProperty(CONTENT_TYPE_KEY, requestContentType);
-
-                        String boundaryData = String.format("--%s%s", boundary, CRLF);
-
-                        try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                                    String name = argument.getKey();
-
-                                    if (name == null) {
-                                        continue;
-                                    }
-
-                                    List<?> values = getParameterValues(argument.getValue());
-
-                                    for (Object element : values) {
-                                        if (element == null) {
-                                            continue;
-                                        }
-
-                                        String value = getParameterValue(element);
-
-                                        writer.append(boundaryData);
-
-                                        writer.append(CONTENT_DISPOSITION_HEADER);
-                                        writer.append(String.format(NAME_PARAMETER_FORMAT, name));
-
-                                        writer.append(CRLF);
-                                        writer.append(CRLF);
-                                        writer.append(value);
-                                        writer.append(CRLF);
-                                    }
-                                }
-
-                                for (Map.Entry<String, List<URL>> attachment : attachments.entrySet()) {
-                                    String name = attachment.getKey();
-                                    List<URL> urls = attachment.getValue();
-
-                                    if (urls == null) {
-                                        continue;
-                                    }
-
-                                    for (URL url : urls) {
-                                        if (url == null) {
-                                            continue;
-                                        }
-
-                                        writer.append(boundaryData);
-
-                                        writer.append(CONTENT_DISPOSITION_HEADER);
-                                        writer.append(String.format(NAME_PARAMETER_FORMAT, name));
-
-                                        String path = url.getPath();
-                                        String filename = path.substring(path.lastIndexOf('/') + 1);
-
-                                        writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
-                                        writer.append(CRLF);
-
-                                        String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                                        if (attachmentContentType == null) {
-                                            attachmentContentType = OCTET_STREAM_MIME_TYPE;
-                                        }
-
-                                        writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
-                                        writer.append(CRLF);
-
-                                        writer.flush();
-
-                                        try (InputStream inputStream = url.openStream()) {
-                                            int b;
-                                            while ((b = inputStream.read()) != EOF) {
-                                                outputStream.write(b);
-                                            }
-                                        }
-
-                                        writer.append(CRLF);
-                                    }
-                                }
-
-                                writer.append(String.format("--%s--%s", boundary, CRLF));
-                            }
+                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                            writer.write(query);
                         }
                     }
                 }
@@ -721,35 +608,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    @SuppressWarnings("unchecked")
     public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
-        return invoke(method, path, arguments, Collections.EMPTY_MAP, resultHandler);
-    }
-
-    /**
-     * Invokes an HTTP-RPC service method.
-     *
-     * @param <V> The type of the value returned by the method.
-     *
-     * @param method
-     * The HTTP verb associated with the remote method.
-     *
-     * @param path
-     * The path associated with the remote method.
-     *
-     * @param arguments
-     * The method arguments.
-     *
-     * @param attachments
-     * The method attachments.
-     *
-     * @param resultHandler
-     * A callback that will be invoked upon completion of the method.
-     *
-     * @return
-     * A future representing the invocation request.
-     */
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, Map<String, List<URL>> attachments, ResultHandler<V> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
         }
@@ -759,10 +618,6 @@ public class WebServiceProxy {
         }
 
         if (arguments == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (attachments == null) {
             throw new IllegalArgumentException();
         }
 
@@ -777,7 +632,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException(exception);
         }
 
-        return executorService.submit(new InvocationCallback<>(method, url, arguments, attachments, resultHandler));
+        return executorService.submit(new InvocationCallback<>(method, url, arguments, resultHandler));
     }
 
     /**

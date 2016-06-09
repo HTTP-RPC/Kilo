@@ -36,8 +36,6 @@
 		37BEFBD91CF87D78009FBB33 /* NSString+HTTPRPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */; };
 		37CF338B1C00A48D00F84C89 /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CF338A1C00A48D00F84C89 /* Statistics.swift */; };
 		37DC1B5B1CB7DDAE0080F0DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37DC1B5D1CB7DDAE0080F0DE /* Localizable.strings */; };
-		37F954CF1CA2B5970058B927 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 37F954CE1CA2B5970058B927 /* test.txt */; };
-		37F954D11CA2B6570058B927 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 37F954D01CA2B6570058B927 /* test.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,8 +111,6 @@
 		37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTTPRPC.m"; sourceTree = "<group>"; };
 		37CF338A1C00A48D00F84C89 /* Statistics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
 		37DC1B5C1CB7DDAE0080F0DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		37F954CE1CA2B5970058B927 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
-		37F954D01CA2B6570058B927 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,8 +204,6 @@
 				379861681BF00AB00063212E /* Assets.xcassets */,
 				3798616A1BF00AB00063212E /* LaunchScreen.storyboard */,
 				3798616D1BF00AB00063212E /* Info.plist */,
-				37F954CE1CA2B5970058B927 /* test.txt */,
-				37F954D01CA2B6570058B927 /* test.jpg */,
 			);
 			path = HTTPRPCTest;
 			sourceTree = "<group>";
@@ -354,9 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */,
-				37F954D11CA2B6570058B927 /* test.jpg in Resources */,
 				371C21661CB449D4000CF22B /* ViewController.xml in Resources */,
-				37F954CF1CA2B5970058B927 /* test.txt in Resources */,
 				379861691BF00AB00063212E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

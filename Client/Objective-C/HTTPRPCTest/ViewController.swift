@@ -30,7 +30,6 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var localeCodeCell: UITableViewCell!
     @IBOutlet var userNameCell: UITableViewCell!
     @IBOutlet var userRoleStatusCell: UITableViewCell!
-    @IBOutlet var attachmentInfoCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
@@ -141,24 +140,6 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         // User role status
         serviceProxy.invoke("GET", path: "userRoleStatus", arguments: ["role": "tomcat"]) {(result, error) in
             validate(result as? Bool == true, error: error, cell: self.userRoleStatusCell)
-        }
-
-        // Attachment info
-        let mainBundle = NSBundle.mainBundle()
-        let textTestURL = mainBundle.URLForResource("test", withExtension: "txt")!
-        let imageTestURL = mainBundle.URLForResource("test", withExtension: "jpg")!
-
-        serviceProxy.invoke("POST", path: "attachmentInfo", arguments:[:], attachments:["test": [textTestURL, imageTestURL]]) {(result, error) in
-            let attachmentInfo = result as! [[String: AnyObject]];
-
-            let textInfo = attachmentInfo[0];
-            let imageInfo = attachmentInfo[1];
-            
-            validate(textInfo["contentType"] as! String == "text/plain"
-                && textInfo["size"] as! Int == 26 && textInfo["checksum"] as! Int == 2412
-                && imageInfo["contentType"] as! String == "image/jpeg"
-                && imageInfo["size"] as! Int == 10392 && imageInfo["checksum"] as! Int == 1038036,
-                error: error, cell: self.attachmentInfoCell)
         }
     }
 
