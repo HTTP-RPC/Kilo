@@ -69,7 +69,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Sum
-        serviceProxy.invoke("GET", path: "sum", arguments: ["a": 2, "b": 4]) {(result, error) in
+        serviceProxy.invoke("GET", path: "{method}", arguments: ["method": "sum", "a": 2, "b": 4]) {(result, error) in
             validate(result as? Int == 6, error: error, cell: self.sumCell)
         }
 

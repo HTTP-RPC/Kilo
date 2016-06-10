@@ -23,8 +23,6 @@ NSString * const WSMethodKey = @"method";
 NSString * const WSPathKey = @"path";
 NSString * const WSArgumentsKey = @"arguments";
 
-NSString * const kPostMethod = @"POST";
-
 NSString * const kContentTypeField = @"Content-Type";
 NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencoded";
 
@@ -53,31 +51,61 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 {
     NSURLSessionDataTask *task = nil;
 
-    NSURL *url = [NSURL URLWithString:path relativeToURL:_baseURL];
+    // Resolve path arguments
+    NSMutableString *resolvedPath = [NSMutableString new];
+
+    NSArray *pathComponents = [path componentsSeparatedByString:@"/"];
+    NSMutableSet *pathParameters = [NSMutableSet new];
+
+    for (NSUInteger i = 0, n = [pathComponents count]; i < n; i++) {
+        NSString *pathComponent = [pathComponents objectAtIndex:i];
+
+        if ([pathComponent hasPrefix:@"{"] && [pathComponent hasSuffix:@"}"]) {
+            NSString *key = [pathComponent substringWithRange:NSMakeRange(1, [pathComponent length] - 2)];
+
+            pathComponent = [WSWebServiceProxy parameterValueForElement:[arguments objectForKey:key]];
+
+            [pathParameters addObject:key];
+        }
+
+        if ([resolvedPath length] > 0) {
+            [resolvedPath appendString:@"/"];
+        }
+
+        [resolvedPath appendString:pathComponent];
+    }
+
+    NSURL *url = [NSURL URLWithString:resolvedPath relativeToURL:_baseURL];
 
     if (url != nil) {
         // Construct query
         NSMutableString *query = [NSMutableString new];
 
         for (NSString *name in arguments) {
-            NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+            if (![pathParameters containsObject:name]) {
+                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
-            for (NSUInteger i = 0, n = [values count]; i < n; i++) {
-                if ([query length] > 0) {
-                    [query appendString:@"&"];
+                for (NSUInteger i = 0, n = [values count]; i < n; i++) {
+                    if ([query length] > 0) {
+                        [query appendString:@"&"];
+                    }
+
+                    NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
+
+                    [query appendString:[name URLEncodedString]];
+                    [query appendString:@"="];
+                    [query appendString:[value URLEncodedString]];
                 }
-
-                NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
-
-                [query appendString:[name URLEncodedString]];
-                [query appendString:@"="];
-                [query appendString:[value URLEncodedString]];
             }
         }
 
         // Append query to URL
-        if ([method caseInsensitiveCompare:kPostMethod] != NSOrderedSame) {
+        NSString *body;
+        if ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame) {
+            body = query;
+        } else {
             url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
+            body = nil;
         }
 
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: url];
@@ -92,9 +120,9 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
         }
 
         // Write request body
-        if ([method caseInsensitiveCompare:kPostMethod] == NSOrderedSame) {
+        if (body != nil) {
             [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
-            [request setHTTPBody:[query UTF8Data]];
+            [request setHTTPBody:[body UTF8Data]];
         }
 
         // Execute request

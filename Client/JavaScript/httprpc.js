@@ -32,6 +32,8 @@ var WebServiceProxy = function(baseURL) {
  * @return An XMLHttpRequest object representing the invocation request.
  */
 WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandler) {
+    // TODO Extract path arguments
+    
     var url = this.baseURL + "/" + path;
 
     var query = "";

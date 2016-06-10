@@ -51,15 +51,13 @@ public class WebServiceProxy {
     private class InvocationCallback<V> implements Callable<V> {
         private String method;
         private URL url;
-        private Map<String, ?> arguments;
+        private String body;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
         private LinkedList<Object> collections = new LinkedList<>();
 
         private static final int EOF = -1;
-
-        private static final String POST_METHOD = "POST";
 
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
@@ -72,10 +70,10 @@ public class WebServiceProxy {
 
         private static final String CHARSET_KEY = "charset";
 
-        public InvocationCallback(String method, URL url, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(String method, URL url, String body, ResultHandler<V> resultHandler) {
             this.method = method;
             this.url = url;
-            this.arguments = arguments;
+            this.body = body;
             this.resultHandler = resultHandler;
         }
 
@@ -83,44 +81,6 @@ public class WebServiceProxy {
         public V call() throws Exception {
             final V result;
             try {
-                // Construct query
-                StringBuilder queryBuilder = new StringBuilder();
-
-                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                    String name = argument.getKey();
-
-                    if (name == null) {
-                        continue;
-                    }
-
-                    List<?> values = getParameterValues(argument.getValue());
-
-                    for (int i = 0, n = values.size(); i < n; i++) {
-                        Object element = values.get(i);
-
-                        if (element == null) {
-                            continue;
-                        }
-
-                        if (queryBuilder.length() > 0) {
-                            queryBuilder.append("&");
-                        }
-
-                        String value = getParameterValue(element);
-
-                        queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                        queryBuilder.append("=");
-                        queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
-                    }
-                }
-
-                String query = queryBuilder.toString();
-
-                // Append query to URL
-                if (!method.equalsIgnoreCase(POST_METHOD)) {
-                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
-                }
-
                 // Open URL connection
                 HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
@@ -138,13 +98,13 @@ public class WebServiceProxy {
                 }
 
                 // Write request body
-                if (method.equalsIgnoreCase(POST_METHOD)) {
+                if (body != null) {
                     connection.setDoOutput(true);
                     connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                            writer.write(query);
+                            writer.write(body);
                         }
                     }
                 }
@@ -625,6 +585,52 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
+        // Construct query
+        StringBuilder queryBuilder = new StringBuilder();
+
+        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+            String name = argument.getKey();
+
+            if (name == null) {
+                continue;
+            }
+
+            try {
+                List<?> values = getParameterValues(argument.getValue());
+
+                for (int i = 0, n = values.size(); i < n; i++) {
+                    Object element = values.get(i);
+
+                    if (element == null) {
+                        continue;
+                    }
+
+                    if (queryBuilder.length() > 0) {
+                        queryBuilder.append("&");
+                    }
+
+                    String value = getParameterValue(element);
+
+                    queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                    queryBuilder.append("=");
+                    queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                }
+            } catch (UnsupportedEncodingException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        String query = queryBuilder.toString();
+
+        // Append query to URL
+        String body;
+        if (method.equalsIgnoreCase("POST")) {
+            body = query;
+        } else {
+            path += "?" + query;
+            body = null;
+        }
+
         URL url;
         try {
             url = new URL(baseURL, path);
@@ -632,7 +638,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException(exception);
         }
 
-        return executorService.submit(new InvocationCallback<>(method, url, arguments, resultHandler));
+        return executorService.submit(new InvocationCallback<>(method, url, body, resultHandler));
     }
 
     /**
