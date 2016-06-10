@@ -33,11 +33,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -585,6 +587,32 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
+        // Resolve path arguments
+        StringBuilder resolvedPathBuilder = new StringBuilder();
+
+        String[] pathComponents = path.split("//");
+        Set<String> pathParameters = new HashSet<>();
+
+        for (int i = 0, n = pathComponents.length; i < n; i++) {
+            String pathComponent = pathComponents[i];
+
+            if (pathComponent.startsWith("{") && pathComponent.endsWith("}")) {
+                String key = pathComponent.substring(1, pathComponent.length() - 1);
+
+                pathComponent = getParameterValue(arguments.get(key));
+
+                pathParameters.add(key);
+            }
+
+            if (resolvedPathBuilder.length() > 0) {
+                resolvedPathBuilder.append("/");
+            }
+
+            resolvedPathBuilder.append(pathComponent);
+        }
+
+        String resolvedPath = resolvedPathBuilder.toString();
+
         // Construct query
         StringBuilder queryBuilder = new StringBuilder();
 
@@ -595,28 +623,30 @@ public class WebServiceProxy {
                 continue;
             }
 
-            try {
-                List<?> values = getParameterValues(argument.getValue());
+            if (!pathParameters.contains(name)) {
+                try {
+                    List<?> values = getParameterValues(argument.getValue());
 
-                for (int i = 0, n = values.size(); i < n; i++) {
-                    Object element = values.get(i);
+                    for (int i = 0, n = values.size(); i < n; i++) {
+                        Object element = values.get(i);
 
-                    if (element == null) {
-                        continue;
+                        if (element == null) {
+                            continue;
+                        }
+
+                        if (queryBuilder.length() > 0) {
+                            queryBuilder.append("&");
+                        }
+
+                        String value = getParameterValue(element);
+
+                        queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                        queryBuilder.append("=");
+                        queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                     }
-
-                    if (queryBuilder.length() > 0) {
-                        queryBuilder.append("&");
-                    }
-
-                    String value = getParameterValue(element);
-
-                    queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                    queryBuilder.append("=");
-                    queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                } catch (UnsupportedEncodingException exception) {
+                    throw new RuntimeException(exception);
                 }
-            } catch (UnsupportedEncodingException exception) {
-                throw new RuntimeException(exception);
             }
         }
 
@@ -627,13 +657,13 @@ public class WebServiceProxy {
         if (method.equalsIgnoreCase("POST")) {
             body = query;
         } else {
-            path += "?" + query;
+            resolvedPath += "?" + query;
             body = null;
         }
 
         URL url;
         try {
-            url = new URL(baseURL, path);
+            url = new URL(baseURL, resolvedPath);
         } catch (MalformedURLException exception) {
             throw new IllegalArgumentException(exception);
         }

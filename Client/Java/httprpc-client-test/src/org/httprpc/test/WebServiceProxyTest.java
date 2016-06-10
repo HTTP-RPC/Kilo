@@ -78,10 +78,11 @@ public class WebServiceProxyTest {
 
         // Sum
         HashMap<String, Object> addArguments = new HashMap<>();
+        addArguments.put("method", "sum");
         addArguments.put("a", 2);
         addArguments.put("b", 4);
 
-        serviceProxy.invoke("GET", "sum", addArguments, new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "{method}", addArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 validate(exception == null && result.doubleValue() == 6.0);
