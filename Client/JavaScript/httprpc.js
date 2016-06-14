@@ -99,7 +99,7 @@ WebServiceProxy.prototype.invoke = function(method, path, keys, arguments, resul
         if (request.readyState == 4) {
             var status = request.status;
 
-            if (status == 200) {
+            if (status / 100 == 2) {
                 var responseText = request.responseText;
 
                 resultHandler((responseText.length > 0) ? JSON.parse(responseText) : null, null);

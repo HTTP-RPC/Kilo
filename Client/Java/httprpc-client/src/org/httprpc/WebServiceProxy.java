@@ -117,9 +117,9 @@ public class WebServiceProxy {
                 }
 
                 // Read response
-                int status = connection.getResponseCode();
+                int responseCode = connection.getResponseCode();
 
-                if (status == HttpURLConnection.HTTP_OK) {
+                if (responseCode / 100 == 2) {
                     String charsetName = getCharsetName(connection.getContentType());
 
                     if (charsetName == null) {
@@ -132,7 +132,7 @@ public class WebServiceProxy {
                         }
                     }
                 } else {
-                    throw new IOException(String.format("%d %s", status, connection.getResponseMessage()));
+                    throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
                 }
             } catch (final Exception exception) {
                 resultDispatcher.execute(new Runnable() {

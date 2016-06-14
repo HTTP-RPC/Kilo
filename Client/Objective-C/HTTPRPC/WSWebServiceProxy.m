@@ -138,7 +138,7 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
             if (error == nil) {
                 NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
 
-                if (statusCode == 200) {
+                if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
                         result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error: &error];
                     }
