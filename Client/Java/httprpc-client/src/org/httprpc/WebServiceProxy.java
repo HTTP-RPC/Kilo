@@ -52,10 +52,6 @@ public class WebServiceProxy {
         private String method;
         private URL url;
         private String query;
-
-        @SuppressWarnings("unused")
-        private URL body;
-
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -70,20 +66,16 @@ public class WebServiceProxy {
         private static final String CONTENT_TYPE_KEY = "Content-Type";
         private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
 
-        @SuppressWarnings("unused")
-        private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
-
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
         private static final String NULL_KEYWORD = "null";
 
         private static final String CHARSET_KEY = "charset";
 
-        public InvocationCallback(String method, URL url, String query, URL body, ResultHandler<V> resultHandler) {
+        public InvocationCallback(String method, URL url, String query, ResultHandler<V> resultHandler) {
             this.method = method;
             this.url = url;
             this.query = query;
-            this.body = body;
             this.resultHandler = resultHandler;
         }
 
@@ -115,8 +107,6 @@ public class WebServiceProxy {
                 // Write request body
                 if (method.equalsIgnoreCase(POST_METHOD)) {
                     connection.setDoOutput(true);
-
-                    // TODO Use octet stream MIME type if body is specified
                     connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
@@ -612,36 +602,6 @@ public class WebServiceProxy {
      * A future representing the invocation request.
      */
     public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
-        return invoke(method, path, keys, arguments, null, resultHandler);
-    }
-
-    /**
-     * Invokes a remote method.
-     *
-     * @param <V> The type of the value returned by the method.
-     *
-     * @param method
-     * The HTTP verb associated with the request.
-     *
-     * @param path
-     * The path associated with the request.
-     *
-     * @param keys
-     * The request keys, or <tt>null</tt> for no keys.
-     *
-     * @param arguments
-     * The request arguments, or <tt>null</tt> for no arguments.
-     *
-     * @param body
-     * The request body, or <tt>null</tt> for no body.
-     *
-     * @param resultHandler
-     * A callback that will be invoked upon completion of the request.
-     *
-     * @return
-     * A future representing the invocation request.
-     */
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, Map<String, ?> arguments, URL body, ResultHandler<V> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
         }
@@ -717,7 +677,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException(exception);
         }
 
-        return executorService.submit(new InvocationCallback<>(method, url, queryBuilder.toString(), body, resultHandler));
+        return executorService.submit(new InvocationCallback<>(method, url, queryBuilder.toString(), resultHandler));
     }
 
     /**

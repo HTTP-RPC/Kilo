@@ -84,7 +84,7 @@ public class WebServiceProxyTest {
         sumArguments.put("a", 2);
         sumArguments.put("b", 4);
 
-        serviceProxy.invoke("GET", "{method}", sumKeys, sumArguments, null, new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "{method}", sumKeys, sumArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 validate(exception == null && result.doubleValue() == 6.0);
