@@ -33,13 +33,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +51,11 @@ public class WebServiceProxy {
     private class InvocationCallback<V> implements Callable<V> {
         private String method;
         private URL url;
-        private String body;
+        private String query;
+
+        @SuppressWarnings("unused")
+        private URL body;
+
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -61,10 +63,15 @@ public class WebServiceProxy {
 
         private static final int EOF = -1;
 
+        private static final String POST_METHOD = "POST";
+
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
         private static final String CONTENT_TYPE_KEY = "Content-Type";
         private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
+
+        @SuppressWarnings("unused")
+        private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
@@ -72,15 +79,21 @@ public class WebServiceProxy {
 
         private static final String CHARSET_KEY = "charset";
 
-        public InvocationCallback(String method, URL url, String body, ResultHandler<V> resultHandler) {
+        public InvocationCallback(String method, URL url, String query, URL body, ResultHandler<V> resultHandler) {
             this.method = method;
             this.url = url;
+            this.query = query;
             this.body = body;
             this.resultHandler = resultHandler;
         }
 
         @Override
         public V call() throws Exception {
+            // Append query to URL
+            if (query.length() > 0 && !method.equalsIgnoreCase(POST_METHOD)) {
+                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
+            }
+
             final V result;
             try {
                 // Open URL connection
@@ -100,13 +113,15 @@ public class WebServiceProxy {
                 }
 
                 // Write request body
-                if (body != null) {
+                if (method.equalsIgnoreCase(POST_METHOD)) {
                     connection.setDoOutput(true);
+
+                    // TODO Use octet stream MIME type if body is specified
                     connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                            writer.write(body);
+                            writer.write(query);
                         }
                     }
                 }
@@ -529,48 +544,104 @@ public class WebServiceProxy {
     }
 
     /**
-     * Invokes an HTTP-RPC service method.
+     * Invokes a remote method.
      *
      * @param <V> The type of the value returned by the method.
      *
      * @param method
-     * The HTTP verb associated with the remote method.
+     * The HTTP verb associated with the request.
      *
      * @param path
-     * The path associated with the remote method.
+     * The path associated with the request.
      *
      * @param resultHandler
-     * A callback that will be invoked upon completion of the method.
+     * A callback that will be invoked upon completion of the request.
      *
      * @return
      * A future representing the invocation request.
      */
-    @SuppressWarnings("unchecked")
     public <V> Future<V> invoke(String method, String path, ResultHandler<V> resultHandler) {
-        return invoke(method, path, Collections.EMPTY_MAP, resultHandler);
+        return invoke(method, path, null, resultHandler);
     }
 
     /**
-     * Invokes an HTTP-RPC service method.
+     * Invokes a remote method.
      *
      * @param <V> The type of the value returned by the method.
      *
      * @param method
-     * The HTTP verb associated with the remote method.
+     * The HTTP verb associated with the request.
      *
      * @param path
-     * The path associated with the remote method.
+     * The path associated with the request.
      *
-     * @param arguments
-     * The method arguments.
+     * @param keys
+     * The request keys, or <tt>null</tt> for no keys.
      *
      * @param resultHandler
-     * A callback that will be invoked upon completion of the method.
+     * A callback that will be invoked upon completion of the request.
      *
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, ResultHandler<V> resultHandler) {
+        return invoke(method, path, keys, null, resultHandler);
+    }
+
+    /**
+     * Invokes a remote method.
+     *
+     * @param <V> The type of the value returned by the method.
+     *
+     * @param method
+     * The HTTP verb associated with the request.
+     *
+     * @param path
+     * The path associated with the request.
+     *
+     * @param keys
+     * The request keys, or <tt>null</tt> for no keys.
+     *
+     * @param arguments
+     * The request arguments, or <tt>null</tt> for no arguments.
+     *
+     * @param resultHandler
+     * A callback that will be invoked upon completion of the request.
+     *
+     * @return
+     * A future representing the invocation request.
+     */
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        return invoke(method, path, keys, arguments, null, resultHandler);
+    }
+
+    /**
+     * Invokes a remote method.
+     *
+     * @param <V> The type of the value returned by the method.
+     *
+     * @param method
+     * The HTTP verb associated with the request.
+     *
+     * @param path
+     * The path associated with the request.
+     *
+     * @param keys
+     * The request keys, or <tt>null</tt> for no keys.
+     *
+     * @param arguments
+     * The request arguments, or <tt>null</tt> for no arguments.
+     *
+     * @param body
+     * The request body, or <tt>null</tt> for no body.
+     *
+     * @param resultHandler
+     * A callback that will be invoked upon completion of the request.
+     *
+     * @return
+     * A future representing the invocation request.
+     */
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, Map<String, ?> arguments, URL body, ResultHandler<V> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
         }
@@ -579,29 +650,20 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        if (arguments == null) {
-            throw new IllegalArgumentException();
-        }
-
         if (resultHandler == null) {
             throw new IllegalArgumentException();
         }
 
-        // Resolve path arguments
+        // Resolve path
         StringBuilder resolvedPathBuilder = new StringBuilder();
 
         String[] pathComponents = path.split("//");
-        Set<String> pathParameters = new HashSet<>();
 
         for (int i = 0, n = pathComponents.length; i < n; i++) {
             String pathComponent = pathComponents[i];
 
-            if (pathComponent.startsWith("{") && pathComponent.endsWith("}")) {
-                String key = pathComponent.substring(1, pathComponent.length() - 1);
-
-                pathComponent = getParameterValue(arguments.get(key));
-
-                pathParameters.add(key);
+            if (pathComponent.startsWith("{") && pathComponent.endsWith("}") && keys != null) {
+                pathComponent = getParameterValue(keys.get(pathComponent.substring(1, pathComponent.length() - 1)));
             }
 
             if (resolvedPathBuilder.length() > 0) {
@@ -611,19 +673,17 @@ public class WebServiceProxy {
             resolvedPathBuilder.append(pathComponent);
         }
 
-        String resolvedPath = resolvedPathBuilder.toString();
-
         // Construct query
         StringBuilder queryBuilder = new StringBuilder();
 
-        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-            String name = argument.getKey();
+        if (arguments != null) {
+            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                String name = argument.getKey();
 
-            if (name == null) {
-                continue;
-            }
+                if (name == null) {
+                    continue;
+                }
 
-            if (!pathParameters.contains(name)) {
                 try {
                     List<?> values = getParameterValues(argument.getValue());
 
@@ -650,25 +710,14 @@ public class WebServiceProxy {
             }
         }
 
-        String query = queryBuilder.toString();
-
-        // Append query to URL
-        String body;
-        if (method.equalsIgnoreCase("POST")) {
-            body = query;
-        } else {
-            resolvedPath += "?" + query;
-            body = null;
-        }
-
         URL url;
         try {
-            url = new URL(baseURL, resolvedPath);
+            url = new URL(baseURL, resolvedPathBuilder.toString());
         } catch (MalformedURLException exception) {
             throw new IllegalArgumentException(exception);
         }
 
-        return executorService.submit(new InvocationCallback<>(method, url, body, resultHandler));
+        return executorService.submit(new InvocationCallback<>(method, url, queryBuilder.toString(), body, resultHandler));
     }
 
     /**
