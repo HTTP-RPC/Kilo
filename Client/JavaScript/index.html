@@ -22,70 +22,70 @@ function testService() {
     var serviceProxy = new WebServiceProxy("/httprpc-server-test/test");
 
     // Sum
-    serviceProxy.invoke("GET", "sum", {a:4, b:2}, function(result, error) {
+    serviceProxy.invoke("GET", "{method}", {method:"sum"}, {a:4, b:2}, function(result, error) {
         validate(error == null && result == 6);
     });
 
     // Sum all
-    serviceProxy.invoke("GET", "sumAll", {values:[1, 2, 3, 4]}, function(result, error) {
+    serviceProxy.invoke("GET", "sumAll", null, {values:[1, 2, 3, 4]}, function(result, error) {
         validate(error == null && result == 10);
     });
 
     // Inverse
-    serviceProxy.invoke("GET", "inverse", {value:true}, function(result, error) {
+    serviceProxy.invoke("GET", "inverse", null, {value:true}, function(result, error) {
         validate(error == null && result == false);
     });
 
     // Characters
-    serviceProxy.invoke("GET", "characters", {text:"Hello, World!"}, function(result, error) {
+    serviceProxy.invoke("GET", "characters", null, {text:"Hello, World!"}, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify(["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));
     });
 
     // Selection
-    serviceProxy.invoke("POST", "selection", {items:["a", "b", "c", "d"]}, function(result, error) {
+    serviceProxy.invoke("POST", "selection", null, {items:["a", "b", "c", "d"]}, function(result, error) {
         validate(error == null && result == "a, b, c, d");
     });
 
     // Map
     var map = {"a":123, "b":456, "c":789};
 
-    serviceProxy.invoke("GET", "map", {"map":map}, function(result, error) {
+    serviceProxy.invoke("GET", "map", null, {"map":map}, function(result, error) {
         validate(error == null && JSON.stringify(result) == JSON.stringify(map));
     });
 
     // Statistics
-    serviceProxy.invoke("POST", "statistics", {values:[1, 3, 5]}, function(result, error) {
+    serviceProxy.invoke("POST", "statistics", null, {values:[1, 3, 5]}, function(result, error) {
         validate(error == null && result.count == 3 && result.average == 3 && result.sum == 9);
     });
 
     // Test data
-    serviceProxy.invoke("GET", "testData", {}, function(result, error) {
+    serviceProxy.invoke("GET", "testData", null, null, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify([{a:"hello", b:1, c:2}, {a:"goodbye", b:2, c:4}]));
     });
 
     // Void
-    serviceProxy.invoke("GET", "void", {}, function(result, error) {
+    serviceProxy.invoke("GET", "void", null, null, function(result, error) {
         validate(error == null && result == null);
     });
 
     // Null
-    serviceProxy.invoke("GET", "null", {}, function(result, error) {
+    serviceProxy.invoke("GET", "null", null, null, function(result, error) {
         validate(error == null && result == null);
     });
 
     // Locale code
-    serviceProxy.invoke("GET", "localeCode", {}, function(result, error) {
+    serviceProxy.invoke("GET", "localeCode", null, null, function(result, error) {
         validate(error == null && result != null);
         document.writeln(result + "<br/>");
     });
 
     // User name
-    serviceProxy.invoke("GET", "userName", {}, function(result, error) {
+    serviceProxy.invoke("GET", "userName", null, null, function(result, error) {
         validate(error == null && result == "tomcat");
     });
 
     // User role status
-    serviceProxy.invoke("GET", "userRoleStatus", {role:"tomcat"}, function(result, error) {
+    serviceProxy.invoke("GET", "userRoleStatus", null, {role:"tomcat"}, function(result, error) {
         validate(error == null && result == true);
     });
 }

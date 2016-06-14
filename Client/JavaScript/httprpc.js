@@ -22,20 +22,41 @@ var WebServiceProxy = function(baseURL) {
 }
 
 /**
- * Invokes an HTTP-RPC service method.
+ * Invokes a remote method.
  *
- * @param method The HTTP verb associated with the remote method.
- * @param path The path associated with the remote method.
- * @param arguments The method arguments.
- * @param resultHandler A callback that will be invoked upon completion of the method.
+ * @param method The HTTP verb associated with the request.
+ * @param path The path associated with the request.
+ * @param keys The request keys, or <tt>null</tt> for no keys.
+ * @param arguments The request arguments, or <tt>null</tt> for no arguments.
+ * @param resultHandler A callback that will be invoked upon completion of the request.
  *
  * @return An XMLHttpRequest object representing the invocation request.
  */
-WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandler) {
-    // TODO Extract path arguments
-    
-    var url = this.baseURL + "/" + path;
+WebServiceProxy.prototype.invoke = function(method, path, keys, arguments, resultHandler) {
+    // Resolve path
+    var resolvedPath = "";
 
+    var pathComponents = path.split("/");
+
+    for (var i = 0, n = pathComponents.length; i < n; i++) {
+        var pathComponent = pathComponents[i];
+
+        if (pathComponent.startsWith("{") && pathComponent.endsWith("}") && keys != null) {
+            var value = keys[pathComponent.substring(1, pathComponent.length - 1)];
+
+            if (value != null) {
+                pathComponent = encodeURIComponent(value);
+            }
+        }
+
+        if (resolvedPath.length > 0) {
+            resolvedPath += "/";
+        }
+
+        resolvedPath += pathComponent;
+    }
+
+    // Construct query
     var query = "";
 
     for (name in arguments) {
@@ -69,6 +90,9 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
+    // Execute request
+    var url = this.baseURL + "/" + resolvedPath;
+
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function() {
@@ -90,7 +114,11 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.send(query);
     } else {
-        request.open(method, url + "?" + query, true);
+        if (query.length > 0) {
+            url += "?" + query;
+        }
+
+        request.open(method, url, true);
         request.send();
     }
 
