@@ -623,7 +623,11 @@ public class WebServiceProxy {
             String pathComponent = pathComponents[i];
 
             if (pathComponent.startsWith("{") && pathComponent.endsWith("}") && keys != null) {
-                pathComponent = getParameterValue(keys.get(pathComponent.substring(1, pathComponent.length() - 1)));
+                Object value = keys.get(pathComponent.substring(1, pathComponent.length() - 1));
+
+                if (value != null) {
+                    pathComponent = getParameterValue(value);
+                }
             }
 
             if (resolvedPathBuilder.length() > 0) {

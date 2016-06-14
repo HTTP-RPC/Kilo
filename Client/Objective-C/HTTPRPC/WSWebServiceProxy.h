@@ -69,11 +69,11 @@ extern NSString * const WSArgumentsKey;
 @property (nonatomic, nullable) id<WSAuthentication> authentication;
 
 /**
- * Invokes an HTTP-RPC service method.
+ * Invokes a remote method.
  *
- * @param method The HTTP verb associated with the remote method.
- * @param path The path associated with the remote method.
- * @param resultHandler A callback that will be invoked upon completion of the method.
+ * @param method The HTTP verb associated with the request.
+ * @param path The path associated with the request.
+ * @param resultHandler A callback that will be invoked upon completion of the request.
  *
  * @return A session data task representing the invocation request.
  */
@@ -81,16 +81,33 @@ extern NSString * const WSArgumentsKey;
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
- * Invokes an HTTP-RPC service method.
+ * Invokes a remote method.
  *
- * @param method The HTTP verb associated with the remote method.
- * @param path The path associated with the remote method.
- * @param arguments The method arguments.
- * @param resultHandler A callback that will be invoked upon completion of the method.
+ * @param method The HTTP verb associated with the request.
+ * @param path The path associated with the request.
+ * @param keys The request keys, or <tt>nil</tt> for no keys.
+ * @param resultHandler A callback that will be invoked upon completion of the request.
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path arguments:(NSDictionary<NSString *, id> *)arguments
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+    keys:(nullable NSDictionary<NSString *, id> *)keys
+    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+
+/**
+ * Invokes a remote method.
+ *
+ * @param method The HTTP verb associated with the request.
+ * @param path The path associated with the request.
+ * @param keys The request keys, or <tt>nil</tt> for no keys.
+ * @param arguments The request arguments, or <tt>nil</tt> for no arguments.
+ * @param resultHandler A callback that will be invoked upon completion of the request.
+ *
+ * @return A session data task representing the invocation request.
+ */
+- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+    keys:(nullable NSDictionary<NSString *, id> *)keys
+    arguments:(nullable NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end
