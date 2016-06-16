@@ -551,7 +551,7 @@ public class WebServiceProxy {
      * A future representing the invocation request.
      */
     public <V> Future<V> invoke(String method, String path, ResultHandler<V> resultHandler) {
-        return invoke(method, path, null, resultHandler);
+        return invoke(method, path, Collections.emptyMap(), resultHandler);
     }
 
     /**
@@ -564,36 +564,9 @@ public class WebServiceProxy {
      *
      * @param path
      * The path associated with the request.
-     *
-     * @param keys
-     * The request keys, or <tt>null</tt> for no keys.
-     *
-     * @param resultHandler
-     * A callback that will be invoked upon completion of the request.
-     *
-     * @return
-     * A future representing the invocation request.
-     */
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, ResultHandler<V> resultHandler) {
-        return invoke(method, path, keys, null, resultHandler);
-    }
-
-    /**
-     * Invokes a remote method.
-     *
-     * @param <V> The type of the value returned by the method.
-     *
-     * @param method
-     * The HTTP verb associated with the request.
-     *
-     * @param path
-     * The path associated with the request.
-     *
-     * @param keys
-     * The request keys, or <tt>null</tt> for no keys.
      *
      * @param arguments
-     * The request arguments, or <tt>null</tt> for no arguments.
+     * The request arguments.
      *
      * @param resultHandler
      * A callback that will be invoked upon completion of the request.
@@ -601,7 +574,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> keys, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
         }
@@ -610,73 +583,52 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        if (resultHandler == null) {
+        if (arguments == null) {
             throw new IllegalArgumentException();
         }
 
-        // Resolve path
-        StringBuilder resolvedPathBuilder = new StringBuilder();
-
-        String[] pathComponents = path.split("//");
-
-        for (int i = 0, n = pathComponents.length; i < n; i++) {
-            String pathComponent = pathComponents[i];
-
-            if (pathComponent.startsWith("{") && pathComponent.endsWith("}") && keys != null) {
-                Object value = keys.get(pathComponent.substring(1, pathComponent.length() - 1));
-
-                if (value != null) {
-                    pathComponent = getParameterValue(value);
-                }
-            }
-
-            if (resolvedPathBuilder.length() > 0) {
-                resolvedPathBuilder.append("/");
-            }
-
-            resolvedPathBuilder.append(pathComponent);
+        if (resultHandler == null) {
+            throw new IllegalArgumentException();
         }
 
         // Construct query
         StringBuilder queryBuilder = new StringBuilder();
 
-        if (arguments != null) {
-            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                String name = argument.getKey();
+        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+            String name = argument.getKey();
 
-                if (name == null) {
-                    continue;
-                }
+            if (name == null) {
+                continue;
+            }
 
-                try {
-                    List<?> values = getParameterValues(argument.getValue());
+            try {
+                List<?> values = getParameterValues(argument.getValue());
 
-                    for (int i = 0, n = values.size(); i < n; i++) {
-                        Object element = values.get(i);
+                for (int i = 0, n = values.size(); i < n; i++) {
+                    Object element = values.get(i);
 
-                        if (element == null) {
-                            continue;
-                        }
-
-                        if (queryBuilder.length() > 0) {
-                            queryBuilder.append("&");
-                        }
-
-                        String value = getParameterValue(element);
-
-                        queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                        queryBuilder.append("=");
-                        queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                    if (element == null) {
+                        continue;
                     }
-                } catch (UnsupportedEncodingException exception) {
-                    throw new RuntimeException(exception);
+
+                    if (queryBuilder.length() > 0) {
+                        queryBuilder.append("&");
+                    }
+
+                    String value = getParameterValue(element);
+
+                    queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                    queryBuilder.append("=");
+                    queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                 }
+            } catch (UnsupportedEncodingException exception) {
+                throw new RuntimeException(exception);
             }
         }
 
         URL url;
         try {
-            url = new URL(baseURL, resolvedPathBuilder.toString());
+            url = new URL(baseURL, path);
         } catch (MalformedURLException exception) {
             throw new IllegalArgumentException(exception);
         }

@@ -85,29 +85,13 @@ extern NSString * const WSArgumentsKey;
  *
  * @param method The HTTP verb associated with the request.
  * @param path The path associated with the request.
- * @param keys The request keys, or <tt>nil</tt> for no keys.
+ * @param arguments The request arguments.
  * @param resultHandler A callback that will be invoked upon completion of the request.
  *
  * @return A session data task representing the invocation request.
  */
 - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-    keys:(nullable NSDictionary<NSString *, id> *)keys
-    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
-
-/**
- * Invokes a remote method.
- *
- * @param method The HTTP verb associated with the request.
- * @param path The path associated with the request.
- * @param keys The request keys, or <tt>nil</tt> for no keys.
- * @param arguments The request arguments, or <tt>nil</tt> for no arguments.
- * @param resultHandler A callback that will be invoked upon completion of the request.
- *
- * @return A session data task representing the invocation request.
- */
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-    keys:(nullable NSDictionary<NSString *, id> *)keys
-    arguments:(nullable NSDictionary<NSString *, id> *)arguments
+    arguments:(NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end

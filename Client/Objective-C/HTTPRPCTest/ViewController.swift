@@ -69,39 +69,39 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Sum
-        serviceProxy.invoke("GET", path: "{method}", keys: ["method": "sum"], arguments: ["a": 2, "b": 4]) {(result, error) in
+        serviceProxy.invoke("GET", path: "sum", arguments: ["a": 2, "b": 4]) {(result, error) in
             validate(result as? Int == 6, error: error, cell: self.sumCell)
         }
 
         // Sum all
-        serviceProxy.invoke("GET", path: "sumAll", keys: nil, arguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+        serviceProxy.invoke("GET", path: "sumAll", arguments: ["values": [1, 2, 3, 4]]) {(result, error) in
             validate(result as? Int == 10, error: error, cell: self.sumAllCell)
         }
 
         // Inverse
-        serviceProxy.invoke("GET", path: "inverse", keys: nil, arguments: ["value": true]) {(result, error) in
+        serviceProxy.invoke("GET", path: "inverse", arguments: ["value": true]) {(result, error) in
             validate(result as? Bool == false, error: error, cell: self.inverseCell)
         }
 
         // Characters
-        serviceProxy.invoke("GET", path: "characters", keys: nil, arguments: ["text": "Hello, World!"]) {(result, error) in
+        serviceProxy.invoke("GET", path: "characters", arguments: ["text": "Hello, World!"]) {(result, error) in
             validate(result as? NSArray == ["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error: error, cell: self.charactersCell)
         }
 
         // Selection
-        serviceProxy.invoke("POST", path: "selection", keys: nil, arguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
+        serviceProxy.invoke("POST", path: "selection", arguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
             validate(result as? String == "a, b, c, d", error: error, cell: self.selectionCell)
         }
 
         // Map
         let map = ["a": 123, "b": 456, "c": 789];
 
-        serviceProxy.invoke("GET", path: "map", keys: nil, arguments: ["map": map]) {(result, error) in
+        serviceProxy.invoke("GET", path: "map", arguments: ["map": map]) {(result, error) in
             validate(result as? NSDictionary == map, error: error, cell: self.mapCell)
         }
 
         // Statistics
-        serviceProxy.invoke("POST", path: "statistics", keys: nil, arguments: ["values": [1, 3, 5]]) {(result, error) in
+        serviceProxy.invoke("POST", path: "statistics", arguments: ["values": [1, 3, 5]]) {(result, error) in
             let statistics: Statistics? = (error == nil) ? Statistics(dictionary: result as! [String : AnyObject]) : nil
 
             validate(statistics?.count == 3 && statistics?.average == 3.0 && statistics?.sum == 9.0, error: error, cell: self.statisticsCell)
@@ -138,7 +138,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // User role status
-        serviceProxy.invoke("GET", path: "userRoleStatus", keys: nil, arguments: ["role": "tomcat"]) {(result, error) in
+        serviceProxy.invoke("GET", path: "userRoleStatus", arguments: ["role": "tomcat"]) {(result, error) in
             validate(result as? Bool == true, error: error, cell: self.userRoleStatusCell)
         }
     }

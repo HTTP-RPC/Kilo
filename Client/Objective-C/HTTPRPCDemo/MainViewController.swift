@@ -76,7 +76,7 @@ class MainViewController: UITableViewController {
         if (editingStyle == .Delete) {
             let id = noteList[indexPath.row]["id"] as! Int
 
-            AppDelegate.serviceProxy.invoke("DELETE", path: "notes", keys: nil, arguments: ["id": id]) {(result, error) in
+            AppDelegate.serviceProxy.invoke("DELETE", path: "notes", arguments: ["id": id]) {(result, error) in
                 if (error == nil) {
                     self.noteList.removeAtIndex(indexPath.row)
 

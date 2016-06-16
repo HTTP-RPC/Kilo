@@ -26,36 +26,12 @@ var WebServiceProxy = function(baseURL) {
  *
  * @param method The HTTP verb associated with the request.
  * @param path The path associated with the request.
- * @param keys The request keys, or <tt>null</tt> for no keys.
- * @param arguments The request arguments, or <tt>null</tt> for no arguments.
+ * @param arguments The request arguments.
  * @param resultHandler A callback that will be invoked upon completion of the request.
  *
  * @return An XMLHttpRequest object representing the invocation request.
  */
-WebServiceProxy.prototype.invoke = function(method, path, keys, arguments, resultHandler) {
-    // Resolve path
-    var resolvedPath = "";
-
-    var pathComponents = path.split("/");
-
-    for (var i = 0, n = pathComponents.length; i < n; i++) {
-        var pathComponent = pathComponents[i];
-
-        if (pathComponent.startsWith("{") && pathComponent.endsWith("}") && keys != null) {
-            var value = keys[pathComponent.substring(1, pathComponent.length - 1)];
-
-            if (value != null) {
-                pathComponent = encodeURIComponent(value);
-            }
-        }
-
-        if (resolvedPath.length > 0) {
-            resolvedPath += "/";
-        }
-
-        resolvedPath += pathComponent;
-    }
-
+WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandler) {
     // Construct query
     var query = "";
 
@@ -91,7 +67,7 @@ WebServiceProxy.prototype.invoke = function(method, path, keys, arguments, resul
     }
 
     // Execute request
-    var url = this.baseURL + "/" + resolvedPath;
+    var url = this.baseURL + "/" + path;
 
     var request = new XMLHttpRequest();
 

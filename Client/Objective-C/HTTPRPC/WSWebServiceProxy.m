@@ -45,47 +45,16 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
-    return [self invoke:method path:path keys:nil resultHandler:resultHandler];
+    return [self invoke:method path:path arguments:[NSDictionary new] resultHandler:resultHandler];
 }
 
 - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-    keys:(NSDictionary<NSString *, id> *)keys
-    resultHandler:(void (^)(id, NSError *))resultHandler
-{
-    return [self invoke:method path:path keys:nil arguments:nil resultHandler:resultHandler];
-}
-
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-    keys:(NSDictionary<NSString *, id> *)keys
     arguments:(NSDictionary *)arguments
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
     NSURLSessionDataTask *task = nil;
 
-    // Resolve path
-    NSMutableString *resolvedPath = [NSMutableString new];
-
-    NSArray *pathComponents = [path componentsSeparatedByString:@"/"];
-
-    for (NSUInteger i = 0, n = [pathComponents count]; i < n; i++) {
-        NSString *pathComponent = [pathComponents objectAtIndex:i];
-
-        if ([pathComponent hasPrefix:@"{"] && [pathComponent hasSuffix:@"}"] && keys != nil) {
-            id value = [keys objectForKey:[pathComponent substringWithRange:NSMakeRange(1, [pathComponent length] - 2)]];
-
-            if (value != nil) {
-                pathComponent = [WSWebServiceProxy parameterValueForElement:value];
-            }
-        }
-
-        if ([resolvedPath length] > 0) {
-            [resolvedPath appendString:@"/"];
-        }
-
-        [resolvedPath appendString:pathComponent];
-    }
-
-    NSURL *url = [NSURL URLWithString:resolvedPath relativeToURL:_baseURL];
+    NSURL *url = [NSURL URLWithString:path relativeToURL:_baseURL];
 
     if (url != nil) {
         // Construct query

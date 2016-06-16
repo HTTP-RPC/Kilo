@@ -4,7 +4,6 @@
     <property file="build.properties"/>
     
     <property name="src" value="src"/>
-    <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
     
     <property name="warfile" value="${ant.project.name}.war"/>
@@ -31,13 +30,10 @@
         <delete dir="." includes="${warfile}"/>
         
         <war destfile="${warfile}" webxml="web.xml">
-            <fileset dir="web"/>
-            
             <classes dir="${bin}"/>
             <classes dir="${src}" excludes="**/*.java"/>
             
             <lib dir="../httprpc-server" includes="*.jar"/>
-            <lib dir="${lib}" includes="*.jar"/>
         </war>
 	</target>
 </project>

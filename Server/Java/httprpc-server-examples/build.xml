@@ -37,8 +37,6 @@
         <delete dir="." includes="${warfile}"/>
         
         <war destfile="${warfile}" webxml="web.xml">
-            <fileset dir="web"/>
-            
             <classes dir="${bin}"/>
             <classes dir="${src}" excludes="**/*.java"/>
             
