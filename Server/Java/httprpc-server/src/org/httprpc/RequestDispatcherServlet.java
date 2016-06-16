@@ -122,7 +122,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException ,IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
