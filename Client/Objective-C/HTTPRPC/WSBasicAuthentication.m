@@ -38,7 +38,7 @@ NSString * const kAuthorizationField = @"Authorization";
 - (void)authenticate:(NSMutableURLRequest *)request
 {
     NSString *credentials = [NSString stringWithFormat:@"%@:%@", _username, _password];
-    NSString *authorization = [NSString stringWithFormat: @"Basic %@", [[credentials UTF8Data] base64EncodedStringWithOptions:0]];
+    NSString *authorization = [NSString stringWithFormat:@"Basic %@", [[credentials UTF8Data] base64EncodedStringWithOptions:0]];
 
     [request setValue:authorization forHTTPHeaderField:kAuthorizationField];
 }

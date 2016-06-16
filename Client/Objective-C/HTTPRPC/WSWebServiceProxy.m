@@ -81,7 +81,7 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
             url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
         }
 
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: url];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 
         [request setHTTPMethod:method];
 
@@ -109,11 +109,11 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 
                 if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
-                        result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error: &error];
+                        result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
-                        WSMethodKey: method, WSPathKey: path, WSArgumentsKey: arguments
+                        WSMethodKey:method, WSPathKey:path, WSArgumentsKey:arguments
                     }];
                 }
             }
