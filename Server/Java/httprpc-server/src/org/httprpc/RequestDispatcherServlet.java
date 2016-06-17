@@ -16,6 +16,7 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -117,12 +118,11 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
-            // Look up service method
+            // Look up method
             pathInfo = pathInfo.substring(1);
 
             Map<String, Method> methodMap = methodMaps.get(pathInfo);
@@ -139,99 +139,37 @@ public class RequestDispatcherServlet extends HttpServlet {
                 return;
             }
 
-            // Construct arguments
-            Parameter[] parameters = method.getParameters();
-
-            Object[] arguments = new Object[parameters.length];
-
-            for (int i = 0; i < parameters.length; i++) {
-                Parameter parameter = parameters[i];
-
-                String name = parameter.getName();
-                Class<?> type = parameter.getType();
-
-                Object argument;
-                if (type == List.class) {
-                    String[] values = request.getParameterValues(name);
-
-                    List<Object> list;
-                    if (values != null) {
-                        ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                        Type elementType = parameterizedType.getActualTypeArguments()[0];
-
-                        int n = values.length;
-
-                        list = new ArrayList<>(n);
-
-                        for (int j = 0; j < n; j++) {
-                            list.add(coerce(values[j], elementType));
-                        }
-                    } else {
-                        list = Collections.EMPTY_LIST;
-                    }
-
-                    argument = list;
-                } else if (type == Map.class) {
-                    String[] values = request.getParameterValues(name);
-
-                    Map<String, Object> map;
-                    if (values != null) {
-                        ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                        Type valueType = parameterizedType.getActualTypeArguments()[1];
-
-                        map = new LinkedHashMap<>();
-
-                        for (int j = 0; j < values.length; j++) {
-                            String[] entry = values[j].split(":");
-
-                            if (entry.length != 2) {
-                                throw new IllegalArgumentException("Invalid map entry.");
-                            }
-
-                            String key = URLDecoder.decode(entry[0], UTF_8_ENCODING);
-                            String value = URLDecoder.decode(entry[1], UTF_8_ENCODING);
-
-                            map.put(key, coerce(value, valueType));
-                        }
-                    } else {
-                        map = Collections.EMPTY_MAP;
-                    }
-
-                    argument = map;
-                } else {
-                    argument = coerce(request.getParameter(name), type);
-                }
-
-                arguments[i] = argument;
-            }
-
-            // Configure service
-            WebService service;
-            if (!Modifier.isStatic(method.getModifiers())) {
-                try {
-                    service = (WebService)serviceType.newInstance();
-                } catch (IllegalAccessException | InstantiationException exception) {
-                    throw new ServletException(exception);
-                }
-
-                service.setLocale(request.getLocale());
-
-                Principal userPrincipal = request.getUserPrincipal();
-
-                if (userPrincipal != null) {
-                    service.setUserName(userPrincipal.getName());
-                    service.setUserRoles(new UserRoleSet(request));
-                }
-            } else {
-                service = null;
-            }
-
             // Execute method
             Object result;
             try {
-                result = method.invoke(service, arguments);
-            } catch (IllegalAccessException | InvocationTargetException exception) {
-                throw new ServletException(exception);
+                WebService service;
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    try {
+                        service = (WebService)serviceType.newInstance();
+                    } catch (IllegalAccessException | InstantiationException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    service.setLocale(request.getLocale());
+
+                    Principal userPrincipal = request.getUserPrincipal();
+
+                    if (userPrincipal != null) {
+                        service.setUserName(userPrincipal.getName());
+                        service.setUserRoles(new UserRoleSet(request));
+                    }
+                } else {
+                    service = null;
+                }
+
+                try {
+                    result = method.invoke(service, getArguments(method.getParameters(), request));
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new RuntimeException(exception);
+                }
+            } catch (RuntimeException exception) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
             }
 
             // Write response
@@ -245,7 +183,79 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    private static Object coerce(String value, Type type) {
+    private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request) {
+        Object[] arguments = new Object[parameters.length];
+
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+
+            String name = parameter.getName();
+            Class<?> type = parameter.getType();
+
+            Object argument;
+            if (type == List.class) {
+                String[] values = request.getParameterValues(name);
+
+                List<Object> list;
+                if (values != null) {
+                    ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                    Type elementType = parameterizedType.getActualTypeArguments()[0];
+
+                    int n = values.length;
+
+                    list = new ArrayList<>(n);
+
+                    for (int j = 0; j < n; j++) {
+                        list.add(getArgument(values[j], elementType));
+                    }
+                } else {
+                    list = Collections.emptyList();
+                }
+
+                argument = list;
+            } else if (type == Map.class) {
+                String[] values = request.getParameterValues(name);
+
+                Map<String, Object> map;
+                if (values != null) {
+                    ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                    Type valueType = parameterizedType.getActualTypeArguments()[1];
+
+                    map = new LinkedHashMap<>();
+
+                    for (int j = 0; j < values.length; j++) {
+                        String[] entry = values[j].split(":");
+
+                        if (entry.length != 2) {
+                            throw new IllegalArgumentException("Invalid map entry.");
+                        }
+
+                        String key, value;
+                        try {
+                            key = URLDecoder.decode(entry[0], UTF_8_ENCODING);
+                            value = URLDecoder.decode(entry[1], UTF_8_ENCODING);
+                        } catch (UnsupportedEncodingException exception) {
+                            throw new RuntimeException(exception);
+                        }
+
+                        map.put(key, getArgument(value, valueType));
+                    }
+                } else {
+                    map = Collections.emptyMap();
+                }
+
+                argument = map;
+            } else {
+                argument = getArgument(request.getParameter(name), type);
+            }
+
+            arguments[i] = argument;
+        }
+
+        return arguments;
+    }
+
+    private static Object getArgument(String value, Type type) {
         Object argument;
         if (type == String.class) {
             argument = value;
@@ -268,13 +278,13 @@ public class RequestDispatcherServlet extends HttpServlet {
         } else if (type == Float.TYPE) {
             argument = (value == null) ? 0 : Float.parseFloat(value);
         } else if (type == Float.class) {
-            argument = (value == null) ? null :  Float.valueOf(value);
+            argument = (value == null) ? null : Float.valueOf(value);
         } else if (type == Double.TYPE) {
             argument = (value == null) ? 0 : Double.parseDouble(value);
         } else if (type == Double.class) {
             argument = (value == null) ? null : Double.valueOf(value);
         } else if (type == Boolean.TYPE) {
-            argument = (value == null) ? Boolean.FALSE : Boolean.parseBoolean(value);
+            argument = (value == null) ? false : Boolean.parseBoolean(value);
         } else if (type == Boolean.class) {
             argument = (value == null) ? null : Boolean.valueOf(value);
         } else {
