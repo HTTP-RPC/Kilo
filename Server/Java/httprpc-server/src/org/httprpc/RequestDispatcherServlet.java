@@ -175,7 +175,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             // Write response
             Class<?> returnType = method.getReturnType();
 
-            if (returnType != Void.TYPE && returnType != Void.class) {
+            if (returnType == Void.TYPE || returnType == Void.class) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
                 response.setContentType(JSON_MIME_TYPE);
 
                 writeValue(response.getWriter(), result, 0);
