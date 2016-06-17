@@ -23,8 +23,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.AbstractSet;
@@ -100,22 +98,20 @@ public class RequestDispatcherServlet extends HttpServlet {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
 
-            if (!Modifier.isStatic(method.getModifiers())) {
-                RPC rpc = method.getAnnotation(RPC.class);
+            RPC rpc = method.getAnnotation(RPC.class);
 
-                if (rpc != null) {
-                    String path = rpc.path();
+            if (rpc != null) {
+                String path = rpc.path();
 
-                    Map<String, Method> methodMap = methodMaps.get(path);
+                Map<String, Method> methodMap = methodMaps.get(path);
 
-                    if (methodMap == null) {
-                        methodMap = new HashMap<>();
+                if (methodMap == null) {
+                    methodMap = new HashMap<>();
 
-                        methodMaps.put(path, methodMap);
-                    }
-
-                    methodMap.put(rpc.method().toLowerCase(), method);
+                    methodMaps.put(path, methodMap);
                 }
+
+                methodMap.put(rpc.method().toLowerCase(), method);
             }
         }
     }
@@ -211,19 +207,23 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             // Configure service
             WebService service;
-            try {
-                service = (WebService)serviceType.newInstance();
-            } catch (IllegalAccessException | InstantiationException exception) {
-                throw new ServletException(exception);
-            }
+            if (!Modifier.isStatic(method.getModifiers())) {
+                try {
+                    service = (WebService)serviceType.newInstance();
+                } catch (IllegalAccessException | InstantiationException exception) {
+                    throw new ServletException(exception);
+                }
 
-            service.setLocale(request.getLocale());
+                service.setLocale(request.getLocale());
 
-            Principal userPrincipal = request.getUserPrincipal();
+                Principal userPrincipal = request.getUserPrincipal();
 
-            if (userPrincipal != null) {
-                service.setUserName(userPrincipal.getName());
-                service.setUserRoles(new UserRoleSet(request));
+                if (userPrincipal != null) {
+                    service.setUserName(userPrincipal.getName());
+                    service.setUserRoles(new UserRoleSet(request));
+                }
+            } else {
+                service = null;
             }
 
             // Execute method
@@ -245,30 +245,40 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    private static Object coerce(String value, Type type) throws ServletException {
+    private static Object coerce(String value, Type type) {
         Object argument;
-        if (value == null || type == String.class) {
+        if (type == String.class) {
             argument = value;
-        } else if (type == Byte.TYPE || type == Byte.class) {
-            argument = Byte.parseByte(value);
-        } else if (type == Short.TYPE || type == Short.class) {
-            argument = Short.parseShort(value);
-        } else if (type == Integer.TYPE || type == Integer.class) {
-            argument = Integer.parseInt(value);
-        } else if (type == Long.TYPE || type == Long.class) {
-            argument = Long.parseLong(value);
-        } else if (type == Float.TYPE || type == Float.class) {
-            argument = Float.parseFloat(value);
-        } else if (type == Double.TYPE || type == Double.class) {
-            argument = Double.parseDouble(value);
-        } else if (type == BigInteger.class) {
-            argument = new BigInteger(value);
-        } else if (type == BigDecimal.class) {
-            argument = new BigDecimal(value);
-        } else if (type == Boolean.TYPE || type == Boolean.class) {
-            argument = Boolean.parseBoolean(value);
+        } else if (type == Byte.TYPE) {
+            argument = (value == null) ? 0 : Byte.parseByte(value);
+        } else if (type == Byte.class) {
+            argument = (value == null) ? null : Byte.valueOf(value);
+        } else if (type == Short.TYPE) {
+            argument = (value == null) ? 0 : Short.parseShort(value);
+        } else if (type == Short.class) {
+            argument = (value == null) ? null : Short.valueOf(value);
+        } else if (type == Integer.TYPE) {
+            argument = (value == null) ? 0 : Integer.parseInt(value);
+        } else if (type == Integer.class) {
+            argument = (value == null) ? null : Integer.valueOf(value);
+        } else if (type == Long.TYPE) {
+            argument = (value == null) ? 0 : Long.parseLong(value);
+        } else if (type == Long.class) {
+            argument = (value == null) ? null : Long.valueOf(value);
+        } else if (type == Float.TYPE) {
+            argument = (value == null) ? 0 : Float.parseFloat(value);
+        } else if (type == Float.class) {
+            argument = (value == null) ? null :  Float.valueOf(value);
+        } else if (type == Double.TYPE) {
+            argument = (value == null) ? 0 : Double.parseDouble(value);
+        } else if (type == Double.class) {
+            argument = (value == null) ? null : Double.valueOf(value);
+        } else if (type == Boolean.TYPE) {
+            argument = (value == null) ? Boolean.FALSE : Boolean.parseBoolean(value);
+        } else if (type == Boolean.class) {
+            argument = (value == null) ? null : Boolean.valueOf(value);
         } else {
-            throw new ServletException("Invalid parameter type.");
+            throw new UnsupportedOperationException("Invalid parameter type.");
         }
 
         return argument;
