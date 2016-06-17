@@ -262,31 +262,31 @@ public class RequestDispatcherServlet extends HttpServlet {
         } else if (type == Byte.TYPE) {
             argument = (value == null) ? 0 : Byte.parseByte(value);
         } else if (type == Byte.class) {
-            argument = (value == null) ? null : Byte.valueOf(value);
+            argument = (value == null) ? null : Byte.parseByte(value);
         } else if (type == Short.TYPE) {
             argument = (value == null) ? 0 : Short.parseShort(value);
         } else if (type == Short.class) {
-            argument = (value == null) ? null : Short.valueOf(value);
+            argument = (value == null) ? null : Short.parseShort(value);
         } else if (type == Integer.TYPE) {
             argument = (value == null) ? 0 : Integer.parseInt(value);
         } else if (type == Integer.class) {
-            argument = (value == null) ? null : Integer.valueOf(value);
+            argument = (value == null) ? null : Integer.parseInt(value);
         } else if (type == Long.TYPE) {
             argument = (value == null) ? 0 : Long.parseLong(value);
         } else if (type == Long.class) {
-            argument = (value == null) ? null : Long.valueOf(value);
+            argument = (value == null) ? null : Long.parseLong(value);
         } else if (type == Float.TYPE) {
             argument = (value == null) ? 0 : Float.parseFloat(value);
         } else if (type == Float.class) {
-            argument = (value == null) ? null : Float.valueOf(value);
+            argument = (value == null) ? null : Float.parseFloat(value);
         } else if (type == Double.TYPE) {
             argument = (value == null) ? 0 : Double.parseDouble(value);
         } else if (type == Double.class) {
-            argument = (value == null) ? null : Double.valueOf(value);
+            argument = (value == null) ? null : Double.parseDouble(value);
         } else if (type == Boolean.TYPE) {
             argument = (value == null) ? false : Boolean.parseBoolean(value);
         } else if (type == Boolean.class) {
-            argument = (value == null) ? null : Boolean.valueOf(value);
+            argument = (value == null) ? null : Boolean.parseBoolean(value);
         } else {
             throw new UnsupportedOperationException("Invalid parameter type.");
         }
