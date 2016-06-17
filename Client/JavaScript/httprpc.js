@@ -17,8 +17,9 @@
  * 
  * @param baseURL The base URL of the service.
  */
-var WebServiceProxy = function(baseURL) {
+var WebServiceProxy = function(baseURL, timeout) {
     this.baseURL = baseURL;
+    this.timeout = timeout;
 }
 
 /**
@@ -82,6 +83,14 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
             } else {
                 resultHandler(null, status);
             }
+        }
+    }
+
+    if (this.timeout != null) {
+        request.timeout = this.timeout;
+
+        request.ontimeout = function() {
+            resultHandler(null, null);
         }
     }
 

@@ -93,6 +93,9 @@ public class WebServiceProxy {
 
                 connection.setRequestMethod(method);
 
+                connection.setConnectTimeout(connectTimeout);
+                connection.setReadTimeout(readTimeout);
+
                 // Set language
                 Locale locale = Locale.getDefault();
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
@@ -456,6 +459,8 @@ public class WebServiceProxy {
 
     private URL baseURL;
     private ExecutorService executorService;
+    private int connectTimeout;
+    private int readTimeout;
 
     private Authentication authentication = null;
 
@@ -480,6 +485,25 @@ public class WebServiceProxy {
      * The executor service that will be used to execute requests.
      */
     public WebServiceProxy(URL baseURL, ExecutorService executorService) {
+        this(baseURL, executorService, 0, 0);
+    }
+
+    /**
+     * Creates a new HTTP-RPC service proxy.
+     *
+     * @param baseURL
+     * The base URL of the service.
+     *
+     * @param executorService
+     * The executor service that will be used to execute requests.
+     *
+     * @param connectTimeout
+     * The connect timeout.
+     *
+     * @param readTimeout
+     * The read timeout.
+     */
+    public WebServiceProxy(URL baseURL, ExecutorService executorService, int connectTimeout, int readTimeout) {
         if (baseURL == null) {
             throw new IllegalArgumentException();
         }
@@ -490,6 +514,8 @@ public class WebServiceProxy {
 
         this.baseURL = baseURL;
         this.executorService = executorService;
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
     }
 
     /**
@@ -550,8 +576,9 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
+    @SuppressWarnings("unchecked")
     public <V> Future<V> invoke(String method, String path, ResultHandler<V> resultHandler) {
-        return invoke(method, path, Collections.emptyMap(), resultHandler);
+        return invoke(method, path, Collections.EMPTY_MAP, resultHandler);
     }
 
     /**
