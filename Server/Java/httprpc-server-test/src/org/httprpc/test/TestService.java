@@ -54,7 +54,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="characters")
-    public List<String> getCharacters(String text) {
+    public static List<String> getCharacters(String text) {
         List<String> characters = null;
 
         if (text != null) {
