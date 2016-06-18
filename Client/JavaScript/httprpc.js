@@ -15,10 +15,9 @@
 /**
  * Creates a new HTTP-RPC service proxy.
  * 
- * @param baseURL The base URL of the service.
+ * @param timeout The request timeout.
  */
-var WebServiceProxy = function(baseURL, timeout) {
-    this.baseURL = baseURL;
+var WebServiceProxy = function(timeout) {
     this.timeout = timeout;
 }
 
@@ -68,8 +67,6 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
     }
 
     // Execute request
-    var url = this.baseURL + "/" + path;
-
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function() {
@@ -95,15 +92,15 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
     }
 
     if (method.toLowerCase() == "post") {
-        request.open(method, url, true);
+        request.open(method, path, true);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.send(query);
     } else {
         if (query.length > 0) {
-            url += "?" + query;
+            path += "?" + query;
         }
 
-        request.open(method, url, true);
+        request.open(method, path, true);
         request.send();
     }
 

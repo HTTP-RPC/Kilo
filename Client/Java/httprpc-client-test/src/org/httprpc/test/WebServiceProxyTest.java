@@ -67,11 +67,10 @@ public class WebServiceProxyTest {
             }
         });
 
-        // Create service
-        URL baseURL = new URL("https://localhost:8443/httprpc-server-test/test/");
+        // Create service proxy
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, threadPool);
+        WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool);
 
         // Set credentials
         serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
@@ -81,7 +80,7 @@ public class WebServiceProxyTest {
         sumArguments.put("a", 2);
         sumArguments.put("b", 4);
 
-        serviceProxy.invoke("GET", "sum", sumArguments, new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", sumArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 validate(exception == null && result.doubleValue() == 6.0);
@@ -89,34 +88,34 @@ public class WebServiceProxyTest {
         });
 
         // Sum all
-        serviceProxy.invoke("GET", "sumAll", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sumAll", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 
         // Inverse
-        serviceProxy.invoke("GET", "inverse", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/inverse", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
             validate(exception == null && result == false);
         });
 
         // Characters
-        serviceProxy.invoke("GET", "characters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
             validate(exception == null && result.equals(listOf("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Selection
-        serviceProxy.invoke("POST", "selection", mapOf(entry("items", listOf("a", "b", "c", "d"))), (result, exception) -> {
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", listOf("a", "b", "c", "d"))), (result, exception) -> {
             validate(exception == null && result.equals("a, b, c, d"));
         });
 
         // Map
         Map<String, ?> map = mapOf(entry("a", 123L), entry("b", 456L), entry("c", 789L));
 
-        serviceProxy.invoke("GET", "map", mapOf(entry("map", map)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/map", mapOf(entry("map", map)), (result, exception) -> {
             validate(exception == null && result.equals(map));
         });
 
         // Statistics
-        serviceProxy.invoke("POST", "statistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/statistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;
 
             validate(statistics != null
@@ -126,7 +125,7 @@ public class WebServiceProxyTest {
         });
 
         // Test data
-        serviceProxy.invoke("GET", "testData", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/testData", (result, exception) -> {
             validate(exception == null && result.equals(listOf(
                 mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
                 mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
@@ -134,28 +133,28 @@ public class WebServiceProxyTest {
         });
 
         // Void
-        serviceProxy.invoke("GET", "void", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/void", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Null
-        serviceProxy.invoke("GET", "null", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/null", (result, exception) -> {
             validate(exception == null && result == null);
         });
 
         // Locale code
-        serviceProxy.invoke("GET", "localeCode", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/localeCode", (result, exception) -> {
             validate(exception == null && result != null);
             System.out.println(result);
         });
 
         // User name
-        serviceProxy.invoke("GET", "userName", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/userName", (result, exception) -> {
             validate(exception == null && result.equals("tomcat"));
         });
 
         // User role status
-        serviceProxy.invoke("GET", "userRoleStatus", mapOf(entry("role", "tomcat")), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", mapOf(entry("role", "tomcat")), (result, exception) -> {
             validate(exception == null && result.equals(true));
         });
 

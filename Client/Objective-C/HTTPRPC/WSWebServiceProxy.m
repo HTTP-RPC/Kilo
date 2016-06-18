@@ -30,13 +30,13 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 
 @implementation WSWebServiceProxy
 
-- (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL
+- (instancetype)initWithSession:(NSURLSession *)session serverURL:(NSURL *)serverURL
 {
     self = [super init];
 
     if (self) {
         _session = session;
-        _baseURL = baseURL;
+        _serverURL = serverURL;
     }
 
     return self;
@@ -54,7 +54,7 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 {
     NSURLSessionDataTask *task = nil;
 
-    NSURL *url = [NSURL URLWithString:path relativeToURL:_baseURL];
+    NSURL *url = [NSURL URLWithString:path relativeToURL:_serverURL];
 
     if (url != nil) {
         // Construct query

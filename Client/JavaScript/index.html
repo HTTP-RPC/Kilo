@@ -19,73 +19,74 @@ limitations under the License.
 <script src="httprpc.js"></script>
 <script>
 function testService() {
-    var serviceProxy = new WebServiceProxy("/httprpc-server-test/test");
+    // Create service proxy
+    var serviceProxy = new WebServiceProxy();
 
     // Sum
-    serviceProxy.invoke("GET", "sum", {a:4, b:2}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {a:4, b:2}, function(result, error) {
         validate(error == null && result == 6);
     });
 
     // Sum all
-    serviceProxy.invoke("GET", "sumAll", {values:[1, 2, 3, 4]}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/sumAll", {values:[1, 2, 3, 4]}, function(result, error) {
         validate(error == null && result == 10);
     });
 
     // Inverse
-    serviceProxy.invoke("GET", "inverse", {value:true}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/inverse", {value:true}, function(result, error) {
         validate(error == null && result == false);
     });
 
     // Characters
-    serviceProxy.invoke("GET", "characters", {text:"Hello, World!"}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", {text:"Hello, World!"}, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify(["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));
     });
 
     // Selection
-    serviceProxy.invoke("POST", "selection", {items:["a", "b", "c", "d"]}, function(result, error) {
+    serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", {items:["a", "b", "c", "d"]}, function(result, error) {
         validate(error == null && result == "a, b, c, d");
     });
 
     // Map
     var map = {"a":123, "b":456, "c":789};
 
-    serviceProxy.invoke("GET", "map", {"map":map}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/map", {"map":map}, function(result, error) {
         validate(error == null && JSON.stringify(result) == JSON.stringify(map));
     });
 
     // Statistics
-    serviceProxy.invoke("POST", "statistics", {values:[1, 3, 5]}, function(result, error) {
+    serviceProxy.invoke("POST", "/httprpc-server-test/test/statistics", {values:[1, 3, 5]}, function(result, error) {
         validate(error == null && result.count == 3 && result.average == 3 && result.sum == 9);
     });
 
     // Test data
-    serviceProxy.invoke("GET", "testData", {}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/testData", {}, function(result, error) {
         validate(JSON.stringify(result) == JSON.stringify([{a:"hello", b:1, c:2}, {a:"goodbye", b:2, c:4}]));
     });
 
     // Void
-    serviceProxy.invoke("GET", "void", {}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/void", {}, function(result, error) {
         validate(error == null && result == null);
     });
 
     // Null
-    serviceProxy.invoke("GET", "null", {}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/null", {}, function(result, error) {
         validate(error == null && result == null);
     });
 
     // Locale code
-    serviceProxy.invoke("GET", "localeCode", {}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/localeCode", {}, function(result, error) {
         validate(error == null && result != null);
         document.writeln(result + "<br/>");
     });
 
     // User name
-    serviceProxy.invoke("GET", "userName", {}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/userName", {}, function(result, error) {
         validate(error == null && result == "tomcat");
     });
 
     // User role status
-    serviceProxy.invoke("GET", "userRoleStatus", {role:"tomcat"}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", {role:"tomcat"}, function(result, error) {
         validate(error == null && result == true);
     });
 }

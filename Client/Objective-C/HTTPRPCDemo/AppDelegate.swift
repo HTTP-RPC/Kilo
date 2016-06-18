@@ -22,10 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(application: UIApplication, willFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
-        let session = NSURLSession.sharedSession()
-        let baseURL = NSURL(string: "http://localhost:8080/httprpc-server-demo/notes/")
-
-        AppDelegate.serviceProxy = WSWebServiceProxy(session: session, baseURL: baseURL!)
+        AppDelegate.serviceProxy = WSWebServiceProxy(session: NSURLSession.sharedSession(), serverURL: NSURL(string: "http://localhost:8080")!)
 
         return true
     }

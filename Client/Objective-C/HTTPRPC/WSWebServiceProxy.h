@@ -49,9 +49,9 @@ extern NSString * const WSArgumentsKey;
  * Creates a new HTTP-RPC service proxy.
  * 
  * @param session The URL session the service proxy will use to execute HTTP requests.
- * @param baseURL The base URL of the service.
+ * @param serverURL The server URL.
  */
-- (instancetype)initWithSession:(NSURLSession *)session baseURL:(NSURL *)baseURL NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSession:(NSURLSession *)session serverURL:(NSURL *)serverURL NS_DESIGNATED_INITIALIZER;
 
 /**
  * The URL session the service proxy uses to execute HTTP requests.
@@ -59,9 +59,9 @@ extern NSString * const WSArgumentsKey;
 @property (nonatomic, readonly) NSURLSession *session;
 
 /**
- * The base URL of the service.
+ * The server URL.
  */
-@property (nonatomic, readonly) NSURL *baseURL;
+@property (nonatomic, readonly) NSURL *serverURL;
 
 /**
  * The service proxy's authentication provider.

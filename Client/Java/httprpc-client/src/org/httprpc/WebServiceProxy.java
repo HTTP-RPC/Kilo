@@ -457,7 +457,7 @@ public class WebServiceProxy {
         }
     }
 
-    private URL baseURL;
+    private URL serverURL;
     private ExecutorService executorService;
     private int connectTimeout;
     private int readTimeout;
@@ -478,21 +478,21 @@ public class WebServiceProxy {
     /**
      * Creates a new HTTP-RPC service proxy.
      *
-     * @param baseURL
-     * The base URL of the service.
+     * @param serverURL
+     * The server URL.
      *
      * @param executorService
      * The executor service that will be used to execute requests.
      */
-    public WebServiceProxy(URL baseURL, ExecutorService executorService) {
-        this(baseURL, executorService, 0, 0);
+    public WebServiceProxy(URL serverURL, ExecutorService executorService) {
+        this(serverURL, executorService, 0, 0);
     }
 
     /**
      * Creates a new HTTP-RPC service proxy.
      *
-     * @param baseURL
-     * The base URL of the service.
+     * @param serverURL
+     * The server URL.
      *
      * @param executorService
      * The executor service that will be used to execute requests.
@@ -503,8 +503,8 @@ public class WebServiceProxy {
      * @param readTimeout
      * The read timeout.
      */
-    public WebServiceProxy(URL baseURL, ExecutorService executorService, int connectTimeout, int readTimeout) {
-        if (baseURL == null) {
+    public WebServiceProxy(URL serverURL, ExecutorService executorService, int connectTimeout, int readTimeout) {
+        if (serverURL == null) {
             throw new IllegalArgumentException();
         }
 
@@ -512,20 +512,20 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        this.baseURL = baseURL;
+        this.serverURL = serverURL;
         this.executorService = executorService;
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
     }
 
     /**
-     * Returns the service's base URL.
+     * Returns the server URL.
      *
      * @return
-     * The service's base URL.
+     * The server URL.
      */
-    public URL getBaseURL() {
-        return baseURL;
+    public URL getServerURL() {
+        return serverURL;
     }
 
     /**
@@ -655,7 +655,7 @@ public class WebServiceProxy {
 
         URL url;
         try {
-            url = new URL(baseURL, path);
+            url = new URL(serverURL, path);
         } catch (MalformedURLException exception) {
             throw new IllegalArgumentException(exception);
         }
