@@ -137,17 +137,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Create service
-        URL baseURL;
+        // Create service proxy
+        URL serverURL;
         try {
-            baseURL = new URL("https://10.0.2.2:8443/httprpc-server-test/test/");
+            serverURL = new URL("https://10.0.2.2:8443");
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }
 
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(baseURL, threadPool);
+        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool);
 
         // Set credentials
         serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         addArguments.put("a", 2);
         addArguments.put("b", 4);
 
-        serviceProxy.invoke("GET", "sum", addArguments, new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", addArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 sumCheckBox.setChecked(exception == null && result.intValue() == 6);
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Sum all
-        serviceProxy.invoke("GET", "sumAll", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sumAll", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 sumAllCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Inverse
-        serviceProxy.invoke("GET", "inverse", mapOf(entry("value", true)), new ResultHandler<Boolean>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/inverse", mapOf(entry("value", true)), new ResultHandler<Boolean>() {
             @Override
             public void execute(Boolean result, Exception exception) {
                 inverseCheckBox.setChecked(exception == null && result == false);
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Characters
-        serviceProxy.invoke("GET", "characters", mapOf(entry("text", "Hello, World!")), new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Hello, World!")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 charactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Selection
-        serviceProxy.invoke("POST", "selection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), new ResultHandler<Object>() {
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 selectionCheckBox.setChecked(exception == null && result.equals("a, b, c, d"));
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         // Map
         final Map<String, ?> map = mapOf(entry("a", 123L), entry("b", 456L), entry("c", 789L));
 
-        serviceProxy.invoke("GET", "map", mapOf(entry("map", map)), new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/map", mapOf(entry("map", map)), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 mapCheckBox.setChecked(exception == null && result.equals(map));
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Statistics
-        serviceProxy.invoke("POST", "statistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/statistics", mapOf(entry("values", Arrays.asList(1, 3, 5))), new ResultHandler<Map<String, Object>>() {
             @Override
             public void execute(Map<String, Object> result, Exception exception) {
                 Statistics statistics = (exception == null) ? new Statistics(result) : null;
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Test data
-        serviceProxy.invoke("GET", "testData", new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/testData", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 testDataCheckBox.setChecked(exception == null && result.equals(Arrays.asList(mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)), mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0)))));
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Void
-        serviceProxy.invoke("GET", "void", new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/void", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 voidCheckBox.setChecked(exception == null && result == null);
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Null
-        serviceProxy.invoke("GET", "null", new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/null", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 nullCheckBox.setChecked(exception == null && result == null);
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Locale code
-        serviceProxy.invoke("GET", "localeCode", new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/localeCode", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 localeCodeCheckBox.setChecked(exception == null && result != null);
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // User name
-        serviceProxy.invoke("GET", "userName", new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/userName", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 userNameCheckBox.setChecked(exception == null && result.equals("tomcat"));
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // User role status
-        serviceProxy.invoke("GET", "userRoleStatus", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 userRoleStatusCheckBox.setChecked(exception == null && result.equals(true));

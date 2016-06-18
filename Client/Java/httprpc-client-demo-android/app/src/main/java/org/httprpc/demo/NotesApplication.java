@@ -36,14 +36,14 @@ public class NotesApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        URL baseURL;
+        URL serverURL;
         try {
-            baseURL = new URL("http://10.0.2.2:8080/httprpc-server-demo/notes/");
+            serverURL = new URL("http://10.0.2.2:8080");
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }
 
-        serviceProxy = new WebServiceProxy(baseURL, Executors.newSingleThreadExecutor());
+        serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor());
 
         WebServiceProxy.setResultDispatcher(new Executor() {
             private Handler handler = new Handler(Looper.getMainLooper());

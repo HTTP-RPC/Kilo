@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int id = ((Number)noteList.get(position).get("id")).intValue();
 
-                NotesApplication.getServiceProxy().invoke("DELETE", "notes", mapOf(entry("id", id)), new ResultHandler<Void>() {
+                NotesApplication.getServiceProxy().invoke("DELETE", "/httprpc-server-demo/notes/notes", mapOf(entry("id", id)), new ResultHandler<Void>() {
                     @Override
                     public void execute(Void result, Exception exception) {
                         if (exception == null) {
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteButton.setEnabled(false);
 
-        NotesApplication.getServiceProxy().invoke("GET", "notes", new ResultHandler<List<Map<String, Object>>>() {
+        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server-demo/notes/notes", new ResultHandler<List<Map<String, Object>>>() {
             @Override
             public void execute(List<Map<String, Object>> result, Exception exception) {
                 if (exception == null) {
