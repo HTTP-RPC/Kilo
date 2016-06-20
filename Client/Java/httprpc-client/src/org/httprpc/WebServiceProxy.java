@@ -25,7 +25,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.AbstractMap;
@@ -50,8 +49,8 @@ public class WebServiceProxy {
     // Invocation callback
     private class InvocationCallback<V> implements Callable<V> {
         private String method;
-        private URL url;
-        private String query;
+        private String path;
+        private Map<String, ?> arguments;
         private ResultHandler<V> resultHandler;
 
         private int c = EOF;
@@ -72,71 +71,18 @@ public class WebServiceProxy {
 
         private static final String CHARSET_KEY = "charset";
 
-        public InvocationCallback(String method, URL url, String query, ResultHandler<V> resultHandler) {
+        public InvocationCallback(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
             this.method = method;
-            this.url = url;
-            this.query = query;
+            this.path = path;
+            this.arguments = arguments;
             this.resultHandler = resultHandler;
         }
 
         @Override
         public V call() throws Exception {
-            // Append query to URL
-            if (query.length() > 0 && !method.equalsIgnoreCase(POST_METHOD)) {
-                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
-            }
-
             final V result;
             try {
-                // Open URL connection
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-                connection.setRequestMethod(method);
-
-                connection.setConnectTimeout(connectTimeout);
-                connection.setReadTimeout(readTimeout);
-
-                // Set language
-                Locale locale = Locale.getDefault();
-                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
-
-                connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
-
-                // Authenticate request
-                if (authentication != null) {
-                    authentication.authenticate(connection);
-                }
-
-                // Write request body
-                if (method.equalsIgnoreCase(POST_METHOD)) {
-                    connection.setDoOutput(true);
-                    connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
-
-                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                            writer.write(query);
-                        }
-                    }
-                }
-
-                // Read response
-                int responseCode = connection.getResponseCode();
-
-                if (responseCode / 100 == 2) {
-                    String charsetName = getCharsetName(connection.getContentType());
-
-                    if (charsetName == null) {
-                        charsetName = UTF_8_ENCODING;
-                    }
-
-                    try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charsetName))) {
-                            result = readValue(reader);
-                        }
-                    }
-                } else {
-                    throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
-                }
+                result = invoke();
             } catch (final Exception exception) {
                 resultDispatcher.execute(new Runnable() {
                     @Override
@@ -154,6 +100,101 @@ public class WebServiceProxy {
                     resultHandler.execute(result, null);
                 }
             });
+
+            return result;
+        }
+
+        private V invoke() throws Exception {
+            URL url = new URL(serverURL, path);
+
+            // Construct query
+            StringBuilder queryBuilder = new StringBuilder();
+
+            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                String name = argument.getKey();
+
+                if (name == null) {
+                    continue;
+                }
+
+                List<?> values = getParameterValues(argument.getValue());
+
+                for (int i = 0, n = values.size(); i < n; i++) {
+                    Object element = values.get(i);
+
+                    if (element == null) {
+                        continue;
+                    }
+
+                    if (queryBuilder.length() > 0) {
+                        queryBuilder.append("&");
+                    }
+
+                    String value = getParameterValue(element);
+
+                    queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                    queryBuilder.append("=");
+                    queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                }
+            }
+
+            String query = queryBuilder.toString();
+
+            // Append query to URL
+            if (query.length() > 0 && !method.equalsIgnoreCase(POST_METHOD)) {
+                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
+            }
+
+            // Open URL connection
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+            connection.setRequestMethod(method);
+
+            connection.setConnectTimeout(connectTimeout);
+            connection.setReadTimeout(readTimeout);
+
+            // Set language
+            Locale locale = Locale.getDefault();
+            String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
+
+            connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
+
+            // Authenticate request
+            if (authentication != null) {
+                authentication.authenticate(connection);
+            }
+
+            // Write request body
+            if (method.equalsIgnoreCase(POST_METHOD)) {
+                connection.setDoOutput(true);
+                connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
+
+                try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                        writer.write(query);
+                    }
+                }
+            }
+
+            // Read response
+            int responseCode = connection.getResponseCode();
+
+            V result;
+            if (responseCode / 100 == 2) {
+                String charsetName = getCharsetName(connection.getContentType());
+
+                if (charsetName == null) {
+                    charsetName = UTF_8_ENCODING;
+                }
+
+                try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, charsetName))) {
+                        result = readValue(reader);
+                    }
+                }
+            } else {
+                throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
+            }
 
             return result;
         }
@@ -618,49 +659,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        // Construct query
-        StringBuilder queryBuilder = new StringBuilder();
-
-        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-            String name = argument.getKey();
-
-            if (name == null) {
-                continue;
-            }
-
-            try {
-                List<?> values = getParameterValues(argument.getValue());
-
-                for (int i = 0, n = values.size(); i < n; i++) {
-                    Object element = values.get(i);
-
-                    if (element == null) {
-                        continue;
-                    }
-
-                    if (queryBuilder.length() > 0) {
-                        queryBuilder.append("&");
-                    }
-
-                    String value = getParameterValue(element);
-
-                    queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                    queryBuilder.append("=");
-                    queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
-                }
-            } catch (UnsupportedEncodingException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
-
-        URL url;
-        try {
-            url = new URL(serverURL, path);
-        } catch (MalformedURLException exception) {
-            throw new IllegalArgumentException(exception);
-        }
-
-        return executorService.submit(new InvocationCallback<>(method, url, queryBuilder.toString(), resultHandler));
+        return executorService.submit(new InvocationCallback<>(method, path, arguments, resultHandler));
     }
 
     /**
