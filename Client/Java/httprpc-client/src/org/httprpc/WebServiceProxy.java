@@ -778,7 +778,7 @@ public class WebServiceProxy {
 
     private static String getParameterValue(Object element) {
         if (!(element instanceof String || element instanceof Number || element instanceof Boolean)) {
-            throw new IllegalArgumentException("Invalid collection element.");
+            throw new IllegalArgumentException("Invalid parameter element.");
         }
 
         return element.toString();

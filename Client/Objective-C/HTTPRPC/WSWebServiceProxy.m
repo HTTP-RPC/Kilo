@@ -153,7 +153,7 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 }
 
 + (NSString *)parameterValueForElement:(id)element {
-    NSAssert([element isKindOfClass:[NSString self]] || [element isKindOfClass:[NSNumber self]], @"Invalid collection element.");
+    NSAssert([element isKindOfClass:[NSString self]] || [element isKindOfClass:[NSNumber self]], @"Invalid parameter element.");
 
     id value;
     if (element == (void *)kCFBooleanTrue) {
