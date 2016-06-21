@@ -79,13 +79,13 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     private Class<?> serviceType = null;
-
-    private Resource root = new Resource();
+    private Resource root = null;
 
     private static final String JSON_MIME_TYPE = "application/json";
 
     @Override
     public void init() throws ServletException {
+        // Load service class
         String serviceClassName = getServletConfig().getInitParameter("serviceClassName");
 
         try {
@@ -98,7 +98,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             throw new ServletException("Invalid service type.");
         }
 
-        // Index methods
+        // Populate resource tree
+        root = new Resource();
+
         Method[] methods = serviceType.getMethods();
 
         for (int i = 0; i < methods.length; i++) {
@@ -135,8 +137,8 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Find method
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Look up service method
         Resource resource = root;
 
         String pathInfo = request.getPathInfo();
@@ -167,62 +169,86 @@ public class RequestDispatcherServlet extends HttpServlet {
             return;
         }
 
-        // Execute method
-        Object result;
-        try {
-            WebService service;
-            if (!Modifier.isStatic(method.getModifiers())) {
-                try {
-                    service = (WebService)serviceType.newInstance();
-                } catch (IllegalAccessException | InstantiationException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                service.setLocale(request.getLocale());
-
-                Principal userPrincipal = request.getUserPrincipal();
-
-                if (userPrincipal != null) {
-                    service.setUserName(userPrincipal.getName());
-                    service.setUserRoles(new UserRoleSet(request));
-                }
-            } else {
-                service = null;
-            }
-
-            try {
-                result = method.invoke(service, getArguments(method.getParameters(), request));
-            } catch (IllegalAccessException | InvocationTargetException exception) {
-                throw new RuntimeException(exception);
-            }
-        } catch (RuntimeException exception) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        } finally {
-            // TODO Delete attachments
-        }
-
-        // Write response
-        Class<?> returnType = method.getReturnType();
-
-        if (returnType == Void.TYPE || returnType == Void.class) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        } else {
-            response.setContentType(JSON_MIME_TYPE);
-
-            writeValue(response.getWriter(), result, 0);
-        }
-    }
-
-    private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request) {
         // Populate part map
         HashMap<String, LinkedList<Part>> partMap = new HashMap<>();
 
         String contentType = request.getContentType();
 
         if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            // TODO
+            for (Part part : request.getParts()) {
+                String name = part.getName();
+
+                LinkedList<Part> partList = partMap.get(name);
+
+                if (partList == null) {
+                    partList = new LinkedList<>();
+                    partMap.put(name, partList);
+                }
+
+                partList.add(part);
+            }
         }
+
+        try {
+            // Invoke method
+            Object result;
+            try {
+                WebService service;
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    try {
+                        service = (WebService)serviceType.newInstance();
+                    } catch (IllegalAccessException | InstantiationException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    service.setLocale(request.getLocale());
+
+                    Principal userPrincipal = request.getUserPrincipal();
+
+                    if (userPrincipal != null) {
+                        service.setUserName(userPrincipal.getName());
+                        service.setUserRoles(new UserRoleSet(request));
+                    }
+                } else {
+                    service = null;
+                }
+
+                try {
+                    result = method.invoke(service, getArguments(method, request, partMap));
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new RuntimeException(exception);
+                }
+            } catch (RuntimeException exception) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+
+            // Write response
+            Class<?> returnType = method.getReturnType();
+
+            if (returnType == Void.TYPE || returnType == Void.class) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                response.setContentType(JSON_MIME_TYPE);
+
+                writeValue(response.getWriter(), result, 0);
+            }
+        } finally {
+            // Clean up temporary files
+            for (LinkedList<Part> partList : partMap.values()) {
+                for (Part part : partList) {
+                    try {
+                        part.delete();
+                    } catch (IOException exception) {
+                        // No-op
+                    }
+                }
+            }
+        }
+    }
+
+    private static Object[] getArguments(Method method, HttpServletRequest request, Map<String, LinkedList<Part>> partMap) {
+        Parameter[] parameters = method.getParameters();
 
         Object[] arguments = new Object[parameters.length];
 
@@ -245,7 +271,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                         list = new ArrayList<>(partList.size());
 
                         for (Part part : partList) {
-                            list.add(getURL(part));
+                            list.add(getArgument(part));
                         }
                     } else {
                         list = Collections.emptyList();
@@ -271,7 +297,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 if (type == URL.class) {
                     LinkedList<Part> partList = partMap.get(name);
 
-                    argument = (partList == null) ? null : getURL(partList.getFirst());
+                    argument = (partList == null) ? null : getArgument(partList.getFirst());
                 } else {
                     argument = getArgument(request.getParameter(name), type);
                 }
@@ -283,7 +309,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         return arguments;
     }
 
-    private static URL getURL(Part part) {
+    private static URL getArgument(Part part) {
         // TODO
         return null;
     }
