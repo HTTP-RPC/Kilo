@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox inverseCheckBox;
     private CheckBox charactersCheckBox;
     private CheckBox selectionCheckBox;
-    private CheckBox mapCheckBox;
     private CheckBox statisticsCheckBox;
     private CheckBox testDataCheckBox;
     private CheckBox voidCheckBox;
@@ -123,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         inverseCheckBox = (CheckBox)findViewById(R.id.inverse_checkbox);
         charactersCheckBox = (CheckBox)findViewById(R.id.characters_checkbox);
         selectionCheckBox = (CheckBox)findViewById(R.id.selection_checkbox);
-        mapCheckBox = (CheckBox)findViewById(R.id.map_checkbox);
         statisticsCheckBox = (CheckBox)findViewById(R.id.statistics_checkbox);
         testDataCheckBox = (CheckBox)findViewById(R.id.test_data_checkbox);
         voidCheckBox = (CheckBox)findViewById(R.id.void_checkbox);
@@ -193,16 +191,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(Object result, Exception exception) {
                 selectionCheckBox.setChecked(exception == null && result.equals("a, b, c, d"));
-            }
-        });
-
-        // Map
-        final Map<String, ?> map = mapOf(entry("a", 123L), entry("b", 456L), entry("c", 789L));
-
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/map", mapOf(entry("map", map)), new ResultHandler<Object>() {
-            @Override
-            public void execute(Object result, Exception exception) {
-                mapCheckBox.setChecked(exception == null && result.equals(map));
             }
         });
 

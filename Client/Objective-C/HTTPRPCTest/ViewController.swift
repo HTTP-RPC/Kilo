@@ -22,7 +22,6 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var inverseCell: UITableViewCell!
     @IBOutlet var charactersCell: UITableViewCell!
     @IBOutlet var selectionCell: UITableViewCell!
-    @IBOutlet var mapCell: UITableViewCell!
     @IBOutlet var statisticsCell: UITableViewCell!
     @IBOutlet var testDataCell: UITableViewCell!
     @IBOutlet var voidCell: UITableViewCell!
@@ -89,13 +88,6 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         // Selection
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/selection", arguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
             validate(result as? String == "a, b, c, d", error: error, cell: self.selectionCell)
-        }
-
-        // Map
-        let map = ["a": 123, "b": 456, "c": 789];
-
-        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/map", arguments: ["map": map]) {(result, error) in
-            validate(result as? NSDictionary == map, error: error, cell: self.mapCell)
         }
 
         // Statistics

@@ -816,30 +816,6 @@ public class WebServiceProxy {
         List<?> values;
         if (argument instanceof List<?>) {
             values = (List<?>)argument;
-        } else if (argument instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>)argument;
-
-            ArrayList<Object> entries = new ArrayList<>(map.size());
-
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                Object key = entry.getKey();
-
-                if (key == null) {
-                    continue;
-                }
-
-                Object value = entry.getValue();
-
-                if (value == null) {
-                    continue;
-                }
-
-                entries.add(String.format("%s:%s",
-                    URLEncoder.encode(key.toString(), UTF_8_ENCODING),
-                    URLEncoder.encode(getParameterValue(value), UTF_8_ENCODING)));
-            }
-
-            values = entries;
         } else {
             values = Collections.singletonList(argument);
         }

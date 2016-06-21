@@ -47,11 +47,6 @@ limitations under the License.
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <CheckBox android:id="@+id/map_checkbox"
-            android:text="Map"
-            android:enabled="false"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/statistics_checkbox"
             android:text="Statistics"
             android:enabled="false"

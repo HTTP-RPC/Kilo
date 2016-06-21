@@ -198,18 +198,6 @@ NSString * const kCRLF = @"\r\n";
     NSArray *values;
     if ([argument isKindOfClass:[NSArray self]]) {
         values = (NSArray *)argument;
-    } else if ([argument isKindOfClass:[NSDictionary self]]) {
-        NSDictionary *dictionary = (NSDictionary *)argument;
-
-        NSMutableArray *entries = [NSMutableArray new];
-
-        for (NSString *key in dictionary) {
-            id value = [self parameterValueForElement:[dictionary objectForKey:key]];
-
-            [entries addObject:[NSString stringWithFormat:@"%@:%@", [key URLEncodedString], [value URLEncodedString]]];
-        }
-
-        values = entries;
     } else {
         values = [NSArray arrayWithObject:argument];
     }

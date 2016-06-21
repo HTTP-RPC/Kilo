@@ -16,7 +16,6 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,13 +23,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -81,8 +78,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     private Class<?> serviceType = null;
 
     private Resource root = new Resource();
-
-    private static final String UTF_8_ENCODING = "UTF-8";
 
     private static final String JSON_MIME_TYPE = "application/json";
 
@@ -244,38 +239,6 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
 
                 argument = list;
-            } else if (type == Map.class) {
-                String[] values = request.getParameterValues(name);
-
-                Map<String, Object> map;
-                if (values != null) {
-                    ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                    Type valueType = parameterizedType.getActualTypeArguments()[1];
-
-                    map = new LinkedHashMap<>();
-
-                    for (int j = 0; j < values.length; j++) {
-                        String[] entry = values[j].split(":");
-
-                        if (entry.length != 2) {
-                            throw new IllegalArgumentException("Invalid map entry.");
-                        }
-
-                        String key, value;
-                        try {
-                            key = URLDecoder.decode(entry[0], UTF_8_ENCODING);
-                            value = URLDecoder.decode(entry[1], UTF_8_ENCODING);
-                        } catch (UnsupportedEncodingException exception) {
-                            throw new RuntimeException(exception);
-                        }
-
-                        map.put(key, getArgument(value, valueType));
-                    }
-                } else {
-                    map = Collections.emptyMap();
-                }
-
-                argument = map;
             } else {
                 argument = getArgument(request.getParameter(name), type);
             }

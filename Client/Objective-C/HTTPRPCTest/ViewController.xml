@@ -20,7 +20,6 @@ limitations under the License.
     <UITableViewCell style="value1TableViewCell" id="inverseCell" textLabel.text="Inverse"/>
     <UITableViewCell style="value1TableViewCell" id="charactersCell" textLabel.text="Characters"/>
     <UITableViewCell style="value1TableViewCell" id="selectionCell" textLabel.text="Selection"/>
-    <UITableViewCell style="value1TableViewCell" id="mapCell" textLabel.text="Map"/>
     <UITableViewCell style="value1TableViewCell" id="statisticsCell" textLabel.text="Statistics"/>
     <UITableViewCell style="value1TableViewCell" id="testDataCell" textLabel.text="Test Data"/>
     <UITableViewCell style="value1TableViewCell" id="voidCell" textLabel.text="Void"/>

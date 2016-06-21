@@ -75,11 +75,6 @@ public class TestService extends WebService {
         return String.join(", ", items);
     }
 
-    @RPC(method="GET", path="map")
-    public Map<String, Integer> getMap(Map<String, Integer> map) {
-        return map;
-    }
-
     @RPC(method="GET", path="tree")
     public Map<String, Object> getTree() {
         TreeNode root = new TreeNode("Seasons", false);

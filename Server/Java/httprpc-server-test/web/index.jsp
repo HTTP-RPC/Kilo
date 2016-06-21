@@ -59,10 +59,6 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/map?map=a:123&map=b:456&map=c:789">Map</a>
-
-<hr/>
-
 <a href="${pageContext.request.contextPath}/test/tree">Tree</a>
 
 <hr/>
