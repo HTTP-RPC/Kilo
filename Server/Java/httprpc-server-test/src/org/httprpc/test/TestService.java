@@ -15,12 +15,15 @@
 package org.httprpc.test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -161,5 +164,29 @@ public class TestService extends WebService {
     @RPC(method="GET", path="userRoleStatus")
     public boolean getUserRoleStatus(String role) {
         return getUserRoles().contains(role);
+    }
+
+    @RPC(method="POST", path="attachmentInfo")
+    public List<Map<String, ?>> getAttachmentInfo(List<URL> attachments) throws IOException {
+        LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
+
+        for (URL url : attachments) {
+            long bytes = 0;
+            long checksum = 0;
+
+            try (InputStream inputStream = url.openStream()) {
+                int b;
+                while ((b = inputStream.read()) != -1) {
+                    bytes++;
+                    checksum += b;
+                }
+            }
+
+            attachmentInfo.add(mapOf(entry("path", url.getPath()),
+                entry("bytes", bytes),
+                entry("checksum", checksum)));
+        }
+
+        return attachmentInfo;
     }
 }

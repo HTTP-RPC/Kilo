@@ -109,5 +109,34 @@
 </table>
 </form>
 
+<hr/>
+
+<form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data">
+<table>
+<tr>
+<td>File 1</td><td><input type="file" name="attachments"/></td>
+</tr>
+<tr>
+<td>File 2</td><td><input type="file" name="attachments"/></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Get Attachment Info"/></td>
+</tr>
+</table>
+</form>
+
+<hr/>
+
+<form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data">
+<table>
+<tr>
+<td>Files</td><td><input type="file" name="attachments" multiple/></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Get Attachment Info"/></td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

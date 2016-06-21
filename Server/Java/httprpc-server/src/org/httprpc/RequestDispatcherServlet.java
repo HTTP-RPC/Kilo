@@ -14,6 +14,7 @@
 
 package org.httprpc;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -247,7 +248,8 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request, Map<String, LinkedList<Part>> partMap) {
+    private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request,
+        Map<String, LinkedList<Part>> partMap) throws IOException {
         Object[] arguments = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -307,9 +309,11 @@ public class RequestDispatcherServlet extends HttpServlet {
         return arguments;
     }
 
-    private static URL getArgument(Part part) {
-        // TODO
-        return null;
+    private static URL getArgument(Part part) throws IOException {
+        File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
+        part.write(file.getAbsolutePath());
+
+        return file.toURI().toURL();
     }
 
     private static Object getArgument(String value, Type type) {
