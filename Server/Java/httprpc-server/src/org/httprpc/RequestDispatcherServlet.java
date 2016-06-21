@@ -242,8 +242,11 @@ public class RequestDispatcherServlet extends HttpServlet {
                     LinkedList<Part> partList = partMap.get(name);
 
                     if (partList != null) {
-                        // TODO
-                        list = Collections.emptyList();
+                        list = new ArrayList<>(partList.size());
+
+                        for (Part part : partList) {
+                            list.add(getURL(part));
+                        }
                     } else {
                         list = Collections.emptyList();
                     }
@@ -266,8 +269,9 @@ public class RequestDispatcherServlet extends HttpServlet {
                 argument = list;
             } else {
                 if (type == URL.class) {
-                    // TODO
-                    argument = null;
+                    LinkedList<Part> partList = partMap.get(name);
+
+                    argument = (partList == null) ? null : getURL(partList.getFirst());
                 } else {
                     argument = getArgument(request.getParameter(name), type);
                 }
@@ -277,6 +281,11 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         return arguments;
+    }
+
+    private static URL getURL(Part part) {
+        // TODO
+        return null;
     }
 
     private static Object getArgument(String value, Type type) {
