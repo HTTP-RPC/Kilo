@@ -177,6 +177,12 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         if (contentType != null && contentType.startsWith("multipart/form-data")) {
             for (Part part : request.getParts()) {
+                String submittedFileName = part.getSubmittedFileName();
+
+                if (submittedFileName == null || submittedFileName.length() == 0) {
+                    continue;
+                }
+
                 String name = part.getName();
 
                 LinkedList<Part> partList = partMap.get(name);

@@ -167,7 +167,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="attachmentInfo")
-    public List<Map<String, ?>> getAttachmentInfo(List<URL> attachments) throws IOException {
+    public List<Map<String, ?>> getAttachmentInfo(String text, List<URL> attachments) throws IOException {
         LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (URL url : attachments) {
@@ -182,9 +182,12 @@ public class TestService extends WebService {
                 }
             }
 
-            attachmentInfo.add(mapOf(entry("path", url.getPath()),
+            attachmentInfo.add(mapOf(
+                entry("text", text),
+                entry("path", url.getPath()),
                 entry("bytes", bytes),
-                entry("checksum", checksum)));
+                entry("checksum", checksum))
+            );
         }
 
         return attachmentInfo;

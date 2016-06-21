@@ -130,6 +130,9 @@
 <form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data">
 <table>
 <tr>
+<td>Text</td><td><input type="text" name="text"/></td>
+</tr>
+<tr>
 <td>Files</td><td><input type="file" name="attachments" multiple/></td>
 </tr>
 <tr>
