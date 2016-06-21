@@ -29,11 +29,11 @@ import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -47,6 +47,12 @@ import javax.servlet.http.HttpServletResponse;
 @MultipartConfig
 public class RequestDispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
+
+    // Resource structure
+    private static class Resource {
+        public final TreeMap<String, Method> methods = new TreeMap<>();
+        public final TreeMap<String, Resource> resources = new TreeMap<>();
+    }
 
     // User role set
     private static class UserRoleSet extends AbstractSet<String> {
@@ -74,7 +80,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private Class<?> serviceType = null;
 
-    private Map<String, Map<String, Method>> methodMaps = new HashMap<>();
+    private Resource root = new Resource();
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
@@ -94,6 +100,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             throw new ServletException("Invalid service type.");
         }
 
+        // Index methods
         Method[] methods = serviceType.getMethods();
 
         for (int i = 0; i < methods.length; i++) {
@@ -102,86 +109,108 @@ public class RequestDispatcherServlet extends HttpServlet {
             RPC rpc = method.getAnnotation(RPC.class);
 
             if (rpc != null) {
-                String path = rpc.path();
+                Resource resource = root;
 
-                Map<String, Method> methodMap = methodMaps.get(path);
+                String[] components = rpc.path().split("/");
 
-                if (methodMap == null) {
-                    methodMap = new HashMap<>();
+                for (int j = 0; j < components.length; j++) {
+                    String component = components[j];
 
-                    methodMaps.put(path, methodMap);
+                    if (component.length() == 0) {
+                        continue;
+                    }
+
+                    Resource child = resource.resources.get(component);
+
+                    if (child == null) {
+                        child = new Resource();
+
+                        resource.resources.put(component, child);
+                    }
+
+                    resource = child;
                 }
 
-                methodMap.put(rpc.method().toLowerCase(), method);
+                resource.methods.put(rpc.method().toLowerCase(), method);
             }
         }
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Find method
+        Resource resource = root;
+
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
-            // Look up method
-            pathInfo = pathInfo.substring(1);
+            String[] components = pathInfo.split("/");
 
-            Map<String, Method> methodMap = methodMaps.get(pathInfo);
+            for (int j = 0; j < components.length; j++) {
+                String component = components[j];
 
-            if (methodMap == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
-            Method method = methodMap.get(request.getMethod().toLowerCase());
-
-            if (method == null) {
-                response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-                return;
-            }
-
-            // Execute method
-            Object result;
-            try {
-                WebService service;
-                if (!Modifier.isStatic(method.getModifiers())) {
-                    try {
-                        service = (WebService)serviceType.newInstance();
-                    } catch (IllegalAccessException | InstantiationException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    service.setLocale(request.getLocale());
-
-                    Principal userPrincipal = request.getUserPrincipal();
-
-                    if (userPrincipal != null) {
-                        service.setUserName(userPrincipal.getName());
-                        service.setUserRoles(new UserRoleSet(request));
-                    }
-                } else {
-                    service = null;
+                if (component.length() == 0) {
+                    continue;
                 }
 
+                resource = resource.resources.get(component);
+
+                if (resource == null) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+            }
+        }
+
+        Method method = resource.methods.get(request.getMethod().toLowerCase());
+
+        if (method == null) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
+        // Execute method
+        Object result;
+        try {
+            WebService service;
+            if (!Modifier.isStatic(method.getModifiers())) {
                 try {
-                    result = method.invoke(service, getArguments(method.getParameters(), request));
-                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    service = (WebService)serviceType.newInstance();
+                } catch (IllegalAccessException | InstantiationException exception) {
                     throw new RuntimeException(exception);
                 }
-            } catch (RuntimeException exception) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            }
 
-            // Write response
-            Class<?> returnType = method.getReturnType();
+                service.setLocale(request.getLocale());
 
-            if (returnType == Void.TYPE || returnType == Void.class) {
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                Principal userPrincipal = request.getUserPrincipal();
+
+                if (userPrincipal != null) {
+                    service.setUserName(userPrincipal.getName());
+                    service.setUserRoles(new UserRoleSet(request));
+                }
             } else {
-                response.setContentType(JSON_MIME_TYPE);
-
-                writeValue(response.getWriter(), result, 0);
+                service = null;
             }
+
+            try {
+                result = method.invoke(service, getArguments(method.getParameters(), request));
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                throw new RuntimeException(exception);
+            }
+        } catch (RuntimeException exception) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        // Write response
+        Class<?> returnType = method.getReturnType();
+
+        if (returnType == Void.TYPE || returnType == Void.class) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } else {
+            response.setContentType(JSON_MIME_TYPE);
+
+            writeValue(response.getWriter(), result, 0);
         }
     }
 

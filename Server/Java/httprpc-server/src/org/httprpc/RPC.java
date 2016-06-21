@@ -35,5 +35,5 @@ public @interface RPC {
      * @return
      * The path associated with the method.
      */
-    public String path();
+    public String path() default "";
 }
