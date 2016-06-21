@@ -214,7 +214,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
 
                 try {
-                    result = method.invoke(service, getArguments(method, request, partMap));
+                    result = method.invoke(service, getArguments(method.getParameters(), request, partMap));
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new RuntimeException(exception);
                 }
@@ -247,9 +247,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    private static Object[] getArguments(Method method, HttpServletRequest request, Map<String, LinkedList<Part>> partMap) {
-        Parameter[] parameters = method.getParameters();
-
+    private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request, Map<String, LinkedList<Part>> partMap) {
         Object[] arguments = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
