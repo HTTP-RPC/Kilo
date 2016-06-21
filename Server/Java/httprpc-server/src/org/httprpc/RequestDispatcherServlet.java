@@ -23,20 +23,23 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -47,8 +50,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     // Resource structure
     private static class Resource {
-        public final TreeMap<String, Method> methods = new TreeMap<>();
-        public final TreeMap<String, Resource> resources = new TreeMap<>();
+        public final HashMap<String, Method> methods = new HashMap<>();
+        public final HashMap<String, Resource> resources = new HashMap<>();
     }
 
     // User role set
@@ -195,6 +198,8 @@ public class RequestDispatcherServlet extends HttpServlet {
         } catch (RuntimeException exception) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
+        } finally {
+            // TODO Delete attachments
         }
 
         // Write response
@@ -210,6 +215,15 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request) {
+        // Populate part map
+        HashMap<String, LinkedList<Part>> partMap = new HashMap<>();
+
+        String contentType = request.getContentType();
+
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            // TODO
+        }
+
         Object[] arguments = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -220,27 +234,43 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             Object argument;
             if (type == List.class) {
-                String[] values = request.getParameterValues(name);
+                ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                Type elementType = parameterizedType.getActualTypeArguments()[0];
 
                 List<Object> list;
-                if (values != null) {
-                    ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                    Type elementType = parameterizedType.getActualTypeArguments()[0];
+                if (elementType == URL.class) {
+                    LinkedList<Part> partList = partMap.get(name);
 
-                    int n = values.length;
-
-                    list = new ArrayList<>(n);
-
-                    for (int j = 0; j < n; j++) {
-                        list.add(getArgument(values[j], elementType));
+                    if (partList != null) {
+                        // TODO
+                        list = Collections.emptyList();
+                    } else {
+                        list = Collections.emptyList();
                     }
                 } else {
-                    list = Collections.emptyList();
+                    String[] values = request.getParameterValues(name);
+
+                    if (values != null) {
+                        int n = values.length;
+
+                        list = new ArrayList<>(n);
+
+                        for (int j = 0; j < n; j++) {
+                            list.add(getArgument(values[j], elementType));
+                        }
+                    } else {
+                        list = Collections.emptyList();
+                    }
                 }
 
                 argument = list;
             } else {
-                argument = getArgument(request.getParameter(name), type);
+                if (type == URL.class) {
+                    // TODO
+                    argument = null;
+                } else {
+                    argument = getArgument(request.getParameter(name), type);
+                }
             }
 
             arguments[i] = argument;
