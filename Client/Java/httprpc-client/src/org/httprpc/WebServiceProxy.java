@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -63,7 +65,16 @@ public class WebServiceProxy {
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
         private static final String CONTENT_TYPE_KEY = "Content-Type";
-        private static final String WWW_FORM_URL_ENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
+        private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+        private static final String BOUNDARY_PARAMETER_FORMAT = "; boundary=%s";
+
+        private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
+
+        private static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition: form-data";
+        private static final String NAME_PARAMETER_FORMAT = "; name=\"%s\"";
+        private static final String FILENAME_PARAMETER_FORMAT = "; filename=\"%s\"";
+
+        private static final String CRLF = "\r\n";
 
         private static final String TRUE_KEYWORD = "true";
         private static final String FALSE_KEYWORD = "false";
@@ -108,41 +119,40 @@ public class WebServiceProxy {
             URL url = new URL(serverURL, path);
 
             // Construct query
-            StringBuilder queryBuilder = new StringBuilder();
+            if (!method.equalsIgnoreCase(POST_METHOD)) {
+                StringBuilder queryBuilder = new StringBuilder();
 
-            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                String name = argument.getKey();
+                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                    String name = argument.getKey();
 
-                if (name == null) {
-                    continue;
-                }
-
-                List<?> values = getParameterValues(argument.getValue());
-
-                for (int i = 0, n = values.size(); i < n; i++) {
-                    Object element = values.get(i);
-
-                    if (element == null) {
+                    if (name == null) {
                         continue;
                     }
 
-                    if (queryBuilder.length() > 0) {
-                        queryBuilder.append("&");
+                    List<?> values = getParameterValues(argument.getValue());
+
+                    for (int i = 0, n = values.size(); i < n; i++) {
+                        Object element = values.get(i);
+
+                        if (element == null) {
+                            continue;
+                        }
+
+                        if (queryBuilder.length() > 0) {
+                            queryBuilder.append("&");
+                        }
+
+                        String value = getParameterValue(element);
+
+                        queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                        queryBuilder.append("=");
+                        queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                     }
-
-                    String value = getParameterValue(element);
-
-                    queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                    queryBuilder.append("=");
-                    queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
                 }
-            }
 
-            String query = queryBuilder.toString();
-
-            // Append query to URL
-            if (query.length() > 0 && !method.equalsIgnoreCase(POST_METHOD)) {
-                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
+                if (queryBuilder.length() > 0) {
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + queryBuilder);
+                }
             }
 
             // Open URL connection
@@ -167,11 +177,73 @@ public class WebServiceProxy {
             // Write request body
             if (method.equalsIgnoreCase(POST_METHOD)) {
                 connection.setDoOutput(true);
-                connection.setRequestProperty(CONTENT_TYPE_KEY, WWW_FORM_URL_ENCODED_MIME_TYPE);
 
+                String boundary = UUID.randomUUID().toString();
+                String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
+
+                connection.setRequestProperty(CONTENT_TYPE_KEY, requestContentType);
+
+                String boundaryData = String.format("--%s%s", boundary, CRLF);
+
+                // Write request body
                 try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                        writer.write(query);
+                        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                            String name = argument.getKey();
+
+                            if (name == null) {
+                                continue;
+                            }
+
+                            List<?> values = getParameterValues(argument.getValue());
+
+                            for (Object element : values) {
+                                if (element == null) {
+                                    continue;
+                                }
+
+                                writer.append(boundaryData);
+
+                                writer.append(CONTENT_DISPOSITION_HEADER);
+                                writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+
+                                if (element instanceof URL) {
+                                    String path = ((URL)element).getPath();
+                                    String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                                    writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
+                                    writer.append(CRLF);
+
+                                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                                    if (attachmentContentType == null) {
+                                        attachmentContentType = OCTET_STREAM_MIME_TYPE;
+                                    }
+
+                                    writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
+                                    writer.append(CRLF);
+
+                                    writer.flush();
+
+                                    try (InputStream inputStream = url.openStream()) {
+                                        int b;
+                                        while ((b = inputStream.read()) != EOF) {
+                                            outputStream.write(b);
+                                        }
+                                    }
+                                } else {
+                                    String value = getParameterValue(element);
+
+                                    writer.append(CRLF);
+                                    writer.append(CRLF);
+                                    writer.append(value);
+                                }
+
+                                writer.append(CRLF);
+                            }
+                        }
+
+                        writer.append(String.format("--%s--%s", boundary, CRLF));
                     }
                 }
             }

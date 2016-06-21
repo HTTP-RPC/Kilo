@@ -26,7 +26,16 @@ NSString * const WSArgumentsKey = @"arguments";
 NSString * const kPostMethod = @"POST";
 
 NSString * const kContentTypeField = @"Content-Type";
-NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencoded";
+NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
+NSString * const kBoundaryParameterFormat = @"; boundary=%@";
+
+NSString * const kOctetStreamMIMEType = @"application/octet-stream";
+
+NSString * const kContentDispositionHeader = @"Content-Disposition: form-data";
+NSString * const kNameParameterFormat = @"; name=\"%@\"";
+NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
+
+NSString * const kCRLF = @"\r\n";
 
 @implementation WSWebServiceProxy
 
@@ -58,27 +67,28 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 
     if (url != nil) {
         // Construct query
-        NSMutableString *query = [NSMutableString new];
+        if ([method caseInsensitiveCompare:kPostMethod] != NSOrderedSame) {
+            NSMutableString *query = [NSMutableString new];
 
-        for (NSString *name in arguments) {
-            NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+            for (NSString *name in arguments) {
+                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
-            for (NSUInteger i = 0, n = [values count]; i < n; i++) {
-                if ([query length] > 0) {
-                    [query appendString:@"&"];
+                for (NSUInteger i = 0, n = [values count]; i < n; i++) {
+                    if ([query length] > 0) {
+                        [query appendString:@"&"];
+                    }
+
+                    NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
+
+                    [query appendString:[name URLEncodedString]];
+                    [query appendString:@"="];
+                    [query appendString:[value URLEncodedString]];
                 }
-
-                NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
-
-                [query appendString:[name URLEncodedString]];
-                [query appendString:@"="];
-                [query appendString:[value URLEncodedString]];
             }
-        }
 
-        // Append query to URL
-        if ([query length] > 0 && [method caseInsensitiveCompare:kPostMethod] != NSOrderedSame) {
-            url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
+            if ([query length] > 0) {
+                url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
+            }
         }
 
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -94,8 +104,63 @@ NSString * const kWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencode
 
         // Write request body
         if ([method caseInsensitiveCompare:kPostMethod] == NSOrderedSame) {
-            [request setValue:kWWWFormURLEncodedMIMEType forHTTPHeaderField:kContentTypeField];
-            [request setHTTPBody:[query UTF8Data]];
+            NSString *boundary = [[NSUUID new] UUIDString];
+            NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
+
+            [request setValue:requestContentType forHTTPHeaderField:kContentTypeField];
+
+            // Construct multi-part form data
+            NSMutableData *body = [NSMutableData new];
+
+            NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
+
+            NSData *contentDispositionHeaderData = [kContentDispositionHeader UTF8Data];
+
+            for (NSString *name in arguments) {
+                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+
+                for (id element in values) {
+                    [body appendData:boundaryData];
+
+                    [body appendData:contentDispositionHeaderData];
+                    [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
+
+                    if ([element isKindOfClass:[NSURL self]]) {
+                        NSString *filename = [url lastPathComponent];
+
+                        [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
+
+                        CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
+                        CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
+
+                        NSString *attachmentContentType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+
+                        CFRelease(uti);
+
+                        if (attachmentContentType == nil) {
+                            attachmentContentType = kOctetStreamMIMEType;
+                        }
+
+                        [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
+
+                        [body appendData:[NSData dataWithContentsOfURL:url]];
+                    } else {
+                        NSString *value = [WSWebServiceProxy parameterValueForElement:element];
+
+                        [body appendData:[kCRLF UTF8Data]];
+                        [body appendData:[kCRLF UTF8Data]];
+                        [body appendData:[value UTF8Data]];
+                    }
+
+                    [body appendData:[kCRLF UTF8Data]];
+                }
+            }
+
+            [body appendData:[[NSString stringWithFormat:@"--%@--%@", boundary, kCRLF] UTF8Data]];
+
+            [request setHTTPBody:body];
         }
 
         // Execute request
