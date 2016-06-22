@@ -126,7 +126,7 @@ NSString * const kCRLF = @"\r\n";
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
 
                     if ([element isKindOfClass:[NSURL self]]) {
-                        NSString *filename = [url lastPathComponent];
+                        NSString *filename = [element lastPathComponent];
 
                         [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
@@ -145,7 +145,7 @@ NSString * const kCRLF = @"\r\n";
                         [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
 
-                        [body appendData:[NSData dataWithContentsOfURL:url]];
+                        [body appendData:[NSData dataWithContentsOfURL:element]];
                     } else {
                         NSString *value = [WSWebServiceProxy parameterValueForElement:element];
 
