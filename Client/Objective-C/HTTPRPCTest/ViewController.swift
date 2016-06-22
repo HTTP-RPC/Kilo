@@ -29,6 +29,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var localeCodeCell: UITableViewCell!
     @IBOutlet var userNameCell: UITableViewCell!
     @IBOutlet var userRoleStatusCell: UITableViewCell!
+    @IBOutlet var attachmentInfoCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
@@ -130,6 +131,28 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         // User role status
         serviceProxy.invoke("GET", path: "/httprpc-server-test/test/userRoleStatus", arguments: ["role": "tomcat"]) {(result, error) in
             validate(result as? Bool == true, error: error, cell: self.userRoleStatusCell)
+        }
+
+        // Attachment info
+        let mainBundle = NSBundle.mainBundle()
+
+        let textTestURL = mainBundle.URLForResource("test", withExtension: "txt")!
+        let imageTestURL = mainBundle.URLForResource("test", withExtension: "jpg")!
+
+        serviceProxy.invoke("POST", path: "/httprpc-server-test/test/attachmentInfo", arguments:["text": "hello", "attachments": [textTestURL, imageTestURL]]) {(result, error) in
+            validate(result as? NSDictionary == [
+                "text": "hello",
+                "attachmentInfo": [
+                    [
+                        "bytes": 26,
+                        "checksum": 2412
+                    ],
+                    [
+                        "bytes": 10392,
+                        "checksum": 1038036
+                    ]
+                ]
+            ], error: error, cell: self.attachmentInfoCell)
         }
     }
 

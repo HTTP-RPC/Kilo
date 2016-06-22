@@ -29,6 +29,8 @@
 		379861641BF00AB00063212E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379861631BF00AB00063212E /* ViewController.swift */; };
 		379861691BF00AB00063212E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 379861681BF00AB00063212E /* Assets.xcassets */; };
 		3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3798616A1BF00AB00063212E /* LaunchScreen.storyboard */; };
+		37B0AC071D1B57D20004A6B6 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 37B0AC051D1B57D20004A6B6 /* test.jpg */; };
+		37B0AC081D1B57D20004A6B6 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 37B0AC061D1B57D20004A6B6 /* test.txt */; };
 		37BEFBD11CF8770F009FBB33 /* WSAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 37BEFBD01CF8770F009FBB33 /* WSAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37BEFBD41CF8776F009FBB33 /* WSBasicAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 37BEFBD21CF8776F009FBB33 /* WSBasicAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37BEFBD51CF8776F009FBB33 /* WSBasicAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */; };
@@ -104,6 +106,8 @@
 		379861681BF00AB00063212E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3798616B1BF00AB00063212E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3798616D1BF00AB00063212E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		37B0AC051D1B57D20004A6B6 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
+		37B0AC061D1B57D20004A6B6 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		37BEFBD01CF8770F009FBB33 /* WSAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSAuthentication.h; sourceTree = "<group>"; };
 		37BEFBD21CF8776F009FBB33 /* WSBasicAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBasicAuthentication.h; sourceTree = "<group>"; };
 		37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSBasicAuthentication.m; sourceTree = "<group>"; };
@@ -204,6 +208,8 @@
 				379861681BF00AB00063212E /* Assets.xcassets */,
 				3798616A1BF00AB00063212E /* LaunchScreen.storyboard */,
 				3798616D1BF00AB00063212E /* Info.plist */,
+				37B0AC051D1B57D20004A6B6 /* test.jpg */,
+				37B0AC061D1B57D20004A6B6 /* test.txt */,
 			);
 			path = HTTPRPCTest;
 			sourceTree = "<group>";
@@ -350,6 +356,8 @@
 				3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */,
 				371C21661CB449D4000CF22B /* ViewController.xml in Resources */,
 				379861691BF00AB00063212E /* Assets.xcassets in Resources */,
+				37B0AC071D1B57D20004A6B6 /* test.jpg in Resources */,
+				37B0AC081D1B57D20004A6B6 /* test.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
