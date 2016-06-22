@@ -170,8 +170,8 @@ public class RequestDispatcherServlet extends HttpServlet {
             return;
         }
 
-        // Populate part map
-        HashMap<String, LinkedList<Part>> partMap = new HashMap<>();
+        // Populate file map
+        HashMap<String, LinkedList<File>> fileMap = new HashMap<>();
 
         String contentType = request.getContentType();
 
@@ -185,14 +185,17 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                 String name = part.getName();
 
-                LinkedList<Part> partList = partMap.get(name);
+                LinkedList<File> fileList = fileMap.get(name);
 
-                if (partList == null) {
-                    partList = new LinkedList<>();
-                    partMap.put(name, partList);
+                if (fileList == null) {
+                    fileList = new LinkedList<>();
+                    fileMap.put(name, fileList);
                 }
 
-                partList.add(part);
+                File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
+                part.write(file.getAbsolutePath());
+
+                fileList.add(file);
             }
         }
 
@@ -221,7 +224,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
 
                 try {
-                    result = method.invoke(service, getArguments(method.getParameters(), request, partMap));
+                    result = method.invoke(service, getArguments(method.getParameters(), request, fileMap));
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new RuntimeException(exception);
                 }
@@ -241,21 +244,17 @@ public class RequestDispatcherServlet extends HttpServlet {
                 writeValue(response.getWriter(), result, 0);
             }
         } finally {
-            // Clean up temporary files
-            for (LinkedList<Part> partList : partMap.values()) {
-                for (Part part : partList) {
-                    try {
-                        part.delete();
-                    } catch (IOException exception) {
-                        // No-op
-                    }
+            // Delete files
+            for (LinkedList<File> fileList : fileMap.values()) {
+                for (File file : fileList) {
+                    file.delete();
                 }
             }
         }
     }
 
     private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request,
-        Map<String, LinkedList<Part>> partMap) throws IOException {
+        Map<String, LinkedList<File>> fileMap) throws IOException {
         Object[] arguments = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -271,13 +270,13 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                 List<Object> list;
                 if (elementType == URL.class) {
-                    LinkedList<Part> partList = partMap.get(name);
+                    LinkedList<File> fileList = fileMap.get(name);
 
-                    if (partList != null) {
-                        list = new ArrayList<>(partList.size());
+                    if (fileList != null) {
+                        list = new ArrayList<>(fileList.size());
 
-                        for (Part part : partList) {
-                            list.add(getArgument(part));
+                        for (File file : fileList) {
+                            list.add(file.toURI().toURL());
                         }
                     } else {
                         list = Collections.emptyList();
@@ -301,9 +300,13 @@ public class RequestDispatcherServlet extends HttpServlet {
                 argument = list;
             } else {
                 if (type == URL.class) {
-                    LinkedList<Part> partList = partMap.get(name);
+                    LinkedList<File> fileList = fileMap.get(name);
 
-                    argument = (partList == null) ? null : getArgument(partList.getFirst());
+                    if (fileList != null) {
+                        argument = fileList.getFirst().toURI().toURL();
+                    } else {
+                        argument = null;
+                    }
                 } else {
                     argument = getArgument(request.getParameter(name), type);
                 }
@@ -313,13 +316,6 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         return arguments;
-    }
-
-    private static URL getArgument(Part part) throws IOException {
-        File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
-        part.write(file.getAbsolutePath());
-
-        return file.toURI().toURL();
     }
 
     private static Object getArgument(String value, Type type) {
