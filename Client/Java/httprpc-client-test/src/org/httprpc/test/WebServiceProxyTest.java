@@ -18,6 +18,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -151,8 +152,34 @@ public class WebServiceProxyTest {
             validate(exception == null && result.equals(true));
         });
 
+        // Attachment info
+        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
+        List<?> attachments = listOf(textTestURL, imageTestURL);
+
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/attachmentInfo",
+            mapOf(entry("text", "hello"), entry("attachments", attachments)),
+            WebServiceProxyTest::handleAttachmentInfoResult);
+
         // Shut down thread pool
         threadPool.shutdown();
+    }
+
+    private static void handleAttachmentInfoResult(Map<String, ?> result, Exception exception) {
+        validate(exception == null && result.equals(mapOf(
+            entry("text", "hello"),
+            entry("attachmentInfo", listOf(
+                mapOf(
+                    entry("bytes", 26L),
+                    entry("checksum", 2412L)
+                ),
+                mapOf(
+                    entry("bytes", 10392L),
+                    entry("checksum", 1038036L)
+                )
+            ))
+        )));
     }
 
     private static void validate(boolean condition) {

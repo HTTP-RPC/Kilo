@@ -225,7 +225,7 @@ public class WebServiceProxy {
 
                                     writer.flush();
 
-                                    try (InputStream inputStream = url.openStream()) {
+                                    try (InputStream inputStream = ((URL)element).openStream()) {
                                         int b;
                                         while ((b = inputStream.read()) != EOF) {
                                             outputStream.write(b);

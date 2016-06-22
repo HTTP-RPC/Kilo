@@ -183,7 +183,6 @@ public class TestService extends WebService {
             }
 
             attachmentInfo.add(mapOf(
-                entry("path", url.getPath()),
                 entry("bytes", bytes),
                 entry("checksum", checksum))
             );
