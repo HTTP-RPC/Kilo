@@ -82,8 +82,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     private Class<?> serviceType = null;
     private Resource root = null;
 
-    private static final String JSON_MIME_TYPE = "application/json";
-
     @Override
     public void init() throws ServletException {
         // Load service class
@@ -239,7 +237,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setContentType(JSON_MIME_TYPE);
+                response.setContentType("application/json; charset=UTF-8");
 
                 writeValue(response.getWriter(), result, 0);
             }

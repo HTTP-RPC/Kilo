@@ -70,8 +70,8 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Characters
-        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/characters", arguments: ["text": "Hello, World!"]) {(result, error) in
-            self.validate(result as? NSArray == ["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error: error, cell: self.charactersCell)
+        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/characters", arguments: ["text": "Héllo, World!"]) {(result, error) in
+            self.validate(result as? NSArray == ["H", "é", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"], error: error, cell: self.charactersCell)
         }
 
         // Selection

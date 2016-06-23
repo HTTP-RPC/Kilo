@@ -99,8 +99,8 @@ public class WebServiceProxyTest {
         });
 
         // Characters
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Hello, World!")), (result, exception) -> {
-            validate(exception == null && result.equals(listOf("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Héllo, World!")), (result, exception) -> {
+            validate(exception == null && result.equals(listOf("H", "é", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
         });
 
         // Selection
@@ -159,7 +159,7 @@ public class WebServiceProxyTest {
         List<?> attachments = listOf(textTestURL, imageTestURL);
 
         serviceProxy.invoke("POST", "/httprpc-server-test/test/attachmentInfo",
-            mapOf(entry("text", "hello"), entry("attachments", attachments)),
+            mapOf(entry("text", "héllo"), entry("attachments", attachments)),
             WebServiceProxyTest::handleAttachmentInfoResult);
 
         // Shut down thread pool
@@ -168,7 +168,7 @@ public class WebServiceProxyTest {
 
     private static void handleAttachmentInfoResult(Map<String, ?> result, Exception exception) {
         validate(exception == null && result.equals(mapOf(
-            entry("text", "hello"),
+            entry("text", "héllo"),
             entry("attachmentInfo", listOf(
                 mapOf(
                     entry("bytes", 26L),
