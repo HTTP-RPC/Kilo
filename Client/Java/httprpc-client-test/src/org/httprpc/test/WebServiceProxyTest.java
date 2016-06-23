@@ -104,8 +104,8 @@ public class WebServiceProxyTest {
         });
 
         // Selection
-        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", listOf("a", "b", "c", "d"))), (result, exception) -> {
-            validate(exception == null && result.equals("a, b, c, d"));
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", listOf("å", "b", "c", "d"))), (result, exception) -> {
+            validate(exception == null && result.equals("å, b, c, d"));
         });
 
         // Statistics

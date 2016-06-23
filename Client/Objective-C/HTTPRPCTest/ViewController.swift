@@ -75,8 +75,8 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Selection
-        serviceProxy.invoke("POST", path: "/httprpc-server-test/test/selection", arguments: ["items": ["a", "b", "c", "d"]]) {(result, error) in
-            self.validate(result as? String == "a, b, c, d", error: error, cell: self.selectionCell)
+        serviceProxy.invoke("POST", path: "/httprpc-server-test/test/selection", arguments: ["items": ["å", "b", "c", "d"]]) {(result, error) in
+            self.validate(result as? String == "å, b, c, d", error: error, cell: self.selectionCell)
         }
 
         // Statistics

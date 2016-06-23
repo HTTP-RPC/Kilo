@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -187,7 +188,7 @@ public class WebServiceProxy {
 
                 // Write request body
                 try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)))) {
                         for (Map.Entry<String, ?> argument : arguments.entrySet()) {
                             String name = argument.getKey();
 
@@ -232,11 +233,10 @@ public class WebServiceProxy {
                                         }
                                     }
                                 } else {
-                                    String value = getParameterValue(element);
+                                    writer.append(CRLF);
 
                                     writer.append(CRLF);
-                                    writer.append(CRLF);
-                                    writer.append(value);
+                                    writer.append(getParameterValue(element));
                                 }
 
                                 writer.append(CRLF);

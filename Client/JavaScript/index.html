@@ -15,6 +15,7 @@ limitations under the License.
 <html>
 
 <head>
+<meta charset="UTF-8">
 <title>HTTP-RPC Test</title>
 <script src="httprpc.js"></script>
 <script>
@@ -38,13 +39,13 @@ function testService() {
     });
 
     // Characters
-    serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", {text:"Hello, World!"}, function(result, error) {
-        validate(JSON.stringify(result) == JSON.stringify(["H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", {text:"Héllo, World!"}, function(result, error) {
+        validate(JSON.stringify(result) == JSON.stringify(["H", "é", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!"]));
     });
 
     // Selection
-    serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", {items:["a", "b", "c", "d"]}, function(result, error) {
-        validate(error == null && result == "a, b, c, d");
+    serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", {items:["å", "b", "c", "d"]}, function(result, error) {
+        validate(error == null && result == "å, b, c, d");
     });
 
     // Statistics

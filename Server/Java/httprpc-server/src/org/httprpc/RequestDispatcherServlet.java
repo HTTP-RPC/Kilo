@@ -168,6 +168,11 @@ public class RequestDispatcherServlet extends HttpServlet {
             return;
         }
 
+        // Set character encoding
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding("UTF-8");
+        }
+
         // Populate file map
         HashMap<String, LinkedList<File>> fileMap = new HashMap<>();
 

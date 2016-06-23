@@ -111,8 +111,11 @@
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data">
+<form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table>
+<tr>
+<td>Text</td><td><input type="text" name="text"/></td>
+</tr>
 <tr>
 <td>File 1</td><td><input type="file" name="attachments"/></td>
 </tr>
@@ -127,7 +130,7 @@
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data">
+<form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table>
 <tr>
 <td>Text</td><td><input type="text" name="text"/></td>
