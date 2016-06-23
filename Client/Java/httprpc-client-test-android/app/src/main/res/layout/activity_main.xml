@@ -82,6 +82,11 @@ limitations under the License.
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/attachment_info_checkbox"
+            android:text="Attachment Info"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </ScrollView>
 

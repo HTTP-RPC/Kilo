@@ -28,6 +28,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -44,6 +45,7 @@ import org.httprpc.BasicAuthentication;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
+import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox localeCodeCheckBox;
     private CheckBox userNameCheckBox;
     private CheckBox userRoleStatusCheckBox;
+    private CheckBox attachmentInfoCheckBox;
 
     static {
         // Allow self-signed certificates for testing purposes
@@ -129,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         localeCodeCheckBox = (CheckBox)findViewById(R.id.locale_code_checkbox);
         userNameCheckBox = (CheckBox)findViewById(R.id.user_name_checkbox);
         userRoleStatusCheckBox = (CheckBox)findViewById(R.id.user_role_status_checkbox);
+        attachmentInfoCheckBox = (CheckBox)findViewById(R.id.attachment_info_checkbox);
     }
 
     @Override
@@ -179,18 +183,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Characters
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Hello, World!")), new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Héllo, World!")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
-                charactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "e", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
+                charactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "é", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
             }
         });
 
         // Selection
-        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", Arrays.asList("a", "b", "c", "d"))), new ResultHandler<Object>() {
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", Arrays.asList("å", "b", "c", "d"))), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
-                selectionCheckBox.setChecked(exception == null && result.equals("a, b, c, d"));
+                selectionCheckBox.setChecked(exception == null && result.equals("å, b, c, d"));
             }
         });
 
@@ -250,6 +254,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(Object result, Exception exception) {
                 userRoleStatusCheckBox.setChecked(exception == null && result.equals(true));
+            }
+        });
+
+        // Attachment info
+        URL textTestURL = getClass().getResource("/assets/test.txt");
+        URL imageTestURL = getClass().getResource("/assets/test.jpg");
+
+        List<?> attachments = listOf(textTestURL, imageTestURL);
+
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/attachmentInfo",
+            mapOf(entry("text", "héllo"), entry("attachments", attachments)), new ResultHandler<Map<String, ?>>() {
+            @Override
+            public void execute(Map<String, ?> result, Exception exception) {
+                attachmentInfoCheckBox.setChecked(exception == null && result.equals(mapOf(
+                    entry("text", "héllo"),
+                    entry("attachmentInfo", listOf(
+                        mapOf(
+                            entry("bytes", 26L),
+                            entry("checksum", 2412L)
+                        ),
+                        mapOf(
+                            entry("bytes", 10392L),
+                            entry("checksum", 1038036L)
+                        )
+                    ))
+                )));
             }
         });
 
