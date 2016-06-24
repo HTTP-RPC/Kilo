@@ -29,13 +29,13 @@ import org.httprpc.beans.BeanAdapter;
  */
 public class EventService extends WebService {
     /**
-     * Creates an event.
+     * Adds an event.
      *
      * @param name
      * The name of the event.
      */
-    @RPC(method="POST", path="events")
-    public void createEvent(String title) {
+    @RPC(method="POST")
+    public void addEvent(String title) {
         SessionFactory sessionFactory = HibernateSessionFactoryManager.getSessionFactory();
 
         try (Session session = sessionFactory.openSession()) {
@@ -46,13 +46,13 @@ public class EventService extends WebService {
     }
 
     /**
-     * Returns the list of events.
+     * Retrieves a list of all events.
      *
      * @return
-     * The list of events.
+     * A list of all events.
      */
-    @RPC(method="GET", path="events")
-    public List<Map<String, Object>> getEvents() {
+    @RPC(method="GET")
+    public List<Map<String, ?>> getEvents() {
         SessionFactory sessionFactory = HibernateSessionFactoryManager.getSessionFactory();
 
         List<?> events;

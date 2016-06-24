@@ -36,12 +36,12 @@ public class NoteService extends WebService {
     private static final String MESSAGE_KEY = "message";
 
     /**
-     * Adds a note to the database.
+     * Adds a note.
      *
      * @param message
      * The note text.
      */
-    @RPC(method="POST", path="notes")
+    @RPC(method="POST")
     public void addNote(String message) {
         synchronized (notes) {
             notes.put(nextNoteID, mapOf(
@@ -55,12 +55,12 @@ public class NoteService extends WebService {
     }
 
     /**
-     * Deletes a note from the database.
+     * Removes a note.
      *
      * @param id
      * The note ID.
      */
-    @RPC(method="DELETE", path="notes")
+    @RPC(method="DELETE")
     public void deleteNote(int id) {
         synchronized (notes) {
             notes.remove(id);
@@ -68,13 +68,13 @@ public class NoteService extends WebService {
     }
 
     /**
-     * Lists all notes in the database.
+     * Retrieves a list of all notes.
      *
      * @return
      * A list of all notes.
      */
-    @RPC(method="GET", path="notes")
-    public List<Map<String, ?>> listNotes() {
+    @RPC(method="GET")
+    public List<Map<String, ?>> getNotes() {
         LinkedList<Map<String, ?>> noteList = new LinkedList<>();
 
         synchronized (notes) {

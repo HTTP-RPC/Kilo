@@ -3,7 +3,7 @@
 <title>Test Form</title>
 </head>
 <body>
-<form action="${pageContext.request.contextPath}/events/events" method="post">
+<form action="${pageContext.request.contextPath}/events" method="post">
 <table>
 <tr>
 <td>Title</td><td><input type="text" name="title"/></td>

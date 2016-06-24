@@ -79,7 +79,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="tree")
-    public Map<String, Object> getTree() {
+    public Map<String, ?> getTree() {
         TreeNode root = new TreeNode("Seasons", false);
 
         TreeNode winter = new TreeNode("Winter", false);
@@ -106,7 +106,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="statistics")
-    public Map<String, Object> getStatistics(List<Double> values) {
+    public Map<String, ?> getStatistics(List<Double> values) {
         Statistics statistics = new Statistics();
 
         int n = values.size();
@@ -123,7 +123,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="testData")
-    public List<Map<String, Object>> getTestData() throws ClassNotFoundException, SQLException, IOException {
+    public ResultSetAdapter getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
         String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));

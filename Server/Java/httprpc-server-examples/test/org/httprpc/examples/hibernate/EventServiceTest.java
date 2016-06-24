@@ -37,11 +37,11 @@ public class EventServiceTest {
     public void eventServiceTest() {
         EventService service = new EventService();
 
-        service.createEvent("A");
-        service.createEvent("B");
-        service.createEvent("C");
+        service.addEvent("A");
+        service.addEvent("B");
+        service.addEvent("C");
 
-        List<Map<String, Object>> events = service.getEvents();
+        List<Map<String, ?>> events = service.getEvents();
 
         Assert.assertEquals("A", events.get(0).get("title"));
         Assert.assertEquals("B", events.get(1).get("title"));

@@ -27,16 +27,16 @@ import com.mongodb.client.MongoDatabase;
  */
 public class RestaurantService extends WebService {
     /**
-     * Searches for restaurants.
+     * Retrieves a list of restaurants in a given zip code.
      *
      * @param zipCode
      * The zip code to search for.
      *
      * @return
-     * A list of restaurants matching the given zip code.
+     * A list of restaurants in the given zip code.
      */
-    @RPC(method="GET", path="restaurants")
-    public IteratorAdapter searchRestaurants(String zipCode) {
+    @RPC(method="GET")
+    public IteratorAdapter getRestaurants(String zipCode) {
         MongoDatabase db = MongoClientManager.getMongoClient().getDatabase("test");
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
 

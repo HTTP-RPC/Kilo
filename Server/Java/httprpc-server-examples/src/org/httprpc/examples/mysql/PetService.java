@@ -40,7 +40,7 @@ public class PetService extends WebService {
     }
 
     /**
-     * Searches for pets.
+     * Retrieves a list of pets belonging to a given owner.
      *
      * @param owner
      * The pet owner to search for.
@@ -48,8 +48,8 @@ public class PetService extends WebService {
      * @return
      * A list of pets belonging to the given owner.
      */
-    @RPC(method="GET", path="pets")
-    public ResultSetAdapter searchPets(String owner) throws SQLException, IOException {
+    @RPC(method="GET")
+    public ResultSetAdapter getPets(String owner) throws SQLException, IOException {
         Parameters parameters = Parameters.parse(new InputStreamReader(getClass().getResourceAsStream("pet_search.sql")));
         PreparedStatement statement = DriverManager.getConnection(DB_URL).prepareStatement(parameters.getSQL());
 

@@ -27,7 +27,7 @@ public class PetServiceTest {
 
         int i = 0;
 
-        try (ResultSetAdapter results = service.searchPets("Harold")) {
+        try (ResultSetAdapter results = service.getPets("Harold")) {
             Iterator<?> iterator = results.iterator();
 
             while (iterator.hasNext()) {

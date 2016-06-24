@@ -39,7 +39,7 @@ public class RestaurantServiceTest {
 
         int i = 0;
 
-        try (IteratorAdapter results = service.searchRestaurants("10075")) {
+        try (IteratorAdapter results = service.getRestaurants("10075")) {
             Iterator<?> iterator = results.iterator();
 
             while (iterator.hasNext()) {
