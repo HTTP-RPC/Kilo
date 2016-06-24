@@ -29,6 +29,7 @@ import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -173,6 +174,24 @@ public class RequestDispatcherServlet extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
         }
 
+        // Populate parameter map
+        HashMap<String, LinkedList<String>> parameterMap = new HashMap<>();
+
+        Enumeration<String> parameterNames = request.getParameterNames();
+
+        while (parameterNames.hasMoreElements()) {
+            String name = parameterNames.nextElement();
+            String[] values = request.getParameterValues(name);
+
+            LinkedList<String> valueList = new LinkedList<>();
+
+            for (int i = 0; i < values.length; i++) {
+                valueList.add(values[i]);
+            }
+
+            parameterMap.put(name, valueList);
+        }
+
         // Populate file map
         HashMap<String, LinkedList<File>> fileMap = new HashMap<>();
 
@@ -227,7 +246,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
 
                 try {
-                    result = method.invoke(service, getArguments(method.getParameters(), request, fileMap));
+                    result = method.invoke(service, getArguments(method, parameterMap, fileMap));
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new RuntimeException(exception);
                 }
@@ -256,8 +275,10 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    private static Object[] getArguments(Parameter[] parameters, HttpServletRequest request,
-        Map<String, LinkedList<File>> fileMap) throws IOException {
+    private static Object[] getArguments(Method method, HashMap<String, LinkedList<String>> parameterMap,
+        HashMap<String, LinkedList<File>> fileMap) throws IOException {
+        Parameter[] parameters = method.getParameters();
+
         Object[] arguments = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -285,15 +306,15 @@ public class RequestDispatcherServlet extends HttpServlet {
                         list = Collections.emptyList();
                     }
                 } else {
-                    String[] values = request.getParameterValues(name);
+                    LinkedList<String> valueList = parameterMap.get(name);
 
-                    if (values != null) {
-                        int n = values.length;
+                    if (valueList != null) {
+                        int n = valueList.size();
 
                         list = new ArrayList<>(n);
 
-                        for (int j = 0; j < n; j++) {
-                            list.add(getArgument(values[j], elementType));
+                        for (String value : valueList) {
+                            list.add(getArgument(value, elementType));
                         }
                     } else {
                         list = Collections.emptyList();
@@ -311,7 +332,13 @@ public class RequestDispatcherServlet extends HttpServlet {
                         argument = null;
                     }
                 } else {
-                    argument = getArgument(request.getParameter(name), type);
+                    LinkedList<String> valueList = parameterMap.get(name);
+
+                    if (valueList != null) {
+                        argument = getArgument(valueList.getFirst(), type);
+                    } else {
+                        argument = null;
+                    }
                 }
             }
 
