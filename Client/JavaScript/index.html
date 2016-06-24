@@ -94,6 +94,15 @@ function testService() {
         validate(error == null && result == true);
     });
 
+    // Long list
+    var request = serviceProxy.invoke("GET", "/httprpc-server-test/test/longList", {}, function(result, error) {
+        validate(error == 0);
+    });
+
+    window.setTimeout(function() {
+        request.abort();
+    }, 1000);
+
     // Delayed result
     serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", {result: "abcdefg", delay: 9000}, function(result, error) {
         validate(error == 0);

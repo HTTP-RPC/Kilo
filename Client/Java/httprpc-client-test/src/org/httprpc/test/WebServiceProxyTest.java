@@ -176,14 +176,9 @@ public class WebServiceProxyTest {
             mapOf(entry("text", "héllo"), entry("attachments", attachments)),
             WebServiceProxyTest::handleAttachmentInfoResult);
 
-        // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
-            validate(exception instanceof SocketTimeoutException);
-        });
-
         // Long list
         Future<?> future = serviceProxy.invoke("GET", "/httprpc-server-test/test/longList", (result, exception) -> {
-            validate(exception != null);
+            // No-op
         });
 
         Timer timer = new Timer();
@@ -191,9 +186,14 @@ public class WebServiceProxyTest {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                future.cancel(true);
+                validate(future.cancel(true));
             }
         }, 1000);
+
+        // Delayed result
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+            validate(exception instanceof SocketTimeoutException);
+        });
 
         // Shut down thread pool
         threadPool.shutdown();

@@ -31,9 +31,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox userNameCheckBox;
     private CheckBox userRoleStatusCheckBox;
     private CheckBox attachmentInfoCheckBox;
+    private CheckBox longListCheckBox;
     private CheckBox delayedResultCheckBox;
 
     static {
@@ -139,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         userNameCheckBox = (CheckBox)findViewById(R.id.user_name_checkbox);
         userRoleStatusCheckBox = (CheckBox)findViewById(R.id.user_role_status_checkbox);
         attachmentInfoCheckBox = (CheckBox)findViewById(R.id.attachment_info_checkbox);
+        longListCheckBox = (CheckBox)findViewById(R.id.long_list_checkbox);
         delayedResultCheckBox = (CheckBox)findViewById(R.id.delayed_result_checkbox);
     }
 
@@ -305,6 +310,22 @@ public class MainActivity extends AppCompatActivity {
                 )));
             }
         });
+
+        // Long list
+        final Future<?> future = serviceProxy.invoke("GET", "/httprpc-server-test/test/longList", new ResultHandler<List<Number>>() {
+            @Override
+            public void execute(List<Number> result, Exception exception) {
+                // No-op
+            }
+        });
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                longListCheckBox.setChecked(future.cancel(true));
+            }
+        }, 1000);
 
         // Delayed result
         serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), new ResultHandler<Object>() {
