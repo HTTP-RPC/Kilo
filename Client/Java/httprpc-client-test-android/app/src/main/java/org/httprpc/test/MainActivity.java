@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.widget.CheckBox;
 
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox userNameCheckBox;
     private CheckBox userRoleStatusCheckBox;
     private CheckBox attachmentInfoCheckBox;
+    private CheckBox delayedResultCheckBox;
 
     static {
         // Allow self-signed certificates for testing purposes
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         userNameCheckBox = (CheckBox)findViewById(R.id.user_name_checkbox);
         userRoleStatusCheckBox = (CheckBox)findViewById(R.id.user_role_status_checkbox);
         attachmentInfoCheckBox = (CheckBox)findViewById(R.id.attachment_info_checkbox);
+        delayedResultCheckBox = (CheckBox)findViewById(R.id.delayed_result_checkbox);
     }
 
     @Override
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool);
+        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool, 3000, 3000);
 
         // Set credentials
         serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
@@ -300,6 +303,14 @@ public class MainActivity extends AppCompatActivity {
                         )
                     ))
                 )));
+            }
+        });
+
+        // Delayed result
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), new ResultHandler<Object>() {
+            @Override
+            public void execute(Object result, Exception exception) {
+                delayedResultCheckBox.setChecked(exception instanceof SocketTimeoutException);
             }
         });
 

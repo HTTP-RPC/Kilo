@@ -21,7 +21,7 @@ limitations under the License.
 <script>
 function testService() {
     // Create service proxy
-    var serviceProxy = new WebServiceProxy();
+    var serviceProxy = new WebServiceProxy(3000);
 
     // Sum
     serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {a:4, b:2}, function(result, error) {
@@ -92,6 +92,11 @@ function testService() {
     // User role status
     serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", {role:"tomcat"}, function(result, error) {
         validate(error == null && result == true);
+    });
+
+    // Delayed result
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", {result: "abcdefg", delay: 9000}, function(result, error) {
+        validate(error == 0);
     });
 }
 

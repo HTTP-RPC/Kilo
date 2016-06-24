@@ -30,4 +30,5 @@ limitations under the License.
     <UITableViewCell style="value1TableViewCell" id="userNameCell" textLabel.text="User Name"/>
     <UITableViewCell style="value1TableViewCell" id="userRoleStatusCell" textLabel.text="User Role Status"/>
     <UITableViewCell style="value1TableViewCell" id="attachmentInfoCell" textLabel.text="Attachment Info"/>
+    <UITableViewCell style="value1TableViewCell" id="delayedResultCell" textLabel.text="Delayed Result"/>
 </LMTableView>

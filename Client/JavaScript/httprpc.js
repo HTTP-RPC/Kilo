@@ -69,6 +69,8 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
     // Execute request
     var request = new XMLHttpRequest();
 
+    request.timeout = this.timeout;
+
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
             var status = request.status;
@@ -80,14 +82,6 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
             } else {
                 resultHandler(null, status);
             }
-        }
-    }
-
-    if (this.timeout != null) {
-        request.timeout = this.timeout;
-
-        request.ontimeout = function() {
-            resultHandler(null, null);
         }
     }
 

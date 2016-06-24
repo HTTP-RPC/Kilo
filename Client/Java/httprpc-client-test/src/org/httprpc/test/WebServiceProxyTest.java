@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -71,7 +72,7 @@ public class WebServiceProxyTest {
         // Create service proxy
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool);
+        WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool, 3000, 3000);
 
         // Set credentials
         serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
@@ -171,6 +172,11 @@ public class WebServiceProxyTest {
         serviceProxy.invoke("POST", "/httprpc-server-test/test/attachmentInfo",
             mapOf(entry("text", "héllo"), entry("attachments", attachments)),
             WebServiceProxyTest::handleAttachmentInfoResult);
+
+        // Delayed result
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+            validate(exception instanceof SocketTimeoutException);
+        });
 
         // Shut down thread pool
         threadPool.shutdown();

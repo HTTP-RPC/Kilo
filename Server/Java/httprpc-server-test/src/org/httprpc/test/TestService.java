@@ -203,4 +203,15 @@ public class TestService extends WebService {
             entry("attachmentInfo", attachmentInfo)
         );
     }
+
+    @RPC(method="GET", path="delayedResult")
+    public String getDelayedResult(String result, int delay) {
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        return result;
+    }
 }

@@ -32,6 +32,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var userNameCell: UITableViewCell!
     @IBOutlet var userRoleStatusCell: UITableViewCell!
     @IBOutlet var attachmentInfoCell: UITableViewCell!
+    @IBOutlet var delayedResultCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
@@ -44,6 +45,8 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         // Configure session
         let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
         configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
+        configuration.timeoutIntervalForRequest = 3
+        configuration.timeoutIntervalForResource = 3
 
         let delegateQueue = NSOperationQueue()
         delegateQueue.maxConcurrentOperationCount = 10
@@ -142,6 +145,11 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/attachmentInfo",
             arguments:["text": "héllo", "attachments": [textTestURL, imageTestURL]],
             resultHandler: handleAttachmentInfoResult)
+
+        // Delayed result
+        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/delayedResult", arguments: ["result": "abcdefg", "delay": 9000]) {(result, error) in
+            self.validate(error != nil, error: error, cell: self.delayedResultCell)
+        }
     }
 
     func handleAttachmentInfoResult(result: AnyObject?, error: NSError?) {
