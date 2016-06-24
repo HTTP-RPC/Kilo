@@ -47,6 +47,16 @@ limitations under the License.
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/put_checkbox"
+            android:text="Put"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/delete_checkbox"
+            android:text="Delete"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/statistics_checkbox"
             android:text="Statistics"
             android:enabled="false"

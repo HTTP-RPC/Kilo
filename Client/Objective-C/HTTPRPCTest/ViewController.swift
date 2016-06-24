@@ -22,6 +22,8 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var inverseCell: UITableViewCell!
     @IBOutlet var charactersCell: UITableViewCell!
     @IBOutlet var selectionCell: UITableViewCell!
+    @IBOutlet var putCell: UITableViewCell!
+    @IBOutlet var deleteCell: UITableViewCell!
     @IBOutlet var statisticsCell: UITableViewCell!
     @IBOutlet var testDataCell: UITableViewCell!
     @IBOutlet var voidCell: UITableViewCell!
@@ -77,6 +79,16 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         // Selection
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/selection", arguments: ["items": ["å", "b", "c", "d"]]) {(result, error) in
             self.validate(result as? String == "å, b, c, d", error: error, cell: self.selectionCell)
+        }
+
+        // Put
+        serviceProxy.invoke("PUT", path: "/httprpc-server-test/test", arguments: ["value": "héllo"]) {(result, error) in
+            self.validate(result as? String == "héllo", error: error, cell: self.putCell)
+        }
+
+        // Delete
+        serviceProxy.invoke("DELETE", path: "/httprpc-server-test/test", arguments: ["value": 101]) {(result, error) in
+            self.validate(result as? Int == 101, error: error, cell: self.deleteCell)
         }
 
         // Statistics

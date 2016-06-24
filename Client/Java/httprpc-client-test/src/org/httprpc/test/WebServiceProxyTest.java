@@ -108,6 +108,16 @@ public class WebServiceProxyTest {
             validate(exception == null && result.equals("å, b, c, d"));
         });
 
+        // Put
+        serviceProxy.invoke("PUT", "/httprpc-server-test/test", mapOf(entry("value", "héllo")), (result, exception) -> {
+            validate(exception == null && result.equals("héllo"));
+        });
+
+        // Delete
+        serviceProxy.invoke("DELETE", "/httprpc-server-test/test", mapOf(entry("value", 101)), (result, exception) -> {
+            validate(exception == null && result.equals(101L));
+        });
+
         // Statistics
         serviceProxy.invoke("POST", "/httprpc-server-test/test/statistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
             Statistics statistics = (exception == null) ? new Statistics(result) : null;

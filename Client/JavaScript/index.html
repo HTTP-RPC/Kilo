@@ -48,6 +48,16 @@ function testService() {
         validate(error == null && result == "å, b, c, d");
     });
 
+    // Put
+    serviceProxy.invoke("PUT", "/httprpc-server-test/test", {value: "héllo"}, function(result, error) {
+        validate(error == null && result == "héllo");
+    });
+
+    // Delete
+    serviceProxy.invoke("DELETE", "/httprpc-server-test/test", {value: 101}, function(result, error) {
+        validate(error == null && result == 101);
+    });
+
     // Statistics
     serviceProxy.invoke("POST", "/httprpc-server-test/test/statistics", {values:[1, 3, 5]}, function(result, error) {
         validate(error == null && result.count == 3 && result.average == 3 && result.sum == 9);

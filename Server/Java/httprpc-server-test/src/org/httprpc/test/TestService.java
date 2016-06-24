@@ -105,6 +105,16 @@ public class TestService extends WebService {
         return new BeanAdapter(root);
     }
 
+    @RPC(method="PUT")
+    public String put(String value) {
+        return value;
+    }
+
+    @RPC(method="DELETE")
+    public int delete(int value) {
+        return value;
+    }
+
     @RPC(method="POST", path="statistics")
     public Map<String, ?> getStatistics(List<Double> values) {
         Statistics statistics = new Statistics();

@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox inverseCheckBox;
     private CheckBox charactersCheckBox;
     private CheckBox selectionCheckBox;
+    private CheckBox putCheckBox;
+    private CheckBox deleteCheckBox;
     private CheckBox statisticsCheckBox;
     private CheckBox testDataCheckBox;
     private CheckBox voidCheckBox;
@@ -125,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
         inverseCheckBox = (CheckBox)findViewById(R.id.inverse_checkbox);
         charactersCheckBox = (CheckBox)findViewById(R.id.characters_checkbox);
         selectionCheckBox = (CheckBox)findViewById(R.id.selection_checkbox);
+        putCheckBox = (CheckBox)findViewById(R.id.put_checkbox);
+        deleteCheckBox = (CheckBox)findViewById(R.id.delete_checkbox);
         statisticsCheckBox = (CheckBox)findViewById(R.id.statistics_checkbox);
         testDataCheckBox = (CheckBox)findViewById(R.id.test_data_checkbox);
         voidCheckBox = (CheckBox)findViewById(R.id.void_checkbox);
@@ -195,6 +199,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(Object result, Exception exception) {
                 selectionCheckBox.setChecked(exception == null && result.equals("å, b, c, d"));
+            }
+        });
+
+        // Put
+        serviceProxy.invoke("PUT", "/httprpc-server-test/test", mapOf(entry("value", "héllo")), new ResultHandler<String>() {
+            @Override
+            public void execute(String result, Exception exception) {
+                putCheckBox.setChecked(exception == null && result.equals("héllo"));
+            }
+        });
+
+        // Delete
+        serviceProxy.invoke("DELETE", "/httprpc-server-test/test", mapOf(entry("value", 101)), new ResultHandler<Number>() {
+            @Override
+            public void execute(Number result, Exception exception) {
+                deleteCheckBox.setChecked(exception == null && result.equals(101L));
             }
         });
 
