@@ -21,6 +21,7 @@ import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -202,6 +203,21 @@ public class TestService extends WebService {
             entry("text", text),
             entry("attachmentInfo", attachmentInfo)
         );
+    }
+
+    @RPC(method="GET", path="longList")
+    public List<Integer> getLongList() {
+        return new AbstractList<Integer>() {
+            @Override
+            public Integer get(int index) {
+                return index;
+            }
+
+            @Override
+            public int size() {
+                return Integer.MAX_VALUE;
+            }
+        };
     }
 
     @RPC(method="GET", path="delayedResult")

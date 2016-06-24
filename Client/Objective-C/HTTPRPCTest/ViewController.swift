@@ -33,6 +33,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var userRoleStatusCell: UITableViewCell!
     @IBOutlet var attachmentInfoCell: UITableViewCell!
     @IBOutlet var delayedResultCell: UITableViewCell!
+    @IBOutlet var longListCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
@@ -145,6 +146,15 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/attachmentInfo",
             arguments:["text": "héllo", "attachments": [textTestURL, imageTestURL]],
             resultHandler: handleAttachmentInfoResult)
+
+        // Long list
+        let task = serviceProxy.invoke("GET", path: "/httprpc-server-test/test/longList") {(result, error) in
+            self.validate(error != nil, error: error, cell: self.longListCell)
+        }
+
+        NSTimer.scheduledTimerWithTimeInterval(1, target: NSBlockOperation(block: {
+            task.cancel()
+        }), selector: #selector(NSOperation.main), userInfo: nil, repeats: false)
 
         // Delayed result
         serviceProxy.invoke("GET", path: "/httprpc-server-test/test/delayedResult", arguments: ["result": "abcdefg", "delay": 9000]) {(result, error) in
