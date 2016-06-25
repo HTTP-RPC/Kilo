@@ -1,3 +1,5 @@
+<%@page pageEncoding="UTF-8"%>
+
 <html>
 <head>
 <title>Test Form</title>
@@ -28,7 +30,7 @@
 <form action="${pageContext.request.contextPath}/test/characters" method="get">
 <table>
 <tr>
-<td>Text</td><td><input type="text" name="text" value="Hello, World!"/></td>
+<td>Text</td><td><input type="text" name="text" value="Héllo, World!"/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit" value="Get Characters"/></td>
@@ -44,10 +46,10 @@
 <td style="vertical-align:top">Items</td>
 <td>
 <select multiple name="items">
-<option value="one">One</option>
-<option value="two">Two</option>
-<option value="three">Three</option>
-<option value="four">Four</option>
+<option value="å">One</option>
+<option value="b">Two</option>
+<option value="c">Three</option>
+<option value="d">Four</option>
 </select>
 </td>
 </tr>
@@ -114,7 +116,7 @@
 <form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table>
 <tr>
-<td>Text</td><td><input type="text" name="text"/></td>
+<td>Text</td><td><input type="text" name="text" value="héllo"/></td>
 </tr>
 <tr>
 <td>File 1</td><td><input type="file" name="attachments"/></td>
@@ -133,7 +135,7 @@
 <form action="${pageContext.request.contextPath}/test/attachmentInfo" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table>
 <tr>
-<td>Text</td><td><input type="text" name="text"/></td>
+<td>Text</td><td><input type="text" name="text" value="héllo"/></td>
 </tr>
 <tr>
 <td>Files</td><td><input type="file" name="attachments" multiple/></td>
