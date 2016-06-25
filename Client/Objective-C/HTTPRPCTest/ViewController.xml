@@ -15,8 +15,8 @@ limitations under the License.
 -->
 
 <LMTableView>
-    <UITableViewCell style="value1TableViewCell" id="sumCell" textLabel.text="Sum"/>
-    <UITableViewCell style="value1TableViewCell" id="sumAllCell" textLabel.text="Sum All"/>
+    <UITableViewCell style="value1TableViewCell" id="sumCell" textLabel.text="Sum A, B"/>
+    <UITableViewCell style="value1TableViewCell" id="sumAllCell" textLabel.text="Sum Values"/>
     <UITableViewCell style="value1TableViewCell" id="inverseCell" textLabel.text="Inverse"/>
     <UITableViewCell style="value1TableViewCell" id="charactersCell" textLabel.text="Characters"/>
     <UITableViewCell style="value1TableViewCell" id="selectionCell" textLabel.text="Selection"/>

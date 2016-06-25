@@ -92,8 +92,7 @@ public class WebServiceProxyTest {
             }
         });
 
-        // Sum all
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/sumAll", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
             validate(exception == null && result.doubleValue() == 10.0);
         });
 

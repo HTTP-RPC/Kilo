@@ -41,8 +41,8 @@ public class TestService extends WebService {
         return a + b;
     }
 
-    @RPC(method="GET", path="sumAll")
-    public double getSumAll(List<Double> values) {
+    @RPC(method="GET", path="sum")
+    public double getSum(List<Double> values) {
         double total = 0;
 
         for (double value : values) {

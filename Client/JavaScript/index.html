@@ -28,8 +28,7 @@ function testService() {
         validate(error == null && result == 6);
     });
 
-    // Sum all
-    serviceProxy.invoke("GET", "/httprpc-server-test/test/sumAll", {values:[1, 2, 3, 4]}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {values:[1, 2, 3, 4]}, function(result, error) {
         validate(error == null && result == 10);
     });
 

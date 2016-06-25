@@ -178,8 +178,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Sum all
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/sumAll", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("values", Arrays.asList(1, 2, 3, 4))), new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
                 sumAllCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);

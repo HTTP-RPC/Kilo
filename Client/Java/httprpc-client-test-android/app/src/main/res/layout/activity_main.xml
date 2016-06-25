@@ -23,12 +23,12 @@ limitations under the License.
         android:layout_height="wrap_content"
         tools:context=".MainActivity">
         <CheckBox android:id="@+id/sum_checkbox"
-            android:text="Sum"
+            android:text="Sum A, B"
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/sum_all_checkbox"
-            android:text="Sum All"
+            android:text="Sum Values"
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

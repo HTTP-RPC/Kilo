@@ -52,7 +52,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     // Resource structure
     private static class Resource {
-        public final HashMap<String, Method> methods = new HashMap<>();
+        public final HashMap<String, LinkedList<Method>> handlerMap = new HashMap<>();
         public final HashMap<String, Resource> resources = new HashMap<>();
     }
 
@@ -131,14 +131,24 @@ public class RequestDispatcherServlet extends HttpServlet {
                     resource = child;
                 }
 
-                resource.methods.put(rpc.method().toLowerCase(), method);
+                String key = rpc.method().toLowerCase();
+
+                LinkedList<Method> handlerList = resource.handlerMap.get(key);
+
+                if (handlerList == null) {
+                    handlerList = new LinkedList<>();
+
+                    resource.handlerMap.put(key, handlerList);
+                }
+
+                handlerList.add(method);
             }
         }
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Look up service method
+        // Look up resource
         Resource resource = root;
 
         String pathInfo = request.getPathInfo();
@@ -162,9 +172,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             }
         }
 
-        Method method = resource.methods.get(request.getMethod().toLowerCase());
+        LinkedList<Method> handlerList = resource.handlerMap.get(request.getMethod().toLowerCase());
 
-        if (method == null) {
+        if (handlerList == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
@@ -221,8 +231,10 @@ public class RequestDispatcherServlet extends HttpServlet {
             }
         }
 
+        // Invoke handler method
+        Method method = getMethod(handlerList, parameterMap, fileMap);
+
         try {
-            // Invoke method
             Object result;
             try {
                 WebService service;
@@ -273,6 +285,35 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    private static Method getMethod(LinkedList<Method> handlerList, HashMap<String, LinkedList<String>> parameterMap,
+        HashMap<String, LinkedList<File>> fileMap) {
+        Method method = null;
+
+        int n = -1;
+
+        for (Method handler : handlerList) {
+            Parameter[] parameters = handler.getParameters();
+
+            int count = 0;
+
+            for (int i = 0; i < parameters.length; i++) {
+                String name = parameters[i].getName();
+
+                if (parameterMap.containsKey(name) || fileMap.containsKey(name)) {
+                    count++;
+                }
+            }
+
+            if (count > n) {
+                n = count;
+
+                method = handler;
+            }
+        }
+
+        return method;
     }
 
     private static Object[] getArguments(Method method, HashMap<String, LinkedList<String>> parameterMap,
@@ -334,11 +375,14 @@ public class RequestDispatcherServlet extends HttpServlet {
                 } else {
                     LinkedList<String> valueList = parameterMap.get(name);
 
+                    String value;
                     if (valueList != null) {
-                        argument = getArgument(valueList.getFirst(), type);
+                        value = valueList.getFirst();
                     } else {
-                        argument = null;
+                        value = null;
                     }
+
+                    argument = getArgument(value, type);
                 }
             }
 

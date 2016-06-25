@@ -17,7 +17,7 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/sumAll?values=1&values=2&values=3&values=4">Sum All</a>
+<a href="${pageContext.request.contextPath}/test/sum?values=1&values=2&values=3&values=4">Sum</a>
 
 <hr/>
 
