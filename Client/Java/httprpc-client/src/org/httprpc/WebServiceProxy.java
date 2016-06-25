@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -761,7 +760,7 @@ public class WebServiceProxy {
      */
     @SafeVarargs
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
-        LinkedHashMap<K, Object> map = new LinkedHashMap<>();
+        HashMap<K, Object> map = new HashMap<>();
 
         for (Map.Entry<K, ?> entry : entries) {
             map.put(entry.getKey(), entry.getValue());

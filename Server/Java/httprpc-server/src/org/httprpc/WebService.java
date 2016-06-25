@@ -17,7 +17,7 @@ package org.httprpc;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -122,7 +122,7 @@ public abstract class WebService {
      */
     @SafeVarargs
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
-        LinkedHashMap<K, Object> map = new LinkedHashMap<>();
+        HashMap<K, Object> map = new HashMap<>();
 
         for (Map.Entry<K, ?> entry : entries) {
             map.put(entry.getKey(), entry.getValue());
