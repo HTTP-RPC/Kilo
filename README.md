@@ -1,25 +1,27 @@
 # Introduction
-HTTP-RPC is a framework for simplifying development of REST-based applications. It allows developers to publish and interact with HTTP-based web services using a convenient, RPC-like interface while preserving fundamental REST concepts such as statelessness and uniform resource access.
+HTTP-RPC is an open-source framework for simplifying development of REST-based applications. It allows developers to create and access HTTP-based web services using a convenient, RPC-like metaphor while preserving fundamental REST concepts such as statelessness and uniform resource access.
 
-The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server library provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
+The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
 
-# Service Overview
+# Service Operations
 HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_.
 
-Arguments are passed either via the query string or in the request body, like an HTML form. Results are typically returned as JSON, although operations that do not return a value are also supported.
+Arguments are passed either via the query string or in the request body, like an HTML form. Results are generally returned as JSON, although operations that do not return a value are also supported.
 
 ## GET
 The `GET` method is used to retrive information from the server. For example, the following request might be used to obtain data about a calendar event:
 
     GET /calendar?eventID=101
 
-This request might retrieve the sum of two numbers, whose values are specified by the `a` and `b` arguments:
+This request might retrieve the sum of two numbers, whose values are specified by the `a` and `b` query arguments:
 
     GET /math/sum?a=2&b=4
 
-Alternatively, the values could be specified as a list rather than as two fixed variables:
+Alternatively, the argument values could be specified as a list rather than as two fixed variables:
 
     GET /math/sum?values=1&values=2&values=3
+    
+In either case, the service would return the value 6 in response.
 
 ## POST
 The `POST` method is typically used to add new information to the server. For example, the following request might be used to create a new calendar event:
@@ -61,15 +63,15 @@ The Java server implementation of HTTP-RPC allows developers to create and publi
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
-    * `RPC` - annotation that specifies a remote procedure call
+    * `RPC` - annotation that specifies a "remote procedure call", or request handler method
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
 * _`org.httprpc.beans`_
-    * `BeanAdapter` - wrapper class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
+    * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
 * _`org.httprpc.sql`_
-    * `ResultSetAdapter` - wrapper class that presents the contents of a JDBC result set as an iterable list, suitable for streaming to JSON
+    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable list, suitable for streaming to JSON
     * `Parameters` - class for simplifying execution of prepared statements
 * _`org.httprpc.util`_
-    * `IteratorAdapter` - wrapper class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
+    * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
 
 Each of these classes is discussed in more detail below. 
 
@@ -80,7 +82,7 @@ The JAR file for the Java server implementation of HTTP-RPC can be downloaded [h
 
 Service operations are defined by adding public methods to a concrete service implementation. All public methods annotated with the `@RPC` annotation automatically become available for remote execution when the service is published.
 
-For example, the following class might be used to implement the addition operations discussed earlier:
+For example, the following class might be used to implement the simple addition operations discussed in the previous section:
 
     public class MathService extends WebService {
         @RPC(method="GET", path="sum")
@@ -100,14 +102,15 @@ For example, the following class might be used to implement the addition operati
         }
     }
     
-Note that both methods are mapped to _/math/sum_. The `RequestDispatcherServlet` class discussed in the next section selects the best method to execute based on the names of the provided argument values. For example, the following request would cause the first method to be invoked, returning a result of 6:
+Note that both methods are mapped to the _/math/sum_ path. The `RequestDispatcherServlet` class discussed in the next section selects the best method to execute based on the names of the provided argument values. For example, the following request would cause the first method to be invoked:
 
     GET /math/sum?a=2&b=4
     
-This request would invoke the second method, also returning 6:
+This request would invoke the second method:
 
     GET /math/sum?values=1&values=2&values=3
 
+#### Method Arguments
 Method arguments may be any of the following types:
 
 * `byte`/`java.lang.Byte`
@@ -123,9 +126,10 @@ Method arguments may be any of the following types:
 
 `URL` arguments represent binary content provided by the caller and can only be used with `POST` requests submitted using the "multipart/form-data" encoding. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
 
-Omitting the value of a primitive parameter produces an argument value of 0 for that parameter. Omitting the value of a simple reference type produces a null argument value for that parameter. Omitting all values for a list parameter produces an empty list argument for the parameter.
+Omitting the value of a primitive parameter results in an argument value of 0 for that parameter. Omitting the value of a simple reference type produces a null argument value for that parameter. Omitting all values for a list parameter produces an empty list argument for the parameter.
 
-Methods may return any of the following types, `void`, or `java.lang.Void`:
+#### Return Values
+Methods may return any of the following types:
 
 * `byte`/`java.lang.Byte`
 * `short`/`java.lang.Short`
@@ -137,6 +141,8 @@ Methods may return any of the following types, `void`, or `java.lang.Void`:
 * `java.lang.String`
 * `java.util.List`
 * `java.util.Map` 
+
+Methods may also return `void` or `java.lang.Void` to indicate that they do not return a value.
 
 `Map` implementations must use `String` values for keys. Nested structures are supported, but reference cycles are not permitted.
 
@@ -193,7 +199,7 @@ Servlet security is provided by the underlying servlet container. See the Java E
 ### BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
 
-For example, the statistical data discussed in the previous section might be represented by the following Bean class:
+For example, the following Bean class might be used to represent a set of simple statistical data about a collection of values:
 
     public class Statistics {
         private int count = 0;
@@ -225,7 +231,7 @@ For example, the statistical data discussed in the previous section might be rep
         }
     }
 
-Using this class, an implementation of the `getStatistics()` method might look like this:
+Using this class, an implementation of a `getStatistics()` method might look like this:
 
     @RPC(method="GET", path="statistics")
     public Map<String, ?> getStatistics(List<Double> values) {    
@@ -246,26 +252,7 @@ Using this class, an implementation of the `getStatistics()` method might look l
 
 Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
 
-Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. 
-
-For example, the `getTree()` method discussed earlier could be implemented using `BeanAdapter` as follows:
-
-    @RPC(method="GET", path="tree")
-    public Map<String, ?> getTree() {
-        TreeNode root = new TreeNode();
-        ...
-
-        return new BeanAdapter(root);
-    }
-
-The `TreeNode` instances returned by the `getChildren()` method will be recursively adapted:
-
-    public class TreeNode {
-        public String getName() { ... }    
-        public List<TreeNode> getChildren() { ... }
-    }
-
-The `BeanAdapter#adapt()` method is used to adapt property values. This method is called internally by `BeanAdapter#get()`, but it can also be used to explicitly adapt list or map values as needed. See the Javadoc for the `BeanAdapter` class for more information.
+Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. This allows service methods to return recursive structures such as trees.
 
 ### ResultSetAdapter Class
 The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
@@ -328,7 +315,7 @@ As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its 
 `IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
 
 ## Java Client
-The Java client library enables Java-based applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
+The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
 
 * _`org.httprpc`_
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
@@ -349,7 +336,7 @@ The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC 
 
 The executor service is used to schedule service requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
 
-Service operations are executed by calling the `invoke()` method:
+Service operations are initiated by calling the `invoke()` method:
     
     public <V> Future<V> invoke(String method, String path, 
         Map<String, ?> arguments,  
@@ -367,7 +354,7 @@ A convenience method is also provided for executing operations that don't take a
     public <V> Future<V> invoke(String method, String path, 
         ResultHandler<V> resultHandler) { ... }
 
-Arguments may be any of the following types:
+Request arguments may be any of the following types:
 
 * `java.lang.Number`
 * `java.lang.Boolean`
@@ -377,7 +364,7 @@ Arguments may be any of the following types:
 
 URL arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
 
-The result handler is called upon completion of the service operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
+The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
     public void execute(V result, Exception exception);
 
@@ -566,12 +553,11 @@ A convenience method is also provided for executing operations that don't take a
 Arguments may be any of the following types:
 
 * `NSNumber`
-* `CFBooleanRef`
 * `NSString`
 * `NSURL`
 * `NSArray`
 
-URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
+`CFBooleanRef` is also supported for boolean value arguments. URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
 
 The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
