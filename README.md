@@ -620,7 +620,34 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to i
     }
 
 ## JavaScript Client
-TODO
+The JavaScript HTTP-RPC client enables browser-based applications to consume HTTP-RPC services. It is delivered as JavaScript file that defines a single `WebServiceProxy` class, which is discussed in more detail below. 
+
+The source code for the JavaScript client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases).
+
+### WebServiceProxy Class
+The `WebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server, and uses `JSON.parse()` to convert the response to an object. `POST` requests are encoded using the "application/x-www-form-urlencoded" MIME type.
+
+Service proxies are initialized via the `WebServiceProxy` constructor. Service operations are executed by calling the `invoke()` method on the service proxy. Request arguments can be numbers, booleans, strings, or arrays of any simple type.
+
+The `invoke()` method takes a result handler function as the final argument. This callback is invoked upon completion of the operation. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
+
+Both methods return the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
+
+### Examples
+The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WebServiceProxy` class, and then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
+
+    // Create service proxy
+    var serviceProxy = new WebServiceProxy();
+
+    // Get sum of "a" and "b"
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {a:4, b:2}, function(result, error) {
+        // result is 6
+    });
+
+    // Get sum of all values
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {values:[1, 2, 3, 4]}, function(result, error) {
+        // result is 6
+    });
 
 # More Information
 For additional information and examples, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
