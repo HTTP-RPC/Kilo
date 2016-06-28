@@ -22,12 +22,12 @@ public interface ResultHandler<V> {
      * Executes the result handler.
      *
      * @param result
-     * The result of executing a remote method, or <tt>null</tt> if an error
+     * The result of executing a service operation, or <tt>null</tt> if an error
      * occurred.
      *
      * @param exception
-     * An exception representing the error that occurred while invoking the
-     * remote method, or <tt>null</tt> if an error did not occur.
+     * An exception representing the error that occurred, or <tt>null</tt> if an
+     * error did not occur.
      */
     public void execute(V result, Exception exception);
 }

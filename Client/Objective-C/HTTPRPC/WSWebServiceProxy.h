@@ -69,7 +69,7 @@ extern NSString * const WSArgumentsKey;
 @property (nonatomic, nullable) id<WSAuthentication> authentication;
 
 /**
- * Invokes a remote method.
+ * Executes a service operation.
  *
  * @param method The HTTP verb associated with the request.
  * @param path The path associated with the request.
@@ -81,7 +81,7 @@ extern NSString * const WSArgumentsKey;
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
- * Invokes a remote method.
+ * Executes a service operation.
  *
  * @param method The HTTP verb associated with the request.
  * @param path The path associated with the request.

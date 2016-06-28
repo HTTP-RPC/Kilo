@@ -22,7 +22,7 @@ var WebServiceProxy = function(timeout) {
 }
 
 /**
- * Invokes a remote method.
+ * Executes a service operation.
  *
  * @param method The HTTP verb associated with the request.
  * @param path The path associated with the request.

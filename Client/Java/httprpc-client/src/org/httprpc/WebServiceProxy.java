@@ -672,9 +672,9 @@ public class WebServiceProxy {
     }
 
     /**
-     * Invokes a remote method.
+     * Executes a service operation.
      *
-     * @param <V> The type of the value returned by the method.
+     * @param <V> The type of the value returned by the operation.
      *
      * @param method
      * The HTTP verb associated with the request.
@@ -694,9 +694,9 @@ public class WebServiceProxy {
     }
 
     /**
-     * Invokes a remote method.
+     * Executes a service operation.
      *
-     * @param <V> The type of the value returned by the method.
+     * @param <V> The type of the value returned by the operation.
      *
      * @param method
      * The HTTP verb associated with the request.
