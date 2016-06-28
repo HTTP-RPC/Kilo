@@ -4,7 +4,7 @@ HTTP-RPC is a framework for simplifying development of REST-based applications. 
 The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server library provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
 
 # Service Overview
-HTTP-RPC services are accessed by applying an HTTP verb such as GET or POST to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_.
+HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_.
 
 Arguments are passed either via the query string or in the request body, like an HTML form. Results are typically returned as JSON, although operations that do not return a value are also supported.
 
@@ -326,7 +326,209 @@ As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its 
 `IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
 
 ## Java Client
-TODO
+The Java client implementation of HTTP-RPC enables Java-based applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
+
+* _`org.httprpc`_
+    * `WebServiceProxy` - invocation proxy for HTTP-RPC services
+    * `ResultHandler` - callback interface for handling results
+    * `Result` - abstract base class for typed results
+    * `Authentication` - interface for authenticating requests
+    * `BasicAuthentication` - authentication implementation supporting basic HTTP authentication
+
+The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
+
+### WebServiceProxy Class
+The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `POST` requests are encoded as "multipart/form-data".
+
+`WebServiceProxy` provides a single constructor that takes the following arguments:
+
+* `serverURL` - an instance of `java.net.URL` representing the URL of the server
+* `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
+
+The executor service is used to schedule remote method requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
+
+Service operations are executed by calling the `invoke()` method:
+    
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments,  
+        ResultHandler<V> resultHandler) { ... }
+
+This method takes the following arguments:
+
+* `method` - the HTTP method to execute
+* `path` - the resource path
+* `arguments` - a map containing the method arguments as key/value pairs
+* `resultHandler` - an instance of `org.httprpc.ResultHandler` that will be invoked upon completion of the remote method
+
+A convenience method is also provided for executing operations that don't take any arguments:
+
+    public <V> Future<V> invoke(String method, String path, 
+        ResultHandler<V> resultHandler) { ... }
+
+Arguments may be any of the following types:
+
+* `java.lang.Number`
+* `java.lang.Boolean`
+* `java.lang.String`
+* `java.net.URL`
+* `java.util.List`
+
+`URL` arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
+
+The result handler is called upon completion of the remote method. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
+
+    public void execute(V result, Exception exception);
+
+On successful completion, the first argument will contain the result of the remote method call. It will be an instance of one of the following types or `null`, depending on the content of the JSON response returned by the server:
+
+* string: `java.lang.String`
+* number: `java.lang.Number`
+* true/false: `java.lang.Boolean`
+* array: `java.util.List`
+* object: `java.util.Map`
+
+The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
+
+All variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
+
+#### Argument Map Creation
+Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
+
+    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
+    public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
+    
+Using these convenience methods, argument map creation can be reduced from this:
+
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("a", 2);
+    arguments.put("b", 4);
+    
+to this:
+
+    Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
+    
+A complete example using `WebServiceProxy#invoke()` is provided later.
+
+#### Multi-Threading Considerations
+By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
+
+While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The `setResultDispatcher()` method allows an application to specify an instance of `java.util.concurrent.Executor` that will be used to perform all result handler notifications. This is a static method that only needs to be called once at application startup.
+
+For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
+
+    WebServiceProxy.setResultDispatcher(new Executor() {
+        private Handler handler = new Handler(Looper.getMainLooper());
+
+        @Override
+        public void execute(Runnable command) {
+            handler.post(command);
+        }
+    });
+
+Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
+
+### Result Class
+`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following constructor that is used to populate Java Bean property values from map entries:
+
+    public Result(Map<String, Object> properties) { ... }
+    
+For example, the following Java class might be used to provide a typed version of the statistical data returned by the `getStatistics()` method discussed earlier:
+
+    public class Statistics extends Result {
+        private int count;
+        private double sum;
+        private double average;
+
+        public Statistics(Map<String, Object> properties) {
+            super(properties);
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public double getSum() {
+            return sum;
+        }
+
+        public void setSum(double sum) {
+            this.sum = sum;
+        }
+
+        public double getAverage() {
+            return average;
+        }
+
+        public void setAverage(double average) {
+            this.average = average;
+        }
+    }
+
+The map data returned by `getStatistics()` can be converted to a `Statistics` instance as follows:
+
+    serviceProxy.invoke("getStatistics", (Map<String, Object> result, Exception exception) -> {
+        Statistics statistics = new Statistics(result);
+
+        // Prints 3, 9.0, and 3.0
+        System.out.println(statistics.getCount());
+        System.out.println(statistics.getSum());
+        System.out.println(statistics.getAverage());
+    });
+
+### Authentication
+Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
+
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `org.httprpc.Authentication` interface defines a single method that is used to authenticate each request submitted by a proxy instance:
+
+    public interface Authentication {
+        public void authenticate(HttpURLConnection connection);
+    }
+
+Authentication providers are associated with a proxy instance via the `setAuthentication()` method of the `WebServiceProxy` class. For example, the following code associates an instance of `org.httprpc.BasicAuthentication` with a service proxy:
+
+    serviceProxy.setAuthentication(new BasicAuthentication("username", "password"));
+
+The `BasicAuthentication` class is provided by the HTTP-RPC Java client library. Applications may provide custom implementations of the `Authentication` interface to support other authentication schemes.
+
+### Examples
+The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
+
+    // Create service
+    URL serverURL = new URL("https://localhost:8443");
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+    WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, executorService);
+
+    // Get sum of "a" and "b"
+    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), new ResultHandler<Number>() {
+        @Override
+        public void execute(Number result, Exception exception) {
+            // result is 6
+        }
+    });
+    
+    // Get sum of all values
+    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", Arrays.asList(1, 2, 3))), new ResultHandler<Number>() {
+        @Override
+        public void execute(Number result, Exception exception) {
+            // result is 6
+        }
+    });
+
+Note that, in Java 8 or later, lambda expressions can be used instead of anonymous classes to implement result handlers, reducing the code for invoking the remote methods to the following:
+
+    // Get sum of "a" and "b"
+    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
+        // result is 6
+    });
+
+    // Get sum of all values
+    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", Arrays.asList(1, 2, 3))), (result, exception) -> {
+        // result is 6
+    });
 
 # Objective-C/Swift Client
 TODO
