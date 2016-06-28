@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void execute(Object result, Exception exception) {
                 localeCodeCheckBox.setChecked(exception == null && result != null);
-                localeCodeCheckBox.setText(localeCodeCheckBox.getText() + ": " + String.valueOf(result));
+                localeCodeCheckBox.setText(getResources().getString(R.string.locale_code) + ": " + String.valueOf(result));
             }
         });
 

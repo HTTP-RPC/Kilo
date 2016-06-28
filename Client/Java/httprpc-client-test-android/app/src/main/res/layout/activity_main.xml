@@ -78,7 +78,7 @@ limitations under the License.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/locale_code_checkbox"
-            android:text="Locale Code"
+            android:text="@string/locale_code"
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

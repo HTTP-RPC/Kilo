@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HTTP-RPC Test</string>
+    <string name="locale_code">Locale Code</string>
 </resources>
