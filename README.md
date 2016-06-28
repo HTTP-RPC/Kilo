@@ -227,7 +227,8 @@ For example, the statistical data discussed in the previous section might be rep
 
 Using this class, an implementation of the `getStatistics()` method might look like this:
 
-    public Map<String, Object> getStatistics(List<Double> values) {    
+    @RPC(method="GET", path="statistics")
+    public Map<String, ?> getStatistics(List<Double> values) {    
         Statistics statistics = new Statistics();
 
         int n = values.size();
@@ -249,8 +250,8 @@ Note that, if a property returns a nested Bean type, the property's value will b
 
 For example, the `getTree()` method discussed earlier could be implemented using `BeanAdapter` as follows:
 
-    @Template("tree.html")
-    public Map<String, Object> getTree() {
+    @RPC(method="GET", path="tree")
+    public Map<String, ?> getTree() {
         TreeNode root = new TreeNode();
         ...
 
@@ -271,7 +272,8 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
 
 `ResultSetAdapter` is forward-scrolling only; its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a result set to be returned directly to the caller without any intermediate buffering. The caller can simply execute a JDBC query, pass the resulting result set to the `ResultSetAdapter` constructor, and return the adapter instance:
 
-    public List<Map<String, Object>> getData() throws SQLException {
+    @RPC(method="GET", path="data")
+    public ResultSetAdapter getData() throws SQLException {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from some_table");
         
@@ -345,19 +347,20 @@ The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC 
 * `serverURL` - an instance of `java.net.URL` representing the URL of the server
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
 
-The executor service is used to schedule remote method requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
+The executor service is used to schedule service requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
 
 Service operations are executed by calling the `invoke()` method:
     
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments,  
+    public <V> Future<V> invoke(String method, String path, 
+        Map<String, ?> arguments,  
         ResultHandler<V> resultHandler) { ... }
 
 This method takes the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the resource path
-* `arguments` - a map containing the method arguments as key/value pairs
-* `resultHandler` - an instance of `org.httprpc.ResultHandler` that will be invoked upon completion of the remote method
+* `arguments` - a map containing the request arguments as key/value pairs
+* `resultHandler` - an instance of `org.httprpc.ResultHandler` that will be invoked upon completion of the service operation
 
 A convenience method is also provided for executing operations that don't take any arguments:
 
@@ -374,11 +377,11 @@ Arguments may be any of the following types:
 
 `URL` arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
 
-The result handler is called upon completion of the remote method. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
+The result handler is called upon completion of the service operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
     public void execute(V result, Exception exception);
 
-On successful completion, the first argument will contain the result of the remote method call. It will be an instance of one of the following types or `null`, depending on the content of the JSON response returned by the server:
+On successful completion, the first argument will contain the result of the operation. It will be an instance of one of the following types or `null`, depending on the content of the JSON response returned by the server:
 
 * string: `java.lang.String`
 * number: `java.lang.Number`
@@ -427,7 +430,7 @@ For example, the following Android-specific code ensures that all result handler
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ### Result Class
-`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service method to typed values. It provides the following constructor that is used to populate Java Bean property values from map entries:
+`Result` is an abstract base class for typed results. Using this class, applications can easily map untyped object data returned by a service operation to typed values. It provides the following constructor that is used to populate Java Bean property values from map entries:
 
     public Result(Map<String, Object> properties) { ... }
     
@@ -494,7 +497,7 @@ Authentication providers are associated with a proxy instance via the `setAuthen
 The `BasicAuthentication` class is provided by the HTTP-RPC Java client library. Applications may provide custom implementations of the `Authentication` interface to support other authentication schemes.
 
 ### Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
+The following code snippet demonstrates how `WebServiceProxy` can be used to access the resources of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
 
     // Create service
     URL serverURL = new URL("https://localhost:8443");
@@ -518,7 +521,7 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to inv
         }
     });
 
-Note that, in Java 8 or later, lambda expressions can be used instead of anonymous classes to implement result handlers, reducing the code for invoking the remote methods to the following:
+Note that, in Java 8 or later, lambda expressions can be used instead of anonymous classes to implement result handlers, reducing the invocation code to the following:
 
     // Get sum of "a" and "b"
     serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
@@ -530,10 +533,92 @@ Note that, in Java 8 or later, lambda expressions can be used instead of anonymo
         // result is 6
     });
 
-# Objective-C/Swift Client
-TODO
+## Objective-C/Swift Client
+The Objective-C/Swift client implementation of HTTP-RPC enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that includes the following types, discussed in more detail below:
 
-# JavaScript Client
+* `WSWebServiceProxy` - invocation proxy for HTTP-RPC services
+* `WSAuthentication` - interface for authenticating requests
+* `WSBasicAuthentication` - authentication implementation supporting basic HTTP authentication
+
+The framework for the Objective-C/Swift client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
+
+### WSWebServiceProxy Class
+The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `POST` requests are encoded as "multipart/form-data". `NSJSONSerialization` is used to deserialize response content.
+
+Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the URL of the server as arguments. Service operations are executed by calling the `invoke:withArguments:attachments:resultHandler:` method:
+    
+    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
+        withArguments:(NSDictionary *)arguments
+        attachments:(NSDictionary *)attachments
+        resultHandler:(void (^)(id, NSError *))resultHandler;
+
+This method takes the following arguments:
+
+* `methodName` - the name of the remote method to invoke
+* `arguments` - a dictionary containing the method arguments as key/value pairs
+* `attachments` - a dictionary containing any attachments to the method
+* `resultHandler` - a callback that will be invoked upon completion of the method
+
+The following convenience methods are also provided:
+
+    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
+        resultHandler:(void (^)(id, NSError *))resultHandler;
+    
+    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
+        withArguments:(NSDictionary *)arguments
+        resultHandler:(void (^)(id, NSError *))resultHandler;
+
+Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as arrays of any supported simple type (e.g. `[Double]`), and keyed collections are specified as dictionaries (e.g. `[String: Int]`). Dictionary arguments must use `String` values for keys.
+
+Attachments are specified a dictionary of URL arrays. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
+
+The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+
+Both variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+
+Although requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
+
+### Authentication
+Although it is possible to use the `URLSession:task:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDataDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
+
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `WSAuthentication` protocol defines a single method that is used to authenticate each request submitted by a proxy instance:
+
+    - (void)authenticate:(NSMutableURLRequest *)request;
+
+Authentication providers are associated with a proxy instance via the `authentication` property of the `WSWebServiceProxy` class. For example, the following code associates an instance of `WSBasicAuthentication` with a service proxy:
+
+    serviceProxy.authentication = WSBasicAuthentication(username: "username", password: "password")
+
+The `WSBasicAuthentication` class is provided by the HTTP-RPC framework. Applications may provide custom implementations of the `WSAuthentication` protocol to support other authentication schemes.
+
+### Examples
+The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
+
+    // Configure session
+    let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+    configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
+
+    let delegateQueue = NSOperationQueue()
+    delegateQueue.maxConcurrentOperationCount = 10
+
+    let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+
+    // Initialize service proxy and invoke methods
+    let baseURL = NSURL(string: "https://localhost:8443/httprpc-test-server/test/")
+
+    let serviceProxy = WSWebServiceProxy(session: session, baseURL: baseURL!)
+    
+    // Add a + b
+    serviceProxy.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
+        // result is 6
+    }
+
+    // Add values
+    serviceProxy.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+        // result is 10
+    }
+
+## JavaScript Client
 TODO
 
 # More Information
