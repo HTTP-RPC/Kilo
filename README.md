@@ -80,7 +80,7 @@ The JAR file for the Java server implementation of HTTP-RPC can be downloaded [h
 
 Service operations are defined by adding public methods to a concrete service implementation. All public methods annotated with the `@RPC` annotation automatically become available for remote execution when the service is published.
 
-For example, the following class might be used to implement the _sum_ operations discussed earlier:
+For example, the following class might be used to implement the addition operations discussed earlier:
 
     public class MathService extends WebService {
         @RPC(method="GET", path="sum")
@@ -100,7 +100,7 @@ For example, the following class might be used to implement the _sum_ operations
         }
     }
     
-Note that both methods are mapped to the _sum_ path. The `RequestDispatcherServlet` class discussed in the next section will select the best method to execute based on the provided argument values. For example, the following request would cause the first method to be invoked, returning a result of 6:
+Note that both methods are mapped to _/math/sum_. The `RequestDispatcherServlet` class discussed in the next section selects the best method to execute based on the names of the provided argument values. For example, the following request would cause the first method to be invoked, returning a result of 6:
 
     GET /math/sum?a=2&b=4
     
@@ -121,9 +121,9 @@ Method arguments may be any of the following types:
 * `java.net.URL`
 * `java.util.List`
 
-`URL` arguments represent binary content provided by the caller and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
+`URL` arguments represent binary content provided by the caller and can only be used with `POST` requests submitted using the "multipart/form-data" encoding. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
 
-If the value of a primitive parameter is not provided, a value of 0 will be passed to the method for that argument. Omitting the value of a wrapper or other simple (non-list) type produces a null argument value for that parameter. Omitting all values for a list parameter produces an empty list argument for the parameter.
+Omitting the value of a primitive parameter produces an argument value of 0 for that parameter. Omitting the value of a simple reference type produces a null argument value for that parameter. Omitting all values for a list parameter produces an empty list argument for the parameter.
 
 Methods may return any of the following types, `void`, or `java.lang.Void`:
 
