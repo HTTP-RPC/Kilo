@@ -328,7 +328,7 @@ As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its 
 `IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
 
 ## Java Client
-The Java client implementation of HTTP-RPC enables Java-based applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
+The Java client library enables Java-based applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
 
 * _`org.httprpc`_
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
@@ -375,13 +375,13 @@ Arguments may be any of the following types:
 * `java.net.URL`
 * `java.util.List`
 
-`URL` arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
+URL arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
 
 The result handler is called upon completion of the service operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
     public void execute(V result, Exception exception);
 
-On successful completion, the first argument will contain the result of the operation. It will be an instance of one of the following types or `null`, depending on the content of the JSON response returned by the server:
+On successful completion, the first argument will contain the result of the operation. It will be an instance of one of the following types or `null`, depending on the response returned by the server:
 
 * string: `java.lang.String`
 * number: `java.lang.Number`
@@ -391,7 +391,7 @@ On successful completion, the first argument will contain the result of the oper
 
 The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
 
-All variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
+Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
 #### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
@@ -534,7 +534,7 @@ Note that, in Java 8 or later, lambda expressions can be used instead of anonymo
     });
 
 ## Objective-C/Swift Client
-The Objective-C/Swift client implementation of HTTP-RPC enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that includes the following types, discussed in more detail below:
+The Objective-C/Swift client library enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that includes the following types, discussed in more detail below:
 
 * `WSWebServiceProxy` - invocation proxy for HTTP-RPC services
 * `WSAuthentication` - interface for authenticating requests
@@ -545,34 +545,35 @@ The framework for the Objective-C/Swift client can be downloaded [here](https://
 ### WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `POST` requests are encoded as "multipart/form-data". `NSJSONSerialization` is used to deserialize response content.
 
-Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the URL of the server as arguments. Service operations are executed by calling the `invoke:withArguments:attachments:resultHandler:` method:
-    
-    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
-        withArguments:(NSDictionary *)arguments
-        attachments:(NSDictionary *)attachments
-        resultHandler:(void (^)(id, NSError *))resultHandler;
+Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the URL of the server as arguments. Service operations are executed by calling the `invoke:path:arguments:resultHandler:` method:
+
+    - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+        arguments:(NSDictionary<NSString *, id> *)arguments
+        resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 This method takes the following arguments:
 
-* `methodName` - the name of the remote method to invoke
-* `arguments` - a dictionary containing the method arguments as key/value pairs
-* `attachments` - a dictionary containing any attachments to the method
+* `method` - the HTTP method to execute
+* `path` - the resource path
+* `arguments` - a dictionary containing the request arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-The following convenience methods are also provided:
+A convenience method is also provided for executing operations that don't take any arguments:
 
-    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
-        resultHandler:(void (^)(id, NSError *))resultHandler;
-    
-    - (NSURLSessionDataTask *)invoke:(NSString *)methodName
-        withArguments:(NSDictionary *)arguments
-        resultHandler:(void (^)(id, NSError *))resultHandler;
+    - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+        resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
-Method arguments can be any numeric type, a boolean, or a string. Indexed collection arguments are specified as arrays of any supported simple type (e.g. `[Double]`), and keyed collections are specified as dictionaries (e.g. `[String: Int]`). Dictionary arguments must use `String` values for keys.
+Arguments may be any of the following types:
 
-Attachments are specified a dictionary of URL arrays. The URLs refer to local resources whose contents will be transmitted along with the method arguments. If provided, they are sent to the server as multipart form data, like an HTML form. See [RFC 2388](https://www.ietf.org/rfc/rfc2388.txt) for more information.
+* `NSNumber`
+* `CFBooleanRef`
+* `NSString`
+* `NSURL`
+* `NSArray`
 
-The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument contains the value returned by the method, or `nil` if the method does not return a value. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
+
+The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
 Both variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
@@ -592,7 +593,7 @@ Authentication providers are associated with a proxy instance via the `authentic
 The `WSBasicAuthentication` class is provided by the HTTP-RPC framework. Applications may provide custom implementations of the `WSAuthentication` protocol to support other authentication schemes.
 
 ### Examples
-The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `add()` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `addValues()` method, passing the values 1, 2, 3, and 4 as arguments:
+The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
 
     // Configure session
     let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -604,18 +605,18 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to i
     let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
     // Initialize service proxy and invoke methods
-    let baseURL = NSURL(string: "https://localhost:8443/httprpc-test-server/test/")
+    let baseURL = NSURL(string: "https://localhost:8443")
 
-    let serviceProxy = WSWebServiceProxy(session: session, baseURL: baseURL!)
+    let serviceProxy = WSWebServiceProxy(session: session, serverURL: serverURL!)
     
-    // Add a + b
-    serviceProxy.invoke("add", withArguments: ["a": 2, "b": 4]) {(result, error) in
+    // Get sum of "a" and "b"
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) {(result, error) in
         // result is 6
     }
 
-    // Add values
-    serviceProxy.invoke("addValues", withArguments: ["values": [1, 2, 3, 4]]) {(result, error) in
-        // result is 10
+    // Get sum of all values
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3]]) {(result, error) in
+        // result is 6
     }
 
 ## JavaScript Client
