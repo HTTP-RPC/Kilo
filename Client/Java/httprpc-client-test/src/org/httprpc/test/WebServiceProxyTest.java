@@ -156,12 +156,12 @@ public class WebServiceProxyTest {
         });
 
         // User name
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/userName", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/user/name", (result, exception) -> {
             validate(exception == null && result.equals("tomcat"));
         });
 
         // User role status
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", mapOf(entry("role", "tomcat")), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/user/roleStatus", mapOf(entry("role", "tomcat")), (result, exception) -> {
             validate(exception == null && result.equals(true));
         });
 

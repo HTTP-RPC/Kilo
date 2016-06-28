@@ -96,17 +96,17 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/test/userName">User Name</a>
+<a href="${pageContext.request.contextPath}/test/user/name">User Name</a>
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/userRoleStatus" method="get">
+<form action="${pageContext.request.contextPath}/test/user/roleStatus" method="get">
 <table>
 <tr>
 <td>Role</td><td><input type="text" name="role" value="tomcat"/></td>
 </tr>
 <tr>
-<td colspan="2"><input type="submit" value="Is User in Role"/></td>
+<td colspan="2"><input type="submit" value="Get User Role Status"/></td>
 </tr>
 </table>
 </form>

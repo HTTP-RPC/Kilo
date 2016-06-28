@@ -111,7 +111,7 @@ public class TestService extends WebService {
         return value;
     }
 
-    @RPC(method="DELETE")
+    @RPC(method="DELETE", path="/")
     public int delete(int value) {
         return value;
     }
@@ -167,17 +167,17 @@ public class TestService extends WebService {
     }
 
     @Override
-    @RPC(method="GET", path="userName")
+    @RPC(method="GET", path="user/name")
     public String getUserName() {
         return super.getUserName();
     }
 
-    @RPC(method="GET", path="userRoleStatus")
+    @RPC(method="GET", path="user/roleStatus")
     public boolean getUserRoleStatus(String role) {
         return getUserRoles().contains(role);
     }
 
-    @RPC(method="POST", path="attachmentInfo")
+    @RPC(method="POST", path="/attachmentInfo")
     public Map<String, ?> getAttachmentInfo(String text, List<URL> attachments) throws IOException {
         LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
@@ -205,7 +205,7 @@ public class TestService extends WebService {
         );
     }
 
-    @RPC(method="GET", path="longList")
+    @RPC(method="GET", path="/longList")
     public List<Integer> getLongList() {
         return new AbstractList<Integer>() {
             @Override
@@ -220,7 +220,7 @@ public class TestService extends WebService {
         };
     }
 
-    @RPC(method="GET", path="delayedResult")
+    @RPC(method="GET", path="/delayedResult")
     public String getDelayedResult(String result, int delay) {
         try {
             Thread.sleep(delay);

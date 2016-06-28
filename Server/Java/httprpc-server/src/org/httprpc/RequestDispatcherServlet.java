@@ -438,8 +438,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         if (value == null) {
             writer.append(null);
-        } else if (value instanceof String) {
-            String string = (String)value;
+        } else if (value instanceof CharSequence) {
+            CharSequence string = (CharSequence)value;
 
             writer.append("\"");
 

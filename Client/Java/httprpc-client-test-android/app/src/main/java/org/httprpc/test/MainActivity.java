@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // User name
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/userName", new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/user/name", new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 userNameCheckBox.setChecked(exception == null && result.equals("tomcat"));
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // User role status
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/user/roleStatus", mapOf(entry("role", "tomcat")), new ResultHandler<Object>() {
             @Override
             public void execute(Object result, Exception exception) {
                 userRoleStatusCheckBox.setChecked(exception == null && result.equals(true));

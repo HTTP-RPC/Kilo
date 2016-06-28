@@ -84,12 +84,12 @@ function testService() {
     });
 
     // User name
-    serviceProxy.invoke("GET", "/httprpc-server-test/test/userName", {}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/user/name", {}, function(result, error) {
         validate(error == null && result == "tomcat");
     });
 
     // User role status
-    serviceProxy.invoke("GET", "/httprpc-server-test/test/userRoleStatus", {role:"tomcat"}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/user/roleStatus", {role:"tomcat"}, function(result, error) {
         validate(error == null && result == true);
     });
 

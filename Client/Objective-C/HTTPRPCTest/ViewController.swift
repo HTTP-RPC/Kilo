@@ -127,12 +127,12 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // User name
-        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/userName") {(result, error) in
+        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/user/name") {(result, error) in
             self.validate(result as? String == "tomcat", error: error, cell: self.userNameCell)
         }
 
         // User role status
-        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/userRoleStatus", arguments: ["role": "tomcat"]) {(result, error) in
+        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/user/roleStatus", arguments: ["role": "tomcat"]) {(result, error) in
             self.validate(result as? Bool == true, error: error, cell: self.userRoleStatusCell)
         }
 
