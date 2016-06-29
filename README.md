@@ -1,5 +1,5 @@
 # Introduction
-HTTP-RPC is an open-source framework for simplifying development of REST-based applications. It allows developers to create and access HTTP-based web services using a convenient, RPC-like metaphor while preserving fundamental REST concepts such as statelessness and uniform resource access.
+HTTP-RPC is an open-source framework for simplifying development of REST-based applications. It allows developers to create and access HTTP-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
 The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
 
@@ -34,15 +34,21 @@ As with HTML forms, if the `POST` arguments contain only text values, they can b
 
 If the arguments contain binary data such as a JPEG or PNG image, the "multipart/form-data" encoding can be used.
 
+While it is not required, `POST` requests that create resources often return a value that can be used to identify the resource for later retrieval, update, or removal.
+
 ## PUT
 The `PUT` method updates existing information on the server. For example, the following request might be used to modify the end date of a calendar event:
 
     PUT /calendar?eventID=102&end=2016-06-28T15:30
 
+`PUT` requests generally do not return a value.
+
 ## DELETE
 The `DELETE` method removes information from the server. For example, this request might be used to delete a calendar event:
 
     DELETE /calendar?eventID=102
+
+`DELETE` requests generally do not return a value.
 
 ## Response Codes
 Although the HTTP specification defines a large number of possible response codes, only a few are applicable to HTTP-RPC services:
@@ -56,10 +62,8 @@ Although the HTTP specification defines a large number of possible response code
 # Implementations
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. For examples and additional information, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
-I am always looking for ways to improve HTTP-RPC. If you have any suggestions, please [let me know](mailto:gk_brown@verizon.net?subject=HTTP-RPC).
-
 ## Java Server
-The Java server implementation of HTTP-RPC allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following classes:
+The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following classes:
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
@@ -80,7 +84,7 @@ The JAR file for the Java server implementation of HTTP-RPC can be downloaded [h
 ### WebService Class
 `WebService` is an abstract base class for HTTP-RPC web services. All services must extend this class and must provide a public, zero-argument constructor.
 
-Service operations are defined by adding public methods to a concrete service implementation. All public methods annotated with the `@RPC` annotation automatically become available for remote execution when the service is published.
+Service operations are defined by adding public methods to a concrete service implementation. The `@RPC` annotation is used to flag a method as remotely accessible. This annotation associates an HTTP verb and a resource path with the method. All public annotated methods automatically become available for remote execution when the service is published.
 
 For example, the following class might be used to implement the simple addition operations discussed in the previous section:
 
@@ -102,7 +106,7 @@ For example, the following class might be used to implement the simple addition 
         }
     }
     
-Note that both methods are mapped to the _/math/sum_ path. The `RequestDispatcherServlet` class discussed in the next section selects the best method to execute based on the names of the provided argument values. For example, the following request would cause the first method to be invoked:
+Note that both methods are mapped to the path _/math/sum_. The `RequestDispatcherServlet` class discussed in the next section selects the best method to execute based on the names of the provided argument values. For example, the following request would cause the first method to be invoked:
 
     GET /math/sum?a=2&b=4
     
@@ -138,7 +142,7 @@ Methods may return any of the following types:
 * `float`/`java.lang.Float`
 * `double`/`java.lang.Double`
 * `boolean`/`java.lang.Boolean`
-* `java.lang.String`
+* `java.lang.CharSequence`
 * `java.util.List`
 * `java.util.Map` 
 
@@ -188,9 +192,9 @@ Each servlet instance hosts a single HTTP-RPC service. The name of the service t
 
 A new service instance is created and initialized for each request. `RequestDispatcherServlet` converts the request parameters to the argument types expected by the named method, invokes the method, and writes the return value to the response stream as JSON.
 
-If the method completes successfully and returns a value, an HTTP 200 status is returned. If the method returns `void` or `Void`, HTTP 204 is returned.
+If the method completes successfully and returns a value, an HTTP 200 status code is returned. If the method returns `void` or `Void`, HTTP 204 is returned.
 
-If the requested resource does not exist, the servlet returns an HTTP 404 status. If the resource exists but does not support the requested method, HTTP 405 is returned. 
+If the requested resource does not exist, the servlet returns an HTTP 404 status code. If the resource exists but does not support the requested method, HTTP 405 is returned. 
 
 If any exception is thrown while executing the method, HTTP 500 is returned.
 
@@ -199,7 +203,7 @@ Servlet security is provided by the underlying servlet container. See the Java E
 ### BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
 
-For example, the following Bean class might be used to represent a set of simple statistical data about a collection of values:
+For example, the following Bean class might be used to represent basic statistical data about a collection of values:
 
     public class Statistics {
         private int count = 0;
@@ -557,7 +561,7 @@ Arguments may be any of the following types:
 * `NSURL`
 * `NSArray`
 
-`CFBooleanRef` is also supported for boolean value arguments. URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
+`CFBooleanRef` is also supported for boolean arguments. URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
 
 The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
@@ -591,7 +595,7 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to i
     let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
     // Initialize service proxy and invoke methods
-    let baseURL = NSURL(string: "https://localhost:8443")
+    let serverURL = NSURL(string: "https://localhost:8443")
 
     let serviceProxy = WSWebServiceProxy(session: session, serverURL: serverURL!)
     
