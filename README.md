@@ -170,7 +170,7 @@ Java objects are mapped to their JSON equivalents as follows:
 
 * `java.lang.Number` or numeric primitive: number
 * `java.lang.Boolean` or boolean primitive: true/false
-* `java.lang.String`: string
+* `java.lang.CharSequence`: string
 * `java.util.List`: array
 * `java.util.Map`: object
 
