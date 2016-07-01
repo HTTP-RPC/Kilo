@@ -9,7 +9,7 @@ HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` 
 Arguments are passed either via the query string or in the request body, like an HTML form. Results are generally returned as JSON, although operations that do not return a value are also supported.
 
 ## GET
-The `GET` method is used to retrive information from the server. For example, the following request might be used to obtain data about a calendar event:
+The `GET` method is used to retrive information from the server. `GET` arguments are passed in the query string. For example, the following request might be used to obtain data about a calendar event:
 
     GET /calendar?eventID=101
 
@@ -28,7 +28,7 @@ The `POST` method is typically used to add new information to the server. For ex
 
     POST /calendar
 
-As with HTML forms, if the `POST` arguments contain only text values, they can be encoded using the "application/x-www-form-urlencoded" MIME type:
+As with HTML forms, `POST` arguments are passed in the request body. If the arguments contain only text values, they can be encoded using the "application/x-www-form-urlencoded" MIME type:
 
     title=Planning+Meeting&start=2016-06-28T14:00&end=2016-06-28T15:00
 
@@ -37,14 +37,14 @@ If the arguments contain binary data such as a JPEG or PNG image, the "multipart
 While it is not required, `POST` requests that create resources often return a value that can be used to identify the resource for later retrieval, update, or removal.
 
 ## PUT
-The `PUT` method updates existing information on the server. For example, the following request might be used to modify the end date of a calendar event:
+The `PUT` method updates existing information on the server. `PUT` arguments are passed in the query string. For example, the following request might be used to modify the end date of a calendar event:
 
     PUT /calendar?eventID=102&end=2016-06-28T15:30
 
 `PUT` requests generally do not return a value.
 
 ## DELETE
-The `DELETE` method removes information from the server. For example, this request might be used to delete a calendar event:
+The `DELETE` method removes information from the server. `DELETE` arguments are passed in the query string. For example, this request might be used to delete a calendar event:
 
     DELETE /calendar?eventID=102
 
