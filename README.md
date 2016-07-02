@@ -67,7 +67,7 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
-    * `RPC` - annotation that specifies a "remote procedure call", or request handler method
+    * `RPC` - annotation that specifies a "remote procedure call", or service method
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
 * _`org.httprpc.beans`_
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
