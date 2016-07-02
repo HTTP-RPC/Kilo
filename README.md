@@ -630,12 +630,12 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to inv
     var serviceProxy = new WebServiceProxy();
 
     // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {a:4, b:2}, function(result, error) {
+    serviceProxy.invoke("GET", "/math/sum", {a:4, b:2}, function(result, error) {
         // result is 6
     });
 
     // Get sum of all values
-    serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", {values:[1, 2, 3, 4]}, function(result, error) {
+    serviceProxy.invoke("GET", "/math/sum", {values:[1, 2, 3, 4]}, function(result, error) {
         // result is 6
     });
 
