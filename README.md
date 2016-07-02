@@ -505,7 +505,7 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to acc
     });
     
     // Get sum of all values
-    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", Arrays.asList(1, 2, 3))), new ResultHandler<Number>() {
+    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))), new ResultHandler<Number>() {
         @Override
         public void execute(Number result, Exception exception) {
             // result is 6
@@ -520,7 +520,7 @@ Note that, in Java 8 or later, lambda expressions can be used instead of anonymo
     });
 
     // Get sum of all values
-    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", Arrays.asList(1, 2, 3))), (result, exception) -> {
+    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))), (result, exception) -> {
         // result is 6
     });
 
