@@ -38,10 +38,25 @@ public class PagedReader extends Reader {
     private static int DEFAULT_PAGE_SIZE = 1024;
     private static int EOF = -1;
 
+    /**
+     * Creates a new paged reader.
+     *
+     * @param reader
+     * The source reader.
+     */
     public PagedReader(Reader reader) {
         this(reader, DEFAULT_PAGE_SIZE);
     }
 
+    /**
+     * Creates a new paged reader.
+     *
+     * @param reader
+     * The source reader.
+     *
+     * @param pageSize
+     * The page size.
+     */
     public PagedReader(Reader reader, int pageSize) {
         if (reader == null) {
             throw new IllegalArgumentException();

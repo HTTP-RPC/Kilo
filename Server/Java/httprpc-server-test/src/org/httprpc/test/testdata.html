@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>Test Data</title>
+<style type="text/css" media="screen">
+table {
+    border-collapse:collapse;
+    border:1px solid #000000;
+}
+td {
+    border:1px solid #000000;
+}
+</style>
+</head>
+<body>
+<table>
+<tr>
+<td>{{@a}}</td>
+<td>{{@b}}</td>
+<td>{{@c}}</td>
+</tr>
+{{#.}}<tr>
+<td>{{a:test=lower:^html}}</td>
+<td>{{b:format=0x%04x}}</td>
+<td>{{c:format=currency}}</td>
+</tr>{{/.}}
+</table>
+</body>
+</html>

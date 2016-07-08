@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -74,36 +73,6 @@ public class TemplateSerializer implements Serializer {
         modifiers.put("^xml", new MarkupEscapeModifier());
         modifiers.put("^json", new JSONEscapeModifier());
         modifiers.put("^csv", new CSVEscapeModifier());
-
-        try (InputStream inputStream = TemplateSerializer.class.getResourceAsStream("/META-INF/httprpc/modifiers.properties")) {
-            if (inputStream != null) {
-                Properties mappings = new Properties();
-
-                for (Map.Entry<Object, Object> mapping : mappings.entrySet()) {
-                    String name = mapping.getKey().toString();
-
-                    Class<?> type;
-                    try {
-                        type = Class.forName(mapping.getValue().toString());
-                    } catch (ClassNotFoundException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    if (type != null && Modifier.class.isAssignableFrom(type)) {
-                        Modifier modifier;
-                        try {
-                            modifier = (Modifier)type.newInstance();
-                        } catch (IllegalAccessException | InstantiationException exception) {
-                            throw new RuntimeException(exception);
-                        }
-
-                        modifiers.put(name, modifier);
-                    }
-                }
-            }
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
     }
 
     private static final int EOF = -1;
@@ -111,6 +80,24 @@ public class TemplateSerializer implements Serializer {
     private static final String RESOURCE_PREFIX = "@";
     private static final String CONTEXT_PREFIX = "$";
 
+    /**
+     * Constructs a new template serializer.
+     *
+     * @param serviceType
+     * The service type.
+     *
+     * @param templateName
+     * The template name.
+     * 
+     * @param contentType
+     * The content type.
+     * 
+     * @param locale
+     * The locale.
+     * 
+     * @param context
+     * The context.
+     */
     public TemplateSerializer(Class<?> serviceType, String templateName, String contentType, Locale locale, Map<String, Object> context) {
         this.serviceType = serviceType;
         this.templateName = templateName;
@@ -410,5 +397,15 @@ public class TemplateSerializer implements Serializer {
 
             c = reader.read();
         }
+    }
+
+    /**
+     * Returns the modifier map.
+     *
+     * @return
+     * The modifier map.
+     */
+    public static Map<String, Modifier> getModifiers() {
+        return modifiers;
     }
 }
