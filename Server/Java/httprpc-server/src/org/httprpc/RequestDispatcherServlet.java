@@ -16,6 +16,8 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -39,10 +42,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
-import org.httprpc.serialization.JSONSerializer;
-import org.httprpc.serialization.Serializer;
-import org.httprpc.serialization.TemplateSerializer;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -83,8 +82,6 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private Class<?> serviceType = null;
     private Resource root = null;
-
-    private static final String UTF_8_ENCODING = "UTF-8";
 
     @Override
     public void init() throws ServletException {
@@ -154,35 +151,19 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Look up resource
         Resource resource = root;
 
-        String templateName = null;
-
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
             String[] components = pathInfo.split("/");
 
-            for (int i = 0; i < components.length; i++) {
-                String component = components[i];
+            for (int j = 0; j < components.length; j++) {
+                String component = components[j];
 
                 if (component.length() == 0) {
                     continue;
                 }
 
-                Resource child = resource.resources.get(component);
-
-                if (child == null && i == components.length - 1 && request.getMethod().equalsIgnoreCase("GET")) {
-                    int j = component.lastIndexOf('.');
-
-                    if (j != -1) {
-                        child = resource.resources.get(component.substring(0, j));
-
-                        if (child != null) {
-                            templateName = pathInfo.substring(1);
-                        }
-                    }
-                }
-
-                resource = child;
+                resource = resource.resources.get(component);
 
                 if (resource == null) {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -200,7 +181,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         // Set character encoding
         if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding(UTF_8_ENCODING);
+            request.setCharacterEncoding("UTF-8");
         }
 
         // Populate parameter map
@@ -292,27 +273,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setCharacterEncoding(UTF_8_ENCODING);
+                response.setContentType("application/json; charset=UTF-8");
 
-                Serializer serializer;
-                if (templateName != null) {
-                    HashMap<String, Object> context = new HashMap<>();
-
-                    context.put("scheme", request.getScheme());
-                    context.put("serverName", request.getServerName());
-                    context.put("serverPort", request.getServerPort());
-                    context.put("contextPath", request.getContextPath());
-
-                    serializer = new TemplateSerializer(serviceType, templateName,
-                        getServletContext().getMimeType(templateName),
-                        request.getLocale(), context);
-                } else {
-                    serializer = new JSONSerializer();
-                }
-
-                response.setContentType(serializer.getContentType());
-
-                serializer.writeValue(response.getWriter(), result);
+                writeValue(response.getWriter(), result, 0);
             }
         } finally {
             // Delete files
@@ -466,5 +429,139 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         return argument;
+    }
+
+    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
+        if (writer.checkError()) {
+            throw new IOException("Error writing to output stream.");
+        }
+
+        if (value == null) {
+            writer.append(null);
+        } else if (value instanceof CharSequence) {
+            CharSequence string = (CharSequence)value;
+
+            writer.append("\"");
+
+            for (int i = 0, n = string.length(); i < n; i++) {
+                char c = string.charAt(i);
+
+                if (c == '"' || c == '\\') {
+                    writer.append("\\" + c);
+                } else if (c == '\b') {
+                    writer.append("\\b");
+                } else if (c == '\f') {
+                    writer.append("\\f");
+                } else if (c == '\n') {
+                    writer.append("\\n");
+                } else if (c == '\r') {
+                    writer.append("\\r");
+                } else if (c == '\t') {
+                    writer.append("\\t");
+                } else {
+                    writer.append(c);
+                }
+            }
+
+            writer.append("\"");
+        } else if (value instanceof Number || value instanceof Boolean) {
+            writer.append(String.valueOf(value));
+        } else if (value instanceof List<?>) {
+            List<?> list = (List<?>)value;
+
+            try {
+                writer.append("[");
+
+                depth++;
+
+                int i = 0;
+
+                for (Object element : list) {
+                    if (i > 0) {
+                        writer.append(",");
+                    }
+
+                    writer.append("\n");
+
+                    indent(writer, depth);
+
+                    writeValue(writer, element, depth);
+
+                    i++;
+                }
+
+                depth--;
+
+                writer.append("\n");
+
+                indent(writer, depth);
+
+                writer.append("]");
+            } finally {
+                if (list instanceof AutoCloseable) {
+                    try {
+                        ((AutoCloseable)list).close();
+                    } catch (Exception exception) {
+                        throw new IOException(exception);
+                    }
+                }
+            }
+        } else if (value instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>)value;
+
+            try {
+                writer.append("{");
+
+                depth++;
+
+                int i = 0;
+
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    if (i > 0) {
+                        writer.append(",");
+                    }
+
+                    writer.append("\n");
+
+                    Object key = entry.getKey();
+
+                    if (!(key instanceof String)) {
+                        throw new IOException("Invalid key type.");
+                    }
+
+                    indent(writer, depth);
+
+                    writer.append("\"" + key + "\": ");
+
+                    writeValue(writer, entry.getValue(), depth);
+
+                    i++;
+                }
+
+                depth--;
+
+                writer.append("\n");
+
+                indent(writer, depth);
+
+                writer.append("}");
+            } finally {
+                if (map instanceof AutoCloseable) {
+                    try {
+                        ((AutoCloseable)map).close();
+                    } catch (Exception exception) {
+                        throw new IOException(exception);
+                    }
+                }
+            }
+        } else {
+            throw new IOException("Invalid value type.");
+        }
+    }
+
+    private static void indent(Writer writer, int depth) throws IOException {
+        for (int i = 0; i < depth; i++) {
+            writer.append("  ");
+        }
     }
 }
