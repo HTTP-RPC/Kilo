@@ -273,9 +273,12 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setContentType("application/json; charset=UTF-8");
+                JSONSerializer serializer = new JSONSerializer();
 
-                writeValue(response.getWriter(), result, 0);
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType(serializer.getContentType());
+
+                serializer.writeValue(response.getWriter(), result);
             }
         } finally {
             // Delete files
@@ -430,8 +433,25 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         return argument;
     }
+}
 
-    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
+// Abstract base class for serializers
+abstract class Serializer {
+    public abstract String getContentType();
+    public abstract void writeValue(PrintWriter writer, Object value) throws IOException;
+}
+
+// JSON serializer
+class JSONSerializer extends Serializer {
+    private int depth = 0;
+
+    @Override
+    public String getContentType() {
+        return "application/json";
+    }
+
+    @Override
+    public void writeValue(PrintWriter writer, Object value) throws IOException {
         if (writer.checkError()) {
             throw new IOException("Error writing to output stream.");
         }
@@ -483,9 +503,9 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                     writer.append("\n");
 
-                    indent(writer, depth);
+                    indent(writer);
 
-                    writeValue(writer, element, depth);
+                    writeValue(writer, element);
 
                     i++;
                 }
@@ -494,7 +514,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                 writer.append("\n");
 
-                indent(writer, depth);
+                indent(writer);
 
                 writer.append("]");
             } finally {
@@ -529,11 +549,11 @@ public class RequestDispatcherServlet extends HttpServlet {
                         throw new IOException("Invalid key type.");
                     }
 
-                    indent(writer, depth);
+                    indent(writer);
 
                     writer.append("\"" + key + "\": ");
 
-                    writeValue(writer, entry.getValue(), depth);
+                    writeValue(writer, entry.getValue());
 
                     i++;
                 }
@@ -542,7 +562,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
                 writer.append("\n");
 
-                indent(writer, depth);
+                indent(writer);
 
                 writer.append("}");
             } finally {
@@ -559,7 +579,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    private static void indent(Writer writer, int depth) throws IOException {
+    private void indent(Writer writer) throws IOException {
         for (int i = 0; i < depth; i++) {
             writer.append("  ");
         }
