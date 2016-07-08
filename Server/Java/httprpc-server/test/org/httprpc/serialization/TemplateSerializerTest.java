@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.serialization;
 
 import java.io.IOException;
 import java.io.PrintWriter;

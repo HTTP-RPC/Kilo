@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.serialization.template;
 
 /**
  * Interface representing a modifier.
