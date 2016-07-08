@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import org.httprpc.serialization.JSONSerializer;
+import org.httprpc.serialization.Serializer;
+import org.httprpc.serialization.TemplateSerializer;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -152,19 +154,35 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Look up resource
         Resource resource = root;
 
+        String templateName = null;
+
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
             String[] components = pathInfo.split("/");
 
-            for (int j = 0; j < components.length; j++) {
-                String component = components[j];
+            for (int i = 0; i < components.length; i++) {
+                String component = components[i];
 
                 if (component.length() == 0) {
                     continue;
                 }
 
-                resource = resource.resources.get(component);
+                Resource child = resource.resources.get(component);
+
+                if (child == null && i == components.length - 1 && request.getMethod().equalsIgnoreCase("GET")) {
+                    int j = component.lastIndexOf('.');
+
+                    if (j != -1) {
+                        child = resource.resources.get(component.substring(0, j));
+
+                        if (child != null) {
+                            templateName = pathInfo.substring(1);
+                        }
+                    }
+                }
+
+                resource = child;
 
                 if (resource == null) {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -274,9 +292,24 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                JSONSerializer serializer = new JSONSerializer();
-
                 response.setCharacterEncoding(UTF_8_ENCODING);
+
+                Serializer serializer;
+                if (templateName != null) {
+                    HashMap<String, Object> context = new HashMap<>();
+
+                    context.put("scheme", request.getScheme());
+                    context.put("serverName", request.getServerName());
+                    context.put("serverPort", request.getServerPort());
+                    context.put("contextPath", request.getContextPath());
+
+                    serializer = new TemplateSerializer(serviceType, templateName,
+                        getServletContext().getMimeType(templateName),
+                        request.getLocale(), context);
+                } else {
+                    serializer = new JSONSerializer();
+                }
+
                 response.setContentType(serializer.getContentType());
 
                 serializer.writeValue(response.getWriter(), result);

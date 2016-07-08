@@ -80,10 +80,6 @@
 </table>
 </form>
 
-<a href="${pageContext.request.contextPath}/test/statistics.html?values=1&values=3&values=5">statistics.html</a>
-
-<hr/>
-
 <a href="${pageContext.request.contextPath}/test/testData">Test Data</a>
 <br/>
 <a href="${pageContext.request.contextPath}/test/testData.html">testData.html</a>
