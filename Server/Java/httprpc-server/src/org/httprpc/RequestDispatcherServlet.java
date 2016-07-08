@@ -82,6 +82,8 @@ public class RequestDispatcherServlet extends HttpServlet {
     private Class<?> serviceType = null;
     private Resource root = null;
 
+    private static final String UTF_8_ENCODING = "UTF-8";
+
     @Override
     public void init() throws ServletException {
         // Load service class
@@ -180,7 +182,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         // Set character encoding
         if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
+            request.setCharacterEncoding(UTF_8_ENCODING);
         }
 
         // Populate parameter map
@@ -274,7 +276,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             } else {
                 JSONSerializer serializer = new JSONSerializer();
 
-                response.setCharacterEncoding("UTF-8");
+                response.setCharacterEncoding(UTF_8_ENCODING);
                 response.setContentType(serializer.getContentType());
 
                 serializer.writeValue(response.getWriter(), result);
