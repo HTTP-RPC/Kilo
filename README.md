@@ -63,7 +63,7 @@ Although the HTTP specification defines a large number of possible response code
 Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. For examples and additional information, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 ## Java Server
-The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following classes:
+The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following core classes:
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
@@ -76,6 +76,18 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
     * `Parameters` - class for simplifying execution of prepared statements
 * _`org.httprpc.util`_
     * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
+
+Additionally, the JAR file contains the following classes for working with templates, which allow service data to be declaratively transformed into alternate representations:
+
+* _`org.httprpc`_
+    * `Template` - annotation that associates a template with a service method
+* _`org.httprpc.template`_
+    * `TemplateEngine` - template processing engine
+    * `Modifier` - interface representing a template modifier
+    * `MarkupEscapeModifier` - modifier that escapes markup data
+    * `JSONEscapeModifier` - modifier that escapes JSON data
+    * `CSVEscapeModifier` - modifier that escapes CSV data
+    * `URLEscapeModifer` - modifier that escapes URL values
 
 Each of these classes is discussed in more detail below. 
 
@@ -323,6 +335,20 @@ The `IteratorAdapter` class allows the content of an arbitrary cursor to be effi
 As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a cursor to be returned directly to the caller without any intermediate buffering.
 
 `IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
+
+### Templates
+Although data produced by an HTTP-RPC web service is typically returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
+
+HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ctemplate) system, which defines a set of "markers" that are replaced with values supplied by a "data dictionary" when the template is processed. The following marker types are supported by HTTP-RPC:
+
+* {{_variable_}} - injects a variable from the data dictionary into the output
+* {{#_section_}}...{{/_section_}} - defines a repeating section of content
+* {{>_include_}} - imports content specified by another template
+* {{!_comment_}} - defines a comment
+
+The value returned by the service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. 
+
+TODO More detail (note indentation level)
 
 ## Java Client
 The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:

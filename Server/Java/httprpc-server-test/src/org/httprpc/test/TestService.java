@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.httprpc.RPC;
+import org.httprpc.Template;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
@@ -80,6 +81,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="tree")
+    @Template(name="tree.html", type="text/html")
     public Map<String, ?> getTree() {
         TreeNode root = new TreeNode("Seasons", false);
 
@@ -134,6 +136,9 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="testData")
+    @Template(name="testdata.csv", type="text/csv")
+    @Template(name="testdata.html", type="text/html")
+    @Template(name="testdata.xml", type="application/xml")
     public ResultSetAdapter getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 
