@@ -254,7 +254,13 @@ Using this class, an implementation of a `getStatistics()` method might look lik
         return new BeanAdapter(statistics);
     }
 
-Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object.
+Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object; for example:
+
+    {
+      "average": 3.0, 
+      "count": 3, 
+      "sum": 9.0
+    }
 
 Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. This allows service methods to return recursive structures such as trees.
 
