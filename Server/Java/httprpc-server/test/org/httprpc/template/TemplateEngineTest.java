@@ -16,16 +16,16 @@ package org.httprpc.template;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.httprpc.WebService.listOf;
+import static org.httprpc.WebService.mapOf;
+import static org.httprpc.WebService.entry;
 
 public class TemplateEngineTest {
     @Test
@@ -342,66 +342,5 @@ public class TemplateEngineTest {
         }
 
         Assert.assertEquals("[]", result);
-    }
-
-    @Test
-    public void testResource() throws IOException {
-        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource1.txt"),
-            ResourceBundle.getBundle(getClass().getPackage().getName() + ".resource1"));
-
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "hello");
-            result = writer.toString();
-        }
-
-        Assert.assertEquals("value:hello", result);
-    }
-
-    @Test
-    public void testMissingResourceKey() throws IOException {
-        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource2.txt"),
-            ResourceBundle.getBundle(getClass().getPackage().getName() + ".resource2"));
-
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "hello");
-            result = writer.toString();
-        }
-
-        Assert.assertEquals("label:hello", result);
-    }
-
-    @Test
-    public void testMissingResourceBundle() throws IOException {
-        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource3.txt"), null);
-
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "hello");
-            result = writer.toString();
-        }
-
-        Assert.assertEquals("label:hello", result);
-    }
-
-    @SafeVarargs
-    private static List<?> listOf(Object...elements) {
-        return Collections.unmodifiableList(Arrays.asList(elements));
-    }
-
-    @SafeVarargs
-    private static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
-        HashMap<K, Object> map = new HashMap<>();
-
-        for (Map.Entry<K, ?> entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
-        }
-
-        return Collections.unmodifiableMap(map);
-    }
-
-    private static <K> Map.Entry<K, ?> entry(K key, Object value) {
-        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 }

@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
@@ -46,7 +44,6 @@ public class TemplateEngine {
     }
 
     private URL url;
-    private ResourceBundle resources;
 
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
@@ -64,8 +61,6 @@ public class TemplateEngine {
 
     private static final int EOF = -1;
 
-    private static final String RESOURCE_PREFIX = "@";
-
     /**
      * Constructs a new template engine.
      *
@@ -73,25 +68,11 @@ public class TemplateEngine {
      * The URL of the template.
      */
     public TemplateEngine(URL url) {
-        this(url, null);
-    }
-
-    /**
-     * Constructs a new template engine.
-     *
-     * @param url
-     * The URL of the template.
-     *
-     * @param resources
-     * The resource bundle, or <tt>null</tt> for no resources.
-     */
-    public TemplateEngine(URL url, ResourceBundle resources) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
         this.url = url;
-        this.resources = resources;
     }
 
     /**
@@ -276,23 +257,6 @@ public class TemplateEngine {
                             Object value;
                             if (key.equals(".")) {
                                 value = dictionary.get(key);
-                            } else if (key.startsWith(RESOURCE_PREFIX)) {
-                                key = key.substring(RESOURCE_PREFIX.length());
-
-                                if (resources != null) {
-                                    try {
-                                        value = resources.getString(key);
-                                    } catch (MissingResourceException exception) {
-                                        value = null;
-                                    }
-                                } else {
-                                    value = null;
-                                }
-
-                                if (value == null) {
-                                    value = key;
-                                }
-
                             } else {
                                 value = dictionary;
 
