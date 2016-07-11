@@ -14,6 +14,8 @@
 
 package org.httprpc.template;
 
+import java.util.Locale;
+
 /**
  * Interface representing a modifier.
  */
@@ -22,13 +24,16 @@ public interface Modifier {
      * Applies the modifier.
      *
      * @param value
-     * The value to which the modifier will be applied.
+     * The value to which the modifier is being be applied.
      *
      * @param argument
-     * Modifier argument, or <tt>null</tt> if no argument was provided.
+     * The modifier argument, or <tt>null</tt> if no argument was provided.
+     *
+     * @param locale
+     * The locale in which the modifier is being applied.
      *
      * @return
      * The modified value.
      */
-    public Object apply(Object value, String argument);
+    public Object apply(Object value, String argument, Locale locale);
 }

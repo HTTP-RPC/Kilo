@@ -14,12 +14,14 @@
 
 package org.httprpc.template;
 
+import java.util.Locale;
+
 /**
  * Markup escape modifier.
  */
 public class MarkupEscapeModifier implements Modifier {
     @Override
-    public Object apply(Object value, String argument) {
+    public Object apply(Object value, String argument, Locale locale) {
         StringBuilder resultBuilder = new StringBuilder();
 
         String string = value.toString();

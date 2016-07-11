@@ -14,12 +14,14 @@
 
 package org.httprpc.template;
 
+import java.util.Locale;
+
 /**
  * JSON escape modifier.
  */
 public class JSONEscapeModifier implements Modifier {
     @Override
-    public Object apply(Object value, String argument) {
+    public Object apply(Object value, String argument, Locale locale) {
         StringBuilder resultBuilder = new StringBuilder();
 
         String string = value.toString();

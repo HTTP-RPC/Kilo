@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,14 +89,33 @@ public class TemplateEngine {
      * If an exception occurs while writing the object.
      */
     public void writeObject(Writer writer, Object object) throws IOException {
+        writeObject(writer, object, Locale.getDefault());
+    }
+
+    /**
+     * Writes an object to an output stream.
+     *
+     * @param writer
+     * The output stream.
+     *
+     * @param object
+     * The object to write.
+     *
+     * @param locale
+     * The locale in which the template is being written.
+     *
+     * @throws IOException
+     * If an exception occurs while writing the object.
+     */
+    public void writeObject(Writer writer, Object object, Locale locale) throws IOException {
         if (object != null) {
             try (InputStream inputStream = url.openStream()) {
-                writeObject(new PagedReader(new InputStreamReader(inputStream)), writer, object);
+                writeObject(new PagedReader(new InputStreamReader(inputStream)), writer, object, locale);
             }
         }
     }
 
-    private void writeObject(Reader reader, Writer writer, Object root) throws IOException {
+    private void writeObject(Reader reader, Writer writer, Object root, Locale locale) throws IOException {
         if (!(root instanceof Map<?, ?>)) {
             root = Collections.singletonMap(".", root);
         }
@@ -181,7 +201,7 @@ public class TemplateEngine {
                                             reader.mark(0);
                                         }
 
-                                        writeObject(reader, writer, element);
+                                        writeObject(reader, writer, element, locale);
 
                                         if (iterator.hasNext()) {
                                             reader.reset();
@@ -200,7 +220,7 @@ public class TemplateEngine {
                                         }
                                     };
 
-                                    writeObject(reader, new NullWriter(), Collections.emptyMap());
+                                    writeObject(reader, new NullWriter(), Collections.emptyMap(), locale);
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
@@ -231,14 +251,14 @@ public class TemplateEngine {
                                 try (InputStream inputStream = url.openStream()) {
                                     include = new PagedReader(new InputStreamReader(inputStream));
 
-                                    writeObject(include, writer, dictionary);
+                                    writeObject(include, writer, dictionary, locale);
 
                                     includes.put(marker, include);
                                 }
                             } else {
                                 include.reset();
 
-                                writeObject(include, writer, dictionary);
+                                writeObject(include, writer, dictionary, locale);
                             }
 
                             break;
@@ -298,7 +318,7 @@ public class TemplateEngine {
                                         Modifier modifier = modifiers.get(name);
 
                                         if (modifier != null) {
-                                            value = modifier.apply(value, argument);
+                                            value = modifier.apply(value, argument, locale);
                                         }
                                     }
                                 }

@@ -76,6 +76,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="selection")
+    @Template(name="statistics.html", type="text/html")
     public String getSelection(List<String> items) {
         return String.join(", ", items);
     }

@@ -16,6 +16,7 @@ package org.httprpc.template;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Locale;
 
 /**
  * URL escape modifier.
@@ -24,7 +25,7 @@ public class URLEscapeModifier implements Modifier {
     private static final String UTF_8_ENCODING = "UTF-8";
 
     @Override
-    public Object apply(Object value, String argument) {
+    public Object apply(Object value, String argument, Locale locale) {
         String result;
         try {
             result = URLEncoder.encode(value.toString(), UTF_8_ENCODING);
