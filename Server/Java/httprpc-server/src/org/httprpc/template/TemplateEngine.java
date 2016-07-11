@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,7 @@ public class TemplateEngine {
     }
 
     private URL url;
+    private Charset charset;
 
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
@@ -60,6 +62,8 @@ public class TemplateEngine {
         modifiers.put("^csv", new CSVEscapeModifier());
     }
 
+    private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
     private static final int EOF = -1;
 
     /**
@@ -69,11 +73,29 @@ public class TemplateEngine {
      * The URL of the template.
      */
     public TemplateEngine(URL url) {
+        this(url, DEFAULT_CHARSET);
+    }
+
+    /**
+     * Constructs a new template engine.
+     *
+     * @param url
+     * The URL of the template.
+     *
+     * @param charset
+     * The template's character set.
+     */
+    public TemplateEngine(URL url, Charset charset) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
+        if (charset == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.url = url;
+        this.charset = charset;
     }
 
     /**
@@ -110,7 +132,7 @@ public class TemplateEngine {
     public void writeObject(Writer writer, Object object, Locale locale) throws IOException {
         if (object != null) {
             try (InputStream inputStream = url.openStream()) {
-                writeObject(new PagedReader(new InputStreamReader(inputStream)), writer, object, locale);
+                writeObject(new PagedReader(new InputStreamReader(inputStream, charset)), writer, object, locale);
             }
         }
     }
