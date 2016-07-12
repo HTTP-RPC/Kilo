@@ -76,13 +76,13 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="selection")
-    @Template(name="statistics.html", type="text/html")
+    @Template(name="statistics.html", mimeType="text/html")
     public String getSelection(List<String> items) {
         return String.join(", ", items);
     }
 
     @RPC(method="GET", path="tree")
-    @Template(name="tree.html", type="text/html")
+    @Template(name="tree.html", mimeType="text/html")
     public Map<String, ?> getTree() {
         TreeNode root = new TreeNode("Seasons", false);
 
@@ -137,9 +137,9 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="testData")
-    @Template(name="testdata.csv", type="text/csv")
-    @Template(name="testdata.html", type="text/html")
-    @Template(name="testdata.xml", type="application/xml")
+    @Template(name="testdata.csv", mimeType="text/csv")
+    @Template(name="testdata.html", mimeType="text/html")
+    @Template(name="testdata.xml", mimeType="application/xml")
     public ResultSetAdapter getTestData() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.sqlite.JDBC");
 

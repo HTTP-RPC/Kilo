@@ -199,10 +199,6 @@ public class RequestDispatcherServlet extends HttpServlet {
             return;
         }
 
-        if (extension != null) {
-            // TODO Get MIME type and look up template
-        }
-
         // Set character encoding
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding(UTF_8_ENCODING);
@@ -257,6 +253,23 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
+
+        if (extension != null) {
+            String mimeType = getServletContext().getMimeType(pathInfo);
+
+            Template[] templates = method.getAnnotationsByType(Template.class);
+
+            for (int i = 0; i < templates.length; i++) {
+                Template template = templates[i];
+
+                if (template.mimeType().equals(mimeType)) {
+                    // TODO
+                    break;
+                }
+            }
+        }
+
+        // TODO If no serializer has been found, return HTTP 406
 
         try {
             Object result;

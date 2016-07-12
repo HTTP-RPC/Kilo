@@ -29,13 +29,13 @@ import java.lang.annotation.Target;
 public @interface Template {
     /**
      * @return
-     * The template name.
+     * The template's name.
      */
     public String name();
 
     /**
      * @return
-     * The template type.
+     * The template's MIME type.
      */
-    public String type();
+    public String mimeType();
 }
