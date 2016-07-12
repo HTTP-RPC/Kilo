@@ -62,10 +62,12 @@
 <hr/>
 
 <a href="${pageContext.request.contextPath}/test/tree">Tree</a>
+<br/>
+<a href="${pageContext.request.contextPath}/test/tree.html">tree.html</a>
 
 <hr/>
 
-<form action="${pageContext.request.contextPath}/test/statistics" method="post">
+<form action="${pageContext.request.contextPath}/test/statistics.html" method="post">
 <table> 
 <tr>
 <td>Value 1</td><td><input type="text" name="values" value="1" size="4"/></td>
@@ -81,6 +83,10 @@
 <hr/>
 
 <a href="${pageContext.request.contextPath}/test/testData">Test Data</a>
+<br/>
+<a href="${pageContext.request.contextPath}/test/testData.html">testData.html</a><br>
+<a href="${pageContext.request.contextPath}/test/testData.xml">testData.xml</a><br>
+<a href="${pageContext.request.contextPath}/test/testData.csv">testData.csv</a><br>
 
 <hr/>
 
