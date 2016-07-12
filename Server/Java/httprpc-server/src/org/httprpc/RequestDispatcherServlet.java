@@ -17,6 +17,7 @@ package org.httprpc;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -90,8 +91,10 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
-    private static final String JSON_MIME_TYPE = "application/json";
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+
+    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
+    private static final String JSON_MIME_TYPE = "application/json";
 
     @Override
     public void init() throws ServletException {
@@ -264,7 +267,9 @@ public class RequestDispatcherServlet extends HttpServlet {
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
         Serializer serializer;
-        if (extension == null) {
+        if (method.getReturnType().equals(URL.class)) {
+            serializer = new BinarySerializer();
+        } else if (extension == null) {
             serializer = new JSONSerializer();
         } else {
             serializer = null;
@@ -488,6 +493,28 @@ public class RequestDispatcherServlet extends HttpServlet {
     interface Serializer {
         public String getContentType();
         public void writeValue(Object value, OutputStream outputStream) throws IOException;
+    }
+
+    // Binary serializer
+    private static class BinarySerializer implements Serializer {
+        @Override
+        public String getContentType() {
+            return OCTET_STREAM_MIME_TYPE;
+        }
+
+        @Override
+        public void writeValue(Object value, OutputStream outputStream) throws IOException {
+            URL url = (URL)value;
+
+            if (url != null) {
+                try (InputStream inputStream = url.openStream()) {
+                    int b;
+                    while ((b = inputStream.read()) != -1) {
+                        outputStream.write(b);
+                    }
+                }
+            }
+        }
     }
 
     // JSON serializer

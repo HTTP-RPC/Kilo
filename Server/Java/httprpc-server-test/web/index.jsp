@@ -152,5 +152,16 @@
 </table>
 </form>
 
+<form action="${pageContext.request.contextPath}/test/echo" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+<table>
+<tr>
+<td>Attachment</td><td><input type="file" name="attachment"/></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Echo"/></td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

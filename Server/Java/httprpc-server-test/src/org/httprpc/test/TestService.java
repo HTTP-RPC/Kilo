@@ -211,6 +211,11 @@ public class TestService extends WebService {
         );
     }
 
+    @RPC(method="POST", path="/echo")
+    public URL echo(URL attachment) throws IOException {
+        return attachment;
+    }
+
     @RPC(method="GET", path="/longList")
     public List<Integer> getLongList() {
         return new AbstractList<Integer>() {
