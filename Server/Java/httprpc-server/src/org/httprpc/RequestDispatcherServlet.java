@@ -14,9 +14,11 @@
 
 package org.httprpc;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,6 +27,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -183,13 +186,17 @@ public class RequestDispatcherServlet extends HttpServlet {
                     }
                 }
 
-                resource = child;
-
-                if (resource == null) {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    return;
+                if (child == null) {
+                    break;
                 }
+
+                resource = child;
             }
+        }
+
+        if (resource == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
 
         LinkedList<Method> handlerList = resource.handlerMap.get(request.getMethod().toLowerCase());
@@ -254,7 +261,10 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
-        if (extension != null) {
+        Serializer serializer;
+        if (extension == null) {
+            serializer = new JSONSerializer();
+        } else {
             String mimeType = getServletContext().getMimeType(pathInfo);
 
             Template[] templates = method.getAnnotationsByType(Template.class);
@@ -263,13 +273,18 @@ public class RequestDispatcherServlet extends HttpServlet {
                 Template template = templates[i];
 
                 if (template.mimeType().equals(mimeType)) {
-                    // TODO
+                    // TODO Create template serializer
                     break;
                 }
             }
+
+            serializer = null; // TODO
         }
 
-        // TODO If no serializer has been found, return HTTP 406
+        if (serializer == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            return;
+        }
 
         try {
             Object result;
@@ -310,10 +325,8 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setContentType(JSON_MIME_TYPE);
-                response.setCharacterEncoding(UTF_8_ENCODING);
-
-                writeValue(response.getWriter(), result, 0);
+                response.setContentType(serializer.getContentType());
+                serializer.writeValue(result, response.getOutputStream());
             }
         } finally {
             // Delete files
@@ -469,137 +482,157 @@ public class RequestDispatcherServlet extends HttpServlet {
         return argument;
     }
 
-    private static void writeValue(PrintWriter writer, Object value, int depth) throws IOException {
-        if (writer.checkError()) {
-            throw new IOException("Error writing to output stream.");
-        }
-
-        if (value == null) {
-            writer.append(null);
-        } else if (value instanceof CharSequence) {
-            CharSequence string = (CharSequence)value;
-
-            writer.append("\"");
-
-            for (int i = 0, n = string.length(); i < n; i++) {
-                char c = string.charAt(i);
-
-                if (c == '"' || c == '\\') {
-                    writer.append("\\" + c);
-                } else if (c == '\b') {
-                    writer.append("\\b");
-                } else if (c == '\f') {
-                    writer.append("\\f");
-                } else if (c == '\n') {
-                    writer.append("\\n");
-                } else if (c == '\r') {
-                    writer.append("\\r");
-                } else if (c == '\t') {
-                    writer.append("\\t");
-                } else {
-                    writer.append(c);
-                }
-            }
-
-            writer.append("\"");
-        } else if (value instanceof Number || value instanceof Boolean) {
-            writer.append(String.valueOf(value));
-        } else if (value instanceof List<?>) {
-            List<?> list = (List<?>)value;
-
-            try {
-                writer.append("[");
-
-                depth++;
-
-                int i = 0;
-
-                for (Object element : list) {
-                    if (i > 0) {
-                        writer.append(",");
-                    }
-
-                    writer.append("\n");
-
-                    indent(writer, depth);
-
-                    writeValue(writer, element, depth);
-
-                    i++;
-                }
-
-                depth--;
-
-                writer.append("\n");
-
-                indent(writer, depth);
-
-                writer.append("]");
-            } finally {
-                if (list instanceof AutoCloseable) {
-                    try {
-                        ((AutoCloseable)list).close();
-                    } catch (Exception exception) {
-                        throw new IOException(exception);
-                    }
-                }
-            }
-        } else if (value instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>)value;
-
-            try {
-                writer.append("{");
-
-                depth++;
-
-                int i = 0;
-
-                for (Map.Entry<?, ?> entry : map.entrySet()) {
-                    if (i > 0) {
-                        writer.append(",");
-                    }
-
-                    writer.append("\n");
-
-                    Object key = entry.getKey();
-
-                    if (!(key instanceof String)) {
-                        throw new IOException("Invalid key type.");
-                    }
-
-                    indent(writer, depth);
-
-                    writer.append("\"" + key + "\": ");
-
-                    writeValue(writer, entry.getValue(), depth);
-
-                    i++;
-                }
-
-                depth--;
-
-                writer.append("\n");
-
-                indent(writer, depth);
-
-                writer.append("}");
-            } finally {
-                if (map instanceof AutoCloseable) {
-                    try {
-                        ((AutoCloseable)map).close();
-                    } catch (Exception exception) {
-                        throw new IOException(exception);
-                    }
-                }
-            }
-        } else {
-            throw new IOException("Invalid value type.");
-        }
+    // Interface representing a serializer
+    interface Serializer {
+        public String getContentType();
+        public void writeValue(Object value, OutputStream outputStream) throws IOException;
     }
 
-    private static void indent(Writer writer, int depth) throws IOException {
-        for (int i = 0; i < depth; i++) {
-            writer.append("  ");
+    // JSON serializer
+    private static class JSONSerializer implements Serializer {
+        private int depth = 0;
+
+        @Override
+        public String getContentType() {
+            return String.format("%s;charset=%s", JSON_MIME_TYPE, UTF_8_ENCODING);
+        }
+
+        @Override
+        public void writeValue(Object value, OutputStream outputStream) throws IOException {
+            Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
+            writeValue(value, writer);
+
+            writer.flush();
+        }
+
+        private void writeValue(Object value, Writer writer) throws IOException {
+            if (value == null) {
+                writer.append(null);
+            } else if (value instanceof CharSequence) {
+                CharSequence string = (CharSequence)value;
+
+                writer.append("\"");
+
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    char c = string.charAt(i);
+
+                    if (c == '"' || c == '\\') {
+                        writer.append("\\" + c);
+                    } else if (c == '\b') {
+                        writer.append("\\b");
+                    } else if (c == '\f') {
+                        writer.append("\\f");
+                    } else if (c == '\n') {
+                        writer.append("\\n");
+                    } else if (c == '\r') {
+                        writer.append("\\r");
+                    } else if (c == '\t') {
+                        writer.append("\\t");
+                    } else {
+                        writer.append(c);
+                    }
+                }
+
+                writer.append("\"");
+            } else if (value instanceof Number || value instanceof Boolean) {
+                writer.append(String.valueOf(value));
+            } else if (value instanceof List<?>) {
+                List<?> list = (List<?>)value;
+
+                try {
+                    writer.append("[");
+
+                    depth++;
+
+                    int i = 0;
+
+                    for (Object element : list) {
+                        if (i > 0) {
+                            writer.append(",");
+                        }
+
+                        writer.append("\n");
+
+                        indent(writer);
+
+                        writeValue(element, writer);
+
+                        i++;
+                    }
+
+                    depth--;
+
+                    writer.append("\n");
+
+                    indent(writer);
+
+                    writer.append("]");
+                } finally {
+                    if (list instanceof AutoCloseable) {
+                        try {
+                            ((AutoCloseable)list).close();
+                        } catch (Exception exception) {
+                            throw new IOException(exception);
+                        }
+                    }
+                }
+            } else if (value instanceof Map<?, ?>) {
+                Map<?, ?> map = (Map<?, ?>)value;
+
+                try {
+                    writer.append("{");
+
+                    depth++;
+
+                    int i = 0;
+
+                    for (Map.Entry<?, ?> entry : map.entrySet()) {
+                        if (i > 0) {
+                            writer.append(",");
+                        }
+
+                        writer.append("\n");
+
+                        Object key = entry.getKey();
+
+                        if (!(key instanceof String)) {
+                            throw new IOException("Invalid key type.");
+                        }
+
+                        indent(writer);
+
+                        writer.append("\"" + key + "\": ");
+
+                        writeValue(entry.getValue(), writer);
+
+                        i++;
+                    }
+
+                    depth--;
+
+                    writer.append("\n");
+
+                    indent(writer);
+
+                    writer.append("}");
+                } finally {
+                    if (map instanceof AutoCloseable) {
+                        try {
+                            ((AutoCloseable)map).close();
+                        } catch (Exception exception) {
+                            throw new IOException(exception);
+                        }
+                    }
+                }
+            } else {
+                throw new IOException("Invalid value type.");
+            }
+        }
+
+        private void indent(Writer writer) throws IOException {
+            for (int i = 0; i < depth; i++) {
+                writer.append("  ");
+            }
         }
     }
 }
