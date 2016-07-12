@@ -46,6 +46,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import org.httprpc.template.TemplateEngine;
+
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
  */
@@ -261,7 +263,8 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
-        Serializer serializer;
+        Serializer serializer = null;
+
         if (extension == null) {
             serializer = new JSONSerializer();
         } else {
@@ -273,12 +276,10 @@ public class RequestDispatcherServlet extends HttpServlet {
                 Template template = templates[i];
 
                 if (template.mimeType().equals(mimeType)) {
-                    // TODO Create template serializer
+                    serializer = new TemplateSerializer(serviceType.getResource(template.name()), mimeType);
                     break;
                 }
             }
-
-            serializer = null; // TODO
         }
 
         if (serializer == null) {
@@ -633,6 +634,32 @@ public class RequestDispatcherServlet extends HttpServlet {
             for (int i = 0; i < depth; i++) {
                 writer.append("  ");
             }
+        }
+    }
+
+    // Template serializer
+    private static class TemplateSerializer implements Serializer {
+        private URL url;
+        private String contentType;
+
+        public TemplateSerializer(URL url, String contentType) {
+            this.url = url;
+            this.contentType = contentType;
+        }
+
+        @Override
+        public String getContentType() {
+            return String.format("%s;charset=%s", contentType, UTF_8_ENCODING);
+        }
+
+        @Override
+        public void writeValue(Object value, OutputStream outputStream) throws IOException {
+            Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
+
+            TemplateEngine templateEngine = new TemplateEngine(url);
+            templateEngine.writeObject(value, writer);
+
+            writer.flush();
         }
     }
 }

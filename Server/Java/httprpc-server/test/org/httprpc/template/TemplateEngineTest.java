@@ -35,7 +35,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, null);
+            engine.writeObject(null, writer);
             result = writer.toString();
         }
 
@@ -56,7 +56,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, dictionary);
+            engine.writeObject(dictionary, writer);
             result = writer.toString();
         }
 
@@ -72,7 +72,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, mapOf(entry("list", Collections.emptyList())));
+            engine.writeObject(mapOf(entry("list", Collections.emptyList())), writer);
             result = writer.toString();
         }
 
@@ -92,7 +92,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, mapOf(entry("list", list)));
+            engine.writeObject(mapOf(entry("list", list)), writer);
             result = writer.toString();
         }
 
@@ -120,7 +120,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, mapOf(entry("list", list)));
+            engine.writeObject(mapOf(entry("list", list)), writer);
             result = writer.toString();
         }
 
@@ -151,7 +151,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, dictionary);
+            engine.writeObject(dictionary, writer);
             result = writer.toString();
         }
 
@@ -166,7 +166,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, value);
+            engine.writeObject(value, writer);
             result = writer.toString();
         }
 
@@ -179,7 +179,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, Collections.emptyList());
+            engine.writeObject(Collections.emptyList(), writer);
             result = writer.toString();
         }
 
@@ -194,7 +194,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, value);
+            engine.writeObject(value, writer);
             result = writer.toString();
         }
 
@@ -207,7 +207,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, Collections.emptyMap());
+            engine.writeObject(Collections.emptyMap(), writer);
             result = writer.toString();
         }
 
@@ -220,7 +220,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, 4.5);
+            engine.writeObject(4.5, writer);
             result = writer.toString();
         }
 
@@ -233,7 +233,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "abc:def&xyz");
+            engine.writeObject("abc:def&xyz", writer);
             result = writer.toString();
         }
 
@@ -246,7 +246,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "a<b>c&d\"e");
+            engine.writeObject("a<b>c&d\"e", writer);
             result = writer.toString();
         }
 
@@ -259,7 +259,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "\"\\\b\f\n\r\t");
+            engine.writeObject("\"\\\b\f\n\r\t", writer);
             result = writer.toString();
         }
 
@@ -272,7 +272,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "a\\b\"c");
+            engine.writeObject("a\\b\"c", writer);
             result = writer.toString();
         }
 
@@ -285,7 +285,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, "hello");
+            engine.writeObject("hello", writer);
             result = writer.toString();
         }
 
@@ -298,7 +298,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, listOf("a", "b", "c"));
+            engine.writeObject(listOf("a", "b", "c"), writer);
             result = writer.toString();
         }
 
@@ -323,7 +323,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, list);
+            engine.writeObject(list, writer);
             result = writer.toString();
         }
 
@@ -338,7 +338,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, list);
+            engine.writeObject(list, writer);
             result = writer.toString();
         }
 
@@ -353,7 +353,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, new ResourceBundleAdapter("hello", resourceBundle));
+            engine.writeObject(new ResourceBundleAdapter("hello", resourceBundle), writer);
             result = writer.toString();
         }
 
@@ -368,7 +368,7 @@ public class TemplateEngineTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(writer, new ResourceBundleAdapter("hello", resourceBundle));
+            engine.writeObject(new ResourceBundleAdapter("hello", resourceBundle), writer);
             result = writer.toString();
         }
 

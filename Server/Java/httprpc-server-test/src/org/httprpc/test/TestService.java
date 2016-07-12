@@ -76,7 +76,6 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="selection")
-    @Template(name="statistics.html", mimeType="text/html")
     public String getSelection(List<String> items) {
         return String.join(", ", items);
     }
@@ -120,6 +119,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="statistics")
+    @Template(name="statistics.html", mimeType="text/html")
     public Map<String, ?> getStatistics(List<Double> values) {
         Statistics statistics = new Statistics();
 

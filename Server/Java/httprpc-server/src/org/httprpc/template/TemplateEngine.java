@@ -101,27 +101,27 @@ public class TemplateEngine {
     /**
      * Writes an object to an output stream.
      *
-     * @param writer
-     * The output stream.
-     *
      * @param object
      * The object to write.
+     *
+     * @param writer
+     * The output stream.
      *
      * @throws IOException
      * If an exception occurs while writing the object.
      */
-    public void writeObject(Writer writer, Object object) throws IOException {
-        writeObject(writer, object, Locale.getDefault());
+    public void writeObject(Object object, Writer writer) throws IOException {
+        writeObject(object, writer, Locale.getDefault());
     }
 
     /**
      * Writes an object to an output stream.
      *
-     * @param writer
-     * The output stream.
-     *
      * @param object
      * The object to write.
+     *
+     * @param writer
+     * The output stream.
      *
      * @param locale
      * The locale in which the template is being written.
@@ -129,15 +129,15 @@ public class TemplateEngine {
      * @throws IOException
      * If an exception occurs while writing the object.
      */
-    public void writeObject(Writer writer, Object object, Locale locale) throws IOException {
+    public void writeObject(Object object, Writer writer, Locale locale) throws IOException {
         if (object != null) {
             try (InputStream inputStream = url.openStream()) {
-                writeObject(new PagedReader(new InputStreamReader(inputStream, charset)), writer, object, locale);
+                writeObject(object, writer, locale, new PagedReader(new InputStreamReader(inputStream, charset)));
             }
         }
     }
 
-    private void writeObject(Reader reader, Writer writer, Object root, Locale locale) throws IOException {
+    private void writeObject(Object root, Writer writer, Locale locale, Reader reader) throws IOException {
         Map<?, ?> dictionary;
         if (root instanceof Map<?, ?>) {
             dictionary = (Map<?, ?>)root;
@@ -224,7 +224,7 @@ public class TemplateEngine {
                                             reader.mark(0);
                                         }
 
-                                        writeObject(reader, writer, element, locale);
+                                        writeObject(element, writer, locale, reader);
 
                                         if (iterator.hasNext()) {
                                             reader.reset();
@@ -243,7 +243,7 @@ public class TemplateEngine {
                                         }
                                     };
 
-                                    writeObject(reader, new NullWriter(), Collections.emptyMap(), locale);
+                                    writeObject(Collections.emptyMap(), new NullWriter(), locale, reader);
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
@@ -274,14 +274,14 @@ public class TemplateEngine {
                                 try (InputStream inputStream = url.openStream()) {
                                     include = new PagedReader(new InputStreamReader(inputStream));
 
-                                    writeObject(include, writer, dictionary, locale);
+                                    writeObject(dictionary, writer, locale, include);
 
                                     includes.put(marker, include);
                                 }
                             } else {
                                 include.reset();
 
-                                writeObject(include, writer, dictionary, locale);
+                                writeObject(dictionary, writer, locale, include);
                             }
 
                             break;
