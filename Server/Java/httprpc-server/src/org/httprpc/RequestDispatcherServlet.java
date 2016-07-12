@@ -157,6 +157,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         Resource resource = root;
 
         String pathInfo = request.getPathInfo();
+        String extension = null;
 
         if (pathInfo != null) {
             String[] components = pathInfo.split("/");
@@ -168,7 +169,21 @@ public class RequestDispatcherServlet extends HttpServlet {
                     continue;
                 }
 
-                resource = resource.resources.get(component);
+                Resource child = resource.resources.get(component);
+
+                if (child == null && i == components.length - 1) {
+                    int j = component.lastIndexOf('.');
+
+                    if (j != -1) {
+                        child = resource.resources.get(component.substring(0, j));
+
+                        if (child != null) {
+                            extension = component.substring(j + 1);
+                        }
+                    }
+                }
+
+                resource = child;
 
                 if (resource == null) {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -182,6 +197,10 @@ public class RequestDispatcherServlet extends HttpServlet {
         if (handlerList == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
+        }
+
+        if (extension != null) {
+            // TODO Get MIME type and look up template
         }
 
         // Set character encoding
