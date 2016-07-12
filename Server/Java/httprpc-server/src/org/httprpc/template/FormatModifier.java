@@ -48,7 +48,7 @@ public class FormatModifier implements Modifier {
             } else if (argument.equals("shortTime")) {
                 result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(new Date((Long)value));
             } else {
-                result = String.format(argument, value);
+                result = String.format(locale, argument, value);
             }
         } else {
             result = value;
