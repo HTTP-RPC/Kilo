@@ -156,8 +156,8 @@ public class RequestDispatcherServlet extends HttpServlet {
         if (pathInfo != null) {
             String[] components = pathInfo.split("/");
 
-            for (int j = 0; j < components.length; j++) {
-                String component = components[j];
+            for (int i = 0; i < components.length; i++) {
+                String component = components[i];
 
                 if (component.length() == 0) {
                     continue;
