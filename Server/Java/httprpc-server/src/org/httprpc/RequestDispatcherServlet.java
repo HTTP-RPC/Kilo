@@ -83,6 +83,11 @@ public class RequestDispatcherServlet extends HttpServlet {
     private Class<?> serviceType = null;
     private Resource root = null;
 
+    private static final String UTF_8_ENCODING = "UTF-8";
+
+    private static final String JSON_MIME_TYPE = "application/json";
+    private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+
     @Override
     public void init() throws ServletException {
         // Load service class
@@ -181,7 +186,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         // Set character encoding
         if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
+            request.setCharacterEncoding(UTF_8_ENCODING);
         }
 
         // Populate parameter map
@@ -207,7 +212,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         String contentType = request.getContentType();
 
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+        if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA_MIME_TYPE)) {
             for (Part part : request.getParts()) {
                 String submittedFileName = part.getSubmittedFileName();
 
@@ -273,7 +278,8 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setContentType("application/json; charset=UTF-8");
+                response.setContentType(JSON_MIME_TYPE);
+                response.setCharacterEncoding(UTF_8_ENCODING);
 
                 writeValue(response.getWriter(), result, 0);
             }
