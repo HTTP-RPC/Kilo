@@ -277,7 +277,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 Template template = templates[i];
 
                 if (template.mimeType().equals(mimeType)) {
-                    serializer = new TemplateSerializer(serviceType.getResource(template.name()), mimeType);
+                    serializer = new TemplateSerializer(serviceType.getResource(template.name()), serviceType.getName(), mimeType);
                     break;
                 }
             }
@@ -641,10 +641,12 @@ public class RequestDispatcherServlet extends HttpServlet {
     // Template serializer
     private static class TemplateSerializer implements Serializer {
         private URL url;
+        private String baseName;
         private String contentType;
 
-        public TemplateSerializer(URL url, String contentType) {
+        public TemplateSerializer(URL url, String baseName, String contentType) {
             this.url = url;
+            this.baseName = baseName;
             this.contentType = contentType;
         }
 
@@ -657,7 +659,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         public void writeValue(Object value, OutputStream outputStream) throws IOException {
             Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
 
-            TemplateEngine templateEngine = new TemplateEngine(url);
+            TemplateEngine templateEngine = new TemplateEngine(url, baseName);
             templateEngine.writeObject(value, writer);
 
             writer.flush();
