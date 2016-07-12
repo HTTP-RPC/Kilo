@@ -28,6 +28,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.AbstractSet;
@@ -332,7 +333,8 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setContentType(serializer.getContentType());
+                response.setContentType(serializer.getContentType(result));
+
                 serializer.writeValue(result, response.getOutputStream());
             }
         } finally {
@@ -491,15 +493,15 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     // Interface representing a serializer
     interface Serializer {
-        public String getContentType();
+        public String getContentType(Object value);
         public void writeValue(Object value, OutputStream outputStream) throws IOException;
     }
 
     // Binary serializer
     private static class BinarySerializer implements Serializer {
         @Override
-        public String getContentType() {
-            return OCTET_STREAM_MIME_TYPE;
+        public String getContentType(Object value) {
+            return (value == null) ? OCTET_STREAM_MIME_TYPE : URLConnection.guessContentTypeFromName(((URL)value).getFile());
         }
 
         @Override
@@ -522,7 +524,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         private int depth = 0;
 
         @Override
-        public String getContentType() {
+        public String getContentType(Object value) {
             return String.format("%s;charset=%s", JSON_MIME_TYPE, UTF_8_ENCODING);
         }
 
@@ -678,7 +680,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         @Override
-        public String getContentType() {
+        public String getContentType(Object value) {
             return String.format("%s;charset=%s", contentType, UTF_8_ENCODING);
         }
 
