@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
@@ -46,7 +47,7 @@ public class TemplateEngine {
     }
 
     private URL url;
-    private Charset charset;
+    private String baseName;
 
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
@@ -62,9 +63,11 @@ public class TemplateEngine {
         modifiers.put("^csv", new CSVEscapeModifier());
     }
 
-    private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-
     private static final int EOF = -1;
+
+    private static final String UTF_8_ENCODING = "UTF-8";
+
+    private static final String RESOURCE_PREFIX = "@";
 
     /**
      * Constructs a new template engine.
@@ -73,7 +76,7 @@ public class TemplateEngine {
      * The URL of the template.
      */
     public TemplateEngine(URL url) {
-        this(url, DEFAULT_CHARSET);
+        this(url, null);
     }
 
     /**
@@ -82,20 +85,16 @@ public class TemplateEngine {
      * @param url
      * The URL of the template.
      *
-     * @param charset
-     * The template's character set.
+     * @param baseName
+     * The base name of the template's resource bundle.
      */
-    public TemplateEngine(URL url, Charset charset) {
+    public TemplateEngine(URL url, String baseName) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
-        if (charset == null) {
-            throw new IllegalArgumentException();
-        }
-
         this.url = url;
-        this.charset = charset;
+        this.baseName = baseName;
     }
 
     /**
@@ -132,7 +131,9 @@ public class TemplateEngine {
     public void writeObject(Object object, Writer writer, Locale locale) throws IOException {
         if (object != null) {
             try (InputStream inputStream = url.openStream()) {
-                writeObject(object, writer, locale, new PagedReader(new InputStreamReader(inputStream, charset)));
+                Reader reader = new PagedReader(new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING)));
+
+                writeObject(object, writer, locale, reader);
             }
         }
     }
@@ -300,6 +301,8 @@ public class TemplateEngine {
                             Object value;
                             if (key.equals(".")) {
                                 value = dictionary.get(key);
+                            } else if (key.startsWith(RESOURCE_PREFIX) && baseName != null) {
+                                value = ResourceBundle.getBundle(baseName, locale).getString(key.substring(RESOURCE_PREFIX.length()));
                             } else {
                                 value = dictionary;
 

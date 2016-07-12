@@ -263,11 +263,12 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
-        Serializer serializer = null;
-
+        Serializer serializer;
         if (extension == null) {
             serializer = new JSONSerializer();
         } else {
+            serializer = null;
+
             String mimeType = getServletContext().getMimeType(pathInfo);
 
             Template[] templates = method.getAnnotationsByType(Template.class);

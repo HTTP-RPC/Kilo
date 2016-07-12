@@ -19,7 +19,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -347,31 +347,35 @@ public class TemplateEngineTest {
 
     @Test
     public void testResource() throws IOException {
-        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource1.txt"));
-
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".resource1");
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource1.txt"),
+            getClass().getPackage().getName() + ".resource1");
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(new ResourceBundleAdapter("hello", resourceBundle), writer);
+            engine.writeObject("hello", writer);
             result = writer.toString();
         }
 
         Assert.assertEquals("value:hello", result);
     }
 
-    @Test
+    @Test(expected=MissingResourceException.class)
     public void testMissingResourceKey() throws IOException {
-        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource2.txt"));
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource2.txt"),
+            getClass().getPackage().getName() + ".resource2");
 
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".resource2");
-
-        String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeObject(new ResourceBundleAdapter("hello", resourceBundle), writer);
-            result = writer.toString();
+            engine.writeObject("hello", writer);
         }
+    }
 
-        Assert.assertEquals("@label:hello", result);
+    @Test(expected=MissingResourceException.class)
+    public void testMissingResourceBundle() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource3.txt"),
+            getClass().getPackage().getName() + ".resource3");
+
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject("hello", writer);
+        }
     }
 }
