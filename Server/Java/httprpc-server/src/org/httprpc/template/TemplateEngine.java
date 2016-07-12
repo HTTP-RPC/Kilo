@@ -138,11 +138,12 @@ public class TemplateEngine {
     }
 
     private void writeObject(Reader reader, Writer writer, Object root, Locale locale) throws IOException {
-        if (!(root instanceof Map<?, ?>)) {
-            root = Collections.singletonMap(".", root);
+        Map<?, ?> dictionary;
+        if (root instanceof Map<?, ?>) {
+            dictionary = (Map<?, ?>)root;
+        } else {
+            dictionary = Collections.singletonMap(".", root);
         }
-
-        Map<?, ?> dictionary = (Map<?, ?>)root;
 
         int c = reader.read();
 

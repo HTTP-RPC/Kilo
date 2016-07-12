@@ -88,6 +88,7 @@ Additionally, the JAR file contains the following classes for working with templ
     * `JSONEscapeModifier` - modifier that escapes JSON data
     * `CSVEscapeModifier` - modifier that escapes CSV data
     * `URLEscapeModifer` - modifier that escapes URL values
+    * `ResourceBundleAdapter` - adapter class that presents the contents of a root object and a resource bundle as a single map, suitable for use as a data dictionary
 
 Each of these classes is discussed in more detail below. 
 

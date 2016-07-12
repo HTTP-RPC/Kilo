@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -342,5 +343,35 @@ public class TemplateEngineTest {
         }
 
         Assert.assertEquals("[]", result);
+    }
+
+    @Test
+    public void testResource() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource1.txt"));
+
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".resource1");
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject(writer, new ResourceBundleAdapter("hello", resourceBundle));
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("value:hello", result);
+    }
+
+    @Test
+    public void testMissingResourceKey() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("resource2.txt"));
+
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".resource2");
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject(writer, new ResourceBundleAdapter("hello", resourceBundle));
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("@label:hello", result);
     }
 }

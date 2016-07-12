@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that exposes the contents of an iterator as an iterable list of
+ * Class that presents the contents of an iterator as an iterable list of
  * values.
  */
 public class IteratorAdapter extends AbstractList<Object> implements AutoCloseable {

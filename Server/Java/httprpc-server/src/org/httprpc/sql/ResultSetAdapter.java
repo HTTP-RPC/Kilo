@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Class that exposes the contents of a JDBC result set as an iterable list of
+ * Class that presents the contents of a JDBC result set as an iterable list of
  * maps.
  * <p>
  * If a column's value is <tt>null</tt> or an instance of one of the following

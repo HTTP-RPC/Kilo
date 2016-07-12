@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that exposes the properties of a Java Bean object as a map.
+ * Class that presents the properties of a Java Bean object as a map.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
