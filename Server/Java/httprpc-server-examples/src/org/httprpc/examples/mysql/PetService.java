@@ -50,7 +50,7 @@ public class PetService extends WebService {
      */
     @RPC(method="GET")
     public ResultSetAdapter getPets(String owner) throws SQLException, IOException {
-        Parameters parameters = Parameters.parse(new InputStreamReader(getClass().getResourceAsStream("pet_search.sql")));
+        Parameters parameters = Parameters.parse(new InputStreamReader(getClass().getResourceAsStream("pets.sql")));
         PreparedStatement statement = DriverManager.getConnection(DB_URL).prepareStatement(parameters.getSQL());
 
         parameters.apply(statement, mapOf(entry("owner", owner)));
