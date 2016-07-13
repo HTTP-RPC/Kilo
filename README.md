@@ -340,16 +340,113 @@ As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its 
 ### Templates
 Although data produced by an HTTP-RPC web service is typically returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
 
-HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ctemplate) system, which defines a set of "markers" that are replaced with values supplied by a "data dictionary" when the template is processed. The following marker types are supported by HTTP-RPC:
+HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ctemplate) system, which defines a set of "markers" that are replaced with values supplied by a "data dictionary" when the template is processed. The following CTemplate marker types are supported by HTTP-RPC:
 
 * {{_variable_}} - injects a variable from the data dictionary into the output
 * {{#_section_}}...{{/_section_}} - defines a repeating section of content
 * {{>_include_}} - imports content specified by another template
 * {{!_comment_}} - defines a comment
 
-The value returned by the service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. 
+The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. However, it can be an instance of any supported return type. Non-map values are assigned a default key of ".", allowing them to be referred to in the template.
 
-TODO More detail (note indentation level)
+For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier into HTML is shown below:
+
+    <html>
+    <head>
+        <title>Statistics</title>
+    </head>
+    <body>
+        <p>Count: {{count}}</p>
+        <p>Sum: {{sum}}</p>
+        <p>Average: {{average}}</p> 
+    </body>
+    </html>
+
+This method returned a map containing the result of some simple statistical calculations:
+
+    {
+      "average": 3.0, 
+      "count": 3, 
+      "sum": 9.0
+    }
+
+At execution time, the "count", "sum", and "average" variable markers will be replaced by their corresponding values from the data dictionary:
+
+    <html>
+    <head>
+        <title>Statistics</title>
+    </head>
+    <body>
+        <p>Count: 3.0</p>
+        <p>Sum: 9.0</p>
+        <p>Average: 3.0</p> 
+    </body>
+    </html>
+
+
+#### @Template Annotation
+The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
+
+    @Template(name="statistics.html", mimeType="text/html")
+    public Map<String, ?> getStatistics(List<Double> values) { ... }
+
+The `name` value refers to the file containing the template definition. It is specified as a resource path relative to the service type.
+
+The `mimeType` value indicates type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL. 
+
+Note that it is possible to associate multiple templates with a single service method. For example, the following code adds an additional XML template document to the `getStatistics()` method:
+
+    @Template(name="statistics.html", mimeType="text/html")
+    @Template(name="statistics.xml", mimeType="application/xml")
+    public Map<String, ?> getStatistics(List<Double> values) { ... }
+
+#### TemplateEngine Class
+TODO
+
+#### Variable Markers
+Variable markers can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
+
+Variable names beginning with an `@` character are considered resource references. Resources allow static template content to be localized. At execution time, the template processor looks for a resource bundle with the same base name as the service type, using the locale specified by the current HTTP request. If the bundle exists, it is used to provide a localized string value for the variable.
+
+For example, the descriptive text from _statistics.html_ could be extracted into _MathService.properties_ as follows:
+
+    title=Statistics
+    count=Count
+    sum=Sum
+    average=Average
+
+The template could be updated to refer to these values as shown below:
+
+    <html>
+    <head>
+        <title>{{@title}}</title>
+    </head>
+    <body>
+        <p>{{@count}}: {{count}}</p>
+        <p>{{@sum}}: {{sum}}</p>
+        <p>{{@average}}: {{average}}</p> 
+    </body>
+    </html>
+
+When the template is processed, the resource references will be replaced with their corresponding values from the resource bundle.
+
+##### Modifiers
+TODO
+
+#### Section Markers
+TODO
+
+#### Includes
+Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers.
+
+TODO
+
+#### Comments
+Comment markers simply define a block of text that is excluded from the final output. They are generally used to provide informational text to the reader of the source template. For example:
+
+TODO
+
+When the template is processed, only the TODO content will be included in the output.
 
 ## Java Client
 The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
