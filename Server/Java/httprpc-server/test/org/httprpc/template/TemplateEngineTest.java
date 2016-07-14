@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.httprpc.WebService.listOf;
@@ -29,6 +30,11 @@ import static org.httprpc.WebService.mapOf;
 import static org.httprpc.WebService.entry;
 
 public class TemplateEngineTest {
+    @BeforeClass
+    public static void setup() {
+        TemplateEngine.getModifiers().put("case", new CaseModifier());
+    }
+
     @Test
     public void testNull() throws IOException {
         TemplateEngine engine = new TemplateEngine(getClass().getResource("dictionary.txt"));
@@ -377,5 +383,18 @@ public class TemplateEngineTest {
         try (StringWriter writer = new StringWriter()) {
             engine.writeObject("hello", writer);
         }
+    }
+
+    @Test
+    public void testUppercaseModifier() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("upper.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject("abcdefg", writer);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("ABCDEFG", result);
     }
 }
