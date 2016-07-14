@@ -77,18 +77,13 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
 * _`org.httprpc.util`_
     * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
 
-Additionally, the JAR file contains the following classes for working with templates, which allow service data to be declaratively transformed into alternate representations:
+Additionally, the server library provides the following classes for use with templates, which allow service data to be declaratively transformed into alternate representations:
 
 * _`org.httprpc`_
     * `Template` - annotation that associates a template with a service method
 * _`org.httprpc.template`_
-    * `TemplateEngine` - template processing engine
+    * `TemplateEngine` - class for processing template documents
     * `Modifier` - interface representing a template modifier
-    * `MarkupEscapeModifier` - modifier that escapes markup data
-    * `JSONEscapeModifier` - modifier that escapes JSON data
-    * `CSVEscapeModifier` - modifier that escapes CSV data
-    * `URLEscapeModifer` - modifier that escapes URL values
-    * `ResourceBundleAdapter` - adapter class that presents the contents of a root object and a resource bundle as a single map, suitable for use as a data dictionary
 
 Each of these classes is discussed in more detail below. 
 
@@ -157,7 +152,8 @@ Methods may return any of the following types:
 * `boolean`/`java.lang.Boolean`
 * `java.lang.CharSequence`
 * `java.util.List`
-* `java.util.Map` 
+* `java.util.Map`
+* `java.net.URL`
 
 Methods may also return `void` or `java.lang.Void` to indicate that they do not return a value.
 
@@ -186,6 +182,8 @@ Java objects are mapped to their JSON equivalents as follows:
 * `java.lang.CharSequence`: string
 * `java.util.List`: array
 * `java.util.Map`: object
+
+`URL` values represent untyped data. The binary content of the referenced resource is returned to the caller verbatim.
 
 Each servlet instance hosts a single HTTP-RPC service. The name of the service type is passed to the servlet via the "serviceClassName" initialization parameter. For example:
 
@@ -345,11 +343,11 @@ HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ct
 * {{_variable_}} - injects a variable from the data dictionary into the output
 * {{#_section_}}...{{/_section_}} - defines a repeating section of content
 * {{>_include_}} - imports content specified by another template
-* {{!_comment_}} - defines a comment
+* {{!_comment_}} - provides informational text about a template's content
 
-The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values supplied by the dictionary. However, it can be an instance of any supported return type. Non-map values are assigned a default key of ".", allowing them to be referred to in the template.
+The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values provided by the dictionary. 
 
-For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier into HTML is shown below:
+For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier to HTML is shown below:
 
     <html>
     <head>
@@ -362,7 +360,7 @@ For example, a simple template for transforming the output of the `getStatistics
     </body>
     </html>
 
-This method returned a map containing the result of some simple statistical calculations:
+The `getStatistics()` method returns a map containing the result of some simple statistical calculations:
 
     {
       "average": 3.0, 
@@ -370,7 +368,7 @@ This method returned a map containing the result of some simple statistical calc
       "sum": 9.0
     }
 
-At execution time, the "count", "sum", and "average" variable markers will be replaced by their corresponding values from the data dictionary:
+At execution time, the "count", "sum", and "average" variable markers will be replaced by their corresponding values from the data dictionary, producing the following markup:
 
     <html>
     <head>
@@ -383,9 +381,19 @@ At execution time, the "count", "sum", and "average" variable markers will be re
     </body>
     </html>
 
+#### Dot Notation
+Although maps are often used to provide a template's data dictionary, this is not strictly required. Non-map values are automatically wrapped in a map instance and assigned a default name of ".". This name can be used to refer to the value in a template. 
 
-#### @Template Annotation
-The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
+For example, the following template could be used to transform output of a method that returns a `double` value:
+
+	The value is {{.}}.
+
+If the value returned by the method is the number `8`, the resulting output would look like this:
+
+	The value is 8.
+
+#### Template Documents
+The `org.httprpc.Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
 
     @Template(name="statistics.html", mimeType="text/html")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
@@ -400,22 +408,21 @@ Note that it is possible to associate multiple templates with a single service m
     @Template(name="statistics.xml", mimeType="application/xml")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
-#### TemplateEngine Class
-TODO
+The `org.httprpc.template.TemplateEngine` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
 
 #### Variable Markers
-Variable markers can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
+Variable markers inject a variable from the data dictionary into the output. They can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
 
-Variable names beginning with an `@` character are considered resource references. Resources allow static template content to be localized. At execution time, the template processor looks for a resource bundle with the same base name as the service type, using the locale specified by the current HTTP request. If the bundle exists, it is used to provide a localized string value for the variable.
+Variable names beginning with the `@` character represent "resource references". Resources allow static template content to be localized. At execution time, the template processor looks for a resource bundle with the same base name as the service type, using the locale specified by the current HTTP request. If the bundle exists, it is used to provide a localized string value for the variable.
 
-For example, the descriptive text from _statistics.html_ could be extracted into _MathService.properties_ as follows:
+For example, the descriptive text from _statistics.html_ could be localized as follows:
 
     title=Statistics
     count=Count
     sum=Sum
     average=Average
 
-The template could be updated to refer to these values as shown below:
+The template could be updated to refer to the resource values as shown below:
 
     <html>
     <head>
@@ -431,22 +438,111 @@ The template could be updated to refer to these values as shown below:
 When the template is processed, the resource references will be replaced with their corresponding values from the resource bundle.
 
 ##### Modifiers
-TODO
+The CTemplate specification defines a syntax for applying an optional set of "modifiers" to a variable. Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.
+
+Modifiers are specified as follows. They are invoked from left to right, in the order in which they are specified:
+
+    {{variable:modifier1:modifier2:modifier3=argument:...}}
+
+An optional argument value may be included to provide additional information to the modifier.
+
+HTTP-RPC provides the following set of standard modifiers:
+
+* `format` - applies a format string
+* `^html`, `^xml` - applies markup encoding to a value
+* `^json` - applies JSON encoding to a value
+* `^csv` - applies CSV encoding to a value
+* `^url` - applies URL encoding to a value
+
+For example, the following marker applies a format string to a value and then URL-encodes the result:
+
+    {{value:format=0x%04x:^url}}
+
+In addition to `printf()`-style formatting, the `format` modifier also supports the following arguments for numeric values:
+
+  * `currency` - applies a currency format
+  * `percent` - applies a percent format
+  * `shortDate` - applies a short date format
+  * `mediumDate` - applies a medium date format
+  * `longDate` - applies a long date format
+  * `fullDate` - applies a full date format
+  * `shortTime` - applies a short time format
+  * `mediumTime` - applies a medium time format
+  * `longTime` - applies a long time format
+  * `fullTime` - applies a full time format
+
+For example, the following marker applies a medium date format to a long value named "date":
+
+    {{date:format=mediumDate}}
+
+Applications may also define their own custom modifiers. Modifiers are created by implementing the `org.httprpc.template.Modifier` interface, which defines the following method:
+
+    public Object apply(Object value, String argument, Locale locale);
+    
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If an argument is not specified, `argument` will be null. The third argument contains the caller's locale.
+
+For example, the following class implements a modifier that converts values to uppercase:
+
+    public class UppercaseModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale) {
+            return value.toString().toUpperCase(locale);
+        }
+    }
+
+Custom modifiers are registered by adding them to the modifier map returned by `TemplateEngine#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document.
+
+Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template engines.
 
 #### Section Markers
+Section markers define a repeating section of content. The marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list. The element becomes the data dictionary for each successive iteration over the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
+
+For example, ...
+
+TODO
+
+Dot notation can be used to refer to the list itself as well as its elements. For example, ...
+
 TODO
 
 #### Includes
 Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers.
 
-TODO
+For example, the following template, _hello.txt_, includes another document named _world.txt_: 
+
+    Hello, {{>world.txt}}!
+    
+When _hello.txt_ is processed, the include marker will be replaced with the contents of _world.txt_. For example, if _world.txt_ contains the text "World", the result of processing _hello.txt_ would be the following:
+
+	Hello, World!
+
+Includes inherit their context from the parent document, so they can refer to elements in the parent's data dictionary. This allows includes to be parameterized.
+
+Includes can also be used to facilitate recursion. For example, an include that includes itself could be used to transform the output of a method that returns a hierarchical data structure:
+
+    public class TreeNode {
+        public String getName() { ... }    
+        public List<TreeNode> getChildren() { ... }
+    }
+
+The result of processing the following template, _treenode.html_, would be a collection of nested unordered list elements representing each of the nodes in the tree:
+
+    <ul>
+    {{#children}}
+    <li>
+    <p>{{name}}</p>
+    {{>treenode.html}}
+    </li>
+    {{/children}}
+    </ul>
 
 #### Comments
-Comment markers simply define a block of text that is excluded from the final output. They are generally used to provide informational text to the reader of the source template. For example:
+Comment markers provide informational text about a template's content. They are not included in the final output. 
 
-TODO
+For example, when the following template is processed, only the content between the `<p>` tags will be included in the output:
 
-When the template is processed, only the TODO content will be included in the output.
+    {{! Some placeholder text }}
+    <p>Lorem ipsum dolor sit amet.</p>
 
 ## Java Client
 The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
