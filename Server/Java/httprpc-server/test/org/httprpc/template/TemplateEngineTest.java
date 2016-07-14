@@ -16,7 +16,9 @@ package org.httprpc.template;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -221,8 +223,8 @@ public class TemplateEngineTest {
     }
 
     @Test
-    public void testFormatModifier() throws IOException {
-        TemplateEngine engine = new TemplateEngine(getClass().getResource("format.txt"));
+    public void testFloatFormatModifier() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("format1.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -231,6 +233,21 @@ public class TemplateEngineTest {
         }
 
         Assert.assertEquals("4.50", result);
+    }
+
+    @Test
+    public void testDateFormatModifier() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("format2.txt"));
+
+        Date date = new Date();
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject(date.getTime(), writer);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date.getTime()), result);
     }
 
     @Test
