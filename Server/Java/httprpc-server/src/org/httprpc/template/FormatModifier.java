@@ -32,21 +32,21 @@ public class FormatModifier implements Modifier {
             } else if (argument.equals("percent")) {
                 result = NumberFormat.getPercentInstance(locale).format(value);
             } else if (argument.equals("fullDate")) {
-                result = DateFormat.getDateInstance(DateFormat.FULL, locale).format(new Date((Long)value));
+                result = DateFormat.getDateInstance(DateFormat.FULL, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("longDate")) {
-                result = DateFormat.getDateInstance(DateFormat.LONG, locale).format(new Date((Long)value));
+                result = DateFormat.getDateInstance(DateFormat.LONG, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("mediumDate")) {
-                result = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(new Date((Long)value));
+                result = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("shortDate")) {
-                result = DateFormat.getDateInstance(DateFormat.SHORT, locale).format(new Date((Long)value));
+                result = DateFormat.getDateInstance(DateFormat.SHORT, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("fullTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.FULL, locale).format(new Date((Long)value));
+                result = DateFormat.getTimeInstance(DateFormat.FULL, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("longTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.LONG, locale).format(new Date((Long)value));
+                result = DateFormat.getTimeInstance(DateFormat.LONG, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("mediumTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale).format(new Date((Long)value));
+                result = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale).format(new Date(((Number)value).longValue()));
             } else if (argument.equals("shortTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(new Date((Long)value));
+                result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(new Date(((Number)value).longValue()));
             } else {
                 result = String.format(locale, argument, value);
             }
