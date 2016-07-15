@@ -345,9 +345,7 @@ HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ct
 * {{>_include_}} - imports content specified by another template
 * {{!_comment_}} - provides informational text about a template's content
 
-The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values provided by the dictionary. 
-
-For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier to HTML is shown below:
+The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values provided by the dictionary. For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier to HTML is shown below:
 
     <html>
     <head>
@@ -360,7 +358,7 @@ For example, a simple template for transforming the output of the `getStatistics
     </body>
     </html>
 
-The `getStatistics()` method returns a map containing the result of some simple statistical calculations:
+This method returns a map containing the result of some simple statistical calculations:
 
     {
         "average": 3.0, 
@@ -402,7 +400,7 @@ The `name` value refers to the file containing the template definition. It is sp
 
 The `mimeType` value indicates type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL. 
 
-Note that it is possible to associate multiple templates with a single service method. For example, the following code adds an additional XML template document to the `getStatistics()` method:
+Note that it is possible to associate multiple templates with a single service method. For example, the following code associates an additional XML template with the `getStatistics()` method:
 
     @Template(name="statistics.html", mimeType="text/html")
     @Template(name="statistics.xml", mimeType="application/xml")
@@ -423,7 +421,7 @@ For example, the descriptive text from _statistics.html_ could be localized as f
     sum=Sum
     average=Average
 
-The template could be updated to refer to the resource values as shown below:
+The template could be updated to refer to these string resources as shown below:
 
     <html>
     <head>
@@ -439,25 +437,23 @@ The template could be updated to refer to the resource values as shown below:
 When the template is processed, the resource references will be replaced with their corresponding values from the resource bundle.
 
 ##### Context References
-Variable names beginning with the `$` character are considered a "context references". Context properties provide information about the context in which the request is executing:
+Variable names beginning with the `$` character represent "context references". Context properties provide information about the context in which the request is executing. HTTP-RPC provides the following context values:
 
 * `scheme` - the scheme used to make the request; e.g. "http" or "https"
 * `serverName` - the host name of the server to which the request was sent
 * `serverPort` - the port to which the request was sent
 * `contextPath` - the context path of the web application handling the request
 
-For example, the following markup might be used to embed a product image in an HTML template:
+For example, the following markup uses the `contextPath` value to embed a product image in an HTML template:
 
     <img src="{{$contextPath}}/images/{{productID}}.jpg"/>
 
 ##### Modifiers
 The CTemplate specification defines a syntax for applying an optional set of "modifiers" to a variable. Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.
 
-Modifiers are specified as follows. They are invoked from left to right, in the order in which they are specified:
+Modifiers are specified as shown below. They are invoked in order from left to right. An optional argument value may be included to provide additional information to the modifier:
 
     {{variable:modifier1:modifier2:modifier3=argument:...}}
-
-An optional argument value may be included to provide additional information to the modifier.
 
 HTTP-RPC provides the following set of standard modifiers:
 
@@ -484,7 +480,7 @@ In addition to `printf()`-style formatting, the `format` modifier also supports 
   * `longTime` - applies a long time format
   * `fullTime` - applies a full time format
 
-For example, the following marker applies a medium date format to a long value named "date":
+For example, this marker applies a medium date format to a long value named "date":
 
     {{date:format=mediumDate}}
 
@@ -492,7 +488,7 @@ Applications may also define their own custom modifiers. Modifiers are created b
 
     public Object apply(Object value, String argument, Locale locale);
     
-The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If an argument is not specified, `argument` will be null. The third argument contains the caller's locale.
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If a modifier argument is not specified, `argument` will be null. The third argument contains the caller's locale.
 
 For example, the following class implements a modifier that converts values to uppercase:
 
@@ -528,11 +524,11 @@ For example, a service that provides information about homes for sale might retu
         ...
     ]
     
-A template to present these results in an HTML table could be written as shown below. Dot notation is used to refer to the list itself, and variable markers are used to refer to the properties of the list elements. The `format` modifier is used to present the list price as a currency value:
+A template to present these results in an HTML table is shown below. Dot notation is used to refer to the list itself, and variable markers are used to refer to the properties of the list elements. The `format` modifier is used to present the list price as a currency value:
 
     <html>
     <head>
-    <title>Property Listings</title>
+        <title>Property Listings</title>
     </head>
     <body>
     <table>
