@@ -413,6 +413,7 @@ The `org.httprpc.template.TemplateEngine` class is responsible for merging a tem
 #### Variable Markers
 Variable markers inject a variable from the data dictionary into the output. They can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
 
+##### Resource References
 Variable names beginning with the `@` character represent "resource references". Resources allow static template content to be localized. At execution time, the template processor looks for a resource bundle with the same base name as the service type, using the locale specified by the current HTTP request. If the bundle exists, it is used to provide a localized string value for the variable.
 
 For example, the descriptive text from _statistics.html_ could be localized as follows:
@@ -436,6 +437,18 @@ The template could be updated to refer to the resource values as shown below:
     </html>
 
 When the template is processed, the resource references will be replaced with their corresponding values from the resource bundle.
+
+##### Context References
+Variable names beginning with the `$` character are considered a "context references". Context properties provide information about the context in which the request is executing:
+
+* `scheme` - the scheme used to make the request; e.g. "http" or "https"
+* `serverName` - the host name of the server to which the request was sent
+* `serverPort` - the port to which the request was sent
+* `contextPath` - the context path of the web application handling the request
+
+For example, the following markup might be used to embed a product image in an HTML template:
+
+    <img src="{{$contextPath}}/images/{{productID}}.jpg"/>
 
 ##### Modifiers
 The CTemplate specification defines a syntax for applying an optional set of "modifiers" to a variable. Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.
