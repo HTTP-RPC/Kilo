@@ -403,6 +403,34 @@ public class TemplateEngineTest {
     }
 
     @Test
+    public void testContextProperty() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("context.txt"));
+
+        engine.getContext().put("a", "A");
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject("B", writer);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("A/B", result);
+    }
+
+    @Test
+    public void testMissingContextProperty() throws IOException {
+        TemplateEngine engine = new TemplateEngine(getClass().getResource("context.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            engine.writeObject("B", writer);
+            result = writer.toString();
+        }
+
+        Assert.assertEquals("/B", result);
+    }
+
+    @Test
     public void testUppercaseModifier() throws IOException {
         TemplateEngine engine = new TemplateEngine(getClass().getResource("upper.txt"));
 

@@ -49,6 +49,8 @@ public class TemplateEngine {
     private URL url;
     private String baseName;
 
+    private HashMap<String, Object> context = new HashMap<>();
+
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
 
@@ -67,6 +69,7 @@ public class TemplateEngine {
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
+    private static final String CONTEXT_PREFIX = "$";
     private static final String RESOURCE_PREFIX = "@";
 
     /**
@@ -95,6 +98,16 @@ public class TemplateEngine {
 
         this.url = url;
         this.baseName = baseName;
+    }
+
+    /**
+     * Returns the engine context.
+     *
+     * @return
+     * The engine context.
+     */
+    public Map<String, Object> getContext() {
+        return context;
     }
 
     /**
@@ -299,10 +312,12 @@ public class TemplateEngine {
                             String key = components[0];
 
                             Object value;
-                            if (key.equals(".")) {
-                                value = dictionary.get(key);
+                            if (key.startsWith(CONTEXT_PREFIX)) {
+                                value = context.get(key.substring(CONTEXT_PREFIX.length()));
                             } else if (key.startsWith(RESOURCE_PREFIX) && baseName != null) {
                                 value = ResourceBundle.getBundle(baseName, locale).getString(key.substring(RESOURCE_PREFIX.length()));
+                            } else if (key.equals(".")) {
+                                value = dictionary.get(key);
                             } else {
                                 value = dictionary;
 
