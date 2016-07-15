@@ -268,9 +268,9 @@ Using this class, an implementation of a `getStatistics()` method might look lik
 Although the values are actually stored in the strongly typed `Statistics` object, the adapter makes the data appear as a map, allowing it to be returned to the caller as a JSON object; for example:
 
     {
-      "average": 3.0, 
-      "count": 3, 
-      "sum": 9.0
+        "average": 3.0, 
+        "count": 3, 
+        "sum": 9.0
     }
 
 Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. This allows service methods to return recursive structures such as trees.
@@ -363,9 +363,9 @@ For example, a simple template for transforming the output of the `getStatistics
 The `getStatistics()` method returns a map containing the result of some simple statistical calculations:
 
     {
-      "average": 3.0, 
-      "count": 3, 
-      "sum": 9.0
+        "average": 3.0, 
+        "count": 3, 
+        "sum": 9.0
     }
 
 At execution time, the "count", "sum", and "average" variable markers will be replaced by their corresponding values from the data dictionary, producing the following markup:
@@ -508,15 +508,51 @@ Custom modifiers are registered by adding them to the modifier map returned by `
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template engines.
 
 #### Section Markers
-Section markers define a repeating section of content. The marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list. The element becomes the data dictionary for each successive iteration over the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
+Section markers define a repeating section of content. The section marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list. The element becomes the data dictionary for each successive iteration through the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
 
-For example, ...
+For example, a service that provides information about homes for sale might return a list of available properties as follows:
 
-TODO
+    [
+        {
+            "streetAddress": "17 Cardinal St.",
+            "listPrice": 849000,
+            "numberOfBedrooms": 4,
+            "numberOfBathrooms": 3
+        },
+        {
+            "streetAddress": "72 Wedgemere Ave.",
+            "listPrice": 1650000,
+            "numberOfBedrooms": 5,
+            "numberOfBathrooms": 3
+        },
+        ...
+    ]
+    
+A template to present these results in an HTML table could be written as shown below. Dot notation is used to refer to the list itself, and variable markers are used to refer to the properties of the list elements. The `format` modifier is used to present the list price as a currency value:
 
-Dot notation can be used to refer to the list itself as well as its elements. For example, ...
-
-TODO
+    <html>
+    <head>
+    <title>Property Listings</title>
+    </head>
+    <body>
+    <table>
+    <tr>
+        <td>Street Address</td> 
+        <td>List Price</td> 
+        <td># Bedrooms</td> 
+        <td># Bathrooms</em></td> 
+    </tr>
+    {{#.}}
+    <tr>
+        <td>{{streetAddress}}</td> 
+        <td>{{listPrice:format=currency}}</td> 
+        <td>{{numberOfBedrooms}}</td> 
+        <td>{{numberOfBathrooms}}</td>
+    </tr>
+    {{/.}}
+    </table>
+    </body>
+    </html>
 
 #### Includes
 Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers.
