@@ -46,16 +46,19 @@
     <servlet-mapping>
         <servlet-name>PetServlet</servlet-name>
         <url-pattern>/pets/*</url-pattern>
+        <url-pattern>/pets.html</url-pattern>
     </servlet-mapping>    
 
     <servlet-mapping>
         <servlet-name>EventServlet</servlet-name>
         <url-pattern>/events/*</url-pattern>
+        <url-pattern>/events.html</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>RestaurantServlet</servlet-name>
         <url-pattern>/restaurants/*</url-pattern>
+        <url-pattern>/restaurants.html</url-pattern>
     </servlet-mapping>
 </web-app>
 

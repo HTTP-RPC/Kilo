@@ -16,6 +16,7 @@ package org.httprpc.examples.mongodb;
 
 import org.bson.Document;
 import org.httprpc.RPC;
+import org.httprpc.Template;
 import org.httprpc.WebService;
 import org.httprpc.util.IteratorAdapter;
 
@@ -36,6 +37,7 @@ public class RestaurantService extends WebService {
      * A list of restaurants in the given zip code.
      */
     @RPC(method="GET")
+    @Template(name="restaurants.html", mimeType="text/html")
     public IteratorAdapter getRestaurants(String zipCode) {
         MongoDatabase db = MongoClientManager.getMongoClient().getDatabase("test");
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));

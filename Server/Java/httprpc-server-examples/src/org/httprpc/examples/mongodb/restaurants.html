@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>{{@restaurants}}</title>
+</head>
+<body>
+{{#.}}
+<p>
+<strong>{{name}}</strong></em><br/>
+{{address.building}} {{address.street}}, {{borough}}<br/>
+</p>
+<p>{{@cuisine}}: <em>{{cuisine}}</em></p>
+<p>{{@grades}}:</p>
+<ul>
+{{#grades}}
+<li>{{date:format=mediumDate}} {{grade}} (<em>{{score}}</em>)</li>
+{{/grades}}
+</ul>
+{{/.}}
+</body>
+</html>

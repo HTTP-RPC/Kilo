@@ -168,7 +168,15 @@ public class RequestDispatcherServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         String extension = null;
 
-        if (pathInfo != null) {
+        if (pathInfo == null) {
+            String servletPath = request.getServletPath();
+
+            int j = servletPath.lastIndexOf('.');
+
+            if (j != -1) {
+                extension = servletPath.substring(j);
+            }
+        } else {
             String[] components = pathInfo.split("/");
 
             for (int i = 0; i < components.length; i++) {
@@ -187,7 +195,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                         child = resource.resources.get(component.substring(0, j));
 
                         if (child != null) {
-                            extension = component.substring(j + 1);
+                            extension = component.substring(j);
                         }
                     }
                 }
@@ -275,7 +283,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         } else {
             serializer = null;
 
-            String mimeType = getServletContext().getMimeType(pathInfo);
+            String mimeType = getServletContext().getMimeType(extension);
 
             Template[] templates = method.getAnnotationsByType(Template.class);
 
