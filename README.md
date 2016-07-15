@@ -761,7 +761,7 @@ The `BasicAuthentication` class is provided by the HTTP-RPC Java client library.
 ### Examples
 The following code snippet demonstrates how `WebServiceProxy` can be used to access the resources of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
 
-    // Create service
+    // Create service proxy
     URL serverURL = new URL("https://localhost:8443");
     ExecutorService executorService = Executors.newFixedThreadPool(10);
 
