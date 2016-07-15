@@ -283,7 +283,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 Template template = templates[i];
 
                 if (template.mimeType().equals(mimeType)) {
-                    serializer = new TemplateSerializer(serviceType.getResource(template.name()), serviceType.getName(), mimeType);
+                    serializer = new TemplateSerializer(serviceType.getResource(template.name()), serviceType.getName(), mimeType, request);
                     break;
                 }
             }
@@ -672,11 +672,13 @@ public class RequestDispatcherServlet extends HttpServlet {
         private URL url;
         private String baseName;
         private String contentType;
+        private HttpServletRequest request;
 
-        public TemplateSerializer(URL url, String baseName, String contentType) {
+        public TemplateSerializer(URL url, String baseName, String contentType, HttpServletRequest request) {
             this.url = url;
             this.baseName = baseName;
             this.contentType = contentType;
+            this.request = request;
         }
 
         @Override
@@ -689,6 +691,14 @@ public class RequestDispatcherServlet extends HttpServlet {
             Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
 
             TemplateEngine templateEngine = new TemplateEngine(url, baseName);
+
+            Map<String, Object> context = templateEngine.getContext();
+
+            context.put("scheme", request.getScheme());
+            context.put("serverName", request.getServerName());
+            context.put("serverPort", request.getServerPort());
+            context.put("contextPath", request.getContextPath());
+
             templateEngine.writeObject(value, writer);
 
             writer.flush();
