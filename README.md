@@ -57,6 +57,7 @@ Although the HTTP specification defines a large number of possible response code
 * _204 No Content_ - The request succeeded, but did not produce a result
 * _404 Not Found_ - The requested resource does not exist
 * _405 Method Not Allowed_ - The requested resource exists, but does not support the requested HTTP method
+* _406 Not Acceptable_ - The requested representation is not available
 * _500 Internal Server Error_ - An error occurred while executing the method
 
 # Implementations

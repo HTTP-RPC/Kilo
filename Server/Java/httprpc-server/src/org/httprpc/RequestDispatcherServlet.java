@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -307,11 +306,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             try {
                 WebService service;
                 if (!Modifier.isStatic(method.getModifiers())) {
-                    try {
-                        service = (WebService)serviceType.newInstance();
-                    } catch (IllegalAccessException | InstantiationException exception) {
-                        throw new RuntimeException(exception);
-                    }
+                    service = (WebService)serviceType.newInstance();
 
                     service.setLocale(request.getLocale());
 
@@ -325,12 +320,8 @@ public class RequestDispatcherServlet extends HttpServlet {
                     service = null;
                 }
 
-                try {
-                    result = method.invoke(service, getArguments(method, parameterMap, fileMap));
-                } catch (IllegalAccessException | InvocationTargetException exception) {
-                    throw new RuntimeException(exception);
-                }
-            } catch (RuntimeException exception) {
+                result = method.invoke(service, getArguments(method, parameterMap, fileMap));
+            } catch (Exception exception) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
