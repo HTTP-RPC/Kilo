@@ -323,6 +323,13 @@ public class RequestDispatcherServlet extends HttpServlet {
                 result = method.invoke(service, getArguments(method, parameterMap, fileMap));
             } catch (Exception exception) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+                Throwable cause = exception.getCause();
+
+                if (cause != null) {
+                    request.getServletContext().log(getClass().getName(), cause);
+                }
+
                 return;
             }
 
