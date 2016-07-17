@@ -422,27 +422,25 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
 
                 argument = list;
-            } else {
-                if (type == URL.class) {
-                    LinkedList<File> fileList = fileMap.get(name);
+            } else if (type == URL.class) {
+                LinkedList<File> fileList = fileMap.get(name);
 
-                    if (fileList != null) {
-                        argument = fileList.getFirst().toURI().toURL();
-                    } else {
-                        argument = null;
-                    }
+                if (fileList != null) {
+                    argument = fileList.getFirst().toURI().toURL();
                 } else {
-                    LinkedList<String> valueList = parameterMap.get(name);
-
-                    String value;
-                    if (valueList != null) {
-                        value = valueList.getFirst();
-                    } else {
-                        value = null;
-                    }
-
-                    argument = getArgument(value, type);
+                    argument = null;
                 }
+            } else {
+                LinkedList<String> valueList = parameterMap.get(name);
+
+                String value;
+                if (valueList != null) {
+                    value = valueList.getFirst();
+                } else {
+                    value = null;
+                }
+
+                argument = getArgument(value, type);
             }
 
             arguments[i] = argument;
