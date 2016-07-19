@@ -95,22 +95,26 @@ public class WebServiceProxy {
             try {
                 result = invoke();
             } catch (final Exception exception) {
-                resultDispatcher.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultHandler.execute(null, exception);
-                    }
-                });
+                if (resultHandler != null) {
+                    resultDispatcher.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultHandler.execute(null, exception);
+                        }
+                    });
+                }
 
                 throw exception;
             }
 
-            resultDispatcher.execute(new Runnable() {
-                @Override
-                public void run() {
-                    resultHandler.execute(result, null);
-                }
-            });
+            if (resultHandler != null) {
+                resultDispatcher.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultHandler.execute(result, null);
+                    }
+                });
+            }
 
             return result;
         }
@@ -683,7 +687,8 @@ public class WebServiceProxy {
      * The path associated with the request.
      *
      * @param resultHandler
-     * A callback that will be invoked upon completion of the request.
+     * A callback that will be invoked upon completion of the request, or
+     * <tt>null</tt> for no result handler.
      *
      * @return
      * A future representing the invocation request.
@@ -708,7 +713,8 @@ public class WebServiceProxy {
      * The request arguments.
      *
      * @param resultHandler
-     * A callback that will be invoked upon completion of the request.
+     * A callback that will be invoked upon completion of the request, or
+     * <tt>null</tt> for no result handler.
      *
      * @return
      * A future representing the invocation request.
@@ -723,10 +729,6 @@ public class WebServiceProxy {
         }
 
         if (arguments == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (resultHandler == null) {
             throw new IllegalArgumentException();
         }
 

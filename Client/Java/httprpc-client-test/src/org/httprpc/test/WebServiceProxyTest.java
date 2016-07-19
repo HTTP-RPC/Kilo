@@ -194,6 +194,13 @@ public class WebServiceProxyTest {
             validate(exception instanceof SocketTimeoutException);
         });
 
+        // Parallel operations
+        Future<Double> sum1 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
+        Future<Double> sum2 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
+        Future<Double> sum3 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
+
+        validate(sum1.get().equals(3.0) && sum2.get().equals(6.0) && sum3.get().equals(9.0));
+
         // Shut down thread pool
         threadPool.shutdown();
     }
