@@ -3,6 +3,15 @@ HTTP-RPC is an open-source framework for simplifying development of REST-based a
 
 The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
 
+# Contents
+* [Service Operations](#service-operations)
+* [Implementations](#implementations)
+	* [Java Server](#java-server)
+	* [Java Client](#java-client)
+	* [Objective-C/Swift Client](#objective-cswift-client)
+	* [JavaScript Client](#javascript-client)
+* [More Information](#more-information)
+
 # Service Operations
 HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_.
 
