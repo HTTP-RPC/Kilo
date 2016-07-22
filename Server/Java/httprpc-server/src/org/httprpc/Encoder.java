@@ -15,29 +15,34 @@
 package org.httprpc;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * Interface representing a decoder.
+ * Interface representing an encoder.
  */
-public interface Decoder {
+public interface Encoder {
     /**
-     * Reads a value from an input stream.
+     * Returns the type of content produced by the encoder for a given value.
      *
-     * @param inputStream
-     * The input stream to read from.
-     *
-     * @param contentType
-     * The MIME type of the data.
+     * @param value
+     * The value to encode.
      *
      * @return
-     * The decoded value.
+     * The content type.
+     */
+    public String getContentType(Object value);
+
+    /**
+     * Writes a value to an output stream.
+     *
+     * @param value
+     * The value to encode.
+     *
+     * @param outputStream
+     * The output stream to write to.
      *
      * @throws IOException
      * If an exception occurs.
-     *
-     * @param <V>
-     * The type of value read by the decoder.
      */
-    public <V> V readValue(InputStream inputStream, String contentType) throws IOException;
+    public void writeValue(Object value, OutputStream outputStream) throws IOException;
 }

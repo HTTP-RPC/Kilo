@@ -18,26 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Interface representing a decoder.
+ * JSON decoder.
  */
-public interface Decoder {
-    /**
-     * Reads a value from an input stream.
-     *
-     * @param inputStream
-     * The input stream to read from.
-     *
-     * @param contentType
-     * The MIME type of the data.
-     *
-     * @return
-     * The decoded value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     *
-     * @param <V>
-     * The type of value read by the decoder.
-     */
-    public <V> V readValue(InputStream inputStream, String contentType) throws IOException;
+public class JSONDecoder implements Decoder {
+    @Override
+    public <V> V readValue(InputStream inputStream, String contentType) throws IOException {
+        // TODO
+        return null;
+    }
 }
