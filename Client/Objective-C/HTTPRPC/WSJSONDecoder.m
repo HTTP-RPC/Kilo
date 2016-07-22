@@ -10,10 +10,9 @@
 
 @implementation WSJSONDecoder
 
-- (id)readValue:(NSData *)data
+- (id)readValue:(NSData *)data contentType:(NSString *)contentType error:(NSError **)error
 {
-    // TODO
-    return nil;
+    return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
 }
 
 @end

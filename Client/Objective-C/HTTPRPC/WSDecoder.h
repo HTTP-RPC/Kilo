@@ -25,10 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
  * Reads a value from a data object.
  *
  * @param data The data object to read from.
+ * @param contentType The MIME type of the data.
+ * @param error A description of the problem, in case of an error; <code>nil</code>, otherwise.
  *
  * @return The decoded value.
  */
-- (nullable id)readValue:(NSData *)data;
+- (nullable id)readValue:(NSData *)data contentType:(nullable NSString *)contentType error:(NSError * _Nullable *)error;
 
 @end
 

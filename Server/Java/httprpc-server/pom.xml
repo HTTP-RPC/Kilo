@@ -5,5 +5,5 @@
     <groupId>org.httprpc</groupId>
     <artifactId>httprpc-server</artifactId>
     <name>HTTP-RPC Server</name>
-    <version>3.1</version>
+    <version>3.2</version>
 </project>

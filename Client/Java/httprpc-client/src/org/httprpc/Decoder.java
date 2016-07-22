@@ -14,6 +14,7 @@
 
 package org.httprpc;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -29,8 +30,14 @@ public interface Decoder<V> {
      * @param inputStream
      * The input stream to read from.
      *
+     * @param contentType
+     * The MIME type of the data.
+     *
      * @return
      * The decoded value.
+     *
+     * @throws IOException
+     * If an exception occurs.
      */
-    public V readValue(InputStream inputStream);
+    public V readValue(InputStream inputStream, String contentType) throws IOException;
 }

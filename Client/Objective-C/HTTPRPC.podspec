@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'HTTPRPC'
-  s.version          = '3.1'
+  s.version          = '3.2'
   s.summary          = 'Cross-platform RPC over HTTP'
   s.description      = <<-DESC
     HTTP-RPC is a mechanism for executing remote procedure calls via HTTP. It combines the
