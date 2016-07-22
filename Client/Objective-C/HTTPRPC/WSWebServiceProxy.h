@@ -94,6 +94,32 @@ extern NSString * const WSArgumentsKey;
     arguments:(NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
+/**
+ * Executes a service operation for download.
+ *
+ * @param method The HTTP verb associated with the request.
+ * @param path The path associated with the request.
+ * @param resultHandler A callback that will be invoked upon completion of the request.
+ *
+ * @return A session download task representing the invocation request.
+ */
+- (NSURLSessionDownloadTask *)invokeForDownload:(NSString *)method path:(NSString *)path
+    resultHandler:(void (^)(NSURL * _Nullable, NSError * _Nullable))resultHandler;
+
+/**
+ * Executes a service operation for download.
+ *
+ * @param method The HTTP verb associated with the request.
+ * @param path The path associated with the request.
+ * @param arguments The request arguments.
+ * @param resultHandler A callback that will be invoked upon completion of the request.
+ *
+ * @return A session download task representing the invocation request.
+ */
+- (NSURLSessionDownloadTask *)invokeForDownload:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary<NSString *, id> *)arguments
+    resultHandler:(void (^)(NSURL * _Nullable, NSError * _Nullable))resultHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END

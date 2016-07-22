@@ -194,6 +194,20 @@ NSString * const kCRLF = @"\r\n";
     return task;
 }
 
+- (NSURLSessionDownloadTask *)invokeForDownload:(NSString *)method path:(NSString *)path
+    resultHandler:(void (^)(NSURL *, NSError *))resultHandler
+{
+    return [self invokeForDownload:method path:path arguments:[NSDictionary new] resultHandler:resultHandler];
+}
+
+- (NSURLSessionDownloadTask *)invokeForDownload:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary<NSString *, id> *)arguments
+    resultHandler:(void (^)(NSURL *, NSError *))resultHandler
+{
+    // TODO
+    return nil;
+}
+
 + (NSArray *)parameterValuesForArgument:(id)argument {
     NSArray *values;
     if ([argument isKindOfClass:[NSArray self]]) {

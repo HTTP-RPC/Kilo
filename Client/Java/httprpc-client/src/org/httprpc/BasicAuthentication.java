@@ -17,9 +17,8 @@ package org.httprpc;
 import java.net.HttpURLConnection;
 
 /**
- * Implementation of the {@link Authentication} interface supporting the HTTP
- * <a href="http://tools.ietf.org/rfc/rfc2617.txt">Basic Authentication</a>
- * scheme.
+ * HTTP <a href="http://tools.ietf.org/rfc/rfc2617.txt">basic authentication</a>
+ * provider.
  */
 public class BasicAuthentication implements Authentication {
     private String username;

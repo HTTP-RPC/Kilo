@@ -18,8 +18,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * HTTP <a href="http://tools.ietf.org/rfc/rfc2617.txt">basic authentication</a>
+ * provider.
+ */
 @interface WSBasicAuthentication : NSObject<WSAuthentication>
 
+/**
+ * Creates a new basic authentication provider.
+ *
+ * @param username The username that will be used to authenticate requests.
+ * @param password The password that will be used to authenticate requests.
+ */
 - (instancetype)initWithUsername:(NSString *)username password:(NSString *)password;
 
 @end

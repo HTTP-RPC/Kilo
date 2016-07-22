@@ -10,6 +10,8 @@
 		371C21631CB449BA000CF22B /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
 		371C21641CB449BA000CF22B /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		371C21661CB449D4000CF22B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 371C21651CB449D4000CF22B /* ViewController.xml */; };
+		371E31E91D42908E00695465 /* WSJSONDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 371E31E71D42908E00695465 /* WSJSONDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		371E31EA1D42908E00695465 /* WSJSONDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 371E31E81D42908E00695465 /* WSJSONDecoder.m */; };
 		3741BFDB1CB67E8800CCEA5F /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
 		3741BFDC1CB67E8800CCEA5F /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3741BFDE1CB67E8C00CCEA5F /* HTTPRPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3798614C1BF009D60063212E /* HTTPRPC.framework */; };
@@ -38,6 +40,7 @@
 		37BEFBD91CF87D78009FBB33 /* NSString+HTTPRPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */; };
 		37CF338B1C00A48D00F84C89 /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CF338A1C00A48D00F84C89 /* Statistics.swift */; };
 		37DC1B5B1CB7DDAE0080F0DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37DC1B5D1CB7DDAE0080F0DE /* Localizable.strings */; };
+		37FE87FE1D429053004D70E4 /* WSDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 37FE87FD1D429053004D70E4 /* WSDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +90,8 @@
 /* Begin PBXFileReference section */
 		371C21621CB449BA000CF22B /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
 		371C21651CB449D4000CF22B /* ViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ViewController.xml; sourceTree = "<group>"; };
+		371E31E71D42908E00695465 /* WSJSONDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSJSONDecoder.h; sourceTree = "<group>"; };
+		371E31E81D42908E00695465 /* WSJSONDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSJSONDecoder.m; sourceTree = "<group>"; };
 		37543EDD1CB67E1A00006F16 /* HTTPRPCDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HTTPRPCDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37543EDF1CB67E1A00006F16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		37543EE11CB67E1A00006F16 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -115,6 +120,7 @@
 		37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTTPRPC.m"; sourceTree = "<group>"; };
 		37CF338A1C00A48D00F84C89 /* Statistics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
 		37DC1B5C1CB7DDAE0080F0DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		37FE87FD1D429053004D70E4 /* WSDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSDecoder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +197,9 @@
 				37BEFBD01CF8770F009FBB33 /* WSAuthentication.h */,
 				37BEFBD21CF8776F009FBB33 /* WSBasicAuthentication.h */,
 				37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */,
+				37FE87FD1D429053004D70E4 /* WSDecoder.h */,
+				371E31E71D42908E00695465 /* WSJSONDecoder.h */,
+				371E31E81D42908E00695465 /* WSJSONDecoder.m */,
 				379861571BF00A0E0063212E /* WSWebServiceProxy.h */,
 				379861581BF00A0E0063212E /* WSWebServiceProxy.m */,
 				379861511BF009D60063212E /* Info.plist */,
@@ -221,11 +230,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				371E31E91D42908E00695465 /* WSJSONDecoder.h in Headers */,
 				37BEFBD11CF8770F009FBB33 /* WSAuthentication.h in Headers */,
 				37BEFBD41CF8776F009FBB33 /* WSBasicAuthentication.h in Headers */,
 				379861591BF00A0E0063212E /* WSWebServiceProxy.h in Headers */,
 				37BEFBD81CF87D78009FBB33 /* NSString+HTTPRPC.h in Headers */,
 				379861501BF009D60063212E /* HTTPRPC.h in Headers */,
+				37FE87FE1D429053004D70E4 /* WSDecoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,6 +389,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				371E31EA1D42908E00695465 /* WSJSONDecoder.m in Sources */,
 				37BEFBD91CF87D78009FBB33 /* NSString+HTTPRPC.m in Sources */,
 				37BEFBD51CF8776F009FBB33 /* WSBasicAuthentication.m in Sources */,
 				3798615A1BF00A0E0063212E /* WSWebServiceProxy.m in Sources */,

@@ -16,8 +16,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Protocol representing an authentication provider.
+ */
 @protocol WSAuthentication <NSObject>
 
+/**
+ * Authenticates a service request.
+ *
+ * @param connection The URL connection to authenticate.
+ */
 - (void)authenticate:(NSMutableURLRequest *)request;
 
 @end
