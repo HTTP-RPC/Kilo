@@ -16,8 +16,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Protocol representing a decoder.
+ */
 @protocol WSDecoder <NSObject>
 
+/**
+ * Reads a value from a data object.
+ *
+ * @param data The data object to read from.
+ *
+ * @return The decoded value.
+ */
 - (nullable id)readValue:(NSData *)data;
 
 @end

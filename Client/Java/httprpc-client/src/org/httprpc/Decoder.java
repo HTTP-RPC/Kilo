@@ -18,7 +18,19 @@ import java.io.InputStream;
 
 /**
  * Interface representing a decoder.
+ *
+ * @param <V>
+ * The type of value read by the decoder.
  */
 public interface Decoder<V> {
+    /**
+     * Reads a value from an input stream.
+     *
+     * @param inputStream
+     * The input stream to read from.
+     *
+     * @return
+     * The decoded value.
+     */
     public V readValue(InputStream inputStream);
 }

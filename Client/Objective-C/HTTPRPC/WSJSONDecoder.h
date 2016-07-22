@@ -10,6 +10,9 @@
 
 #import "WSDecoder.h"
 
+/**
+ * JSON decoder.
+ */
 @interface WSJSONDecoder : NSObject<WSDecoder>
 
 @end
