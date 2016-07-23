@@ -82,12 +82,37 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
+    // Stream encoder
+    private static class StreamEncoder implements Encoder {
+        @Override
+        public String getContentType(Object value) {
+            URL url = (URL)value;
+
+            return (url == null) ? OCTET_STREAM_MIME_TYPE : URLConnection.guessContentTypeFromName(url.getFile());
+        }
+
+        @Override
+        public void writeValue(Object value, OutputStream outputStream) throws IOException {
+            URL url = (URL)value;
+
+            if (url != null) {
+                try (InputStream inputStream = url.openStream()) {
+                    int b;
+                    while ((b = inputStream.read()) != -1) {
+                        outputStream.write(b);
+                    }
+                }
+            }
+        }
+    }
+
     private Class<?> serviceType = null;
     private Resource root = null;
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
 
     @Override
     public void init() throws ServletException {
@@ -494,30 +519,5 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
 
         return argument;
-    }
-}
-
-class StreamEncoder implements Encoder {
-    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
-
-    @Override
-    public String getContentType(Object value) {
-        URL url = (URL)value;
-
-        return (url == null) ? OCTET_STREAM_MIME_TYPE : URLConnection.guessContentTypeFromName(url.getFile());
-    }
-
-    @Override
-    public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        URL url = (URL)value;
-
-        if (url != null) {
-            try (InputStream inputStream = url.openStream()) {
-                int b;
-                while ((b = inputStream.read()) != -1) {
-                    outputStream.write(b);
-                }
-            }
-        }
     }
 }
