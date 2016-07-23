@@ -31,9 +31,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -110,16 +107,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        // Set result dispatcher
-        WebServiceProxy.setResultDispatcher(new Executor() {
-            private Handler handler = new Handler(Looper.getMainLooper());
-
-            @Override
-            public void execute(Runnable command) {
-                handler.post(command);
-            }
-        });
     }
 
     @Override
@@ -161,7 +148,19 @@ public class MainActivity extends AppCompatActivity {
 
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool, 3000, 3000);
+        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool, 3000, 3000) {
+            private Handler handler = new Handler(Looper.getMainLooper());
+
+            @Override
+            protected <V> void execute(final ResultHandler<V> resultHandler, final V result, final Exception exception) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultHandler.execute(result, exception);
+                    }
+                });
+            }
+        };
 
         // Set credentials
         serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));

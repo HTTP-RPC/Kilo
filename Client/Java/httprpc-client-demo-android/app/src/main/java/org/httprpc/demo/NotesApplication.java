@@ -18,6 +18,7 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
+import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
 import java.net.MalformedURLException;
@@ -43,15 +44,18 @@ public class NotesApplication extends Application {
             throw new RuntimeException(exception);
         }
 
-        serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor());
-
-        WebServiceProxy.setResultDispatcher(new Executor() {
+        serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor()) {
             private Handler handler = new Handler(Looper.getMainLooper());
 
             @Override
-            public void execute(Runnable command) {
-                handler.post(command);
+            protected <V> void execute(final ResultHandler<V> resultHandler, final V result, final Exception exception) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultHandler.execute(result, exception);
+                    }
+                });
             }
-        });
+        };
     }
 }

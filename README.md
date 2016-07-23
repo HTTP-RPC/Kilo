@@ -689,18 +689,21 @@ A complete example using `WebServiceProxy#invoke()` is provided later.
 #### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
 
-While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The `setResultDispatcher()` method allows an application to specify an instance of `java.util.concurrent.Executor` that will be used to perform all result handler notifications. This is a static method that only needs to be called once at application startup.
+While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `execute()` method can be overridden to process all result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
 
-For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
-
-    WebServiceProxy.setResultDispatcher(new Executor() {
+    serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor()) {
         private Handler handler = new Handler(Looper.getMainLooper());
 
         @Override
-        public void execute(Runnable command) {
-            handler.post(command);
+        protected <V> void execute(final ResultHandler<V> resultHandler, final V result, final Exception exception) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    resultHandler.execute(result, exception);
+                }
+            });
         }
-    });
+    };
 
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 

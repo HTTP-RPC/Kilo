@@ -465,6 +465,8 @@ public class WebServiceProxy {
     /**
      * Executes a result handler.
      *
+     * @param <V> The type of the value returned by the operation.
+     *
      * @param resultHandler
      * The result handler to execute.
      *
