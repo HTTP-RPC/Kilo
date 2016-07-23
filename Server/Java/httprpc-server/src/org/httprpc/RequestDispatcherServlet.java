@@ -14,13 +14,10 @@
 
 package org.httprpc;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -28,7 +25,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -47,7 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import org.httprpc.template.TemplateEngine;
+import org.httprpc.template.TemplateEncoder;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -92,9 +88,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     private static final String UTF_8_ENCODING = "UTF-8";
 
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-
-    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
-    private static final String JSON_MIME_TYPE = "application/json";
 
     @Override
     public void init() throws ServletException {
@@ -274,13 +267,13 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
-        Serializer serializer;
+        Encoder encoder;
         if (method.getReturnType().equals(URL.class)) {
-            serializer = new BinarySerializer();
+            encoder = new StreamEncoder();
         } else if (extension == null) {
-            serializer = new JSONSerializer();
+            encoder = new JSONEncoder();
         } else {
-            serializer = null;
+            encoder = null;
 
             String mimeType = getServletContext().getMimeType(extension);
 
@@ -290,13 +283,21 @@ public class RequestDispatcherServlet extends HttpServlet {
                 Template template = templates[i];
 
                 if (template.mimeType().equals(mimeType)) {
-                    serializer = new TemplateSerializer(serviceType.getResource(template.name()), serviceType.getName(), mimeType, request);
+                    encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
+
+                    Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
+
+                    context.put("scheme", request.getScheme());
+                    context.put("serverName", request.getServerName());
+                    context.put("serverPort", request.getServerPort());
+                    context.put("contextPath", request.getContextPath());
+
                     break;
                 }
             }
         }
 
-        if (serializer == null) {
+        if (encoder == null) {
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             return;
         }
@@ -339,9 +340,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                response.setContentType(serializer.getContentType(result));
+                response.setContentType(encoder.getContentType(result));
 
-                serializer.writeValue(result, response.getOutputStream());
+                encoder.writeValue(result, response.getOutputStream());
             }
         } finally {
             // Delete files
@@ -494,218 +495,29 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         return argument;
     }
+}
 
-    // Interface representing a serializer
-    interface Serializer {
-        public String getContentType(Object value);
-        public void writeValue(Object value, OutputStream outputStream) throws IOException;
+class StreamEncoder implements Encoder {
+    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
+
+    @Override
+    public String getContentType(Object value) {
+        URL url = (URL)value;
+
+        return (url == null) ? OCTET_STREAM_MIME_TYPE : URLConnection.guessContentTypeFromName(url.getFile());
     }
 
-    // Binary serializer
-    private static class BinarySerializer implements Serializer {
-        @Override
-        public String getContentType(Object value) {
-            return (value == null) ? OCTET_STREAM_MIME_TYPE : URLConnection.guessContentTypeFromName(((URL)value).getFile());
-        }
+    @Override
+    public void writeValue(Object value, OutputStream outputStream) throws IOException {
+        URL url = (URL)value;
 
-        @Override
-        public void writeValue(Object value, OutputStream outputStream) throws IOException {
-            URL url = (URL)value;
-
-            if (url != null) {
-                try (InputStream inputStream = url.openStream()) {
-                    int b;
-                    while ((b = inputStream.read()) != -1) {
-                        outputStream.write(b);
-                    }
+        if (url != null) {
+            try (InputStream inputStream = url.openStream()) {
+                int b;
+                while ((b = inputStream.read()) != -1) {
+                    outputStream.write(b);
                 }
             }
-        }
-    }
-
-    // JSON serializer
-    private static class JSONSerializer implements Serializer {
-        private int depth = 0;
-
-        @Override
-        public String getContentType(Object value) {
-            return String.format("%s;charset=%s", JSON_MIME_TYPE, UTF_8_ENCODING);
-        }
-
-        @Override
-        public void writeValue(Object value, OutputStream outputStream) throws IOException {
-            Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
-            writeValue(value, writer);
-
-            writer.flush();
-        }
-
-        private void writeValue(Object value, Writer writer) throws IOException {
-            if (value == null) {
-                writer.append(null);
-            } else if (value instanceof CharSequence) {
-                CharSequence string = (CharSequence)value;
-
-                writer.append("\"");
-
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    char c = string.charAt(i);
-
-                    if (c == '"' || c == '\\') {
-                        writer.append("\\" + c);
-                    } else if (c == '\b') {
-                        writer.append("\\b");
-                    } else if (c == '\f') {
-                        writer.append("\\f");
-                    } else if (c == '\n') {
-                        writer.append("\\n");
-                    } else if (c == '\r') {
-                        writer.append("\\r");
-                    } else if (c == '\t') {
-                        writer.append("\\t");
-                    } else {
-                        writer.append(c);
-                    }
-                }
-
-                writer.append("\"");
-            } else if (value instanceof Number || value instanceof Boolean) {
-                writer.append(String.valueOf(value));
-            } else if (value instanceof List<?>) {
-                List<?> list = (List<?>)value;
-
-                try {
-                    writer.append("[");
-
-                    depth++;
-
-                    int i = 0;
-
-                    for (Object element : list) {
-                        if (i > 0) {
-                            writer.append(",");
-                        }
-
-                        writer.append("\n");
-
-                        indent(writer);
-
-                        writeValue(element, writer);
-
-                        i++;
-                    }
-
-                    depth--;
-
-                    writer.append("\n");
-
-                    indent(writer);
-
-                    writer.append("]");
-                } finally {
-                    if (list instanceof AutoCloseable) {
-                        try {
-                            ((AutoCloseable)list).close();
-                        } catch (Exception exception) {
-                            throw new IOException(exception);
-                        }
-                    }
-                }
-            } else if (value instanceof Map<?, ?>) {
-                Map<?, ?> map = (Map<?, ?>)value;
-
-                try {
-                    writer.append("{");
-
-                    depth++;
-
-                    int i = 0;
-
-                    for (Map.Entry<?, ?> entry : map.entrySet()) {
-                        if (i > 0) {
-                            writer.append(",");
-                        }
-
-                        writer.append("\n");
-
-                        Object key = entry.getKey();
-
-                        if (!(key instanceof String)) {
-                            throw new IOException("Invalid key type.");
-                        }
-
-                        indent(writer);
-
-                        writer.append("\"" + key + "\": ");
-
-                        writeValue(entry.getValue(), writer);
-
-                        i++;
-                    }
-
-                    depth--;
-
-                    writer.append("\n");
-
-                    indent(writer);
-
-                    writer.append("}");
-                } finally {
-                    if (map instanceof AutoCloseable) {
-                        try {
-                            ((AutoCloseable)map).close();
-                        } catch (Exception exception) {
-                            throw new IOException(exception);
-                        }
-                    }
-                }
-            } else {
-                throw new IOException("Invalid value type.");
-            }
-        }
-
-        private void indent(Writer writer) throws IOException {
-            for (int i = 0; i < depth; i++) {
-                writer.append("  ");
-            }
-        }
-    }
-
-    // Template serializer
-    private static class TemplateSerializer implements Serializer {
-        private URL url;
-        private String baseName;
-        private String contentType;
-        private HttpServletRequest request;
-
-        public TemplateSerializer(URL url, String baseName, String contentType, HttpServletRequest request) {
-            this.url = url;
-            this.baseName = baseName;
-            this.contentType = contentType;
-            this.request = request;
-        }
-
-        @Override
-        public String getContentType(Object value) {
-            return String.format("%s;charset=%s", contentType, UTF_8_ENCODING);
-        }
-
-        @Override
-        public void writeValue(Object value, OutputStream outputStream) throws IOException {
-            Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
-
-            TemplateEngine templateEngine = new TemplateEngine(url, baseName);
-
-            Map<String, Object> context = templateEngine.getContext();
-
-            context.put("scheme", request.getScheme());
-            context.put("serverName", request.getServerName());
-            context.put("serverPort", request.getServerPort());
-            context.put("contextPath", request.getContextPath());
-
-            templateEngine.writeObject(value, writer);
-
-            writer.flush();
         }
     }
 }

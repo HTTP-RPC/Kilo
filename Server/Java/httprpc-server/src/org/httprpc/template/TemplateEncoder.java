@@ -14,9 +14,12 @@
 
 package org.httprpc.template;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
@@ -33,10 +36,12 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.httprpc.Encoder;
+
 /**
  * Template processing engine.
  */
-public class TemplateEngine {
+public class TemplateEncoder implements Encoder {
     // Marker type enumeration
     private enum MarkerType {
         SECTION_START,
@@ -47,6 +52,7 @@ public class TemplateEngine {
     }
 
     private URL url;
+    private String contentType;
     private String baseName;
 
     private HashMap<String, Object> context = new HashMap<>();
@@ -77,9 +83,12 @@ public class TemplateEngine {
      *
      * @param url
      * The URL of the template.
+     *
+     * @param contentType
+     * The MIME type of the template.
      */
-    public TemplateEngine(URL url) {
-        this(url, null);
+    public TemplateEncoder(URL url, String contentType) {
+        this(url, contentType, null);
     }
 
     /**
@@ -88,15 +97,23 @@ public class TemplateEngine {
      * @param url
      * The URL of the template.
      *
+     * @param contentType
+     * The MIME type of the template.
+     *
      * @param baseName
      * The base name of the template's resource bundle.
      */
-    public TemplateEngine(URL url, String baseName) {
+    public TemplateEncoder(URL url, String contentType, String baseName) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
+        if (contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.url = url;
+        this.contentType = contentType;
         this.baseName = baseName;
     }
 
@@ -110,48 +127,80 @@ public class TemplateEngine {
         return context;
     }
 
-    /**
-     * Writes an object to an output stream.
-     *
-     * @param object
-     * The object to write.
-     *
-     * @param writer
-     * The output stream.
-     *
-     * @throws IOException
-     * If an exception occurs while writing the object.
-     */
-    public void writeObject(Object object, Writer writer) throws IOException {
-        writeObject(object, writer, Locale.getDefault());
+    @Override
+    public String getContentType(Object value) {
+        return String.format("%s;charset=%s", contentType, UTF_8_ENCODING);
+    }
+
+    @Override
+    public void writeValue(Object value, OutputStream outputStream) throws IOException {
+        writeValue(value, outputStream, Locale.getDefault());
     }
 
     /**
-     * Writes an object to an output stream.
+     * Writes a value to an output stream.
      *
-     * @param object
-     * The object to write.
+     * @param value
+     * The value to encode.
      *
-     * @param writer
-     * The output stream.
+     * @param outputStream
+     * The output stream to write to.
      *
      * @param locale
-     * The locale in which the template is being written.
+     * The locale to use when writing the value.
      *
      * @throws IOException
-     * If an exception occurs while writing the object.
+     * If an exception occurs.
      */
-    public void writeObject(Object object, Writer writer, Locale locale) throws IOException {
-        if (object != null) {
+    public void writeValue(Object value, OutputStream outputStream, Locale locale) throws IOException {
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
+        writeValue(value, writer, locale);
+
+        writer.flush();
+    }
+
+    /**
+     * Writes a value to a character stream.
+     *
+     * @param value
+     * The value to encode.
+     *
+     * @param writer
+     * The character stream to write to.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void writeValue(Object value, Writer writer) throws IOException {
+        writeValue(value, writer, Locale.getDefault());
+    }
+
+    /**
+     * Writes a value to a character stream.
+     *
+     * @param value
+     * The value to encode.
+     *
+     * @param writer
+     * The character stream to write to.
+     *
+     * @param locale
+     * The locale to use when writing the value.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void writeValue(Object value, Writer writer, Locale locale) throws IOException {
+        if (value != null) {
             try (InputStream inputStream = url.openStream()) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING)));
 
-                writeObject(object, writer, locale, reader);
+                writeRoot(value, writer, locale, reader);
             }
         }
     }
 
-    private void writeObject(Object root, Writer writer, Locale locale, Reader reader) throws IOException {
+    private void writeRoot(Object root, Writer writer, Locale locale, Reader reader) throws IOException {
         Map<?, ?> dictionary;
         if (root instanceof Map<?, ?>) {
             dictionary = (Map<?, ?>)root;
@@ -238,7 +287,7 @@ public class TemplateEngine {
                                             reader.mark(0);
                                         }
 
-                                        writeObject(element, writer, locale, reader);
+                                        writeRoot(element, writer, locale, reader);
 
                                         if (iterator.hasNext()) {
                                             reader.reset();
@@ -257,7 +306,7 @@ public class TemplateEngine {
                                         }
                                     };
 
-                                    writeObject(Collections.emptyMap(), new NullWriter(), locale, reader);
+                                    writeRoot(Collections.emptyMap(), new NullWriter(), locale, reader);
                                 }
                             } finally {
                                 if (list instanceof AutoCloseable) {
@@ -288,14 +337,14 @@ public class TemplateEngine {
                                 try (InputStream inputStream = url.openStream()) {
                                     include = new PagedReader(new InputStreamReader(inputStream));
 
-                                    writeObject(dictionary, writer, locale, include);
+                                    writeRoot(dictionary, writer, locale, include);
 
                                     includes.put(marker, include);
                                 }
                             } else {
                                 include.reset();
 
-                                writeObject(dictionary, writer, locale, include);
+                                writeRoot(dictionary, writer, locale, include);
                             }
 
                             break;
