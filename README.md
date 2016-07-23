@@ -79,6 +79,7 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
     * `WebService` - abstract base class for HTTP-RPC services
     * `RPC` - annotation that specifies a "remote procedure call", or service method
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
+    * `JSONEncoder` - class for transforming method results into JSON
 * _`org.httprpc.beans`_
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
 * _`org.httprpc.sql`_
@@ -192,6 +193,8 @@ Java objects are mapped to their JSON equivalents as follows:
 * `java.lang.CharSequence`: string
 * `java.util.List`: array
 * `java.util.Map`: object
+
+Internally, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. This class can also be used by application code to write JSON data to arbitrary output streams.
 
 `URL` values represent untyped data. The binary content of the referenced resource is returned to the caller verbatim.
 
