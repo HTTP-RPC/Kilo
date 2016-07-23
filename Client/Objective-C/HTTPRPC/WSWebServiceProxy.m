@@ -15,8 +15,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "WSWebServiceProxy.h"
-#import "WSDecoder.h"
-#import "WSJSONDecoder.h"
 #import "NSString+HTTPRPC.h"
 
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
@@ -121,14 +119,14 @@ NSString * const kCRLF = @"\r\n";
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
-                for (id element in values) {
+                for (id value in values) {
                     [body appendData:boundaryData];
 
                     [body appendData:contentDispositionHeaderData];
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
 
-                    if ([element isKindOfClass:[NSURL self]]) {
-                        NSString *filename = [element lastPathComponent];
+                    if ([value isKindOfClass:[NSURL self]]) {
+                        NSString *filename = [value lastPathComponent];
 
                         [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
@@ -147,13 +145,12 @@ NSString * const kCRLF = @"\r\n";
                         [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
 
-                        [body appendData:[NSData dataWithContentsOfURL:element]];
+                        [body appendData:[NSData dataWithContentsOfURL:value]];
                     } else {
-                        NSString *value = [WSWebServiceProxy parameterValueForElement:element];
+                        [body appendData:[kCRLF UTF8Data]];
 
                         [body appendData:[kCRLF UTF8Data]];
-                        [body appendData:[kCRLF UTF8Data]];
-                        [body appendData:[value UTF8Data]];
+                        [body appendData:[[WSWebServiceProxy parameterValueForElement:value] UTF8Data]];
                     }
 
                     [body appendData:[kCRLF UTF8Data]];
@@ -176,7 +173,7 @@ NSString * const kCRLF = @"\r\n";
 
                 if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
-                        result = [[self decoderForContentType:[response MIMEType]] readValue:data error:&error];
+                        result = [self decode:data contentType:[response MIMEType] error:&error];
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
@@ -196,9 +193,11 @@ NSString * const kCRLF = @"\r\n";
     return task;
 }
 
-- (id<WSDecoder>)decoderForContentType:(NSString *)contentType
+- (id)decode:(NSData *)data contentType:(NSString *)contentType error:(NSError **)error
 {
-    return [WSJSONDecoder new];
+    // TODO Decode images; return nil for unsupported content type
+
+    return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
 }
 
 + (NSArray *)parameterValuesForArgument:(id)argument {

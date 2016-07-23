@@ -22,6 +22,4 @@ FOUNDATION_EXPORT const unsigned char HTTPRPCVersionString[];
 
 #import <HTTPRPC/WSAuthentication.h>
 #import <HTTPRPC/WSBasicAuthentication.h>
-#import <HTTPRPC/WSDecoder.h>
-#import <HTTPRPC/WSJSONDecoder.h>
 #import <HTTPRPC/WSWebServiceProxy.h>

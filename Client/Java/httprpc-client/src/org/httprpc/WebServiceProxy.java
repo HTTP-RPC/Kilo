@@ -176,8 +176,8 @@ public class WebServiceProxy {
 
                             List<?> values = getParameterValues(argument.getValue());
 
-                            for (Object element : values) {
-                                if (element == null) {
+                            for (Object value : values) {
+                                if (value == null) {
                                     continue;
                                 }
 
@@ -186,8 +186,8 @@ public class WebServiceProxy {
                                 writer.append(CONTENT_DISPOSITION_HEADER);
                                 writer.append(String.format(NAME_PARAMETER_FORMAT, name));
 
-                                if (element instanceof URL) {
-                                    String path = ((URL)element).getPath();
+                                if (value instanceof URL) {
+                                    String path = ((URL)value).getPath();
                                     String filename = path.substring(path.lastIndexOf('/') + 1);
 
                                     writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
@@ -204,7 +204,7 @@ public class WebServiceProxy {
 
                                     writer.flush();
 
-                                    try (InputStream inputStream = ((URL)element).openStream()) {
+                                    try (InputStream inputStream = ((URL)value).openStream()) {
                                         int b;
                                         while ((b = inputStream.read()) != EOF) {
                                             outputStream.write(b);
@@ -214,7 +214,7 @@ public class WebServiceProxy {
                                     writer.append(CRLF);
 
                                     writer.append(CRLF);
-                                    writer.append(getParameterValue(element));
+                                    writer.append(getParameterValue(value));
                                 }
 
                                 writer.append(CRLF);
@@ -232,7 +232,7 @@ public class WebServiceProxy {
             V result;
             if (responseCode / 100 == 2) {
                 try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                    result = getDecoder(connection.getContentType()).readValue(inputStream);
+                    result = decode(inputStream, connection.getContentType());
                 }
             } else {
                 throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
@@ -450,16 +450,29 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns a decoder for a given content type.
+     * Reads a value from an input stream.
+     *
+     * @param <V>
+     * The type of the decoded value.
+     *
+     * @param inputStream
+     * The input stream to read from.
      *
      * @param contentType
-     * The MIME type to decode.
+     * The MIME type of the content.
      *
      * @return
-     * A decoder for the given MIME type.
+     * The decoded value.
+     *
+     * @throws IOException
+     * If an exception occurs.
      */
-    protected Decoder getDecoder(String contentType) {
-        return new JSONDecoder();
+    protected <V> V decode(InputStream inputStream, String contentType) throws IOException {
+        // TODO Return null for unsupported content type
+
+        Decoder decoder = new JSONDecoder();
+
+        return decoder.readValue(inputStream);
     }
 
     /**
