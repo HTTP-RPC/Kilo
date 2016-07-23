@@ -92,7 +92,7 @@ Additionally, the server library provides the following classes for use with tem
 * _`org.httprpc`_
     * `Template` - annotation that associates a template with a service method
 * _`org.httprpc.template`_
-    * `TemplateEngine` - class for processing template documents
+    * `TemplateEncoder` - class for processing template documents
     * `Modifier` - interface representing a template modifier
 
 Each of these classes is discussed in more detail below. 
@@ -416,7 +416,7 @@ Note that it is possible to associate multiple templates with a single service m
     @Template(name="statistics.xml", mimeType="application/xml")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
-The `org.httprpc.template.TemplateEngine` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
+The `org.httprpc.template.TemplateEncoder` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
 
 #### Variable Markers
 Variable markers inject a variable from the data dictionary into the output. They can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
@@ -509,7 +509,7 @@ For example, the following class implements a modifier that converts values to u
         }
     }
 
-Custom modifiers are registered by adding them to the modifier map returned by `TemplateEngine#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document.
+Custom modifiers are registered by adding them to the modifier map returned by `TemplateEncoder#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document.
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template engines.
 
