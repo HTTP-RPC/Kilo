@@ -195,7 +195,9 @@ NSString * const kCRLF = @"\r\n";
 
 - (id)decode:(NSData *)data contentType:(NSString *)contentType error:(NSError **)error
 {
-    // TODO Decode images; return nil for unsupported content type
+    // TODO Content type may be null
+    // TODO Decode images
+    // TODO Return nil for unsupported content type?
 
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
 }
