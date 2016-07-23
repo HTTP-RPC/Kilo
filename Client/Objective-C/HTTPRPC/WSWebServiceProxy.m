@@ -176,9 +176,7 @@ NSString * const kCRLF = @"\r\n";
 
                 if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
-                        id<WSDecoder> decoder = [WSJSONDecoder new];
-
-                        result = [decoder readValue:data error:&error];
+                        result = [[self decoderForContentType:[response MIMEType]] readValue:data error:&error];
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
@@ -196,6 +194,11 @@ NSString * const kCRLF = @"\r\n";
     }
 
     return task;
+}
+
+- (id<WSDecoder>)decoderForContentType:(NSString *)contentType
+{
+    return [WSJSONDecoder new];
 }
 
 + (NSArray *)parameterValuesForArgument:(id)argument {

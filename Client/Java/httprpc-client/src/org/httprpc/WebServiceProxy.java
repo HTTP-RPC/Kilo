@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -66,8 +65,6 @@ public class WebServiceProxy {
 
         private static final String CRLF = "\r\n";
 
-        private static final String CHARSET_KEY = "charset";
-
         private static final int EOF = -1;
 
         public InvocationCallback(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
@@ -79,29 +76,19 @@ public class WebServiceProxy {
 
         @Override
         public V call() throws Exception {
-            final V result;
+            V result;
             try {
                 result = invoke();
-            } catch (final Exception exception) {
+            } catch (Exception exception) {
                 if (resultHandler != null) {
-                    resultDispatcher.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultHandler.execute(null, exception);
-                        }
-                    });
+                    execute(resultHandler, null, exception);
                 }
 
                 throw exception;
             }
 
             if (resultHandler != null) {
-                resultDispatcher.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultHandler.execute(result, null);
-                    }
-                });
+                execute(resultHandler, result, null);
             }
 
             return result;
@@ -244,50 +231,14 @@ public class WebServiceProxy {
 
             V result;
             if (responseCode / 100 == 2) {
-                String charsetName = getCharsetName(connection.getContentType());
-
-                if (charsetName == null) {
-                    charsetName = UTF_8_ENCODING;
-                }
-
                 try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                    Decoder decoder = new JSONDecoder();
-
-                    result = decoder.readValue(inputStream);
+                    result = getDecoder(connection.getContentType()).readValue(inputStream);
                 }
             } else {
                 throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
             }
 
             return result;
-        }
-
-        private String getCharsetName(String contentType) {
-            String charsetName = null;
-
-            if (contentType != null) {
-                int i = contentType.indexOf(CHARSET_KEY);
-
-                if (i != -1) {
-                    i += CHARSET_KEY.length();
-
-                    int n = contentType.length();
-
-                    if (i < n && contentType.charAt(i) == '=') {
-                        int j = contentType.indexOf(";", ++i);
-
-                        if (j == -1) {
-                            j = n;
-                        }
-
-                        if (j > i) {
-                            charsetName = contentType.substring(i, j);
-                        }
-                    }
-                }
-            }
-
-            return charsetName;
         }
     }
 
@@ -349,13 +300,6 @@ public class WebServiceProxy {
     private int readTimeout;
 
     private Authentication authentication = null;
-
-    private static Executor resultDispatcher = new Executor() {
-        @Override
-        public void execute(Runnable command) {
-            command.run();
-        }
-    };
 
     private static final int PAGE_SIZE = 1024;
 
@@ -506,6 +450,35 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns a decoder for a given content type.
+     *
+     * @param contentType
+     * The MIME type to decode.
+     *
+     * @return
+     * A decoder for the given MIME type.
+     */
+    protected Decoder getDecoder(String contentType) {
+        return new JSONDecoder();
+    }
+
+    /**
+     * Executes a result handler.
+     *
+     * @param resultHandler
+     * The result handler to execute.
+     *
+     * @param result
+     * The result value.
+     *
+     * @param exception
+     * The exception value.
+     */
+    protected <V> void execute(ResultHandler<V> resultHandler, V result, Exception exception) {
+        resultHandler.execute(result, exception);
+    }
+
+    /**
      * Creates a list from a variable length array of elements.
      *
      * @param elements
@@ -557,30 +530,6 @@ public class WebServiceProxy {
      */
     public static <K> Map.Entry<K, ?> entry(K key, Object value) {
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
-    }
-
-    /**
-     * Returns the result dispatcher.
-     *
-     * @return
-     * The result dispatcher.
-     */
-    public static Executor getResultDispatcher() {
-        return resultDispatcher;
-    }
-
-    /**
-     * Sets the result dispatcher.
-     *
-     * @param resultDispatcher
-     * The result dispatcher.
-     */
-    public static void setResultDispatcher(Executor resultDispatcher) {
-        if (resultDispatcher == null) {
-            throw new IllegalArgumentException();
-        }
-
-        WebServiceProxy.resultDispatcher = resultDispatcher;
     }
 
     private static List<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
