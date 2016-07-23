@@ -27,9 +27,6 @@ public interface Decoder {
      * @param inputStream
      * The input stream to read from.
      *
-     * @param contentType
-     * The MIME type of the data.
-     *
      * @return
      * The decoded value.
      *
@@ -39,5 +36,5 @@ public interface Decoder {
      * @param <V>
      * The type of value read by the decoder.
      */
-    public <V> V readValue(InputStream inputStream, String contentType) throws IOException;
+    public <V> V readValue(InputStream inputStream) throws IOException;
 }

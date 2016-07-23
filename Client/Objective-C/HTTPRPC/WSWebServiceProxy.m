@@ -12,10 +12,12 @@
 // limitations under the License.
 //
 
-#import "WSWebServiceProxy.h"
-#import "NSString+HTTPRPC.h"
-
 #import <MobileCoreServices/MobileCoreServices.h>
+
+#import "WSWebServiceProxy.h"
+#import "WSDecoder.h"
+#import "WSJSONDecoder.h"
+#import "NSString+HTTPRPC.h"
 
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
@@ -174,7 +176,9 @@ NSString * const kCRLF = @"\r\n";
 
                 if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
-                        result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+                        id<WSDecoder> decoder = [WSJSONDecoder new];
+
+                        result = [decoder readValue:data error:&error];
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
@@ -192,20 +196,6 @@ NSString * const kCRLF = @"\r\n";
     }
 
     return task;
-}
-
-- (NSURLSessionDownloadTask *)invokeForDownload:(NSString *)method path:(NSString *)path
-    resultHandler:(void (^)(NSURL *, NSError *))resultHandler
-{
-    return [self invokeForDownload:method path:path arguments:[NSDictionary new] resultHandler:resultHandler];
-}
-
-- (NSURLSessionDownloadTask *)invokeForDownload:(NSString *)method path:(NSString *)path
-    arguments:(NSDictionary<NSString *, id> *)arguments
-    resultHandler:(void (^)(NSURL *, NSError *))resultHandler
-{
-    // TODO
-    return nil;
 }
 
 + (NSArray *)parameterValuesForArgument:(id)argument {

@@ -16,7 +16,7 @@
 
 @implementation WSJSONDecoder
 
-- (id)readValue:(NSData *)data contentType:(NSString *)contentType error:(NSError **)error
+- (id)readValue:(NSData *)data error:(NSError **)error
 {
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
 }
