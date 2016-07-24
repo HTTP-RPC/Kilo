@@ -125,6 +125,8 @@ NSString * const kCRLF = @"\r\n";
                     [body appendData:contentDispositionHeaderData];
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
 
+                    // TODO Add support for raw data values
+
                     if ([value isKindOfClass:[NSURL self]]) {
                         NSString *filename = [value lastPathComponent];
 
@@ -197,7 +199,7 @@ NSString * const kCRLF = @"\r\n";
 {
     // TODO Content type may be null
     // TODO Decode images
-    // TODO Return nil for unsupported content type?
+    // TODO Return raw data for unsupported content type
 
     return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
 }

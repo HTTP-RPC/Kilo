@@ -469,7 +469,7 @@ public class WebServiceProxy {
      */
     protected <V> V decode(InputStream inputStream, String contentType) throws IOException {
         // TODO Content type may be null
-        // TODO Return null for unsupported content type?
+        // TODO Return null for unsupported content type
 
         Decoder decoder = new JSONDecoder();
 
