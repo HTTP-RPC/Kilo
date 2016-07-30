@@ -295,9 +295,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         Encoder encoder;
         if (method.getReturnType().equals(URL.class)) {
             encoder = new StreamEncoder();
-        } else if (extension == null) {
-            encoder = new JSONEncoder();
-        } else {
+        } else if (extension != null) {
             encoder = null;
 
             String mimeType = getServletContext().getMimeType(extension);
@@ -307,7 +305,7 @@ public class RequestDispatcherServlet extends HttpServlet {
             for (int i = 0; i < templates.length; i++) {
                 Template template = templates[i];
 
-                if (template.mimeType().equals(mimeType)) {
+                if (template.contentType().equals(mimeType)) {
                     encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
 
                     Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
@@ -320,6 +318,8 @@ public class RequestDispatcherServlet extends HttpServlet {
                     break;
                 }
             }
+        } else {
+            encoder = new JSONEncoder();
         }
 
         if (encoder == null) {

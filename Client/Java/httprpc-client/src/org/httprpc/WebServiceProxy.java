@@ -111,9 +111,9 @@ public class WebServiceProxy {
                     List<?> values = getParameterValues(argument.getValue());
 
                     for (int i = 0, n = values.size(); i < n; i++) {
-                        Object element = values.get(i);
+                        Object value = values.get(i);
 
-                        if (element == null) {
+                        if (value == null) {
                             continue;
                         }
 
@@ -121,11 +121,9 @@ public class WebServiceProxy {
                             queryBuilder.append("&");
                         }
 
-                        String value = getParameterValue(element);
-
                         queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
                         queryBuilder.append("=");
-                        queryBuilder.append(URLEncoder.encode(value, UTF_8_ENCODING));
+                        queryBuilder.append(URLEncoder.encode(getParameterValue(value), UTF_8_ENCODING));
                     }
                 }
 

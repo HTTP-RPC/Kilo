@@ -37,7 +37,7 @@ public class RestaurantService extends WebService {
      * A list of restaurants in the given zip code.
      */
     @RPC(method="GET")
-    @Template(name="restaurants.html", mimeType="text/html")
+    @Template(name="restaurants.html", contentType="text/html")
     public IteratorAdapter getRestaurants(String zipCode) {
         MongoDatabase db = MongoClientManager.getMongoClient().getDatabase("test");
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));

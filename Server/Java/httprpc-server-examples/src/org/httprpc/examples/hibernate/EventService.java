@@ -53,7 +53,7 @@ public class EventService extends WebService {
      * A list of all events.
      */
     @RPC(method="GET")
-    @Template(name="events.html", mimeType="text/html")
+    @Template(name="events.html", contentType="text/html")
     public List<Map<String, ?>> getEvents() {
         SessionFactory sessionFactory = HibernateSessionFactoryManager.getSessionFactory();
 

@@ -50,7 +50,7 @@ public class PetService extends WebService {
      * A list of pets belonging to the given owner.
      */
     @RPC(method="GET")
-    @Template(name="pets.html", mimeType="text/html")
+    @Template(name="pets.html", contentType="text/html")
     public ResultSetAdapter getPets(String owner) throws SQLException, IOException {
         Parameters parameters = Parameters.parse(new InputStreamReader(getClass().getResourceAsStream("pets.sql")));
         PreparedStatement statement = DriverManager.getConnection(DB_URL).prepareStatement(parameters.getSQL());

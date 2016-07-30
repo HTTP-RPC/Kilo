@@ -35,7 +35,7 @@ public @interface Template {
 
     /**
      * @return
-     * The template's MIME type.
+     * The MIME type of the content produced by the template.
      */
-    public String mimeType();
+    public String contentType();
 }
