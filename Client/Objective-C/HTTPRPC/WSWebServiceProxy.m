@@ -175,7 +175,10 @@ NSString * const kCRLF = @"\r\n";
 
                 if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
-                        result = [self decode:data contentType:[response MIMEType] error:&error];
+                        // TODO Add support for UIImage values
+                        // TODO Add support for NSData values
+
+                        result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
@@ -193,15 +196,6 @@ NSString * const kCRLF = @"\r\n";
     }
 
     return task;
-}
-
-- (id)decode:(NSData *)data contentType:(NSString *)contentType error:(NSError **)error
-{
-    // TODO Content type may be null
-    // TODO Decode images
-    // TODO Return raw data for unsupported content type
-
-    return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
 }
 
 + (NSArray *)parameterValuesForArgument:(id)argument {

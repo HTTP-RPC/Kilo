@@ -81,14 +81,14 @@ public class WebServiceProxy {
                 result = invoke();
             } catch (Exception exception) {
                 if (resultHandler != null) {
-                    execute(resultHandler, null, exception);
+                    dispatchResult(resultHandler, null, exception);
                 }
 
                 throw exception;
             }
 
             if (resultHandler != null) {
-                execute(resultHandler, result, null);
+                dispatchResult(resultHandler, result, null);
             }
 
             return result;
@@ -230,7 +230,7 @@ public class WebServiceProxy {
             V result;
             if (responseCode / 100 == 2) {
                 try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                    result = decode(inputStream, connection.getContentType());
+                    result = decodeResponse(inputStream, connection.getContentType());
                 }
             } else {
                 throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
@@ -448,7 +448,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Reads a value from an input stream.
+     * Decodes a response value.
      *
      * @param <V>
      * The type of the decoded value.
@@ -465,7 +465,7 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs.
      */
-    protected <V> V decode(InputStream inputStream, String contentType) throws IOException {
+    protected <V> V decodeResponse(InputStream inputStream, String contentType) throws IOException {
         // TODO Content type may be null
         // TODO Return null for unsupported content type
 
@@ -475,9 +475,9 @@ public class WebServiceProxy {
     }
 
     /**
-     * Executes a result handler.
+     * Dispatches a result value.
      *
-     * @param <V> The type of the value returned by the operation.
+     * @param <V> The type of the result value.
      *
      * @param resultHandler
      * The result handler to execute.
@@ -488,7 +488,7 @@ public class WebServiceProxy {
      * @param exception
      * The exception value.
      */
-    protected <V> void execute(ResultHandler<V> resultHandler, V result, Exception exception) {
+    protected <V> void dispatchResult(ResultHandler<V> resultHandler, V result, Exception exception) {
         resultHandler.execute(result, exception);
     }
 
