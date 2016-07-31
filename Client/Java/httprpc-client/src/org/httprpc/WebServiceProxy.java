@@ -76,19 +76,29 @@ public class WebServiceProxy {
 
         @Override
         public V call() throws Exception {
-            V result;
+            final V result;
             try {
                 result = invoke();
-            } catch (Exception exception) {
+            } catch (final Exception exception) {
                 if (resultHandler != null) {
-                    dispatchResult(resultHandler, null, exception);
+                    dispatchResult(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultHandler.execute(null, exception);
+                        }
+                    });
                 }
 
                 throw exception;
             }
 
             if (resultHandler != null) {
-                dispatchResult(resultHandler, result, null);
+                dispatchResult(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultHandler.execute(result, null);
+                    }
+                });
             }
 
             return result;
@@ -455,7 +465,7 @@ public class WebServiceProxy {
      * The input stream to read from.
      *
      * @param contentType
-     * The MIME type of the content to decode.
+     * The MIME type of the content.
      *
      * @return
      * The decoded value.
@@ -475,19 +485,12 @@ public class WebServiceProxy {
     /**
      * Dispatches a result value.
      *
-     * @param <V> The type of the result value.
-     *
-     * @param resultHandler
-     * The result handler to execute.
-     *
-     * @param result
-     * The result value.
-     *
-     * @param exception
-     * The exception value.
+     * @param command
+     * A callback representing the result handler and the associated result or
+     * exception.
      */
-    protected <V> void dispatchResult(ResultHandler<V> resultHandler, V result, Exception exception) {
-        resultHandler.execute(result, exception);
+    protected void dispatchResult(Runnable command) {
+        command.run();
     }
 
     /**

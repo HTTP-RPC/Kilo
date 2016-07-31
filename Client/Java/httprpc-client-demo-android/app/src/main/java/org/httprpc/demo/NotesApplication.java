@@ -48,13 +48,8 @@ public class NotesApplication extends Application {
             private Handler handler = new Handler(Looper.getMainLooper());
 
             @Override
-            protected <V> void dispatchResult(final ResultHandler<V> resultHandler, final V result, final Exception exception) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultHandler.execute(result, exception);
-                    }
-                });
+            protected void dispatchResult(Runnable command) {
+                handler.post(command);
             }
         };
     }
