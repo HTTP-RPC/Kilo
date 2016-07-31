@@ -27,9 +27,9 @@ import java.util.Map;
  * JSON encoder.
  */
 public class JSONEncoder implements Encoder {
-    private static final String JSON_MIME_TYPE = "application/json";
-
     private static final String UTF_8_ENCODING = "UTF-8";
+
+    private static final String JSON_MIME_TYPE = "application/json";
 
     private int depth = 0;
 

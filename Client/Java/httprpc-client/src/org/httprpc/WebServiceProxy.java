@@ -314,6 +314,8 @@ public class WebServiceProxy {
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
+    private static final String JSON_MIME_TYPE = "application/json";
+
     /**
      * Creates a new HTTP-RPC service proxy.
      *
@@ -465,21 +467,25 @@ public class WebServiceProxy {
      * The input stream to read from.
      *
      * @param contentType
-     * The MIME type of the content.
+     * The MIME type of the content, or <tt>null</tt> if the content type is
+     * unknown.
      *
      * @return
-     * The decoded value.
+     * The decoded value, or <tt>null</tt> if the value could not be decoded.
      *
      * @throws IOException
      * If an exception occurs.
      */
     protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-        // TODO Content type may be null
-        // TODO Return null for unsupported content type
+        Object value = null;
 
-        Decoder decoder = new JSONDecoder();
+        if (contentType != null && contentType.startsWith(JSON_MIME_TYPE)) {
+            Decoder decoder = new JSONDecoder();
 
-        return decoder.readValue(inputStream);
+            value = decoder.readValue(inputStream);
+        }
+
+        return value;
     }
 
     /**

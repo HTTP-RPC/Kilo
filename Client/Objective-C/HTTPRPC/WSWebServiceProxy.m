@@ -12,6 +12,7 @@
 // limitations under the License.
 //
 
+#import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "WSWebServiceProxy.h"
@@ -36,6 +37,9 @@ NSString * const kNameParameterFormat = @"; name=\"%@\"";
 NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
 
 NSString * const kCRLF = @"\r\n";
+
+NSString * const kJSONMIMEType = @"application/json";
+NSString * const kImageMIMETypePrefix = @"image/";
 
 @implementation WSWebServiceProxy
 
@@ -119,15 +123,17 @@ NSString * const kCRLF = @"\r\n";
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
-                for (id value in values) {
+                for (__strong id value in values) {
                     [body appendData:boundaryData];
 
                     [body appendData:contentDispositionHeaderData];
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
 
-                    // TODO Add support for raw data values
-
                     if ([value isKindOfClass:[NSURL self]]) {
+                        value = [NSData dataWithContentsOfURL:value];
+                    }
+
+                    if ([value isKindOfClass:[NSData self]]) {
                         NSString *filename = [value lastPathComponent];
 
                         [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
@@ -147,7 +153,7 @@ NSString * const kCRLF = @"\r\n";
                         [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
 
-                        [body appendData:[NSData dataWithContentsOfURL:value]];
+                        [body appendData:value];
                     } else {
                         [body appendData:[kCRLF UTF8Data]];
 
@@ -175,10 +181,15 @@ NSString * const kCRLF = @"\r\n";
 
                 if (statusCode / 100 == 2) {
                     if ([data length] > 0) {
-                        // TODO Add support for UIImage values
-                        // TODO Add support for NSData values
+                        NSString *mimeType = [response MIMEType];
 
-                        result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+                        if ([mimeType hasPrefix:kJSONMIMEType]) {
+                            result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+                        } else if ([mimeType hasPrefix:kImageMIMETypePrefix]) {
+                            result = [UIImage imageWithData:data];
+                        } else {
+                            result = data;
+                        }
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{

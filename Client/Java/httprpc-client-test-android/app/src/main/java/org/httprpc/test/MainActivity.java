@@ -14,12 +14,15 @@
 
 package org.httprpc.test;
 
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CheckBox;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -150,6 +153,18 @@ public class MainActivity extends AppCompatActivity {
 
         WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool, 3000, 3000) {
             private Handler handler = new Handler(Looper.getMainLooper());
+
+            @Override
+            protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+                Object value;
+                if (contentType != null && contentType.startsWith("image/")) {
+                    value = BitmapFactory.decodeStream(inputStream);
+                } else {
+                    value = super.decodeResponse(inputStream, contentType);
+                }
+
+                return value;
+            }
 
             @Override
             protected void dispatchResult(Runnable command) {

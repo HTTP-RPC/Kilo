@@ -650,13 +650,13 @@ Request arguments may be any of the following types:
 * `java.net.URL`
 * `java.util.List`
 
-URL arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
+URL arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>` or `List<URL>`.
 
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
     public void execute(V result, Exception exception);
 
-On successful completion, the first argument will contain the result of the operation. It will be an instance of one of the following types or `null`, depending on the response returned by the server:
+On successful completion, the first argument will contain the result of the operation. By default, this will be an instance of one of the following types or `null`, depending on the response returned by the server:
 
 * string: `java.lang.String`
 * number: `java.lang.Number`
@@ -664,7 +664,21 @@ On successful completion, the first argument will contain the result of the oper
 * array: `java.util.List`
 * object: `java.util.Map`
 
-The second argument will always be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
+The second argument will be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
+
+Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to return `Bitmap` instances: 
+
+    @Override
+    protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+        Object value;
+        if (contentType != null && contentType.startsWith("image/")) {
+            value = BitmapFactory.decodeStream(inputStream);
+        } else {
+            value = super.decodeResponse(inputStream, contentType);
+        }
+
+        return value;
+    }
 
 Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
@@ -816,7 +830,7 @@ The Objective-C/Swift client library enables iOS applications to consume HTTP-RP
 The framework for the Objective-C/Swift client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
 
 ### WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `POST` requests are encoded as "multipart/form-data". `NSJSONSerialization` is used to deserialize response content.
+The `WSWebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `POST` requests are encoded as "multipart/form-data". `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content.
 
 Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the URL of the server as arguments. Service operations are executed by calling the `invoke:path:arguments:resultHandler:` method:
 
