@@ -28,12 +28,16 @@ public abstract class Result {
     private static final String SET_PREFIX = "set";
 
     /**
-     * Constructs a result.
+     * Constructs a result object.
      *
      * @param properties
      * A map containing the property values to set.
      */
     public Result(Map<String, ?> properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException();
+        }
+
         Method[] methods = getClass().getMethods();
 
         for (int i = 0; i < methods.length; i++) {
@@ -78,6 +82,10 @@ public abstract class Result {
      * The property value.
      */
     protected void setValue(String key, Object value) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
         Method method = setters.get(key);
 
         if (method != null) {
@@ -126,8 +134,32 @@ public abstract class Result {
      * @return
      * The value at the given path, or <tt>null</tt> if the value does not exist.
      */
+    @SuppressWarnings("unchecked")
     public static <V> V getValue(Map<String, ?> root, String path) {
-        // TODO
-        return null;
+        if (root == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (path == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Object value = root;
+
+        String[] components = path.split("\\.");
+
+        for (int i = 0; i < components.length; i++) {
+            String component = components[i];
+
+            if (value instanceof Map<?, ?>) {
+                value = ((Map<?, ?>)value).get(component);
+            } else {
+                value = null;
+
+                break;
+            }
+        }
+
+        return (V)value;
     }
 }

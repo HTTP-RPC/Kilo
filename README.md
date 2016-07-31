@@ -768,6 +768,12 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
         System.out.println(statistics.getAverage());
     });
 
+Additionally, `Result` provides the following static method for accessing nested map values by dot-separated key path (e.g. "foo.bar"):
+
+    public static <V> V getValue(Map<String, ?> root, String path) { ... }
+
+See the Javadoc for more information.
+
 ### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
