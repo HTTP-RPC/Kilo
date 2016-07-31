@@ -14,7 +14,6 @@
 
 package org.httprpc;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -175,7 +174,7 @@ public class WebServiceProxy {
 
                 // Write request body
                 try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)))) {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING))) {
                         for (Map.Entry<String, ?> argument : arguments.entrySet()) {
                             String name = argument.getKey();
 
@@ -255,21 +254,17 @@ public class WebServiceProxy {
     private static class MonitoredInputStream extends InputStream {
         private InputStream inputStream;
 
-        private int count = 0;
-
         public MonitoredInputStream(InputStream inputStream) {
             this.inputStream = inputStream;
         }
 
         @Override
         public int read() throws IOException {
-            int b = inputStream.read();
-
-            if (b != -1 && ++count % PAGE_SIZE == 0 && Thread.currentThread().isInterrupted()) {
+            if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedIOException();
             }
 
-            return b;
+            return inputStream.read();
         }
 
         @Override
@@ -282,19 +277,17 @@ public class WebServiceProxy {
     private static class MonitoredOutputStream extends OutputStream {
         private OutputStream outputStream;
 
-        private int count = 0;
-
         public MonitoredOutputStream(OutputStream outputStream) {
             this.outputStream = outputStream;
         }
 
         @Override
         public void write(int b) throws IOException {
-            outputStream.write(b);
-
-            if (++count % PAGE_SIZE == 0 && Thread.currentThread().isInterrupted()) {
+            if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedIOException();
             }
+
+            outputStream.write(b);
         }
 
         @Override
@@ -309,8 +302,6 @@ public class WebServiceProxy {
     private int readTimeout;
 
     private Authentication authentication = null;
-
-    private static final int PAGE_SIZE = 1024;
 
     private static final String UTF_8_ENCODING = "UTF-8";
 

@@ -14,7 +14,6 @@
 
 package org.httprpc.template;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -153,7 +152,7 @@ public class TemplateEncoder implements Encoder {
      * If an exception occurs.
      */
     public void writeValue(Object value, OutputStream outputStream, Locale locale) throws IOException {
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
+        Writer writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
         writeValue(value, writer, locale);
 
         writer.flush();

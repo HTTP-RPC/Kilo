@@ -14,7 +14,6 @@
 
 package org.httprpc;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -40,7 +39,7 @@ public class JSONEncoder implements Encoder {
 
     @Override
     public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING)));
+        Writer writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
         writeValue(value, writer);
 
         writer.flush();

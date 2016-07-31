@@ -14,7 +14,6 @@
 
 package org.httprpc;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +42,7 @@ public class JSONDecoder implements Decoder {
 
     @Override
     public Object readValue(InputStream inputStream) throws IOException {
-        return readValue(new BufferedReader(new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING))));
+        return readValue(new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING)));
     }
 
     /**
