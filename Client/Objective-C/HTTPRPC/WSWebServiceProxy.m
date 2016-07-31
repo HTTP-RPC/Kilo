@@ -130,10 +130,6 @@ NSString * const kImageMIMETypePrefix = @"image/";
                     [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
 
                     if ([value isKindOfClass:[NSURL self]]) {
-                        value = [NSData dataWithContentsOfURL:value];
-                    }
-
-                    if ([value isKindOfClass:[NSData self]]) {
                         NSString *filename = [value lastPathComponent];
 
                         [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
@@ -153,7 +149,7 @@ NSString * const kImageMIMETypePrefix = @"image/";
                         [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
 
-                        [body appendData:value];
+                        [body appendData:[NSData dataWithContentsOfURL:value]];
                     } else {
                         [body appendData:[kCRLF UTF8Data]];
 
