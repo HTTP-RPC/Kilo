@@ -406,17 +406,17 @@ If the value returned by the method is the number `8`, the resulting output woul
 #### Template Documents
 The `org.httprpc.Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
 
-    @Template(name="statistics.html", mimeType="text/html")
+    @Template(name="statistics.html", contentType="text/html")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
 The `name` value refers to the file containing the template definition. It is specified as a resource path relative to the service type.
 
-The `mimeType` value indicates type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL. 
+The `contentType` value indicates type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL. 
 
 Note that it is possible to associate multiple templates with a single service method. For example, the following code associates an additional XML template with the `getStatistics()` method:
 
-    @Template(name="statistics.html", mimeType="text/html")
-    @Template(name="statistics.xml", mimeType="application/xml")
+    @Template(name="statistics.html", contentType="text/html")
+    @Template(name="statistics.xml", contentType="application/xml")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
 The `org.httprpc.template.TemplateEncoder` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
@@ -689,13 +689,13 @@ A complete example using `WebServiceProxy#invoke()` is provided later.
 #### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
 
-While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `execute()` method can be overridden to process all result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
+While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `dispatchResult()` method can be overridden to process all result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
 
     serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor()) {
         private Handler handler = new Handler(Looper.getMainLooper());
 
         @Override
-        protected <V> void execute(final ResultHandler<V> resultHandler, final V result, final Exception exception) {
+        protected <V> void dispatchResult(final ResultHandler<V> resultHandler, final V result, final Exception exception) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {

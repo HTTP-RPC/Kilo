@@ -455,7 +455,7 @@ public class WebServiceProxy {
      * The input stream to read from.
      *
      * @param contentType
-     * The MIME type of the content.
+     * The MIME type of the content to decode.
      *
      * @return
      * The decoded value.

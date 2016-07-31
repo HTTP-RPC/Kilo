@@ -22,7 +22,7 @@ import java.io.OutputStream;
  */
 public interface Encoder {
     /**
-     * Returns the type of content produced by the encoder for a given value.
+     * Returns the MIME type of the content produced by the encoder.
      *
      * @param value
      * The value to encode.

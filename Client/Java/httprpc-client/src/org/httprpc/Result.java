@@ -33,7 +33,7 @@ public abstract class Result {
      * @param properties
      * A map containing the property values to set.
      */
-    public Result(Map<String, Object> properties) {
+    public Result(Map<String, ?> properties) {
         Method[] methods = getClass().getMethods();
 
         for (int i = 0; i < methods.length; i++) {
@@ -62,8 +62,8 @@ public abstract class Result {
             }
         }
 
-        for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            setProperty(entry.getKey(), entry.getValue());
+        for (Map.Entry<String, ?> entry : properties.entrySet()) {
+            setValue(entry.getKey(), entry.getValue());
         }
     }
 
@@ -71,14 +71,14 @@ public abstract class Result {
      * Sets a property value. Numeric values will be automatically coerced to
      * the appropriate type.
      *
-     * @param name
+     * @param key
      * The property name.
      *
      * @param value
      * The property value.
      */
-    protected void setProperty(String name, Object value) {
-        Method method = setters.get(name);
+    protected void setValue(String key, Object value) {
+        Method method = setters.get(key);
 
         if (method != null) {
             if (value instanceof Number) {
@@ -108,23 +108,26 @@ public abstract class Result {
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 throw new RuntimeException(exception);
             }
-        } else {
-            setUndefined(name, value);
         }
     }
 
     /**
-     * Called by {@link #setProperty(String, Object)} when a setter is not found for a
-     * given property. The default implementation throws an
-     * <tt>{@link IllegalArgumentException}</tt>.
+     * Returns the value at a given path.
      *
-     * @param name
-     * The property name.
+     * @param <V>
+     * The type of the value to return.
      *
-     * @param value
-     * The property value.
+     * @param root
+     * The root object.
+     *
+     * @param path
+     * The path to the value.
+     *
+     * @return
+     * The value at the given path, or <tt>null</tt> if the value does not exist.
      */
-    protected void setUndefined(String name, Object value) {
-        throw new IllegalArgumentException(String.format("Property \"%s\" is not defined.", name));
+    public static <V> V getValue(Map<String, ?> root, String path) {
+        // TODO
+        return null;
     }
 }
