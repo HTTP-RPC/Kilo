@@ -270,6 +270,15 @@ public class WebServiceProxy {
         }
 
         @Override
+        public int read(byte b[], int off, int len) throws IOException {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedIOException();
+            }
+
+            return inputStream.read(b, off, len);
+        }
+
+        @Override
         public void close() throws IOException {
             inputStream.close();
         }
@@ -290,6 +299,15 @@ public class WebServiceProxy {
             }
 
             outputStream.write(b);
+        }
+
+        @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedIOException();
+            }
+
+            outputStream.write(b, off, len);
         }
 
         @Override
