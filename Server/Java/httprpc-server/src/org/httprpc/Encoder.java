@@ -22,13 +22,13 @@ import java.io.OutputStream;
  */
 public interface Encoder {
     /**
-     * Returns the MIME type produced by the encoder for a given value.
+     * Returns the type of content produced by the encoder for a given value.
      *
      * @param value
      * The value to encode.
      *
      * @return
-     * The content type.
+     * The value's content type.
      */
     public String getContentType(Object value);
 
