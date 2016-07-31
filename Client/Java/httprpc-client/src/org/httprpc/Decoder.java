@@ -32,9 +32,6 @@ public interface Decoder {
      *
      * @throws IOException
      * If an exception occurs.
-     *
-     * @param <V>
-     * The type of value read by the decoder.
      */
-    public <V> V readValue(InputStream inputStream) throws IOException;
+    public Object readValue(InputStream inputStream) throws IOException;
 }

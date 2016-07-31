@@ -94,6 +94,7 @@ public class WebServiceProxy {
             return result;
         }
 
+        @SuppressWarnings("unchecked")
         private V invoke() throws Exception {
             URL url = new URL(serverURL, path);
 
@@ -227,7 +228,7 @@ public class WebServiceProxy {
             // Read response
             int responseCode = connection.getResponseCode();
 
-            V result;
+            Object result;
             if (responseCode / 100 == 2) {
                 try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
                     result = decodeResponse(inputStream, connection.getContentType());
@@ -236,7 +237,7 @@ public class WebServiceProxy {
                 throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
             }
 
-            return result;
+            return (V)result;
         }
     }
 
@@ -450,9 +451,6 @@ public class WebServiceProxy {
     /**
      * Decodes a response value.
      *
-     * @param <V>
-     * The type of the decoded value.
-     *
      * @param inputStream
      * The input stream to read from.
      *
@@ -465,7 +463,7 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs.
      */
-    protected <V> V decodeResponse(InputStream inputStream, String contentType) throws IOException {
+    protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
         // TODO Content type may be null
         // TODO Return null for unsupported content type
 

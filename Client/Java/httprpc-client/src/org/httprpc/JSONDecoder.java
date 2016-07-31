@@ -42,7 +42,7 @@ public class JSONDecoder implements Decoder {
     private static final int EOF = -1;
 
     @Override
-    public <V> V readValue(InputStream inputStream) throws IOException {
+    public Object readValue(InputStream inputStream) throws IOException {
         return readValue(new BufferedReader(new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING))));
     }
 
@@ -57,12 +57,9 @@ public class JSONDecoder implements Decoder {
      *
      * @throws IOException
      * If an exception occurs.
-     *
-     * @param <V>
-     * The type of value read by the decoder.
      */
     @SuppressWarnings("unchecked")
-    public <V> V readValue(Reader reader) throws IOException {
+    public Object readValue(Reader reader) throws IOException {
         c = reader.read();
 
         Object value = null;
@@ -166,7 +163,7 @@ public class JSONDecoder implements Decoder {
             skipWhitespace(reader);
         }
 
-        return (V)value;
+        return value;
     }
 
     private void skipWhitespace(Reader reader) throws IOException {
