@@ -367,7 +367,11 @@ public class RequestDispatcherServlet extends HttpServlet {
             } else {
                 response.setContentType(encoder.getContentType(result));
 
-                encoder.writeValue(result, response.getOutputStream());
+                try {
+                    encoder.writeValue(result, response.getOutputStream());
+                } catch (IOException exception) {
+                    request.getServletContext().log(getClass().getName(), exception);
+                }
             }
         } finally {
             // Delete files

@@ -174,63 +174,65 @@ public class WebServiceProxy {
 
                 // Write request body
                 try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING))) {
-                        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                            String name = argument.getKey();
+                    OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
 
-                            if (name == null) {
+                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                        String name = argument.getKey();
+
+                        if (name == null) {
+                            continue;
+                        }
+
+                        List<?> values = getParameterValues(argument.getValue());
+
+                        for (Object value : values) {
+                            if (value == null) {
                                 continue;
                             }
 
-                            List<?> values = getParameterValues(argument.getValue());
+                            writer.append(boundaryData);
 
-                            for (Object value : values) {
-                                if (value == null) {
-                                    continue;
+                            writer.append(CONTENT_DISPOSITION_HEADER);
+                            writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+
+                            if (value instanceof URL) {
+                                String path = ((URL)value).getPath();
+                                String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                                writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
+                                writer.append(CRLF);
+
+                                String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                                if (attachmentContentType == null) {
+                                    attachmentContentType = OCTET_STREAM_MIME_TYPE;
                                 }
 
-                                writer.append(boundaryData);
+                                writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
+                                writer.append(CRLF);
 
-                                writer.append(CONTENT_DISPOSITION_HEADER);
-                                writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+                                writer.flush();
 
-                                if (value instanceof URL) {
-                                    String path = ((URL)value).getPath();
-                                    String filename = path.substring(path.lastIndexOf('/') + 1);
-
-                                    writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
-                                    writer.append(CRLF);
-
-                                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                                    if (attachmentContentType == null) {
-                                        attachmentContentType = OCTET_STREAM_MIME_TYPE;
+                                try (InputStream inputStream = ((URL)value).openStream()) {
+                                    int b;
+                                    while ((b = inputStream.read()) != EOF) {
+                                        outputStream.write(b);
                                     }
-
-                                    writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
-                                    writer.append(CRLF);
-
-                                    writer.flush();
-
-                                    try (InputStream inputStream = ((URL)value).openStream()) {
-                                        int b;
-                                        while ((b = inputStream.read()) != EOF) {
-                                            outputStream.write(b);
-                                        }
-                                    }
-                                } else {
-                                    writer.append(CRLF);
-
-                                    writer.append(CRLF);
-                                    writer.append(getParameterValue(value));
                                 }
+                            } else {
+                                writer.append(CRLF);
 
                                 writer.append(CRLF);
+                                writer.append(getParameterValue(value));
                             }
-                        }
 
-                        writer.append(String.format("--%s--%s", boundary, CRLF));
+                            writer.append(CRLF);
+                        }
                     }
+
+                    writer.append(String.format("--%s--%s", boundary, CRLF));
+
+                    writer.flush();
                 }
             }
 
