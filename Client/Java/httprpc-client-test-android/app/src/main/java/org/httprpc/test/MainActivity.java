@@ -14,12 +14,14 @@
 
 package org.httprpc.test;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox userNameCheckBox;
     private CheckBox userRoleStatusCheckBox;
     private CheckBox attachmentInfoCheckBox;
+    private CheckBox echoCheckBox;
+    private ImageView echoImageView;
     private CheckBox longListCheckBox;
     private CheckBox delayedResultCheckBox;
 
@@ -133,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
         userNameCheckBox = (CheckBox)findViewById(R.id.user_name_checkbox);
         userRoleStatusCheckBox = (CheckBox)findViewById(R.id.user_role_status_checkbox);
         attachmentInfoCheckBox = (CheckBox)findViewById(R.id.attachment_info_checkbox);
+        echoImageView = (ImageView)findViewById(R.id.echo_image_view);
+        echoCheckBox = (CheckBox)findViewById(R.id.echo_checkbox);
         longListCheckBox = (CheckBox)findViewById(R.id.long_list_checkbox);
         delayedResultCheckBox = (CheckBox)findViewById(R.id.delayed_result_checkbox);
     }
@@ -316,6 +322,17 @@ public class MainActivity extends AppCompatActivity {
                         )
                     ))
                 )));
+            }
+        });
+
+        // Echo
+        serviceProxy.invoke("POST", "/httprpc-server-test/test/echo",
+            mapOf(entry("attachment", imageTestURL)), new ResultHandler<Bitmap>() {
+            @Override
+            public void execute(Bitmap result, Exception exception) {
+                echoCheckBox.setChecked(exception == null && result != null);
+
+                echoImageView.setImageBitmap(result);
             }
         });
 

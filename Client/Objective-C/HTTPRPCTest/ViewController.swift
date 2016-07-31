@@ -32,6 +32,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
     @IBOutlet var userNameCell: UITableViewCell!
     @IBOutlet var userRoleStatusCell: UITableViewCell!
     @IBOutlet var attachmentInfoCell: UITableViewCell!
+    @IBOutlet var echoCell: UITableViewCell!
     @IBOutlet var delayedResultCell: UITableViewCell!
     @IBOutlet var longListCell: UITableViewCell!
 
@@ -145,6 +146,13 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/attachmentInfo",
             arguments:["text": "héllo", "attachments": [textTestURL, imageTestURL]],
             resultHandler: handleAttachmentInfoResult)
+
+        // Echo
+        serviceProxy.invoke("POST", path: "/httprpc-server-test/test/echo", arguments:["attachment": imageTestURL]) {(result, error) in
+            self.validate(result != nil, error: error, cell: self.echoCell)
+
+            self.echoCell.imageView?.image = result as? UIImage
+        }
 
         // Long list
         let task = serviceProxy.invoke("GET", path: "/httprpc-server-test/test/longList") {(result, error) in
