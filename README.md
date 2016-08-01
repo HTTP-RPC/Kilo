@@ -611,6 +611,7 @@ The Java client library enables Java applications (including Android) to consume
     * `Result` - abstract base class for typed results
     * `Authentication` - interface for authenticating requests
     * `BasicAuthentication` - authentication implementation supporting basic HTTP authentication
+    * `JSONDecoder` - class for deserializing JSON response data
 
 The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
 
@@ -642,6 +643,9 @@ A convenience method is also provided for executing operations that don't take a
     public <V> Future<V> invoke(String method, String path, 
         ResultHandler<V> resultHandler) { ... }
 
+Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
+
+#### Arguments and Return Values
 Request arguments may be any of the following types:
 
 * `java.lang.Number`
@@ -666,6 +670,8 @@ On successful completion, the first argument will contain the result of the oper
 
 The second argument will be `null` in this case. If an error occurs, the first argument will be `null` and the second will contain an exception representing the error that occurred.
 
+Internally, `WebServiceProxy ` uses the `JSONDecoder` class to deserialize JSON response data returned by a service operation. This class can also be used by application code to read JSON data from arbitrary input streams.
+
 Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to return `Bitmap` instances: 
 
     @Override
@@ -679,8 +685,6 @@ Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to pr
 
         return value;
     }
-
-Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
 #### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
