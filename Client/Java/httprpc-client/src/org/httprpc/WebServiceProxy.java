@@ -14,6 +14,8 @@
 
 package org.httprpc;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -253,11 +255,9 @@ public class WebServiceProxy {
     }
 
     // Monitored input stream
-    private static class MonitoredInputStream extends InputStream {
-        private InputStream inputStream;
-
+    private static class MonitoredInputStream extends BufferedInputStream {
         public MonitoredInputStream(InputStream inputStream) {
-            this.inputStream = inputStream;
+            super(inputStream);
         }
 
         @Override
@@ -266,7 +266,7 @@ public class WebServiceProxy {
                 throw new InterruptedIOException();
             }
 
-            return inputStream.read();
+            return super.read();
         }
 
         @Override
@@ -275,21 +275,14 @@ public class WebServiceProxy {
                 throw new InterruptedIOException();
             }
 
-            return inputStream.read(b, off, len);
-        }
-
-        @Override
-        public void close() throws IOException {
-            inputStream.close();
+            return super.read(b, off, len);
         }
     }
 
     // Monitored output stream
-    private static class MonitoredOutputStream extends OutputStream {
-        private OutputStream outputStream;
-
+    private static class MonitoredOutputStream extends BufferedOutputStream {
         public MonitoredOutputStream(OutputStream outputStream) {
-            this.outputStream = outputStream;
+            super(outputStream);
         }
 
         @Override
@@ -298,7 +291,7 @@ public class WebServiceProxy {
                 throw new InterruptedIOException();
             }
 
-            outputStream.write(b);
+            super.write(b);
         }
 
         @Override
@@ -307,12 +300,7 @@ public class WebServiceProxy {
                 throw new InterruptedIOException();
             }
 
-            outputStream.write(b, off, len);
-        }
-
-        @Override
-        public void close() throws IOException {
-            outputStream.close();
+            super.write(b, off, len);
         }
     }
 

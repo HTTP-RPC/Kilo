@@ -10,6 +10,7 @@
 		371C21631CB449BA000CF22B /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
 		371C21641CB449BA000CF22B /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		371C21661CB449D4000CF22B /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 371C21651CB449D4000CF22B /* ViewController.xml */; };
+		372C64931D4F79EF0077E9C8 /* WSWebServiceProxyDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 372C64921D4F79EF0077E9C8 /* WSWebServiceProxyDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3741BFDB1CB67E8800CCEA5F /* MarkupKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; };
 		3741BFDC1CB67E8800CCEA5F /* MarkupKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 371C21621CB449BA000CF22B /* MarkupKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3741BFDE1CB67E8C00CCEA5F /* HTTPRPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3798614C1BF009D60063212E /* HTTPRPC.framework */; };
@@ -87,6 +88,7 @@
 /* Begin PBXFileReference section */
 		371C21621CB449BA000CF22B /* MarkupKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MarkupKit.framework; sourceTree = "<group>"; };
 		371C21651CB449D4000CF22B /* ViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ViewController.xml; sourceTree = "<group>"; };
+		372C64921D4F79EF0077E9C8 /* WSWebServiceProxyDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSWebServiceProxyDelegate.h; sourceTree = "<group>"; };
 		37543EDD1CB67E1A00006F16 /* HTTPRPCDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HTTPRPCDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37543EDF1CB67E1A00006F16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		37543EE11CB67E1A00006F16 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 				37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */,
 				379861571BF00A0E0063212E /* WSWebServiceProxy.h */,
 				379861581BF00A0E0063212E /* WSWebServiceProxy.m */,
+				372C64921D4F79EF0077E9C8 /* WSWebServiceProxyDelegate.h */,
 				379861511BF009D60063212E /* Info.plist */,
 			);
 			path = HTTPRPC;
@@ -224,6 +227,7 @@
 				37BEFBD11CF8770F009FBB33 /* WSAuthentication.h in Headers */,
 				37BEFBD41CF8776F009FBB33 /* WSBasicAuthentication.h in Headers */,
 				379861591BF00A0E0063212E /* WSWebServiceProxy.h in Headers */,
+				372C64931D4F79EF0077E9C8 /* WSWebServiceProxyDelegate.h in Headers */,
 				37BEFBD81CF87D78009FBB33 /* NSString+HTTPRPC.h in Headers */,
 				379861501BF009D60063212E /* HTTPRPC.h in Headers */,
 			);
