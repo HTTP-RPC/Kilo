@@ -160,7 +160,7 @@ public class WebServiceProxy {
 
             // Authenticate request
             if (authentication != null) {
-                authentication.authenticate(connection);
+                authentication.authenticateRequest(connection);
             }
 
             // Write request body

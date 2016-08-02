@@ -103,7 +103,7 @@ NSString * const kImageMIMETypePrefix = @"image/";
         id<WSAuthentication> authentication = [self authentication];
 
         if (authentication != nil) {
-            [authentication authenticate:request];
+            [authentication authenticateRequest:request];
         }
 
         // Write request body

@@ -172,7 +172,7 @@ Methods may also return `void` or `java.lang.Void` to indicate that they do not 
 
 `List` and `Map` types are not required to support random access; iterability is sufficient. Additionally, `List` and `Map` types that implement `java.lang.AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
 
-For example, the `org.httprpc.sql.ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as a forward-scrolling, auto-closeable list of map values. Closing the list also closes the underlying result set, ensuring that database resources are not leaked. `ResultSetAdapter` is discussed in more detail later.
+For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as a forward-scrolling, auto-closeable list of map values. Closing the list also closes the underlying result set, ensuring that database resources are not leaked. `ResultSetAdapter` is discussed in more detail later.
 
 #### Request Metadata
 `WebService` provides the following methods that allow an extending class to obtain additional information about the current request:
@@ -404,7 +404,7 @@ If the value returned by the method is the number `8`, the resulting output woul
 	The value is 8.
 
 #### Template Documents
-The `org.httprpc.Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
+The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
 
     @Template(name="statistics.html", contentType="text/html")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
@@ -419,7 +419,7 @@ Note that it is possible to associate multiple templates with a single service m
     @Template(name="statistics.xml", contentType="application/xml")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
-The `org.httprpc.template.TemplateEncoder` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
+The `TemplateEncoder` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
 
 #### Variable Markers
 Variable markers inject a variable from the data dictionary into the output. They can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
@@ -497,7 +497,7 @@ For example, this marker applies a medium date format to a long value named "dat
 
     {{date:format=mediumDate}}
 
-Applications may also define their own custom modifiers. Modifiers are created by implementing the `org.httprpc.template.Modifier` interface, which defines the following method:
+Applications may also define their own custom modifiers. Modifiers are created by implementing the `Modifier` interface, which defines the following method:
 
     public Object apply(Object value, String argument, Locale locale);
     
@@ -636,7 +636,7 @@ This method takes the following arguments:
 * `method` - the HTTP method to execute
 * `path` - the resource path
 * `arguments` - a map containing the request arguments as key/value pairs
-* `resultHandler` - an instance of `org.httprpc.ResultHandler` that will be invoked upon completion of the service operation
+* `resultHandler` - an instance of `ResultHandler` that will be invoked upon completion of the service operation
 
 A convenience method is also provided for executing operations that don't take any arguments:
 
@@ -781,13 +781,13 @@ See the Javadoc for more information.
 ### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
-HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `org.httprpc.Authentication` interface defines a single method that is used to authenticate each request submitted by a proxy instance:
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `Authentication` interface defines a single method that is used to authenticate each request submitted by a proxy instance:
 
     public interface Authentication {
-        public void authenticate(HttpURLConnection connection);
+        public void authenticateRequest(HttpURLConnection connection);
     }
 
-Authentication providers are associated with a proxy instance via the `setAuthentication()` method of the `WebServiceProxy` class. For example, the following code associates an instance of `org.httprpc.BasicAuthentication` with a service proxy:
+Authentication providers are associated with a proxy instance via the `setAuthentication()` method of the `WebServiceProxy` class. For example, the following code associates an instance of `BasicAuthentication` with a service proxy:
 
     serviceProxy.setAuthentication(new BasicAuthentication("username", "password"));
 
@@ -880,7 +880,7 @@ Although it is possible to use the `URLSession:task:didReceiveChallenge:completi
 
 HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `WSAuthentication` protocol defines a single method that is used to authenticate each request submitted by a proxy instance:
 
-    - (void)authenticate:(NSMutableURLRequest *)request;
+    - (void)authenticateRequest:(NSMutableURLRequest *)request;
 
 Authentication providers are associated with a proxy instance via the `authentication` property of the `WSWebServiceProxy` class. For example, the following code associates an instance of `WSBasicAuthentication` with a service proxy:
 

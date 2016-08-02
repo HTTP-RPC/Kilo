@@ -68,7 +68,7 @@ public class BasicAuthentication implements Authentication {
     }
 
     @Override
-    public void authenticate(HttpURLConnection connection) {
+    public void authenticateRequest(HttpURLConnection connection) {
         connection.setRequestProperty(AUTHORIZATION_KEY, "Basic " + encode(String.format("%s:%s", username, password)));
     }
 

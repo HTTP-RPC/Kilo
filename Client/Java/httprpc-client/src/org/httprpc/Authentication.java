@@ -24,7 +24,7 @@ public interface Authentication {
      * Authenticates a service request.
      *
      * @param connection
-     * The URL connection to authenticate.
+     * The URL connection representing the request to authenticate.
      */
-    public void authenticate(HttpURLConnection connection);
+    public void authenticateRequest(HttpURLConnection connection);
 }

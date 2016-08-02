@@ -24,9 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Authenticates a service request.
  *
- * @param connection The URL connection to authenticate.
+ * @param request The URL request to authenticate.
  */
-- (void)authenticate:(NSMutableURLRequest *)request;
+- (void)authenticateRequest:(NSMutableURLRequest *)request;
 
 @end
 
