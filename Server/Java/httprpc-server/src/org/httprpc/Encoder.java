@@ -22,17 +22,6 @@ import java.io.OutputStream;
  */
 public interface Encoder {
     /**
-     * Returns the MIME type of the content produced by the encoder.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @return
-     * The value's content type.
-     */
-    public String getContentType(Object value);
-
-    /**
      * Writes a value to an output stream.
      *
      * @param value

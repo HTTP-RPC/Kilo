@@ -28,14 +28,7 @@ import java.util.Map;
 public class JSONEncoder implements Encoder {
     private static final String UTF_8_ENCODING = "UTF-8";
 
-    private static final String JSON_MIME_TYPE = "application/json";
-
     private int depth = 0;
-
-    @Override
-    public String getContentType(Object value) {
-        return String.format("%s;charset=%s", JSON_MIME_TYPE, UTF_8_ENCODING);
-    }
 
     @Override
     public void writeValue(Object value, OutputStream outputStream) throws IOException {

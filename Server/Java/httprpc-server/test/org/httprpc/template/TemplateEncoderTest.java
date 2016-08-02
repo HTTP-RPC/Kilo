@@ -39,7 +39,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNull() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("dictionary.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("dictionary.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -52,7 +52,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testDictionary() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("dictionary.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("dictionary.txt"));
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -76,7 +76,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testEmptySection() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section1.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section1.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -89,7 +89,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testSingleElementSection() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section1.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section1.txt"));
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -112,7 +112,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMultiElementSection() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section1.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section1.txt"));
 
         Map<String, ?> dictionary1 = mapOf(
             entry("a", "hello"),
@@ -143,7 +143,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNestedSection1() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section2.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section2.txt"));
 
         Map<String, ?> dictionary = mapOf(
             entry("abc", "ABC"),
@@ -168,7 +168,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNestedSection2() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section3.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section3.txt"));
 
         List<?> value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
@@ -183,7 +183,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNestedEmptySection() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section3.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section3.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -196,7 +196,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testPrimitiveSection() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section4.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("section4.txt"));
 
         List<?> value = listOf("hello", 42, false);
 
@@ -211,7 +211,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testComment() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("comment.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("comment.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -224,7 +224,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testFloatFormatModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("format1.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("format1.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -237,7 +237,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testDateFormatModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("format2.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("format2.txt"));
 
         Date date = new Date();
 
@@ -252,7 +252,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testURLEscapeModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("url.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("url.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -265,7 +265,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMarkupEscapeModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("markup.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("markup.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -278,7 +278,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testJSONEscapeModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("json.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("json.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -291,7 +291,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testCSVEscapeModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("csv.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("csv.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -304,7 +304,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testSimpleInclude() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("master1.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("master1.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -317,7 +317,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testSectionInclude() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("master2.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("master2.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -330,7 +330,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testRecursion() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("recursion.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("recursion.txt"));
 
         List<?> list = listOf(
             listOf(
@@ -355,7 +355,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testEmptyRecursion() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("recursion.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("recursion.txt"));
 
         List<?> list = Collections.EMPTY_LIST;
 
@@ -370,7 +370,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testResource() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("resource1.txt"), "text/plain",
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("resource1.txt"),
             getClass().getPackage().getName() + ".resource1");
 
         String result;
@@ -384,7 +384,7 @@ public class TemplateEncoderTest {
 
     @Test(expected=MissingResourceException.class)
     public void testMissingResourceKey() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("resource2.txt"), "text/plain",
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("resource2.txt"),
             getClass().getPackage().getName() + ".resource2");
 
         try (StringWriter writer = new StringWriter()) {
@@ -394,7 +394,7 @@ public class TemplateEncoderTest {
 
     @Test(expected=MissingResourceException.class)
     public void testMissingResourceBundle() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("resource3.txt"), "text/plain",
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("resource3.txt"),
             getClass().getPackage().getName() + ".resource3");
 
         try (StringWriter writer = new StringWriter()) {
@@ -404,7 +404,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testContextProperty() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("context.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("context.txt"));
 
         engine.getContext().put("a", "A");
 
@@ -419,7 +419,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMissingContextProperty() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("context.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("context.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -432,7 +432,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testUppercaseModifier() throws IOException {
-        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("upper.txt"), "text/plain");
+        TemplateEncoder engine = new TemplateEncoder(getClass().getResource("upper.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {

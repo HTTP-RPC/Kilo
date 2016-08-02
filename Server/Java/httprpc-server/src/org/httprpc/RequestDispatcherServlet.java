@@ -16,15 +16,12 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -34,7 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -42,8 +38,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
-import org.httprpc.template.TemplateEncoder;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -82,37 +76,12 @@ public class RequestDispatcherServlet extends HttpServlet {
         }
     }
 
-    // Stream encoder
-    private static class StreamEncoder implements Encoder {
-        @Override
-        public String getContentType(Object value) {
-            URL url = (URL)value;
-
-            return (url == null) ? OCTET_STREAM_MIME_TYPE : URLConnection.guessContentTypeFromName(url.getFile());
-        }
-
-        @Override
-        public void writeValue(Object value, OutputStream outputStream) throws IOException {
-            URL url = (URL)value;
-
-            if (url != null) {
-                try (InputStream inputStream = url.openStream()) {
-                    int b;
-                    while ((b = inputStream.read()) != -1) {
-                        outputStream.write(b);
-                    }
-                }
-            }
-        }
-    }
-
     private Class<?> serviceType = null;
     private Resource root = null;
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
 
     @Override
     public void init() throws ServletException {
@@ -180,10 +149,10 @@ public class RequestDispatcherServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Look up resource
-        Resource resource = root;
-
         String pathInfo = request.getPathInfo();
         String extension = null;
+
+        Resource resource = root;
 
         if (pathInfo == null) {
             String servletPath = request.getServletPath();
@@ -292,41 +261,6 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
-        Encoder encoder;
-        if (method.getReturnType().equals(URL.class)) {
-            encoder = new StreamEncoder();
-        } else if (extension != null) {
-            encoder = null;
-
-            String mimeType = getServletContext().getMimeType(extension);
-
-            Template[] templates = method.getAnnotationsByType(Template.class);
-
-            for (int i = 0; i < templates.length; i++) {
-                Template template = templates[i];
-
-                if (template.contentType().equals(mimeType)) {
-                    encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
-
-                    Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
-
-                    context.put("scheme", request.getScheme());
-                    context.put("serverName", request.getServerName());
-                    context.put("serverPort", request.getServerPort());
-                    context.put("contextPath", request.getContextPath());
-
-                    break;
-                }
-            }
-        } else {
-            encoder = new JSONEncoder();
-        }
-
-        if (encoder == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            return;
-        }
-
         try {
             Object result;
             try {
@@ -364,14 +298,14 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else if (result instanceof URL) {
+                // TODO
             } else {
-                response.setContentType(encoder.getContentType(result));
-
-                try {
-                    encoder.writeValue(result, response.getOutputStream());
-                } catch (IOException exception) {
-                    request.getServletContext().log(getClass().getName(), exception);
+                if (extension != null) {
+                    // TODO
                 }
+
+                // TODO
             }
         } finally {
             // Delete files
