@@ -16,12 +16,15 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -38,6 +42,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.httprpc.template.TemplateEncoder;
 
 /**
  * Servlet that dispatches HTTP-RPC web service requests.
@@ -298,14 +304,60 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            } else if (result instanceof URL) {
-                // TODO
+            } else if (returnType == URL.class || result instanceof URL) {
+                URL url = (URL)result;
+
+                if (url != null) {
+                    response.setContentType(URLConnection.guessContentTypeFromName(url.getFile()));
+
+                    OutputStream outputStream = response.getOutputStream();
+
+                    try (InputStream inputStream = url.openStream()) {
+                        int b;
+                        while ((b = inputStream.read()) != -1) {
+                            outputStream.write(b);
+                        }
+                    } catch (IOException exception) {
+                        request.getServletContext().log(getClass().getName(), exception);
+                    }
+                }
             } else {
+                Encoder encoder = null;
+
                 if (extension != null) {
-                    // TODO
+                    String mimeType = getServletContext().getMimeType(extension);
+
+                    Template[] templates = method.getAnnotationsByType(Template.class);
+
+                    for (int i = 0; i < templates.length; i++) {
+                        Template template = templates[i];
+
+                        if (template.contentType().equals(mimeType)) {
+                            encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
+
+                            Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
+
+                            context.put("scheme", request.getScheme());
+                            context.put("serverName", request.getServerName());
+                            context.put("serverPort", request.getServerPort());
+                            context.put("contextPath", request.getContextPath());
+
+                            break;
+                        }
+                    }
+                } else {
+                    encoder = new JSONEncoder();
                 }
 
-                // TODO
+                if (encoder != null) {
+                    response.setContentType(encoder.getContentType());
+
+                    try {
+                        encoder.writeValue(result, response.getOutputStream());
+                    } catch (IOException exception) {
+                        request.getServletContext().log(getClass().getName(), exception);
+                    }
+                }
             }
         } finally {
             // Delete files

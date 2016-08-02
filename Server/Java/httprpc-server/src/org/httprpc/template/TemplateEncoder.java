@@ -51,6 +51,7 @@ public class TemplateEncoder implements Encoder {
     }
 
     private URL url;
+    private String contentType;
     private String baseName;
 
     private HashMap<String, Object> context = new HashMap<>();
@@ -81,9 +82,12 @@ public class TemplateEncoder implements Encoder {
      *
      * @param url
      * The URL of the template.
+     *
+     * @param contentType
+     * The MIME type of the template.
      */
-    public TemplateEncoder(URL url) {
-        this(url, null);
+    public TemplateEncoder(URL url, String contentType) {
+        this(url, contentType, null);
     }
 
     /**
@@ -92,15 +96,23 @@ public class TemplateEncoder implements Encoder {
      * @param url
      * The URL of the template.
      *
+     * @param contentType
+     * The MIME type of the template.
+     *
      * @param baseName
      * The base name of the template's resource bundle.
      */
-    public TemplateEncoder(URL url, String baseName) {
+    public TemplateEncoder(URL url, String contentType, String baseName) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
+        if (contentType == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.url = url;
+        this.contentType = contentType;
         this.baseName = baseName;
     }
 
@@ -112,6 +124,11 @@ public class TemplateEncoder implements Encoder {
      */
     public Map<String, Object> getContext() {
         return context;
+    }
+
+    @Override
+    public String getContentType() {
+        return String.format("%s;charset=%s", contentType, UTF_8_ENCODING);
     }
 
     @Override
