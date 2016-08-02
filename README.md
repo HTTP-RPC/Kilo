@@ -659,7 +659,7 @@ The result handler is called upon completion of the operation. `ResultHandler` i
 
     public void execute(V result, Exception exception);
 
-On successful completion, the first argument will contain the result of the operation. By default, this will be an instance of one of the following types or `null`, depending on the response returned by the server:
+On successful completion, the first argument will contain the result of the operation. This will typically be an instance of one of the following types or `null`, depending on the response returned by the server:
 
 * string: `java.lang.String`
 * number: `java.lang.Number`
