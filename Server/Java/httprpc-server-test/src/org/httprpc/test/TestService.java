@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.httprpc.Encoding;
 import org.httprpc.RPC;
 import org.httprpc.Template;
 import org.httprpc.WebService;
@@ -212,6 +213,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="POST", path="/echo")
+    @Encoding(TestEncoder.class)
     public URL echo(URL attachment) throws IOException {
         return attachment;
     }

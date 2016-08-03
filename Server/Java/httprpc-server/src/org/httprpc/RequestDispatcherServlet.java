@@ -16,15 +16,12 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.Principal;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -272,35 +269,7 @@ public class RequestDispatcherServlet extends HttpServlet {
         Encoder encoder = null;
 
         if (returnType != Void.TYPE && returnType != Void.class) {
-            if (extension == null) {
-                // TODO This should be handled by a custom encoder
-                if (returnType == URL.class) {
-                    encoder = new Encoder() {
-                        @Override
-                        public String getContentType(Object value) {
-                            URL url = (URL)value;
-
-                            return (url == null) ? "application/octet-stream" : URLConnection.guessContentTypeFromName(url.getFile());
-                        }
-
-                        @Override
-                        public void writeValue(Object value, OutputStream outputStream) throws IOException {
-                            URL url = (URL)value;
-
-                            if (url != null) {
-                                try (InputStream inputStream = url.openStream()) {
-                                    int b;
-                                    while ((b = inputStream.read()) != -1) {
-                                        outputStream.write(b);
-                                    }
-                                }
-                            }
-                        }
-                    };
-                } else {
-                    encoder = new JSONEncoder();
-                }
-            } else {
+            if (extension != null) {
                 String mimeType = getServletContext().getMimeType(extension);
 
                 Template[] templates = method.getAnnotationsByType(Template.class);
@@ -325,6 +294,22 @@ public class RequestDispatcherServlet extends HttpServlet {
                 if (encoder == null) {
                     response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                     return;
+                }
+            } else {
+                Encoding encoding = method.getAnnotation(Encoding.class);
+
+                if (encoding != null) {
+                    try {
+                        encoder = encoding.value().newInstance();
+                    } catch (InstantiationException | IllegalAccessException exception) {
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+                        request.getServletContext().log(getClass().getName(), exception);
+
+                        return;
+                    }
+                } else {
+                    encoder = new JSONEncoder();
                 }
             }
         }
