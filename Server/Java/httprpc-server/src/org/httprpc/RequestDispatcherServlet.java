@@ -336,13 +336,14 @@ public class RequestDispatcherServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
                 if (encoder == null) {
+                    // TODO Return image content via a custom encoder
                     if (returnType == URL.class) {
                         encoder = new Encoder() {
                             @Override
                             public String getContentType(Object value) {
                                 URL url = (URL)value;
 
-                                return (url == null) ? null : URLConnection.guessContentTypeFromName(url.getFile());
+                                return (url == null) ? "application/octet-stream" : URLConnection.guessContentTypeFromName(url.getFile());
                             }
 
                             @Override

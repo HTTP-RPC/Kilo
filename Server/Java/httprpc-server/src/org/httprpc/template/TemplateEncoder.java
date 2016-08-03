@@ -385,10 +385,6 @@ public class TemplateEncoder implements Encoder {
                             }
 
                             if (value != null) {
-                                if (!(value instanceof String || value instanceof Number || value instanceof Boolean)) {
-                                    throw new IOException("Invalid variable element.");
-                                }
-
                                 if (components.length > 1) {
                                     for (int i = 1; i < components.length; i++) {
                                         String component = components[i];
