@@ -267,33 +267,65 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
+        Class<?> returnType = method.getReturnType();
+
         Encoder encoder = null;
 
-        if (extension != null) {
-            String mimeType = getServletContext().getMimeType(extension);
+        if (returnType != Void.TYPE && returnType != Void.class) {
+            if (extension == null) {
+                // TODO This should be handled by a custom encoder
+                if (returnType == URL.class) {
+                    encoder = new Encoder() {
+                        @Override
+                        public String getContentType(Object value) {
+                            URL url = (URL)value;
 
-            Template[] templates = method.getAnnotationsByType(Template.class);
+                            return (url == null) ? "application/octet-stream" : URLConnection.guessContentTypeFromName(url.getFile());
+                        }
 
-            for (int i = 0; i < templates.length; i++) {
-                Template template = templates[i];
+                        @Override
+                        public void writeValue(Object value, OutputStream outputStream) throws IOException {
+                            URL url = (URL)value;
 
-                if (template.contentType().equals(mimeType)) {
-                    encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
-
-                    Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
-
-                    context.put("scheme", request.getScheme());
-                    context.put("serverName", request.getServerName());
-                    context.put("serverPort", request.getServerPort());
-                    context.put("contextPath", request.getContextPath());
-
-                    break;
+                            if (url != null) {
+                                try (InputStream inputStream = url.openStream()) {
+                                    int b;
+                                    while ((b = inputStream.read()) != -1) {
+                                        outputStream.write(b);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                } else {
+                    encoder = new JSONEncoder();
                 }
-            }
+            } else {
+                String mimeType = getServletContext().getMimeType(extension);
 
-            if (encoder == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                return;
+                Template[] templates = method.getAnnotationsByType(Template.class);
+
+                for (int i = 0; i < templates.length; i++) {
+                    Template template = templates[i];
+
+                    if (template.contentType().equals(mimeType)) {
+                        encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
+
+                        Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
+
+                        context.put("scheme", request.getScheme());
+                        context.put("serverName", request.getServerName());
+                        context.put("serverPort", request.getServerPort());
+                        context.put("contextPath", request.getContextPath());
+
+                        break;
+                    }
+                }
+
+                if (encoder == null) {
+                    response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    return;
+                }
             }
         }
 
@@ -330,41 +362,9 @@ public class RequestDispatcherServlet extends HttpServlet {
             }
 
             // Write response
-            Class<?> returnType = method.getReturnType();
-
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                if (encoder == null) {
-                    // TODO Return image content via a custom encoder
-                    if (returnType == URL.class) {
-                        encoder = new Encoder() {
-                            @Override
-                            public String getContentType(Object value) {
-                                URL url = (URL)value;
-
-                                return (url == null) ? "application/octet-stream" : URLConnection.guessContentTypeFromName(url.getFile());
-                            }
-
-                            @Override
-                            public void writeValue(Object value, OutputStream outputStream) throws IOException {
-                                URL url = (URL)value;
-
-                                if (url != null) {
-                                    try (InputStream inputStream = url.openStream()) {
-                                        int b;
-                                        while ((b = inputStream.read()) != -1) {
-                                            outputStream.write(b);
-                                        }
-                                    }
-                                }
-                            }
-                        };
-                    } else {
-                        encoder = new JSONEncoder();
-                    }
-                }
-
                 response.setContentType(encoder.getContentType(result));
 
                 try {
