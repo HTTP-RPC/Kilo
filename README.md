@@ -79,7 +79,9 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
     * `WebService` - abstract base class for HTTP-RPC services
     * `RPC` - annotation that specifies a "remote procedure call", or service method
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
-    * `JSONEncoder` - class for transforming method results into JSON
+    * `Encoder ` - interface representing a content encoder
+    * `JSONEncoder` - class that encodes a JSON response
+    * `Encoding` - annotation that specifies a custom encoding
 * _`org.httprpc.beans`_
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
 * _`org.httprpc.sql`_
@@ -103,7 +105,7 @@ The JAR file for the Java server implementation of HTTP-RPC can be downloaded [h
 ### WebService Class
 `WebService` is an abstract base class for HTTP-RPC web services. All services must extend this class and must provide a public, zero-argument constructor.
 
-Service operations are defined by adding public methods to a concrete service implementation. The `@RPC` annotation is used to flag a method as remotely accessible. This annotation associates an HTTP verb and a resource path with the method. All public annotated methods automatically become available for remote execution when the service is published.
+Service operations are defined by adding public methods to a concrete service implementation. The `RPC` annotation is used to flag a method as remotely accessible. This annotation associates an HTTP verb and a resource path with the method. All public annotated methods automatically become available for remote execution when the service is published.
 
 For example, the following class might be used to implement the simple addition operations discussed in the previous section:
 
@@ -220,6 +222,21 @@ If the requested resource does not exist, the servlet returns an HTTP 404 status
 If any exception is thrown while executing the method, HTTP 500 is returned.
 
 Servlet security is provided by the underlying servlet container. See the Java EE documentation for more information.
+
+#### Custom Encodings
+The `Encoding` annotation is used to associate a custom encoder with a service method. This allows an application to effectively extend the set of supported return types. 
+
+The annotation defines a single element representing the type of the encoder that will be used to serialize the return value. This type must implement the `Encoder` interface. For example:
+
+    @RPC(method="GET", path="/customValue")
+    @Encoding(CustomEncoder.class)
+    public CustomType getCustomType() { ... }
+
+All requests for `/customValue` will return the representation of `CustomType` as defined by the `CustomEncoder` type.
+
+While custom encodings offer a great deal of flexibility, many common use cases can be addressed using the various adapter types provided by the framework. These adapters are discussed in more detail below. 
+
+Templates are another means for customizing a resource's representation. They are discussed in a later section.
 
 ### BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
@@ -606,9 +623,10 @@ The Java client library enables Java applications (including Android) to consume
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
     * `Result` - abstract base class for typed results
-    * `Authentication` - interface for authenticating requests
-    * `BasicAuthentication` - authentication implementation supporting basic HTTP authentication
-    * `JSONDecoder` - class for deserializing JSON response data
+    * `Authentication` - interface representing an authentication provider
+    * `BasicAuthentication` - HTTP basic authentication provider
+    * `Decoder` - interface representing a content decoder
+    * `JSONDecoder` - class that decodes a JSON response
 
 The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
 
