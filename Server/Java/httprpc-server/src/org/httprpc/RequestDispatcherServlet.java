@@ -267,6 +267,36 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
+        Encoder encoder = null;
+
+        if (extension != null) {
+            String mimeType = getServletContext().getMimeType(extension);
+
+            Template[] templates = method.getAnnotationsByType(Template.class);
+
+            for (int i = 0; i < templates.length; i++) {
+                Template template = templates[i];
+
+                if (template.contentType().equals(mimeType)) {
+                    encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
+
+                    Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
+
+                    context.put("scheme", request.getScheme());
+                    context.put("serverName", request.getServerName());
+                    context.put("serverPort", request.getServerPort());
+                    context.put("contextPath", request.getContextPath());
+
+                    break;
+                }
+            }
+
+            if (encoder == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                return;
+            }
+        }
+
         try {
             Object result;
             try {
@@ -304,59 +334,42 @@ public class RequestDispatcherServlet extends HttpServlet {
 
             if (returnType == Void.TYPE || returnType == Void.class) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            } else if (returnType == URL.class || result instanceof URL) {
-                URL url = (URL)result;
-
-                if (url != null) {
-                    response.setContentType(URLConnection.guessContentTypeFromName(url.getFile()));
-
-                    OutputStream outputStream = response.getOutputStream();
-
-                    try (InputStream inputStream = url.openStream()) {
-                        int b;
-                        while ((b = inputStream.read()) != -1) {
-                            outputStream.write(b);
-                        }
-                    } catch (IOException exception) {
-                        request.getServletContext().log(getClass().getName(), exception);
-                    }
-                }
             } else {
-                Encoder encoder = null;
+                if (encoder == null) {
+                    if (returnType == URL.class) {
+                        encoder = new Encoder() {
+                            @Override
+                            public String getContentType(Object value) {
+                                URL url = (URL)value;
 
-                if (extension != null) {
-                    String mimeType = getServletContext().getMimeType(extension);
+                                return (url == null) ? null : URLConnection.guessContentTypeFromName(url.getFile());
+                            }
 
-                    Template[] templates = method.getAnnotationsByType(Template.class);
+                            @Override
+                            public void writeValue(Object value, OutputStream outputStream) throws IOException {
+                                URL url = (URL)value;
 
-                    for (int i = 0; i < templates.length; i++) {
-                        Template template = templates[i];
-
-                        if (template.contentType().equals(mimeType)) {
-                            encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
-
-                            Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
-
-                            context.put("scheme", request.getScheme());
-                            context.put("serverName", request.getServerName());
-                            context.put("serverPort", request.getServerPort());
-                            context.put("contextPath", request.getContextPath());
-
-                            break;
-                        }
+                                if (url != null) {
+                                    try (InputStream inputStream = url.openStream()) {
+                                        int b;
+                                        while ((b = inputStream.read()) != -1) {
+                                            outputStream.write(b);
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                    } else {
+                        encoder = new JSONEncoder();
                     }
-                } else {
-                    encoder = new JSONEncoder();
                 }
 
-                if (encoder != null) {
-                    response.setContentType(encoder.getContentType(result));
+                response.setContentType(encoder.getContentType(result));
 
-                    try {
-                        encoder.writeValue(result, response.getOutputStream());
-                    } catch (IOException exception) {
-                        request.getServletContext().log(getClass().getName(), exception);
-                    }
+                try {
+                    encoder.writeValue(result, response.getOutputStream());
+                } catch (IOException exception) {
+                    request.getServletContext().log(getClass().getName(), exception);
                 }
             }
         } finally {

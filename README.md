@@ -66,6 +66,7 @@ Although the HTTP specification defines a large number of possible response code
 * _204 No Content_ - The request succeeded, but did not produce a result
 * _404 Not Found_ - The requested resource does not exist
 * _405 Method Not Allowed_ - The resource exists, but does not support the requested method
+* _406 Not Acceptable_ - The requested representation is not available
 * _500 Internal Server Error_ - An error occurred while executing the method
 
 # Implementations
@@ -146,7 +147,7 @@ Method arguments may be any of the following types:
 * `java.net.URL`
 * `java.util.List`
 
-`URL` arguments represent binary content provided by the caller and can only be used with `POST` requests submitted using the "multipart/form-data" encoding. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>`.
+`URL` arguments represent binary content provided by the caller and can only be used with `POST` requests submitted using the "multipart/form-data" encoding. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>` or `List<URL>`.
 
 Omitting the value of a primitive parameter results in an argument value of 0 for that parameter. Omitting the value of a simple reference type produces a null argument value for that parameter. Omitting all values for a list parameter produces an empty list argument for the parameter.
 
@@ -163,7 +164,6 @@ Methods may return any of the following types:
 * `java.lang.CharSequence`
 * `java.util.List`
 * `java.util.Map`
-* `java.net.URL`
 
 Methods may also return `void` or `java.lang.Void` to indicate that they do not return a value.
 
@@ -194,8 +194,6 @@ Java objects are mapped to their JSON equivalents as follows:
 * `java.util.Map`: object
 
 Internally, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. This class can also be used by application code to write JSON data to arbitrary output streams.
-
-`URL` values represent untyped data. The binary content of the referenced resource is returned to the caller verbatim.
 
 Each servlet instance hosts a single HTTP-RPC service. The name of the service type is passed to the servlet via the "serviceClassName" initialization parameter. For example:
 
