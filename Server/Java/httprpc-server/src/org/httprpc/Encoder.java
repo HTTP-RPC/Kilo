@@ -24,10 +24,13 @@ public interface Encoder {
     /**
      * Returns the MIME type of the content produced by the encoder.
      *
+     * @param value
+     * The value to encode.
+     *
      * @return
-     * The encoder's content type.
+     * The value's content type.
      */
-    public String getContentType();
+    public String getContentType(Object value);
 
     /**
      * Writes a value to an output stream.

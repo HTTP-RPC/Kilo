@@ -350,7 +350,7 @@ public class RequestDispatcherServlet extends HttpServlet {
                 }
 
                 if (encoder != null) {
-                    response.setContentType(encoder.getContentType());
+                    response.setContentType(encoder.getContentType(result));
 
                     try {
                         encoder.writeValue(result, response.getOutputStream());

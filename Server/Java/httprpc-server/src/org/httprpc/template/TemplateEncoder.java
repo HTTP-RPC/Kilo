@@ -127,7 +127,7 @@ public class TemplateEncoder implements Encoder {
     }
 
     @Override
-    public String getContentType() {
+    public String getContentType(Object value) {
         return String.format("%s;charset=%s", contentType, UTF_8_ENCODING);
     }
 

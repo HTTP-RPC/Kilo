@@ -33,7 +33,7 @@ public class JSONEncoder implements Encoder {
     private int depth = 0;
 
     @Override
-    public String getContentType() {
+    public String getContentType(Object value) {
         return String.format("%s;charset=%s", JSON_MIME_TYPE, UTF_8_ENCODING);
     }
 
