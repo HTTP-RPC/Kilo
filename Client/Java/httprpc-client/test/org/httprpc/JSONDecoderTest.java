@@ -59,7 +59,7 @@ public class JSONDecoderTest {
 
     @Test
     public void testArray() throws IOException {
-        Object value = decode("[\"abc\", 123,,, true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]");
+        Object value = decode("[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]");
 
         Assert.assertTrue(value.equals(listOf(
             "abc",
@@ -102,7 +102,7 @@ public class JSONDecoderTest {
 
     @Test
     public void testObject() throws IOException {
-        Object value = decode("{\"a\": \"abc\", \"b\": 123,,, \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}");
+        Object value = decode("{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}");
 
         Assert.assertTrue(value.equals(mapOf(
             entry("a", "abc"),
