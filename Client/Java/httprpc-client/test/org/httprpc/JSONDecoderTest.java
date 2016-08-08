@@ -26,54 +26,97 @@ import static org.httprpc.WebServiceProxy.entry;
 
 public class JSONDecoderTest {
     @Test
-    public void testString() {
-        Assert.assertEquals("abcdefg", decode("\"abcdefg\""));
+    public void testString() throws IOException {
+        Assert.assertTrue(decode("\"abcdéfg\"").equals("abcdéfg"));
+        Assert.assertTrue(decode("\"\\b\\f\\r\\n\\t\"").equals("\b\f\r\n\t"));
+        Assert.assertTrue(decode("\"\\u00E9\"").equals("é"));
     }
 
     @Test
-    public void testNumber() {
-        Assert.assertEquals(42L, decode("42"));
+    public void testNumber() throws IOException {
+        Assert.assertTrue(decode("42").equals(42));
+        Assert.assertTrue(decode("42").equals(42L));
+        Assert.assertTrue(decode("42").equals(42F));
+        Assert.assertTrue(decode("42").equals(42.0));
+
+        Assert.assertEquals(decode("42").hashCode(), Long.valueOf(42L).hashCode());
+        Assert.assertEquals((new NumberAdapter(Integer.valueOf(42), true)).hashCode(), (new NumberAdapter(Long.valueOf(42L), true)).hashCode());
+
+        Assert.assertTrue(decode("123.0").equals(123));
+        Assert.assertTrue(decode("123.0").equals(123L));
+        Assert.assertTrue(decode("123.0").equals(123F));
+        Assert.assertTrue(decode("123.0").equals(123.0));
+
+        Assert.assertEquals(decode("123.0").hashCode(), Double.valueOf(123.0).hashCode());
+        Assert.assertEquals((new NumberAdapter(Float.valueOf(123F), false)).hashCode(), (new NumberAdapter(Double.valueOf(123.0), false)).hashCode());
     }
 
     @Test
-    public void testBoolean() {
-        Assert.assertEquals(true, decode("true"));
-        Assert.assertEquals(false, decode("false"));
+    public void testBoolean() throws IOException {
+        Assert.assertTrue(decode("true").equals(true));
+        Assert.assertTrue(decode("false").equals(false));
     }
 
     @Test
-    public void testArray() {
-        Assert.assertEquals(listOf(
+    public void testArray() throws IOException {
+        Object value = decode("[\"abc\", 123,,, true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]");
+
+        Assert.assertTrue(value.equals(listOf(
             "abc",
-            123L,
+            123,
             true,
-            listOf(1L, 2L, 3.0),
-            mapOf(entry("x", 1L), entry("y", 2L), entry("z", 3.0))
-        ), decode("[\"abc\", 123, true, [1, 2, 3.0], {\"x\": 1, \"y\": 2, \"z\": 3.0}]"));
+            listOf(1, 2L, 3.0),
+            mapOf(entry("x", 1), entry("y", 2F), entry("z", 3.0))
+        )));
+    }
+
+    @Test(expected=IOException.class)
+    public void testMissingObjectCommas() throws IOException {
+        decode("{a:1 b:2 c:3}");
+    }
+
+    @Test(expected=IOException.class)
+    public void testMissingObjectClosingBracket() throws IOException {
+        decode("{a:1, b:2, c:3");
+    }
+
+    @Test(expected=IOException.class)
+    public void testWrongObjectClosingBracket() throws IOException {
+        decode("{a:1, b:2, c:3]");
+    }
+
+    @Test(expected=IOException.class)
+    public void testMissingArrayCommas() throws IOException {
+        decode("[1 2 3]");
+    }
+
+    @Test(expected=IOException.class)
+    public void testMissingArrayClosingBracket() throws IOException {
+        decode("[1 2 3");
+    }
+
+    @Test(expected=IOException.class)
+    public void testWrongArrayClosingBracket() throws IOException {
+        decode("[1 2 3}");
     }
 
     @Test
-    public void testObject() {
-        Assert.assertEquals(mapOf(
+    public void testObject() throws IOException {
+        Object value = decode("{\"a\": \"abc\", \"b\": 123,,, \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}");
+
+        Assert.assertTrue(value.equals(mapOf(
             entry("a", "abc"),
-            entry("b", 123L),
+            entry("b", 123),
             entry("c", true),
-            entry("d", listOf(1L, 2L, 3.0)),
-            entry("e", mapOf(entry("x", 1L), entry("y", 2L), entry("z", 3.0)))
-        ), decode("{\"a\": \"abc\", \"b\": 123, \"c\": true, \"d\": [1, 2, 3.0], \"e\": {\"x\": 1, \"y\": 2, \"z\": 3.0}}"));
+            entry("d", listOf(1, 2L, 3.0)),
+            entry("e", mapOf(entry("x", 1), entry("y", 2F), entry("z", 3.0)))
+        )));
     }
 
     @SuppressWarnings("unchecked")
-    private <V> V decode(String json) {
+    private <V> V decode(String json) throws IOException {
         JSONDecoder decoder = new JSONDecoder();
 
-        V value;
-        try {
-            value = (V)decoder.readValue(new StringReader(json));
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        return value;
+        return (V)decoder.readValue(new StringReader(json));
     }
 }

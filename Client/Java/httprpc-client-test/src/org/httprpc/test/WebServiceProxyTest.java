@@ -88,7 +88,7 @@ public class WebServiceProxyTest {
         serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", sumArguments, new ResultHandler<Number>() {
             @Override
             public void execute(Number result, Exception exception) {
-                validate(exception == null && result.doubleValue() == 6.0);
+                validate(exception == null && result.intValue() == 6);
             }
         });
 
@@ -118,7 +118,7 @@ public class WebServiceProxyTest {
 
         // Delete
         serviceProxy.invoke("DELETE", "/httprpc-server-test/test", mapOf(entry("value", 101)), (result, exception) -> {
-            validate(exception == null && result.equals(101L));
+            validate(exception == null && result.equals(101));
         });
 
         // Statistics
@@ -134,8 +134,8 @@ public class WebServiceProxyTest {
         // Test data
         serviceProxy.invoke("GET", "/httprpc-server-test/test/testData", (result, exception) -> {
             validate(exception == null && result.equals(listOf(
-                mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)),
-                mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0))))
+                mapOf(entry("a", "hello"), entry("b", 1), entry("c", 2.0)),
+                mapOf(entry("a", "goodbye"), entry("b", 2), entry("c", 4.0))))
             );
         });
 
@@ -195,11 +195,11 @@ public class WebServiceProxyTest {
         });
 
         // Parallel operations
-        Future<Double> sum1 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
-        Future<Double> sum2 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
-        Future<Double> sum3 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
+        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
+        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
+        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
 
-        validate(sum1.get().equals(3.0) && sum2.get().equals(6.0) && sum3.get().equals(9.0));
+        validate(sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
 
         // Shut down thread pool
         threadPool.shutdown();

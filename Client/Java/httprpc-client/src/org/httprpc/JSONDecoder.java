@@ -233,9 +233,10 @@ public class JSONDecoder implements Decoder {
     private Number readNumber(Reader reader) throws IOException {
         Number value = null;
 
-        StringBuilder numberBuilder = new StringBuilder();
         boolean negative = false;
         boolean integer = true;
+
+        StringBuilder numberBuilder = new StringBuilder();
 
         if (c == '+' || c == '-') {
             negative = (c == '-');
@@ -256,7 +257,7 @@ public class JSONDecoder implements Decoder {
             value = Double.valueOf(numberBuilder.toString()) * (negative ? -1.0 : 1.0);
         }
 
-        return value;
+        return new NumberAdapter(value, integer);
     }
 
     private boolean readKeyword(Reader reader, String keyword) throws IOException {
@@ -273,5 +274,66 @@ public class JSONDecoder implements Decoder {
         }
 
         return (i == n);
+    }
+}
+
+// Number adapter
+class NumberAdapter extends Number {
+    private static final long serialVersionUID = 0;
+
+    private Number number;
+    private boolean integer;
+
+    public NumberAdapter(Number number, boolean integer) {
+        this.number = number;
+        this.integer = integer;
+    }
+
+    @Override
+    public int intValue() {
+        return number.intValue();
+    }
+
+    @Override
+    public long longValue() {
+        return number.longValue();
+    }
+
+    @Override
+    public float floatValue() {
+        return number.floatValue();
+    }
+
+    @Override
+    public double doubleValue() {
+        return number.doubleValue();
+    }
+
+    @Override
+    public int hashCode() {
+        long value;
+        if (integer) {
+            value = number.longValue();
+        } else {
+            value = Double.doubleToLongBits(number.doubleValue());
+        }
+
+        return (int)(value ^ (value >>> 32));
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return (object instanceof Number && equals((Number)object));
+    }
+
+    private boolean equals(Number number) {
+        boolean result;
+        if (integer) {
+            result = (longValue() == number.longValue());
+        } else {
+            result = (Double.doubleToLongBits(doubleValue()) == Double.doubleToLongBits(number.doubleValue()));
+        }
+
+        return result;
     }
 }
