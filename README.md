@@ -167,7 +167,7 @@ Methods may return any of the following types:
 * `java.util.List`
 * `java.util.Map`
 
-Methods may also return `void` or `java.lang.Void` to indicate that they do not return a value.
+Methods may also return `void` or `java.lang.Void` to indicate that they do not produce a value.
 
 `Map` implementations must use `String` values for keys. Nested structures are supported, but reference cycles are not permitted.
 
@@ -236,7 +236,7 @@ All requests for `/customValue` will return the representation of `CustomType` a
 
 While custom encodings offer a great deal of flexibility, many common use cases can be addressed using the various adapter types provided by the framework. These adapters are discussed in more detail below. 
 
-Templates are another means for customizing a resource's representation. They are discussed in a later section.
+Templates are another means for customizing a resource's representation. They are also discussed in a later section.
 
 ### BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
@@ -687,7 +687,7 @@ The second argument will be `null` in this case. If an error occurs, the first a
 
 Internally, `WebServiceProxy ` uses the `JSONDecoder` class to deserialize JSON response data returned by a service operation. This class can also be used by application code to read JSON data from arbitrary input streams.
 
-Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to return `Bitmap` instances: 
+Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to support `Bitmap` data: 
 
     @Override
     protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
@@ -787,7 +787,7 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
         System.out.println(statistics.getAverage());
     });
 
-Additionally, `Result` provides the following static method for accessing nested map values by dot-separated key path (e.g. "foo.bar"):
+Additionally, `Result` provides the following static method for accessing nested map values by key path (e.g. "foo.bar"):
 
     public static <V> V getValue(Map<String, ?> root, String path) { ... }
 
