@@ -16,6 +16,8 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Date;
+import java.util.HashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,22 +43,67 @@ public class JSONDecoderTest {
 
         Assert.assertFalse(decode("42").equals(42.5));
 
-        Assert.assertEquals((new NumberAdapter(Integer.valueOf(42))).hashCode(), (new NumberAdapter(Long.valueOf(42L))).hashCode());
+        Assert.assertEquals(new NumberAdapter(Integer.MAX_VALUE), Integer.MAX_VALUE);
+        Assert.assertEquals(new NumberAdapter(Integer.MIN_VALUE), Integer.MIN_VALUE);
+
+        Assert.assertEquals(new NumberAdapter(Long.MAX_VALUE), Long.MAX_VALUE);
+        Assert.assertEquals(new NumberAdapter(Long.MIN_VALUE), Long.MIN_VALUE);
 
         Assert.assertTrue(decode("123.0").equals(123));
         Assert.assertTrue(decode("123.0").equals(123L));
         Assert.assertTrue(decode("123.0").equals(123F));
         Assert.assertTrue(decode("123.0").equals(123.0));
 
-        Assert.assertFalse(decode("123.0").equals(123.5));
+        Assert.assertTrue(decode("123.456").equals(123.456));
 
-        Assert.assertEquals((new NumberAdapter(Float.valueOf(123F))).hashCode(), (new NumberAdapter(Double.valueOf(123.0))).hashCode());
+        Assert.assertFalse(decode("123.456").equals(123));
+
+        Assert.assertTrue(decode("-789").equals(-789));
+        Assert.assertTrue(decode("-789").equals(-789L));
+        Assert.assertTrue(decode("-789.0").equals(-789F));
+        Assert.assertTrue(decode("-789.0").equals(-789.0));
+
+        Assert.assertTrue(decode("-789.10").equals(-789.10));
+
+        Assert.assertFalse(decode("-789.10").equals(-789));
+
+        Assert.assertEquals(new NumberAdapter(Float.MAX_VALUE), Float.MAX_VALUE);
+        Assert.assertEquals(new NumberAdapter(Float.MIN_VALUE), Float.MIN_VALUE);
+
+        Assert.assertEquals(new NumberAdapter(Double.MAX_VALUE), Double.MAX_VALUE);
+        Assert.assertEquals(new NumberAdapter(Double.MIN_VALUE), Double.MIN_VALUE);
+
+        HashSet<Number> numbers = new HashSet<>();
+
+        numbers.add(new NumberAdapter(101));
+
+        Assert.assertTrue(numbers.contains(new NumberAdapter(101)));
+        Assert.assertTrue(numbers.contains(new NumberAdapter(101L)));
+        Assert.assertTrue(numbers.contains(new NumberAdapter(101F)));
+        Assert.assertTrue(numbers.contains(new NumberAdapter(101.0)));
+
+        numbers.add(new NumberAdapter(202.5));
+
+        Assert.assertFalse(numbers.contains(new NumberAdapter(202)));
+        Assert.assertFalse(numbers.contains(new NumberAdapter(202L)));
+
+        Assert.assertTrue(numbers.contains(new NumberAdapter(202.5F)));
+        Assert.assertTrue(numbers.contains(new NumberAdapter(202.5)));
+
+        Date now = new Date();
+
+        Assert.assertEquals(decode(Long.toString(now.getTime())), now.getTime());
     }
 
     @Test
     public void testBoolean() throws IOException {
         Assert.assertTrue(decode("true").equals(true));
         Assert.assertTrue(decode("false").equals(false));
+    }
+
+    @Test(expected=IOException.class)
+    public void testInvalidCharacters() throws IOException {
+        decode("xyz");
     }
 
     @Test

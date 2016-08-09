@@ -234,7 +234,7 @@ public class JSONDecoder implements Decoder {
         Number value = null;
 
         boolean negative = false;
-        boolean integer = true;
+        boolean decimal = false;
 
         StringBuilder numberBuilder = new StringBuilder();
 
@@ -246,15 +246,15 @@ public class JSONDecoder implements Decoder {
 
         while (c != EOF && (Character.isDigit(c) || c == '.' || c == 'e' || c == 'E' || c == '-')) {
             numberBuilder.append((char)c);
-            integer &= !(c == '.');
+            decimal |= (c == '.');
 
             c = reader.read();
         }
 
-        if (integer) {
-            value = Long.valueOf(numberBuilder.toString()) * (negative ? -1 : 1);
-        } else {
+        if (decimal) {
             value = Double.valueOf(numberBuilder.toString()) * (negative ? -1.0 : 1.0);
+        } else {
+            value = Long.valueOf(numberBuilder.toString()) * (negative ? -1 : 1);
         }
 
         return new NumberAdapter(value);
