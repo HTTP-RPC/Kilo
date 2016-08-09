@@ -257,7 +257,7 @@ public class JSONDecoder implements Decoder {
             value = Double.valueOf(numberBuilder.toString()) * (negative ? -1.0 : 1.0);
         }
 
-        return new NumberAdapter(value, integer);
+        return new NumberAdapter(value);
     }
 
     private boolean readKeyword(Reader reader, String keyword) throws IOException {
@@ -282,11 +282,9 @@ class NumberAdapter extends Number {
     private static final long serialVersionUID = 0;
 
     private Number number;
-    private boolean integer;
 
-    public NumberAdapter(Number number, boolean integer) {
+    public NumberAdapter(Number number) {
         this.number = number;
-        this.integer = integer;
     }
 
     @Override
@@ -311,14 +309,9 @@ class NumberAdapter extends Number {
 
     @Override
     public int hashCode() {
-        long value;
-        if (integer) {
-            value = number.longValue();
-        } else {
-            value = Double.doubleToLongBits(number.doubleValue());
-        }
+        long bits = Double.doubleToLongBits(doubleValue());
 
-        return (int)(value ^ (value >>> 32));
+        return (int)(bits ^ (bits >>> 32));
     }
 
     @Override
@@ -327,13 +320,6 @@ class NumberAdapter extends Number {
     }
 
     private boolean equals(Number number) {
-        boolean result;
-        if (integer) {
-            result = (longValue() == number.longValue());
-        } else {
-            result = (Double.doubleToLongBits(doubleValue()) == Double.doubleToLongBits(number.doubleValue()));
-        }
-
-        return result;
+        return (Double.doubleToLongBits(doubleValue()) == Double.doubleToLongBits(number.doubleValue()));
     }
 }

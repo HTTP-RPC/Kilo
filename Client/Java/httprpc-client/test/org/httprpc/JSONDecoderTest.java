@@ -39,16 +39,18 @@ public class JSONDecoderTest {
         Assert.assertTrue(decode("42").equals(42F));
         Assert.assertTrue(decode("42").equals(42.0));
 
-        Assert.assertEquals(decode("42").hashCode(), Long.valueOf(42L).hashCode());
-        Assert.assertEquals((new NumberAdapter(Integer.valueOf(42), true)).hashCode(), (new NumberAdapter(Long.valueOf(42L), true)).hashCode());
+        Assert.assertFalse(decode("42").equals(42.5));
+
+        Assert.assertEquals((new NumberAdapter(Integer.valueOf(42))).hashCode(), (new NumberAdapter(Long.valueOf(42L))).hashCode());
 
         Assert.assertTrue(decode("123.0").equals(123));
         Assert.assertTrue(decode("123.0").equals(123L));
         Assert.assertTrue(decode("123.0").equals(123F));
         Assert.assertTrue(decode("123.0").equals(123.0));
 
-        Assert.assertEquals(decode("123.0").hashCode(), Double.valueOf(123.0).hashCode());
-        Assert.assertEquals((new NumberAdapter(Float.valueOf(123F), false)).hashCode(), (new NumberAdapter(Double.valueOf(123.0), false)).hashCode());
+        Assert.assertFalse(decode("123.0").equals(123.5));
+
+        Assert.assertEquals((new NumberAdapter(Float.valueOf(123F))).hashCode(), (new NumberAdapter(Double.valueOf(123.0))).hashCode());
     }
 
     @Test
