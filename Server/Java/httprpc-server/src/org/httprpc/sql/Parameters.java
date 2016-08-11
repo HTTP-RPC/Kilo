@@ -16,6 +16,7 @@ package org.httprpc.sql;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -39,7 +40,7 @@ public class Parameters {
      * Returns the parsed SQL.
      *
      * @return
-     * The SQL that was parsed by the call to {@link #parse(Reader)}.
+     * The parsed SQL.
      */
     public String getSQL() {
         return sql;
@@ -66,16 +67,38 @@ public class Parameters {
     }
 
     /**
-     * Parses a parameterized SQL statement. Parameters are declared using
-     * <a href="http://jcp.org/en/jsr/detail?id=317" target="_blank">JPA</a>
-     * named parameter syntax.
+     * Parses a parameterized SQL statement.
+     *
+     * @param sql
+     * A string containing the SQL to parse.
+     *
+     * @return
+     * An {@link Parameters} instance containing the parsed SQL.
+     *
+     * @throws IOException
+     * If an exception occurs while reading the SQL statement.
+     */
+    public static Parameters parse(String sql) throws IOException {
+        if (sql == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Parameters parameters;
+        try (Reader sqlReader = new StringReader(sql)) {
+            parameters = parse(sqlReader);
+        }
+
+        return parameters;
+    }
+
+    /**
+     * Parses a parameterized SQL statement.
      *
      * @param sqlReader
      * A reader containing the SQL to parse.
      *
      * @return
-     * An instance of {@link Parameters} that can be used to apply a set of
-     * argument values to a prepared statement.
+     * An {@link Parameters} instance containing the parsed SQL.
      *
      * @throws IOException
      * If an exception occurs while reading the SQL statement.

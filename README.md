@@ -321,9 +321,9 @@ The `Parameters` class provides a means for executing prepared statements using 
     SELECT * FROM some_table 
     WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
     
-The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a `java.io.Reader` containing the SQL text as an argument; for example:
+The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
 
-    Parameters parameters = Parameters.parse(new StringReader(sql));
+    Parameters parameters = Parameters.parse(sql);
 
 The `getSQL()` method returns the parsed SQL in standard JDBC syntax:
 

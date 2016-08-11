@@ -16,7 +16,6 @@ package org.httprpc.test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -145,10 +144,8 @@ public class TestService extends WebService {
         Class.forName("org.sqlite.JDBC");
 
         String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));
+        Parameters parameters = Parameters.parse("select * from test where a=:a or b=:b or c=coalesce(:c, 4.0)");
 
-        String sql = "select * from test where a=:a or b=:b or c=coalesce(:c, 4.0)";
-
-        Parameters parameters = Parameters.parse(new StringReader(sql));
         PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
 
         parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
