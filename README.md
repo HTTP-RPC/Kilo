@@ -62,7 +62,7 @@ The `DELETE` method removes information from the server. `DELETE` arguments are 
 ## Response Codes
 Although the HTTP specification defines a large number of possible response codes, only a few are applicable to HTTP-RPC services:
 
-* _200 OK_ - The request succeeded, and the response contains a JSON value representing the result
+* _200 OK_ - The request succeeded, and the response contains a value representing the result
 * _204 No Content_ - The request succeeded, but did not produce a result
 * _404 Not Found_ - The requested resource does not exist
 * _405 Method Not Allowed_ - The resource exists, but does not support the requested method
@@ -77,7 +77,7 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
 
 * _`org.httprpc`_
     * `WebService` - abstract base class for HTTP-RPC services
-    * `RPC` - annotation that specifies a "remote procedure call", or service method
+    * `RPC` - annotation that specifies a "remote procedure call", or web service method
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
     * `Encoder ` - interface representing a content encoder
     * `JSONEncoder` - class that encodes a JSON response
@@ -219,7 +219,7 @@ If the method completes successfully and returns a value, an HTTP 200 status cod
 
 If the requested resource does not exist, the servlet returns an HTTP 404 status code. If the resource exists but does not support the requested method, HTTP 405 is returned. 
 
-If any exception is thrown while executing the method, HTTP 500 is returned.
+If any exception is thrown while executing the method, HTTP 500 is returned. If an exception is thrown while serializing the response, the output is truncated. In either case, the exception is logged.
 
 Servlet security is provided by the underlying servlet container. See the Java EE documentation for more information.
 
@@ -236,7 +236,7 @@ All requests for `/customValue` will return the representation of `CustomType` a
 
 While custom encodings offer a great deal of flexibility, many common use cases can be addressed using the various adapter types provided by the framework. These adapters are discussed in more detail below. 
 
-Templates are another means for customizing a resource's representation. They are also discussed in a later section.
+Templates are another means for customizing a resource's representation. They are discussed in a later section.
 
 ### BeanAdapter Class
 The `BeanAdapter` class allows the contents of a Java Bean object to be returned from a service method. This class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized to JSON.
@@ -325,7 +325,7 @@ The `parse()` method is used to create a `Parameters` instance from a SQL statem
 
     Parameters parameters = Parameters.parse(new StringReader(sql));
 
-The `getSQL()` method of the `Parameters` class returns the parsed SQL in standard JDBC syntax:
+The `getSQL()` method returns the parsed SQL in standard JDBC syntax:
 
     SELECT * FROM some_table 
     WHERE column_a = ? OR column_b = ? OR column_c = COALESCE(?, 4.0)
@@ -334,7 +334,7 @@ This value is used to create the actual prepared statement:
 
     PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
 
-Parameter values are applied to the statement using the `apply()` method. The first argument to this method is the prepared statement, and the second is a map containing the statement arguments:
+Parameter values are specified via a map passed to the `apply()` method:
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("a", "hello");
@@ -363,7 +363,7 @@ As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its 
 `IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
 
 ### Templates
-Although data produced by an HTTP-RPC web service is typically returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
+Although data produced by an HTTP-RPC web service is usually returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
 
 HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ctemplate) system, which defines a set of "markers" that are replaced with values supplied by a "data dictionary" when the template is processed. The following CTemplate marker types are supported by HTTP-RPC:
 
@@ -372,7 +372,7 @@ HTTP-RPC templates are based on the [CTemplate](https://github.com/OlafvdSpek/ct
 * {{>_include_}} - imports content specified by another template
 * {{!_comment_}} - provides informational text about a template's content
 
-The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values provided by the dictionary. For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier to HTML is shown below:
+The value returned by a service method represents the data dictionary. Usually, this will be an instance of `java.util.Map` whose keys represent the values provided by the dictionary. For example, a simple template for transforming the output of the `getStatistics()` method discussed earlier into HTML is shown below:
 
     <html>
     <head>
@@ -420,15 +420,17 @@ If the value returned by the method is the number `8`, the resulting output woul
 #### Template Documents
 The `Template` annotation is used to associate a template document with a method. The annotation's value represents the name and type of the template that will be applied to the results. For example:
 
+    @RPC(method="GET", path="statistics")
     @Template(name="statistics.html", contentType="text/html")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
 The `name` value refers to the file containing the template definition. It is specified as a resource path relative to the service type.
 
-The `contentType` value indicates type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL. 
+The `contentType` value indicates the type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL; for example, _/math/statistics.html_. 
 
 Note that it is possible to associate multiple templates with a single service method. For example, the following code associates an additional XML template with the `getStatistics()` method:
 
+    @RPC(method="GET", path="statistics")
     @Template(name="statistics.html", contentType="text/html")
     @Template(name="statistics.xml", contentType="application/xml")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
@@ -436,7 +438,7 @@ Note that it is possible to associate multiple templates with a single service m
 The `TemplateEncoder` class is responsible for merging a template document with a data dictionary. Although it is used internally by HTTP-RPC to transform annotated method results, it can also be used by application code to perform arbitrary transformations. See the Javadoc for more information.
 
 #### Variable Markers
-Variable markers inject a variable from the data dictionary into the output. They can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Missing (i.e. `null`) values are replaced with the empty string in the generated output. Nested variables can be referred to using dot-separated path notation; e.g. "name.first".
+Variable markers inject a variable from the data dictionary into the output. They can be used to refer to any simple dictionary value (i.e. number, boolean, or character sequence). Nested values can be referred to using dot-separated path notation; e.g. "name.first". Missing (i.e. `null`) values are replaced with the empty string in the generated output. 
 
 ##### Resource References
 Variable names beginning with the `@` character represent "resource references". Resources allow static template content to be localized. At execution time, the template processor looks for a resource bundle with the same base name as the service type, using the locale specified by the current HTTP request. If the bundle exists, it is used to provide a localized string value for the variable.
@@ -515,7 +517,7 @@ Applications may also define their own custom modifiers. Modifiers are created b
 
     public Object apply(Object value, String argument, Locale locale);
     
-The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If a modifier argument is not specified, `argument` will be null. The third argument contains the caller's locale.
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If a modifier argument is not specified, the value of `argument` will be null. The third argument contains the caller's locale.
 
 For example, the following class implements a modifier that converts values to uppercase:
 
@@ -526,12 +528,14 @@ For example, the following class implements a modifier that converts values to u
         }
     }
 
-Custom modifiers are registered by adding them to the modifier map returned by `TemplateEncoder#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document.
+Custom modifiers are registered by adding them to the modifier map returned by `TemplateEncoder#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document. For example:
+
+	TemplateEncoder.getModifiers().put("uppercase", new UppercaseModifier());
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template engines.
 
 #### Section Markers
-Section markers define a repeating section of content. The section marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list. The element becomes the data dictionary for each successive iteration through the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
+Section markers define a repeating section of content. The marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list, and the element becomes the data dictionary for each successive iteration through the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
 
 For example, a service that provides information about homes for sale might return a list of available properties as follows:
 
@@ -551,7 +555,7 @@ For example, a service that provides information about homes for sale might retu
         ...
     ]
     
-A template to present these results in an HTML table is shown below. Dot notation is used to refer to the list itself, and variable markers are used to refer to the properties of the list elements. The `format` modifier is used to present the list price as a currency value:
+A template to present these results in an HTML table is shown below. Dot notation is used to refer to the list itself, and variable markers are used to refer to the properties of the list elements. The `format` modifier is used to present the list price as a localized currency value:
 
     <html>
     <head>
@@ -609,9 +613,7 @@ The result of processing the following template, _treenode.html_, would be a col
     </ul>
 
 #### Comments
-Comment markers provide informational text about a template's content. They are not included in the final output. 
-
-For example, when the following template is processed, only the content between the `<p>` tags will be included in the output:
+Comment markers provide informational text about a template's content. They are not included in the final output. For example, when the following template is processed, only the content between the `<p>` tags will be included:
 
     {{! Some placeholder text }}
     <p>Lorem ipsum dolor sit amet.</p>
@@ -636,9 +638,7 @@ The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC 
 `WebServiceProxy` provides a single constructor that takes the following arguments:
 
 * `serverURL` - an instance of `java.net.URL` representing the URL of the server
-* `executorService` - an instance of `java.util.concurrent.ExecutorService` that will be used to execute service requests
-
-The executor service is used to schedule service requests. Internally, requests are implemented as a `Callable` that is submitted to the service. See the `ExecutorService` Javadoc for more information.
+* `executorService` - an instance of `java.util.concurrent.ExecutorService` that is used to  dispatch service requests
 
 Service operations are initiated by calling the `invoke()` method:
     
@@ -717,7 +717,7 @@ to this:
 
     Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
     
-A complete example using `WebServiceProxy#invoke()` is provided later.
+A complete example is provided later.
 
 #### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
@@ -781,13 +781,12 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
     serviceProxy.invoke("getStatistics", (Map<String, Object> result, Exception exception) -> {
         Statistics statistics = new Statistics(result);
 
-        // Prints 3, 9.0, and 3.0
         System.out.println(statistics.getCount());
         System.out.println(statistics.getSum());
         System.out.println(statistics.getAverage());
     });
 
-Additionally, `Result` provides the following static method for accessing nested map values by key path (e.g. "foo.bar"):
+Additionally, the `Result` class provides the following static method for accessing nested map values by key path (e.g. "foo.bar"):
 
     public static <V> V getValue(Map<String, ?> root, String path) { ... }
 
