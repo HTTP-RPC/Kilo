@@ -86,6 +86,8 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
 
+    private static final String USER_AGENT_KEY = "User-Agent";
+
     @Override
     public void init() throws ServletException {
         // Load service class
@@ -270,24 +272,28 @@ public class RequestDispatcherServlet extends HttpServlet {
 
         if (returnType != Void.TYPE && returnType != Void.class) {
             if (extension != null) {
-                String mimeType = getServletContext().getMimeType(extension);
+                String userAgent = request.getHeader(USER_AGENT_KEY);
 
-                Template[] templates = method.getAnnotationsByType(Template.class);
+                if (userAgent != null) {
+                    String mimeType = getServletContext().getMimeType(extension);
 
-                for (int i = 0; i < templates.length; i++) {
-                    Template template = templates[i];
+                    Template[] templates = method.getAnnotationsByType(Template.class);
 
-                    if (template.contentType().equals(mimeType)) {
-                        encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
+                    for (int i = 0; i < templates.length; i++) {
+                        Template template = templates[i];
 
-                        Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
+                        if (template.contentType().equals(mimeType) && userAgent.matches(template.userAgent())) {
+                            encoder = new TemplateEncoder(serviceType.getResource(template.name()), mimeType, serviceType.getName());
 
-                        context.put("scheme", request.getScheme());
-                        context.put("serverName", request.getServerName());
-                        context.put("serverPort", request.getServerPort());
-                        context.put("contextPath", request.getContextPath());
+                            Map<String, Object> context = ((TemplateEncoder)encoder).getContext();
 
-                        break;
+                            context.put("scheme", request.getScheme());
+                            context.put("serverName", request.getServerName());
+                            context.put("serverPort", request.getServerPort());
+                            context.put("contextPath", request.getContextPath());
+
+                            break;
+                        }
                     }
                 }
 

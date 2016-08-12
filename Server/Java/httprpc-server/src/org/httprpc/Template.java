@@ -38,4 +38,11 @@ public @interface Template {
      * The MIME type of the content produced by the template.
      */
     public String contentType();
+
+    /**
+     * @return
+     * A regular expression that associates the template with a user agent. The
+     * default value matches all user agents.
+     */
+    public String userAgent() default ".*";
 }

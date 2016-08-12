@@ -424,9 +424,11 @@ The `Template` annotation is used to associate a template document with a method
     @Template(name="statistics.html", contentType="text/html")
     public Map<String, ?> getStatistics(List<Double> values) { ... }
 
-The `name` value refers to the file containing the template definition. It is specified as a resource path relative to the service type.
+The `name` element refers to the file containing the template definition. It is specified as a resource path relative to the service type.
 
-The `contentType` value indicates the type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL; for example, _/math/statistics.html_. 
+The `contentType` element indicates the type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL; for example, _/math/statistics.html_.
+
+The optional `userAgent` element can be used to associate a template with a particular user agent string. This value is a regular expression that is matched against the `User-Agent` header provided by the caller. The default value matches all user agents.
 
 Note that it is possible to associate multiple templates with a single service method. For example, the following code associates an additional XML template with the `getStatistics()` method:
 

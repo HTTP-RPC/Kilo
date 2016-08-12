@@ -81,7 +81,7 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="tree")
-    @Template(name="tree.html", contentType="text/html")
+    @Template(name="tree.html", contentType="text/html", userAgent=".*Safari.*")
     public Map<String, ?> getTree() {
         TreeNode root = new TreeNode("Seasons", false);
 
