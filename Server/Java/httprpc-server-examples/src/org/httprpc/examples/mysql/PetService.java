@@ -15,8 +15,6 @@
 package org.httprpc.examples.mysql;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -53,11 +51,7 @@ public class PetService extends WebService {
     @RPC(method="GET")
     @Template(name="pets.html", contentType="text/html")
     public ResultSetAdapter getPets(String owner) throws SQLException, IOException {
-        Parameters parameters;
-        try (Reader sqlReader = new InputStreamReader(getClass().getResourceAsStream("pets.sql"))) {
-            parameters = Parameters.parse(sqlReader);
-        }
-
+        Parameters parameters = Parameters.parse("select name, species, sex, birth from pet where owner = :owner");
         PreparedStatement statement = DriverManager.getConnection(DB_URL).prepareStatement(parameters.getSQL());
 
         parameters.apply(statement, mapOf(entry("owner", owner)));
