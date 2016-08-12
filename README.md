@@ -10,7 +10,7 @@ The project currently includes support for implementing REST services in Java an
 	* [Java Client](#java-client)
 	* [Objective-C/Swift Client](#objective-cswift-client)
 	* [JavaScript Client](#javascript-client)
-* [More Information](#more-information)
+* [Additional Information](#additional-information)
 
 # Service Operations
 HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_.
@@ -961,5 +961,5 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to inv
         // result is 6
     });
 
-# More Information
+# Additional Information
 For additional information and examples, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
