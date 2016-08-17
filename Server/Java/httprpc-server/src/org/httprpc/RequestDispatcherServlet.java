@@ -378,25 +378,29 @@ public class RequestDispatcherServlet extends HttpServlet {
         HashMap<String, LinkedList<File>> fileMap) {
         Method method = null;
 
-        int n = -1;
+        int n = parameterMap.size() + fileMap.size();
+
+        int i = Integer.MAX_VALUE;
 
         for (Method handler : handlerList) {
+            // TODO Skip if parameter count is less than argument count?
+
             Parameter[] parameters = handler.getParameters();
 
-            int count = 0;
+            int j = 0;
 
-            for (int i = 0; i < parameters.length; i++) {
-                String name = parameters[i].getName();
+            for (int k = 0; k < parameters.length; k++) {
+                String name = parameters[k].getName();
 
-                if (parameterMap.containsKey(name) || fileMap.containsKey(name)) {
-                    count++;
+                if (!(parameterMap.containsKey(name) || fileMap.containsKey(name))) {
+                    j++;
                 }
             }
 
-            if (count > n) {
-                n = count;
-
+            if (parameters.length - j == n && j < i) {
                 method = handler;
+
+                i = j;
             }
         }
 

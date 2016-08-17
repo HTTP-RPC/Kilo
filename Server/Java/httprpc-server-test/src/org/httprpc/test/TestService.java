@@ -59,6 +59,11 @@ public class TestService extends WebService {
     }
 
     @RPC(method="GET", path="characters")
+    public static List<String> getCharacters() {
+        return null;
+    }
+
+    @RPC(method="GET", path="characters")
     public static List<String> getCharacters(String text) {
         List<String> characters = null;
 
@@ -73,6 +78,11 @@ public class TestService extends WebService {
         }
 
         return characters;
+    }
+
+    @RPC(method="POST", path="selection")
+    public String getSelection() {
+        return null;
     }
 
     @RPC(method="POST", path="selection")
@@ -106,6 +116,11 @@ public class TestService extends WebService {
         root.getChildren().add(fall);
 
         return new BeanAdapter(root);
+    }
+
+    @RPC(method="GET", path="tree")
+    public Map<String, ?> getTree(String value) {
+        return null;
     }
 
     @RPC(method="PUT")
