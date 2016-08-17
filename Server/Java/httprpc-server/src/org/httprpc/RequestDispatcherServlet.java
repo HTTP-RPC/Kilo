@@ -383,24 +383,24 @@ public class RequestDispatcherServlet extends HttpServlet {
         int i = Integer.MAX_VALUE;
 
         for (Method handler : handlerList) {
-            // TODO Skip if parameter count is less than argument count?
-
             Parameter[] parameters = handler.getParameters();
 
-            int j = 0;
+            if (parameters.length >= n) {
+                int j = 0;
 
-            for (int k = 0; k < parameters.length; k++) {
-                String name = parameters[k].getName();
+                for (int k = 0; k < parameters.length; k++) {
+                    String name = parameters[k].getName();
 
-                if (!(parameterMap.containsKey(name) || fileMap.containsKey(name))) {
-                    j++;
+                    if (!(parameterMap.containsKey(name) || fileMap.containsKey(name))) {
+                        j++;
+                    }
                 }
-            }
 
-            if (parameters.length - j == n && j < i) {
-                method = handler;
+                if (parameters.length - j == n && j < i) {
+                    method = handler;
 
-                i = j;
+                    i = j;
+                }
             }
         }
 
