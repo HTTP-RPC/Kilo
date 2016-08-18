@@ -13,9 +13,9 @@ The project currently includes support for implementing REST services in Java an
 * [Additional Information](#additional-information)
 
 # Service Operations
-HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_.
+HTTP-RPC services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_. 
 
-Arguments are provided either via the query string or in the request body, like an HTML form. Results are generally returned as JSON, although operations that produce arbitrary content or do not return a value are also supported.
+Arguments are provided either via the query string or in the request body, like an HTML form. Although services may produce any type of content, results are generally returned as JSON. Operations that do not return a value are also supported.
 
 ## GET
 The `GET` method is used to retrive information from the server. `GET` arguments are passed in the query string. For example, the following request might be used to obtain data about a calendar event:

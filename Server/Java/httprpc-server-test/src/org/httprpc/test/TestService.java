@@ -37,6 +37,17 @@ import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
 public class TestService extends WebService {
+    private static final String DB_URL = String.format("jdbc:sqlite::resource:%s/test.db",
+        TestService.class.getPackage().getName().replace('.', '/'));;
+
+    static {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     @RPC(method="GET", path="sum")
     public double getSum(double a, double b) {
         return a + b;
@@ -155,13 +166,9 @@ public class TestService extends WebService {
     @Template(name="testdata.csv", contentType="text/csv")
     @Template(name="testdata.html", contentType="text/html")
     @Template(name="testdata.xml", contentType="application/xml")
-    public ResultSetAdapter getTestData() throws ClassNotFoundException, SQLException, IOException {
-        Class.forName("org.sqlite.JDBC");
-
-        String url = String.format("jdbc:sqlite::resource:%s/test.db", getClass().getPackage().getName().replace('.', '/'));
+    public ResultSetAdapter getTestData() throws SQLException {
         Parameters parameters = Parameters.parse("select * from test where a=:a or b=:b or c=coalesce(:c, 4.0)");
-
-        PreparedStatement statement = DriverManager.getConnection(url).prepareStatement(parameters.getSQL());
+        PreparedStatement statement = DriverManager.getConnection(DB_URL).prepareStatement(parameters.getSQL());
 
         parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
 

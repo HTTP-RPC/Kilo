@@ -74,11 +74,8 @@ public class Parameters {
      *
      * @return
      * An {@link Parameters} instance containing the parsed SQL.
-     *
-     * @throws IOException
-     * If an exception occurs while reading the SQL statement.
      */
-    public static Parameters parse(String sql) throws IOException {
+    public static Parameters parse(String sql) {
         if (sql == null) {
             throw new IllegalArgumentException();
         }
@@ -86,6 +83,8 @@ public class Parameters {
         Parameters parameters;
         try (Reader sqlReader = new StringReader(sql)) {
             parameters = parse(sqlReader);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
 
         return parameters;
