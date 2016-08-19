@@ -29,11 +29,11 @@ public class CSVEscapeModifier implements Modifier {
         for (int i = 0, n = string.length(); i < n; i++) {
             char c = string.charAt(i);
 
-            if (c == '"' || c == '\\') {
-                resultBuilder.append("\\" + c);
-            } else {
+            if (c == '"') {
                 resultBuilder.append(c);
             }
+
+            resultBuilder.append(c);
         }
 
         return resultBuilder.toString();

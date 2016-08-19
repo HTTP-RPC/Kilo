@@ -295,11 +295,11 @@ public class TemplateEncoderTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeValue("a\\b\"c", writer);
+            engine.writeValue("a\"b\"c", writer);
             result = writer.toString();
         }
 
-        Assert.assertEquals("a\\\\b\\\"c", result);
+        Assert.assertEquals("a\"\"b\"\"c", result);
     }
 
     @Test
