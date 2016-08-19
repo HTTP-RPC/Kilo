@@ -266,6 +266,11 @@ public class RequestDispatcherServlet extends HttpServlet {
         // Invoke handler method
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
+        if (method == null) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
         Class<?> returnType = method.getReturnType();
 
         Encoder encoder = null;
