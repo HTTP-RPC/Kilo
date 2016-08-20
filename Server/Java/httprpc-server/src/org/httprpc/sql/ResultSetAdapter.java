@@ -159,7 +159,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
      * The adapted value.
      */
     @SuppressWarnings("unchecked")
-    protected static <T> T adapt(Object value) {
+    public static <T> T adapt(Object value) {
         if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
             if (value instanceof Date) {
                 value = ((Date)value).getTime();
