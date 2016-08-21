@@ -14,16 +14,6 @@
 
 package org.httprpc.beans;
 
-import java.util.Date;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 public class BeanAdapterTest {
-    @Test
-    public void testDate() {
-        Date date = new Date();
-
-        Assert.assertEquals(Long.valueOf(date.getTime()), BeanAdapter.adapt(date));
-    }
+    // TODO
 }

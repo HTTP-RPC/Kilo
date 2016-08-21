@@ -26,6 +26,19 @@ import java.util.Set;
 /**
  * Class that presents the contents of an iterator as an iterable list of
  * values.
+ * <p>
+ * If a value is <tt>null</tt> or an instance of one of the following types, it
+ * is returned as-is:
+ * <ul>
+ * <li>{@link String}</li>
+ * <li>{@link Number}</li>
+ * <li>{@link Boolean}</li>
+ * </ul>
+ * If the value is a {@link Date}, it is converted to its numeric
+ * representation via {@link Date#getTime()}. If the value is a {@link List},
+ * it is wrapped in an adapter that will adapt the list's elements. If the
+ * value is a {@link Map}, it is wrapped in an adapter that will adapt the
+ * map's values. Otherwise, it is converted to a {@link String}.
  */
 public class IteratorAdapter extends AbstractList<Object> implements AutoCloseable {
     // List adapter
@@ -157,31 +170,8 @@ public class IteratorAdapter extends AbstractList<Object> implements AutoCloseab
         return getClass().getName();
     }
 
-    /**
-     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
-     * the following types, it is returned as-is:
-     * <ul>
-     * <li>{@link String}</li>
-     * <li>{@link Number}</li>
-     * <li>{@link Boolean}</li>
-     * </ul>
-     * If the value is a {@link Date}, it is converted to its numeric
-     * representation via {@link Date#getTime()}. If the value is a
-     * {@link List}, it is wrapped in an adapter that will adapt the list's
-     * elements. If the value is a {@link Map}, it is wrapped in an adapter
-     * that will adapt the map's values. Otherwise, it is converted to a
-     * {@link String}.
-     *
-     * @param <T> The expected type of the adapted value.
-     *
-     * @param value
-     * The value to adapt.
-     *
-     * @return
-     * The adapted value.
-     */
     @SuppressWarnings("unchecked")
-    public static <T> T adapt(Object value) {
+    static Object adapt(Object value) {
         if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
             if (value instanceof Date) {
                 value = ((Date)value).getTime();
@@ -194,6 +184,6 @@ public class IteratorAdapter extends AbstractList<Object> implements AutoCloseab
             }
         }
 
-        return (T)value;
+        return value;
     }
 }

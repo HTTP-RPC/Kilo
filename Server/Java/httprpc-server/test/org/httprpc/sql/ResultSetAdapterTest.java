@@ -14,28 +14,6 @@
 
 package org.httprpc.sql;
 
-import java.util.Date;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 public class ResultSetAdapterTest {
-    @Test
-    public void testDate() {
-        Date date = new Date();
-
-        Assert.assertEquals(Long.valueOf(date.getTime()), ResultSetAdapter.adapt(date));
-    }
-
-    @Test
-    public void testObject() {
-        Object object = new Object() {
-            @Override
-            public String toString() {
-                return "hello";
-            }
-        };
-
-        Assert.assertEquals("hello", ResultSetAdapter.adapt(object));
-    }
+    // TODO
 }

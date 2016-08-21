@@ -27,7 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that presents the properties of a Java Bean object as a map.
+ * Class that presents the properties of a Java Bean object as a map. Property
+ * values are adapted as described for {@link #adapt(Object)}.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter

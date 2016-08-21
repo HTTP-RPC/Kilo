@@ -29,6 +29,17 @@ import java.util.NoSuchElementException;
 /**
  * Class that presents the contents of a JDBC result set as an iterable list of
  * maps.
+ * <p>
+ * If a column's value is <tt>null</tt> or an instance of one of the following
+ * types, it is returned as-is:
+ * <ul>
+ * <li>{@link String}</li>
+ * <li>{@link Number}</li>
+ * <li>{@link Boolean}</li>
+ * </ul>
+ * If the value is a {@link Date}, it is converted to its numeric
+ * representation via {@link Date#getTime()}. Otherwise, it is converted to a
+ * {@link String}.
  */
 public class ResultSetAdapter extends AbstractList<Map<String, Object>> implements AutoCloseable {
     private ResultSet resultSet;
@@ -111,10 +122,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
 
                 try {
                     for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
-                        String key = resultSetMetaData.getColumnLabel(i + 1);
-                        Object value = resultSet.getObject(i + 1);
-
-                        row.put(key, adapt(value));
+                        row.put(resultSetMetaData.getColumnLabel(i + 1), adapt(resultSet.getObject(i + 1)));
                     }
                 } catch (SQLException exception) {
                     throw new RuntimeException(exception);
@@ -132,28 +140,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
         return getClass().getName();
     }
 
-    /**
-     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
-     * the following types, it is returned as-is:
-     * <ul>
-     * <li>{@link String}</li>
-     * <li>{@link Number}</li>
-     * <li>{@link Boolean}</li>
-     * </ul>
-     * If the value is a {@link Date}, it is converted to its numeric
-     * representation via {@link Date#getTime()}. Otherwise, it is converted to
-     * a {@link String}.
-     *
-     * @param <T> The expected type of the adapted value.
-     *
-     * @param value
-     * The value to adapt.
-     *
-     * @return
-     * The adapted value.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T adapt(Object value) {
+    private static Object adapt(Object value) {
         if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
             if (value instanceof Date) {
                 value = ((Date)value).getTime();
@@ -162,6 +149,6 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
             }
         }
 
-        return (T)value;
+        return value;
     }
 }
