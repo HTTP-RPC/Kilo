@@ -27,7 +27,7 @@ import static org.httprpc.WebService.entry;
 
 public class IteratorAdapterTest {
     @Test
-    public void testIteratorAdapter1() {
+    public void testIteratorAdapter1() throws Exception {
         List<?> list1 = listOf(2L, 4.0, "abc", new Date(0), new Object() {
             @Override
             public String toString() {
@@ -37,15 +37,20 @@ public class IteratorAdapterTest {
 
         LinkedList<Object> list2 = new LinkedList<>();
 
-        for (Object element : new IteratorAdapter(list1.iterator())) {
-            list2.add(element);
+        TestIterator iterator = new TestIterator(list1.iterator());
+
+        try (IteratorAdapter adapter = new IteratorAdapter(iterator)) {
+            for (Object element : adapter) {
+                list2.add(element);
+            }
         }
 
+        Assert.assertTrue(iterator.isClosed());
         Assert.assertEquals(listOf(2L, 4.0, "abc", 0L, "hello"), list2);
     }
 
     @Test
-    public void testIteratorAdapter2() {
+    public void testIteratorAdapter2() throws Exception {
         List<?> list1 = listOf(listOf(2L, 4.0, "abc", new Date(0), new Object() {
             @Override
             public String toString() {
@@ -55,15 +60,20 @@ public class IteratorAdapterTest {
 
         LinkedList<Object> list2 = new LinkedList<>();
 
-        for (Object element : new IteratorAdapter(list1.iterator())) {
-            list2.add(element);
+        TestIterator iterator = new TestIterator(list1.iterator());
+
+        try (IteratorAdapter adapter = new IteratorAdapter(iterator)) {
+            for (Object element : adapter) {
+                list2.add(element);
+            }
         }
 
+        Assert.assertTrue(iterator.isClosed());
         Assert.assertEquals(listOf(listOf(2L, 4.0, "abc", 0L, "hello")), list2);
     }
 
     @Test
-    public void testIteratorAdapter3() {
+    public void testIteratorAdapter3() throws Exception {
         List<?> list1 = listOf(mapOf(entry("a", 2L), entry("b", 4.0), entry("c", "abc"), entry("d", new Date(0)), entry("e", new Object() {
             @Override
             public String toString() {
@@ -73,10 +83,15 @@ public class IteratorAdapterTest {
 
         LinkedList<Object> list2 = new LinkedList<>();
 
-        for (Object element : new IteratorAdapter(list1.iterator())) {
-            list2.add(element);
+        TestIterator iterator = new TestIterator(list1.iterator());
+
+        try (IteratorAdapter adapter = new IteratorAdapter(iterator)) {
+            for (Object element : adapter) {
+                list2.add(element);
+            }
         }
 
+        Assert.assertTrue(iterator.isClosed());
         Assert.assertEquals(listOf(mapOf(entry("a", 2L), entry("b", 4.0), entry("c", "abc"), entry("d", 0L), entry("e", "hello"))), list2);
     }
 }
