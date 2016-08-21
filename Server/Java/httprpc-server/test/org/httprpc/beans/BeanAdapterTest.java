@@ -14,6 +14,26 @@
 
 package org.httprpc.beans;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.httprpc.WebService.listOf;
+import static org.httprpc.WebService.mapOf;
+import static org.httprpc.WebService.entry;
+
 public class BeanAdapterTest {
-    // TODO
+    @Test
+    public void testBeanAdapter() {
+        BeanAdapter adapter = new BeanAdapter(new TestBean());
+
+        Assert.assertEquals(mapOf(
+            entry("a", 2L),
+            entry("b", 4.0),
+            entry("c", "abc"),
+            entry("d", 0L),
+            entry("e", mapOf(entry("i", true))),
+            entry("f", listOf(mapOf(entry("i", true)))),
+            entry("g", mapOf(entry("h", mapOf(entry("i", true)))))
+        ), adapter);
+    }
 }
