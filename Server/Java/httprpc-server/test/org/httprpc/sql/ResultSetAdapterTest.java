@@ -14,6 +14,37 @@
 
 package org.httprpc.sql;
 
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.httprpc.WebService.listOf;
+import static org.httprpc.WebService.mapOf;
+import static org.httprpc.WebService.entry;
+
 public class ResultSetAdapterTest {
-    // TODO
+    @Test
+    public void testResultSetAdapter() throws SQLException {
+        LinkedList<Map<String, Object>> list = new LinkedList<>();
+
+        TestResultSet resultSet = new TestResultSet();
+
+        try (ResultSetAdapter adapter = new ResultSetAdapter(resultSet)) {
+            for (Map<String, Object> row : adapter) {
+                list.add(row);
+            }
+        }
+
+        Assert.assertTrue(resultSet.isClosed());
+        Assert.assertEquals(listOf(mapOf(
+            entry("a", 2L),
+            entry("b", 4.0),
+            entry("c", "abc"),
+            entry("d", 0L),
+            entry("e", "hello")
+        )), list);
+    }
 }

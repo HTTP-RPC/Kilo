@@ -27,7 +27,6 @@ import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
-import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -37,1200 +36,1090 @@ import java.util.Calendar;
 import java.util.Map;
 
 public class TestResultSet implements ResultSet {
-    private class TestResultSetMetaData implements ResultSetMetaData {
+    private ResultSetMetaData metaData = new ResultSetMetaData() {
         @Override
-        public <T> T unwrap(Class<T> iface) throws SQLException {
-            // TODO
-            return null;
+        public <T> T unwrap(Class<T> iface) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isWrapperFor(Class<?> iface) throws SQLException {
-            // TODO
-            return false;
+        public boolean isWrapperFor(Class<?> iface) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int getColumnCount() throws SQLException {
-            // TODO
-            return 0;
+        public int getColumnCount() {
+            return labels.length;
         }
 
         @Override
-        public boolean isAutoIncrement(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isAutoIncrement(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isCaseSensitive(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isCaseSensitive(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isSearchable(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isSearchable(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isCurrency(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isCurrency(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int isNullable(int column) throws SQLException {
-            // TODO
-            return 0;
+        public int isNullable(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isSigned(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isSigned(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int getColumnDisplaySize(int column) throws SQLException {
-            // TODO
-            return 0;
+        public int getColumnDisplaySize(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getColumnLabel(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getColumnLabel(int column) {
+            return labels[column - 1];
         }
 
         @Override
-        public String getColumnName(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getColumnName(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getSchemaName(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getSchemaName(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int getPrecision(int column) throws SQLException {
-            // TODO
-            return 0;
+        public int getPrecision(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int getScale(int column) throws SQLException {
-            // TODO
-            return 0;
+        public int getScale(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getTableName(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getTableName(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getCatalogName(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getCatalogName(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public int getColumnType(int column) throws SQLException {
-            // TODO
-            return 0;
+        public int getColumnType(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getColumnTypeName(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getColumnTypeName(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isReadOnly(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isReadOnly(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isWritable(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isWritable(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean isDefinitelyWritable(int column) throws SQLException {
-            // TODO
-            return false;
+        public boolean isDefinitelyWritable(int column) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getColumnClassName(int column) throws SQLException {
-            // TODO
-            return null;
+        public String getColumnClassName(int column) {
+            throw new UnsupportedOperationException();
         }
-    }
+    };
 
-    private ResultSetMetaData metaData = new TestResultSetMetaData();
+    private String[] labels = {"a", "b", "c", "d", "e"};
+
+    private Object[] values = {2L, 4.0, "abc", new Date(0), new Object() {
+        @Override
+        public String toString() {
+            return "hello";
+        }
+    }};
+
+    private boolean hasNext = true;
+    private boolean closed = false;
 
     @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        // TODO
+    public <T> T unwrap(Class<T> iface) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean next() {
+        boolean hasNext = this.hasNext;
+
+        this.hasNext = false;
+
+        return hasNext;
+    }
+
+    @Override
+    public void close() {
+        closed = true;
+    }
+
+    @Override
+    public boolean wasNull() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getString(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean getBoolean(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte getByte(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public short getShort(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getInt(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getLong(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getFloat(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getDouble(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(int columnIndex, int scale) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte[] getBytes(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Date getDate(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Time getTime(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Timestamp getTimestamp(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getAsciiStream(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getUnicodeStream(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getBinaryStream(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getString(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean getBoolean(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte getByte(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public short getShort(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getInt(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getLong(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float getFloat(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getDouble(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(String columnLabel, int scale) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte[] getBytes(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Date getDate(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Time getTime(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Timestamp getTimestamp(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getAsciiStream(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getUnicodeStream(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getBinaryStream(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public SQLWarning getWarnings() {
         return null;
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        // TODO
-        return false;
+    public void clearWarnings() {
     }
 
     @Override
-    public boolean next() throws SQLException {
-        // TODO
-        return false;
+    public String getCursorName() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void close() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public boolean wasNull() throws SQLException {
-        // TODO
-        return false;
-    }
-
-    @Override
-    public String getString(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public boolean getBoolean(int columnIndex) throws SQLException {
-        // TODO
-        return false;
-    }
-
-    @Override
-    public byte getByte(int columnIndex) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public short getShort(int columnIndex) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public int getInt(int columnIndex) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public long getLong(int columnIndex) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public float getFloat(int columnIndex) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public double getDouble(int columnIndex) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public byte[] getBytes(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Date getDate(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Time getTime(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public InputStream getAsciiStream(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public InputStream getUnicodeStream(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public InputStream getBinaryStream(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public String getString(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public boolean getBoolean(String columnLabel) throws SQLException {
-        // TODO
-        return false;
-    }
-
-    @Override
-    public byte getByte(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public short getShort(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public int getInt(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public long getLong(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public float getFloat(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public double getDouble(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(String columnLabel, int scale) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public byte[] getBytes(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Date getDate(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Time getTime(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Timestamp getTimestamp(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public InputStream getAsciiStream(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public InputStream getUnicodeStream(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public InputStream getBinaryStream(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public SQLWarning getWarnings() throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public void clearWarnings() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public String getCursorName() throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public ResultSetMetaData getMetaData() throws SQLException {
+    public ResultSetMetaData getMetaData() {
         return metaData;
     }
 
     @Override
-    public Object getObject(int columnIndex) throws SQLException {
-        // TODO
+    public Object getObject(int columnIndex) {
+        return values[columnIndex - 1];
+    }
+
+    @Override
+    public Object getObject(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int findColumn(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Reader getCharacterStream(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Reader getCharacterStream(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isBeforeFirst() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isAfterLast() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isFirst() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isLast() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void beforeFirst() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void afterLast() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean first() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean last() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean absolute(int row) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean relative(int rows) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean previous() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFetchDirection(int direction) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getFetchDirection() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFetchSize(int rows) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getFetchSize() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getType() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getConcurrency() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean rowUpdated() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean rowInserted() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean rowDeleted() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateNull(int columnIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBoolean(int columnIndex, boolean x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateByte(int columnIndex, byte x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateShort(int columnIndex, short x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateInt(int columnIndex, int x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateLong(int columnIndex, long x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateFloat(int columnIndex, float x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateDouble(int columnIndex, double x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBigDecimal(int columnIndex, BigDecimal x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateString(int columnIndex, String x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBytes(int columnIndex, byte[] x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateDate(int columnIndex, Date x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateTime(int columnIndex, Time x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateTimestamp(int columnIndex, Timestamp x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateAsciiStream(int columnIndex, InputStream x, int length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBinaryStream(int columnIndex, InputStream x, int length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateCharacterStream(int columnIndex, Reader x, int length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateObject(int columnIndex, Object x, int scaleOrLength) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateObject(int columnIndex, Object x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateNull(String columnLabel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBoolean(String columnLabel, boolean x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateByte(String columnLabel, byte x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateShort(String columnLabel, short x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateInt(String columnLabel, int x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateLong(String columnLabel, long x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateFloat(String columnLabel, float x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateDouble(String columnLabel, double x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBigDecimal(String columnLabel, BigDecimal x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateString(String columnLabel, String x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBytes(String columnLabel, byte[] x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateDate(String columnLabel, Date x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateTime(String columnLabel, Time x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateTimestamp(String columnLabel, Timestamp x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateAsciiStream(String columnLabel, InputStream x, int length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateBinaryStream(String columnLabel, InputStream x, int length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateCharacterStream(String columnLabel, Reader reader, int length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateObject(String columnLabel, Object x, int scaleOrLength) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateObject(String columnLabel, Object x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void insertRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void refreshRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void cancelRowUpdates() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void moveToInsertRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void moveToCurrentRow() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Statement getStatement() {
         return null;
     }
 
     @Override
-    public Object getObject(String columnLabel) throws SQLException {
-        // TODO
-        return null;
+    public Object getObject(int columnIndex, Map<String, Class<?>> map) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int findColumn(String columnLabel) throws SQLException {
-        // TODO
-        return 0;
+    public Ref getRef(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Reader getCharacterStream(int columnIndex) throws SQLException {
-        // TODO
-        return null;
+    public Blob getBlob(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Reader getCharacterStream(String columnLabel) throws SQLException {
-        // TODO
-        return null;
+    public Clob getClob(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
-        // TODO
-        return null;
+    public Array getArray(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
-        // TODO
-        return null;
+    public Object getObject(String columnLabel, Map<String, Class<?>> map) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isBeforeFirst() throws SQLException {
-        // TODO
-        return false;
+    public Ref getRef(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isAfterLast() throws SQLException {
-        // TODO
-        return false;
+    public Blob getBlob(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isFirst() throws SQLException {
-        // TODO
-        return false;
+    public Clob getClob(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isLast() throws SQLException {
-        // TODO
-        return false;
+    public Array getArray(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void beforeFirst() throws SQLException {
-        // TODO
+    public Date getDate(int columnIndex, Calendar cal) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void afterLast() throws SQLException {
-        // TODO
+    public Date getDate(String columnLabel, Calendar cal) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean first() throws SQLException {
-        // TODO
-        return false;
+    public Time getTime(int columnIndex, Calendar cal) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean last() throws SQLException {
-        // TODO
-        return false;
+    public Time getTime(String columnLabel, Calendar cal) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getRow() throws SQLException {
-        // TODO
-        return 0;
+    public Timestamp getTimestamp(int columnIndex, Calendar cal) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean absolute(int row) throws SQLException {
-        // TODO
-        return false;
+    public Timestamp getTimestamp(String columnLabel, Calendar cal) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean relative(int rows) throws SQLException {
-        // TODO
-        return false;
+    public URL getURL(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean previous() throws SQLException {
-        // TODO
-        return false;
+    public URL getURL(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setFetchDirection(int direction) throws SQLException {
-        // TODO
+    public void updateRef(int columnIndex, Ref x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getFetchDirection() throws SQLException {
-        // TODO
-        return 0;
+    public void updateRef(String columnLabel, Ref x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setFetchSize(int rows) throws SQLException {
-        // TODO
+    public void updateBlob(int columnIndex, Blob x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getFetchSize() throws SQLException {
-        // TODO
-        return 0;
+    public void updateBlob(String columnLabel, Blob x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getType() throws SQLException {
-        // TODO
-        return 0;
+    public void updateClob(int columnIndex, Clob x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getConcurrency() throws SQLException {
-        // TODO
-        return 0;
+    public void updateClob(String columnLabel, Clob x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean rowUpdated() throws SQLException {
-        // TODO
-        return false;
+    public void updateArray(int columnIndex, Array x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean rowInserted() throws SQLException {
-        // TODO
-        return false;
+    public void updateArray(String columnLabel, Array x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean rowDeleted() throws SQLException {
-        // TODO
-        return false;
+    public RowId getRowId(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNull(int columnIndex) throws SQLException {
-        // TODO
+    public RowId getRowId(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBoolean(int columnIndex, boolean x) throws SQLException {
-        // TODO
+    public void updateRowId(int columnIndex, RowId x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateByte(int columnIndex, byte x) throws SQLException {
-        // TODO
+    public void updateRowId(String columnLabel, RowId x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateShort(int columnIndex, short x) throws SQLException {
-        // TODO
+    public int getHoldability() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateInt(int columnIndex, int x) throws SQLException {
-        // TODO
+    public boolean isClosed() {
+        return closed;
     }
 
     @Override
-    public void updateLong(int columnIndex, long x) throws SQLException {
-        // TODO
+    public void updateNString(int columnIndex, String nString) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateFloat(int columnIndex, float x) throws SQLException {
-        // TODO
+    public void updateNString(String columnLabel, String nString) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateDouble(int columnIndex, double x) throws SQLException {
-        // TODO
+    public void updateNClob(int columnIndex, NClob nClob) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
-        // TODO
+    public void updateNClob(String columnLabel, NClob nClob) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateString(int columnIndex, String x) throws SQLException {
-        // TODO
+    public NClob getNClob(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBytes(int columnIndex, byte[] x) throws SQLException {
-        // TODO
+    public NClob getNClob(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateDate(int columnIndex, Date x) throws SQLException {
-        // TODO
+    public SQLXML getSQLXML(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateTime(int columnIndex, Time x) throws SQLException {
-        // TODO
+    public SQLXML getSQLXML(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateTimestamp(int columnIndex, Timestamp x) throws SQLException {
-        // TODO
+    public void updateSQLXML(int columnIndex, SQLXML xmlObject) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateAsciiStream(int columnIndex, InputStream x, int length) throws SQLException {
-        // TODO
+    public void updateSQLXML(String columnLabel, SQLXML xmlObject) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBinaryStream(int columnIndex, InputStream x, int length) throws SQLException {
-        // TODO
+    public String getNString(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateCharacterStream(int columnIndex, Reader x, int length) throws SQLException {
-        // TODO
+    public String getNString(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateObject(int columnIndex, Object x, int scaleOrLength) throws SQLException {
-        // TODO
+    public Reader getNCharacterStream(int columnIndex) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateObject(int columnIndex, Object x) throws SQLException {
-        // TODO
+    public Reader getNCharacterStream(String columnLabel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNull(String columnLabel) throws SQLException {
-        // TODO
+    public void updateNCharacterStream(int columnIndex, Reader x, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBoolean(String columnLabel, boolean x) throws SQLException {
-        // TODO
+    public void updateNCharacterStream(String columnLabel, Reader reader, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateByte(String columnLabel, byte x) throws SQLException {
-        // TODO
+    public void updateAsciiStream(int columnIndex, InputStream x, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateShort(String columnLabel, short x) throws SQLException {
-        // TODO
+    public void updateBinaryStream(int columnIndex, InputStream x, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateInt(String columnLabel, int x) throws SQLException {
-        // TODO
+    public void updateCharacterStream(int columnIndex, Reader x, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateLong(String columnLabel, long x) throws SQLException {
-        // TODO
-
-    }
-
-    @Override
-    public void updateFloat(String columnLabel, float x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateDouble(String columnLabel, double x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateBigDecimal(String columnLabel, BigDecimal x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateString(String columnLabel, String x) throws SQLException {
-        // TODO
-
-    }
-
-    @Override
-    public void updateBytes(String columnLabel, byte[] x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateDate(String columnLabel, Date x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateTime(String columnLabel, Time x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateTimestamp(String columnLabel, Timestamp x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateAsciiStream(String columnLabel, InputStream x, int length)
-        throws SQLException {
-        // TODO
-
-    }
-
-    @Override
-    public void updateBinaryStream(String columnLabel, InputStream x, int length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateCharacterStream(String columnLabel, Reader reader, int length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateObject(String columnLabel, Object x, int scaleOrLength) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateObject(String columnLabel, Object x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void insertRow() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateRow() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void deleteRow() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void refreshRow() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void cancelRowUpdates() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void moveToInsertRow() throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void moveToCurrentRow() throws SQLException {
-        // TODO
-
-    }
-
-    @Override
-    public Statement getStatement() throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Object getObject(int columnIndex, Map<String, Class<?>> map) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Ref getRef(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Blob getBlob(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Clob getClob(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Array getArray(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Object getObject(String columnLabel, Map<String, Class<?>> map) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Ref getRef(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Blob getBlob(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Clob getClob(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Array getArray(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Date getDate(int columnIndex, Calendar cal) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Date getDate(String columnLabel, Calendar cal) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Time getTime(int columnIndex, Calendar cal) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Time getTime(String columnLabel, Calendar cal) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public URL getURL(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public URL getURL(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public void updateRef(int columnIndex, Ref x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateRef(String columnLabel, Ref x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateBlob(int columnIndex, Blob x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateBlob(String columnLabel, Blob x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateClob(int columnIndex, Clob x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateClob(String columnLabel, Clob x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateArray(int columnIndex, Array x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateArray(String columnLabel, Array x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public RowId getRowId(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public RowId getRowId(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public void updateRowId(int columnIndex, RowId x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateRowId(String columnLabel, RowId x) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public int getHoldability() throws SQLException {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public boolean isClosed() throws SQLException {
-        // TODO
-        return false;
-    }
-
-    @Override
-    public void updateNString(int columnIndex, String nString) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateNString(String columnLabel, String nString) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateNClob(String columnLabel, NClob nClob) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public NClob getNClob(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public NClob getNClob(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public SQLXML getSQLXML(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public SQLXML getSQLXML(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public void updateSQLXML(int columnIndex, SQLXML xmlObject) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public String getNString(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public String getNString(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Reader getNCharacterStream(int columnIndex) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Reader getNCharacterStream(String columnLabel) throws SQLException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public void updateNCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateNCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateAsciiStream(int columnIndex, InputStream x, long length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateBinaryStream(int columnIndex, InputStream x, long length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
-        // TODO
-    }
-
-    @Override
-    public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException {
-        // TODO
+    public void updateAsciiStream(String columnLabel, InputStream x, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBinaryStream(String columnLabel, InputStream x, long length) throws SQLException {
-        // TODO
+    public void updateBinaryStream(String columnLabel, InputStream x, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
-        // TODO
+    public void updateCharacterStream(String columnLabel, Reader reader, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
-        // TODO
+    public void updateBlob(int columnIndex, InputStream inputStream, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBlob(String columnLabel, InputStream inputStream, long length) throws SQLException {
-        // TODO
+    public void updateBlob(String columnLabel, InputStream inputStream, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
-        // TODO
+    public void updateClob(int columnIndex, Reader reader, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
-        // TODO
+    public void updateClob(String columnLabel, Reader reader, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
-        // TODO
+    public void updateNClob(int columnIndex, Reader reader, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
-        // TODO
+    public void updateNClob(String columnLabel, Reader reader, long length) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNCharacterStream(int columnIndex, Reader x) throws SQLException {
-        // TODO
+    public void updateNCharacterStream(int columnIndex, Reader x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNCharacterStream(String columnLabel, Reader reader) throws SQLException {
-        // TODO
+    public void updateNCharacterStream(String columnLabel, Reader reader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException {
-        // TODO
+    public void updateAsciiStream(int columnIndex, InputStream x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBinaryStream(int columnIndex, InputStream x) throws SQLException {
-        // TODO
+    public void updateBinaryStream(int columnIndex, InputStream x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateCharacterStream(int columnIndex, Reader x) throws SQLException {
-        // TODO
+    public void updateCharacterStream(int columnIndex, Reader x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException {
-        // TODO
+    public void updateAsciiStream(String columnLabel, InputStream x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException {
-        // TODO
+    public void updateBinaryStream(String columnLabel, InputStream x) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException {
-        // TODO
+    public void updateCharacterStream(String columnLabel, Reader reader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
-        // TODO
+    public void updateBlob(int columnIndex, InputStream inputStream) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
-        // TODO
+    public void updateBlob(String columnLabel, InputStream inputStream) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateClob(int columnIndex, Reader reader) throws SQLException {
-        // TODO
+    public void updateClob(int columnIndex, Reader reader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateClob(String columnLabel, Reader reader) throws SQLException {
-        // TODO
+    public void updateClob(String columnLabel, Reader reader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNClob(int columnIndex, Reader reader) throws SQLException {
-        // TODO
+    public void updateNClob(int columnIndex, Reader reader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateNClob(String columnLabel, Reader reader) throws SQLException {
-        // TODO
+    public void updateNClob(String columnLabel, Reader reader) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-        // TODO
-        return null;
+    public <T> T getObject(int columnIndex, Class<T> type) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-        // TODO
-        return null;
+    public <T> T getObject(String columnLabel, Class<T> type) {
+        throw new UnsupportedOperationException();
     }
 }
