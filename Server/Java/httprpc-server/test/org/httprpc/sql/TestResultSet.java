@@ -153,9 +153,9 @@ public class TestResultSet implements ResultSet {
         }
     };
 
-    private String[] labels = {"a", "b", "c", "d", "e", "f.g.h"};
+    private String[] labels = {"a", "b", "c", "d", "e", "f.g", "f.g.h"};
 
-    private Object[] values = {2L, 4.0, "abc", true, new Date(0), new Object() {
+    private Object[] values = {2L, 4.0, "abc", true, new Date(0), "xyz", new Object() {
         @Override
         public String toString() {
             return "hello";
