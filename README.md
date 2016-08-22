@@ -315,6 +315,23 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
         return new ResultSetAdapter(resultSet);
     }
 
+If a column's label contains a period, the value will be returned as a nested structure. For example, the following query might be used to retrieve a list of employees:
+
+    SELECT first_name AS 'name.first', last_name AS 'name.last', title FROM employees
+    
+Because the aliases for the `first_name` and `last_name` columns contain a period, each row will contain a nested "name" structure instead of a flat collection of key/value pairs; for example:
+
+    [
+      {
+        "name": {
+          "first": "John",
+          "last": "Smith"
+        },
+        "title": "Manager"
+      },
+      ...
+    ]
+
 ### Parameters Class
 The `Parameters` class provides a means for executing prepared statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 

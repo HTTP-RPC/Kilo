@@ -43,8 +43,9 @@ public class ResultSetAdapterTest {
             entry("a", 2L),
             entry("b", 4.0),
             entry("c", "abc"),
-            entry("d", 0L),
-            entry("e", "hello")
+            entry("d", true),
+            entry("e", 0L),
+            entry("f", mapOf(entry("g", mapOf(entry("h", "hello")))))
         )), list);
     }
 }
