@@ -303,9 +303,9 @@ Although the values are actually stored in the strongly typed `Statistics` objec
 Note that, if a property returns a nested Bean type, the property's value will be automatically wrapped in a `BeanAdapter` instance. Additionally, if a property returns a `List` or `Map` type, the value will be wrapped in an adapter of the appropriate type that automatically adapts its sub-elements. This allows service methods to return recursive structures such as trees.
 
 ### ResultSetAdapter Class
-The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed and database resources are not leaked.
+The `ResultSetAdapter` class allows the result of a SQL query to be efficiently returned from a service method. This class implements the `List` interface and makes each row in a JDBC result set appear as an instance of `Map`, rendering the data suitable for serialization to JSON. It also implements the `AutoCloseable` interface, to ensure that the underlying result set is closed once all of the response data has been written.
 
-`ResultSetAdapter` is forward-scrolling only; its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a result set to be returned directly to the caller without any intermediate buffering. The caller can simply execute a JDBC query, pass the resulting result set to the `ResultSetAdapter` constructor, and return the adapter instance:
+`ResultSetAdapter` is forward-scrolling only; its contents are not accessible via the `get()` and `size()` methods. This allows query results to be returned to the caller directly, without any intermediate buffering. The service can simply execute a query, pass the result set to the adapter's constructor, and return the adapter instance:
 
     @RPC(method="GET", path="data")
     public ResultSetAdapter getData() throws SQLException {
@@ -315,6 +315,7 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
         return new ResultSetAdapter(resultSet);
     }
 
+#### Nested Structures
 If a column's label contains a period, the value will be returned as a nested structure. For example, the following query might be used to retrieve a list of employees:
 
     SELECT first_name AS 'name.first', last_name AS 'name.last', title FROM employees
