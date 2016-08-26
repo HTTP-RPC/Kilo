@@ -903,7 +903,7 @@ Arguments may be any of the following types:
 
 `CFBooleanRef` is also supported for boolean arguments. URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
 
-The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
+The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
 Both variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
