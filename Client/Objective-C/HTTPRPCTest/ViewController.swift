@@ -160,7 +160,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         NSTimer.scheduledTimerWithTimeInterval(1, target: NSBlockOperation(block: {
-            task.cancel()
+            task!.cancel()
         }), selector: #selector(NSOperation.main), userInfo: nil, repeats: false)
 
         // Delayed result

@@ -77,7 +77,7 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+- (nullable NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
@@ -90,7 +90,7 @@ extern NSString * const WSArgumentsKey;
  *
  * @return A session data task representing the invocation request.
  */
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+- (nullable NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
     arguments:(NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
