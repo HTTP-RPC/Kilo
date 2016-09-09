@@ -19,7 +19,7 @@ import HTTPRPC
 class MainViewController: UITableViewController {
     var noteList: [[String: AnyObject]] = []
 
-    static let NoteCellIdentifier = "noteCell"
+    let noteCellIdentifier = "noteCell"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,10 +58,10 @@ class MainViewController: UITableViewController {
         let message = noteList[indexPath.row]["message"] as? String
         let date = NSDate(timeIntervalSince1970: noteList[indexPath.row]["date"] as! Double / 1000)
 
-        var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier(MainViewController.NoteCellIdentifier)
+        var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier(noteCellIdentifier)
 
         if (cell == nil) {
-            cell = UITableViewCell(style: .Subtitle, reuseIdentifier: MainViewController.NoteCellIdentifier)
+            cell = UITableViewCell(style: .Subtitle, reuseIdentifier: noteCellIdentifier)
         }
 
         cell.textLabel!.text = message
