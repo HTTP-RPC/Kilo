@@ -24,15 +24,15 @@ class MainViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSBundle.mainBundle().localizedStringForKey("notes", value: nil, table: nil)
+        title = Bundle.main.localizedString(forKey: "notes", value: nil, table: nil)
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add,
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add,
             target: self, action: #selector(MainViewController.add))
 
         tableView.estimatedRowHeight = 2
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         AppDelegate.serviceProxy.invoke("GET", path: "/httprpc-server-demo/notes") {(result, error) in
@@ -46,42 +46,42 @@ class MainViewController: UITableViewController {
         }
     }
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return noteList.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let message = noteList[indexPath.row]["message"] as? String
-        let date = NSDate(timeIntervalSince1970: noteList[indexPath.row]["date"] as! Double / 1000)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let message = noteList[(indexPath as NSIndexPath).row]["message"] as? String
+        let date = Date(timeIntervalSince1970: noteList[(indexPath as NSIndexPath).row]["date"] as! Double / 1000)
 
-        var cell: UITableViewCell! = tableView.dequeueReusableCellWithIdentifier(noteCellIdentifier)
+        var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: noteCellIdentifier)
 
         if (cell == nil) {
-            cell = UITableViewCell(style: .Subtitle, reuseIdentifier: noteCellIdentifier)
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: noteCellIdentifier)
         }
 
         cell.textLabel!.text = message
         cell.textLabel!.numberOfLines = 0
 
-        cell.detailTextLabel!.text = NSDateFormatter.localizedStringFromDate(date, dateStyle: .ShortStyle, timeStyle: .MediumStyle)
+        cell.detailTextLabel!.text = DateFormatter.localizedString(from: date, dateStyle: .short, timeStyle: .medium)
 
         return cell
     }
 
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath:NSIndexPath) {
-        if (editingStyle == .Delete) {
-            let id = noteList[indexPath.row]["id"] as! Int
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath:IndexPath) {
+        if (editingStyle == .delete) {
+            let id = noteList[(indexPath as NSIndexPath).row]["id"] as! Int
 
             AppDelegate.serviceProxy.invoke("DELETE", path: "/httprpc-server-demo/notes", arguments: ["id": id]) {(result, error) in
                 if (error == nil) {
-                    self.noteList.removeAtIndex(indexPath.row)
+                    self.noteList.remove(at: (indexPath as NSIndexPath).row)
 
                     tableView.beginUpdates()
-                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                    tableView.deleteRows(at: [indexPath], with: .automatic)
                     tableView.endUpdates()
                 } else {
                     NSLog(error!.localizedDescription)
@@ -91,6 +91,6 @@ class MainViewController: UITableViewController {
     }
 
     func add() {
-        presentViewController(UINavigationController(rootViewController:AddNoteViewController()), animated: true, completion: nil)
+        present(UINavigationController(rootViewController:AddNoteViewController()), animated: true, completion: nil)
     }
 }

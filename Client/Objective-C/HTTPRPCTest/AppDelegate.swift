@@ -18,13 +18,13 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow()
-        window!.backgroundColor = UIColor.whiteColor()
+        window!.backgroundColor = UIColor.white
 
         window!.rootViewController = ViewController()
 
-        window!.frame = UIScreen.mainScreen().bounds
+        window!.frame = UIScreen.main.bounds
         window!.makeKeyAndVisible()
 
         return true

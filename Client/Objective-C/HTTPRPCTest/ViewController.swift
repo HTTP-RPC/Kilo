@@ -16,7 +16,7 @@ import UIKit
 import MarkupKit
 import HTTPRPC
 
-class ViewController: UITableViewController, NSURLSessionDataDelegate {
+class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var sumCell: UITableViewCell!
     @IBOutlet var sumAllCell: UITableViewCell!
     @IBOutlet var inverseCell: UITableViewCell!
@@ -38,25 +38,25 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
 
     override func loadView() {
         // Load view from markup
-        view = LMViewBuilder.viewWithName("ViewController", owner: self, root: nil)
+        view = LMViewBuilder.view(withName: "ViewController", owner: self, root: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad();
 
         // Configure session
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
+        let configuration = URLSessionConfiguration.default
+        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
         configuration.timeoutIntervalForRequest = 3
         configuration.timeoutIntervalForResource = 3
 
-        let delegateQueue = NSOperationQueue()
+        let delegateQueue = OperationQueue()
         delegateQueue.maxConcurrentOperationCount = 10
 
         // Create service proxy
-        let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+        let session = Foundation.URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
-        let serviceProxy = WSWebServiceProxy(session: session, serverURL: NSURL(string: "https://localhost:8443")!)
+        let serviceProxy = WSWebServiceProxy(session: session, serverURL: URL(string: "https://localhost:8443")!)
 
         // Set credentials
         serviceProxy.authentication = WSBasicAuthentication(username: "tomcat", password: "tomcat")
@@ -138,10 +138,10 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
 
         // Attachment info
-        let mainBundle = NSBundle.mainBundle()
+        let mainBundle = Bundle.main
 
-        let textTestURL = mainBundle.URLForResource("test", withExtension: "txt")!
-        let imageTestURL = mainBundle.URLForResource("test", withExtension: "jpg")!
+        let textTestURL = mainBundle.url(forResource: "test", withExtension: "txt")!
+        let imageTestURL = mainBundle.url(forResource: "test", withExtension: "jpg")!
 
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/attachmentInfo",
             arguments:["text": "héllo", "attachments": [textTestURL, imageTestURL]],
@@ -159,9 +159,9 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
             self.validate(error != nil, error: error, cell: self.longListCell)
         }
 
-        NSTimer.scheduledTimerWithTimeInterval(1, target: NSBlockOperation(block: {
+        Timer.scheduledTimer(timeInterval: 1, target: BlockOperation(block: {
             task!.cancel()
-        }), selector: #selector(NSOperation.main), userInfo: nil, repeats: false)
+        }), selector: #selector(Operation.main), userInfo: nil, repeats: false)
 
         // Delayed result
         serviceProxy.invoke("GET", path: "/httprpc-server-test/test/delayedResult", arguments: ["result": "abcdefg", "delay": 9000]) {(result, error) in
@@ -169,7 +169,7 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         }
     }
 
-    func handleAttachmentInfoResult(result: AnyObject?, error: NSError?) {
+    func handleAttachmentInfoResult(_ result: Any?, error: Error?) {
         validate(result as? NSDictionary == [
             "text": "héllo",
             "attachmentInfo": [
@@ -185,14 +185,14 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         ], error: error, cell: self.attachmentInfoCell)
     }
 
-    func validate(condition: Bool, error: NSError?, cell: UITableViewCell) {
+    func validate(_ condition: Bool, error: Error?, cell: UITableViewCell) {
         if (condition) {
-            cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
         } else {
-            cell.textLabel!.textColor = UIColor.redColor()
+            cell.textLabel!.textColor = UIColor.red
 
             if (error != nil) {
-                print(error!.description)
+                print(error!)
             }
         }
     }
@@ -203,13 +203,13 @@ class ViewController: UITableViewController, NSURLSessionDataDelegate {
         tableView.contentInset = UIEdgeInsets(top: topLayoutGuide.length, left: 0, bottom: bottomLayoutGuide.length, right: 0)
     }
 
-    func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge,
-        completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         // Allow self-signed certificates for testing purposes
         if (challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust) {
-            completionHandler(NSURLSessionAuthChallengeDisposition.UseCredential, NSURLCredential(forTrust: challenge.protectionSpace.serverTrust!))
+            completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
         } else {
-            completionHandler(NSURLSessionAuthChallengeDisposition.PerformDefaultHandling, nil)
+            completionHandler(Foundation.URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
     }
 }

@@ -20,34 +20,34 @@ class AddNoteViewController: UITableViewController {
     var messageTextView: UITextView!
     
     override func loadView() {
-        view = LMViewBuilder.viewWithName("AddNoteViewController", owner: self, root: nil)
+        view = LMViewBuilder.view(withName: "AddNoteViewController", owner: self, root: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSBundle.mainBundle().localizedStringForKey("addNote", value: nil, table: nil)
+        title = Bundle.main.localizedString(forKey: "addNote", value: nil, table: nil)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel,
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel,
             target: self, action: #selector(AddNoteViewController.cancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done,
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done,
             target: self, action: #selector(AddNoteViewController.done))
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         messageTextView.becomeFirstResponder()
     }
 
     func cancel() {
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 
     func done() {
         AppDelegate.serviceProxy.invoke("POST", path: "/httprpc-server-demo/notes", arguments: ["message": messageTextView.text]) {(result, error) in
             if (error == nil) {
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
             } else {
                 NSLog(error!.localizedDescription)
             }

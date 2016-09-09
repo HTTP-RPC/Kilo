@@ -17,23 +17,23 @@ import HTTPRPC
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    private(set) static var serviceProxy: WSWebServiceProxy!
+    fileprivate(set) static var serviceProxy: WSWebServiceProxy!
 
     var window: UIWindow?
 
-    func application(application: UIApplication, willFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
-        AppDelegate.serviceProxy = WSWebServiceProxy(session: NSURLSession.sharedSession(), serverURL: NSURL(string: "http://localhost:8080")!)
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        AppDelegate.serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "http://localhost:8080")!)
 
         return true
     }
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow()
 
         window!.rootViewController = UINavigationController(rootViewController: MainViewController())
 
-        window!.backgroundColor = UIColor.whiteColor()
-        window!.frame = UIScreen.mainScreen().bounds
+        window!.backgroundColor = UIColor.white
+        window!.frame = UIScreen.main.bounds
 
         window!.makeKeyAndVisible()
 
