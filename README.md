@@ -926,18 +926,15 @@ The `WSBasicAuthentication` class is provided by the HTTP-RPC framework. Applica
 The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
 
     // Configure session
-    let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-    configuration.requestCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
+    let configuration = URLSessionConfiguration.default
 
-    let delegateQueue = NSOperationQueue()
+    let delegateQueue = OperationQueue()
     delegateQueue.maxConcurrentOperationCount = 10
 
-    let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+    let session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
     // Initialize service proxy and invoke methods
-    let serverURL = NSURL(string: "https://localhost:8443")
-
-    let serviceProxy = WSWebServiceProxy(session: session, serverURL: serverURL!)
+    let serviceProxy = WSWebServiceProxy(session: session, serverURL: URL(string: "https://localhost:8443")!)
     
     // Get sum of "a" and "b"
     serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) {(result, error) in
@@ -945,7 +942,7 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to i
     }
 
     // Get sum of all values
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3]]) {(result, error) in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) {(result, error) in
         // result is 6
     }
 

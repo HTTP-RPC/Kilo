@@ -54,7 +54,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         delegateQueue.maxConcurrentOperationCount = 10
 
         // Create service proxy
-        let session = Foundation.URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
 
         let serviceProxy = WSWebServiceProxy(session: session, serverURL: URL(string: "https://localhost:8443")!)
 
@@ -207,9 +207,9 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         // Allow self-signed certificates for testing purposes
         if (challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust) {
-            completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
         } else {
-            completionHandler(Foundation.URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
     }
 }
