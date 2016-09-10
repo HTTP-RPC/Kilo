@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The scroll view's content view.
  */
-@property (nonatomic) UIView *contentView;
+@property (nonatomic, nullable) UIView *contentView;
 
 /**
  * Indicates that the width of the scroll view's content should match the scroll view's width.
