@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -564,10 +565,17 @@ public class WebServiceProxy {
     }
 
     private static String getParameterValue(Object element) {
-        if (!(element instanceof String || element instanceof Number || element instanceof Boolean)) {
-            throw new IllegalArgumentException("Invalid parameter element.");
+        // TODO Support LocalDate, LocalTime, and LocalDateTime in Java 8
+
+        String value;
+        if (element instanceof Enum<?>) {
+            value = ((Enum<?>)element).name();
+        } else if (element instanceof Date) {
+            value = String.valueOf(((Date)element).getTime());
+        } else {
+            value = element.toString();
         }
 
-        return element.toString();
+        return value;
     }
 }

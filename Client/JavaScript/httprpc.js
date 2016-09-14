@@ -41,12 +41,6 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         var values;
         if (value instanceof Array) {
             values = value;
-        } else if (value instanceof Object) {
-            values = [];
-            
-            for (key in value) {
-                values.push(encodeURIComponent(key) + ":" + encodeURIComponent(value[key]));
-            }
         } else {
             values = [value];
         }
@@ -56,6 +50,10 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
 
             if (element == null) {
                 continue;
+            }
+
+            if (element instanceof Date) {
+                element = element.getTime();
             }
 
             if (query.length > 0) {

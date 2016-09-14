@@ -217,13 +217,13 @@ NSString * const kImageMIMETypePrefix = @"image/";
 }
 
 + (NSString *)parameterValueForElement:(id)element {
-    NSAssert([element isKindOfClass:[NSString self]] || [element isKindOfClass:[NSNumber self]], @"Invalid parameter element.");
-
     id value;
     if (element == (void *)kCFBooleanTrue) {
         value = @"true";
     } else if (element == (void *)kCFBooleanFalse) {
         value = @"false";
+    } else if ([element isKindOfClass:[NSDate self]]) {
+        value = [NSString stringWithFormat:@"%.0f", [(NSDate *)element timeIntervalSince1970] * 1000];
     } else {
         value = [element description];
     }

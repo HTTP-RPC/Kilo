@@ -23,9 +23,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -487,7 +492,7 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     private static Object getArgument(String value, Type type) {
-        // TODO Add support for enum and date/time types
+        // TODO Add support for enum types
 
         Object argument;
         if (type == String.class) {
@@ -520,6 +525,14 @@ public class RequestDispatcherServlet extends HttpServlet {
             argument = (value == null) ? false : Boolean.parseBoolean(value);
         } else if (type == Boolean.class) {
             argument = (value == null) ? null : Boolean.parseBoolean(value);
+        } else if (type == Date.class) {
+            argument = new Date(Long.parseLong(value));
+        } else if (type == LocalDate.class) {
+            argument = DateTimeFormatter.ISO_DATE.parse(value);
+        } else if (type == LocalTime.class) {
+            argument = DateTimeFormatter.ISO_TIME.parse(value);
+        } else if (type == LocalDateTime.class) {
+            argument = DateTimeFormatter.ISO_DATE_TIME.parse(value);
         } else {
             throw new UnsupportedOperationException("Invalid parameter type.");
         }
