@@ -90,7 +90,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     private static final String UTF_8_ENCODING = "UTF-8";
 
     private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-
     private static final String USER_AGENT_KEY = "User-Agent";
 
     @Override
@@ -492,8 +491,6 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     private static Object getArgument(String value, Type type) {
-        // TODO Add support for enum types
-
         Object argument;
         if (type == String.class) {
             argument = value;

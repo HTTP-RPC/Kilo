@@ -568,9 +568,7 @@ public class WebServiceProxy {
         // TODO Support LocalDate, LocalTime, and LocalDateTime in Java 8
 
         String value;
-        if (element instanceof Enum<?>) {
-            value = ((Enum<?>)element).name();
-        } else if (element instanceof Date) {
+        if (element instanceof Date) {
             value = String.valueOf(((Date)element).getTime());
         } else {
             value = element.toString();

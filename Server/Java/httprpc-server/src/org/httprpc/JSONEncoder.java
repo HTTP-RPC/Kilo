@@ -94,8 +94,6 @@ public class JSONEncoder implements Encoder {
             writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
-        } else if (value instanceof Enum<?>) {
-            writeValue(((Enum<?>)value).name(), writer);
         } else if (value instanceof Date) {
             writeValue(((Date)value).getTime(), writer);
         } else if (value instanceof LocalDate) {
