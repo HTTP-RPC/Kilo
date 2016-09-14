@@ -28,12 +28,7 @@ import static org.httprpc.WebService.entry;
 public class IteratorAdapterTest {
     @Test
     public void testIteratorAdapter1() throws Exception {
-        List<?> list1 = listOf(2L, 4.0, "abc", true, new Date(0), new Object() {
-            @Override
-            public String toString() {
-                return "hello";
-            }
-        });
+        List<?> list1 = listOf(2L, 4.0, "abc", true, new Date(0));
 
         LinkedList<Object> list2 = new LinkedList<>();
 
@@ -46,17 +41,12 @@ public class IteratorAdapterTest {
         }
 
         Assert.assertTrue(iterator.isClosed());
-        Assert.assertEquals(listOf(2L, 4.0, "abc", true, 0L, "hello"), list2);
+        Assert.assertEquals(listOf(2L, 4.0, "abc", true, new Date(0)), list2);
     }
 
     @Test
     public void testIteratorAdapter2() throws Exception {
-        List<?> list1 = listOf(listOf(2L, 4.0, "abc", true, new Date(0), new Object() {
-            @Override
-            public String toString() {
-                return "hello";
-            }
-        }));
+        List<?> list1 = listOf(listOf(2L, 4.0, "abc", true, new Date(0)));
 
         LinkedList<Object> list2 = new LinkedList<>();
 
@@ -69,17 +59,12 @@ public class IteratorAdapterTest {
         }
 
         Assert.assertTrue(iterator.isClosed());
-        Assert.assertEquals(listOf(listOf(2L, 4.0, "abc", true, 0L, "hello")), list2);
+        Assert.assertEquals(listOf(listOf(2L, 4.0, "abc", true, new Date(0))), list2);
     }
 
     @Test
     public void testIteratorAdapter3() throws Exception {
-        List<?> list1 = listOf(mapOf(entry("a", 2L), entry("b", 4.0), entry("c", "abc"), entry("d", true), entry("e", new Date(0)), entry("f", new Object() {
-            @Override
-            public String toString() {
-                return "hello";
-            }
-        })));
+        List<?> list1 = listOf(mapOf(entry("a", 2L), entry("b", 4.0), entry("c", "abc"), entry("d", true), entry("e", new Date(0))));
 
         LinkedList<Object> list2 = new LinkedList<>();
 
@@ -92,6 +77,6 @@ public class IteratorAdapterTest {
         }
 
         Assert.assertTrue(iterator.isClosed());
-        Assert.assertEquals(listOf(mapOf(entry("a", 2L), entry("b", 4.0), entry("c", "abc"), entry("d", true), entry("e", 0L), entry("f", "hello"))), list2);
+        Assert.assertEquals(listOf(mapOf(entry("a", 2L), entry("b", 4.0), entry("c", "abc"), entry("d", true), entry("e", new Date(0)))), list2);
     }
 }

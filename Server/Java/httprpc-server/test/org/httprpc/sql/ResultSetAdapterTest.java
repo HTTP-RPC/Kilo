@@ -14,6 +14,7 @@
 
 package org.httprpc.sql;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class ResultSetAdapterTest {
             entry("b", 4.0),
             entry("c", "abc"),
             entry("d", true),
-            entry("e", 0L),
+            entry("e", new Date(0)),
             entry("f", mapOf(entry("g", mapOf(entry("h", "hello")))))
         )), list);
     }

@@ -487,6 +487,8 @@ public class RequestDispatcherServlet extends HttpServlet {
     }
 
     private static Object getArgument(String value, Type type) {
+        // TODO Add support for enum and date/time types
+
         Object argument;
         if (type == String.class) {
             argument = value;

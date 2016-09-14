@@ -19,6 +19,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +94,16 @@ public class JSONEncoder implements Encoder {
             writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
+        } else if (value instanceof Enum<?>) {
+            writeValue(((Enum<?>)value).name(), writer);
+        } else if (value instanceof Date) {
+            writeValue(((Date)value).getTime(), writer);
+        } else if (value instanceof LocalDate) {
+            writeValue(DateTimeFormatter.ISO_DATE.format((TemporalAccessor)value), writer);
+        } else if (value instanceof LocalTime) {
+            writeValue(DateTimeFormatter.ISO_TIME.format((TemporalAccessor)value), writer);
+        } else if (value instanceof LocalDateTime) {
+            writeValue(DateTimeFormatter.ISO_DATE_TIME.format((TemporalAccessor)value), writer);
         } else if (value instanceof List<?>) {
             List<?> list = (List<?>)value;
 

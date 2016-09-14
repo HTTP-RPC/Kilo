@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,18 +29,7 @@ import java.util.NoSuchElementException;
 /**
  * Class that presents the contents of a JDBC result set as an iterable list of
  * maps.
- * <p>
- * If a column's value is <tt>null</tt> or an instance of one of the following
- * types, it is returned as-is:
- * <ul>
- * <li>{@link String}</li>
- * <li>{@link Number}</li>
- * <li>{@link Boolean}</li>
- * </ul>
- * If the value is a {@link Date}, it is converted to its numeric
- * representation via {@link Date#getTime()}. Otherwise, it is converted to a
- * {@link String}.
- * <p>
+ *
  * If a column's label contains a period, the value will be returned as a
  * nested structure.
  */
@@ -153,7 +141,7 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
                             map = (LinkedHashMap<String, Object>)child;
                         }
 
-                        map.put(path[path.length - 1], adapt(resultSet.getObject(i + 1)));
+                        map.put(path[path.length - 1], resultSet.getObject(i + 1));
                     }
                 } catch (SQLException exception) {
                     throw new RuntimeException(exception);
@@ -169,17 +157,5 @@ public class ResultSetAdapter extends AbstractList<Map<String, Object>> implemen
     @Override
     public String toString() {
         return getClass().getName();
-    }
-
-    private static Object adapt(Object value) {
-        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
-            if (value instanceof Date) {
-                value = ((Date)value).getTime();
-            } else {
-                value = value.toString();
-            }
-        }
-
-        return value;
     }
 }

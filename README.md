@@ -662,8 +662,7 @@ The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC 
 
 Service operations are initiated by calling the `invoke()` method:
     
-    public <V> Future<V> invoke(String method, String path, 
-        Map<String, ?> arguments,  
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments,  
         ResultHandler<V> resultHandler) { ... }
 
 This method takes the following arguments:

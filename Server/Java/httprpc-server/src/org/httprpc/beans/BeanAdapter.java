@@ -16,6 +16,7 @@ package org.httprpc.beans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.temporal.TemporalAccessor;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -223,13 +224,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link String}</li>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
+     * <li>{@link Enum}</li>
+     * <li>{@link Date}</li>
+     * <li>{@link TemporalAccessor}</li>
      * </ul>
-     * If the value is a {@link Date}, it is converted to its numeric
-     * representation via {@link Date#getTime()}. If the value is a
-     * {@link List}, it is wrapped in an adapter that will adapt the list's
-     * elements. If the value is a {@link Map}, it is wrapped in an adapter
-     * that will adapt the map's values. Otherwise, the value is considered a
-     * nested Bean and is wrapped in a Bean adapter.
+     * If the value is a {@link List}, it is wrapped in an adapter that will
+     * adapt the list's elements. If the value is a {@link Map}, it is wrapped
+     * in an adapter that will adapt the map's values. Otherwise, the value is
+     * considered a nested Bean and is wrapped in a Bean adapter.
      *
      * @param <T> The expected type of the adapted value.
      *
@@ -241,10 +243,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <T> T adapt(Object value) {
-        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
-            if (value instanceof Date) {
-                value = ((Date)value).getTime();
-            } else if (value instanceof List<?>) {
+        if (!(value == null
+            || value instanceof String
+            || value instanceof Number
+            || value instanceof Boolean
+            || value instanceof Enum<?>
+            || value instanceof Date
+            || value instanceof TemporalAccessor)) {
+            if (value instanceof List<?>) {
                 value = new ListAdapter((List<Object>)value);
             } else if (value instanceof Map<?, ?>) {
                 value = new MapAdapter((Map<Object, Object>)value);

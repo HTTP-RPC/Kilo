@@ -19,6 +19,9 @@ import org.junit.Test;
 
 import static org.httprpc.WebService.listOf;
 import static org.httprpc.WebService.mapOf;
+
+import java.util.Date;
+
 import static org.httprpc.WebService.entry;
 
 public class BeanAdapterTest {
@@ -30,7 +33,7 @@ public class BeanAdapterTest {
             entry("a", 2L),
             entry("b", 4.0),
             entry("c", "abc"),
-            entry("d", 0L),
+            entry("d", new Date(0)),
             entry("e", mapOf(entry("i", true))),
             entry("f", listOf(mapOf(entry("i", true)))),
             entry("g", mapOf(entry("h", mapOf(entry("i", true)))))

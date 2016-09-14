@@ -15,106 +15,14 @@
 package org.httprpc.util;
 
 import java.util.AbstractList;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Class that presents the contents of an iterator as an iterable list of
  * values.
- * <p>
- * If a value is <tt>null</tt> or an instance of one of the following types, it
- * is returned as-is:
- * <ul>
- * <li>{@link String}</li>
- * <li>{@link Number}</li>
- * <li>{@link Boolean}</li>
- * </ul>
- * If the value is a {@link Date}, it is converted to its numeric
- * representation via {@link Date#getTime()}. If the value is a {@link List},
- * it is wrapped in an adapter that will adapt the list's elements. If the
- * value is a {@link Map}, it is wrapped in an adapter that will adapt the
- * map's values. Otherwise, it is converted to a {@link String}.
  */
 public class IteratorAdapter extends AbstractList<Object> implements AutoCloseable {
-    // List adapter
-    private static class ListAdapter extends AbstractList<Object> {
-        private List<Object> list;
-
-        public ListAdapter(List<Object> list) {
-            this.list = list;
-        }
-
-        @Override
-        public Object get(int index) {
-            return adapt(list.get(index));
-        }
-
-        @Override
-        public int size() {
-            return list.size();
-        }
-    }
-
-    // Map adapter
-    private static class MapAdapter extends AbstractMap<Object, Object> {
-        private Map<Object, Object> map;
-
-        private Set<Entry<Object, Object>> entrySet = new AbstractSet<Entry<Object, Object>>() {
-            @Override
-            public int size() {
-                return map.size();
-            }
-
-            @Override
-            public Iterator<Entry<Object, Object>> iterator() {
-                return new Iterator<Entry<Object, Object>>() {
-                    private Iterator<Entry<Object, Object>> iterator = map.entrySet().iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
-
-                    @Override
-                    public Entry<Object, Object> next() {
-                        return new Entry<Object, Object>() {
-                            private Entry<Object, Object> entry = iterator.next();
-
-                            @Override
-                            public Object getKey() {
-                                return entry.getKey();
-                            }
-
-                            @Override
-                            public Object getValue() {
-                                return adapt(entry.getValue());
-                            }
-
-                            @Override
-                            public Object setValue(Object value) {
-                                throw new UnsupportedOperationException();
-                            }
-                        };
-                    }
-                };
-            }
-        };
-
-        public MapAdapter(Map<Object, Object> map) {
-            this.map = map;
-        }
-
-        @Override
-        public Set<Entry<Object, Object>> entrySet() {
-            return entrySet;
-        }
-    }
-
     private Iterator<?> iterator;
 
     /**
@@ -153,7 +61,7 @@ public class IteratorAdapter extends AbstractList<Object> implements AutoCloseab
 
             @Override
             public Object next() {
-                return adapt(iterator.next());
+                return iterator.next();
             }
         };
     }
@@ -168,22 +76,5 @@ public class IteratorAdapter extends AbstractList<Object> implements AutoCloseab
     @Override
     public String toString() {
         return getClass().getName();
-    }
-
-    @SuppressWarnings("unchecked")
-    static Object adapt(Object value) {
-        if (value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean)) {
-            if (value instanceof Date) {
-                value = ((Date)value).getTime();
-            } else if (value instanceof List<?>) {
-                value = new ListAdapter((List<Object>)value);
-            } else if (value instanceof Map<?, ?>) {
-                value = new MapAdapter((Map<Object, Object>)value);
-            } else {
-                value = value.toString();
-            }
-        }
-
-        return value;
     }
 }
