@@ -20,9 +20,11 @@ import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -229,6 +231,16 @@ public class TestService extends WebService {
             entry("text", text),
             entry("attachmentInfo", attachmentInfo)
         );
+    }
+
+    @RPC(method="GET", path="/echo")
+    public Date echo(Date date) {
+        return date;
+    }
+
+    @RPC(method="GET", path="/echo")
+    public List<LocalDate> echo(List<LocalDate> dates) {
+        return dates;
     }
 
     @RPC(method="POST", path="/echo")

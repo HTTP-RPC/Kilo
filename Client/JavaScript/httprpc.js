@@ -52,10 +52,6 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
                 continue;
             }
 
-            if (element instanceof Date) {
-                element = element.getTime();
-            }
-
             if (query.length > 0) {
                 query += "&";
             }

@@ -16,6 +16,11 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,6 +74,20 @@ public class JSONEncoderTest {
         )).replaceAll("\\s+", "");
 
         Assert.assertTrue(json.equals("{\"a\":\"abc\",\"b\":123,\"c\":true,\"d\":[1,2,3.0],\"e\":{\"x\":1,\"y\":2.0,\"z\":3.0}}"));
+    }
+
+    @Test
+    public void testDates() throws IOException {
+        Assert.assertTrue(encode(new Date(0)).equals("0"));
+
+        LocalDate date = LocalDate.now();
+        Assert.assertTrue(encode(date).equals("\"" + DateTimeFormatter.ISO_DATE.format(date) + "\""));
+
+        LocalTime time = LocalTime.now();
+        Assert.assertTrue(encode(time).equals("\"" + DateTimeFormatter.ISO_TIME.format(time) + "\""));
+
+        LocalDateTime dateTime = LocalDateTime.now();
+        Assert.assertTrue(encode(dateTime).equals("\"" + DateTimeFormatter.ISO_DATE_TIME.format(dateTime) + "\""));
     }
 
     private String encode(Object value) throws IOException {

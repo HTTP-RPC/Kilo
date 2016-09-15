@@ -30,7 +30,6 @@ import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -136,7 +135,7 @@ public class WebServiceProxy {
 
                         queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
                         queryBuilder.append("=");
-                        queryBuilder.append(URLEncoder.encode(getParameterValue(value), UTF_8_ENCODING));
+                        queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
                     }
                 }
 
@@ -226,7 +225,7 @@ public class WebServiceProxy {
                                 writer.append(CRLF);
 
                                 writer.append(CRLF);
-                                writer.append(getParameterValue(value));
+                                writer.append(value.toString());
                             }
 
                             writer.append(CRLF);
@@ -562,18 +561,5 @@ public class WebServiceProxy {
         }
 
         return values;
-    }
-
-    private static String getParameterValue(Object element) {
-        // TODO Support LocalDate, LocalTime, and LocalDateTime in Java 8
-
-        String value;
-        if (element instanceof Date) {
-            value = String.valueOf(((Date)element).getTime());
-        } else {
-            value = element.toString();
-        }
-
-        return value;
     }
 }
