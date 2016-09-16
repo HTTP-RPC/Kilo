@@ -981,7 +981,7 @@ This method takes the following arguments:
 * `arguments` - an object containing the request arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-Arguments may be of any type, and are generally converted to parameter values via `toString()`. However, array arguments represent multi-value parameters, and behave similarly to `<select multiple>` tags in HTML.
+Arguments may be of any type, and are generally converted to parameter values via `toString()`. However, array arguments represent multi-value parameters, and behave similarly to `<select multiple>` tags in HTML forms.
 
 The result handler is invoked upon completion of the operation. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
 
