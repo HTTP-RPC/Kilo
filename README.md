@@ -1,5 +1,5 @@
 # Introduction
-HTTP-RPC is an open-source framework for simplifying development of REST-based applications. It allows developers to create and access HTTP-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
+HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to create and access web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
 The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
 
@@ -211,7 +211,7 @@ Each servlet instance hosts a single HTTP-RPC service. The name of the service t
         <url-pattern>/math/*</url-pattern>
     </servlet-mapping>
 
-A new service instance is created and initialized for each request. `RequestDispatcherServlet` converts the request parameters to the argument types expected by the named method, invokes the method, and writes the return value to the response stream as JSON. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+A new service instance is created and initialized for each request. `RequestDispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the response stream. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 Values for numeric and boolean arguments are converted to the appropriate type using the parse method of the associated wrapper class (e.g. `Integer#parseInt()`). Other argument types are handled as described below:
 
@@ -223,7 +223,7 @@ Values for numeric and boolean arguments are converted to the appropriate type u
 * `java.util.Date`: result of calling `Long#parseLong()`, then `Date(long)`
 * `java.util.List`: array list containing argument values coerced to `List` parameter type
 
-Return values are mapped to their JSON equivalents as follows:
+By default, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. Return values are mapped to their JSON equivalents as follows:
 
 * `java.lang.Number` or numeric primitive: number
 * `java.lang.Boolean` or boolean primitive: true/false
@@ -235,7 +235,7 @@ Return values are mapped to their JSON equivalents as follows:
 * `java.util.List`: array
 * `java.util.Map`: object
 
-Internally, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. This class can also be used by application code to write JSON data to arbitrary output streams.
+`JSONEncoder` can also be used by application code to write JSON data to arbitrary output streams.
 
 If the method completes successfully and returns a value, an HTTP 200 status code is returned. If the method returns `void` or `Void`, HTTP 204 is returned.
 
@@ -400,7 +400,7 @@ The `IteratorAdapter` class allows the content of an arbitrary cursor to be effi
 
 As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a cursor to be returned directly to the caller without any intermediate buffering.
 
-`IteratorAdapter` is typically used to serialize result data produced by NoSQL databases.
+`IteratorAdapter` is typically used to serialize result data produced by NoSQL databases. It can also be used to serialize the result of stream operations on Java collection types.
 
 ### Templates
 Although data produced by an HTTP-RPC web service is usually returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
@@ -466,7 +466,7 @@ The `Template` annotation is used to associate a template document with a method
 
 The `name` element refers to the file containing the template definition. It is specified as a resource path relative to the service type.
 
-The `contentType` element indicates the type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL; for example, _/math/statistics.html_.
+The `contentType` element indicates the type of the content produced by the named template. It is used by `RequestDispatcherServlet` to identify the requested template. A specific representation is requested by appending a file extension associated with the desired MIME type to the service name in the URL; for example, _/math/statistics.html_. If the requested representation does not exist, the servlet returns an HTTP 406 status code.
 
 The optional `userAgent` element can be used to associate a template with a particular user agent string. This value is a regular expression that is matched against the `User-Agent` header provided by the caller. The default value matches all user agents.
 
@@ -725,20 +725,6 @@ The second argument will be `null` in this case. If an error occurs, the first a
 
 Internally, `WebServiceProxy ` uses the `JSONDecoder` class to deserialize JSON response data returned by a service operation. This class can also be used by application code to read JSON data from arbitrary input streams.
 
-Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to support `Bitmap` data: 
-
-    @Override
-    protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-        Object value;
-        if (contentType != null && contentType.startsWith("image/")) {
-            value = BitmapFactory.decodeStream(inputStream);
-        } else {
-            value = super.decodeResponse(inputStream, contentType);
-        }
-
-        return value;
-    }
-
 #### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
@@ -756,6 +742,21 @@ to this:
     Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
     
 A complete example is provided later.
+
+#### Custom Deserialization
+Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to support `Bitmap` data: 
+
+    @Override
+    protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+        Object value;
+        if (contentType != null && contentType.startsWith("image/")) {
+            value = BitmapFactory.decodeStream(inputStream);
+        } else {
+            value = super.decodeResponse(inputStream, contentType);
+        }
+
+        return value;
+    }
 
 #### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request, which in most cases will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
