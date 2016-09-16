@@ -93,6 +93,17 @@ function testService() {
         validate(error == null && result == true);
     });
 
+    // Dates
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", {date: 0}, function(result, error) {
+        validate(error == null && result == 0, result);
+    });
+
+    var dates = ["2016-09-15", "2016-09-16"];
+
+    serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", {dates: dates}, function(result, error) {
+        validate(error == null && result[0] == dates[0] && result[1] == dates[1]);
+    });
+
     // Long list
     var request = serviceProxy.invoke("GET", "/httprpc-server-test/test/longList", {}, function(result, error) {
         validate(error == 0);

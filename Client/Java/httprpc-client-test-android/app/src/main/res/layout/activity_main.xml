@@ -97,6 +97,16 @@ limitations under the License.
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/date_checkbox"
+            android:text="Date"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/dates_checkbox"
+            android:text="Dates"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

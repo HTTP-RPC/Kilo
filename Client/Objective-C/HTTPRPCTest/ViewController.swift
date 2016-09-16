@@ -32,6 +32,8 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var userNameCell: UITableViewCell!
     @IBOutlet var userRoleStatusCell: UITableViewCell!
     @IBOutlet var attachmentInfoCell: UITableViewCell!
+    @IBOutlet var dateCell: UITableViewCell!
+    @IBOutlet var datesCell: UITableViewCell!
     @IBOutlet var echoCell: UITableViewCell!
     @IBOutlet var delayedResultCell: UITableViewCell!
     @IBOutlet var longListCell: UITableViewCell!
@@ -42,7 +44,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     }
 
     override func viewDidLoad() {
-        super.viewDidLoad();
+        super.viewDidLoad()
 
         // Configure session
         let configuration = URLSessionConfiguration.default
@@ -146,6 +148,17 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/attachmentInfo",
             arguments:["text": "héllo", "attachments": [textTestURL, imageTestURL]],
             resultHandler: handleAttachmentInfoResult)
+
+        // Dates
+        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/echo", arguments: ["date": 0]) {(result, error) in
+            self.validate(result as? Int == 0, error: error, cell: self.dateCell)
+        }
+
+        let dates: NSArray = ["2016-09-15", "2016-09-16"]
+
+        serviceProxy.invoke("GET", path: "/httprpc-server-test/test/echo", arguments: ["dates": dates]) {(result, error) in
+            self.validate(result as? NSArray == dates, error: error, cell: self.datesCell)
+        }
 
         // Echo
         serviceProxy.invoke("POST", path: "/httprpc-server-test/test/echo", arguments:["attachment": imageTestURL]) {(result, error) in

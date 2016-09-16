@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox userNameCheckBox;
     private CheckBox userRoleStatusCheckBox;
     private CheckBox attachmentInfoCheckBox;
+    private CheckBox dateCheckBox;
+    private CheckBox datesCheckBox;
     private CheckBox echoCheckBox;
     private ImageView echoImageView;
     private CheckBox longListCheckBox;
@@ -137,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
         userNameCheckBox = (CheckBox)findViewById(R.id.user_name_checkbox);
         userRoleStatusCheckBox = (CheckBox)findViewById(R.id.user_role_status_checkbox);
         attachmentInfoCheckBox = (CheckBox)findViewById(R.id.attachment_info_checkbox);
+        dateCheckBox = (CheckBox)findViewById(R.id.date_checkbox);
+        datesCheckBox = (CheckBox)findViewById(R.id.dates_checkbox);
         echoImageView = (ImageView)findViewById(R.id.echo_image_view);
         echoCheckBox = (CheckBox)findViewById(R.id.echo_checkbox);
         longListCheckBox = (CheckBox)findViewById(R.id.long_list_checkbox);
@@ -322,6 +326,23 @@ public class MainActivity extends AppCompatActivity {
                         )
                     ))
                 )));
+            }
+        });
+
+        // Dates
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("date", 0)), new ResultHandler<Number>() {
+            @Override
+            public void execute(Number result, Exception exception) {
+                dateCheckBox.setChecked(exception == null && result.equals(0));
+            }
+        });
+
+        final List <?> dates = listOf("2016-09-15", "2016-09-16");
+
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("dates", dates)), new ResultHandler<List<?>>() {
+            @Override
+            public void execute(List<?> result, Exception exception) {
+                datesCheckBox.setChecked(exception == null && result.equals(dates));
             }
         });
 

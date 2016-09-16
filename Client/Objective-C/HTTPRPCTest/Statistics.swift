@@ -22,6 +22,6 @@ class Statistics: NSObject {
     init(dictionary: [String: AnyObject]) {
         super.init()
 
-        setValuesForKeys(dictionary);
+        setValuesForKeys(dictionary)
     }
 }

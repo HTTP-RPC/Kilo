@@ -175,6 +175,17 @@ public class WebServiceProxyTest {
             mapOf(entry("text", "héllo"), entry("attachments", attachments)),
             WebServiceProxyTest::handleAttachmentInfoResult);
 
+        // Dates
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("date", 0)), (Number result, Exception exception) -> {
+            validate(exception == null && result.equals(0));
+        });
+
+        List<?> dates = listOf("2016-09-15", "2016-09-16");
+
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("dates", dates)), (Number result, Exception exception) -> {
+            validate(exception == null && result.equals(dates));
+        });
+
         // Long list
         Future<?> future = serviceProxy.invoke("GET", "/httprpc-server-test/test/longList", (result, exception) -> {
             // No-op

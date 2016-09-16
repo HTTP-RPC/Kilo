@@ -81,13 +81,13 @@ public class JSONEncoderTest {
         Assert.assertTrue(encode(new Date(0)).equals("0"));
 
         LocalDate date = LocalDate.now();
-        Assert.assertTrue(encode(date).equals("\"" + DateTimeFormatter.ISO_DATE.format(date) + "\""));
+        Assert.assertTrue(encode(date).equals("\"" + date.format(DateTimeFormatter.ISO_DATE) + "\""));
 
         LocalTime time = LocalTime.now();
-        Assert.assertTrue(encode(time).equals("\"" + DateTimeFormatter.ISO_TIME.format(time) + "\""));
+        Assert.assertTrue(encode(time).equals("\"" + time.format(DateTimeFormatter.ISO_TIME) + "\""));
 
         LocalDateTime dateTime = LocalDateTime.now();
-        Assert.assertTrue(encode(dateTime).equals("\"" + DateTimeFormatter.ISO_DATE_TIME.format(dateTime) + "\""));
+        Assert.assertTrue(encode(dateTime).equals("\"" + dateTime.format(DateTimeFormatter.ISO_DATE_TIME) + "\""));
     }
 
     private String encode(Object value) throws IOException {
