@@ -25,7 +25,7 @@ public interface Encoder {
      * Returns the MIME type of the content produced by the encoder.
      *
      * @param value
-     * The value to encode.
+     * The value to be encoded.
      *
      * @return
      * The value's content type.

@@ -28,10 +28,11 @@ import java.util.NoSuchElementException;
 
 /**
  * Class that presents the contents of a JDBC result set as an iterable list of
- * maps.
- *
- * If a column's label contains a period, the value will be returned as a
+ * maps. If a column's label contains a period, the value will be returned as a
  * nested structure.
+ *
+ * Closing the adapter closes the underlying result set, statement, and
+ * connection.
  */
 public class ResultSetAdapter extends AbstractList<Map<String, Object>> implements AutoCloseable {
     private ResultSet resultSet;

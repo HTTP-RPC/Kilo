@@ -147,11 +147,15 @@ Method arguments may be any of the following types:
 * `boolean`/`java.lang.Boolean`
 * `java.lang.String`
 * `java.net.URL`
+* `java.time.LocalDate`
+* `java.time.LocalTime`
+* `java.time.LocalDateTime`
+* `java.util.Date`
 * `java.util.List`
 
-`URL` arguments represent binary content provided by the caller and can only be used with `POST` requests submitted using the "multipart/form-data" encoding. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>` or `List<URL>`.
+`URL` arguments represent binary content, and can only be used with `POST` requests submitted using the "multipart/form-data" encoding. `List` arguments represent multi-value parameters. They may be used with any request type, but elements must be a supported simple type; e.g. `List<Double>` or `List<URL>`.
 
-Omitting the value of a primitive parameter results in an argument value of 0 for that parameter. Omitting the value of a simple reference type produces a null argument value for that parameter. Omitting all values for a list parameter produces an empty list argument for the parameter.
+Omitting the value of a primitive parameter results in an argument value of 0 for that parameter. Omitting the value of a simple reference type parameter produces a `null` argument value for that parameter. Omitting all values for a list type parameter produces an empty list argument for the parameter.
 
 #### Return Values
 Methods may return any of the following types:
@@ -164,6 +168,10 @@ Methods may return any of the following types:
 * `double`/`java.lang.Double`
 * `boolean`/`java.lang.Boolean`
 * `java.lang.CharSequence`
+* `java.time.LocalDate`
+* `java.time.LocalTime`
+* `java.time.LocalDateTime`
+* `java.util.Date`
 * `java.util.List`
 * `java.util.Map`
 
@@ -185,17 +193,7 @@ For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultS
 The values returned by these methods are populated via protected setters, which are called once per request by `RequestDispatcherServlet`. These setters are not meant to be called by application code. However, they can be used to facilitate unit testing of service implementations by simulating a request from an actual client. 
 
 ### RequestDispatcherServlet Class
-HTTP-RPC services are published via the `RequestDispatcherServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the specified method, and serializing the return value to JSON. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
-
-Java objects are mapped to their JSON equivalents as follows:
-
-* `java.lang.Number` or numeric primitive: number
-* `java.lang.Boolean` or boolean primitive: true/false
-* `java.lang.CharSequence`: string
-* `java.util.List`: array
-* `java.util.Map`: object
-
-Internally, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. This class can also be used by application code to write JSON data to arbitrary output streams.
+HTTP-RPC services are published via the `RequestDispatcherServlet` class. This class is resposible for translating HTTP request parameters to method arguments, invoking the specified method, and serializing the return value to JSON. 
 
 Each servlet instance hosts a single HTTP-RPC service. The name of the service type is passed to the servlet via the "serviceClassName" initialization parameter. For example:
 
@@ -213,7 +211,31 @@ Each servlet instance hosts a single HTTP-RPC service. The name of the service t
         <url-pattern>/math/*</url-pattern>
     </servlet-mapping>
 
-A new service instance is created and initialized for each request. `RequestDispatcherServlet` converts the request parameters to the argument types expected by the named method, invokes the method, and writes the return value to the response stream as JSON.
+A new service instance is created and initialized for each request. `RequestDispatcherServlet` converts the request parameters to the argument types expected by the named method, invokes the method, and writes the return value to the response stream as JSON. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+
+Values for numeric and boolean arguments are converted to the appropriate type using the parse method of the associated wrapper class (e.g. `Integer#parseInt()`). Other argument types are handled as described below:
+
+* `java.lang.String`: no coercion necessary
+* `java.net.URL`: URL of temporary local file containing uploaded content
+* `java.time.LocalDate`: result of calling `DateTimeFormatter.ISO_DATE.parse()`
+* `java.time.LocalTime`: result of calling `DateTimeFormatter.ISO_TIME.parse()`
+* `java.time.LocalDateTime`: result of calling `DateTimeFormatter.ISO_DATE_TIME.parse()`
+* `java.util.Date`: result of calling `Long#parseLong()`, then `Date(long)`
+* `java.util.List`: array list containing argument values coerced to `List` parameter type
+
+Return values are mapped to their JSON equivalents as follows:
+
+* `java.lang.Number` or numeric primitive: number
+* `java.lang.Boolean` or boolean primitive: true/false
+* `java.lang.CharSequence`: string
+* `java.time.LocalDate`: string formatted as an ISO date
+* `java.time.LocalTime`: string formatted as an ISO time
+* `java.time.LocalDateTime`: string formatted as an ISO date/time
+* `java.util.Date`: long value representing the date's absolute time
+* `java.util.List`: array
+* `java.util.Map`: object
+
+Internally, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. This class can also be used by application code to write JSON data to arbitrary output streams.
 
 If the method completes successfully and returns a value, an HTTP 200 status code is returned. If the method returns `void` or `Void`, HTTP 204 is returned.
 
@@ -537,7 +559,7 @@ Applications may also define their own custom modifiers. Modifiers are created b
 
     public Object apply(Object value, String argument, Locale locale);
     
-The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If a modifier argument is not specified, the value of `argument` will be null. The third argument contains the caller's locale.
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If a modifier argument is not specified, the value of `argument` will be `null`. The third argument contains the caller's locale.
 
 For example, the following class implements a modifier that converts values to uppercase:
 
@@ -680,15 +702,14 @@ A convenience method is also provided for executing operations that don't take a
 Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
 
 #### Arguments and Return Values
-Request arguments may be any of the following types:
+TODO 
+Arguments may be of any type and are generally converted to their string representations via `toString()` 
 
-* `java.lang.Number`
-* `java.lang.Boolean`
-* `java.lang.String`
-* `java.net.URL`
-* `java.util.List`
+When used with `POST` requests, URL arguments represent binary content (similar to HTML "file"-type inputs)
 
-URL arguments represent binary content and can only be used with `POST` requests. List arguments may be used with any request type, but list elements must be a supported simple type; e.g. `List<Double>` or `List<URL>`.
+List arguments represent multi-value arguments; when used with URLs, multiple files are attached (similar to "file" inputs with "multiple")
+
+
 
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
@@ -893,14 +914,11 @@ A convenience method is also provided for executing operations that don't take a
     - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
         resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
-Arguments may be any of the following types:
+TODO Arguments
 
-* `NSNumber`
-* `NSString`
-* `NSURL`
-* `NSArray`
+`CFBooleanRef` is also supported for boolean arguments - converted to "true" or "false"
 
-`CFBooleanRef` is also supported for boolean arguments. URL arguments represent binary content and can only be used with `POST` requests. Array arguments may be used with any request type, but array elements must be a supported simple type.
+
 
 The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
@@ -953,7 +971,11 @@ The source code for the JavaScript client can be downloaded [here](https://githu
 ### WebServiceProxy Class
 The `WebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server, and uses `JSON.parse()` to convert the response to an object. `POST` requests are encoded using the "application/x-www-form-urlencoded" MIME type.
 
-Service proxies are initialized via the `WebServiceProxy` constructor. Service operations are executed by calling the `invoke()` method on the service proxy. Request arguments can be numbers, booleans, strings, or arrays of any simple type.
+Service proxies are initialized via the `WebServiceProxy` constructor. Service operations are executed by calling the `invoke()` method on the service proxy. 
+
+TODO Arguments
+
+
 
 The `invoke()` method takes a result handler function as the final argument. This callback is invoked upon completion of the operation. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
 
