@@ -677,10 +677,12 @@ The JAR file for the Java client implementation of HTTP-RPC can be downloaded [h
 ### WebServiceProxy Class
 The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `POST` requests are encoded as "multipart/form-data".
 
-`WebServiceProxy` provides a single constructor that takes the following arguments:
+The `WebServiceProxy` constructor accepts the following arguments:
 
 * `serverURL` - an instance of `java.net.URL` representing the URL of the server
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that is used to  dispatch service requests
+
+Optional connection and read timeout values may also be provided.
 
 Service operations are initiated by calling the `invoke()` method:
     
@@ -699,17 +701,13 @@ A convenience method is also provided for executing operations that don't take a
     public <V> Future<V> invoke(String method, String path, 
         ResultHandler<V> resultHandler) { ... }
 
-Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request as well as obtain information about a request that has completed.
+Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
 #### Arguments and Return Values
-TODO 
-Arguments may be of any type and are generally converted to their string representations via `toString()` 
+Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following argument types are given special consideration:
 
-When used with `POST` requests, URL arguments represent binary content (similar to HTML "file"-type inputs)
-
-List arguments represent multi-value arguments; when used with URLs, multiple files are attached (similar to "file" inputs with "multiple")
-
-
+* Instances of `java.net.URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
+* Instances of `java.util.List` represent multi-value parameters. They may be used with any request type; however, lists containing URL values are handled similarly to `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
 
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
@@ -914,17 +912,18 @@ A convenience method is also provided for executing operations that don't take a
     - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
         resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
-TODO Arguments
+Both variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
-`CFBooleanRef` is also supported for boolean arguments - converted to "true" or "false"
+#### Arguments and Return Values
+Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following argument types are given special consideration:
 
-
+* Instances of `NSURL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
+* Instances of `NSArray` represent multi-value parameters. They may be used with any request type; however, arrays containing URL values are handled similarly to `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
+* The `CFBooleanRef` constants `kCFBooleanTrue` and `kCFBooleanFalse` are converted to "true" and "false", respectively.
 
 The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
 
-Both variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
-
-Although requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
+Note that, while requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
 ### Authentication
 Although it is possible to use the `URLSession:task:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDataDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
@@ -971,13 +970,20 @@ The source code for the JavaScript client can be downloaded [here](https://githu
 ### WebServiceProxy Class
 The `WebServiceProxy` class serves as an invocation proxy for HTTP-RPC services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server, and uses `JSON.parse()` to convert the response to an object. `POST` requests are encoded using the "application/x-www-form-urlencoded" MIME type.
 
-Service proxies are initialized via the `WebServiceProxy` constructor. Service operations are executed by calling the `invoke()` method on the service proxy. 
+Service proxies are initialized via the `WebServiceProxy` constructor, which takes a single optional argument representing the request timeout. Service operations are executed by calling the `invoke()` method on the proxy instance: 
 
-TODO Arguments
+    WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandler) { ... }
 
+This method takes the following arguments:
 
+* `method` - the HTTP method to execute
+* `path` - the resource path
+* `arguments` - an object containing the request arguments as key/value pairs
+* `resultHandler` - a callback that will be invoked upon completion of the method
 
-The `invoke()` method takes a result handler function as the final argument. This callback is invoked upon completion of the operation. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
+Arguments may be of any type, and are generally converted to parameter values via `toString()`. However, array arguments represent multi-value parameters, and behave similarly to `<select multiple>` tags in HTML.
+
+The result handler is invoked upon completion of the operation. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
 
 Both methods return the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
 
