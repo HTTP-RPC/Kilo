@@ -37,6 +37,7 @@ import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
+import org.httprpc.util.IteratorAdapter;
 
 public class TestService extends WebService {
     private static final String DB_URL = String.format("jdbc:sqlite::resource:%s/test.db",
@@ -175,6 +176,11 @@ public class TestService extends WebService {
         parameters.apply(statement, mapOf(entry("a", "hello"), entry("b", 3)));
 
         return new ResultSetAdapter(statement.executeQuery());
+    }
+
+    @RPC(method="GET", path="stream")
+    public IteratorAdapter getStream() {
+        return new IteratorAdapter(listOf("Albert", "Ann", "Bobby", "Barbara", "Charlie", "Donna", "Edward").stream().iterator());
     }
 
     @RPC(method="GET", path="void")

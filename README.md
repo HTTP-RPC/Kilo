@@ -217,9 +217,9 @@ Values for numeric and boolean arguments are converted to the appropriate type u
 
 * `java.lang.String`: no coercion necessary
 * `java.net.URL`: URL of temporary local file containing uploaded content
-* `java.time.LocalDate`: result of calling `DateTimeFormatter.ISO_DATE.parse()`
-* `java.time.LocalTime`: result of calling `DateTimeFormatter.ISO_TIME.parse()`
-* `java.time.LocalDateTime`: result of calling `DateTimeFormatter.ISO_DATE_TIME.parse()`
+* `java.time.LocalDate`: result of calling `LocalDate#parse()`
+* `java.time.LocalTime`: result of calling `LocalTime#parse()`
+* `java.time.LocalDateTime`: result of calling `LocalDateTime#parse()`
 * `java.util.Date`: result of calling `Long#parseLong()`, then `Date(long)`
 * `java.util.List`: array list containing argument values coerced to `List` parameter type
 

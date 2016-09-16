@@ -26,7 +26,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -525,11 +524,11 @@ public class RequestDispatcherServlet extends HttpServlet {
         } else if (type == Date.class) {
             argument = new Date(Long.parseLong(value));
         } else if (type == LocalDate.class) {
-            argument = DateTimeFormatter.ISO_DATE.parse(value);
+            argument = LocalDate.parse(value);
         } else if (type == LocalTime.class) {
-            argument = DateTimeFormatter.ISO_TIME.parse(value);
+            argument = LocalTime.parse(value);
         } else if (type == LocalDateTime.class) {
-            argument = DateTimeFormatter.ISO_DATE_TIME.parse(value);
+            argument = LocalDateTime.parse(value);
         } else {
             throw new UnsupportedOperationException("Invalid parameter type.");
         }

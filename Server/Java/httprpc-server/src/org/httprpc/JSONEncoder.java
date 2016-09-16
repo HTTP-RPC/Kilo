@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -97,11 +96,11 @@ public class JSONEncoder implements Encoder {
         } else if (value instanceof Date) {
             writeValue(((Date)value).getTime(), writer);
         } else if (value instanceof LocalDate) {
-            writeValue(DateTimeFormatter.ISO_DATE.format((TemporalAccessor)value), writer);
+            writeValue(((LocalDate)value).format(DateTimeFormatter.ISO_LOCAL_DATE), writer);
         } else if (value instanceof LocalTime) {
-            writeValue(DateTimeFormatter.ISO_TIME.format((TemporalAccessor)value), writer);
+            writeValue(((LocalTime)value).format(DateTimeFormatter.ISO_LOCAL_TIME), writer);
         } else if (value instanceof LocalDateTime) {
-            writeValue(DateTimeFormatter.ISO_DATE_TIME.format((TemporalAccessor)value), writer);
+            writeValue(((LocalDateTime)value).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), writer);
         } else if (value instanceof List<?>) {
             List<?> list = (List<?>)value;
 

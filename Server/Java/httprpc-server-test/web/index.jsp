@@ -90,6 +90,10 @@
 
 <hr/>
 
+<a href="${pageContext.request.contextPath}/test/stream">Stream</a>
+
+<hr/>
+
 <a href="${pageContext.request.contextPath}/test/void">Void</a>
 
 <hr/>
@@ -151,6 +155,14 @@
 </tr>
 </table>
 </form>
+
+<hr/>
+
+<a href="${pageContext.request.contextPath}/test/echo?date=0">Date</a>
+<br/>
+<a href="${pageContext.request.contextPath}/test/echo?dates=2016-09-15&dates=2016-09-16">Dates</a>
+
+<hr/>
 
 <form action="${pageContext.request.contextPath}/test/echo" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table>
