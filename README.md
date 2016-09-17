@@ -538,7 +538,7 @@ For example, the following marker applies a format string to a value and then UR
 
     {{value:format=0x%04x:^url}}
 
-In addition to `printf()`-style formatting, the `format` modifier also supports the following arguments for numeric values:
+In addition to `printf()`-style formatting, the `format` modifier also supports the following arguments:
 
   * `currency` - applies a currency format
   * `percent` - applies a percent format
@@ -550,8 +550,12 @@ In addition to `printf()`-style formatting, the `format` modifier also supports 
   * `mediumTime` - applies a medium time format
   * `longTime` - applies a long time format
   * `fullTime` - applies a full time format
+  * `shortDateTime` - applies a short date/time format
+  * `mediumDateTime` - applies a medium date/time format
+  * `longDateTime` - applies a long date/time format
+  * `fullDateTime` - applies a full date/time format
 
-For example, this marker applies a medium date format to a long value named "date":
+For example, this marker applies a medium date format to a date value named "date":
 
     {{date:format=mediumDate}}
 

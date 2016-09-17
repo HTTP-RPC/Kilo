@@ -160,13 +160,15 @@ public class JSONEncoder implements Encoder {
 
                     Object key = entry.getKey();
 
-                    if (!(key instanceof String)) {
-                        throw new IOException("Invalid key type.");
+                    if (key == null) {
+                        continue;
                     }
 
                     indent(writer);
 
-                    writer.append("\"" + key + "\": ");
+                    writeValue(key.toString(), writer);
+
+                    writer.append(": ");
 
                     writeValue(entry.getValue(), writer);
 
@@ -190,7 +192,7 @@ public class JSONEncoder implements Encoder {
                 }
             }
         } else {
-            throw new IOException("Invalid value type.");
+            writeValue(value.toString(), writer);
         }
     }
 

@@ -16,7 +16,11 @@ package org.httprpc.template;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 
 /**
@@ -27,28 +31,144 @@ public class FormatModifier implements Modifier {
     public Object apply(Object value, String argument, Locale locale) {
         Object result;
         if (argument != null) {
-            if (argument.equals("currency")) {
-                result = NumberFormat.getCurrencyInstance(locale).format(value);
-            } else if (argument.equals("percent")) {
-                result = NumberFormat.getPercentInstance(locale).format(value);
-            } else if (argument.equals("fullDate")) {
-                result = DateFormat.getDateInstance(DateFormat.FULL, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("longDate")) {
-                result = DateFormat.getDateInstance(DateFormat.LONG, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("mediumDate")) {
-                result = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("shortDate")) {
-                result = DateFormat.getDateInstance(DateFormat.SHORT, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("fullTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.FULL, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("longTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.LONG, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("mediumTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale).format(new Date(((Number)value).longValue()));
-            } else if (argument.equals("shortTime")) {
-                result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(new Date(((Number)value).longValue()));
-            } else {
-                result = String.format(locale, argument, value);
+            switch (argument) {
+                case "currency": {
+                    result = NumberFormat.getCurrencyInstance(locale).format(value);
+
+                    break;
+                }
+
+                case "percent": {
+                    result = NumberFormat.getPercentInstance(locale).format(value);
+
+                    break;
+                }
+
+                case "fullDate": {
+                    if (value instanceof LocalDate) {
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
+                    } else {
+                        result = DateFormat.getDateInstance(DateFormat.FULL, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "longDate": {
+                    if (value instanceof LocalDate) {
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG));
+                    } else {
+                        result = DateFormat.getDateInstance(DateFormat.LONG, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "mediumDate": {
+                    if (value instanceof LocalDate) {
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+                    } else {
+                        result = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "shortDate": {
+                    if (value instanceof LocalDate) {
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+                    } else {
+                        result = DateFormat.getDateInstance(DateFormat.SHORT, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "fullTime": {
+                    if (value instanceof LocalTime) {
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL));
+                    } else {
+                        result = DateFormat.getTimeInstance(DateFormat.FULL, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "longTime": {
+                    if (value instanceof LocalTime) {
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+                    } else {
+                        result = DateFormat.getTimeInstance(DateFormat.LONG, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "mediumTime": {
+                    if (value instanceof LocalTime) {
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM));
+                    } else {
+                        result = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "shortTime": {
+                    if (value instanceof LocalTime) {
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
+                    } else {
+                        result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "fullDateTime": {
+                    if (value instanceof LocalDateTime) {
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL));
+                    } else {
+                        result = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "longDateTime": {
+                    if (value instanceof LocalDateTime) {
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+                    } else {
+                        result = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "mediumDateTime": {
+                    if (value instanceof LocalDateTime) {
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM));
+                    } else {
+                        result = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                case "shortDateTime": {
+                    if (value instanceof LocalDateTime) {
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
+                    } else {
+                        result = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(value);
+                    }
+
+                    break;
+                }
+
+                default: {
+                    result = String.format(locale, argument, value);
+
+                    break;
+                }
             }
         } else {
             result = value;
