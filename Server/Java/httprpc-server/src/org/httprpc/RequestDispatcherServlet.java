@@ -491,7 +491,7 @@ public class RequestDispatcherServlet extends HttpServlet {
 
     private static Object getArgument(String value, Type type) {
         Object argument;
-        if (type == Object.class || type == String.class) {
+        if (type == String.class) {
             argument = value;
         } else if (type == Byte.TYPE) {
             argument = (value == null) ? 0 : Byte.parseByte(value);

@@ -75,26 +75,26 @@ Support currently exists for implementing HTTP-RPC services in Java, and consumi
 ## Java Server
 The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following core classes:
 
-* _`org.httprpc`_
+* `org.httprpc`
     * `WebService` - abstract base class for HTTP-RPC services
     * `RPC` - annotation that specifies a "remote procedure call", or web service method
     * `RequestDispatcherServlet` - servlet that dispatches requests to service instances
     * `Encoder ` - interface representing a content encoder
     * `JSONEncoder` - class that encodes a JSON response
     * `Encoding` - annotation that specifies a custom encoding
-* _`org.httprpc.beans`_
+* `org.httprpc.beans`
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map, suitable for serialization to JSON
-* _`org.httprpc.sql`_
+* `org.httprpc.sql`
     * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable list, suitable for streaming to JSON
     * `Parameters` - class for simplifying execution of prepared statements
-* _`org.httprpc.util`_
+* `org.httprpc.util`
     * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
 
 Additionally, the server library provides the following classes for use with templates, which allow service data to be declaratively transformed into alternate representations:
 
-* _`org.httprpc`_
+* `org.httprpc`
     * `Template` - annotation that associates a template with a service method
-* _`org.httprpc.template`_
+* `org.httprpc.template`
     * `TemplateEncoder` - class for processing template documents
     * `Modifier` - interface representing a template modifier
 
@@ -138,14 +138,14 @@ This request would invoke the second method:
 #### Method Arguments
 Method arguments may be any of the following types:
 
-* `byte`/`java.lang.Byte`
-* `short`/`java.lang.Short`
-* `int`/`java.lang.Integer`
-* `long`/`java.lang.Long`
-* `float`/`java.lang.Float`
-* `double`/`java.lang.Double`
-* `boolean`/`java.lang.Boolean`
-* `java.lang.String`
+* `byte`/`Byte`
+* `short`/`Short`
+* `int`/`Integer`
+* `long`/`Long`
+* `float`/`Float`
+* `double`/`Double`
+* `boolean`/`Boolean`
+* `String`
 * `java.net.URL`
 * `java.time.LocalDate`
 * `java.time.LocalTime`
@@ -160,14 +160,14 @@ Omitting the value of a primitive parameter results in an argument value of 0 fo
 #### Return Values
 Methods may return any of the following types:
 
-* `byte`/`java.lang.Byte`
-* `short`/`java.lang.Short`
-* `int`/`java.lang.Integer`
-* `long`/`java.lang.Long`
-* `float`/`java.lang.Float`
-* `double`/`java.lang.Double`
-* `boolean`/`java.lang.Boolean`
-* `java.lang.CharSequence`
+* `byte`/`Byte`
+* `short`/`Short`
+* `int`/`Integer`
+* `long`/`Long`
+* `float`/`Float`
+* `double`/`Double`
+* `boolean`/`Boolean`
+* `CharSequence`
 * `java.time.LocalDate`
 * `java.time.LocalTime`
 * `java.time.LocalDateTime`
@@ -175,11 +175,11 @@ Methods may return any of the following types:
 * `java.util.List`
 * `java.util.Map`
 
-Methods may also return `void` or `java.lang.Void` to indicate that they do not produce a value.
+Methods may also return `void` or `Void` to indicate that they do not produce a value.
 
 `Map` implementations must use `String` values for keys. Nested structures are supported, but reference cycles are not permitted.
 
-`List` and `Map` types are not required to support random access; iterability is sufficient. Additionally, `List` and `Map` types that implement `java.lang.AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
+`List` and `Map` types are not required to support random access; iterability is sufficient. Additionally, `List` and `Map` types that implement `AutoCloseable` will be automatically closed after their values have been written to the output stream. This allows service implementations to stream response data rather than buffering it in memory before it is written. 
 
 For example, the `ResultSetAdapter` class wraps an instance of `java.sql.ResultSet` and exposes its contents as a forward-scrolling, auto-closeable list of map values. Closing the list also closes the underlying result set, ensuring that database resources are not leaked. `ResultSetAdapter` is discussed in more detail later.
 
@@ -215,7 +215,7 @@ A new service instance is created and initialized for each request. `RequestDisp
 
 Values for numeric and boolean arguments are converted to the appropriate type using the parse method of the associated wrapper class (e.g. `Integer#parseInt()`). Other argument types are handled as described below:
 
-* `java.lang.String`: no coercion necessary
+* `String`: no coercion necessary
 * `java.net.URL`: URL of temporary local file containing uploaded content
 * `java.time.LocalDate`: result of calling `LocalDate#parse()`
 * `java.time.LocalTime`: result of calling `LocalTime#parse()`
@@ -225,9 +225,9 @@ Values for numeric and boolean arguments are converted to the appropriate type u
 
 By default, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. Return values are mapped to their JSON equivalents as follows:
 
-* `java.lang.Number` or numeric primitive: number
-* `java.lang.Boolean` or boolean primitive: true/false
-* `java.lang.CharSequence`: string
+* `Number` or numeric primitive: number
+* `Boolean` or `boolean`: true/false
+* `CharSequence`: string
 * `java.time.LocalDate`: string formatted as an ISO date
 * `java.time.LocalTime`: string formatted as an ISO time
 * `java.time.LocalDateTime`: string formatted as an ISO date/time
@@ -667,7 +667,7 @@ Comment markers provide informational text about a template's content. They are 
 ## Java Client
 The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
 
-* _`org.httprpc`_
+* `org.httprpc`
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
     * `Result` - abstract base class for typed results
@@ -719,9 +719,9 @@ The result handler is called upon completion of the operation. `ResultHandler` i
 
 On successful completion, the first argument will contain the result of the operation. This will typically be an instance of one of the following types or `null`, depending on the response returned by the server:
 
-* string: `java.lang.String`
-* number: `java.lang.Number`
-* true/false: `java.lang.Boolean`
+* string: `String`
+* number: `Number`
+* true/false: `Boolean`
 * array: `java.util.List`
 * object: `java.util.Map`
 
