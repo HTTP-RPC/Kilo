@@ -211,7 +211,7 @@ Each servlet instance hosts a single HTTP-RPC service. The name of the service t
         <url-pattern>/math/*</url-pattern>
     </servlet-mapping>
 
-A new service instance is created and initialized for each request. `RequestDispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the response stream. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+A new service instance is created and initialized for each request (unless the service method is static, in which case no instance is necessary). `RequestDispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the response stream. Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 Values for numeric and boolean arguments are converted to the appropriate type using the parse method of the associated wrapper class (e.g. `Integer#parseInt()`). Other argument types are handled as described below:
 
