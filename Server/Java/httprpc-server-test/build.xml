@@ -11,6 +11,7 @@
     
     <target name="build">
         <ant dir="../httprpc-server" target="build" inheritAll="false"/>
+        <ant dir="../../../Client/Java/httprpc-client" target="build" inheritAll="false"/>
         
         <echo message="Building ${title}..."/>
         
@@ -23,6 +24,7 @@
             failonerror="true">
             <classpath>
                 <fileset dir="../httprpc-server" includes="*.jar"/>
+                <fileset dir="../../../Client/Java/httprpc-client" includes="*.jar"/>
             </classpath>
             
             <compilerarg value="-parameters"/>
@@ -37,6 +39,7 @@
             <classes dir="${src}" excludes="**/*.java"/>
             
             <lib dir="../httprpc-server" includes="*.jar"/>
+            <lib dir="../../../Client/Java/httprpc-client" includes="*.jar"/>
             <lib dir="${lib}" includes="*.jar"/>
         </war>
 	</target>

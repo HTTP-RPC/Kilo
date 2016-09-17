@@ -91,6 +91,8 @@
 <hr/>
 
 <a href="${pageContext.request.contextPath}/test/stream">Stream</a>
+<br/>
+<a href="${pageContext.request.contextPath}/test/stream/proxy">Stream (proxy)</a>
 
 <hr/>
 

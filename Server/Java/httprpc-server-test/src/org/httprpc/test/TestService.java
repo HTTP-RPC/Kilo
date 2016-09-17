@@ -16,7 +16,12 @@ package org.httprpc.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,11 +34,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.httprpc.BasicAuthentication;
 import org.httprpc.Encoding;
 import org.httprpc.RPC;
 import org.httprpc.Template;
 import org.httprpc.WebService;
+import org.httprpc.WebServiceProxy;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
@@ -49,6 +65,44 @@ public class TestService extends WebService {
         } catch (ClassNotFoundException exception) {
             throw new RuntimeException(exception);
         }
+
+        // Allow self-signed certificates for testing purposes
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
+            }
+        };
+
+        SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+        } catch (NoSuchAlgorithmException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        try {
+            sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
+        } catch (KeyManagementException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+
+        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession sslSession) {
+                return true;
+            }
+        });
     }
 
     @RPC(method="GET", path="sum")
@@ -181,6 +235,25 @@ public class TestService extends WebService {
     @RPC(method="GET", path="stream")
     public IteratorAdapter getStream() {
         return new IteratorAdapter(listOf("Albert", "Ann", "Bobby", "Barbara", "Charlie", "Donna", "Edward").stream().iterator());
+    }
+
+    @RPC(method="GET", path="stream/proxy")
+    public Object getStreamProxy() throws InterruptedException, ExecutionException {
+        URL serverURL;
+        try {
+            serverURL = new URL("https://localhost:8443");
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor());
+        serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
+
+        Object result = serviceProxy.invoke("GET", "/httprpc-server-test/test/stream", null).get();
+
+        serviceProxy.getExecutorService().shutdown();
+
+        return result;
     }
 
     @RPC(method="GET", path="void")
