@@ -46,7 +46,7 @@ public class FormatModifier implements Modifier {
 
                 case "fullDate": {
                     if (value instanceof LocalDate) {
-                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale));
                     } else {
                         result = DateFormat.getDateInstance(DateFormat.FULL, locale).format(value);
                     }
@@ -56,7 +56,7 @@ public class FormatModifier implements Modifier {
 
                 case "longDate": {
                     if (value instanceof LocalDate) {
-                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG));
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale));
                     } else {
                         result = DateFormat.getDateInstance(DateFormat.LONG, locale).format(value);
                     }
@@ -66,7 +66,7 @@ public class FormatModifier implements Modifier {
 
                 case "mediumDate": {
                     if (value instanceof LocalDate) {
-                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
                     } else {
                         result = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(value);
                     }
@@ -76,7 +76,7 @@ public class FormatModifier implements Modifier {
 
                 case "shortDate": {
                     if (value instanceof LocalDate) {
-                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+                        result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale));
                     } else {
                         result = DateFormat.getDateInstance(DateFormat.SHORT, locale).format(value);
                     }
@@ -86,7 +86,7 @@ public class FormatModifier implements Modifier {
 
                 case "fullTime": {
                     if (value instanceof LocalTime) {
-                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL));
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL).withLocale(locale));
                     } else {
                         result = DateFormat.getTimeInstance(DateFormat.FULL, locale).format(value);
                     }
@@ -96,7 +96,7 @@ public class FormatModifier implements Modifier {
 
                 case "longTime": {
                     if (value instanceof LocalTime) {
-                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withLocale(locale));
                     } else {
                         result = DateFormat.getTimeInstance(DateFormat.LONG, locale).format(value);
                     }
@@ -106,7 +106,7 @@ public class FormatModifier implements Modifier {
 
                 case "mediumTime": {
                     if (value instanceof LocalTime) {
-                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM));
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale));
                     } else {
                         result = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale).format(value);
                     }
@@ -116,7 +116,7 @@ public class FormatModifier implements Modifier {
 
                 case "shortTime": {
                     if (value instanceof LocalTime) {
-                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
+                        result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale));
                     } else {
                         result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(value);
                     }
@@ -126,7 +126,7 @@ public class FormatModifier implements Modifier {
 
                 case "fullDateTime": {
                     if (value instanceof LocalDateTime) {
-                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL));
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(locale));
                     } else {
                         result = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale).format(value);
                     }
@@ -136,7 +136,7 @@ public class FormatModifier implements Modifier {
 
                 case "longDateTime": {
                     if (value instanceof LocalDateTime) {
-                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(locale));
                     } else {
                         result = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale).format(value);
                     }
@@ -146,7 +146,7 @@ public class FormatModifier implements Modifier {
 
                 case "mediumDateTime": {
                     if (value instanceof LocalDateTime) {
-                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM));
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale));
                     } else {
                         result = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale).format(value);
                     }
@@ -156,7 +156,7 @@ public class FormatModifier implements Modifier {
 
                 case "shortDateTime": {
                     if (value instanceof LocalDateTime) {
-                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
+                        result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale));
                     } else {
                         result = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(value);
                     }

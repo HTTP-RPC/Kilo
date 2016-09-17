@@ -17,6 +17,11 @@ package org.httprpc.template;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -240,14 +245,25 @@ public class TemplateEncoderTest {
         TemplateEncoder engine = new TemplateEncoder(getClass().getResource("format2.txt"), "text/plain");
 
         Date date = new Date();
+        LocalDate localDate = LocalDate.now();
+        LocalTime localTime = LocalTime.now();
+        LocalDateTime localDateTime = LocalDateTime.now();
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            engine.writeValue(date.getTime(), writer);
+            engine.writeValue(mapOf(
+                entry("date", date),
+                entry("localDate", localDate),
+                entry("localTime", localTime),
+                entry("localDateTime", localDateTime)
+            ), writer);
             result = writer.toString();
         }
 
-        Assert.assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date.getTime()), result);
+        Assert.assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date)
+            + "," + localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT))
+            + "," + localTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+            + "," + localDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)), result);
     }
 
     @Test
