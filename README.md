@@ -70,10 +70,10 @@ Although the HTTP specification defines a large number of possible response code
 * _500 Internal Server Error_ - An error occurred while executing the method
 
 # Implementations
-Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. For examples and additional information, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 ## Java Server
-The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a JAR file that contains the following core classes:
+The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a single JAR file that contains the following core classes:
 
 * `org.httprpc`
     * `WebService` - abstract base class for HTTP-RPC services
@@ -90,7 +90,7 @@ The Java server library allows developers to create and publish HTTP-RPC web ser
 * `org.httprpc.util`
     * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable list, suitable for streaming to JSON
 
-Additionally, the server library provides the following classes for use with templates, which allow service data to be declaratively transformed into alternate representations:
+Additionally, the server library provides the following classes for use with templates, which allow response data to be declaratively transformed into alternate representations:
 
 * `org.httprpc`
     * `Template` - annotation that associates a template with a service method
@@ -216,12 +216,12 @@ A new service instance is created and initialized for each request (unless the s
 Values for numeric and boolean arguments are converted to the appropriate type using the parse method of the associated wrapper class (e.g. `Integer#parseInt()`). Other argument types are handled as described below:
 
 * `String`: no coercion necessary
-* `java.net.URL`: URL of temporary local file containing uploaded content
+* `java.net.URL`: URL of temporary file containing uploaded content
 * `java.time.LocalDate`: result of calling `LocalDate#parse()`
 * `java.time.LocalTime`: result of calling `LocalTime#parse()`
 * `java.time.LocalDateTime`: result of calling `LocalDateTime#parse()`
 * `java.util.Date`: result of calling `Long#parseLong()`, then `Date(long)`
-* `java.util.List`: array list containing argument values coerced to `List` parameter type
+* `java.util.List`: array list containing argument values coerced to `List` element type
 
 By default, `RequestDispatcherServlet` uses the `JSONEncoder` class to transform method results to JSON. Return values are mapped to their JSON equivalents as follows:
 
@@ -338,7 +338,7 @@ The `ResultSetAdapter` class allows the result of a SQL query to be efficiently 
     }
 
 #### Nested Structures
-If a column's label contains a period, the value will be returned as a nested structure. For example, the following query might be used to retrieve a list of employees:
+If a column's label contains a period, the value will be returned as a nested structure. For example, the following query might be used to retrieve a list of employee records:
 
     SELECT first_name AS 'name.first', last_name AS 'name.last', title FROM employees
     
@@ -396,11 +396,18 @@ Once applied, the statement can be executed:
     return new ResultSetAdapter(statement.executeQuery());    
 
 ### IteratorAdapter Class
-The `IteratorAdapter` class allows the content of an arbitrary cursor to be efficiently returned from a service method. This class implements the `List` interface and adapts each element produced by the iterator for serialization to JSON, including nested `List` and `Map` structures. Like `ResultSetAdapter`, `IteratorAdapter` implements the `AutoCloseable` interface. If the underlying iterator type also implements `AutoCloseable`, `IteratorAdapter` will ensure that the underlying cursor is closed so that resources are not leaked.
+The `IteratorAdapter` class allows the content of an arbitrary cursor to be efficiently returned from a service method. This class implements the `List` interface and makes each item produced by an iterator appear to be an element of the list, rendering the data suitable for serialization to JSON.
+
+Like `ResultSetAdapter`, `IteratorAdapter` implements the `AutoCloseable` interface. If the underlying iterator type also implements `AutoCloseable`, `IteratorAdapter` will ensure that the underlying cursor is closed so that resources are not leaked.
 
 As with `ResultSetAdapter`, `IteratorAdapter` is forward-scrolling only, so its contents are not accessible via the `get()` and `size()` methods. This allows the contents of a cursor to be returned directly to the caller without any intermediate buffering.
 
-`IteratorAdapter` is typically used to serialize result data produced by NoSQL databases. It can also be used to serialize the result of stream operations on Java collection types.
+`IteratorAdapter` is typically used to serialize result data produced by NoSQL databases. It can also be used to serialize the result of stream operations on Java collection types. For example:
+
+    @RPC(method="GET", path="stream")
+    public IteratorAdapter getStream() {
+        return new IteratorAdapter(listOf("a", "b", "c").stream().iterator());
+    }
 
 ### Templates
 Although data produced by an HTTP-RPC web service is usually returned to the caller as JSON, it can also be transformed into other representations via "templates". Templates are documents that describe an output format, such as HTML, XML, or CSV. They are merged with result data at execution time to create the final response that is sent back to the caller.
@@ -581,7 +588,7 @@ Custom modifiers are registered by adding them to the modifier map returned by `
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple template engines.
 
 #### Section Markers
-Section markers define a repeating section of content. The marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list, and the element becomes the data dictionary for each successive iteration through the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
+Section markers define a repeating section of content. The marker name must refer to a list value in the data dictionary. Content between the markers is repeated once for each element in the list. The element provides the data dictionary for each successive iteration through the section. If the list is missing (i.e. `null`) or empty, the section's content is excluded from the output.
 
 For example, a service that provides information about homes for sale might return a list of available properties as follows:
 
@@ -665,7 +672,7 @@ Comment markers provide informational text about a template's content. They are 
     <p>Lorem ipsum dolor sit amet.</p>
 
 ## Java Client
-The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that includes the following types, discussed in more detail below:
+The Java client library enables Java applications (including Android) to consume HTTP-RPC web services. It is distributed as a JAR file that contains the following classes, discussed in more detail below:
 
 * `org.httprpc`
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
@@ -735,7 +742,7 @@ Since explicit creation and population of the argument map can be cumbersome, `W
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
     public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
     
-Using these convenience methods, argument map creation can be reduced from this:
+Using these methods, argument map creation can be reduced from this:
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("a", 2);
@@ -829,9 +836,17 @@ The map data returned by `getStatistics()` can be converted to a `Statistics` in
         System.out.println(statistics.getAverage());
     });
 
-Additionally, the `Result` class provides the following static method for accessing nested map values by key path (e.g. "foo.bar"):
+Additionally, the `Result` class provides the following method for accessing nested map values by key path:
 
     public static <V> V getValue(Map<String, ?> root, String path) { ... }
+    
+For example, given the following JSON response data, a call to `getValue(result, "foo.bar")` would return 123:
+
+    {
+      "foo": {
+        "bar": 123
+      }
+    }
 
 See the Javadoc for more information.
 
@@ -844,7 +859,7 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
         public void authenticateRequest(HttpURLConnection connection);
     }
 
-Authentication providers are associated with a proxy instance via the `setAuthentication()` method of the `WebServiceProxy` class. For example, the following code associates an instance of `BasicAuthentication` with a service proxy:
+Authentication providers are associated with a proxy instance via the `setAuthentication()` method. For example, the following code associates an instance of `BasicAuthentication` with a service proxy:
 
     serviceProxy.setAuthentication(new BasicAuthentication("username", "password"));
 
@@ -917,7 +932,7 @@ A convenience method is also provided for executing operations that don't take a
     - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
         resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
-Both variants of the `invoke` method return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+Both variants return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 #### Arguments and Return Values
 Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following argument types are given special consideration:
@@ -944,7 +959,7 @@ Authentication providers are associated with a proxy instance via the `authentic
 The `WSBasicAuthentication` class is provided by the HTTP-RPC framework. Applications may provide custom implementations of the `WSAuthentication` protocol to support other authentication schemes.
 
 ### Examples
-The following code snippet demonstrates how `WSWebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
+The following code snippet demonstrates how `WSWebServiceProxy` can be used to access the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
 
     // Configure session
     let configuration = URLSessionConfiguration.default
@@ -968,7 +983,7 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to i
     }
 
 ## JavaScript Client
-The JavaScript HTTP-RPC client enables browser-based applications to consume HTTP-RPC services. It is delivered as JavaScript file that defines a single `WebServiceProxy` class, which is discussed in more detail below. 
+The JavaScript HTTP-RPC client enables browser-based applications to consume HTTP-RPC services. It is delivered as a JavaScript source file that contains a single `WebServiceProxy` class, discussed in more detail below. 
 
 The source code for the JavaScript client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases).
 
@@ -990,10 +1005,10 @@ Arguments may be of any type, and are generally converted to parameter values vi
 
 The result handler is invoked upon completion of the operation. The callback takes two arguments: a result object and an error object. If the remote method completes successfully, the first argument contains the value returned by the method. If the method call fails, the second argument will contain the HTTP status code corresponding to the error that occurred.
 
-Both methods return the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
+The `invoke()` method returns the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
 
 ### Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to invoke the methods of the hypothetical math service. It first creates an instance of the `WebServiceProxy` class, and then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
+The following code snippet demonstrates how `WebServiceProxy` can be used to access the methods of the hypothetical math service. It first creates an instance of the `WebServiceProxy` class, and then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
 
     // Create service proxy
     var serviceProxy = new WebServiceProxy();
