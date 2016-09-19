@@ -1,7 +1,7 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to create and access web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system. 
+The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system.
 
 # Contents
 * [Service Operations](#service-operations)
@@ -70,7 +70,9 @@ Although the HTTP specification defines a large number of possible response code
 * _500 Internal Server Error_ - An error occurred while executing the method
 
 # Implementations
-Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+Support currently exists for implementing HTTP-RPC services in Java, and consuming services in Java, Objective-C/Swift, or JavaScript. Services can also be accessed using standard HTML forms and command-line utilities such as `curl`. 
+
+For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 ## Java Server
 The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a single JAR file that contains the following core classes:
