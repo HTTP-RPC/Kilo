@@ -51,6 +51,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         public int size() {
             return list.size();
         }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<Object>() {
+                private Iterator<Object> iterator = list.iterator();
+
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public Object next() {
+                    return adapt(iterator.next(), cache);
+                }
+            };
+        }
     }
 
     // Map adapter
@@ -102,6 +119,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         public MapAdapter(Map<Object, Object> map, HashMap<Class<?>, HashMap<String, Method>> cache) {
             this.map = map;
             this.cache = cache;
+        }
+
+        @Override
+        public Object get(Object key) {
+            return adapt(map.get(key), cache);
         }
 
         @Override
