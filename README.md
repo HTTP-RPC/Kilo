@@ -1,7 +1,7 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to create and access web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to other, larger Java-based REST frameworks, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system.
+The project currently includes support for implementing REST services in Java and consuming services in Java, Objective-C/Swift, or JavaScript. The server component provides a lightweight alternative to larger Java-based REST frameworks such as JAX-RS, and the consistent cross-platform client API makes it easy to interact with services regardless of target device or operating system.
 
 # Contents
 * [Service Operations](#service-operations)
@@ -75,7 +75,7 @@ Support currently exists for implementing HTTP-RPC services in Java, and consumi
 For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 ## Java Server
-The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a single JAR file that contains the following core classes:
+The Java server library allows developers to create and publish HTTP-RPC web services in Java. It is distributed as a single (approximately 50k) JAR file that contains the following core classes:
 
 * `org.httprpc`
     * `WebService` - abstract base class for HTTP-RPC services
