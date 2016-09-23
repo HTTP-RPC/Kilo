@@ -35,16 +35,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
         private List<Object> list;
-        private HashMap<Class<?>, HashMap<String, Method>> cache;
+        private HashMap<Class<?>, HashMap<String, Method>> getterCache;
 
-        public ListAdapter(List<Object> list, HashMap<Class<?>, HashMap<String, Method>> cache) {
+        public ListAdapter(List<Object> list, HashMap<Class<?>, HashMap<String, Method>> getterCache) {
             this.list = list;
-            this.cache = cache;
+            this.getterCache = getterCache;
         }
 
         @Override
         public Object get(int index) {
-            return adapt(list.get(index), cache);
+            return adapt(list.get(index), getterCache);
         }
 
         @Override
@@ -64,7 +64,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 @Override
                 public Object next() {
-                    return adapt(iterator.next(), cache);
+                    return adapt(iterator.next(), getterCache);
                 }
             };
         }
@@ -73,7 +73,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         private Map<Object, Object> map;
-        private HashMap<Class<?>, HashMap<String, Method>> cache;
+        private HashMap<Class<?>, HashMap<String, Method>> getterCache;
 
         private Set<Entry<Object, Object>> entrySet = new AbstractSet<Entry<Object, Object>>() {
             @Override
@@ -103,7 +103,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                             @Override
                             public Object getValue() {
-                                return adapt(entry.getValue(), cache);
+                                return adapt(entry.getValue(), getterCache);
                             }
 
                             @Override
@@ -116,14 +116,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         };
 
-        public MapAdapter(Map<Object, Object> map, HashMap<Class<?>, HashMap<String, Method>> cache) {
+        public MapAdapter(Map<Object, Object> map, HashMap<Class<?>, HashMap<String, Method>> getterCache) {
             this.map = map;
-            this.cache = cache;
+            this.getterCache = getterCache;
         }
 
         @Override
         public Object get(Object key) {
-            return adapt(map.get(key), cache);
+            return adapt(map.get(key), getterCache);
         }
 
         @Override
@@ -133,7 +133,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private Object bean;
-    private HashMap<Class<?>, HashMap<String, Method>> cache;
+    private HashMap<Class<?>, HashMap<String, Method>> getterCache;
 
     private HashMap<String, Method> getters;
 
@@ -176,17 +176,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         this(bean, new HashMap<>());
     }
 
-    private BeanAdapter(Object bean, HashMap<Class<?>, HashMap<String, Method>> cache) {
+    private BeanAdapter(Object bean, HashMap<Class<?>, HashMap<String, Method>> getterCache) {
         if (bean == null) {
             throw new IllegalArgumentException();
         }
 
         this.bean = bean;
-        this.cache = cache;
+        this.getterCache = getterCache;
 
         Class<?> type = bean.getClass();
 
-        getters = cache.get(type);
+        getters = getterCache.get(type);
 
         if (getters == null) {
             getters = new HashMap<>();
@@ -227,7 +227,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
             }
 
-            cache.put(type, getters);
+            getterCache.put(type, getters);
         }
     }
 
@@ -242,7 +242,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         Object value;
         if (method != null) {
             try {
-                value = adapt(method.invoke(bean), cache);
+                value = adapt(method.invoke(bean), getterCache);
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 throw new RuntimeException(exception);
             }
@@ -287,7 +287,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> cache) {
+    private static <T> T adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> getterCache) {
         if (!(value == null
             || value instanceof String
             || value instanceof Number
@@ -296,11 +296,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Date
             || value instanceof TemporalAccessor)) {
             if (value instanceof List<?>) {
-                value = new ListAdapter((List<Object>)value, cache);
+                value = new ListAdapter((List<Object>)value, getterCache);
             } else if (value instanceof Map<?, ?>) {
-                value = new MapAdapter((Map<Object, Object>)value, cache);
+                value = new MapAdapter((Map<Object, Object>)value, getterCache);
             } else {
-                value = new BeanAdapter(value, cache);
+                value = new BeanAdapter(value, getterCache);
             }
         }
 
