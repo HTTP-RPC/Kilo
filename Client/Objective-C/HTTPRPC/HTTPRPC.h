@@ -20,6 +20,4 @@ FOUNDATION_EXPORT double HTTPRPCVersionNumber;
 //! Project version string for HTTPRPC.
 FOUNDATION_EXPORT const unsigned char HTTPRPCVersionString[];
 
-#import <HTTPRPC/WSAuthentication.h>
-#import <HTTPRPC/WSBasicAuthentication.h>
 #import <HTTPRPC/WSWebServiceProxy.h>

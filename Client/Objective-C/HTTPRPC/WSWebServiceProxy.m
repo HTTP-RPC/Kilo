@@ -16,7 +16,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "WSWebServiceProxy.h"
-#import "NSString+HTTPRPC.h"
 
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
@@ -26,6 +25,7 @@ NSString * const WSArgumentsKey = @"arguments";
 
 NSString * const kPostMethod = @"POST";
 
+NSString * const kAuthorizationField = @"Authorization";
 NSString * const kContentTypeField = @"Content-Type";
 NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
 NSString * const kBoundaryParameterFormat = @"; boundary=%@";
@@ -40,6 +40,13 @@ NSString * const kCRLF = @"\r\n";
 
 NSString * const kJSONMIMEType = @"application/json";
 NSString * const kImageMIMETypePrefix = @"image/";
+
+@interface NSString (HTTPRPC)
+
+- (NSData *)UTF8Data;
+- (NSString *)URLEncodedString;
+
+@end
 
 @implementation WSWebServiceProxy
 
@@ -100,10 +107,13 @@ NSString * const kImageMIMETypePrefix = @"image/";
         [request setHTTPMethod:method];
 
         // Authenticate request
-        id<WSAuthentication> authentication = [self authentication];
+        NSURLCredential *authorization = [self authorization];
 
-        if (authentication != nil) {
-            [authentication authenticateRequest:request];
+        if (authorization != nil) {
+            NSString *credentials = [NSString stringWithFormat:@"%@:%@", [authorization user], [authorization password]];
+            NSString *value = [NSString stringWithFormat:@"Basic %@", [[credentials UTF8Data] base64EncodedStringWithOptions:0]];
+
+            [request setValue:value forHTTPHeaderField:kAuthorizationField];
         }
 
         // Write request body
@@ -227,6 +237,20 @@ NSString * const kImageMIMETypePrefix = @"image/";
     }
 
     return value;
+}
+
+@end
+
+@implementation NSString (HTTPRPC)
+
+- (NSData *)UTF8Data
+{
+    return [self dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)URLEncodedString
+{
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 @end

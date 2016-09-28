@@ -61,7 +61,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         let serviceProxy = WSWebServiceProxy(session: session, serverURL: URL(string: "https://localhost:8443")!)
 
         // Set credentials
-        serviceProxy.authentication = WSBasicAuthentication(username: "tomcat", password: "tomcat")
+        serviceProxy.authorization = URLCredential(user: "tomcat", password: "tomcat", persistence: .none)
 
         // Sum
         serviceProxy.invoke("GET", path: "/httprpc-server-test/test/sum", arguments: ["a": 2, "b": 4]) {(result, error) in

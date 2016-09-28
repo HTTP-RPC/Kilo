@@ -31,11 +31,6 @@
 		3798616C1BF00AB00063212E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3798616A1BF00AB00063212E /* LaunchScreen.storyboard */; };
 		37B0AC071D1B57D20004A6B6 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 37B0AC051D1B57D20004A6B6 /* test.jpg */; };
 		37B0AC081D1B57D20004A6B6 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 37B0AC061D1B57D20004A6B6 /* test.txt */; };
-		37BEFBD11CF8770F009FBB33 /* WSAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 37BEFBD01CF8770F009FBB33 /* WSAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		37BEFBD41CF8776F009FBB33 /* WSBasicAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 37BEFBD21CF8776F009FBB33 /* WSBasicAuthentication.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		37BEFBD51CF8776F009FBB33 /* WSBasicAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */; };
-		37BEFBD81CF87D78009FBB33 /* NSString+HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 37BEFBD61CF87D78009FBB33 /* NSString+HTTPRPC.h */; };
-		37BEFBD91CF87D78009FBB33 /* NSString+HTTPRPC.m in Sources */ = {isa = PBXBuildFile; fileRef = 37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */; };
 		37CF338B1C00A48D00F84C89 /* Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CF338A1C00A48D00F84C89 /* Statistics.swift */; };
 		37DC1B5B1CB7DDAE0080F0DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37DC1B5D1CB7DDAE0080F0DE /* Localizable.strings */; };
 /* End PBXBuildFile section */
@@ -108,11 +103,6 @@
 		3798616D1BF00AB00063212E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37B0AC051D1B57D20004A6B6 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 		37B0AC061D1B57D20004A6B6 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
-		37BEFBD01CF8770F009FBB33 /* WSAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSAuthentication.h; sourceTree = "<group>"; };
-		37BEFBD21CF8776F009FBB33 /* WSBasicAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBasicAuthentication.h; sourceTree = "<group>"; };
-		37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSBasicAuthentication.m; sourceTree = "<group>"; };
-		37BEFBD61CF87D78009FBB33 /* NSString+HTTPRPC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTTPRPC.h"; sourceTree = "<group>"; };
-		37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTTPRPC.m"; sourceTree = "<group>"; };
 		37CF338A1C00A48D00F84C89 /* Statistics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statistics.swift; sourceTree = "<group>"; };
 		37DC1B5C1CB7DDAE0080F0DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,11 +176,6 @@
 			isa = PBXGroup;
 			children = (
 				3798614F1BF009D60063212E /* HTTPRPC.h */,
-				37BEFBD61CF87D78009FBB33 /* NSString+HTTPRPC.h */,
-				37BEFBD71CF87D78009FBB33 /* NSString+HTTPRPC.m */,
-				37BEFBD01CF8770F009FBB33 /* WSAuthentication.h */,
-				37BEFBD21CF8776F009FBB33 /* WSBasicAuthentication.h */,
-				37BEFBD31CF8776F009FBB33 /* WSBasicAuthentication.m */,
 				379861571BF00A0E0063212E /* WSWebServiceProxy.h */,
 				379861581BF00A0E0063212E /* WSWebServiceProxy.m */,
 				379861511BF009D60063212E /* Info.plist */,
@@ -221,10 +206,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37BEFBD11CF8770F009FBB33 /* WSAuthentication.h in Headers */,
-				37BEFBD41CF8776F009FBB33 /* WSBasicAuthentication.h in Headers */,
 				379861591BF00A0E0063212E /* WSWebServiceProxy.h in Headers */,
-				37BEFBD81CF87D78009FBB33 /* NSString+HTTPRPC.h in Headers */,
 				379861501BF009D60063212E /* HTTPRPC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,8 +362,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37BEFBD91CF87D78009FBB33 /* NSString+HTTPRPC.m in Sources */,
-				37BEFBD51CF8776F009FBB33 /* WSBasicAuthentication.m in Sources */,
 				3798615A1BF00A0E0063212E /* WSWebServiceProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

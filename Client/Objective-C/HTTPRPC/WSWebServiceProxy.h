@@ -14,8 +14,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "WSAuthentication.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -64,9 +62,9 @@ extern NSString * const WSArgumentsKey;
 @property (nonatomic, readonly) NSURL *serverURL;
 
 /**
- * The service proxy's authentication provider.
+ * The service proxy's authorization credentials.
  */
-@property (nonatomic, nullable) id<WSAuthentication> authentication;
+@property (nonatomic, nullable) NSURLCredential *authorization;
 
 /**
  * Executes a service operation.
