@@ -3,8 +3,6 @@
 <project name="httprpc-client" default="build">
     <property file="build.properties"/>
 
-    <property environment="env"/>
-
     <property name="src" value="src"/>
     <property name="bin" value="bin"/>
     <property name="doc" value="doc"/>
@@ -23,8 +21,6 @@
         <javac srcDir="${src}" destDir="${bin}"
             includejavaruntime="true" includeantruntime="true"
             encoding="UTF-8" deprecation="true" debug="true"
-            source="1.7" target="1.7" 
-            bootclasspath="${env.JDK_7}/jre/lib/rt.jar"
             failonerror="true"/>
 
         <delete dir="." includes="${jarfile}"/>

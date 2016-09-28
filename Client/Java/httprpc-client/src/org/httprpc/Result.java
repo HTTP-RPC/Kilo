@@ -50,7 +50,7 @@ public abstract class Result {
                     int j = SET_PREFIX.length();
                     int n = methodName.length();
 
-                    // TODO Call getParameterCount() in Java 8
+                    // TODO Call getParameterCount() when Android fully supports Java 8
                     if (j < n && method.getParameterTypes().length == 1) {
                         char c = methodName.charAt(j++);
 

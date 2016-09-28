@@ -36,7 +36,7 @@ public class ResultTest {
     public void testGetMissingValue() {
         Map<String, ?> root = mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 42))))));
 
-        Assert.assertEquals(null, Result.getValue(root, "a.b.x"));
+        Assert.assertNull(Result.getValue(root, "a.b.x"));
     }
 }
 

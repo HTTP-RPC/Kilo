@@ -73,7 +73,7 @@ public class BasicAuthentication implements Authentication {
     }
 
     private static String encode(String value) {
-        // TODO Use java.util.Base64 in Java 8
+        // TODO Use java.util.Base64 when Android fully supports Java 8
         byte[] bytes = value.getBytes();
 
         StringBuilder resultBuilder = new StringBuilder(4 * (bytes.length / 3 + 1));

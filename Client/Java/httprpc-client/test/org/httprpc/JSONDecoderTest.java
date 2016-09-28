@@ -92,7 +92,7 @@ public class JSONDecoderTest {
 
         Date now = new Date();
 
-        Assert.assertEquals(decode(Long.toString(now.getTime())), now.getTime());
+        Assert.assertTrue(decode(Long.toString(now.getTime())).equals(now.getTime()));
     }
 
     @Test
