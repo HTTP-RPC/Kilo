@@ -107,10 +107,8 @@ NSString * const kImageMIMETypePrefix = @"image/";
         [request setHTTPMethod:method];
 
         // Authenticate request
-        NSURLCredential *authorization = [self authorization];
-
-        if (authorization != nil) {
-            NSString *credentials = [NSString stringWithFormat:@"%@:%@", [authorization user], [authorization password]];
+        if (_authorization != nil) {
+            NSString *credentials = [NSString stringWithFormat:@"%@:%@", [_authorization user], [_authorization password]];
             NSString *value = [NSString stringWithFormat:@"Basic %@", [[credentials UTF8Data] base64EncodedStringWithOptions:0]];
 
             [request setValue:value forHTTPHeaderField:kAuthorizationField];

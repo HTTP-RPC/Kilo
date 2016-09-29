@@ -17,6 +17,7 @@ package org.httprpc.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -44,7 +45,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.httprpc.BasicAuthentication;
 import org.httprpc.Encoding;
 import org.httprpc.RPC;
 import org.httprpc.Template;
@@ -247,7 +247,7 @@ public class TestService extends WebService {
         }
 
         WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor());
-        serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
+        serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         Object result = serviceProxy.invoke("GET", "/httprpc-server-test/test/stream", null).get();
 

@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import java.net.PasswordAuthentication;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.SecureRandom;
@@ -34,7 +35,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.httprpc.BasicAuthentication;
 import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
@@ -78,7 +78,7 @@ public class WebServiceProxyTest {
         WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool, 3000, 3000);
 
         // Set credentials
-        serviceProxy.setAuthentication(new BasicAuthentication("tomcat", "tomcat"));
+        serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         // Sum
         HashMap<String, Object> sumArguments = new HashMap<>();

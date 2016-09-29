@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -52,6 +53,7 @@ public class WebServiceProxy {
 
         private static final String POST_METHOD = "POST";
 
+        private static final String AUTHORIZATION_KEY = "Authorization";
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
         private static final String CONTENT_TYPE_KEY = "Content-Type";
@@ -159,8 +161,11 @@ public class WebServiceProxy {
             connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
 
             // Authenticate request
-            if (authentication != null) {
-                authentication.authenticateRequest(connection);
+            if (authorization != null) {
+                String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
+                String value = String.format("Basic %s", base64Encode(credentials));
+
+                connection.setRequestProperty(AUTHORIZATION_KEY, value);
             }
 
             // Write request body
@@ -309,11 +314,30 @@ public class WebServiceProxy {
     private int connectTimeout;
     private int readTimeout;
 
-    private Authentication authentication = null;
+    private PasswordAuthentication authorization = null;
 
     private static final String UTF_8_ENCODING = "UTF-8";
 
     private static final String JSON_MIME_TYPE = "application/json";
+
+    private static char[] lookup = new char[64];
+
+    static {
+        for (int i = 0; i < 26; i++) {
+            lookup[i] = (char)('A' + i);
+        }
+
+        for (int i = 26, j = 0; i < 52; i++, j++) {
+            lookup[i] = (char)('a' + j);
+        }
+
+        for (int i = 52, j = 0; i < 62; i++, j++) {
+            lookup[i] = (char)('0' + j);
+        }
+
+        lookup[62] = '+';
+        lookup[63] = '/';
+    }
 
     /**
      * Creates a new HTTP-RPC service proxy.
@@ -379,24 +403,24 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the service proxy's authentication provider.
+     * Returns the service proxy's authorization credentials.
      *
      * @return
-     * The service proxy's authentication provider.
+     * The service proxy's authorization credentials.
      */
-    public Authentication getAuthentication() {
-        return authentication;
+    public PasswordAuthentication getAuthorization() {
+        return authorization;
     }
 
     /**
-     * Sets the service proxy's authentication provider.
+     * Sets the service proxy's authorization credentials.
      *
-     * @param authentication
-     * The service proxy's authentication provider, or <tt>null</tt> for no
-     * authentication provider.
+     * @param authorization
+     * The service proxy's authorization credentials, or <tt>null</tt> for no
+     * credentials.
      */
-    public void setAuthentication(Authentication authentication) {
-        this.authentication = authentication;
+    public void setAuthorization(PasswordAuthentication authorization) {
+        this.authorization = authorization;
     }
 
     /**
@@ -561,5 +585,31 @@ public class WebServiceProxy {
         }
 
         return values;
+    }
+
+    private static String base64Encode(String value) {
+        // TODO Use java.util.Base64 when Android fully supports Java 8
+        byte[] bytes = value.getBytes();
+
+        StringBuilder resultBuilder = new StringBuilder(4 * (bytes.length / 3 + 1));
+
+        for (int i = 0, n = bytes.length; i < n; ) {
+            byte byte0 = bytes[i++];
+            byte byte1 = (i++ < n) ? bytes[i - 1] : 0;
+            byte byte2 = (i++ < n) ? bytes[i - 1] : 0;
+
+            resultBuilder.append(lookup[byte0 >> 2]);
+            resultBuilder.append(lookup[((byte0 << 4) | byte1 >> 4) & 63]);
+            resultBuilder.append(lookup[((byte1 << 2) | byte2 >> 6) & 63]);
+            resultBuilder.append(lookup[byte2 & 63]);
+
+            if (i > n) {
+                for (int m = resultBuilder.length(), j = m - (i - n); j < m; j++) {
+                    resultBuilder.setCharAt(j, '=');
+                }
+            }
+        }
+
+        return resultBuilder.toString();
     }
 }
