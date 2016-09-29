@@ -110,17 +110,14 @@ public class MainActivity extends AppCompatActivity {
 
                 int id = ((Number)noteList.get(position).get("id")).intValue();
 
-                NotesApplication.getServiceProxy().invoke("DELETE", "/httprpc-server-demo/notes", mapOf(entry("id", id)), new ResultHandler<Void>() {
-                    @Override
-                    public void execute(Void result, Exception exception) {
-                        if (exception == null) {
-                            noteList.remove(position);
-                            noteListAdapter.notifyDataSetChanged();
+                NotesApplication.getServiceProxy().invoke("DELETE", "/httprpc-server-demo/notes", mapOf(entry("id", id)), (Void result, Exception exception) -> {
+                    if (exception == null) {
+                        noteList.remove(position);
+                        noteListAdapter.notifyDataSetChanged();
 
-                            deleteButton.setEnabled(false);
-                        } else {
-                            Log.e(TAG, exception.getMessage());
-                        }
+                        deleteButton.setEnabled(false);
+                    } else {
+                        Log.e(TAG, exception.getMessage());
                     }
                 });
             }
@@ -140,16 +137,13 @@ public class MainActivity extends AppCompatActivity {
 
         deleteButton.setEnabled(false);
 
-        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server-demo/notes", new ResultHandler<List<Map<String, Object>>>() {
-            @Override
-            public void execute(List<Map<String, Object>> result, Exception exception) {
-                if (exception == null) {
-                    noteList = result;
+        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server-demo/notes", (List<Map<String, Object>> result, Exception exception) -> {
+            if (exception == null) {
+                noteList = result;
 
-                    noteListAdapter.notifyDataSetChanged();
-                } else {
-                    Log.e(TAG, exception.getMessage());
-                }
+                noteListAdapter.notifyDataSetChanged();
+            } else {
+                Log.e(TAG, exception.getMessage());
             }
         });
     }

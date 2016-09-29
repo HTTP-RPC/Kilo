@@ -55,14 +55,11 @@ public class AddNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = messageEditText.getText().toString();
 
-                NotesApplication.getServiceProxy().invoke("POST", "/httprpc-server-demo/notes", mapOf(entry("message", message)), new ResultHandler<Void>() {
-                    @Override
-                    public void execute(Void result, Exception exception) {
-                        if (exception == null) {
-                            finish();
-                        } else {
-                            Log.e(TAG, exception.getMessage());
-                        }
+                NotesApplication.getServiceProxy().invoke("POST", "/httprpc-server-demo/notes", mapOf(entry("message", message)), (Void result, Exception exception) -> {
+                    if (exception == null) {
+                        finish();
+                    } else {
+                        Log.e(TAG, exception.getMessage());
                     }
                 });
             }

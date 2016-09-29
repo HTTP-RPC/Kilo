@@ -182,7 +182,7 @@ public class WebServiceProxyTest {
 
         List<?> dates = listOf("2016-09-15", "2016-09-16");
 
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("dates", dates)), (Number result, Exception exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("dates", dates)), (List<Number> result, Exception exception) -> {
             validate(exception == null && result.equals(dates));
         });
 
