@@ -50,6 +50,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable UIFont *)fontValue:(NSString *)value;
 
+/**
+ * Retrieves a template collection.
+ *
+ * @param name The name of the template collection.
+ * @param owner The trait collection for which the templates will be applied.
+ *
+ * @return A dictionary containing the template values.
+ */
++ (NSDictionary<NSString *, NSDictionary<NSString *, id> *> *)templatesWithName:(NSString *)name traitCollection:(UITraitCollection *)traitCollection;
+
 @end
 
 NS_ASSUME_NONNULL_END

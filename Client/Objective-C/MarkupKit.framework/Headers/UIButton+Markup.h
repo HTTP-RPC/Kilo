@@ -56,22 +56,22 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The top content edge inset.
  */
-@property (nonatomic) CGFloat contentEdgeInsetTop;
+@property (nonatomic) CGFloat contentEdgeInsetTop UI_APPEARANCE_SELECTOR;
 
 /**
  * The left content edge inset.
  */
-@property (nonatomic) CGFloat contentEdgeInsetLeft;
+@property (nonatomic) CGFloat contentEdgeInsetLeft UI_APPEARANCE_SELECTOR;
 
 /**
  * The bottom content edge inset.
  */
-@property (nonatomic) CGFloat contentEdgeInsetBottom;
+@property (nonatomic) CGFloat contentEdgeInsetBottom UI_APPEARANCE_SELECTOR;
 
 /**
  * The right content edge inset.
  */
-@property (nonatomic) CGFloat contentEdgeInsetRight;
+@property (nonatomic) CGFloat contentEdgeInsetRight UI_APPEARANCE_SELECTOR;
 
 /**
  * The top title edge inset.
