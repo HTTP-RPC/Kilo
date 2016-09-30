@@ -406,7 +406,8 @@ public class WebServiceProxy {
      * Returns the service proxy's authorization credentials.
      *
      * @return
-     * The service proxy's authorization credentials.
+     * The service proxy's authorization credentials, or <tt>null</tt> if no
+     * credentials have been provided.
      */
     public PasswordAuthentication getAuthorization() {
         return authorization;

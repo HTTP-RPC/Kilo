@@ -62,7 +62,7 @@ extern NSString * const WSArgumentsKey;
 @property (nonatomic, readonly) NSURL *serverURL;
 
 /**
- * The service proxy's authorization credentials.
+ * The service proxy's authorization credentials, or <code>nil</code> for no credentials.
  */
 @property (nonatomic, nullable) NSURLCredential *authorization;
 
