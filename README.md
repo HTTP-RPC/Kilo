@@ -680,12 +680,10 @@ The Java client library enables Java applications (including Android) to consume
     * `WebServiceProxy` - invocation proxy for HTTP-RPC services
     * `ResultHandler` - callback interface for handling results
     * `Result` - abstract base class for typed results
-    * `Authentication` - interface representing an authentication provider
-    * `BasicAuthentication` - HTTP basic authentication provider
     * `Decoder` - interface representing a content decoder
     * `JSONDecoder` - class that decodes a JSON response
 
-The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 7 or later is required.
+The JAR file for the Java client implementation of HTTP-RPC can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
 
 ### WebServiceProxy Class
 The `WebServiceProxy` class acts as a client-side invocation proxy for HTTP-RPC web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `POST` requests are encoded as "multipart/form-data".
@@ -855,17 +853,9 @@ See the Javadoc for more information.
 ### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
-HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `Authentication` interface defines a single method that is used to authenticate each request submitted by a proxy instance:
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `setAuthorization()` method can be used to associate a set of user credentials with a proxy instance. This method takes an instance of `java.net.PasswordAuthentication` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
 
-    public interface Authentication {
-        public void authenticateRequest(HttpURLConnection connection);
-    }
-
-Authentication providers are associated with a proxy instance via the `setAuthentication()` method. For example, the following code associates an instance of `BasicAuthentication` with a service proxy:
-
-    serviceProxy.setAuthentication(new BasicAuthentication("username", "password"));
-
-The `BasicAuthentication` class is provided by the HTTP-RPC Java client library. Applications may provide custom implementations of the `Authentication` interface to support other authentication schemes.
+**IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
 ### Examples
 The following code snippet demonstrates how `WebServiceProxy` can be used to access the resources of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
@@ -892,7 +882,7 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to acc
         }
     });
 
-Note that, in Java 8 or later, lambda expressions can be used instead of anonymous classes to implement result handlers, reducing the invocation code to the following:
+Note that lambda expressions can optionally be used instead of anonymous classes to implement result handlers, reducing the invocation code to the following:
 
     // Get sum of "a" and "b"
     serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
@@ -905,11 +895,7 @@ Note that, in Java 8 or later, lambda expressions can be used instead of anonymo
     });
 
 ## Objective-C/Swift Client
-The Objective-C/Swift client library enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that includes the following types, discussed in more detail below:
-
-* `WSWebServiceProxy` - invocation proxy for HTTP-RPC services
-* `WSAuthentication` - interface for authenticating requests
-* `WSBasicAuthentication` - authentication implementation supporting basic HTTP authentication
+The Objective-C/Swift client library enables iOS applications to consume HTTP-RPC services. It is delivered as a modular framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
 The framework for the Objective-C/Swift client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
 
@@ -950,15 +936,9 @@ Note that, while requests are typically processed on a background thread, result
 ### Authentication
 Although it is possible to use the `URLSession:task:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDataDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
-HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `WSAuthentication` protocol defines a single method that is used to authenticate each request submitted by a proxy instance:
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `NSURLCredential` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
 
-    - (void)authenticateRequest:(NSMutableURLRequest *)request;
-
-Authentication providers are associated with a proxy instance via the `authentication` property of the `WSWebServiceProxy` class. For example, the following code associates an instance of `WSBasicAuthentication` with a service proxy:
-
-    serviceProxy.authentication = WSBasicAuthentication(username: "username", password: "password")
-
-The `WSBasicAuthentication` class is provided by the HTTP-RPC framework. Applications may provide custom implementations of the `WSAuthentication` protocol to support other authentication schemes.
+**IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
 ### Examples
 The following code snippet demonstrates how `WSWebServiceProxy` can be used to access the methods of the hypothetical math service. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
