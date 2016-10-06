@@ -16,15 +16,17 @@ package org.httprpc.test;
 
 import java.util.Map;
 
-import org.httprpc.Result;
+import static org.httprpc.WebServiceProxy.valueAt;
 
-public class Statistics extends Result {
+public class Statistics {
     private int count;
     private double sum;
     private double average;
 
     public Statistics(Map<String, Object> properties) {
-        super(properties);
+        count = valueAt(properties, "count");
+        sum = valueAt(properties, "sum");
+        average = valueAt(properties, "average");
     }
 
     public int getCount() {

@@ -43,6 +43,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 
 /**
  * Invocation proxy for HTTP-RPC web services.
@@ -53,7 +54,7 @@ public class WebServiceProxy {
         private String method;
         private String path;
         private Map<String, ?> arguments;
-        private ResultHandler<V> resultHandler;
+        private BiConsumer<V, Exception> resultHandler;
 
         private static final String POST_METHOD = "POST";
 
@@ -74,7 +75,7 @@ public class WebServiceProxy {
 
         private static final int EOF = -1;
 
-        public InvocationCallback(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        public InvocationCallback(String method, String path, Map<String, ?> arguments, BiConsumer<V, Exception> resultHandler) {
             this.method = method;
             this.path = path;
             this.arguments = arguments;
@@ -91,7 +92,7 @@ public class WebServiceProxy {
                     dispatchResult(new Runnable() {
                         @Override
                         public void run() {
-                            resultHandler.execute(null, exception);
+                            resultHandler.accept(null, exception);
                         }
                     });
                 }
@@ -103,7 +104,7 @@ public class WebServiceProxy {
                 dispatchResult(new Runnable() {
                     @Override
                     public void run() {
-                        resultHandler.execute(result, null);
+                        resultHandler.accept(result, null);
                     }
                 });
             }
@@ -447,7 +448,7 @@ public class WebServiceProxy {
      * A future representing the invocation request.
      */
     @SuppressWarnings("unchecked")
-    public <V> Future<V> invoke(String method, String path, ResultHandler<V> resultHandler) {
+    public <V> Future<V> invoke(String method, String path, BiConsumer<V, Exception> resultHandler) {
         return invoke(method, path, Collections.EMPTY_MAP, resultHandler);
     }
 
@@ -472,7 +473,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
-    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, BiConsumer<V, Exception> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
         }

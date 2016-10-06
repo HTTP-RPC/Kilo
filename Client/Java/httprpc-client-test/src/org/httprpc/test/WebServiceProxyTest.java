@@ -35,7 +35,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
 import static org.httprpc.WebServiceProxy.listOf;
@@ -85,11 +84,8 @@ public class WebServiceProxyTest {
         sumArguments.put("a", 2);
         sumArguments.put("b", 4);
 
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", sumArguments, new ResultHandler<Number>() {
-            @Override
-            public void execute(Number result, Exception exception) {
-                validate(exception == null && result.intValue() == 6);
-            }
+        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", sumArguments, (Number result, Exception exception) -> {
+            validate(exception == null && result.intValue() == 6);
         });
 
         serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
