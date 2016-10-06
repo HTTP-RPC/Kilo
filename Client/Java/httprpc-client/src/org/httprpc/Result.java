@@ -118,48 +118,4 @@ public abstract class Result {
             }
         }
     }
-
-    /**
-     * Returns the value at a given path.
-     *
-     * @param <V>
-     * The type of the value to return.
-     *
-     * @param root
-     * The root object.
-     *
-     * @param path
-     * The path to the value.
-     *
-     * @return
-     * The value at the given path, or <tt>null</tt> if the value does not exist.
-     */
-    @SuppressWarnings("unchecked")
-    public static <V> V getValue(Map<String, ?> root, String path) {
-        if (root == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (path == null) {
-            throw new IllegalArgumentException();
-        }
-
-        Object value = root;
-
-        String[] components = path.split("\\.");
-
-        for (int i = 0; i < components.length; i++) {
-            String component = components[i];
-
-            if (value instanceof Map<?, ?>) {
-                value = ((Map<?, ?>)value).get(component);
-            } else {
-                value = null;
-
-                break;
-            }
-        }
-
-        return (V)value;
-    }
 }

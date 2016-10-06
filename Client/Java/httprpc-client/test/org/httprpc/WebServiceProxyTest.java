@@ -22,12 +22,12 @@ import org.junit.Test;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
-public class ResultTest {
+public class WebServiceProxyTest {
     @Test
     public void testGetValue() {
         Map<String, ?> root = mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 42))))));
 
-        Number value = Result.getValue(root, "a.b.c");
+        Number value = WebServiceProxy.valueAt(root, "a.b.c");
 
         Assert.assertEquals(42, value.intValue());
     }
@@ -36,7 +36,7 @@ public class ResultTest {
     public void testGetMissingValue() {
         Map<String, ?> root = mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 42))))));
 
-        Assert.assertNull(Result.getValue(root, "a.b.x"));
+        Assert.assertNull(WebServiceProxy.valueAt(root, "a.b.x"));
     }
 }
 
