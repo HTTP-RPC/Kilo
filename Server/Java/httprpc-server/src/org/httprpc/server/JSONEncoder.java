@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.demo;
+package org.httprpc.server;
 
 import java.io.IOException;
 import java.io.OutputStream;

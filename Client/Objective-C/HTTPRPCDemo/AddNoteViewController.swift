@@ -45,7 +45,7 @@ class AddNoteViewController: UITableViewController {
     }
 
     func done() {
-        AppDelegate.serviceProxy.invoke("POST", path: "/httprpc-demo/notes", arguments: ["message": messageTextView.text]) { result, error in
+        AppDelegate.serviceProxy.invoke("POST", path: "/httprpc-server/notes", arguments: ["message": messageTextView.text]) { result, error in
             if (error == nil) {
                 self.dismiss(animated: true, completion: nil)
             } else {

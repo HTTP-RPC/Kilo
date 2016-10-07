@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.demo;
+package org.httprpc.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Simple note management service demo.
+ * Simple note management service.
  */
 @MultipartConfig
 public class NoteServlet extends HttpServlet {
