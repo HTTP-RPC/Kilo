@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="httprpc-test" default="build">
-    <property file="build.properties"/>
+    <property name="title" value="HTTP-RPC Test"/>
     
     <property name="src" value="src"/>
     <property name="bin" value="bin"/>
