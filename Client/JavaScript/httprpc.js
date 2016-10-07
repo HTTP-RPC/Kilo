@@ -13,7 +13,7 @@
 //
 
 /**
- * Creates a new HTTP-RPC service proxy.
+ * Creates a new web service proxy.
  * 
  * @param timeout The request timeout.
  */

@@ -345,7 +345,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Creates a new HTTP-RPC service proxy.
+     * Creates a new web service proxy.
      *
      * @param serverURL
      * The server URL.
@@ -358,7 +358,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Creates a new HTTP-RPC service proxy.
+     * Creates a new web service proxy.
      *
      * @param serverURL
      * The server URL.

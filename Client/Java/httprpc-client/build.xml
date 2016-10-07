@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="httprpc-client" default="build">
+<project name="httprpc" default="build">
     <property file="build.properties"/>
 
     <property name="src" value="src"/>
@@ -37,9 +37,8 @@
         <delete dir="${doc}"/>
 
         <javadoc sourcepath="${src}" destdir="${doc}"
-            link="http://docs.oracle.com/javase/7/docs/api/"
-            version="true" use="true"
-            bootclasspath="${env.JDK_7}/jre/lib/rt.jar"/>
+            link="http://docs.oracle.com/javase/8/docs/api/"
+            version="true" use="true"/>
         
         <delete dir="." includes="${docfile}"/>
 

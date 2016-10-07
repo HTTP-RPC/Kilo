@@ -44,7 +44,7 @@ extern NSString * const WSArgumentsKey;
 - (instancetype)init NS_UNAVAILABLE;
 
 /**
- * Creates a new HTTP-RPC service proxy.
+ * Creates a new web service proxy.
  * 
  * @param session The URL session the service proxy will use to execute HTTP requests.
  * @param serverURL The server URL.
