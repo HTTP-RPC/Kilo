@@ -509,9 +509,9 @@ public class WebServiceProxy {
         Object value = null;
 
         if (contentType != null && contentType.startsWith(JSON_MIME_TYPE)) {
-            JSONDecoder decoder = new JSONDecoder();
+            JSONDecoder jsonDecoder = new JSONDecoder();
 
-            value = decoder.readValue(inputStream);
+            value = jsonDecoder.readValue(inputStream);
         }
 
         return value;

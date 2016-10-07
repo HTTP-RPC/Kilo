@@ -4,6 +4,7 @@
     <property name="title" value="HTTP-RPC Demo"/>
     
     <property name="src" value="src"/>
+    <property name="api" value="api"/>
     <property name="bin" value="bin"/>
     
     <property name="warfile" value="${ant.project.name}.war"/>
@@ -17,7 +18,11 @@
         <javac srcDir="${src}" destDir="${bin}"
             includejavaruntime="true" includeantruntime="true"
             encoding="UTF-8" deprecation="true" debug="true"
-            failonerror="true"/>
+            failonerror="true">
+            <classpath>
+                <fileset dir="${api}" includes="**/*.jar"/>
+            </classpath>
+        </javac>
         
         <delete dir="." includes="${warfile}"/>
         

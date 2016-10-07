@@ -7,11 +7,7 @@
 
     <servlet>
         <servlet-name>NoteServlet</servlet-name>
-        <servlet-class>org.httprpc.RequestDispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>serviceClassName</param-name>
-            <param-value>org.httprpc.demo.NoteService</param-value>
-        </init-param>
+        <servlet-class>org.httprpc.demo.NoteServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
