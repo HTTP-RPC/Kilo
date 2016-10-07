@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<rows>
-{{#.}}<row>
-<a>{{a:test:^xml}}</a>
-<b>{{b:format=0x%04x}}</b>
-<c>{{c:format=%.4f}}</c>
-</row>{{/.}}
-</rows>

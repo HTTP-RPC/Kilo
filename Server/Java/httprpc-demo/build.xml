@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="httprpc-demo" default="build">
+    <property file="build.properties"/>
+    
+    <property name="src" value="src"/>
+    <property name="bin" value="bin"/>
+    
+    <property name="warfile" value="${ant.project.name}.war"/>
+    
+    <target name="build">
+        <echo message="Building ${title}..."/>
+        
+        <delete dir="${bin}"/>
+        <mkdir dir="${bin}"/>
+        
+        <javac srcDir="${src}" destDir="${bin}"
+            includejavaruntime="true" includeantruntime="true"
+            encoding="UTF-8" deprecation="true" debug="true"
+            failonerror="true"/>
+        
+        <delete dir="." includes="${warfile}"/>
+        
+        <war destfile="${warfile}" webxml="web.xml">
+            <classes dir="${bin}"/>
+            <classes dir="${src}" excludes="**/*.java"/>
+        </war>
+    </target>
+</project>

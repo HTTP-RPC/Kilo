@@ -1,5 +1,5 @@
 .settings
 bin
 doc
-httprpc-client-*.jar
-httprpc-client-*.zip
+httprpc-*.jar
+httprpc-*.zip
