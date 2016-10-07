@@ -28,8 +28,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.httprpc.ResultHandler;
-
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -110,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int id = ((Number)noteList.get(position).get("id")).intValue();
 
-                NotesApplication.getServiceProxy().invoke("DELETE", "/httprpc-server-demo/notes", mapOf(entry("id", id)), (Void result, Exception exception) -> {
+                NotesApplication.getServiceProxy().invoke("DELETE", "/httprpc-server/notes", mapOf(entry("id", id)), (Void result, Exception exception) -> {
                     if (exception == null) {
                         noteList.remove(position);
                         noteListAdapter.notifyDataSetChanged();
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteButton.setEnabled(false);
 
-        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server-demo/notes", (List<Map<String, Object>> result, Exception exception) -> {
+        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server/notes", (List<Map<String, Object>> result, Exception exception) -> {
             if (exception == null) {
                 noteList = result;
 

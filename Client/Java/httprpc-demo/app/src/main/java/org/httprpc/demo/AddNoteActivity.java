@@ -21,8 +21,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import org.httprpc.ResultHandler;
-
 import static org.httprpc.WebServiceProxy.entry;
 import static org.httprpc.WebServiceProxy.mapOf;
 
@@ -55,7 +53,7 @@ public class AddNoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = messageEditText.getText().toString();
 
-                NotesApplication.getServiceProxy().invoke("POST", "/httprpc-server-demo/notes", mapOf(entry("message", message)), (Void result, Exception exception) -> {
+                NotesApplication.getServiceProxy().invoke("POST", "/httprpc-server/notes", mapOf(entry("message", message)), (Void result, Exception exception) -> {
                     if (exception == null) {
                         finish();
                     } else {

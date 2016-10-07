@@ -18,12 +18,10 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.httprpc.ResultHandler;
 import org.httprpc.WebServiceProxy;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class NotesApplication extends Application {
