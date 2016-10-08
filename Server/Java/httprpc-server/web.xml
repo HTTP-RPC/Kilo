@@ -6,10 +6,21 @@
     <display-name>HTTP-RPC Server</display-name>
 
     <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>org.httprpc.server.TestServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>NoteServlet</servlet-name>
         <servlet-class>org.httprpc.server.NoteServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/test/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>NoteServlet</servlet-name>

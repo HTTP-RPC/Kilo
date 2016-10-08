@@ -53,7 +53,7 @@ public class NoteServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         synchronized (notes) {
             HashMap<String, Object> note = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class NoteServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
         synchronized (notes) {
             notes.remove(Integer.parseInt(request.getParameter("id")));
         }

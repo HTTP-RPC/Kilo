@@ -14,29 +14,154 @@
 
 package org.httprpc;
 
+import java.net.PasswordAuthentication;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import org.junit.Assert;
-import org.junit.Test;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.httprpc.WebServiceProxy;
 
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 public class WebServiceProxyTest {
-    @Test
-    public void testGetValue() {
-        Map<String, ?> root = mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 42))))));
+    public static void main(String[] args) throws Exception {
+        // Allow self-signed certificates for testing purposes
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
 
-        Number value = WebServiceProxy.valueAt(root, "a.b.c");
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                // No-op
+            }
 
-        Assert.assertEquals(42, value.intValue());
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                // No-op
+            }
+        };
+
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+
+        sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
+
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> {
+            return true;
+        });
+
+        // Create service proxy
+        ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
+        WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool, 3000, 3000);
+
+        // Set credentials
+        serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
+
+        // Test GET
+        // TODO Arguments
+        // - string list
+        // - number
+        // - number list
+        // - boolean
+        // - boolean list
+        // - date
+        // - date list
+        // - local date
+        // - local date list
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("text", "héllo")), (Map<String, Object> result, Exception exception) -> {
+            // TODO Test return values
+            // - etc.
+            // - locale code
+            // - user name
+            // - missing value (null)
+            validate(exception == null && result != null);
+        });
+
+        // Test POST
+        // TODO Arguments
+        // - string list
+        // - number
+        // - number list
+        // - boolean
+        // - boolean list
+        // - date
+        // - date list
+        // - local date
+        // - local date list
+        // - URL
+        // - URL list
+        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(entry("text", "héllo")), (Map<String, Object> result, Exception exception) -> {
+            // TODO Test return values
+            // - etc.
+            // - locale code
+            // - user name
+            // - missing value (null)
+            // - attachment info
+            validate(exception == null && result != null);
+        });
+
+        // Test PUT
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (String result, Exception exception) -> {
+            validate(exception == null && result != null && result.equals("göodbye"));
+        });
+
+        // Test DELETE
+        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("value", 101)), (result, exception) -> {
+            validate(exception == null && result != null && result.equals(true));
+        });
+
+        // Test void
+        serviceProxy.invoke("GET", "/httprpc-server/test/void", (result, exception) -> {
+            validate(exception == null && result == null);
+        });
+
+        // Test long list
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
+            // No-op
+        });
+
+        Timer timer = new Timer();
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                validate(future.cancel(true));
+            }
+        }, 1000);
+
+        // Test delayed result
+        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+            validate(exception instanceof SocketTimeoutException);
+        });
+
+        // Test parallel operations
+        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
+        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
+        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
+
+        validate(sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
+
+        // Shut down thread pool
+        threadPool.shutdown();
     }
 
-    @Test
-    public void testGetMissingValue() {
-        Map<String, ?> root = mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 42))))));
-
-        Assert.assertNull(WebServiceProxy.valueAt(root, "a.b.x"));
+    private static void validate(boolean condition) {
+        System.out.println(condition ? "OK" : "FAIL");
     }
 }
-
