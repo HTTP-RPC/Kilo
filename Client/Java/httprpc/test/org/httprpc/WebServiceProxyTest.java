@@ -15,12 +15,16 @@
 package org.httprpc;
 
 import java.net.PasswordAuthentication;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -124,23 +128,16 @@ public class WebServiceProxyTest {
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
             entry("text", "héllo")),
             (String result, Exception exception) -> {
-            validate(exception == null && result != null && result.equals("göodbye"));
+            validate(exception == null && result.equals("göodbye"));
         });
 
         // Test DELETE
         serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
             entry("id", 101)),
             (Boolean result, Exception exception) -> {
-            validate(exception == null && result != null && result.equals(true));
+            validate(exception == null && result.equals(true));
         });
 
-        // Test void
-        serviceProxy.invoke("GET", "/httprpc-server/test/void", (result, exception) -> {
-            validate(exception == null && result == null);
-        });
-
-        // TODO
-        /*
         // Test long list
         Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
             // No-op
@@ -166,7 +163,6 @@ public class WebServiceProxyTest {
         Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
 
         validate(sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
-        */
 
         // Shut down thread pool
         threadPool.shutdown();

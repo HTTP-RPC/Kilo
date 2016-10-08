@@ -15,6 +15,7 @@
 package org.httprpc.server;
 
 import java.io.IOException;
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -32,16 +33,67 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO Check for path info
-
         response.setContentType("application/json;charset=UTF-8");
 
-        HashMap<String, Object> result = new HashMap<>();
+        String pathInfo = request.getPathInfo();
 
-        result.put("string", request.getParameter("string"));
-        result.put("strings", Arrays.asList(request.getParameterValues("strings")));
+        Object result;
+        if (pathInfo == null) {
+            HashMap<String, Object> map = new HashMap<>();
 
-        // TODO Additional arguments
+            map.put("string", request.getParameter("string"));
+            map.put("strings", Arrays.asList(request.getParameterValues("strings")));
+
+            // TODO Additional arguments
+
+            result = map;
+        } else {
+            switch (pathInfo.substring(1)) {
+                case "longList": {
+                    result = new AbstractList<Integer>() {
+                        @Override
+                        public Integer get(int index) {
+                            return index;
+                        }
+
+                        @Override
+                        public int size() {
+                            return Integer.MAX_VALUE;
+                        }
+                    };
+
+                    break;
+                }
+
+                case "delayedResult": {
+                    result = request.getParameter("result");
+
+                    int delay = Integer.parseInt(request.getParameter("delay"));
+
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    break;
+                }
+
+                case "sum": {
+                    int a = Integer.parseInt(request.getParameter("a"));
+                    int b = Integer.parseInt(request.getParameter("b"));
+
+                    result = a + b;
+
+                    break;
+                }
+
+                default: {
+                    result = null;
+                    break;
+                }
+            }
+        }
 
         JSONEncoder jsonEncoder = new JSONEncoder();
 
@@ -55,11 +107,23 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO
+        response.setContentType("application/json;charset=UTF-8");
+
+        String result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
+
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.writeValue(result, response.getOutputStream());
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO
+        response.setContentType("application/json;charset=UTF-8");
+
+        boolean result = (Integer.parseInt(request.getParameter("id")) == 101);
+
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.writeValue(result, response.getOutputStream());
     }
 }
