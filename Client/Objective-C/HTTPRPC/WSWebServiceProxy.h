@@ -37,7 +37,7 @@ extern NSString * const WSPathKey;
 extern NSString * const WSArgumentsKey;
 
 /**
- * Invocation proxy for HTTP-RPC web services.
+ * Web service invocation proxy.
  */
 @interface WSWebServiceProxy : NSObject
 

@@ -45,7 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * Invocation proxy for HTTP-RPC web services.
+ * Web service invocation proxy.
  */
 public class WebServiceProxy {
     // Invocation callback
