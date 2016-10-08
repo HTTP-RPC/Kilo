@@ -87,22 +87,35 @@ public class WebServiceProxyTest {
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
                 && valueAt(result, "number").equals(123)
                 && valueAt(result, "boolean").equals(true)
-                && valueAt(result, "missing") == null);
+                && valueAt(result, "xyz") == null);
         });
 
         // Test POST
-        // TODO URL/URL list arguments
+        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
         serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("boolean", true)),
+            entry("boolean", true),
+            entry("attachments", listOf(textTestURL, imageTestURL))),
             (Map<String, ?> result, Exception exception) -> {
             validate(exception == null
                 && valueAt(result, "string").equals("héllo")
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
                 && valueAt(result, "number").equals(123)
-                && valueAt(result, "boolean").equals(true));
+                && valueAt(result, "boolean").equals(true)
+                && valueAt(result, "attachmentInfo").equals(listOf(
+                    mapOf(
+                        entry("bytes", 26),
+                        entry("checksum", 2412)
+                    ),
+                    mapOf(
+                        entry("bytes", 10392),
+                        entry("checksum", 1038036)
+                    )
+                )));
         });
 
         // Test PUT

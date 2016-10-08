@@ -944,5 +944,10 @@ class NumberAdapter extends Number {
     private boolean equals(Number number) {
         return (Double.doubleToLongBits(doubleValue()) == Double.doubleToLongBits(number.doubleValue()));
     }
+
+    @Override
+    public String toString() {
+        return number.toString();
+    }
 }
 
