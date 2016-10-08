@@ -15,16 +15,12 @@
 package org.httprpc;
 
 import java.net.PasswordAuthentication;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -33,8 +29,10 @@ import javax.net.ssl.X509TrustManager;
 
 import org.httprpc.WebServiceProxy;
 
+import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
+import static org.httprpc.WebServiceProxy.valueAt;
 
 public class WebServiceProxyTest {
     public static void main(String[] args) throws Exception {
@@ -75,7 +73,6 @@ public class WebServiceProxyTest {
 
         // Test GET
         // TODO Arguments
-        // - string list
         // - number
         // - number list
         // - boolean
@@ -84,13 +81,18 @@ public class WebServiceProxyTest {
         // - date list
         // - local date
         // - local date list
-        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("text", "héllo")), (Map<String, Object> result, Exception exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+            entry("string", "héllo"),
+            entry("strings", listOf("a", "b", "c"))),
+            (Map<String, ?> result, Exception exception) -> {
             // TODO Test return values
             // - etc.
             // - locale code
             // - user name
             // - missing value (null)
-            validate(exception == null && result != null);
+            validate(exception == null
+                && valueAt(result, "string").equals("héllo")
+                && valueAt(result, "strings").equals(listOf("a", "b", "c")));
         });
 
         // Test POST
@@ -106,7 +108,9 @@ public class WebServiceProxyTest {
         // - local date list
         // - URL
         // - URL list
-        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(entry("text", "héllo")), (Map<String, Object> result, Exception exception) -> {
+        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
+            entry("string", "héllo")),
+            (Map<String, ?> result, Exception exception) -> {
             // TODO Test return values
             // - etc.
             // - locale code
@@ -117,12 +121,16 @@ public class WebServiceProxyTest {
         });
 
         // Test PUT
-        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (String result, Exception exception) -> {
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
+            entry("text", "héllo")),
+            (String result, Exception exception) -> {
             validate(exception == null && result != null && result.equals("göodbye"));
         });
 
         // Test DELETE
-        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("value", 101)), (result, exception) -> {
+        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
+            entry("id", 101)),
+            (Boolean result, Exception exception) -> {
             validate(exception == null && result != null && result.equals(true));
         });
 
@@ -131,6 +139,8 @@ public class WebServiceProxyTest {
             validate(exception == null && result == null);
         });
 
+        // TODO
+        /*
         // Test long list
         Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
             // No-op
@@ -151,11 +161,12 @@ public class WebServiceProxyTest {
         });
 
         // Test parallel operations
-        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
-        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
-        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
+        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
+        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
+        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
 
         validate(sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
+        */
 
         // Shut down thread pool
         threadPool.shutdown();

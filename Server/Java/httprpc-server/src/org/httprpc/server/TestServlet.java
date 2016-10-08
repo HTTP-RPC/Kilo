@@ -15,6 +15,8 @@
 package org.httprpc.server;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +32,20 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO
+        // TODO Check for path info
+
+        response.setContentType("application/json;charset=UTF-8");
+
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("string", request.getParameter("string"));
+        result.put("strings", Arrays.asList(request.getParameterValues("strings")));
+
+        // TODO Additional arguments
+
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.writeValue(result, response.getOutputStream());
     }
 
     @Override
