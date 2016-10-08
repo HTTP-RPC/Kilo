@@ -44,7 +44,9 @@ public class TestServlet extends HttpServlet {
             map.put("string", request.getParameter("string"));
             map.put("strings", Arrays.asList(request.getParameterValues("strings")));
 
-            // TODO Additional arguments
+            map.put("number", Integer.parseInt(request.getParameter("number")));
+
+            map.put("boolean", Boolean.parseBoolean(request.getParameter("boolean")));
 
             result = map;
         } else {
@@ -102,7 +104,20 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO
+        response.setContentType("application/json;charset=UTF-8");
+
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("string", request.getParameter("string"));
+        result.put("strings", Arrays.asList(request.getParameterValues("strings")));
+
+        result.put("number", Integer.parseInt(request.getParameter("number")));
+
+        result.put("boolean", Boolean.parseBoolean(request.getParameter("boolean")));
+
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.writeValue(result, response.getOutputStream());
     }
 
     @Override

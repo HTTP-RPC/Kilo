@@ -76,52 +76,33 @@ public class WebServiceProxyTest {
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         // Test GET
-        // TODO Arguments
-        // - number
-        // - number list
-        // - boolean
-        // - boolean list
-        // - date
-        // - date list
-        // - local date
-        // - local date list
         serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
-            entry("strings", listOf("a", "b", "c"))),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("boolean", true)),
             (Map<String, ?> result, Exception exception) -> {
-            // TODO Test return values
-            // - etc.
-            // - locale code
-            // - user name
-            // - missing value (null)
             validate(exception == null
                 && valueAt(result, "string").equals("héllo")
-                && valueAt(result, "strings").equals(listOf("a", "b", "c")));
+                && valueAt(result, "strings").equals(listOf("a", "b", "c"))
+                && valueAt(result, "number").equals(123)
+                && valueAt(result, "boolean").equals(true)
+                && valueAt(result, "missing") == null);
         });
 
         // Test POST
-        // TODO Arguments
-        // - string list
-        // - number
-        // - number list
-        // - boolean
-        // - boolean list
-        // - date
-        // - date list
-        // - local date
-        // - local date list
-        // - URL
-        // - URL list
+        // TODO URL/URL list arguments
         serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
-            entry("string", "héllo")),
+            entry("string", "héllo"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("boolean", true)),
             (Map<String, ?> result, Exception exception) -> {
-            // TODO Test return values
-            // - etc.
-            // - locale code
-            // - user name
-            // - missing value (null)
-            // - attachment info
-            validate(exception == null && result != null);
+            validate(exception == null
+                && valueAt(result, "string").equals("héllo")
+                && valueAt(result, "strings").equals(listOf("a", "b", "c"))
+                && valueAt(result, "number").equals(123)
+                && valueAt(result, "boolean").equals(true));
         });
 
         // Test PUT
