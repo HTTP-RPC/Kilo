@@ -101,12 +101,12 @@ public class WebServiceProxyTest {
             entry("boolean", true),
             entry("attachments", listOf(textTestURL, imageTestURL))),
             (Map<String, ?> result, Exception exception) -> {
-            validate(exception == null
-                && valueAt(result, "string").equals("héllo")
-                && valueAt(result, "strings").equals(listOf("a", "b", "c"))
-                && valueAt(result, "number").equals(123)
-                && valueAt(result, "boolean").equals(true)
-                && valueAt(result, "attachmentInfo").equals(listOf(
+            validate(exception == null && result.equals(mapOf(
+                entry("string", "héllo"),
+                entry("strings", listOf("a", "b", "c")),
+                entry("number", 123),
+                entry("boolean", true),
+                entry("attachmentInfo", listOf(
                     mapOf(
                         entry("bytes", 26),
                         entry("checksum", 2412)
@@ -115,7 +115,8 @@ public class WebServiceProxyTest {
                         entry("bytes", 10392),
                         entry("checksum", 1038036)
                     )
-                )));
+                ))
+            )));
         });
 
         // Test PUT
