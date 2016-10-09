@@ -61,12 +61,13 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "number": 123,
             "boolean": true,
             ]) { result, error in
-            self.validate(result as? NSDictionary == [
-                "string": "héllo",
-                "strings": ["a", "b", "c"],
-                "number": 123,
-                "boolean": true
-            ], error: error, cell: self.getCell)
+            if let dictionary = result as? NSDictionary {
+                self.validate(dictionary.value(forKeyPath: "string") as! String == "héllo"
+                    && dictionary.value(forKeyPath: "strings") as! [String] == ["a", "b", "c"]
+                    && dictionary.value(forKeyPath: "number") as! Int == 123
+                    && dictionary.value(forKeyPath: "boolean") as! Bool == true,
+                    error: error, cell: self.getCell)
+            }
         }
 
         // POST
