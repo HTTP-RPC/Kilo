@@ -4,4 +4,19 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
     version="3.1">
     <display-name>HTTP-RPC Server</display-name>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>tomcat</realm-name>
+    </login-config>
+    
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>all</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>tomcat</role-name>
+        </auth-constraint>
+    </security-constraint>
 </web-app>
