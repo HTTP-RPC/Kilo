@@ -148,7 +148,7 @@ public class WebServiceProxyTest {
         }, 1000);
 
         // Test delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
             validate(exception instanceof SocketTimeoutException);
         });
 
