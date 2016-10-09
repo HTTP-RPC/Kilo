@@ -82,7 +82,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("boolean", true)),
             (Map<String, ?> result, Exception exception) -> {
-            validate(exception == null
+            validate("GET", exception == null
                 && valueAt(result, "string").equals("héllo")
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
                 && valueAt(result, "number").equals(123)
@@ -101,7 +101,7 @@ public class WebServiceProxyTest {
             entry("boolean", true),
             entry("attachments", listOf(textTestURL, imageTestURL))),
             (Map<String, ?> result, Exception exception) -> {
-            validate(exception == null && result.equals(mapOf(
+            validate("POST", exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
                 entry("number", 123),
@@ -123,14 +123,14 @@ public class WebServiceProxyTest {
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
             entry("text", "héllo")),
             (String result, Exception exception) -> {
-            validate(exception == null && result.equals("göodbye"));
+            validate("PUT", exception == null && result.equals("göodbye"));
         });
 
         // Test DELETE
         serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
             entry("id", 101)),
             (Boolean result, Exception exception) -> {
-            validate(exception == null && result.equals(true));
+            validate("DELETE", exception == null && result.equals(true));
         });
 
         // Test long list
@@ -143,13 +143,13 @@ public class WebServiceProxyTest {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                validate(future.cancel(true));
+                validate("Long list", future.cancel(true));
             }
         }, 1000);
 
         // Test delayed result
         serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
-            validate(exception instanceof SocketTimeoutException);
+            validate("Delayed result", exception instanceof SocketTimeoutException);
         });
 
         // Test parallel operations
@@ -157,13 +157,13 @@ public class WebServiceProxyTest {
         Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
         Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
 
-        validate(sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
+        validate("Parallel operations", sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
 
         // Shut down thread pool
         threadPool.shutdown();
     }
 
-    private static void validate(boolean condition) {
-        System.out.println(condition ? "OK" : "FAIL");
+    private static void validate(String test, boolean condition) {
+        System.out.println(test + ": " + (condition ? "OK" : "FAIL"));
     }
 }

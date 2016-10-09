@@ -126,41 +126,45 @@ public class TestServlet extends HttpServlet {
 
         result.put("boolean", Boolean.parseBoolean(request.getParameter("boolean")));
 
-        LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
+        String contentType = request.getContentType();
 
-        for (Part part : request.getParts()) {
-            String name = part.getName();
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-            if (name.equals("attachments")) {
-                long bytes = 0;
-                long checksum = 0;
+            for (Part part : request.getParts()) {
+                String name = part.getName();
 
-                File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
+                if (name.equals("attachments")) {
+                    long bytes = 0;
+                    long checksum = 0;
 
-                try {
-                    part.write(file.getAbsolutePath());
+                    File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
 
-                    try (InputStream inputStream = new FileInputStream(file)) {
-                        int b;
-                        while ((b = inputStream.read()) != -1) {
-                            bytes++;
-                            checksum += b;
+                    try {
+                        part.write(file.getAbsolutePath());
+
+                        try (InputStream inputStream = new FileInputStream(file)) {
+                            int b;
+                            while ((b = inputStream.read()) != -1) {
+                                bytes++;
+                                checksum += b;
+                            }
                         }
+                    } finally {
+                        file.delete();
                     }
-                } finally {
-                    file.delete();
+
+                    HashMap<String, Object> map = new HashMap<>();
+
+                    map.put("bytes", bytes);
+                    map.put("checksum", checksum);
+
+                    attachmentInfo.add(map);
                 }
-
-                HashMap<String, Object> map = new HashMap<>();
-
-                map.put("bytes", bytes);
-                map.put("checksum", checksum);
-
-                attachmentInfo.add(map);
             }
-        }
 
-        result.put("attachmentInfo", attachmentInfo);
+            result.put("attachmentInfo", attachmentInfo);
+        }
 
         JSONEncoder jsonEncoder = new JSONEncoder();
 
