@@ -75,7 +75,7 @@ public class WebServiceProxyTest {
         // Set credentials
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
-        // Test GET
+        // GET
         serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
@@ -90,7 +90,7 @@ public class WebServiceProxyTest {
                 && valueAt(result, "xyz") == null);
         });
 
-        // Test POST
+        // POST
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
@@ -119,21 +119,21 @@ public class WebServiceProxyTest {
             )));
         });
 
-        // Test PUT
+        // PUT
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
             entry("text", "héllo")),
             (String result, Exception exception) -> {
             validate("PUT", exception == null && result.equals("göodbye"));
         });
 
-        // Test DELETE
+        // DELETE
         serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
             entry("id", 101)),
             (Boolean result, Exception exception) -> {
             validate("DELETE", exception == null && result.equals(true));
         });
 
-        // Test long list
+        // Long list
         Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
             // No-op
         });
@@ -147,12 +147,12 @@ public class WebServiceProxyTest {
             }
         }, 1000);
 
-        // Test delayed result
+        // Delayed result
         serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
             validate("Delayed result", exception instanceof SocketTimeoutException);
         });
 
-        // Test parallel operations
+        // Parallel operations
         Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
         Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
         Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);

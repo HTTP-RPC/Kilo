@@ -33,9 +33,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,29 +49,17 @@ import org.httprpc.WebServiceProxy;
 import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
+import static org.httprpc.WebServiceProxy.valueAt;
 
 public class MainActivity extends AppCompatActivity {
-    private CheckBox sumCheckBox;
-    private CheckBox sumAllCheckBox;
-    private CheckBox inverseCheckBox;
-    private CheckBox charactersCheckBox;
-    private CheckBox selectionCheckBox;
+    private CheckBox getCheckBox;
+    private CheckBox postCheckBox;
     private CheckBox putCheckBox;
     private CheckBox deleteCheckBox;
-    private CheckBox statisticsCheckBox;
-    private CheckBox testDataCheckBox;
-    private CheckBox voidCheckBox;
-    private CheckBox nullCheckBox;
-    private CheckBox localeCodeCheckBox;
-    private CheckBox userNameCheckBox;
-    private CheckBox userRoleStatusCheckBox;
-    private CheckBox attachmentInfoCheckBox;
-    private CheckBox dateCheckBox;
-    private CheckBox datesCheckBox;
-    private CheckBox echoCheckBox;
-    private ImageView echoImageView;
     private CheckBox longListCheckBox;
     private CheckBox delayedResultCheckBox;
+    private CheckBox imageCheckBox;
+    private ImageView imageView;
 
     static {
         // Allow self-signed certificates for testing purposes
@@ -122,27 +107,14 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        sumCheckBox = (CheckBox)findViewById(R.id.sum_checkbox);
-        sumAllCheckBox = (CheckBox)findViewById(R.id.sum_all_checkbox);
-        inverseCheckBox = (CheckBox)findViewById(R.id.inverse_checkbox);
-        charactersCheckBox = (CheckBox)findViewById(R.id.characters_checkbox);
-        selectionCheckBox = (CheckBox)findViewById(R.id.selection_checkbox);
+        getCheckBox = (CheckBox)findViewById(R.id.get_checkbox);
+        postCheckBox = (CheckBox)findViewById(R.id.post_checkbox);
         putCheckBox = (CheckBox)findViewById(R.id.put_checkbox);
         deleteCheckBox = (CheckBox)findViewById(R.id.delete_checkbox);
-        statisticsCheckBox = (CheckBox)findViewById(R.id.statistics_checkbox);
-        testDataCheckBox = (CheckBox)findViewById(R.id.test_data_checkbox);
-        voidCheckBox = (CheckBox)findViewById(R.id.void_checkbox);
-        nullCheckBox = (CheckBox)findViewById(R.id.null_checkbox);
-        localeCodeCheckBox = (CheckBox)findViewById(R.id.locale_code_checkbox);
-        userNameCheckBox = (CheckBox)findViewById(R.id.user_name_checkbox);
-        userRoleStatusCheckBox = (CheckBox)findViewById(R.id.user_role_status_checkbox);
-        attachmentInfoCheckBox = (CheckBox)findViewById(R.id.attachment_info_checkbox);
-        dateCheckBox = (CheckBox)findViewById(R.id.date_checkbox);
-        datesCheckBox = (CheckBox)findViewById(R.id.dates_checkbox);
-        echoImageView = (ImageView)findViewById(R.id.echo_image_view);
-        echoCheckBox = (CheckBox)findViewById(R.id.echo_checkbox);
         longListCheckBox = (CheckBox)findViewById(R.id.long_list_checkbox);
         delayedResultCheckBox = (CheckBox)findViewById(R.id.delayed_result_checkbox);
+        imageCheckBox = (CheckBox)findViewById(R.id.image_checkbox);
+        imageView = (ImageView)findViewById(R.id.image_view);
     }
 
     @Override
@@ -183,126 +155,64 @@ public class MainActivity extends AppCompatActivity {
         // Set credentials
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
-        // Sum
-        HashMap<String, Object> sumArguments = new HashMap<>();
-        sumArguments.put("a", 2);
-        sumArguments.put("b", 4);
-
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", sumArguments, (Number result, Exception exception) -> {
-            sumCheckBox.setChecked(exception == null && result.intValue() == 6);
+        // GET
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+            entry("string", "héllo"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("boolean", true)),
+            (Map<String, ?> result, Exception exception) -> {
+            getCheckBox.setChecked(exception == null
+                && valueAt(result, "string").equals("héllo")
+                && valueAt(result, "strings").equals(listOf("a", "b", "c"))
+                && valueAt(result, "number").equals(123)
+                && valueAt(result, "boolean").equals(true)
+                && valueAt(result, "xyz") == null);
         });
 
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/sum", mapOf(entry("values", listOf(1, 2, 3, 4))), (Number result, Exception exception) -> {
-            sumAllCheckBox.setChecked(exception == null && result.doubleValue() == 10.0);
-        });
-
-        // Inverse
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/inverse", mapOf(entry("value", true)), (Boolean result, Exception exception) -> {
-            inverseCheckBox.setChecked(exception == null && result == false);
-        });
-
-        // Characters
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/characters", mapOf(entry("text", "Héllo, World!")), (result, exception) -> {
-            charactersCheckBox.setChecked(exception == null && result.equals(Arrays.asList("H", "é", "l", "l", "o", ",", " ", "W", "o", "r", "l", "d", "!")));
-        });
-
-        // Selection
-        serviceProxy.invoke("POST", "/httprpc-server-test/test/selection", mapOf(entry("items", listOf("å", "b", "c", "d"))), (result, exception) -> {
-            selectionCheckBox.setChecked(exception == null && result.equals("å, b, c, d"));
-        });
-
-        // Put
-        serviceProxy.invoke("PUT", "/httprpc-server-test/test", mapOf(entry("value", "héllo")), (result, exception) -> {
-            putCheckBox.setChecked(exception == null && result.equals("héllo"));
-        });
-
-        // Delete
-        serviceProxy.invoke("DELETE", "/httprpc-server-test/test", mapOf(entry("value", 101)), (result, exception) -> {
-            deleteCheckBox.setChecked(exception == null && result.equals(101L));
-        });
-
-        // Statistics
-        serviceProxy.invoke("POST", "/httprpc-server-test/test/statistics", mapOf(entry("values", listOf(1, 3, 5))), (Map<String, Object> result, Exception exception) -> {
-            Statistics statistics = (exception == null) ? new Statistics(result) : null;
-
-            statisticsCheckBox.setChecked(statistics != null && statistics.getCount() == 3 && statistics.getAverage() == 3.0 && statistics.getSum() == 9.0);
-        });
-
-        // Test data
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/testData", (result, exception) -> {
-            testDataCheckBox.setChecked(exception == null && result.equals(Arrays.asList(mapOf(entry("a", "hello"), entry("b", 1L), entry("c", 2.0)), mapOf(entry("a", "goodbye"), entry("b", 2L), entry("c", 4.0)))));
-        });
-
-        // Void
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/void", (result, exception) -> {
-            voidCheckBox.setChecked(exception == null && result == null);
-        });
-
-        // Null
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/null", (result, exception) -> {
-            nullCheckBox.setChecked(exception == null && result == null);
-        });
-
-        // Locale code
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/localeCode", (result, exception) -> {
-            localeCodeCheckBox.setChecked(exception == null && result != null);
-            localeCodeCheckBox.setText(getResources().getString(R.string.locale_code) + ": " + String.valueOf(result));
-        });
-
-        // User name
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/user/name", (result, exception) -> {
-            userNameCheckBox.setChecked(exception == null && result.equals("tomcat"));
-        });
-
-        // User role status
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/user/roleStatus", mapOf(entry("role", "tomcat")), (result, exception) -> {
-            userRoleStatusCheckBox.setChecked(exception == null && result.equals(true));
-        });
-
-        // Attachment info
+        // POST
         URL textTestURL = getClass().getResource("/assets/test.txt");
         URL imageTestURL = getClass().getResource("/assets/test.jpg");
 
-        List<?> attachments = listOf(textTestURL, imageTestURL);
-
-        serviceProxy.invoke("POST", "/httprpc-server-test/test/attachmentInfo",
-            mapOf(entry("text", "héllo"), entry("attachments", attachments)), (Map<String, ?> result, Exception exception) -> {
-            attachmentInfoCheckBox.setChecked(exception == null && result.equals(mapOf(
-                entry("text", "héllo"),
+        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
+            entry("string", "héllo"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("boolean", true),
+            entry("attachments", listOf(textTestURL, imageTestURL))),
+            (Map<String, ?> result, Exception exception) -> {
+            postCheckBox.setChecked(exception == null && result.equals(mapOf(
+                entry("string", "héllo"),
+                entry("strings", listOf("a", "b", "c")),
+                entry("number", 123),
+                entry("boolean", true),
                 entry("attachmentInfo", listOf(
                     mapOf(
-                        entry("bytes", 26L),
-                        entry("checksum", 2412L)
+                        entry("bytes", 26),
+                        entry("checksum", 2412)
                     ),
                     mapOf(
-                        entry("bytes", 10392L),
-                        entry("checksum", 1038036L)
+                        entry("bytes", 10392),
+                        entry("checksum", 1038036)
                     )
                 ))
             )));
         });
 
-        // Dates
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("date", 0)), (Number result, Exception exception) -> {
-            dateCheckBox.setChecked(exception == null && result.equals(0));
+        // PUT
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
+            putCheckBox.setChecked(exception == null && result.equals("göodbye"));
         });
 
-        final List <?> dates = listOf("2016-09-15", "2016-09-16");
-
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/echo", mapOf(entry("dates", dates)), (List<Number> result, Exception exception) -> {
-            datesCheckBox.setChecked(exception == null && result.equals(dates));
-        });
-
-        // Echo
-        serviceProxy.invoke("POST", "/httprpc-server-test/test/echo", mapOf(entry("attachment", imageTestURL)), (Bitmap result, Exception exception) -> {
-            echoCheckBox.setChecked(exception == null && result != null);
-            echoImageView.setImageBitmap(result);
+        // Delete
+        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("id", 101)), (result, exception) -> {
+            deleteCheckBox.setChecked(exception == null && result.equals(true));
         });
 
         // Long list
         // TODO Closing the input stream does not appear to abort the connection in Android
         /*
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server-test/test/longList", (result, exception) -> {
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
             // No-op
         });
 
@@ -317,8 +227,14 @@ public class MainActivity extends AppCompatActivity {
         */
 
         // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server-test/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
             delayedResultCheckBox.setChecked(exception instanceof SocketTimeoutException);
+        });
+
+        // Image
+        serviceProxy.invoke("GET", "/httprpc-server/test.jpg", mapOf(entry("attachment", imageTestURL)), (Bitmap result, Exception exception) -> {
+            imageCheckBox.setChecked(exception == null && result != null);
+            imageView.setImageBitmap(result);
         });
 
         // Shut down thread pool
