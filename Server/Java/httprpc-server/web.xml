@@ -13,7 +13,7 @@
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>all</web-resource-name>
-            <url-pattern>/*</url-pattern>
+            <url-pattern>/test/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>tomcat</role-name>
