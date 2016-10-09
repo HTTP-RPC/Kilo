@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,7 @@ import javax.servlet.http.Part;
 /**
  * Test servlet.
  */
+@WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
 public class TestServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
