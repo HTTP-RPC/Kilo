@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="httprpc-server-demo-android" default="sync">
+<project name="httprpc-client-demo" default="sync">
     <target name="sync">
-        <ant dir="../httprpc" target="build" inheritAll="false"/>
+        <ant dir="../httprpc-client" target="build" inheritAll="false"/>
 
         <copy todir="app/libs">
-            <fileset dir="../httprpc">
+            <fileset dir="../httprpc-client">
                 <include name="*.jar"/>
             </fileset>
         </copy>
