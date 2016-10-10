@@ -5,7 +5,7 @@ The project currently includes support for consuming web services in Objective-C
 
 # Contents
 * [Service Operations](#service-operations)
-* [Implementations](#implementations)
+* [Client Implementations](#client-implementations)
 	* [Objective-C/Swift](#objective-cswift)
 	* [Java](#java)
 	* [JavaScript](#javascript)
@@ -58,23 +58,30 @@ The `DELETE` method removes information from the server. `DELETE` arguments are 
 
 `DELETE` requests generally do not return a value.
 
-# Implementations
-The project currently supports consuming services in Objective-C/Swift, Java, and JavaScript. Each client library is discussed in more detail below. For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+# Client Implementations
+The project currently supports consuming services in Objective-C/Swift, Java, and JavaScript. Each client library is discussed in more detail below. 
+
+For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 ## Objective-C/Swift
 The Objective-C/Swift client library enables iOS applications to consume REST-based web services. It is delivered as a modular framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
-The framework can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
+The iOS framework can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
 
 ### WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as an invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `POST` requests are encoded as "multipart/form-data". `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. All other content is returned as `NSData`.
+The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `POST` requests are encoded as "multipart/form-data". `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. All other content is returned as `NSData`.
 
 Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the URL of the server as arguments. Service operations are executed by calling the `invoke:path:arguments:resultHandler:` method:
 
     - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-        arguments:(NSDictionary<NSString *, id> *)arguments
-        resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+        arguments:(NSDictionary *)arguments
+        resultHandler:(void (^)(id, NSError *))resultHandler;
 
+In Swift:
+
+    func invoke(_ method: String, path: String, arguments: [String : Any], 
+        resultHandler: (Any?, Error?)) -> URLSessionDataTask?
+    
 This method takes the following arguments:
 
 * `method` - the HTTP method to execute
@@ -82,12 +89,7 @@ This method takes the following arguments:
 * `arguments` - a dictionary containing the request arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-A convenience method is also provided for executing operations that don't take any arguments:
-
-    - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-        resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
-
-Both variants return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+A convenience method is also provided for executing operations that don't take any arguments. Both variants return an instance of `NSURLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 #### Arguments and Return Values
 Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following argument types are given special consideration:
@@ -108,7 +110,7 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
 ### Examples
-The following code snippet demonstrates how `WSWebServiceProxy` can be used to access the methods of the hypothetical math operations discussed earlier. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
+The following code snippet demonstrates how `WSWebServiceProxy` can be used to access the hypothetical math operations discussed earlier. It first creates an instance of the `WSWebServiceProxy` class backed by a default URL session and a delegate queue supporting ten concurrent operations. It then invokes the service methods:
 
     // Configure session
     let configuration = URLSessionConfiguration.default
@@ -134,14 +136,13 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to a
 ## Java
 The Java client library enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
-* `org.httprpc`
-    * `WebServiceProxy` - invocation proxy for web services
-    * `ResultHandler` - callback interface for handling results
+* `WebServiceProxy` - web service invocation proxy
+* `ResultHandler` - callback interface for handling service results
 
 The JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
 
 ### WebServiceProxy Class
-The `WebServiceProxy` class acts as a client-side invocation proxy for web web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `POST` requests are encoded as "multipart/form-data".
+The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `POST` requests are encoded as "multipart/form-data".
 
 The `WebServiceProxy` constructor accepts the following arguments:
 
@@ -162,12 +163,7 @@ This method takes the following arguments:
 * `arguments` - a map containing the request arguments as key/value pairs
 * `resultHandler` - an instance of `ResultHandler` that will be invoked upon completion of the service operation
 
-A convenience method is also provided for executing operations that don't take any arguments:
-
-    public <V> Future<V> invoke(String method, String path, 
-        ResultHandler<V> resultHandler) { ... }
-
-Both variants of the `invoke()` method return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
+A convenience method is also provided for executing operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
 #### Arguments and Return Values
 Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following argument types are given special consideration:
@@ -261,7 +257,7 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
 ### Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to access the operations of the hypothetical math service discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
+The following code snippet demonstrates how `WebServiceProxy` can be used to access the hypothetical math operations discussed earlier. It first creates an instance of the `WebServiceProxy` class and configures it with a pool of ten threads for executing requests. It then invokes the service methods:
 
     // Create service proxy
     URL serverURL = new URL("https://localhost:8443");
@@ -285,7 +281,7 @@ The following code snippet demonstrates how `WebServiceProxy` can be used to acc
         }
     });
 
-Note that lambda expressions can optionally be used instead of anonymous classes to implement result handlers, reducing the invocation code to the following:
+Note that lambda expressions can optionally be used instead of anonymous inner classes to implement result handlers, reducing the invocation code to the following:
 
     // Get sum of "a" and "b"
     serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
@@ -303,7 +299,7 @@ The JavaScript HTTP-RPC client enables browser-based applications to consume RES
 The source file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases).
 
 ### WebServiceProxy Class
-The `WebServiceProxy` class serves as an invocation proxy for web services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server, and uses `JSON.parse()` to convert the response to an object. `POST` requests are encoded using the "application/x-www-form-urlencoded" MIME type.
+The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server, and uses `JSON.parse()` to convert the response to an object. `POST` requests are encoded using the "application/x-www-form-urlencoded" MIME type.
 
 Service proxies are initialized via the `WebServiceProxy` constructor, which takes a single optional argument representing the request timeout. Service operations are executed by calling the `invoke()` method on the proxy instance: 
 
@@ -323,7 +319,7 @@ The result handler is invoked upon completion of the operation. The callback tak
 The `invoke()` method returns the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
 
 ### Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to access the methods of the hypothetical math service. It first creates an instance of the `WebServiceProxy` class, and then invokes the `getSum(double, double)` method of the service, passing a value of 2 for "a" and 4 for "b". Finally, it executes the `getSum(List<Double>)` method, passing the values 1, 2, and 3 as arguments:
+The following code snippet demonstrates how `WebServiceProxy` can be used to access the hypothetical math operations discussed earlier. It first creates an instance of the `WebServiceProxy` class, and then invokes the service methods:
 
     // Create service proxy
     var serviceProxy = new WebServiceProxy();
