@@ -17,7 +17,6 @@ package org.httprpc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Simple note management service.
+ * Note servlet.
  */
 @WebServlet(urlPatterns={"/notes/*"}, loadOnStartup=1)
 @MultipartConfig
@@ -56,13 +55,11 @@ public class NoteServlet extends DispatcherServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         synchronized (notes) {
-            HashMap<String, Object> note = new HashMap<>();
-
-            note.put(ID_KEY, nextNoteID);
-            note.put(DATE_KEY, new Date().getTime());
-            note.put(MESSAGE_KEY, request.getParameter("message"));
-
-            notes.put(nextNoteID, note);
+            notes.put(nextNoteID, mapOf(
+                entry(ID_KEY, nextNoteID),
+                entry(DATE_KEY, new Date().getTime()),
+                entry(MESSAGE_KEY, request.getParameter("message"))
+            ));
 
             nextNoteID++;
         }

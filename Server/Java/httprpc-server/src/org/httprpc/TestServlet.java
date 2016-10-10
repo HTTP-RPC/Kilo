@@ -49,16 +49,12 @@ public class TestServlet extends DispatcherServlet {
 
         Object result;
         if (pathInfo == null) {
-            HashMap<String, Object> map = new HashMap<>();
-
-            map.put("string", request.getParameter("string"));
-            map.put("strings", Arrays.asList(request.getParameterValues("strings")));
-
-            map.put("number", Integer.parseInt(request.getParameter("number")));
-
-            map.put("boolean", Boolean.parseBoolean(request.getParameter("boolean")));
-
-            result = map;
+            result = mapOf(
+                entry("string", request.getParameter("string")),
+                entry("strings", Arrays.asList(request.getParameterValues("strings"))),
+                entry("number", Integer.parseInt(request.getParameter("number"))),
+                entry("boolean", Boolean.parseBoolean(request.getParameter("boolean")))
+            );
         } else {
             switch (pathInfo.substring(1)) {
                 case "longList": {
