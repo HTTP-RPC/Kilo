@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.server;
+package org.httprpc;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,14 +23,78 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServlet;
+
 /**
- * JSON encoder.
+ * Dispatcher servlet.
  */
-public class JSONEncoder {
+public class DispatcherServlet extends HttpServlet {
+    private static final long serialVersionUID = 0;
+
+    /**
+     * Creates a list from a variable length array of elements.
+     *
+     * @param elements
+     * The elements from which the list will be created.
+     *
+     * @return
+     * An immutable list containing the given elements.
+     */
+    @SafeVarargs
+    public static List<?> listOf(Object...elements) {
+        return Collections.unmodifiableList(Arrays.asList(elements));
+    }
+
+    /**
+     * Creates a map from a variable length array of map entries.
+     *
+     * @param <K> The type of the key.
+     *
+     * @param entries
+     * The entries from which the map will be created.
+     *
+     * @return
+     * An immutable map containing the given entries.
+     */
+    @SafeVarargs
+    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
+        HashMap<K, Object> map = new HashMap<>();
+
+        for (Map.Entry<K, ?> entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Creates a map entry.
+     *
+     * @param <K> The type of the key.
+     *
+     * @param key
+     * The entry's key.
+     *
+     * @param value
+     * The entry's value.
+     *
+     * @return
+     * An immutable map entry containing the key/value pair.
+     */
+    public static <K> Map.Entry<K, ?> entry(K key, Object value) {
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
+    }
+}
+
+class JSONEncoder {
     private static final String UTF_8_ENCODING = "UTF-8";
 
     private int depth = 0;
@@ -42,18 +106,6 @@ public class JSONEncoder {
         writer.flush();
     }
 
-    /**
-     * Writes a value to a character stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
     public void writeValue(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
