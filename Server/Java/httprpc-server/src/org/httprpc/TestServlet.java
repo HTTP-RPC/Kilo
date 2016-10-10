@@ -120,9 +120,7 @@ public class TestServlet extends DispatcherServlet {
 
         result.put("string", request.getParameter("string"));
         result.put("strings", Arrays.asList(request.getParameterValues("strings")));
-
         result.put("number", Integer.parseInt(request.getParameter("number")));
-
         result.put("boolean", Boolean.parseBoolean(request.getParameter("boolean")));
 
         String contentType = request.getContentType();
