@@ -1,7 +1,29 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to access REST-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for consuming web services in Objective-C/Swift, Java, and JavaScript. It provides a consistent client API that makes it easy to interact with services regardless of target device or operating system.
+The project currently includes support for consuming web services in Objective-C/Swift, Java (including Android), and JavaScript. It provides a consistent, callback-based client API that makes it easy to interact with services regardless of target device or operating system. 
+
+For example, the following code snippets demonstrate how the various client APIs might be used to access a simple web service that returns a friendly greeting:
+
+_Swift_
+
+    serviceProxy.invoke("GET", path: "/hello") {(result, error) in
+        print(result) // Prints "Hello, World!"
+    }
+
+_Java_
+
+    serviceProxy.invoke("GET", "/hello", (result, exception) -> {
+        System.out.println(result); // Prints "Hello, World!"
+    });
+
+_JavaScript_
+
+    serviceProxy.invoke("GET", "/hello", function(result, error) {
+        console.log(result); // Prints "Hello, World!"
+    });
+
+This guide introduces the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, please see [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 # Contents
 * [Service Operations](#service-operations)
@@ -95,7 +117,7 @@ A convenience method is also provided for executing operations that don't take a
 Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following argument types are given special consideration:
 
 * Instances of `NSURL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
-* Instances of `NSArray` represent multi-value parameters. They may be used with any request type; however, arrays containing URL values are handled similarly to `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
+* Instances of `NSArray` represent multi-value parameters and generally behave similarly to `<select multiple>` tags in HTML forms. However, arrays containing URL values are handled like `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
 * The `CFBooleanRef` constants `kCFBooleanTrue` and `kCFBooleanFalse` are converted to "true" and "false", respectively.
 
 The result handler callback is called upon completion of the operation. The callback takes two arguments: a result object and an error object. If the operation completes successfully, the first argument will contain the result of the operation. If the operation fails, the second argument will be populated with an instance of `NSError` describing the error that occurred.
@@ -169,7 +191,7 @@ A convenience method is also provided for executing operations that don't take a
 Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following argument types are given special consideration:
 
 * Instances of `java.net.URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
-* Instances of `java.util.List` represent multi-value parameters. They may be used with any request type; however, lists containing URL values are handled similarly to `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
+* Instances of `java.util.List` represent multi-value parameters and generally behave similarly to `<select multiple>` tags in HTML forms. However, lists containing URL values are handled like `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
 
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
@@ -211,9 +233,9 @@ A complete example is provided later.
 For example, given the following JSON response data, a call to `getValue(result, "foo.bar")` would return 123:
 
     {
-      "foo": {
-        "bar": 123
-      }
+        "foo": {
+            "bar": 123
+        }
     }
 
 See the Javadoc for more information.
@@ -238,7 +260,7 @@ By default, a result handler is called on the thread that executed the remote re
 
 While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `dispatchResult()` method can be overridden to process all result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
 
-    serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor()) {
+    WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, Executors.newSingleThreadExecutor()) {
         private Handler handler = new Handler(Looper.getMainLooper());
 
         @Override
