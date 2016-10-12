@@ -1,7 +1,7 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to access REST-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for consuming web services in Objective-C/Swift, Java (including Android), and JavaScript. It provides a consistent, callback-based client API that makes it easy to interact with services regardless of target device or operating system. 
+The project currently includes support for consuming web services in Objective-C/Swift, Java (including Android), and JavaScript. It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. 
 
 For example, the following code snippets demonstrate how the various client APIs might be used to access a simple web service that returns a friendly greeting:
 
