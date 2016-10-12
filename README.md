@@ -95,9 +95,9 @@ The `WSWebServiceProxy` class serves as a client-side invocation proxy for web s
 
 Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the URL of the server as arguments. Service operations are executed by calling the `invoke:path:arguments:resultHandler:` method:
 
-    - (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
-        arguments:(NSDictionary *)arguments
-        resultHandler:(void (^)(id, NSError *))resultHandler;
+    - (nullable NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+        arguments:(NSDictionary<NSString *, id> *)arguments
+        resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 In Swift:
 
