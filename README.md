@@ -86,7 +86,7 @@ The project currently supports consuming services in Objective-C/Swift, Java, an
 For additional information and examples, please see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 ## Objective-C/Swift
-The Objective-C/Swift client library enables iOS applications to consume REST-based web services. It is delivered as a modular framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
+The Objective-C/Swift client library enables iOS applications to consume REST-based web services. It is delivered as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
 The iOS framework can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
 
