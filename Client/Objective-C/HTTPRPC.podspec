@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'HTTPRPC'
   s.version          = '3.6'
-  s.summary          = 'Lightweight cross-platform RPC over HTTP'
+  s.summary          = 'Lightweight multi-platform REST client'
   s.description      = <<-DESC
     HTTP-RPC is an open-source framework for simplifying development of REST applications.
     It allows developers to access REST-based web services using a convenient, RPC-like
