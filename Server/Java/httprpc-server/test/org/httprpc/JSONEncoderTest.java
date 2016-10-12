@@ -25,9 +25,9 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.httprpc.DispatcherServlet.listOf;
-import static org.httprpc.DispatcherServlet.mapOf;
-import static org.httprpc.DispatcherServlet.entry;
+import static org.httprpc.AbstractServlet.listOf;
+import static org.httprpc.AbstractServlet.mapOf;
+import static org.httprpc.AbstractServlet.entry;
 
 public class JSONEncoderTest {
     @Test

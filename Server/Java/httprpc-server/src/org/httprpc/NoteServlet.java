@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(urlPatterns={"/notes/*"}, loadOnStartup=1)
 @MultipartConfig
-public class NoteServlet extends DispatcherServlet {
+public class NoteServlet extends AbstractServlet {
     private static final long serialVersionUID = 0;
 
     private static LinkedHashMap<Integer, Map<String, ?>> notes = new LinkedHashMap<>();

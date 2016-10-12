@@ -38,7 +38,7 @@ import org.httprpc.JSONEncoder;
  */
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
-public class TestServlet extends DispatcherServlet {
+public class TestServlet extends AbstractServlet {
     private static final long serialVersionUID = 0;
 
     @Override

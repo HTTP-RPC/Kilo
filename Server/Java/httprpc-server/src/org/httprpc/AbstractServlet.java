@@ -34,9 +34,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServlet;
 
 /**
- * Dispatcher servlet.
+ * Abstract servlet.
  */
-public class DispatcherServlet extends HttpServlet {
+public abstract class AbstractServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     /**
