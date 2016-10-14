@@ -145,96 +145,76 @@ class JSONEncoder {
             writeValue(((LocalTime)value).format(DateTimeFormatter.ISO_LOCAL_TIME), writer);
         } else if (value instanceof LocalDateTime) {
             writeValue(((LocalDateTime)value).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), writer);
-        } else if (value instanceof List<?>) {
-            List<?> list = (List<?>)value;
+        } else if (value instanceof Iterable<?>) {
+            Iterable<?> iterable = (Iterable<?>)value;
 
-            try {
-                writer.append("[");
+            writer.append("[");
 
-                depth++;
+            depth++;
 
-                int i = 0;
+            int i = 0;
 
-                for (Object element : list) {
-                    if (i > 0) {
-                        writer.append(",");
-                    }
-
-                    writer.append("\n");
-
-                    indent(writer);
-
-                    writeValue(element, writer);
-
-                    i++;
+            for (Object element : iterable) {
+                if (i > 0) {
+                    writer.append(",");
                 }
-
-                depth--;
 
                 writer.append("\n");
 
                 indent(writer);
 
-                writer.append("]");
-            } finally {
-                if (list instanceof AutoCloseable) {
-                    try {
-                        ((AutoCloseable)list).close();
-                    } catch (Exception exception) {
-                        throw new IOException(exception);
-                    }
-                }
+                writeValue(element, writer);
+
+                i++;
             }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("]");
         } else if (value instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>)value;
 
-            try {
-                writer.append("{");
+            writer.append("{");
 
-                depth++;
+            depth++;
 
-                int i = 0;
+            int i = 0;
 
-                for (Map.Entry<?, ?> entry : map.entrySet()) {
-                    if (i > 0) {
-                        writer.append(",");
-                    }
-
-                    writer.append("\n");
-
-                    Object key = entry.getKey();
-
-                    if (key == null) {
-                        continue;
-                    }
-
-                    indent(writer);
-
-                    writeValue(key.toString(), writer);
-
-                    writer.append(": ");
-
-                    writeValue(entry.getValue(), writer);
-
-                    i++;
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                if (i > 0) {
+                    writer.append(",");
                 }
-
-                depth--;
 
                 writer.append("\n");
 
+                Object key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
                 indent(writer);
 
-                writer.append("}");
-            } finally {
-                if (map instanceof AutoCloseable) {
-                    try {
-                        ((AutoCloseable)map).close();
-                    } catch (Exception exception) {
-                        throw new IOException(exception);
-                    }
-                }
+                writeValue(key.toString(), writer);
+
+                writer.append(": ");
+
+                writeValue(entry.getValue(), writer);
+
+                i++;
             }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("}");
         } else {
             writeValue(value.toString(), writer);
         }
