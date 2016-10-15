@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         // GET
-        serviceProxy.invoke("GET", "/httprpc-server/test/get.json", mapOf(
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         URL textTestURL = getClass().getResource("/assets/test.txt");
         URL imageTestURL = getClass().getResource("/assets/test.jpg");
 
-        serviceProxy.invoke("POST", "/httprpc-server/test/post.json", mapOf(
+        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -200,19 +200,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // PUT
-        serviceProxy.invoke("PUT", "/httprpc-server/test/put.json", mapOf(entry("text", "héllo")), (result, exception) -> {
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
             putCheckBox.setChecked(exception == null && result.equals("göodbye"));
         });
 
         // Delete
-        serviceProxy.invoke("DELETE", "/httprpc-server/test/delete.json", mapOf(entry("id", 101)), (result, exception) -> {
+        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("id", 101)), (result, exception) -> {
             deleteCheckBox.setChecked(exception == null && result.equals(true));
         });
 
         // Long list
         // TODO Closing the input stream does not appear to abort the connection in Android
         /*
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList.json", (result, exception) -> {
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test", (result, exception) -> {
             // No-op
         });
 
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         */
 
         // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult.json", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
             delayedResultCheckBox.setChecked(exception instanceof SocketTimeoutException);
         });
 
