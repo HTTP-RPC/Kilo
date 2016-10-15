@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteButton.setEnabled(false);
 
-        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server/notes", (List<Map<String, Object>> result, Exception exception) -> {
+        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server/notes.json", (List<Map<String, Object>> result, Exception exception) -> {
             if (exception == null) {
                 noteList = result;
 

@@ -156,17 +156,17 @@ public class MainActivity extends AppCompatActivity {
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         // GET
-        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+        serviceProxy.invoke("GET", "/httprpc-server/test/get.json", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("boolean", true)),
+            entry("flag", true)),
             (Map<String, ?> result, Exception exception) -> {
             getCheckBox.setChecked(exception == null
                 && valueAt(result, "string").equals("héllo")
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
                 && valueAt(result, "number").equals(123)
-                && valueAt(result, "boolean").equals(true)
+                && valueAt(result, "flag").equals(true)
                 && valueAt(result, "xyz") == null);
         });
 
@@ -174,18 +174,18 @@ public class MainActivity extends AppCompatActivity {
         URL textTestURL = getClass().getResource("/assets/test.txt");
         URL imageTestURL = getClass().getResource("/assets/test.jpg");
 
-        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
+        serviceProxy.invoke("POST", "/httprpc-server/test/post.json", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("boolean", true),
+            entry("flag", true),
             entry("attachments", listOf(textTestURL, imageTestURL))),
             (Map<String, ?> result, Exception exception) -> {
             postCheckBox.setChecked(exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
                 entry("number", 123),
-                entry("boolean", true),
+                entry("flag", true),
                 entry("attachmentInfo", listOf(
                     mapOf(
                         entry("bytes", 26),
@@ -200,19 +200,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // PUT
-        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
+        serviceProxy.invoke("PUT", "/httprpc-server/test/put.json", mapOf(entry("text", "héllo")), (result, exception) -> {
             putCheckBox.setChecked(exception == null && result.equals("göodbye"));
         });
 
         // Delete
-        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("id", 101)), (result, exception) -> {
+        serviceProxy.invoke("DELETE", "/httprpc-server/test/delete.json", mapOf(entry("id", 101)), (result, exception) -> {
             deleteCheckBox.setChecked(exception == null && result.equals(true));
         });
 
         // Long list
         // TODO Closing the input stream does not appear to abort the connection in Android
         /*
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList.json", (result, exception) -> {
             // No-op
         });
 
@@ -227,12 +227,12 @@ public class MainActivity extends AppCompatActivity {
         */
 
         // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult.json", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
             delayedResultCheckBox.setChecked(exception instanceof SocketTimeoutException);
         });
 
         // Image
-        serviceProxy.invoke("GET", "/httprpc-server/test.jpg", mapOf(entry("attachment", imageTestURL)), (Bitmap result, Exception exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test.jpg", (Bitmap result, Exception exception) -> {
             imageCheckBox.setChecked(exception == null && result != null);
             imageView.setImageBitmap(result);
         });

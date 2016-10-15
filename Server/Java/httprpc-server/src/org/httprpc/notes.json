@@ -1,0 +1,7 @@
+[{{#.[,]}}
+  {
+    "id": {{id}},
+    "date": {{date:format=time}},
+    "message": "{{message:^json}}"
+  }{{/.}}
+]

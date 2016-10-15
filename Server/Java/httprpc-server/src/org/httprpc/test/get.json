@@ -1,0 +1,6 @@
+{
+  "string": "{{string:^json}}",
+  "strings": [{{#strings[, ]}}"{{.}}"{{/strings}}],
+  "number": {{number}},
+  "flag": {{flag}}
+}

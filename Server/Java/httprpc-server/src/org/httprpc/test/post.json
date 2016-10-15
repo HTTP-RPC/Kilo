@@ -1,0 +1,12 @@
+{
+  "string": "{{string:^json}}",
+  "strings": [{{#strings[, ]}}"{{.}}"{{/strings}}],
+  "number": {{number}},
+  "flag": {{flag}},
+  "attachmentInfo": [{{#attachmentInfo[,]}}
+    {
+      "bytes": {{bytes}},
+      "checksum": {{checksum}}
+    }{{/attachmentInfo}}
+  ]
+}

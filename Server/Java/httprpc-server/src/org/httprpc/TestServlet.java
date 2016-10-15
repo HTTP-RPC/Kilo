@@ -14,179 +14,123 @@
 
 package org.httprpc;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
-import org.httprpc.JSONEncoder;
+import org.jtemplate.DispatcherServlet;
+import org.jtemplate.RequestMethod;
+import org.jtemplate.ResponseMapping;
 
 /**
  * Test servlet.
  */
-@WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns={
+    "/test/get.json",
+    "/test/post.json",
+    "/test/put.json",
+    "/test/delete.json",
+    "/test/longList.json",
+    "/test/delayedResult.json",
+    "/test/sum.json"
+}, loadOnStartup=1)
 @MultipartConfig
-public class TestServlet extends AbstractServlet {
+public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
+    @RequestMethod("GET")
+    @ResponseMapping(name="test/get.json")
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag) {
+        return mapOf(
+            entry("string", string),
+            entry("strings", strings),
+            entry("number", number),
+            entry("flag", flag)
+        );
+    }
 
-        String pathInfo = request.getPathInfo();
+    @RequestMethod("POST")
+    @ResponseMapping(name="test/post.json")
+    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, List<URL> attachments) throws IOException {
+        LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-        Object result;
-        if (pathInfo == null) {
-            result = mapOf(
-                entry("string", request.getParameter("string")),
-                entry("strings", Arrays.asList(request.getParameterValues("strings"))),
-                entry("number", Integer.parseInt(request.getParameter("number"))),
-                entry("boolean", Boolean.parseBoolean(request.getParameter("boolean")))
+        for (URL url : attachments) {
+            long bytes = 0;
+            long checksum = 0;
+
+            try (InputStream inputStream = url.openStream()) {
+                int b;
+                while ((b = inputStream.read()) != -1) {
+                    bytes++;
+                    checksum += b;
+                }
+            }
+
+            attachmentInfo.add(mapOf(
+                entry("bytes", bytes),
+                entry("checksum", checksum))
             );
-        } else {
-            switch (pathInfo.substring(1)) {
-                case "longList": {
-                    result = new AbstractList<Integer>() {
-                        @Override
-                        public Integer get(int index) {
-                            return index;
-                        }
-
-                        @Override
-                        public int size() {
-                            return Integer.MAX_VALUE;
-                        }
-                    };
-
-                    break;
-                }
-
-                case "delayedResult": {
-                    result = request.getParameter("result");
-
-                    int delay = Integer.parseInt(request.getParameter("delay"));
-
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    break;
-                }
-
-                case "sum": {
-                    int a = Integer.parseInt(request.getParameter("a"));
-                    int b = Integer.parseInt(request.getParameter("b"));
-
-                    result = a + b;
-
-                    break;
-                }
-
-                default: {
-                    result = null;
-                    break;
-                }
-            }
         }
 
-        JSONEncoder jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.writeValue(result, response.getOutputStream());
+        return mapOf(
+            entry("string", string),
+            entry("strings", strings),
+            entry("number", number),
+            entry("flag", flag),
+            entry("attachmentInfo", attachmentInfo)
+        );
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
-        }
+    @RequestMethod("PUT")
+    @ResponseMapping(name="test/put.json")
+    public String testPut(String text) {
+        return text.equals("héllo") ? "göodbye" : null;
+    }
 
-        response.setContentType("application/json;charset=UTF-8");
+    @RequestMethod("DELETE")
+    @ResponseMapping(name="test/delete.json")
+    public boolean testDelete(int id) {
+        return (id == 101);
+    }
 
-        HashMap<String, Object> result = new HashMap<>();
-
-        result.put("string", request.getParameter("string"));
-        result.put("strings", Arrays.asList(request.getParameterValues("strings")));
-        result.put("number", Integer.parseInt(request.getParameter("number")));
-        result.put("boolean", Boolean.parseBoolean(request.getParameter("boolean")));
-
-        String contentType = request.getContentType();
-
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
-
-            for (Part part : request.getParts()) {
-                String name = part.getName();
-
-                if (name.equals("attachments")) {
-                    long bytes = 0;
-                    long checksum = 0;
-
-                    File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
-
-                    try {
-                        part.write(file.getAbsolutePath());
-
-                        try (InputStream inputStream = new FileInputStream(file)) {
-                            int b;
-                            while ((b = inputStream.read()) != -1) {
-                                bytes++;
-                                checksum += b;
-                            }
-                        }
-                    } finally {
-                        file.delete();
-                    }
-
-                    HashMap<String, Object> map = new HashMap<>();
-
-                    map.put("bytes", bytes);
-                    map.put("checksum", checksum);
-
-                    attachmentInfo.add(map);
-                }
+    @RequestMethod("GET")
+    @ResponseMapping(name="test/longList.json")
+    public List<?> getLongList() {
+        return new AbstractList<Integer>() {
+            @Override
+            public Integer get(int index) {
+                return index;
             }
 
-            result.put("attachmentInfo", attachmentInfo);
+            @Override
+            public int size() {
+                return Integer.MAX_VALUE;
+            }
+        };
+    }
+
+    @RequestMethod("GET")
+    @ResponseMapping(name="test/delayedResult.json")
+    public String getDelayedResult(String result, int delay) {
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException exception) {
+            throw new RuntimeException(exception);
         }
 
-        JSONEncoder jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.writeValue(result, response.getOutputStream());
+        return result;
     }
 
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        String result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
-
-        JSONEncoder jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.writeValue(result, response.getOutputStream());
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        boolean result = (Integer.parseInt(request.getParameter("id")) == 101);
-
-        JSONEncoder jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.writeValue(result, response.getOutputStream());
+    @RequestMethod("GET")
+    @ResponseMapping(name="test/sum.json")
+    public int getSum(int a, int b) {
+        return a + b;
     }
 }

@@ -14,23 +14,28 @@
 
 package org.httprpc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import org.jtemplate.DispatcherServlet;
+import org.jtemplate.RequestMethod;
+import org.jtemplate.ResponseMapping;
 
 /**
  * Note servlet.
  */
-@WebServlet(urlPatterns={"/notes/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns={
+    "/notes/*",
+    "/notes.json"
+}, loadOnStartup=1)
 @MultipartConfig
-public class NoteServlet extends AbstractServlet {
+public class NoteServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     private static LinkedHashMap<Integer, Map<String, ?>> notes = new LinkedHashMap<>();
@@ -41,34 +46,43 @@ public class NoteServlet extends AbstractServlet {
     private static final String DATE_KEY = "date";
     private static final String MESSAGE_KEY = "message";
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
+    /**
+     * Adds a note.
+     *
+     * @param message
+     * The note text.
+     */
+    @RequestMethod("POST")
+    public synchronized void addNote(String message) {
+        notes.put(nextNoteID, mapOf(
+            entry(ID_KEY, nextNoteID),
+            entry(DATE_KEY, new Date()),
+            entry(MESSAGE_KEY, message)
+        ));
 
-        synchronized (notes) {
-            JSONEncoder jsonEncoder = new JSONEncoder();
-
-            jsonEncoder.writeValue(new ArrayList<>(notes.values()), response.getOutputStream());
-        }
+        nextNoteID++;
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-        synchronized (notes) {
-            notes.put(nextNoteID, mapOf(
-                entry(ID_KEY, nextNoteID),
-                entry(DATE_KEY, new Date().getTime()),
-                entry(MESSAGE_KEY, request.getParameter("message"))
-            ));
-
-            nextNoteID++;
-        }
+    /**
+     * Removes a note.
+     *
+     * @param id
+     * The note ID.
+     */
+    @RequestMethod("DELETE")
+    public synchronized void deleteNote(int id) {
+        notes.remove(id);
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
-        synchronized (notes) {
-            notes.remove(Integer.parseInt(request.getParameter("id")));
-        }
+    /**
+     * Retrieves a list of all notes.
+     *
+     * @return
+     * A list of all notes.
+     */
+    @RequestMethod("GET")
+    @ResponseMapping(name="notes.json")
+    public synchronized List<Map<String, ?>> getNotes() {
+        return new ArrayList<>(NoteServlet.notes.values());
     }
 }

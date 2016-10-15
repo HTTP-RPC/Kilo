@@ -24,11 +24,11 @@ function testService() {
     var serviceProxy = new WebServiceProxy(3000);
 
     // GET
-    serviceProxy.invoke("GET", "/httprpc-server/test", {
+    serviceProxy.invoke("GET", "/httprpc-server/test/get.json", {
         "string": "héllo",
         "strings": ["a", "b", "c"],
         "number": 123,
-        "boolean": true
+        "flag": true
         }, function(result, error) {
         validate("GET", error == null 
             && result["string"] == "héllo"
@@ -36,16 +36,16 @@ function testService() {
             && result["strings"][1] == "b"
             && result["strings"][2] == "c"
             && result["number"] == 123
-            && result["boolean"] == true
+            && result["flag"] == true
         );
     });
 
     // POST
-    serviceProxy.invoke("POST", "/httprpc-server/test", {
+    serviceProxy.invoke("POST", "/httprpc-server/test/post.json", {
         "string": "héllo",
         "strings": ["a", "b", "c"],
         "number": 123,
-        "boolean": true
+        "flag": true
         }, function(result, error) {
         validate("POST", error == null 
             && result["string"] == "héllo"
@@ -53,22 +53,22 @@ function testService() {
             && result["strings"][1] == "b"
             && result["strings"][2] == "c"
             && result["number"] == 123
-            && result["boolean"] == true
+            && result["flag"] == true
         );
     });
 
     // PUT
-    serviceProxy.invoke("PUT", "/httprpc-server/test", {text: "héllo"}, function(result, error) {
+    serviceProxy.invoke("PUT", "/httprpc-server/test/put.json", {text: "héllo"}, function(result, error) {
         validate("PUT", error == null && result == "göodbye");
     });
 
     // DELETE
-    serviceProxy.invoke("DELETE", "/httprpc-server/test", {id: 101}, function(result, error) {
+    serviceProxy.invoke("DELETE", "/httprpc-server/test/delete.json", {id: 101}, function(result, error) {
         validate("DELETE", error == null && result == true);
     });
 
     // Long list
-    var request = serviceProxy.invoke("GET", "/httprpc-server/test/longList", {}, function(result, error) {
+    var request = serviceProxy.invoke("GET", "/httprpc-server/test/longList.json", {}, function(result, error) {
         validate("Long list", error == 0);
     });
 
@@ -77,7 +77,7 @@ function testService() {
     }, 1000);
 
     // Delayed result
-    serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", {result: "abcdefg", delay: 6000}, function(result, error) {
+    serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult.json", {result: "abcdefg", delay: 6000}, function(result, error) {
         validate("Delayed result", error == 0);
     });
 }

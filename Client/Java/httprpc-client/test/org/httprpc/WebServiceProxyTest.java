@@ -76,17 +76,17 @@ public class WebServiceProxyTest {
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         // GET
-        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+        serviceProxy.invoke("GET", "/httprpc-server/test/get.json", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("boolean", true)),
+            entry("flag", true)),
             (Map<String, ?> result, Exception exception) -> {
             validate("GET", exception == null
                 && valueAt(result, "string").equals("héllo")
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
                 && valueAt(result, "number").equals(123)
-                && valueAt(result, "boolean").equals(true)
+                && valueAt(result, "flag").equals(true)
                 && valueAt(result, "xyz") == null);
         });
 
@@ -94,18 +94,18 @@ public class WebServiceProxyTest {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
+        serviceProxy.invoke("POST", "/httprpc-server/test/post.json", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("boolean", true),
+            entry("flag", true),
             entry("attachments", listOf(textTestURL, imageTestURL))),
             (Map<String, ?> result, Exception exception) -> {
             validate("POST", exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
                 entry("number", 123),
-                entry("boolean", true),
+                entry("flag", true),
                 entry("attachmentInfo", listOf(
                     mapOf(
                         entry("bytes", 26),
@@ -120,21 +120,21 @@ public class WebServiceProxyTest {
         });
 
         // PUT
-        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
+        serviceProxy.invoke("PUT", "/httprpc-server/test/put.json", mapOf(
             entry("text", "héllo")),
             (String result, Exception exception) -> {
             validate("PUT", exception == null && result.equals("göodbye"));
         });
 
         // DELETE
-        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
+        serviceProxy.invoke("DELETE", "/httprpc-server/test/delete.json", mapOf(
             entry("id", 101)),
             (Boolean result, Exception exception) -> {
             validate("DELETE", exception == null && result.equals(true));
         });
 
         // Long list
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList.json", (result, exception) -> {
             // No-op
         });
 
@@ -148,14 +148,14 @@ public class WebServiceProxyTest {
         }, 1000);
 
         // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult.json", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
             validate("Delayed result", exception instanceof SocketTimeoutException);
         });
 
         // Parallel operations
-        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
-        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
-        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
+        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum.json", mapOf(entry("a", 1), entry("b", 2)), null);
+        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum.json", mapOf(entry("a", 2), entry("b", 4)), null);
+        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum.json", mapOf(entry("a", 3), entry("b", 6)), null);
 
         validate("Parallel operations", sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
 
