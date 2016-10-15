@@ -25,15 +25,11 @@ import javax.servlet.annotation.WebServlet;
 
 import org.jtemplate.DispatcherServlet;
 import org.jtemplate.RequestMethod;
-import org.jtemplate.ResponseMapping;
 
 /**
  * Note servlet.
  */
-@WebServlet(urlPatterns={
-    "/notes/*",
-    "/notes.json"
-}, loadOnStartup=1)
+@WebServlet(urlPatterns={"/notes/*"}, loadOnStartup=1)
 @MultipartConfig
 public class NoteServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
@@ -81,7 +77,6 @@ public class NoteServlet extends DispatcherServlet {
      * A list of all notes.
      */
     @RequestMethod("GET")
-    @ResponseMapping(name="notes.json")
     public synchronized List<Map<String, ?>> getNotes() {
         return new ArrayList<>(NoteServlet.notes.values());
     }

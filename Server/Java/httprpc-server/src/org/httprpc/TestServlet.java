@@ -27,26 +27,16 @@ import javax.servlet.annotation.WebServlet;
 
 import org.jtemplate.DispatcherServlet;
 import org.jtemplate.RequestMethod;
-import org.jtemplate.ResponseMapping;
 
 /**
  * Test servlet.
  */
-@WebServlet(urlPatterns={
-    "/test/get.json",
-    "/test/post.json",
-    "/test/put.json",
-    "/test/delete.json",
-    "/test/longList.json",
-    "/test/delayedResult.json",
-    "/test/sum.json"
-}, loadOnStartup=1)
+@WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
 public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    @ResponseMapping(name="test/get.json")
     public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag) {
         return mapOf(
             entry("string", string),
@@ -57,7 +47,6 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("POST")
-    @ResponseMapping(name="test/post.json")
     public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, List<URL> attachments) throws IOException {
         LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
@@ -89,20 +78,17 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("PUT")
-    @ResponseMapping(name="test/put.json")
     public String testPut(String text) {
         return text.equals("héllo") ? "göodbye" : null;
     }
 
     @RequestMethod("DELETE")
-    @ResponseMapping(name="test/delete.json")
     public boolean testDelete(int id) {
         return (id == 101);
     }
 
     @RequestMethod("GET")
-    @ResponseMapping(name="test/longList.json")
-    public List<?> getLongList() {
+    public List<?> testGetLongList() {
         return new AbstractList<Integer>() {
             @Override
             public Integer get(int index) {
@@ -117,8 +103,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    @ResponseMapping(name="test/delayedResult.json")
-    public String getDelayedResult(String result, int delay) {
+    public String testGetDelayedResult(String result, int delay) {
         try {
             Thread.sleep(delay);
         } catch (InterruptedException exception) {
@@ -129,8 +114,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    @ResponseMapping(name="test/sum.json")
-    public int getSum(int a, int b) {
+    public int testGetSum(int a, int b) {
         return a + b;
     }
 }

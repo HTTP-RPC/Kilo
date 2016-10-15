@@ -55,7 +55,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         serviceProxy.authorization = URLCredential(user: "tomcat", password: "tomcat", persistence: .none)
 
         // GET
-        serviceProxy.invoke("GET", path: "/httprpc-server/test/get.json", arguments: [
+        serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: [
             "string": "héllo",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -74,7 +74,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         let textTestURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
         let imageTestURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
 
-        serviceProxy.invoke("POST", path: "/httprpc-server/test/post.json", arguments: [
+        serviceProxy.invoke("POST", path: "/httprpc-server/test", arguments: [
             "string": "héllo",
             "strings": ["a", "b", "c"],
             "number": 123,
@@ -100,17 +100,17 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         }
 
         // PUT
-        serviceProxy.invoke("PUT", path: "/httprpc-server/test/put.json", arguments: ["text": "héllo"]) { result, error in
+        serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
             self.validate(result as? String == "göodbye", error: error, cell: self.putCell)
         }
 
         // DELETE
-        serviceProxy.invoke("DELETE", path: "/httprpc-server/test/delete.json", arguments: ["id": 101]) { result, error in
+        serviceProxy.invoke("DELETE", path: "/httprpc-server/test", arguments: ["id": 101]) { result, error in
             self.validate(result as? Bool == true, error: error, cell: self.deleteCell)
         }
 
         // Long list
-        let task = serviceProxy.invoke("GET", path: "/httprpc-server/test/longList.json") { result, error in
+        let task = serviceProxy.invoke("GET", path: "/httprpc-server/test") { result, error in
             self.validate(error != nil, error: error, cell: self.longListCell)
         }
 
@@ -119,7 +119,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         }), selector: #selector(Operation.main), userInfo: nil, repeats: false)
 
         // Delayed result
-        serviceProxy.invoke("GET", path: "/httprpc-server/test/delayedResult.json", arguments: ["result": "abcdefg", "delay": 6000]) { result, error in
+        serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["result": "abcdefg", "delay": 6000]) { result, error in
             self.validate(error != nil, error: error, cell: self.delayedResultCell)
         }
 

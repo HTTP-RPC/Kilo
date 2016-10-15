@@ -35,7 +35,7 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        AppDelegate.serviceProxy.invoke("GET", path: "/httprpc-server/notes.json") { result, error in
+        AppDelegate.serviceProxy.invoke("GET", path: "/httprpc-server/notes") { result, error in
             if (error == nil) {
                 self.noteList = result as! [[String: AnyObject]]
 

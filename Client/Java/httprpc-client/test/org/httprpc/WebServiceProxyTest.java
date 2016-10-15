@@ -76,7 +76,7 @@ public class WebServiceProxyTest {
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 
         // GET
-        serviceProxy.invoke("GET", "/httprpc-server/test/get.json", mapOf(
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -94,7 +94,7 @@ public class WebServiceProxyTest {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        serviceProxy.invoke("POST", "/httprpc-server/test/post.json", mapOf(
+        serviceProxy.invoke("POST", "/httprpc-server/test", mapOf(
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -120,21 +120,21 @@ public class WebServiceProxyTest {
         });
 
         // PUT
-        serviceProxy.invoke("PUT", "/httprpc-server/test/put.json", mapOf(
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
             entry("text", "héllo")),
             (String result, Exception exception) -> {
             validate("PUT", exception == null && result.equals("göodbye"));
         });
 
         // DELETE
-        serviceProxy.invoke("DELETE", "/httprpc-server/test/delete.json", mapOf(
+        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
             entry("id", 101)),
             (Boolean result, Exception exception) -> {
             validate("DELETE", exception == null && result.equals(true));
         });
 
         // Long list
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList.json", (result, exception) -> {
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
             // No-op
         });
 
@@ -148,14 +148,14 @@ public class WebServiceProxyTest {
         }, 1000);
 
         // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult.json", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
             validate("Delayed result", exception instanceof SocketTimeoutException);
         });
 
         // Parallel operations
-        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum.json", mapOf(entry("a", 1), entry("b", 2)), null);
-        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum.json", mapOf(entry("a", 2), entry("b", 4)), null);
-        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum.json", mapOf(entry("a", 3), entry("b", 6)), null);
+        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
+        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
+        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
 
         validate("Parallel operations", sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
 
