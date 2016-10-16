@@ -133,8 +133,17 @@ public class WebServiceProxyTest {
             validate("DELETE", exception == null && result.equals(true));
         });
 
-        // Long list
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test/longList", (result, exception) -> {
+        // Timeout
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+            entry("value", 123),
+            entry("delay", 6000)), (result, exception) -> {
+            validate("Timeout", exception instanceof SocketTimeoutException);
+        });
+
+        // Cancel
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+            entry("value", 123),
+            entry("delay", 6000)), (result, exception) -> {
             // No-op
         });
 
@@ -143,21 +152,18 @@ public class WebServiceProxyTest {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                validate("Long list", future.cancel(true));
+                timer.cancel();
+
+                validate("Cancel", future.cancel(true));
             }
         }, 1000);
 
-        // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test/delayedResult", mapOf(entry("result", "abcdefg"), entry("delay", 6000)), (result, exception) -> {
-            validate("Delayed result", exception instanceof SocketTimeoutException);
-        });
+        // Blocking
+        Future<Number> value1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("value", 1)), null);
+        Future<Number> value2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("value", 2)), null);
+        Future<Number> value3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("value", 3)), null);
 
-        // Parallel operations
-        Future<Number> sum1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 1), entry("b", 2)), null);
-        Future<Number> sum2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 2), entry("b", 4)), null);
-        Future<Number> sum3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("a", 3), entry("b", 6)), null);
-
-        validate("Parallel operations", sum1.get().equals(3) && sum2.get().equals(6) && sum3.get().equals(9));
+        validate("Blocking", value1.get().intValue() + value2.get().intValue() + value3.get().intValue() == 6);
 
         // Shut down thread pool
         threadPool.shutdown();

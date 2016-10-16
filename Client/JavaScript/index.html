@@ -40,6 +40,10 @@ function testService() {
         );
     });
 
+    window.setTimeout(function() {
+        request.abort();
+    }, 1000);
+
     // POST
     serviceProxy.invoke("POST", "/httprpc-server/test", {
         "string": "héllo",
@@ -67,18 +71,14 @@ function testService() {
         validate("DELETE", error == null && result == true);
     });
 
-    // Long list
-    var request = serviceProxy.invoke("GET", "/httprpc-server/test", {}, function(result, error) {
-        validate("Long list", error == 0);
+    // Timeout
+    serviceProxy.invoke("GET", "/httprpc-server/test", {value: 123, delay: 6000}, function(result, error) {
+        validate("Timeout", error == 0);
     });
 
-    window.setTimeout(function() {
-        request.abort();
-    }, 1000);
-
-    // Delayed result
-    serviceProxy.invoke("GET", "/httprpc-server/test", {result: "abcdefg", delay: 6000}, function(result, error) {
-        validate("Delayed result", error == 0);
+    // Cancel
+    var request = serviceProxy.invoke("GET", "/httprpc-server/test", {value: 123, delay: 6000}, function(result, error) {
+        validate("Cancel", error == 0);
     });
 }
 

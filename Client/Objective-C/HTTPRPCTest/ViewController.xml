@@ -19,7 +19,7 @@ limitations under the License.
     <UITableViewCell style="value1TableViewCell" id="postCell" textLabel.text="POST"/>
     <UITableViewCell style="value1TableViewCell" id="putCell" textLabel.text="PUT"/>
     <UITableViewCell style="value1TableViewCell" id="deleteCell" textLabel.text="DELETE"/>
-    <UITableViewCell style="value1TableViewCell" id="longListCell" textLabel.text="Long List"/>
-    <UITableViewCell style="value1TableViewCell" id="delayedResultCell" textLabel.text="Delayed Result"/>
+    <UITableViewCell style="value1TableViewCell" id="timeoutCell" textLabel.text="Timeout"/>
+    <UITableViewCell style="value1TableViewCell" id="cancelCell" textLabel.text="Cancel"/>
     <UITableViewCell style="value1TableViewCell" id="imageCell" textLabel.text="Image"/>
 </LMTableView>

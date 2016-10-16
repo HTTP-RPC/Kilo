@@ -17,7 +17,6 @@ package org.httprpc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.AbstractList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,13 @@ public class TestServlet extends DispatcherServlet {
             entry("number", number),
             entry("flag", flag)
         );
+    }
+
+    @RequestMethod("GET")
+    public int testGet(int value, int delay) throws InterruptedException {
+        Thread.sleep(delay);
+
+        return value;
     }
 
     @RequestMethod("POST")
@@ -85,36 +91,5 @@ public class TestServlet extends DispatcherServlet {
     @RequestMethod("DELETE")
     public boolean testDelete(int id) {
         return (id == 101);
-    }
-
-    @RequestMethod("GET")
-    public List<?> testGetLongList() {
-        return new AbstractList<Integer>() {
-            @Override
-            public Integer get(int index) {
-                return index;
-            }
-
-            @Override
-            public int size() {
-                return Integer.MAX_VALUE;
-            }
-        };
-    }
-
-    @RequestMethod("GET")
-    public String testGetDelayedResult(String result, int delay) {
-        try {
-            Thread.sleep(delay);
-        } catch (InterruptedException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        return result;
-    }
-
-    @RequestMethod("GET")
-    public int testGetSum(int a, int b) {
-        return a + b;
     }
 }

@@ -21,8 +21,8 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var postCell: UITableViewCell!
     @IBOutlet var putCell: UITableViewCell!
     @IBOutlet var deleteCell: UITableViewCell!
-    @IBOutlet var delayedResultCell: UITableViewCell!
-    @IBOutlet var longListCell: UITableViewCell!
+    @IBOutlet var timeoutCell: UITableViewCell!
+    @IBOutlet var cancelCell: UITableViewCell!
     @IBOutlet var imageCell: UITableViewCell!
 
     override func loadView() {
@@ -109,19 +109,19 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             self.validate(result as? Bool == true, error: error, cell: self.deleteCell)
         }
 
-        // Long list
-        let task = serviceProxy.invoke("GET", path: "/httprpc-server/test") { result, error in
-            self.validate(error != nil, error: error, cell: self.longListCell)
+        // Timeout
+        serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["value": 123, "delay": 6000]) { result, error in
+            self.validate(error != nil, error: error, cell: self.timeoutCell)
+        }
+
+        // Cancel
+        let task = serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["value": 123, "delay": 6000]) { result, error in
+            self.validate(error != nil, error: error, cell: self.cancelCell)
         }
 
         Timer.scheduledTimer(timeInterval: 1, target: BlockOperation(block: {
             task!.cancel()
         }), selector: #selector(Operation.main), userInfo: nil, repeats: false)
-
-        // Delayed result
-        serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["result": "abcdefg", "delay": 6000]) { result, error in
-            self.validate(error != nil, error: error, cell: self.delayedResultCell)
-        }
 
         // Image
         serviceProxy.invoke("GET", path: "/httprpc-server/test.jpg") { result, error in
