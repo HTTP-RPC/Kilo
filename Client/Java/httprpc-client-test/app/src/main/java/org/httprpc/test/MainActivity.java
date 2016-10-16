@@ -36,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -56,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox postCheckBox;
     private CheckBox putCheckBox;
     private CheckBox deleteCheckBox;
-    private CheckBox longListCheckBox;
-    private CheckBox delayedResultCheckBox;
+    private CheckBox timeoutCheckBox;
+    private CheckBox cancelCheckBox;
     private CheckBox imageCheckBox;
     private ImageView imageView;
 
@@ -111,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
         postCheckBox = (CheckBox)findViewById(R.id.post_checkbox);
         putCheckBox = (CheckBox)findViewById(R.id.put_checkbox);
         deleteCheckBox = (CheckBox)findViewById(R.id.delete_checkbox);
-        longListCheckBox = (CheckBox)findViewById(R.id.long_list_checkbox);
-        delayedResultCheckBox = (CheckBox)findViewById(R.id.delayed_result_checkbox);
+        timeoutCheckBox = (CheckBox)findViewById(R.id.timeout_checkbox);
+        cancelCheckBox = (CheckBox)findViewById(R.id.cancel_checkbox);
         imageCheckBox = (CheckBox)findViewById(R.id.image_checkbox);
         imageView = (ImageView)findViewById(R.id.image_view);
     }
@@ -209,10 +210,17 @@ public class MainActivity extends AppCompatActivity {
             deleteCheckBox.setChecked(exception == null && result.equals(true));
         });
 
-        // Long list
-        // TODO Closing the input stream does not appear to abort the connection in Android
-        /*
-        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test", (result, exception) -> {
+        // Timeout
+        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+            entry("value", 123),
+            entry("delay", 6000)), (result, exception) -> {
+            timeoutCheckBox.setChecked(exception instanceof SocketTimeoutException);
+        });
+
+        // Cancel
+        Future<?> future = serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
+            entry("value", 123),
+            entry("delay", 6000)), (result, exception) -> {
             // No-op
         });
 
@@ -221,15 +229,9 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                longListCheckBox.setChecked(future.cancel(true));
+                cancelCheckBox.setChecked(future.cancel(true));
             }
         }, 1000);
-        */
-
-        // Delayed result
-        serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("result", "abcdefg"), entry("delay", 9000)), (result, exception) -> {
-            delayedResultCheckBox.setChecked(exception instanceof SocketTimeoutException);
-        });
 
         // Image
         serviceProxy.invoke("GET", "/httprpc-server/test.jpg", (Bitmap result, Exception exception) -> {

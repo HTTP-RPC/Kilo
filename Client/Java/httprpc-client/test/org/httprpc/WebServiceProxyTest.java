@@ -120,16 +120,12 @@ public class WebServiceProxyTest {
         });
 
         // PUT
-        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
-            entry("text", "héllo")),
-            (String result, Exception exception) -> {
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
             validate("PUT", exception == null && result.equals("göodbye"));
         });
 
         // DELETE
-        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(
-            entry("id", 101)),
-            (Boolean result, Exception exception) -> {
+        serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("id", 101)), (result, exception) -> {
             validate("DELETE", exception == null && result.equals(true));
         });
 

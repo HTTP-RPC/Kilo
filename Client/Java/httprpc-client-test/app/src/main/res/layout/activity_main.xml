@@ -42,13 +42,13 @@ limitations under the License.
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <CheckBox android:id="@+id/long_list_checkbox"
-            android:text="Long List"
+        <CheckBox android:id="@+id/timeout_checkbox"
+            android:text="Timeout"
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <CheckBox android:id="@+id/delayed_result_checkbox"
-            android:text="Delayed Result"
+        <CheckBox android:id="@+id/cancel_checkbox"
+            android:text="Cancel"
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
