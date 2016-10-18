@@ -7,7 +7,7 @@ For example, the following code snippets show how the various clients might be u
 
 _Swift_
 
-    serviceProxy.invoke("GET", path: "/hello") {(result, error) in
+    serviceProxy.invoke("GET", path: "/hello") { result, error in
         print(result) // Prints "Hello, World!"
     }
 
@@ -120,12 +120,12 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to a
     let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
     
     // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) {(result, error) in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { result, error in
         // result is 6
     }
 
     // Get sum of all values
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) {(result, error) in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { result, error in
         // result is 6
     }
 
