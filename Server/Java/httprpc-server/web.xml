@@ -12,7 +12,7 @@
     
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>all</web-resource-name>
+            <web-resource-name>test</web-resource-name>
             <url-pattern>/test/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
