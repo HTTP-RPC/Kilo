@@ -21,6 +21,12 @@ var WebServiceProxy = function(timeout) {
     this.timeout = timeout;
 }
 
+/** HTTP Accept header. */
+WebServiceProxy.prototype.ACCEPT_HEADER = "Accept";
+
+/** HTTP Accept header value. */
+WebServiceProxy.prototype.ACCEPT_HEADER_VALUE = "application/json";
+
 /**
  * Executes a service operation.
  *
@@ -79,10 +85,9 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
-    request.setRequestHeader("Accept", "application/json");
-
     if (method.toLowerCase() == "post") {
         request.open(method, path, true);
+        request.setRequestHeader(this.ACCEPT_HEADER, this.ACCEPT_HEADER_VALUE);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.send(query);
     } else {
@@ -91,6 +96,7 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
 
         request.open(method, path, true);
+        request.setRequestHeader(this.ACCEPT_HEADER, this.ACCEPT_HEADER_VALUE);
         request.send();
     }
 
