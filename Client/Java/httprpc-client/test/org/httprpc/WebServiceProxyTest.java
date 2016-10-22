@@ -155,9 +155,9 @@ public class WebServiceProxyTest {
         }, 1000);
 
         // Blocking
-        Future<Number> value1 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("value", 1)), null);
-        Future<Number> value2 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("value", 2)), null);
-        Future<Number> value3 = serviceProxy.invoke("GET", "/httprpc-server/test/sum", mapOf(entry("value", 3)), null);
+        Future<Number> value1 = serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("value", 1)), null);
+        Future<Number> value2 = serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("value", 2)), null);
+        Future<Number> value3 = serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("value", 3)), null);
 
         validate("Blocking", value1.get().intValue() + value2.get().intValue() + value3.get().intValue() == 6);
 

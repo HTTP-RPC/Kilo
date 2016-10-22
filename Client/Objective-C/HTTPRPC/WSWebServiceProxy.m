@@ -25,7 +25,11 @@ NSString * const WSArgumentsKey = @"arguments";
 
 NSString * const kPostMethod = @"POST";
 
+NSString * const kAcceptField = @"Accept";
+NSString * const kAcceptFieldValue = @"application/json, image/*, */*";
+
 NSString * const kAuthorizationField = @"Authorization";
+
 NSString * const kContentTypeField = @"Content-Type";
 NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
 NSString * const kBoundaryParameterFormat = @"; boundary=%@";
@@ -105,6 +109,8 @@ NSString * const kImageMIMETypePrefix = @"image/";
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
 
         [request setHTTPMethod:method];
+
+        [request setValue:kAcceptFieldValue forHTTPHeaderField:kAcceptField];
 
         // Authenticate request
         if (_authorization != nil) {

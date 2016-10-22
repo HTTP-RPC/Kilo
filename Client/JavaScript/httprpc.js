@@ -79,6 +79,8 @@ WebServiceProxy.prototype.invoke = function(method, path, arguments, resultHandl
         }
     }
 
+    request.setRequestHeader("Accept", "application/json");
+
     if (method.toLowerCase() == "post") {
         request.open(method, path, true);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

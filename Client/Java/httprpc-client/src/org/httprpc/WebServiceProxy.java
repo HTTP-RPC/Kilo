@@ -57,8 +57,12 @@ public class WebServiceProxy {
 
         private static final String POST_METHOD = "POST";
 
-        private static final String AUTHORIZATION_KEY = "Authorization";
+        private static final String ACCEPT_KEY = "Accept";
+        private static final String ACCEPT_VALUE = "application/json, image/*, */*";
+
         private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
+
+        private static final String AUTHORIZATION_KEY = "Authorization";
 
         private static final String CONTENT_TYPE_KEY = "Content-Type";
         private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
@@ -162,6 +166,7 @@ public class WebServiceProxy {
             Locale locale = Locale.getDefault();
             String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
+            connection.setRequestProperty(ACCEPT_KEY, ACCEPT_VALUE);
             connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
 
             // Authenticate request
