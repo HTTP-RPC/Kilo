@@ -24,6 +24,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var timeoutCell: UITableViewCell!
     @IBOutlet var cancelCell: UITableViewCell!
     @IBOutlet var imageCell: UITableViewCell!
+    @IBOutlet var textCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
@@ -128,6 +129,13 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             self.validate(result != nil, error: error, cell: self.imageCell)
 
             self.imageCell.imageView?.image = result as? UIImage
+        }
+
+        // Image
+        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt") { result, error in
+            self.validate(result != nil, error: error, cell: self.textCell)
+
+            self.textCell.textLabel?.text = result as? String
         }
     }
 

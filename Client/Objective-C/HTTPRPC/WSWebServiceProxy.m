@@ -26,7 +26,7 @@ NSString * const WSArgumentsKey = @"arguments";
 NSString * const kPostMethod = @"POST";
 
 NSString * const kAcceptField = @"Accept";
-NSString * const kAcceptFieldValue = @"application/json, image/*, */*";
+NSString * const kAcceptFieldValue = @"application/json, image/*, text/*, */*";
 
 NSString * const kAuthorizationField = @"Authorization";
 
@@ -44,6 +44,7 @@ NSString * const kCRLF = @"\r\n";
 
 NSString * const kJSONMIMEType = @"application/json";
 NSString * const kImageMIMETypePrefix = @"image/";
+NSString * const kTextMIMETypePrefix = @"text/";
 
 @interface NSString (HTTPRPC)
 
@@ -197,6 +198,8 @@ NSString * const kImageMIMETypePrefix = @"image/";
                             result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
                         } else if ([mimeType hasPrefix:kImageMIMETypePrefix]) {
                             result = [UIImage imageWithData:data];
+                        } else if ([mimeType hasPrefix:kTextMIMETypePrefix]) {
+                            result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                         } else {
                             result = data;
                         }

@@ -21,5 +21,6 @@ limitations under the License.
     <UITableViewCell style="value1TableViewCell" id="deleteCell" textLabel.text="DELETE"/>
     <UITableViewCell style="value1TableViewCell" id="timeoutCell" textLabel.text="Timeout"/>
     <UITableViewCell style="value1TableViewCell" id="cancelCell" textLabel.text="Cancel"/>
-    <UITableViewCell style="value1TableViewCell" id="imageCell" textLabel.text="Image"/>
+    <UITableViewCell style="value1TableViewCell" id="imageCell" detailTextLabel.text="test.jpg"/>
+    <UITableViewCell style="value1TableViewCell" id="textCell"  detailTextLabel.text="test.txt"/>
 </LMTableView>
