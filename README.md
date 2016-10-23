@@ -85,7 +85,7 @@ The iOS framework can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/
 ### WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `URLSession` to issue HTTP requests. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
 
-`JSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. All other content is returned as `Data`.
+`JSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Plain text content is returned as a string. All other content is returned as `Data`.
 
 Service proxies are initialized via `init(session:serverURL:)`, which takes a `URLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke(_:path:arguments:resultHandler:)` method, which takes the following arguments:
 
@@ -140,7 +140,7 @@ The Java client library can be downloaded [here](https://github.com/gk-brown/HTT
 ### WebServiceProxy Class
 The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
 
-`WebServiceProxy` deserializes JSON content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
+`WebServiceProxy` deserializes JSON and plain text content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
 
 Service proxies are initialized via a constructor that takes the following arguments:
 
