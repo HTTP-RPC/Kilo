@@ -14,10 +14,13 @@
 
 package org.httprpc;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,6 +30,12 @@ import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 public class JSONDecoderTest {
+    private WebServiceProxy serviceProxy;
+
+    public JSONDecoderTest() throws MalformedURLException {
+        serviceProxy = new WebServiceProxy(new URL("http://localhost:8080"), Executors.newSingleThreadExecutor());
+    }
+
     @Test
     public void testString() throws IOException {
         Assert.assertTrue(decode("\"abcdéfg\"").equals("abcdéfg"));
@@ -42,12 +51,6 @@ public class JSONDecoderTest {
         Assert.assertTrue(decode("42").equals(42.0));
 
         Assert.assertFalse(decode("42").equals(42.5));
-
-        Assert.assertEquals(new NumberAdapter(Integer.MAX_VALUE), Integer.MAX_VALUE);
-        Assert.assertEquals(new NumberAdapter(Integer.MIN_VALUE), Integer.MIN_VALUE);
-
-        Assert.assertEquals(new NumberAdapter(Long.MAX_VALUE), Long.MAX_VALUE);
-        Assert.assertEquals(new NumberAdapter(Long.MIN_VALUE), Long.MIN_VALUE);
 
         Assert.assertTrue(decode("123.0").equals(123));
         Assert.assertTrue(decode("123.0").equals(123L));
@@ -67,28 +70,22 @@ public class JSONDecoderTest {
 
         Assert.assertFalse(decode("-789.10").equals(-789));
 
-        Assert.assertEquals(new NumberAdapter(Float.MAX_VALUE), Float.MAX_VALUE);
-        Assert.assertEquals(new NumberAdapter(Float.MIN_VALUE), Float.MIN_VALUE);
-
-        Assert.assertEquals(new NumberAdapter(Double.MAX_VALUE), Double.MAX_VALUE);
-        Assert.assertEquals(new NumberAdapter(Double.MIN_VALUE), Double.MIN_VALUE);
-
         HashSet<Number> numbers = new HashSet<>();
 
-        numbers.add(new NumberAdapter(101));
+        numbers.add(decode(String.valueOf(101)));
 
-        Assert.assertTrue(numbers.contains(new NumberAdapter(101)));
-        Assert.assertTrue(numbers.contains(new NumberAdapter(101L)));
-        Assert.assertTrue(numbers.contains(new NumberAdapter(101F)));
-        Assert.assertTrue(numbers.contains(new NumberAdapter(101.0)));
+        Assert.assertTrue(numbers.contains(decode(String.valueOf(101))));
+        Assert.assertTrue(numbers.contains(decode(String.valueOf(101L))));
+        Assert.assertTrue(numbers.contains(decode(String.valueOf(101F))));
+        Assert.assertTrue(numbers.contains(decode(String.valueOf(101.0))));
 
-        numbers.add(new NumberAdapter(202.5));
+        numbers.add(decode(String.valueOf(202.5)));
 
-        Assert.assertFalse(numbers.contains(new NumberAdapter(202)));
-        Assert.assertFalse(numbers.contains(new NumberAdapter(202L)));
+        Assert.assertFalse(numbers.contains(decode(String.valueOf(202))));
+        Assert.assertFalse(numbers.contains(decode(String.valueOf(202L))));
 
-        Assert.assertTrue(numbers.contains(new NumberAdapter(202.5F)));
-        Assert.assertTrue(numbers.contains(new NumberAdapter(202.5)));
+        Assert.assertTrue(numbers.contains(decode(String.valueOf(202.5F))));
+        Assert.assertTrue(numbers.contains(decode(String.valueOf(202.5))));
 
         Date now = new Date();
 
@@ -164,8 +161,6 @@ public class JSONDecoderTest {
 
     @SuppressWarnings("unchecked")
     private <V> V decode(String json) throws IOException {
-        JSONDecoder decoder = new JSONDecoder();
-
-        return (V)decoder.readValue(new StringReader(json));
+        return (V)serviceProxy.decodeResponse(new ByteArrayInputStream(json.getBytes()), "application/json");
     }
 }
