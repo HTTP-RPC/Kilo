@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox cancelCheckBox;
     private CheckBox imageCheckBox;
     private ImageView imageView;
+    private CheckBox textCheckBox;
+    private TextView textView;
 
     static {
         // Allow self-signed certificates for testing purposes
@@ -116,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
         cancelCheckBox = (CheckBox)findViewById(R.id.cancel_checkbox);
         imageCheckBox = (CheckBox)findViewById(R.id.image_checkbox);
         imageView = (ImageView)findViewById(R.id.image_view);
+        textCheckBox = (CheckBox)findViewById(R.id.text_checkbox);
+        textView = (TextView)findViewById(R.id.text_view);
     }
 
     @Override
@@ -138,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
                 Object value;
-                if (contentType != null && contentType.startsWith("image/")) {
+                if (contentType.startsWith("image/")) {
                     value = BitmapFactory.decodeStream(inputStream);
                 } else {
                     value = super.decodeResponse(inputStream, contentType);
@@ -237,6 +242,12 @@ public class MainActivity extends AppCompatActivity {
         serviceProxy.invoke("GET", "/httprpc-server/test.jpg", (Bitmap result, Exception exception) -> {
             imageCheckBox.setChecked(exception == null && result != null);
             imageView.setImageBitmap(result);
+        });
+
+        // Text
+        serviceProxy.invoke("GET", "/httprpc-server/test.txt", (String result, Exception exception) -> {
+            textCheckBox.setChecked(exception == null && result != null);
+            textView.setText(result);
         });
 
         // Shut down thread pool
