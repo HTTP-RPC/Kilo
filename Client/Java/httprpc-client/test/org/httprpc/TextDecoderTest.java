@@ -14,28 +14,21 @@
 
 package org.httprpc;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.Executors;
+import java.io.StringReader;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TextDecoderTest {
-    private WebServiceProxy serviceProxy;
-
-    public TextDecoderTest() throws MalformedURLException {
-        serviceProxy = new WebServiceProxy(new URL("http://localhost:8080"), Executors.newSingleThreadExecutor());
-    }
-
     @Test
     public void testPlainText() throws IOException {
-        Assert.assertTrue(decode("héllo\ngöodbye", "text/plain").equals("héllo\ngöodbye"));
+        Assert.assertTrue(decode("héllo\ngöodbye").equals("héllo\ngöodbye"));
     }
 
-    private String decode(String text, String contentType) throws IOException {
-        return (String)serviceProxy.decodeResponse(new ByteArrayInputStream(text.getBytes()), contentType);
+    private String decode(String text) throws IOException {
+        TextDecoder decoder = new TextDecoder();
+
+        return (String)decoder.readValue(new StringReader(text));
     }
 }

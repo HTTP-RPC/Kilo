@@ -14,13 +14,10 @@
 
 package org.httprpc;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,12 +27,6 @@ import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 public class JSONDecoderTest {
-    private WebServiceProxy serviceProxy;
-
-    public JSONDecoderTest() throws MalformedURLException {
-        serviceProxy = new WebServiceProxy(new URL("http://localhost:8080"), Executors.newSingleThreadExecutor());
-    }
-
     @Test
     public void testString() throws IOException {
         Assert.assertTrue(decode("\"abcdéfg\"").equals("abcdéfg"));
@@ -160,7 +151,9 @@ public class JSONDecoderTest {
     }
 
     @SuppressWarnings("unchecked")
-    private <V> V decode(String json) throws IOException {
-        return (V)serviceProxy.decodeResponse(new ByteArrayInputStream(json.getBytes()), "application/json");
+    private <V> V decode(String text) throws IOException {
+        JSONDecoder decoder = new JSONDecoder();
+
+        return (V)decoder.readValue(new StringReader(text));
     }
 }
