@@ -5,8 +5,8 @@ android {
     buildToolsVersion "24.0.0"
 
     defaultConfig {
-        applicationId "org.httprpc.clientdemo"
-        minSdkVersion 22
+        applicationId "org.httprpc.demo"
+        minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"

@@ -17,6 +17,8 @@ package org.httprpc;
 import java.net.PasswordAuthentication;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Map;
@@ -39,7 +41,7 @@ import static org.httprpc.WebServiceProxy.entry;
 import static org.httprpc.WebServiceProxy.valueAt;
 
 public class WebServiceProxyTest {
-    public static void main(String[] args) throws Exception {
+    static {
         // Allow self-signed certificates for testing purposes
         X509TrustManager trustManager = new X509TrustManager() {
             @Override
@@ -58,15 +60,26 @@ public class WebServiceProxyTest {
             }
         };
 
-        SSLContext sslContext = SSLContext.getInstance("SSL");
+        SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+        } catch (NoSuchAlgorithmException exception) {
+            throw new RuntimeException(exception);
+        }
 
-        sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
+        try {
+            sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
+        } catch (KeyManagementException exception) {
+            throw new RuntimeException(exception);
+        }
 
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> {
             return true;
         });
+    }
 
+    public static void main(String[] args) throws Exception {
         // Create service proxy
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
@@ -148,9 +161,9 @@ public class WebServiceProxyTest {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                timer.cancel();
-
                 validate("Cancel", future.cancel(true));
+
+                timer.cancel();
             }
         }, 1000);
 

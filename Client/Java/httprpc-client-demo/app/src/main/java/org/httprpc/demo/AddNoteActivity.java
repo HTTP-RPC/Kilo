@@ -17,7 +17,6 @@ package org.httprpc.demo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -39,28 +38,22 @@ public class AddNoteActivity extends AppCompatActivity {
 
         Button cancelButton = (Button)findViewById(R.id.cancel_button);
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        cancelButton.setOnClickListener(v -> {
+            finish();
         });
 
         Button okButton = (Button) findViewById(R.id.ok_button);
 
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = messageEditText.getText().toString();
+        okButton.setOnClickListener(v -> {
+            String message = messageEditText.getText().toString();
 
-                NotesApplication.getServiceProxy().invoke("POST", "/httprpc-server/notes", mapOf(entry("message", message)), (Void result, Exception exception) -> {
-                    if (exception == null) {
-                        finish();
-                    } else {
-                        Log.e(TAG, exception.getMessage());
-                    }
-                });
-            }
+            DemoApplication.getServiceProxy().invoke("POST", "/httprpc-server/notes", mapOf(entry("message", message)), (Void result, Exception exception) -> {
+                if (exception == null) {
+                    finish();
+                } else {
+                    Log.e(TAG, exception.getMessage());
+                }
+            });
         });
     }
 }

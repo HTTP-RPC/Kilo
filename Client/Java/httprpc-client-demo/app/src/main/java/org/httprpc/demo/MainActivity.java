@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView noteListView;
     private Button deleteButton;
 
-    private List<Map<String, Object>> noteList = Collections.emptyList();
+    private List<Map<String, ?>> noteList = Collections.emptyList();
 
     private BaseAdapter noteListAdapter = new BaseAdapter() {
         @Override
@@ -61,17 +60,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Map<String, Object> note = noteList.get(position);
-
-            String message = (String)note.get("message");
-            Date date = new Date(((Number)note.get("date")).longValue());
-
             if (convertView == null) {
                 convertView = getLayoutInflater().inflate(R.layout.item_note, null);
             }
 
+            Map<String, ?> note = noteList.get(position);
+
+            String message = (String)note.get("message");
+
             TextView messageTextView = (TextView)convertView.findViewById(R.id.message_text_view);
             messageTextView.setText(message);
+
+            Date date = new Date(((Number)note.get("date")).longValue());
 
             TextView dateTextView = (TextView)convertView.findViewById(R.id.date_text_view);
             dateTextView.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date));
@@ -90,35 +90,29 @@ public class MainActivity extends AppCompatActivity {
 
         noteListView = (ListView)findViewById(R.id.note_list_view);
 
-        noteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                deleteButton.setEnabled(true);
-            }
+        noteListView.setOnItemClickListener((parent, view, position, id) -> {
+            deleteButton.setEnabled(true);
         });
 
         noteListView.setAdapter(noteListAdapter);
 
         deleteButton = (Button)findViewById(R.id.delete_button);
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int position = noteListView.getCheckedItemPosition();
+        deleteButton.setOnClickListener(v -> {
+            final int position = noteListView.getCheckedItemPosition();
 
-                int id = ((Number)noteList.get(position).get("id")).intValue();
+            int id = ((Number)noteList.get(position).get("id")).intValue();
 
-                NotesApplication.getServiceProxy().invoke("DELETE", "/httprpc-server/notes", mapOf(entry("id", id)), (Void result, Exception exception) -> {
-                    if (exception == null) {
-                        noteList.remove(position);
-                        noteListAdapter.notifyDataSetChanged();
+            DemoApplication.getServiceProxy().invoke("DELETE", "/httprpc-server/notes", mapOf(entry("id", id)), (Void result, Exception exception) -> {
+                if (exception == null) {
+                    noteList.remove(position);
+                    noteListAdapter.notifyDataSetChanged();
 
-                        deleteButton.setEnabled(false);
-                    } else {
-                        Log.e(TAG, exception.getMessage());
-                    }
-                });
-            }
+                    deleteButton.setEnabled(false);
+                } else {
+                    Log.e(TAG, exception.getMessage());
+                }
+            });
         });
     }
 
@@ -135,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         deleteButton.setEnabled(false);
 
-        NotesApplication.getServiceProxy().invoke("GET", "/httprpc-server/notes", (List<Map<String, Object>> result, Exception exception) -> {
+        DemoApplication.getServiceProxy().invoke("GET", "/httprpc-server/notes", (List<Map<String, ?>> result, Exception exception) -> {
             if (exception == null) {
                 noteList = result;
 

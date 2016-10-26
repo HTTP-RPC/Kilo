@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executors;
 
-public class NotesApplication extends Application {
+public class DemoApplication extends Application {
     private static WebServiceProxy serviceProxy;
 
     public static WebServiceProxy getServiceProxy() {

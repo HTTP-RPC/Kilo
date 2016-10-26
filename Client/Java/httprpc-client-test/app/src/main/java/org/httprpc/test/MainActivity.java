@@ -39,10 +39,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -75,10 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                // No-op
             }
 
             @Override
             public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                // No-op
             }
         };
 
@@ -96,12 +96,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-
-        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession sslSession) {
-                return true;
-            }
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> {
+            return true;
         });
     }
 
@@ -231,11 +227,8 @@ public class MainActivity extends AppCompatActivity {
 
         Handler handler = new Handler();
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                cancelCheckBox.setChecked(future.cancel(true));
-            }
+        handler.postDelayed(() -> {
+            cancelCheckBox.setChecked(future.cancel(true));
         }, 1000);
 
         // Image

@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">HTTP-RPC Example</string>
+
+    <string name="users">Users</string>
+    <string name="posts">Posts</string>
+</resources>
