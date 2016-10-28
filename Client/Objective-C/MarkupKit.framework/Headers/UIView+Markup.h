@@ -16,6 +16,32 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Anchor options.
+ */
+typedef NS_OPTIONS(NSUInteger, LMAnchor) {
+    /** No anchor. */
+    LMAnchorNone        = 0,
+
+    /** Top anchor. */
+    LMAnchorTop         = 1 << 0,
+
+    /** Bottom anchor. */
+    LMAnchorBottom      = 1 << 1,
+
+    /** Left anchor. */
+    LMAnchorLeft        = 1 << 2,
+
+    /** Right anchor. */
+    LMAnchorRight       = 1 << 3,
+
+    /** Leading anchor. */
+    LMAnchorLeading     = 1 << 4,
+
+    /** Trailing anchor. */
+    LMAnchorTrailing    = 1 << 5
+};
+
 @interface UIView (Markup)
 
 /**
@@ -52,6 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
  * The view's weight, or <code>NaN</code> for no weight.
  */
 @property (nonatomic) CGFloat weight;
+
+/**
+ * The view's anchors.
+ */
+@property (nonatomic) LMAnchor anchor;
 
 /**
  * The view's horizontal content compression resistance priority.

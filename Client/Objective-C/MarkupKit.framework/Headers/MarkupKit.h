@@ -26,6 +26,7 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/LMColumnView.h>
 #import <MarkupKit/LMRowView.h>
 #import <MarkupKit/LMLayerView.h>
+#import <MarkupKit/LMAnchorView.h>
 #import <MarkupKit/LMSpacer.h>
 #import <MarkupKit/LMGradientView.h>
 #import <MarkupKit/LMLinearGradientView.h>
