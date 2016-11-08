@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Retrieves a template collection.
  *
  * @param name The name of the template collection.
- * @param owner The trait collection for which the templates will be applied.
+ * @param traitCollection The trait collection for which the templates will be applied.
  *
  * @return A dictionary containing the template values.
  */

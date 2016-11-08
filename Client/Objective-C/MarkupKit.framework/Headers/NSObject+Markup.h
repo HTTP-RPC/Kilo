@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Applies a markup property value.
  *
  * @param value The value to apply.
- * @param keyPath The property's key.
+ * @param key The property's key.
  */
 - (void)applyMarkupPropertyValue:(nullable id)value forKey:(NSString *)key;
 

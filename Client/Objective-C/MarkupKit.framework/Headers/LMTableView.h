@@ -79,7 +79,7 @@ typedef NS_ENUM(NSInteger, LMTableViewSelectionMode) {
 /**
  * Sets the selection mode for a section.
  *
- * @param name The selection mode.
+ * @param selectionMode The selection mode.
  * @param section The section index.
  */
 - (void)setSelectionMode:(LMTableViewSelectionMode)selectionMode forSection:(NSInteger)section;
@@ -113,7 +113,7 @@ typedef NS_ENUM(NSInteger, LMTableViewSelectionMode) {
 /**
  * Sets the footer view for a section.
  * 
- * @param view The footer view.
+ * @param footerView The footer view.
  * @param section The section index.
  */
 - (void)setView:(nullable UIView *)footerView forFooterInSection:(NSInteger)section;
