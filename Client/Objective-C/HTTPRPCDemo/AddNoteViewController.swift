@@ -41,13 +41,13 @@ class AddNoteViewController: UITableViewController {
     }
 
     func cancel() {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true)
     }
 
     func done() {
         AppDelegate.serviceProxy.invoke("POST", path: "/httprpc-server/notes", arguments: ["message": messageTextView.text]) { result, error in
             if (error == nil) {
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true)
             } else {
                 NSLog(error!.localizedDescription)
             }

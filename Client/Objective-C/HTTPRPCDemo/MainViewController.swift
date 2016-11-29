@@ -91,6 +91,6 @@ class MainViewController: UITableViewController {
     }
 
     func add() {
-        present(UINavigationController(rootViewController:AddNoteViewController()), animated: true, completion: nil)
+        present(UINavigationController(rootViewController:AddNoteViewController()), animated: true)
     }
 }
