@@ -78,9 +78,9 @@ The `DELETE` method removes information from the server. `DELETE` arguments are 
 The project currently supports consuming services in Objective-C/Swift, Java, and JavaScript. Each implementation is discussed in more detail below. 
 
 ## Objective-C/Swift
-The Objective-C/Swift client enables iOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
+The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
-The iOS framework can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later is required.
+The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later or tvOS 10 or later is required.
 
 ### WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `URLSession` to issue HTTP requests. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
