@@ -1,18 +1,14 @@
 Pod::Spec.new do |s|
-  s.name             = 'HTTPRPC'
-  s.version          = '3.6.4'
-  s.summary          = 'Lightweight multi-platform REST client'
-  s.description      = <<-DESC
-    HTTP-RPC is an open-source framework for simplifying development of REST applications.
-    It allows developers to access REST-based web services using a convenient, RPC-like
-    metaphor while preserving fundamental REST principles such as statelessness and uniform
-    resource access.
-    DESC
-  s.homepage         = 'https://github.com/gk-brown/HTTP-RPC'
-  s.license          = 'Apache License, Version 2.0'
-  s.author           = 'Greg Brown'
-  s.source           = { :git => "https://github.com/gk-brown/HTTP-RPC.git", :tag => s.version.to_s }
-  s.platform     = :ios, '8.0'
-  s.requires_arc = true
-  s.source_files = 'Client/Objective-C/HTTPRPC/*.{h,m}'
+  s.name            = 'HTTPRPC'
+  s.version         = '3.6.5'
+  s.license         = 'Apache License, Version 2.0'
+  s.homepage        = 'https://github.com/gk-brown/MarkupKit'
+  s.author          = 'Greg Brown'
+  s.summary         = 'Lightweight multi-platform REST client'
+  s.source          = { :git => "https://github.com/gk-brown/HTTP-RPC.git", :tag => s.version.to_s }
+
+  s.ios.deployment_target   = '8.0'
+  s.ios.source_files        = 'Client/Objective-C/HTTPRPC/HTTPRPC-iOS/HTTPRPC/*.{h,m}'
+  s.tvos.deployment_target  = '10.0'
+  s.tvos.source_files       = 'Client/Objective-C/HTTPRPC/HTTPRPC-iOS/HTTPRPC/*.{h,m}'
 end
