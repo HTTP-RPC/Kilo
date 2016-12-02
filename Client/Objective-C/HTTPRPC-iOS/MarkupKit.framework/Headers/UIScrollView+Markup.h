@@ -12,12 +12,19 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-//! Project version number for HTTPRPC.
-FOUNDATION_EXPORT double HTTPRPCVersionNumber;
+NS_ASSUME_NONNULL_BEGIN
 
-//! Project version string for HTTPRPC.
-FOUNDATION_EXPORT const unsigned char HTTPRPCVersionString[];
+@interface UIScrollView (Markup)
 
-#import <HTTPRPC/WSWebServiceProxy.h>
+#if TARGET_OS_IOS
+/**
+ * The index of the current page.
+ */
+@property (nonatomic, readonly) NSInteger currentPage;
+#endif
+
+@end
+
+NS_ASSUME_NONNULL_END
