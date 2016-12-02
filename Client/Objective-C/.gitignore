@@ -1,4 +1,9 @@
-build/
-HTTPRPC.xcodeproj/xcuserdata/
-HTTPRPC.xcodeproj/project.xcworkspace/xcuserdata/
-HTTPRPC.framework.tar.gz
+HTTPRPC.xcworkspace/xcuserdata
+HTTPRPC-iOS/build
+HTTPRPC-iOS/HTTPRPC-iOS.xcodeproj/xcuserdata/
+HTTPRPC-iOS/HTTPRPC-iOS.xcodeproj/project.xcworkspace/xcuserdata/
+HTTPRPC-iOS.framework.tar.gz
+HTTPRPC-tvOS/build
+HTTPRPC-tvOS/HTTPRPC-tvOS.xcodeproj/xcuserdata/
+HTTPRPC-tvOS/HTTPRPC-tvOS.xcodeproj/project.xcworkspace/xcuserdata/
+HTTPRPC-tvOS.framework.tar.gz
