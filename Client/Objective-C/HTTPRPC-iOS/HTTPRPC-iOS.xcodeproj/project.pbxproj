@@ -7,13 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		378623431DF1CE3B0013C797 /* HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 378623411DF1CE3B0013C797 /* HTTPRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		378623581DF1CF1B0013C797 /* HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 378623551DF1CF1B0013C797 /* HTTPRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		378623591DF1CF1B0013C797 /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 378623561DF1CF1B0013C797 /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3786235A1DF1CF1B0013C797 /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 378623571DF1CF1B0013C797 /* WSWebServiceProxy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3786233E1DF1CE3B0013C797 /* HTTPRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTTPRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		378623411DF1CE3B0013C797 /* HTTPRPC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPRPC.h; sourceTree = "<group>"; };
 		378623421DF1CE3B0013C797 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		378623551DF1CF1B0013C797 /* HTTPRPC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRPC.h; sourceTree = "<group>"; };
+		378623561DF1CF1B0013C797 /* WSWebServiceProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSWebServiceProxy.h; sourceTree = "<group>"; };
+		378623571DF1CF1B0013C797 /* WSWebServiceProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSWebServiceProxy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +50,9 @@
 		378623401DF1CE3B0013C797 /* HTTPRPC */ = {
 			isa = PBXGroup;
 			children = (
-				378623411DF1CE3B0013C797 /* HTTPRPC.h */,
+				378623551DF1CF1B0013C797 /* HTTPRPC.h */,
+				378623561DF1CF1B0013C797 /* WSWebServiceProxy.h */,
+				378623571DF1CF1B0013C797 /* WSWebServiceProxy.m */,
 				378623421DF1CE3B0013C797 /* Info.plist */,
 			);
 			path = HTTPRPC;
@@ -59,7 +65,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				378623431DF1CE3B0013C797 /* HTTPRPC.h in Headers */,
+				378623581DF1CF1B0013C797 /* HTTPRPC.h in Headers */,
+				378623591DF1CF1B0013C797 /* WSWebServiceProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +137,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3786235A1DF1CF1B0013C797 /* WSWebServiceProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
