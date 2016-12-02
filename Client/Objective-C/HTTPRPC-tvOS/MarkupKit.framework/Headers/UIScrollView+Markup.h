@@ -16,17 +16,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIProgressView (Markup)
+@interface UIScrollView (Markup)
 
+#if TARGET_OS_IOS
 /**
- * Creates a default progress view.
+ * The index of the current page.
  */
-+ (UIProgressView *)defaultProgressView;
-
-/**
- * Creates a bar progress view.
- */
-+ (UIProgressView *)barProgressView;
+@property (nonatomic, readonly) NSInteger currentPage;
+#endif
 
 @end
 

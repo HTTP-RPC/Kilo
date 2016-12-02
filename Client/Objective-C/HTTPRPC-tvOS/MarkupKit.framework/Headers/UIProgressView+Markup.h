@@ -12,21 +12,24 @@
 // limitations under the License.
 //
 
-import UIKit
+#import <UIKit/UIKit.h>
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
+NS_ASSUME_NONNULL_BEGIN
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        window = UIWindow()
-        window!.backgroundColor = UIColor.white
+@interface UIProgressView (Markup)
 
-        window!.rootViewController = UINavigationController(rootViewController: ViewController())
+/**
+ * Creates a default progress view.
+ */
++ (UIProgressView *)defaultProgressView;
 
-        window!.frame = UIScreen.main.bounds
-        window!.makeKeyAndVisible()
+#if TARGET_OS_IOS
+/**
+ * Creates a bar progress view.
+ */
++ (UIProgressView *)barProgressView;
+#endif
 
-        return true
-    }
-}
+@end
+
+NS_ASSUME_NONNULL_END

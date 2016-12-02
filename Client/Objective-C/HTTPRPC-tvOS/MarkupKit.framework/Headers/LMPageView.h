@@ -16,12 +16,35 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIScrollView (Markup)
+__TVOS_PROHIBITED
+@interface LMPageView : UIScrollView
 
 /**
- * The index of the current page.
+ * The list of pages managed by the page view.
  */
-@property (nonatomic, readonly) NSInteger currentPage;
+@property (nonatomic, readonly, copy) NSArray<UIView *> *pages;
+
+/**
+ * Adds a page.
+ * 
+ * @param page The page to add.
+ */
+- (void)addPage:(UIView *)page;
+
+/**
+ * Inserts a page.
+ *
+ * @param page The page to insert.
+ * @param index The index at which to insert the page.
+ */
+- (void)insertPage:(UIView *)page atIndex:(NSUInteger)index;
+
+/**
+ * Removes a page.
+ *
+ * @param page The page to remove.
+ */
+- (void)removePage:(UIView *)page;
 
 @end
 

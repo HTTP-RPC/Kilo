@@ -16,6 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+__TVOS_PROHIBITED
 @interface LMPickerView : UIPickerView
 
 /**
