@@ -1039,6 +1039,7 @@
 				3719C41E1DF1D5DD000D80F6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3719C4471DF1D74F000D80F6 /* Build configuration list for PBXNativeTarget "HTTPRPCExample" */ = {
 			isa = XCConfigurationList;
@@ -1047,6 +1048,7 @@
 				3719C4491DF1D74F000D80F6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3786232F1DF1CD100013C797 /* Build configuration list for PBXProject "HTTPRPC-iOS" */ = {
 			isa = XCConfigurationList;
