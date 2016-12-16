@@ -133,6 +133,7 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to a
 The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
 * `WebServiceProxy` - web service invocation proxy
+* `WebServiceException` - exception thrown when a service operation returns an error
 * `ResultHandler` - callback interface for handling service results
 
 The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.

@@ -71,6 +71,11 @@ function testService() {
         validate("DELETE", error == null && result == true);
     });
 
+    // Error
+    serviceProxy.invoke("GET", "/httprpc-server/xyz", {}, function(result, error) {
+        validate("Error", error == 404);
+    });
+
     // Timeout
     serviceProxy.invoke("GET", "/httprpc-server/test", {value: 123, delay: 6000}, function(result, error) {
         validate("Timeout", error == 0);

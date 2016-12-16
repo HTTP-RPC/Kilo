@@ -33,8 +33,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.httprpc.WebServiceProxy;
-
 import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
@@ -142,6 +140,12 @@ public class WebServiceProxyTest {
             validate("DELETE", exception == null && result.equals(true));
         });
 
+        // Error
+        serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
+            validate("Error", exception instanceof WebServiceException
+                && ((WebServiceException)exception).getCode() == 404);
+        });
+
         // Timeout
         serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
             entry("value", 123),
@@ -173,6 +177,11 @@ public class WebServiceProxyTest {
         Future<Number> value3 = serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(entry("value", 3)), null);
 
         validate("Blocking", value1.get().intValue() + value2.get().intValue() + value3.get().intValue() == 6);
+
+        // Error
+        serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
+            validate("Error", exception instanceof WebServiceException);
+        });
 
         // Shut down thread pool
         threadPool.shutdown();

@@ -42,6 +42,11 @@ limitations under the License.
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/error_checkbox"
+            android:text="Error"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <CheckBox android:id="@+id/timeout_checkbox"
             android:text="Timeout"
             android:enabled="false"

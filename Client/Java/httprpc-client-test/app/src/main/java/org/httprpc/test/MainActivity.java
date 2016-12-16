@@ -44,6 +44,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.httprpc.WebServiceException;
 import org.httprpc.WebServiceProxy;
 
 import static org.httprpc.WebServiceProxy.listOf;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox postCheckBox;
     private CheckBox putCheckBox;
     private CheckBox deleteCheckBox;
+    private CheckBox errorCheckBox;
     private CheckBox timeoutCheckBox;
     private CheckBox cancelCheckBox;
     private CheckBox imageCheckBox;
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         postCheckBox = (CheckBox)findViewById(R.id.post_checkbox);
         putCheckBox = (CheckBox)findViewById(R.id.put_checkbox);
         deleteCheckBox = (CheckBox)findViewById(R.id.delete_checkbox);
+        errorCheckBox = (CheckBox)findViewById(R.id.error_checkbox);
         timeoutCheckBox = (CheckBox)findViewById(R.id.timeout_checkbox);
         cancelCheckBox = (CheckBox)findViewById(R.id.cancel_checkbox);
         imageCheckBox = (CheckBox)findViewById(R.id.image_checkbox);
@@ -209,6 +212,12 @@ public class MainActivity extends AppCompatActivity {
         // Delete
         serviceProxy.invoke("DELETE", "/httprpc-server/test", mapOf(entry("id", 101)), (result, exception) -> {
             deleteCheckBox.setChecked(exception == null && result.equals(true));
+        });
+
+        // Error
+        serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
+            errorCheckBox.setChecked(exception instanceof WebServiceException
+                && ((WebServiceException)exception).getCode() == 404);
         });
 
         // Timeout

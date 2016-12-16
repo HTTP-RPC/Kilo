@@ -243,7 +243,7 @@ public class WebServiceProxy {
                     }
                 }
             } else {
-                throw new IOException(String.format("%d %s", responseCode, connection.getResponseMessage()));
+                throw new WebServiceException(connection.getResponseMessage(), responseCode);
             }
 
             return (V)result;

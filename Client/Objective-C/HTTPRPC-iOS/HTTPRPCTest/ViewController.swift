@@ -23,6 +23,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var deleteCell: UITableViewCell!
     @IBOutlet var timeoutCell: UITableViewCell!
     @IBOutlet var cancelCell: UITableViewCell!
+    @IBOutlet var errorCell: UITableViewCell!
     @IBOutlet var imageCell: UITableViewCell!
     @IBOutlet var textCell: UITableViewCell!
 
@@ -108,6 +109,13 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         // DELETE
         serviceProxy.invoke("DELETE", path: "/httprpc-server/test", arguments: ["id": 101]) { result, error in
             self.validate(result as? Bool == true, error: error, cell: self.deleteCell)
+        }
+
+        // Error
+        serviceProxy.invoke("GET", path: "/httprpc-server/xyz") { result, error in
+            let error = error as? NSError
+
+            self.validate(error != nil && error!.domain == WSWebServiceErrorDomain && error!.code == 404, error: error, cell: self.errorCell)
         }
 
         // Timeout
