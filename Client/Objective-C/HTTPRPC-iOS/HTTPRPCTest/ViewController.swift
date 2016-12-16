@@ -39,6 +39,8 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
 
         edgesForExtendedLayout = UIRectEdge()
 
+        tableView.delegate = self
+
         // Configure session
         let configuration = URLSessionConfiguration.default
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
@@ -145,6 +147,10 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
 
             self.textCell.textLabel?.text = result as? String
         }
+    }
+
+    override func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
 
     func validate(_ condition: Bool, error: Error?, cell: UITableViewCell) {
