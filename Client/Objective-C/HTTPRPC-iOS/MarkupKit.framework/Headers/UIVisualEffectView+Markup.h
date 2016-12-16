@@ -33,6 +33,23 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (UIVisualEffectView *)darkBlurEffectView;
 
+#if TARGET_OS_TV
+/**
+ * Creates an extra-dark blur effect view.
+ */
++ (UIVisualEffectView *)extraDarkBlurEffectView;
+#endif
+
+/**
+ * Creates a regular blur effect view.
+ */
++ (UIVisualEffectView *)regularBlurEffectView;
+
+/**
+ * Creates a prominent blur effect view.
+ */
++ (UIVisualEffectView *)prominentBlurEffectView;
+
 @end
 
 NS_ASSUME_NONNULL_END
