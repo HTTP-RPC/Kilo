@@ -80,7 +80,7 @@ The project currently supports consuming services in Objective-C/Swift, Java, an
 ## Objective-C/Swift
 The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
-The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTP-RPC). iOS 8 or later or tvOS 10 or later is required.
+The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 8 or later or tvOS 10 or later is required.
 
 ### WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `URLSession` to issue HTTP requests. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
@@ -282,7 +282,7 @@ Note that lambda expressions can optionally be used instead of anonymous inner c
         // result is 6
     });
 
-## JavaScript Client
+## JavaScript
 The JavaScript client enables browser-based applications to consume REST-based web services. It is distributed as a JavaScript source file that contains a single `WebServiceProxy` class, discussed in more detail below. 
 
 The source code for the JavaScript client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases).
