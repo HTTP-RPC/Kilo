@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name            = 'HTTPRPC'
-  s.version         = '3.6.8'
+  s.version         = '3.6.9'
   s.license         = 'Apache License, Version 2.0'
   s.homepage        = 'https://github.com/gk-brown/MarkupKit'
   s.author          = 'Greg Brown'

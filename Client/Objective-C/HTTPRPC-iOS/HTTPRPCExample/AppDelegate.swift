@@ -17,7 +17,7 @@ import HTTPRPC
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    fileprivate(set) static var serviceProxy: WSWebServiceProxy!
+    private(set) static var serviceProxy: WSWebServiceProxy!
 
     var window: UIWindow?
 

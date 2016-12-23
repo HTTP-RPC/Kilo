@@ -33,7 +33,7 @@ import static org.httprpc.WebServiceProxy.entry;
 public class PostActivity extends AppCompatActivity {
     private ListView postListView;
 
-    private List<Map<String, ?>> postList = Collections.emptyList();
+    private List<Map<String, ?>> postList = null;
 
     private BaseAdapter postListAdapter = new BaseAdapter() {
         @Override
@@ -84,26 +84,26 @@ public class PostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post);
 
         postListView = (ListView)findViewById(R.id.post_list_view);
-
-        postListView.setAdapter(postListAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        long userID = getIntent().getLongExtra(USER_ID_KEY, 0);
+        if (postList == null) {
+            long userID = getIntent().getLongExtra(USER_ID_KEY, 0);
 
-        ExampleApplication.getServiceProxy().invoke("GET", "/posts", mapOf(entry("userId", userID)),
-            (List<Map<String, ?>> result, Exception exception) -> {
-            if (exception == null) {
-                postList = result;
+            ExampleApplication.getServiceProxy().invoke("GET", "/posts", mapOf(entry("userId", userID)),
+                (List<Map<String, ?>> result, Exception exception) -> {
+                if (exception == null) {
+                    postList = result;
 
-                postListAdapter.notifyDataSetChanged();
-            } else {
-                Log.e(TAG, exception.getMessage());
-            }
-        });
+                    postListView.setAdapter(postListAdapter);
+                } else {
+                    Log.e(TAG, exception.getMessage());
+                }
+            });
+        }
     }
 }
 

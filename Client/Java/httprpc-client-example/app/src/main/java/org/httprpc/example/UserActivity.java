@@ -28,10 +28,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class UserActivity extends AppCompatActivity {
     private ListView userListView;
 
-    private List<Map<String, ?>> userList = Collections.emptyList();
+    private List<Map<String, ?>> userList = null;
 
     private BaseAdapter userListAdapter = new BaseAdapter() {
         @Override
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private static String TAG = MainActivity.class.getName();
+    private static String TAG = UserActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,28 +82,29 @@ public class MainActivity extends AppCompatActivity {
         userListView = (ListView)findViewById(R.id.user_list_view);
 
         userListView.setOnItemClickListener((parent, view, position, id) -> {
-            Intent intent = new Intent(MainActivity.this, PostActivity.class);
+            Intent intent = new Intent(UserActivity.this, PostActivity.class);
 
             intent.putExtra(PostActivity.USER_ID_KEY, id);
 
             startActivity(intent);
         });
-
-        userListView.setAdapter(userListAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        ExampleApplication.getServiceProxy().invoke("GET", "/users", (List<Map<String, ?>> result, Exception exception) -> {
-            if (exception == null) {
-                userList = result;
+        if (userList == null) {
+            ExampleApplication.getServiceProxy().invoke("GET", "/users",
+                (List<Map<String, ?>> result, Exception exception) -> {
+                if (exception == null) {
+                    userList = result;
 
-                userListAdapter.notifyDataSetChanged();
-            } else {
-                Log.e(TAG, exception.getMessage());
-            }
-        });
+                    userListView.setAdapter(userListAdapter);
+                } else {
+                    Log.e(TAG, exception.getMessage());
+                }
+            });
+        }
     }
 }
