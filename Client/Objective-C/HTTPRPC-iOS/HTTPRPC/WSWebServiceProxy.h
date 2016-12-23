@@ -73,9 +73,9 @@ extern NSString * const WSArgumentsKey;
  * @param path The path associated with the request.
  * @param resultHandler A callback that will be invoked upon completion of the request.
  *
- * @return A session data task representing the invocation request.
+ * @return A URL session task representing the invocation request, or <code>nil</code> if the task could not be created.
  */
-- (nullable NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+- (nullable NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 /**
@@ -86,9 +86,9 @@ extern NSString * const WSArgumentsKey;
  * @param arguments The request arguments.
  * @param resultHandler A callback that will be invoked upon completion of the request.
  *
- * @return A session data task representing the invocation request.
+ * @return A URL session task representing the invocation request, or <code>nil</code> if the task could not be created.
  */
-- (nullable NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+- (nullable NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
     arguments:(NSDictionary<NSString *, id> *)arguments
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 

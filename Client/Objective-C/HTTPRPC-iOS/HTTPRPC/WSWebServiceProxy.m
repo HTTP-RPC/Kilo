@@ -67,13 +67,13 @@ NSString * const kTextMIMETypePrefix = @"text/";
     return self;
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+- (NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
     return [self invoke:method path:path arguments:[NSDictionary new] resultHandler:resultHandler];
 }
 
-- (NSURLSessionDataTask *)invoke:(NSString *)method path:(NSString *)path
+- (NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
     arguments:(NSDictionary *)arguments
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
@@ -194,14 +194,8 @@ NSString * const kTextMIMETypePrefix = @"text/";
                     if ([data length] > 0) {
                         NSString *mimeType = [response MIMEType];
 
-                        if ([mimeType hasPrefix:kJSONMIMEType]) {
-                            result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-                        } else if ([mimeType hasPrefix:kImageMIMETypePrefix]) {
-                            result = [UIImage imageWithData:data];
-                        } else if ([mimeType hasPrefix:kTextMIMETypePrefix]) {
-                            result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                        } else {
-                            result = data;
+                        if (mimeType != nil) {
+                            result = [self decodeResponse:data withMIMEType:mimeType error:&error];
                         }
                     }
                 } else {
@@ -220,6 +214,22 @@ NSString * const kTextMIMETypePrefix = @"text/";
     }
 
     return task;
+}
+
+- (id)decodeResponse:(NSData *)data withMIMEType:(NSString *)mimeType error:(NSError **)error
+{
+    id value;
+    if ([mimeType hasPrefix:kJSONMIMEType]) {
+        value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
+    } else if ([mimeType hasPrefix:kImageMIMETypePrefix]) {
+        value = [UIImage imageWithData:data];
+    } else if ([mimeType hasPrefix:kTextMIMETypePrefix]) {
+        value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    } else {
+        value = nil;
+    }
+
+    return value;
 }
 
 + (NSArray *)parameterValuesForArgument:(id)argument {

@@ -83,18 +83,18 @@ The Objective-C/Swift client enables iOS and tvOS applications to consume REST-b
 The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 8 or later or tvOS 10 or later is required.
 
 ### WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `URLSession` to issue HTTP requests. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
+The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
 
-`JSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Plain text content is returned as a string. All other content is returned as `Data`.
+`NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Plain text content is returned as a string.
 
-Service proxies are initialized via `init(session:serverURL:)`, which takes a `URLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke(_:path:arguments:resultHandler:)` method, which takes the following arguments:
+Service proxies are initialized via `initWithSession:serverURL:`, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the resource path
 * `arguments` - a dictionary containing the request arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `URLSessionDataTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 #### Arguments and Return Values
 Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following types are given special consideration:
@@ -102,14 +102,14 @@ Arguments may be of any type, and are generally converted to parameter values vi
 * Instances of `URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
 * Arrays represent multi-value parameters and generally behave similarly to `<select multiple>` tags in HTML forms. However, arrays containing URL values are handled like `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
 
-The result handler is called upon completion of the operation. If the operation completes successfully, the first argument will contain the value returned by the server. If the operation fails, the first argument will be `nil`, and the second argument will be populated with an `Error` instance describing the error that occurred.
+The result handler is called upon completion of the operation. If successful, the first argument will contain the value returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
 
 Note that, while requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
 ### Authentication
-Although it is possible to use the `urlSession(_:didReceive:completionHandler:)` method of the `URLSessionDataDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
+Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
-HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `URLCredential` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `NSURLCredential` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
