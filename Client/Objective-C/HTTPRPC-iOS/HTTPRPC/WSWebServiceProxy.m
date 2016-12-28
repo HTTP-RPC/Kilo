@@ -26,7 +26,7 @@ NSString * const WSArgumentsKey = @"arguments";
 NSString * const kPostMethod = @"POST";
 
 NSString * const kAcceptField = @"Accept";
-NSString * const kAcceptFieldValue = @"application/json, image/*, text/*, */*";
+NSString * const kAcceptFieldValue = @"application/json, image/*, text/*";
 
 NSString * const kAuthorizationField = @"Authorization";
 
@@ -195,7 +195,7 @@ NSString * const kTextMIMETypePrefix = @"text/";
                         NSString *mimeType = [response MIMEType];
 
                         if (mimeType != nil) {
-                            result = [self decodeResponse:data withMIMEType:mimeType error:&error];
+                            result = [WSWebServiceProxy decodeResponse:data withMIMEType:mimeType error:&error];
                         }
                     }
                 } else {
@@ -216,7 +216,7 @@ NSString * const kTextMIMETypePrefix = @"text/";
     return task;
 }
 
-- (id)decodeResponse:(NSData *)data withMIMEType:(NSString *)mimeType error:(NSError **)error
++ (id)decodeResponse:(NSData *)data withMIMEType:(NSString *)mimeType error:(NSError **)error
 {
     id value;
     if ([mimeType hasPrefix:kJSONMIMEType]) {

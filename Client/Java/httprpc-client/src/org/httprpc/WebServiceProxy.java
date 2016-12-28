@@ -262,7 +262,7 @@ public class WebServiceProxy {
     private static final String POST_METHOD = "POST";
 
     private static final String ACCEPT_KEY = "Accept";
-    private static final String ACCEPT_VALUE = "application/json, image/*, */*";
+    private static final String ACCEPT_VALUE = "application/json, image/*, text/*";
 
     private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
 
