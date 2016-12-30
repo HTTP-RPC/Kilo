@@ -191,12 +191,10 @@ NSString * const kTextMIMETypePrefix = @"text/";
                 NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
 
                 if (statusCode / 100 == 2) {
-                    if ([data length] > 0) {
-                        NSString *mimeType = [response MIMEType];
+                    NSString *mimeType = [response MIMEType];
 
-                        if (mimeType != nil) {
-                            result = [WSWebServiceProxy decodeResponse:data withMIMEType:mimeType error:&error];
-                        }
+                    if (mimeType != nil) {
+                        result = [WSWebServiceProxy decodeResponse:data withMIMEType:mimeType error:&error];
                     }
                 } else {
                     error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
