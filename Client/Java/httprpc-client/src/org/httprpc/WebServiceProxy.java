@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
@@ -695,6 +696,138 @@ class MonitoredOutputStream extends BufferedOutputStream {
         }
 
         super.write(b, off, len);
+    }
+}
+
+// Abstract base class for encoders
+abstract class Encoder {
+    private static final String UTF_8_ENCODING = "UTF-8";
+
+    public void writeValue(Object value, OutputStream outputStream) throws IOException {
+        Writer writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+        writeValue(value, writer);
+
+        writer.flush();
+    }
+
+    public abstract void writeValue(Object value, Writer writer) throws IOException;
+}
+
+// JSON encoder
+class JSONEncoder extends Encoder {
+    private int depth = 0;
+
+    @Override
+    public void writeValue(Object value, Writer writer) throws IOException {
+        if (value == null) {
+            writer.append(null);
+        } else if (value instanceof String) {
+            String string = (String)value;
+
+            writer.append("\"");
+
+            for (int i = 0, n = string.length(); i < n; i++) {
+                char c = string.charAt(i);
+
+                if (c == '"' || c == '\\') {
+                    writer.append("\\" + c);
+                } else if (c == '\b') {
+                    writer.append("\\b");
+                } else if (c == '\f') {
+                    writer.append("\\f");
+                } else if (c == '\n') {
+                    writer.append("\\n");
+                } else if (c == '\r') {
+                    writer.append("\\r");
+                } else if (c == '\t') {
+                    writer.append("\\t");
+                } else {
+                    writer.append(c);
+                }
+            }
+
+            writer.append("\"");
+        } else if (value instanceof Number || value instanceof Boolean) {
+            writer.append(String.valueOf(value));
+        } else if (value instanceof List<?>) {
+            List<?> list = (List<?>)value;
+
+            writer.append("[");
+
+            depth++;
+
+            int i = 0;
+
+            for (Object element : list) {
+                if (i > 0) {
+                    writer.append(",");
+                }
+
+                writer.append("\n");
+
+                indent(writer);
+
+                writeValue(element, writer);
+
+                i++;
+            }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("]");
+        } else if (value instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>)value;
+
+            writer.append("{");
+
+            depth++;
+
+            int i = 0;
+
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                if (i > 0) {
+                    writer.append(",");
+                }
+
+                writer.append("\n");
+
+                Object key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                indent(writer);
+
+                writeValue(key.toString(), writer);
+
+                writer.append(": ");
+
+                writeValue(entry.getValue(), writer);
+
+                i++;
+            }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("}");
+        } else {
+            writeValue(value.toString(), writer);
+        }
+    }
+
+    private void indent(Writer writer) throws IOException {
+        for (int i = 0; i < depth; i++) {
+            writer.append("  ");
+        }
     }
 }
 
