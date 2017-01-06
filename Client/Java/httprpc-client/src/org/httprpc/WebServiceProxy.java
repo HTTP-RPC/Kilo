@@ -782,6 +782,8 @@ class JSONDecoder extends Decoder {
 
         Object value = null;
 
+        skipWhitespace(reader);
+
         while (c != EOF) {
             String key = null;
 
