@@ -1,7 +1,7 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to access REST-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for consuming web services in Objective-C/Swift, Java (including Android), and JavaScript. It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. 
+The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. 
 
 For example, the following code snippets show how the various clients might be used to access a simple web service that returns a friendly greeting:
 
@@ -17,12 +17,6 @@ _Java_
         System.out.println(result); // Prints "Hello, World!"
     });
 
-_JavaScript_
-
-    serviceProxy.invoke("GET", "/hello", function(result, error) {
-        console.log(result); // Prints "Hello, World!"
-    });
-
 This guide introduces the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, please see [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 # Contents
@@ -30,7 +24,6 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 * [Client Implementations](#client-implementations)
 	* [Objective-C/Swift](#objective-cswift)
 	* [Java](#java)
-	* [JavaScript](#javascript)
 * [Additional Information](#additional-information)
 
 # Service Operations
@@ -75,7 +68,7 @@ The `DELETE` method removes information from the server. `DELETE` arguments are 
     DELETE /calendar?eventID=102
 
 # Client Implementations
-The project currently supports consuming services in Objective-C/Swift, Java, and JavaScript. Each implementation is discussed in more detail below. 
+The project currently supports consuming services in Objective-C/Swift and Java. Each implementation is discussed in more detail below. 
 
 ## Objective-C/Swift
 The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
@@ -147,8 +140,6 @@ Service proxies are initialized via a constructor that takes the following argum
 
 * `serverURL` - an instance of `java.net.URL` representing the base URL of the service
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that is used to  dispatch service requests
-
-Optional connection and read timeout values may also be provided.
 
 Service operations are initiated by calling the `invoke()` method, which takes the following arguments:
 
@@ -279,43 +270,6 @@ Note that lambda expressions can optionally be used instead of anonymous inner c
 
     // Get sum of all values
     serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))), (result, exception) -> {
-        // result is 6
-    });
-
-## JavaScript
-The JavaScript client enables browser-based applications to consume REST-based web services. It is distributed as a JavaScript source file that contains a single `WebServiceProxy` class, discussed in more detail below. 
-
-The source code for the JavaScript client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases).
-
-### WebServiceProxy Class
-The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `XMLHttpRequest` to communicate with the server. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "application/x-www-form-urlencoded", like an HTML form. `JSON.parse()` is used to decode response data.
-
-Service proxies are initialized via a constructor that takes a single optional argument representing the request timeout. Service operations are executed by calling the `invoke()` method, which takes the following arguments:
-
-* `method` - the HTTP method to execute
-* `path` - the resource path
-* `arguments` - an object containing the request arguments as key/value pairs
-* `resultHandler` - a callback that will be invoked upon completion of the method
-
-Arguments may be of any type, and are generally converted to parameter values via `toString()`. However, array arguments represent multi-value parameters, and behave similarly to `<select multiple>` tags in HTML forms.
-
-The result handler is called upon completion of the operation. If the operation completes successfully, the first argument will contain the value returned by the server. If the operation fails, the first argument will be `null`, and the second argument will contain the HTTP status code corresponding to the error that occurred.
-
-The `invoke()` method returns the `XMLHttpRequest` instance used to execute the remote call. This allows an application to cancel a request, if necessary.
-
-### Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to access the hypothetical math operations discussed earlier:
-
-    // Create service proxy
-    var serviceProxy = new WebServiceProxy();
-
-    // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", "/math/sum", {a:4, b:2}, function(result, error) {
-        // result is 6
-    });
-
-    // Get sum of all values
-    serviceProxy.invoke("GET", "/math/sum", {values:[1, 2, 3, 4]}, function(result, error) {
         // result is 6
     });
 

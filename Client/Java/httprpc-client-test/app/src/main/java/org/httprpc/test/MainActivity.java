@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool, 3000, 3000) {
+        WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, threadPool) {
             private Handler handler = new Handler(Looper.getMainLooper());
 
             @Override
@@ -156,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
                 handler.post(command);
             }
         };
+
+        serviceProxy.setConnectTimeout(3000);
+        serviceProxy.setReadTimeout(3000);
 
         // Set credentials
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));

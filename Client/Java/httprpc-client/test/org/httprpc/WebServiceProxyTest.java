@@ -81,7 +81,10 @@ public class WebServiceProxyTest {
         // Create service proxy
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-        WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool, 3000, 3000);
+        WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), threadPool);
+
+        serviceProxy.setConnectTimeout(3000);
+        serviceProxy.setReadTimeout(3000);
 
         // Set credentials
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));

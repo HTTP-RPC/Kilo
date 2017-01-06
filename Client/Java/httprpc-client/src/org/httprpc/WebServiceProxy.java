@@ -314,25 +314,6 @@ public class WebServiceProxy {
      * The executor service that will be used to execute requests.
      */
     public WebServiceProxy(URL serverURL, ExecutorService executorService) {
-        this(serverURL, executorService, 0, 0);
-    }
-
-    /**
-     * Creates a new web service proxy.
-     *
-     * @param serverURL
-     * The server URL.
-     *
-     * @param executorService
-     * The executor service that will be used to execute requests.
-     *
-     * @param connectTimeout
-     * The connect timeout.
-     *
-     * @param readTimeout
-     * The read timeout.
-     */
-    public WebServiceProxy(URL serverURL, ExecutorService executorService, int connectTimeout, int readTimeout) {
         if (serverURL == null) {
             throw new IllegalArgumentException();
         }
@@ -343,8 +324,6 @@ public class WebServiceProxy {
 
         this.serverURL = serverURL;
         this.executorService = executorService;
-        this.connectTimeout = connectTimeout;
-        this.readTimeout = readTimeout;
     }
 
     /**
@@ -365,6 +344,46 @@ public class WebServiceProxy {
      */
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    /**
+     * Returns the connect timeout.
+     *
+     * @return
+     * The connect timeout.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
+     * Sets the connect timeout.
+     *
+     * @param connectTimeout
+     * The connect timeout.
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    /**
+     * Returns the read timeout.
+     *
+     * @return
+     * The read timeout.
+     */
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    /**
+     * Sets the read timeout.
+     *
+     * @param readTimeout
+     * The read timeout.
+     */
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
     }
 
     /**
