@@ -2,20 +2,20 @@
 
 <project name="httprpc-server" default="build">
     <property name="title" value="HTTP-RPC Server"/>
-    
+
     <property name="src" value="src"/>
     <property name="api" value="api"/>
     <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
-    
+
     <property name="warfile" value="${ant.project.name}.war"/>
-    
+
     <target name="build">
         <echo message="Building ${title}..."/>
-        
+
         <delete dir="${bin}"/>
         <mkdir dir="${bin}"/>
-        
+
         <javac srcDir="${src}" destDir="${bin}"
             includejavaruntime="true" includeantruntime="true"
             encoding="UTF-8" deprecation="true" debug="true"
@@ -24,18 +24,18 @@
                 <fileset dir="${api}" includes="*.jar"/>
                 <fileset dir="${lib}" includes="*.jar"/>
             </classpath>
-            
+
             <compilerarg value="-parameters"/>
         </javac>
-        
+
         <delete dir="." includes="${warfile}"/>
-        
+
         <war destfile="${warfile}" webxml="web.xml">
             <fileset dir="web"/>
-            
+
             <classes dir="${bin}"/>
             <classes dir="${src}" excludes="**/*.java"/>
-            
+
             <lib dir="${lib}" includes="*.jar"/>
         </war>
     </target>

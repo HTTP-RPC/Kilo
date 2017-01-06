@@ -252,8 +252,9 @@ public class WebServiceProxy {
 
     private URL serverURL;
     private ExecutorService executorService;
-    private int connectTimeout;
-    private int readTimeout;
+
+    private int connectTimeout = 0;
+    private int readTimeout = 0;
 
     private PasswordAuthentication authorization = null;
 

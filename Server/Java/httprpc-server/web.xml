@@ -9,7 +9,7 @@
         <auth-method>BASIC</auth-method>
         <realm-name>tomcat</realm-name>
     </login-config>
-    
+
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>test</web-resource-name>

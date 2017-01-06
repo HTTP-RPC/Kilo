@@ -7,15 +7,15 @@
     <property name="src" value="src"/>
     <property name="bin" value="bin"/>
     <property name="doc" value="doc"/>
-    
+
     <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
     <property name="docfile" value="${ant.project.name}-${version}-javadoc.zip"/>
-    
+
     <property name="zipfile" value="${ant.project.name}-${version}.zip"/>
-    
+
     <target name="build">
         <echo message="Building ${title}..."/>
-        
+
         <delete dir="${bin}"/>
         <mkdir dir="${bin}"/>
 
@@ -33,19 +33,19 @@
             </manifest>
         </jar>
     </target>
-	
+
     <target name="doc">
         <delete dir="${doc}"/>
 
         <javadoc sourcepath="${src}" destdir="${doc}"
             link="http://docs.oracle.com/javase/8/docs/api/"
             version="true" use="true"/>
-        
+
         <delete dir="." includes="${docfile}"/>
 
         <zip destfile="${docfile}" basedir="doc"/>
     </target>
-    
+
     <target name="package" depends="build, doc">
         <delete dir="." includes="${zipfile}"/>
         <zip destfile="${zipfile}" basedir="." includes="${jarfile}, ${docfile}, pom.xml"/>
