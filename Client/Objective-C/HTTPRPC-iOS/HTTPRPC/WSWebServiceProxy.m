@@ -25,26 +25,7 @@ NSString * const WSArgumentsKey = @"arguments";
 
 NSString * const kPostMethod = @"POST";
 
-NSString * const kAcceptField = @"Accept";
-NSString * const kAcceptFieldValue = @"application/json, image/*, text/*";
-
-NSString * const kAuthorizationField = @"Authorization";
-
-NSString * const kContentTypeField = @"Content-Type";
-NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
-NSString * const kBoundaryParameterFormat = @"; boundary=%@";
-
-NSString * const kOctetStreamMIMEType = @"application/octet-stream";
-
-NSString * const kContentDispositionHeader = @"Content-Disposition: form-data";
-NSString * const kNameParameterFormat = @"; name=\"%@\"";
-NSString * const kFilenameParameterFormat = @"; filename=\"%@\"";
-
 NSString * const kCRLF = @"\r\n";
-
-NSString * const kJSONMIMEType = @"application/json";
-NSString * const kImageMIMETypePrefix = @"image/";
-NSString * const kTextMIMETypePrefix = @"text/";
 
 @interface NSString (HTTPRPC)
 
@@ -111,43 +92,36 @@ NSString * const kTextMIMETypePrefix = @"text/";
 
         [request setHTTPMethod:method];
 
-        [request setValue:kAcceptFieldValue forHTTPHeaderField:kAcceptField];
+        [request setValue:@"application/json, image/*, text/*" forHTTPHeaderField:@"Accept"];
 
         // Authenticate request
         if (_authorization != nil) {
             NSString *credentials = [NSString stringWithFormat:@"%@:%@", [_authorization user], [_authorization password]];
             NSString *value = [NSString stringWithFormat:@"Basic %@", [[credentials UTF8Data] base64EncodedStringWithOptions:0]];
 
-            [request setValue:value forHTTPHeaderField:kAuthorizationField];
+            [request setValue:value forHTTPHeaderField:@"Authorization"];
         }
 
         // Write request body
         if ([method caseInsensitiveCompare:kPostMethod] == NSOrderedSame) {
             NSString *boundary = [[NSUUID new] UUIDString];
-            NSString *requestContentType = [kMultipartFormDataMIMEType stringByAppendingString:[NSString stringWithFormat:kBoundaryParameterFormat, boundary]];
 
-            [request setValue:requestContentType forHTTPHeaderField:kContentTypeField];
+            [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
 
             // Construct multi-part form data
             NSMutableData *body = [NSMutableData new];
-
-            NSData *boundaryData = [[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data];
-
-            NSData *contentDispositionHeaderData = [kContentDispositionHeader UTF8Data];
 
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
                 for (__strong id value in values) {
-                    [body appendData:boundaryData];
-
-                    [body appendData:contentDispositionHeaderData];
-                    [body appendData:[[NSString stringWithFormat:kNameParameterFormat, name] UTF8Data]];
+                    [body appendData:[[NSString stringWithFormat:@"--%@%@", boundary, kCRLF] UTF8Data]];
+                    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", name] UTF8Data]];
 
                     if ([value isKindOfClass:[NSURL self]]) {
                         NSString *filename = [value lastPathComponent];
 
-                        [body appendData:[[NSString stringWithFormat:kFilenameParameterFormat, filename] UTF8Data]];
+                        [body appendData:[[NSString stringWithFormat:@"; filename=\"%@\"", filename] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
 
                         CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
@@ -158,10 +132,10 @@ NSString * const kTextMIMETypePrefix = @"text/";
                         CFRelease(uti);
 
                         if (attachmentContentType == nil) {
-                            attachmentContentType = kOctetStreamMIMEType;
+                            attachmentContentType = @"application/octet-stream";
                         }
 
-                        [body appendData:[[NSString stringWithFormat:@"%@: %@%@", kContentTypeField, attachmentContentType, kCRLF] UTF8Data]];
+                        [body appendData:[[NSString stringWithFormat:@"%@: %@%@", @"Content-Type", attachmentContentType, kCRLF] UTF8Data]];
                         [body appendData:[kCRLF UTF8Data]];
 
                         [body appendData:[NSData dataWithContentsOfURL:value]];
@@ -217,11 +191,11 @@ NSString * const kTextMIMETypePrefix = @"text/";
 + (id)decodeResponse:(NSData *)data withMIMEType:(NSString *)mimeType error:(NSError **)error
 {
     id value;
-    if ([mimeType hasPrefix:kJSONMIMEType]) {
+    if ([mimeType hasPrefix:@"application/json"]) {
         value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
-    } else if ([mimeType hasPrefix:kImageMIMETypePrefix]) {
+    } else if ([mimeType hasPrefix:@"image/"]) {
         value = [UIImage imageWithData:data];
-    } else if ([mimeType hasPrefix:kTextMIMETypePrefix]) {
+    } else if ([mimeType hasPrefix:@"text/"]) {
         value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     } else {
         value = nil;

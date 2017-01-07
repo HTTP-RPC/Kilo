@@ -144,15 +144,15 @@ public class WebServiceProxy {
             Locale locale = Locale.getDefault();
             String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-            connection.setRequestProperty(ACCEPT_KEY, ACCEPT_VALUE);
-            connection.setRequestProperty(ACCEPT_LANGUAGE_KEY, acceptLanguage);
+            connection.setRequestProperty("Accept", "application/json, image/*, text/*");
+            connection.setRequestProperty("Accept-Language", acceptLanguage);
 
             // Authenticate request
             if (authorization != null) {
                 String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
                 String value = String.format("Basic %s", base64Encode(credentials));
 
-                connection.setRequestProperty(AUTHORIZATION_KEY, value);
+                connection.setRequestProperty("Authorization", value);
             }
 
             // Write request body
@@ -160,11 +160,8 @@ public class WebServiceProxy {
                 connection.setDoOutput(true);
 
                 String boundary = UUID.randomUUID().toString();
-                String requestContentType = MULTIPART_FORM_DATA_MIME_TYPE + String.format(BOUNDARY_PARAMETER_FORMAT, boundary);
 
-                connection.setRequestProperty(CONTENT_TYPE_KEY, requestContentType);
-
-                String boundaryData = String.format("--%s%s", boundary, CRLF);
+                connection.setRequestProperty("Content-Type", String.format("multipart/form-data; boundary=%s", boundary));
 
                 // Write request body
                 try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
@@ -184,25 +181,23 @@ public class WebServiceProxy {
                                 continue;
                             }
 
-                            writer.append(boundaryData);
-
-                            writer.append(CONTENT_DISPOSITION_HEADER);
-                            writer.append(String.format(NAME_PARAMETER_FORMAT, name));
+                            writer.append(String.format("--%s%s", boundary, CRLF));
+                            writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
 
                             if (value instanceof URL) {
                                 String path = ((URL)value).getPath();
                                 String filename = path.substring(path.lastIndexOf('/') + 1);
 
-                                writer.append(String.format(FILENAME_PARAMETER_FORMAT, filename));
+                                writer.append(String.format("; filename=\"%s\"", filename));
                                 writer.append(CRLF);
 
                                 String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
 
                                 if (attachmentContentType == null) {
-                                    attachmentContentType = OCTET_STREAM_MIME_TYPE;
+                                    attachmentContentType = "application/octet-stream";
                                 }
 
-                                writer.append(String.format("%s: %s%s", CONTENT_TYPE_KEY, attachmentContentType, CRLF));
+                                writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
                                 writer.append(CRLF);
 
                                 writer.flush();
@@ -260,30 +255,9 @@ public class WebServiceProxy {
     private PasswordAuthentication authorization = null;
 
     private static final String UTF_8_ENCODING = "UTF-8";
-
     private static final String POST_METHOD = "POST";
 
-    private static final String ACCEPT_KEY = "Accept";
-    private static final String ACCEPT_VALUE = "application/json, image/*, text/*";
-
-    private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
-
-    private static final String AUTHORIZATION_KEY = "Authorization";
-
-    private static final String CONTENT_TYPE_KEY = "Content-Type";
-    private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-    private static final String BOUNDARY_PARAMETER_FORMAT = "; boundary=%s";
-
-    private static final String OCTET_STREAM_MIME_TYPE = "application/octet-stream";
-
-    private static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition: form-data";
-    private static final String NAME_PARAMETER_FORMAT = "; name=\"%s\"";
-    private static final String FILENAME_PARAMETER_FORMAT = "; filename=\"%s\"";
-
     private static final String CRLF = "\r\n";
-
-    private static final String JSON_MIME_TYPE = "application/json";
-    private static final String TEXT_MIME_TYPE_PREFIX = "text/";
 
     private static final int EOF = -1;
 
@@ -487,11 +461,11 @@ public class WebServiceProxy {
      */
     protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
         Object value;
-        if (contentType.startsWith(JSON_MIME_TYPE)) {
+        if (contentType.startsWith("application/json")) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
-        } else if (contentType.startsWith(TEXT_MIME_TYPE_PREFIX)) {
+        } else if (contentType.startsWith("text/")) {
             TextDecoder decoder = new TextDecoder();
 
             value = decoder.readValue(inputStream);
