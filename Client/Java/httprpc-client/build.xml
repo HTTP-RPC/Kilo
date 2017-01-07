@@ -48,6 +48,6 @@
 
     <target name="package" depends="build, doc">
         <delete dir="." includes="${zipfile}"/>
-        <zip destfile="${zipfile}" basedir="." includes="${jarfile}, ${docfile}, pom.xml"/>
+        <zip destfile="${zipfile}" basedir="." includes="${jarfile}, ${docfile}"/>
     </target>
 </project>
