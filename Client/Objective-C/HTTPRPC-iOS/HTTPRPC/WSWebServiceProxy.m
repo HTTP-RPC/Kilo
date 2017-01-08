@@ -23,8 +23,6 @@ NSString * const WSMethodKey = @"method";
 NSString * const WSPathKey = @"path";
 NSString * const WSArgumentsKey = @"arguments";
 
-NSString * const kPostMethod = @"POST";
-
 NSString * const kCRLF = @"\r\n";
 
 @interface NSString (HTTPRPC)
@@ -64,7 +62,7 @@ NSString * const kCRLF = @"\r\n";
 
     if (url != nil) {
         // Construct query
-        if ([method caseInsensitiveCompare:kPostMethod] != NSOrderedSame) {
+        if ([method caseInsensitiveCompare:@"POST"] != NSOrderedSame) {
             NSMutableString *query = [NSMutableString new];
 
             for (NSString *name in arguments) {
@@ -103,7 +101,7 @@ NSString * const kCRLF = @"\r\n";
         }
 
         // Write request body
-        if ([method caseInsensitiveCompare:kPostMethod] == NSOrderedSame) {
+        if ([url query] == nil) {
             NSString *boundary = [[NSUUID new] UUIDString];
 
             [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];

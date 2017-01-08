@@ -98,7 +98,7 @@ public class WebServiceProxy {
             URL url = new URL(serverURL, path);
 
             // Construct query
-            if (!method.equalsIgnoreCase(POST_METHOD)) {
+            if (!method.equalsIgnoreCase("POST")) {
                 StringBuilder queryBuilder = new StringBuilder();
 
                 for (Map.Entry<String, ?> argument : arguments.entrySet()) {
@@ -156,7 +156,7 @@ public class WebServiceProxy {
             }
 
             // Write request body
-            if (method.equalsIgnoreCase(POST_METHOD)) {
+            if (url.getQuery() == null) {
                 connection.setDoOutput(true);
 
                 String boundary = UUID.randomUUID().toString();
@@ -255,8 +255,6 @@ public class WebServiceProxy {
     private PasswordAuthentication authorization = null;
 
     private static final String UTF_8_ENCODING = "UTF-8";
-    private static final String POST_METHOD = "POST";
-
     private static final String CRLF = "\r\n";
 
     private static final int EOF = -1;
