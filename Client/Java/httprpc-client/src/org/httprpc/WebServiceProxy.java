@@ -57,6 +57,9 @@ public class WebServiceProxy {
 
     private PasswordAuthentication authorization = null;
 
+    // TODO Make this accessible to subclasses that want to override encodeRequest()
+    private String multipartBoundary = UUID.randomUUID().toString();
+
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CRLF = "\r\n";
 
@@ -314,7 +317,7 @@ public class WebServiceProxy {
                 Locale locale = Locale.getDefault();
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                connection.setRequestProperty("Accept", "application/json, image/*, text/*");
+                connection.setRequestProperty("Accept", "application/json, image/*, text/*, */*");
                 connection.setRequestProperty("Accept-Language", acceptLanguage);
 
                 // Authenticate request
@@ -329,69 +332,12 @@ public class WebServiceProxy {
                 if (url.getQuery() == null) {
                     connection.setDoOutput(true);
 
-                    String boundary = UUID.randomUUID().toString();
+                    String contentType = String.format("multipart/form-data; boundary=%s", multipartBoundary);
 
-                    connection.setRequestProperty("Content-Type", String.format("multipart/form-data; boundary=%s", boundary));
+                    connection.setRequestProperty("Content-Type", contentType);
 
-                    // Write request body
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
-
-                        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                            String name = argument.getKey();
-
-                            if (name == null) {
-                                continue;
-                            }
-
-                            List<?> values = getParameterValues(argument.getValue());
-
-                            for (Object value : values) {
-                                if (value == null) {
-                                    continue;
-                                }
-
-                                writer.append(String.format("--%s%s", boundary, CRLF));
-                                writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
-
-                                if (value instanceof URL) {
-                                    String path = ((URL)value).getPath();
-                                    String filename = path.substring(path.lastIndexOf('/') + 1);
-
-                                    writer.append(String.format("; filename=\"%s\"", filename));
-                                    writer.append(CRLF);
-
-                                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                                    if (attachmentContentType == null) {
-                                        attachmentContentType = "application/octet-stream";
-                                    }
-
-                                    writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
-                                    writer.append(CRLF);
-
-                                    writer.flush();
-
-                                    try (InputStream inputStream = ((URL)value).openStream()) {
-                                        int b;
-                                        while ((b = inputStream.read()) != EOF) {
-                                            outputStream.write(b);
-                                        }
-                                    }
-                                } else {
-                                    writer.append(CRLF);
-
-                                    writer.append(CRLF);
-                                    writer.append(value.toString());
-                                }
-
-                                writer.append(CRLF);
-                            }
-                        }
-
-                        writer.append(String.format("--%s--%s", boundary, CRLF));
-
-                        writer.flush();
+                        encodeRequest(arguments, outputStream, contentType);
                     }
                 }
 
@@ -405,7 +351,7 @@ public class WebServiceProxy {
 
                     if (contentType != null) {
                         try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                            result = decodeResponse(inputStream, connection.getContentType());
+                            result = decodeResponse(inputStream, contentType);
                         }
                     }
                 } else {
@@ -415,6 +361,81 @@ public class WebServiceProxy {
                 return (V)result;
             }
         });
+    }
+
+    /**
+     * Encodes a request.
+     *
+     * @param arguments
+     * The request arguments.
+     *
+     * @param outputStream
+     * The output stream to write to.
+     *
+     * @param contentType
+     * The MIME type of the content to encode.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    protected void encodeRequest(Map<String, ?> arguments, OutputStream outputStream, String contentType) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+
+        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+            String name = argument.getKey();
+
+            if (name == null) {
+                continue;
+            }
+
+            List<?> values = getParameterValues(argument.getValue());
+
+            for (Object value : values) {
+                if (value == null) {
+                    continue;
+                }
+
+                writer.append(String.format("--%s%s", multipartBoundary, CRLF));
+                writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
+
+                if (value instanceof URL) {
+                    String path = ((URL)value).getPath();
+                    String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                    writer.append(String.format("; filename=\"%s\"", filename));
+                    writer.append(CRLF);
+
+                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                    if (attachmentContentType == null) {
+                        attachmentContentType = "application/octet-stream";
+                    }
+
+                    writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
+                    writer.append(CRLF);
+
+                    writer.flush();
+
+                    try (InputStream inputStream = ((URL)value).openStream()) {
+                        int b;
+                        while ((b = inputStream.read()) != EOF) {
+                            outputStream.write(b);
+                        }
+                    }
+                } else {
+                    writer.append(CRLF);
+
+                    writer.append(CRLF);
+                    writer.append(value.toString());
+                }
+
+                writer.append(CRLF);
+            }
+        }
+
+        writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
+
+        writer.flush();
     }
 
     /**
