@@ -56,7 +56,6 @@ public class WebServiceProxy {
 
     private PasswordAuthentication authorization = null;
 
-    // TODO Make this accessible to subclasses that want to override encodeRequest()?
     private String multipartBoundary = UUID.randomUUID().toString();
 
     private static final String UTF_8_ENCODING = "UTF-8";
@@ -450,9 +449,16 @@ public class WebServiceProxy {
 
             value = decoder.readValue(inputStream);
         } else if (contentType.startsWith("text/")) {
-            TextDecoder decoder = new TextDecoder();
+            StringBuilder textBuilder = new StringBuilder(1024);
 
-            value = decoder.readValue(inputStream);
+            try (InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING))) {
+                int c;
+                while ((c = reader.read()) != EOF) {
+                    textBuilder.append((char)c);
+                }
+            }
+
+            value = textBuilder.toString();
         } else {
             value = null;
         }
@@ -657,151 +663,8 @@ class MonitoredOutputStream extends BufferedOutputStream {
     }
 }
 
-// Abstract base class for encoders
-abstract class Encoder {
-    private static final String UTF_8_ENCODING = "UTF-8";
-
-    public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        Writer writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
-        writeValue(value, writer);
-
-        writer.flush();
-    }
-
-    public abstract void writeValue(Object value, Writer writer) throws IOException;
-}
-
-// JSON encoder
-class JSONEncoder extends Encoder {
-    private int depth = 0;
-
-    @Override
-    public void writeValue(Object value, Writer writer) throws IOException {
-        if (value == null) {
-            writer.append(null);
-        } else if (value instanceof String) {
-            String string = (String)value;
-
-            writer.append("\"");
-
-            for (int i = 0, n = string.length(); i < n; i++) {
-                char c = string.charAt(i);
-
-                if (c == '"' || c == '\\') {
-                    writer.append("\\" + c);
-                } else if (c == '\b') {
-                    writer.append("\\b");
-                } else if (c == '\f') {
-                    writer.append("\\f");
-                } else if (c == '\n') {
-                    writer.append("\\n");
-                } else if (c == '\r') {
-                    writer.append("\\r");
-                } else if (c == '\t') {
-                    writer.append("\\t");
-                } else {
-                    writer.append(c);
-                }
-            }
-
-            writer.append("\"");
-        } else if (value instanceof Number || value instanceof Boolean) {
-            writer.append(String.valueOf(value));
-        } else if (value instanceof List<?>) {
-            List<?> list = (List<?>)value;
-
-            writer.append("[");
-
-            depth++;
-
-            int i = 0;
-
-            for (Object element : list) {
-                if (i > 0) {
-                    writer.append(",");
-                }
-
-                writer.append("\n");
-
-                indent(writer);
-
-                writeValue(element, writer);
-
-                i++;
-            }
-
-            depth--;
-
-            writer.append("\n");
-
-            indent(writer);
-
-            writer.append("]");
-        } else if (value instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>)value;
-
-            writer.append("{");
-
-            depth++;
-
-            int i = 0;
-
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                if (i > 0) {
-                    writer.append(",");
-                }
-
-                writer.append("\n");
-
-                Object key = entry.getKey();
-
-                if (key == null) {
-                    continue;
-                }
-
-                indent(writer);
-
-                writeValue(key.toString(), writer);
-
-                writer.append(": ");
-
-                writeValue(entry.getValue(), writer);
-
-                i++;
-            }
-
-            depth--;
-
-            writer.append("\n");
-
-            indent(writer);
-
-            writer.append("}");
-        } else {
-            writeValue(value.toString(), writer);
-        }
-    }
-
-    private void indent(Writer writer) throws IOException {
-        for (int i = 0; i < depth; i++) {
-            writer.append("  ");
-        }
-    }
-}
-
-// Abstract base class for decoders
-abstract class Decoder {
-    private static final String UTF_8_ENCODING = "UTF-8";
-
-    public Object readValue(InputStream inputStream) throws IOException {
-        return readValue(new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING)));
-    }
-
-    public abstract Object readValue(Reader reader) throws IOException;
-}
-
 // JSON decoder
-class JSONDecoder extends Decoder {
+class JSONDecoder {
     // Number adapter
     private static class NumberAdapter extends Number {
         private static final long serialVersionUID = 0;
@@ -866,7 +729,10 @@ class JSONDecoder extends Decoder {
 
     private static final int EOF = -1;
 
-    @Override
+    public Object readValue(InputStream inputStream) throws IOException {
+        return readValue(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+    }
+
     @SuppressWarnings("unchecked")
     public Object readValue(Reader reader) throws IOException {
         c = reader.read();
@@ -1081,19 +947,126 @@ class JSONDecoder extends Decoder {
     }
 }
 
-// Text decoder
-class TextDecoder extends Decoder {
-    private static final int EOF = -1;
+// JSON encoder
+class JSONEncoder {
+    private int depth = 0;
 
-    @Override
-    public Object readValue(Reader reader) throws IOException {
-        StringBuilder textBuilder = new StringBuilder(1024);
+    public void writeValue(Object value, OutputStream outputStream) throws IOException {
+        Writer writer = new OutputStreamWriter(outputStream, Charset.forName("UTF-8"));
+        writeValue(value, writer);
 
-        int c;
-        while ((c = reader.read()) != EOF) {
-            textBuilder.append((char)c);
+        writer.flush();
+    }
+
+    public void writeValue(Object value, Writer writer) throws IOException {
+        if (value == null) {
+            writer.append(null);
+        } else if (value instanceof String) {
+            String string = (String)value;
+
+            writer.append("\"");
+
+            for (int i = 0, n = string.length(); i < n; i++) {
+                char c = string.charAt(i);
+
+                if (c == '"' || c == '\\') {
+                    writer.append("\\" + c);
+                } else if (c == '\b') {
+                    writer.append("\\b");
+                } else if (c == '\f') {
+                    writer.append("\\f");
+                } else if (c == '\n') {
+                    writer.append("\\n");
+                } else if (c == '\r') {
+                    writer.append("\\r");
+                } else if (c == '\t') {
+                    writer.append("\\t");
+                } else {
+                    writer.append(c);
+                }
+            }
+
+            writer.append("\"");
+        } else if (value instanceof Number || value instanceof Boolean) {
+            writer.append(String.valueOf(value));
+        } else if (value instanceof List<?>) {
+            List<?> list = (List<?>)value;
+
+            writer.append("[");
+
+            depth++;
+
+            int i = 0;
+
+            for (Object element : list) {
+                if (i > 0) {
+                    writer.append(",");
+                }
+
+                writer.append("\n");
+
+                indent(writer);
+
+                writeValue(element, writer);
+
+                i++;
+            }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("]");
+        } else if (value instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>)value;
+
+            writer.append("{");
+
+            depth++;
+
+            int i = 0;
+
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                if (i > 0) {
+                    writer.append(",");
+                }
+
+                writer.append("\n");
+
+                Object key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                indent(writer);
+
+                writeValue(key.toString(), writer);
+
+                writer.append(": ");
+
+                writeValue(entry.getValue(), writer);
+
+                i++;
+            }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("}");
+        } else {
+            writeValue(value.toString(), writer);
         }
+    }
 
-        return textBuilder.toString();
+    private void indent(Writer writer) throws IOException {
+        for (int i = 0; i < depth; i++) {
+            writer.append("  ");
+        }
     }
 }
