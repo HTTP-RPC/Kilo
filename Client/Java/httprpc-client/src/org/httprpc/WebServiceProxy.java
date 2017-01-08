@@ -245,29 +245,19 @@ public class WebServiceProxy {
         return executorService.submit(new Callable<V>() {
             @Override
             public V call() throws Exception {
-                final V result;
+                V result;
                 try {
                     result = invoke();
-                } catch (final Exception exception) {
+                } catch (Exception exception) {
                     if (resultHandler != null) {
-                        dispatchResult(new Runnable() {
-                            @Override
-                            public void run() {
-                                resultHandler.execute(null, exception);
-                            }
-                        });
+                        dispatchResult(() -> resultHandler.execute(null, exception));
                     }
 
                     throw exception;
                 }
 
                 if (resultHandler != null) {
-                    dispatchResult(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultHandler.execute(result, null);
-                        }
-                    });
+                    dispatchResult(() -> resultHandler.execute(result, null));
                 }
 
                 return result;
