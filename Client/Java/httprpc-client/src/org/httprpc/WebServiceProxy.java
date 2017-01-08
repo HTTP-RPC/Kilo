@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -57,7 +56,7 @@ public class WebServiceProxy {
 
     private PasswordAuthentication authorization = null;
 
-    // TODO Make this accessible to subclasses that want to override encodeRequest()
+    // TODO Make this accessible to subclasses that want to override encodeRequest()?
     private String multipartBoundary = UUID.randomUUID().toString();
 
     private static final String UTF_8_ENCODING = "UTF-8";
@@ -232,6 +231,7 @@ public class WebServiceProxy {
      * @return
      * A future representing the invocation request.
      */
+    @SuppressWarnings("unchecked")
     public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
@@ -245,29 +245,9 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        return executorService.submit(new Callable<V>() {
-            @Override
-            public V call() throws Exception {
-                V result;
-                try {
-                    result = invoke();
-                } catch (Exception exception) {
-                    if (resultHandler != null) {
-                        dispatchResult(() -> resultHandler.execute(null, exception));
-                    }
-
-                    throw exception;
-                }
-
-                if (resultHandler != null) {
-                    dispatchResult(() -> resultHandler.execute(result, null));
-                }
-
-                return result;
-            }
-
-            @SuppressWarnings("unchecked")
-            public V invoke() throws Exception {
+        return executorService.submit(() -> {
+            V result;
+            try {
                 URL url = new URL(serverURL, path);
 
                 // Construct query
@@ -342,8 +322,6 @@ public class WebServiceProxy {
                 }
 
                 // Read response
-                Object result = null;
-
                 int responseCode = connection.getResponseCode();
 
                 if (responseCode / 100 == 2) {
@@ -351,15 +329,27 @@ public class WebServiceProxy {
 
                     if (contentType != null) {
                         try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                            result = decodeResponse(inputStream, contentType);
+                            result = (V)decodeResponse(inputStream, contentType);
                         }
+                    } else {
+                        result = null;
                     }
                 } else {
                     throw new WebServiceException(connection.getResponseMessage(), responseCode);
                 }
+            } catch (Exception exception) {
+                if (resultHandler != null) {
+                    dispatchResult(() -> resultHandler.execute(null, exception));
+                }
 
-                return (V)result;
+                throw exception;
             }
+
+            if (resultHandler != null) {
+                dispatchResult(() -> resultHandler.execute(result, null));
+            }
+
+            return result;
         });
     }
 
