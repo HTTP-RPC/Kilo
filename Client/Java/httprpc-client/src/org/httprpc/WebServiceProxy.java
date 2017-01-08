@@ -311,12 +311,10 @@ public class WebServiceProxy {
                 if (url.getQuery() == null) {
                     connection.setDoOutput(true);
 
-                    String contentType = String.format("multipart/form-data; boundary=%s", multipartBoundary);
-
-                    connection.setRequestProperty("Content-Type", contentType);
+                    connection.setRequestProperty("Content-Type", String.format("multipart/form-data; boundary=%s", multipartBoundary));
 
                     try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                        encodeRequest(arguments, outputStream, contentType);
+                        encodeRequest(arguments, outputStream);
                     }
                 }
 
@@ -367,7 +365,7 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs.
      */
-    protected void encodeRequest(Map<String, ?> arguments, OutputStream outputStream, String contentType) throws IOException {
+    protected void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
 
         for (Map.Entry<String, ?> argument : arguments.entrySet()) {

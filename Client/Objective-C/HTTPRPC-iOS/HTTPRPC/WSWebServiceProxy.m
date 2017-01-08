@@ -107,10 +107,8 @@ NSString * const kCRLF = @"\r\n";
 
         // Write request body
         if ([url query] == nil) {
-            NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", _multipartBoundary];
-
-            [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
-            [request setHTTPBody:[self encodeRequestWithArguments:arguments contentType:contentType]];
+            [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", _multipartBoundary] forHTTPHeaderField:@"Content-Type"];
+            [request setHTTPBody:[self encodeRequestWithArguments:arguments]];
         }
 
         // Execute request
@@ -146,7 +144,7 @@ NSString * const kCRLF = @"\r\n";
     return task;
 }
 
-- (NSData *)encodeRequestWithArguments:(NSDictionary *)arguments contentType:(NSString *)contentType
+- (NSData *)encodeRequestWithArguments:(NSDictionary *)arguments
 {
     NSMutableData *body = [NSMutableData new];
 
