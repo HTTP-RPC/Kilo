@@ -49,203 +49,6 @@ import java.util.concurrent.Future;
  * Web service invocation proxy.
  */
 public class WebServiceProxy {
-    // Invocation callback
-    private class InvocationCallback<V> implements Callable<V> {
-        private String method;
-        private String path;
-        private Map<String, ?> arguments;
-        private ResultHandler<V> resultHandler;
-
-        public InvocationCallback(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
-            this.method = method;
-            this.path = path;
-            this.arguments = arguments;
-            this.resultHandler = resultHandler;
-        }
-
-        @Override
-        public V call() throws Exception {
-            final V result;
-            try {
-                result = invoke();
-            } catch (final Exception exception) {
-                if (resultHandler != null) {
-                    dispatchResult(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultHandler.execute(null, exception);
-                        }
-                    });
-                }
-
-                throw exception;
-            }
-
-            if (resultHandler != null) {
-                dispatchResult(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultHandler.execute(result, null);
-                    }
-                });
-            }
-
-            return result;
-        }
-
-        @SuppressWarnings("unchecked")
-        private V invoke() throws Exception {
-            URL url = new URL(serverURL, path);
-
-            // Construct query
-            if (!method.equalsIgnoreCase("POST")) {
-                StringBuilder queryBuilder = new StringBuilder();
-
-                for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                    String name = argument.getKey();
-
-                    if (name == null) {
-                        continue;
-                    }
-
-                    List<?> values = getParameterValues(argument.getValue());
-
-                    for (int i = 0, n = values.size(); i < n; i++) {
-                        Object value = values.get(i);
-
-                        if (value == null) {
-                            continue;
-                        }
-
-                        if (queryBuilder.length() > 0) {
-                            queryBuilder.append("&");
-                        }
-
-                        queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                        queryBuilder.append("=");
-                        queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
-                    }
-                }
-
-                if (queryBuilder.length() > 0) {
-                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + queryBuilder);
-                }
-            }
-
-            // Open URL connection
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-            connection.setRequestMethod(method);
-
-            connection.setConnectTimeout(connectTimeout);
-            connection.setReadTimeout(readTimeout);
-
-            // Set language
-            Locale locale = Locale.getDefault();
-            String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
-
-            connection.setRequestProperty("Accept", "application/json, image/*, text/*");
-            connection.setRequestProperty("Accept-Language", acceptLanguage);
-
-            // Authenticate request
-            if (authorization != null) {
-                String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
-                String value = String.format("Basic %s", base64Encode(credentials));
-
-                connection.setRequestProperty("Authorization", value);
-            }
-
-            // Write request body
-            if (url.getQuery() == null) {
-                connection.setDoOutput(true);
-
-                String boundary = UUID.randomUUID().toString();
-
-                connection.setRequestProperty("Content-Type", String.format("multipart/form-data; boundary=%s", boundary));
-
-                // Write request body
-                try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                    OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
-
-                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                        String name = argument.getKey();
-
-                        if (name == null) {
-                            continue;
-                        }
-
-                        List<?> values = getParameterValues(argument.getValue());
-
-                        for (Object value : values) {
-                            if (value == null) {
-                                continue;
-                            }
-
-                            writer.append(String.format("--%s%s", boundary, CRLF));
-                            writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
-
-                            if (value instanceof URL) {
-                                String path = ((URL)value).getPath();
-                                String filename = path.substring(path.lastIndexOf('/') + 1);
-
-                                writer.append(String.format("; filename=\"%s\"", filename));
-                                writer.append(CRLF);
-
-                                String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                                if (attachmentContentType == null) {
-                                    attachmentContentType = "application/octet-stream";
-                                }
-
-                                writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
-                                writer.append(CRLF);
-
-                                writer.flush();
-
-                                try (InputStream inputStream = ((URL)value).openStream()) {
-                                    int b;
-                                    while ((b = inputStream.read()) != EOF) {
-                                        outputStream.write(b);
-                                    }
-                                }
-                            } else {
-                                writer.append(CRLF);
-
-                                writer.append(CRLF);
-                                writer.append(value.toString());
-                            }
-
-                            writer.append(CRLF);
-                        }
-                    }
-
-                    writer.append(String.format("--%s--%s", boundary, CRLF));
-
-                    writer.flush();
-                }
-            }
-
-            // Read response
-            Object result = null;
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode / 100 == 2) {
-                String contentType = connection.getContentType();
-
-                if (contentType != null) {
-                    try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                        result = decodeResponse(inputStream, connection.getContentType());
-                    }
-                }
-            } else {
-                throw new WebServiceException(connection.getResponseMessage(), responseCode);
-            }
-
-            return (V)result;
-        }
-    }
-
     private URL serverURL;
     private ExecutorService executorService;
 
@@ -439,7 +242,189 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        return executorService.submit(new InvocationCallback<>(method, path, arguments, resultHandler));
+        return executorService.submit(new Callable<V>() {
+            @Override
+            public V call() throws Exception {
+                final V result;
+                try {
+                    result = invoke();
+                } catch (final Exception exception) {
+                    if (resultHandler != null) {
+                        dispatchResult(new Runnable() {
+                            @Override
+                            public void run() {
+                                resultHandler.execute(null, exception);
+                            }
+                        });
+                    }
+
+                    throw exception;
+                }
+
+                if (resultHandler != null) {
+                    dispatchResult(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultHandler.execute(result, null);
+                        }
+                    });
+                }
+
+                return result;
+            }
+
+            @SuppressWarnings("unchecked")
+            public V invoke() throws Exception {
+                URL url = new URL(serverURL, path);
+
+                // Construct query
+                if (!method.equalsIgnoreCase("POST")) {
+                    StringBuilder queryBuilder = new StringBuilder();
+
+                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                        String name = argument.getKey();
+
+                        if (name == null) {
+                            continue;
+                        }
+
+                        List<?> values = getParameterValues(argument.getValue());
+
+                        for (int i = 0, n = values.size(); i < n; i++) {
+                            Object value = values.get(i);
+
+                            if (value == null) {
+                                continue;
+                            }
+
+                            if (queryBuilder.length() > 0) {
+                                queryBuilder.append("&");
+                            }
+
+                            queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                            queryBuilder.append("=");
+                            queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+                        }
+                    }
+
+                    if (queryBuilder.length() > 0) {
+                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + queryBuilder);
+                    }
+                }
+
+                // Open URL connection
+                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+                connection.setRequestMethod(method);
+
+                connection.setConnectTimeout(connectTimeout);
+                connection.setReadTimeout(readTimeout);
+
+                // Set language
+                Locale locale = Locale.getDefault();
+                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
+
+                connection.setRequestProperty("Accept", "application/json, image/*, text/*");
+                connection.setRequestProperty("Accept-Language", acceptLanguage);
+
+                // Authenticate request
+                if (authorization != null) {
+                    String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
+                    String value = String.format("Basic %s", base64Encode(credentials));
+
+                    connection.setRequestProperty("Authorization", value);
+                }
+
+                // Write request body
+                if (url.getQuery() == null) {
+                    connection.setDoOutput(true);
+
+                    String boundary = UUID.randomUUID().toString();
+
+                    connection.setRequestProperty("Content-Type", String.format("multipart/form-data; boundary=%s", boundary));
+
+                    // Write request body
+                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+
+                        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                            String name = argument.getKey();
+
+                            if (name == null) {
+                                continue;
+                            }
+
+                            List<?> values = getParameterValues(argument.getValue());
+
+                            for (Object value : values) {
+                                if (value == null) {
+                                    continue;
+                                }
+
+                                writer.append(String.format("--%s%s", boundary, CRLF));
+                                writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
+
+                                if (value instanceof URL) {
+                                    String path = ((URL)value).getPath();
+                                    String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                                    writer.append(String.format("; filename=\"%s\"", filename));
+                                    writer.append(CRLF);
+
+                                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                                    if (attachmentContentType == null) {
+                                        attachmentContentType = "application/octet-stream";
+                                    }
+
+                                    writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
+                                    writer.append(CRLF);
+
+                                    writer.flush();
+
+                                    try (InputStream inputStream = ((URL)value).openStream()) {
+                                        int b;
+                                        while ((b = inputStream.read()) != EOF) {
+                                            outputStream.write(b);
+                                        }
+                                    }
+                                } else {
+                                    writer.append(CRLF);
+
+                                    writer.append(CRLF);
+                                    writer.append(value.toString());
+                                }
+
+                                writer.append(CRLF);
+                            }
+                        }
+
+                        writer.append(String.format("--%s--%s", boundary, CRLF));
+
+                        writer.flush();
+                    }
+                }
+
+                // Read response
+                Object result = null;
+
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode / 100 == 2) {
+                    String contentType = connection.getContentType();
+
+                    if (contentType != null) {
+                        try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                            result = decodeResponse(inputStream, connection.getContentType());
+                        }
+                    }
+                } else {
+                    throw new WebServiceException(connection.getResponseMessage(), responseCode);
+                }
+
+                return (V)result;
+            }
+        });
     }
 
     /**
