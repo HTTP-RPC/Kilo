@@ -64,7 +64,7 @@ public class WebServiceProxy {
     private static final String APPLICATION_X_WWW_FORM_URLENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
     private static final String APPLICATION_JSON_MIME_TYPE = "application/json";
 
-    private static final String UTF_8_ENCODING = "UTF-8";
+    private static final String UTF_8 = "UTF-8";
     private static final String CRLF = "\r\n";
 
     private static final int EOF = -1;
@@ -306,9 +306,9 @@ public class WebServiceProxy {
                                 queryBuilder.append("&");
                             }
 
-                            queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                            queryBuilder.append(URLEncoder.encode(name, UTF_8));
                             queryBuilder.append("=");
-                            queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+                            queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
 
                             i++;
                         }
@@ -407,7 +407,7 @@ public class WebServiceProxy {
     }
 
     private void encodeMultipartFormDataRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
         for (Map.Entry<String, ?> argument : arguments.entrySet()) {
             String name = argument.getKey();
@@ -467,7 +467,7 @@ public class WebServiceProxy {
     }
 
     private void encodeApplicationXWWWFormURLEncodedRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
         int i = 0;
 
@@ -491,9 +491,9 @@ public class WebServiceProxy {
                     writer.append("&");
                 }
 
-                writer.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                writer.append(URLEncoder.encode(name, UTF_8));
                 writer.append("=");
-                writer.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+                writer.append(URLEncoder.encode(value.toString(), UTF_8));
 
                 i++;
             }
@@ -503,17 +503,23 @@ public class WebServiceProxy {
     }
 
     private Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-        // TODO Split content type into type/sub-type and extract parameters
+        MIMEType mimeType = MIMEType.valueOf(contentType);
 
         Object value;
-        if (contentType.startsWith(APPLICATION_JSON_MIME_TYPE)) {
+        if (mimeType.getSubtype().equals("json")) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
-        } else if (contentType.startsWith("image/")) {
-            value = decodeImageResponse(inputStream, null); // TODO Image type
-        } else if (contentType.startsWith("text/")) {
-            value = decodeTextResponse(inputStream, null, Charset.forName(UTF_8_ENCODING)); // TODO Text type, charset
+        } else if (mimeType.getType().equals("image")) {
+            value = decodeImageResponse(inputStream, mimeType.getSubtype());
+        } else if (mimeType.getSubtype().equals("text")) {
+            String charsetName = mimeType.getParameter("charset");
+
+            if (charsetName == null) {
+                charsetName = UTF_8;
+            }
+
+            value = decodeTextResponse(inputStream, mimeType.getSubtype(), Charset.forName(charsetName));
         } else {
             throw new UnsupportedOperationException("Unsupported response encoding.");
         }
@@ -715,6 +721,99 @@ public class WebServiceProxy {
         }
 
         return resultBuilder.toString();
+    }
+}
+
+// MIME type
+class MIMEType {
+    private String type;
+    private String subtype;
+
+    private HashMap<String, String> parameters = new HashMap<>();
+
+    private MIMEType(String type, String subtype) {
+        this.type = type;
+        this.subtype = subtype;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getSubtype() {
+        return subtype;
+    }
+
+    public String getParameter(String key) {
+        return parameters.get(key);
+    }
+
+    public static MIMEType valueOf(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        int n = value.length();
+        int i = 0;
+
+        // Type
+        StringBuilder typeBuilder = new StringBuilder();
+
+        while (i < n) {
+            char c = value.charAt(i++);
+
+            if (c == '/') {
+                break;
+            }
+
+            typeBuilder.append(c);
+        }
+
+        // Subtype
+        StringBuilder subtypeBuilder = new StringBuilder();
+
+        while (i < n) {
+            char c = value.charAt(i++);
+
+            if (c == ';') {
+                break;
+            }
+
+            subtypeBuilder.append(c);
+        }
+
+        // Parameters
+        MIMEType mimeType = new MIMEType(typeBuilder.toString(), subtypeBuilder.toString());
+
+        while (i < n) {
+            StringBuilder keyBuilder = new StringBuilder();
+
+            while (i < n) {
+                char c = value.charAt(i++);
+
+                if (c == '=') {
+                    break;
+                }
+
+                keyBuilder.append(c);
+            }
+
+            StringBuilder valueBuilder = new StringBuilder();
+
+            while (i < n) {
+                char c = value.charAt(i++);
+
+                if (c == ';') {
+                    break;
+                }
+
+                valueBuilder.append(c);
+            }
+
+            mimeType.parameters.put(keyBuilder.toString(), valueBuilder.toString());
+        }
+
+        return mimeType;
     }
 }
 
