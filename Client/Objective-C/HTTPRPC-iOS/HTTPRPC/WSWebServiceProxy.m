@@ -70,19 +70,23 @@ NSString * const kCRLF = @"\r\n";
         if ([method caseInsensitiveCompare:@"POST"] != NSOrderedSame) {
             NSMutableString *query = [NSMutableString new];
 
+            NSUInteger i = 0;
+
             for (NSString *name in arguments) {
                 NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
-                for (NSUInteger i = 0, n = [values count]; i < n; i++) {
-                    if ([query length] > 0) {
+                for (NSUInteger j = 0, n = [values count]; j < n; j++) {
+                    if (i > 0) {
                         [query appendString:@"&"];
                     }
 
-                    NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:i]];
+                    NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:j]];
 
                     [query appendString:[name URLEncodedString]];
                     [query appendString:@"="];
                     [query appendString:[value URLEncodedString]];
+
+                    i++;
                 }
             }
 

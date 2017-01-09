@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
                 Object value;
-                if (contentType.startsWith("image/")) {
+                if (contentType.toLowerCase().startsWith("image/")) {
                     value = BitmapFactory.decodeStream(inputStream);
                 } else {
                     value = super.decodeResponse(inputStream, contentType);

@@ -207,7 +207,7 @@ Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to pr
     @Override
     protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
         Object value;
-        if (contentType.startsWith("image/")) {
+        if (contentType.toLowerCase().startsWith("image/")) {
             value = BitmapFactory.decodeStream(inputStream);
         } else {
             value = super.decodeResponse(inputStream, contentType);

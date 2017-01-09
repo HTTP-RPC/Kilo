@@ -60,9 +60,9 @@ public class WebServiceProxy {
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
-    public static final String MULTIPART_FORM_DATA_ENCODING = "multipart/form-data";
-    public static final String APPLICATION_X_WWW_FORM_URLENCODED_ENCODING = "application/x-www-form-urlencoded";
-    public static final String APPLICATION_JSON_ENCODING = "application/json";
+    private static final String MULTIPART_FORM_DATA_ENCODING = "multipart/form-data";
+    private static final String APPLICATION_X_WWW_FORM_URLENCODED_ENCODING = "application/x-www-form-urlencoded";
+    private static final String APPLICATION_JSON_ENCODING = "application/json";
 
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CRLF = "\r\n";
@@ -280,9 +280,10 @@ public class WebServiceProxy {
                 URL url = new URL(serverURL, path);
 
                 // Construct query
-                // TODO PUT/JSON
-                if (!method.equalsIgnoreCase("POST")) {
+                if (!method.equalsIgnoreCase("POST") && !(method.equalsIgnoreCase("PUT") && encoding.equalsIgnoreCase(APPLICATION_JSON_ENCODING))) {
                     StringBuilder queryBuilder = new StringBuilder();
+
+                    int i = 0;
 
                     for (Map.Entry<String, ?> argument : arguments.entrySet()) {
                         String name = argument.getKey();
@@ -293,21 +294,22 @@ public class WebServiceProxy {
 
                         List<?> values = getParameterValues(argument.getValue());
 
-                        for (int i = 0, n = values.size(); i < n; i++) {
-                            Object value = values.get(i);
+                        for (int j = 0, n = values.size(); j < n; j++) {
+                            Object value = values.get(j);
 
                             if (value == null) {
                                 continue;
                             }
 
-                            // TODO Keep track of argument count
-                            if (queryBuilder.length() > 0) {
+                            if (i > 0) {
                                 queryBuilder.append("&");
                             }
 
                             queryBuilder.append(URLEncoder.encode(name, UTF_8_ENCODING));
                             queryBuilder.append("=");
                             queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+
+                            i++;
                         }
                     }
 
@@ -344,7 +346,7 @@ public class WebServiceProxy {
                     connection.setDoOutput(true);
 
                     String contentType;
-                    if (encoding.equals(MULTIPART_FORM_DATA_ENCODING)) {
+                    if (encoding.equalsIgnoreCase(MULTIPART_FORM_DATA_ENCODING)) {
                         contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
                     } else {
                         contentType = encoding;
@@ -389,23 +391,8 @@ public class WebServiceProxy {
         });
     }
 
-    /**
-     * Encodes a request.
-     *
-     * @param arguments
-     * The request arguments.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @param contentType
-     * The MIME type of the content to encode.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    protected void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
-        if (encoding.equals(MULTIPART_FORM_DATA_ENCODING)) {
+    private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
+        if (encoding.equalsIgnoreCase(MULTIPART_FORM_DATA_ENCODING)) {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
 
             for (Map.Entry<String, ?> argument : arguments.entrySet()) {
@@ -463,14 +450,46 @@ public class WebServiceProxy {
             writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
 
             writer.flush();
-        } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED_ENCODING)) {
-            // TODO
-        } else if (encoding.equals(APPLICATION_JSON_ENCODING)) {
+        } else if (encoding.equalsIgnoreCase(APPLICATION_X_WWW_FORM_URLENCODED_ENCODING)) {
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+
+            int i = 0;
+
+            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                String name = argument.getKey();
+
+                if (name == null) {
+                    continue;
+                }
+
+                List<?> values = getParameterValues(argument.getValue());
+
+                for (int j = 0, n = values.size(); j < n; j++) {
+                    Object value = values.get(j);
+
+                    if (value == null) {
+                        continue;
+                    }
+
+                    if (i > 0) {
+                        writer.append("&");
+                    }
+
+                    writer.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                    writer.append("=");
+                    writer.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+
+                    i++;
+                }
+            }
+
+            writer.flush();
+        } else if (encoding.equalsIgnoreCase(APPLICATION_JSON_ENCODING)) {
             JSONEncoder encoder = new JSONEncoder();
 
             encoder.writeValue(arguments, outputStream);
         } else {
-            // TODO?
+            throw new WebServiceException("Unsupported content type.", -1);
         }
     }
 
@@ -484,18 +503,18 @@ public class WebServiceProxy {
      * The MIME type of the content to decode.
      *
      * @return
-     * The decoded value, or <tt>null</tt> if the value could not be decoded.
+     * The decoded value.
      *
      * @throws IOException
      * If an exception occurs.
      */
     protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
         Object value;
-        if (contentType.startsWith("application/json")) {
+        if (contentType.toLowerCase().startsWith("application/json")) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
-        } else if (contentType.startsWith("text/")) {
+        } else if (contentType.toLowerCase().startsWith("text/")) {
             StringBuilder textBuilder = new StringBuilder(1024);
 
             try (InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING))) {
@@ -507,7 +526,7 @@ public class WebServiceProxy {
 
             value = textBuilder.toString();
         } else {
-            value = null;
+            throw new WebServiceException("Unsupported content type.", -1);
         }
 
         return value;
