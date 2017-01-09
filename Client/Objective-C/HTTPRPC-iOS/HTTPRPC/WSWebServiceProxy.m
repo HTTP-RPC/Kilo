@@ -99,7 +99,7 @@ NSString * const kCRLF = @"\r\n";
 
         [request setHTTPMethod:method];
 
-        [request setValue:@"application/json, image/*, text/*, */*" forHTTPHeaderField:@"Accept"];
+        [request setValue:@"application/json, image/*, text/*" forHTTPHeaderField:@"Accept"];
 
         // Authenticate request
         if (_authorization != nil) {

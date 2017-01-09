@@ -330,7 +330,7 @@ public class WebServiceProxy {
                 Locale locale = Locale.getDefault();
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                connection.setRequestProperty("Accept", "application/json, image/*, text/*, */*");
+                connection.setRequestProperty("Accept", "application/json, image/*, text/*");
                 connection.setRequestProperty("Accept-Language", acceptLanguage);
 
                 // Authenticate request
@@ -489,31 +489,18 @@ public class WebServiceProxy {
 
             encoder.writeValue(arguments, outputStream);
         } else {
-            throw new WebServiceException("Unsupported content type.", -1);
+            throw new UnsupportedOperationException("Unsupported request encoding.");
         }
     }
 
-    /**
-     * Decodes a response value.
-     *
-     * @param inputStream
-     * The input stream to read from.
-     *
-     * @param contentType
-     * The MIME type of the content to decode.
-     *
-     * @return
-     * The decoded value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+    private Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
         Object value;
         if (contentType.toLowerCase().startsWith("application/json")) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
+        } else if (contentType.toLowerCase().startsWith("image/")) {
+            value = decodeImageResponse(inputStream);
         } else if (contentType.toLowerCase().startsWith("text/")) {
             StringBuilder textBuilder = new StringBuilder(1024);
 
@@ -526,14 +513,29 @@ public class WebServiceProxy {
 
             value = textBuilder.toString();
         } else {
-            throw new WebServiceException("Unsupported content type.", -1);
+            throw new UnsupportedOperationException("Unsupported response encoding.");
         }
 
         return value;
     }
 
     /**
-     * Dispatches a result value.
+     * Decodes an image response. The default implementation throws
+     * {@link UnsupportedOperationException}.
+     *
+     * @param inputStream
+     * The input stream to read from.
+     *
+     * @return
+     * The decoded image.
+     */
+    protected Object decodeImageResponse(InputStream inputStream) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Dispatches a result. The default implementation executes the callback
+     * immediately on the current thread.
      *
      * @param command
      * A callback representing the result handler and the associated result or
