@@ -15,6 +15,7 @@
 package org.httprpc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class NoteServlet extends HttpServlet {
 
         JSONEncoder encoder = new JSONEncoder();
 
-        encoder.writeValue(notes.values(), response.getOutputStream());
+        encoder.writeValue(new ArrayList<>(notes.values()), response.getOutputStream());
     }
 
     @Override
@@ -59,9 +60,11 @@ public class NoteServlet extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
         }
 
+        Date date = new Date();
+
         notes.put(nextNoteID, mapOf(
             entry(ID_KEY, nextNoteID),
-            entry(DATE_KEY, new Date()),
+            entry(DATE_KEY, date.getTime()),
             entry(MESSAGE_KEY, request.getParameter("message"))
         ));
 

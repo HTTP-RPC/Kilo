@@ -140,15 +140,8 @@ public class MainActivity extends AppCompatActivity {
             private Handler handler = new Handler(Looper.getMainLooper());
 
             @Override
-            protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-                Object value;
-                if (contentType.toLowerCase().startsWith("image/")) {
-                    value = BitmapFactory.decodeStream(inputStream);
-                } else {
-                    value = super.decodeResponse(inputStream, contentType);
-                }
-
-                return value;
+            protected Object decodeImageResponse(InputStream inputStream, String imageType) {
+                return BitmapFactory.decodeStream(inputStream);
             }
 
             @Override

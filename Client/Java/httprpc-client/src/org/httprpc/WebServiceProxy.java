@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -274,121 +275,140 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        return executorService.submit(() -> {
-            V result;
-            try {
-                URL url = new URL(serverURL, path);
+        // TODO Use a lambda expression when Android issue 211386 is resolved:
+        // https://code.google.com/p/android/issues/detail?id=211386
+        return executorService.submit(new Callable<V>() {
+            @Override
+            public V call() throws IOException {
+                V result;
+                try {
+                    URL url = new URL(serverURL, path);
 
-                // Construct query
-                if (!(method.equalsIgnoreCase("POST")
-                    || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON_MIME_TYPE)))) {
-                    StringBuilder queryBuilder = new StringBuilder();
+                    // Construct query
+                    boolean encode = (method.equalsIgnoreCase("POST")
+                        || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON_MIME_TYPE)));
 
-                    int i = 0;
+                    if (!encode) {
+                        StringBuilder queryBuilder = new StringBuilder();
 
-                    for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                        String name = argument.getKey();
+                        int i = 0;
 
-                        if (name == null) {
-                            continue;
-                        }
+                        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+                            String name = argument.getKey();
 
-                        List<?> values = getParameterValues(argument.getValue());
-
-                        for (int j = 0, n = values.size(); j < n; j++) {
-                            Object value = values.get(j);
-
-                            if (value == null) {
+                            if (name == null) {
                                 continue;
                             }
 
-                            if (i > 0) {
-                                queryBuilder.append("&");
+                            List<?> values = getParameterValues(argument.getValue());
+
+                            for (int j = 0, n = values.size(); j < n; j++) {
+                                Object value = values.get(j);
+
+                                if (value == null) {
+                                    continue;
+                                }
+
+                                if (i > 0) {
+                                    queryBuilder.append("&");
+                                }
+
+                                queryBuilder.append(URLEncoder.encode(name, UTF_8));
+                                queryBuilder.append("=");
+                                queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
+
+                                i++;
                             }
+                        }
 
-                            queryBuilder.append(URLEncoder.encode(name, UTF_8));
-                            queryBuilder.append("=");
-                            queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
-
-                            i++;
+                        if (queryBuilder.length() > 0) {
+                            url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + queryBuilder);
                         }
                     }
 
-                    if (queryBuilder.length() > 0) {
-                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + queryBuilder);
-                    }
-                }
+                    // Open URL connection
+                    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
-                // Open URL connection
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod(method);
 
-                connection.setRequestMethod(method);
+                    connection.setConnectTimeout(connectTimeout);
+                    connection.setReadTimeout(readTimeout);
 
-                connection.setConnectTimeout(connectTimeout);
-                connection.setReadTimeout(readTimeout);
+                    // Set language
+                    Locale locale = Locale.getDefault();
+                    String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                // Set language
-                Locale locale = Locale.getDefault();
-                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
+                    connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON_MIME_TYPE));
+                    connection.setRequestProperty("Accept-Language", acceptLanguage);
 
-                connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON_MIME_TYPE));
-                connection.setRequestProperty("Accept-Language", acceptLanguage);
+                    // Authenticate request
+                    if (authorization != null) {
+                        String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
+                        String value = String.format("Basic %s", base64Encode(credentials));
 
-                // Authenticate request
-                if (authorization != null) {
-                    String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
-                    String value = String.format("Basic %s", base64Encode(credentials));
-
-                    connection.setRequestProperty("Authorization", value);
-                }
-
-                // Write request body
-                if (url.getQuery() == null) {
-                    connection.setDoOutput(true);
-
-                    String contentType;
-                    if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
-                        contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
-                    } else {
-                        contentType = encoding;
+                        connection.setRequestProperty("Authorization", value);
                     }
 
-                    connection.setRequestProperty("Content-Type", contentType);
+                    // Write request body
+                    if (encode) {
+                        connection.setDoOutput(true);
 
-                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                        encodeRequest(arguments, outputStream);
+                        String contentType;
+                        if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
+                            contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
+                        } else {
+                            contentType = encoding;
+                        }
+
+                        connection.setRequestProperty("Content-Type", contentType);
+
+                        try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                            encodeRequest(arguments, outputStream);
+                        }
                     }
-                }
 
-                // Read response
-                int responseCode = connection.getResponseCode();
+                    // Read response
+                    int responseCode = connection.getResponseCode();
 
-                if (responseCode / 100 == 2) {
-                    String contentType = connection.getContentType();
+                    if (responseCode / 100 == 2) {
+                        String contentType = connection.getContentType();
 
-                    if (contentType != null) {
-                        try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                            result = (V)decodeResponse(inputStream, contentType.toLowerCase());
+                        if (contentType != null) {
+                            try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                                result = (V)decodeResponse(inputStream, contentType.toLowerCase());
+                            }
+                        } else {
+                            result = null;
                         }
                     } else {
-                        result = null;
+                        throw new WebServiceException(connection.getResponseMessage(), responseCode);
                     }
-                } else {
-                    throw new WebServiceException(connection.getResponseMessage(), responseCode);
+                } catch (Exception exception) {
+                    if (resultHandler != null) {
+                        // TODO Android issue 211386
+                        dispatchResult(new Runnable() {
+                            @Override
+                            public void run() {
+                                resultHandler.execute(null, exception);
+                            }
+                        });
+                    }
+
+                    throw exception;
                 }
-            } catch (Exception exception) {
+
                 if (resultHandler != null) {
-                    dispatchResult(() -> resultHandler.execute(null, exception));
+                    // TODO Android issue 211386
+                    dispatchResult(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultHandler.execute(result, null);
+                        }
+                    });
                 }
 
-                throw exception;
+                return result;
             }
-
-            if (resultHandler != null) {
-                dispatchResult(() -> resultHandler.execute(result, null));
-            }
-
-            return result;
         });
     }
 
@@ -559,6 +579,9 @@ public class WebServiceProxy {
      *
      * @param textType
      * The text subtype.
+     *
+     * @param charset
+     * The character set used to encode the text.
      *
      * @return
      * The decoded text content.
@@ -1267,7 +1290,7 @@ class JSONEncoder {
 
             writer.append("}");
         } else {
-            writeValue(value.toString(), writer);
+            throw new IOException("Unsupported value type.");
         }
     }
 

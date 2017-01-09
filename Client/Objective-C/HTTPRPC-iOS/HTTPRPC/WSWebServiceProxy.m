@@ -91,8 +91,10 @@ NSString * const kCRLF = @"\r\n";
 
     if (url != nil) {
         // Construct query
-        if (!([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
-            || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:kApplicationJSONMIMEType]))) {
+        BOOL encode = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
+            || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:kApplicationJSONMIMEType]));
+
+        if (!encode) {
             NSMutableString *query = [NSMutableString new];
 
             NSUInteger i = 0;
@@ -137,7 +139,7 @@ NSString * const kCRLF = @"\r\n";
         // Write request body
         NSError *error = nil;
 
-        if ([url query] == nil) {
+        if (encode) {
             NSString *contentType;
             if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
                 contentType = [NSString stringWithFormat:@"%@; boundary=%@", _encoding, _multipartBoundary];
