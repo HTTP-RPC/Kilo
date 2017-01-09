@@ -505,21 +505,24 @@ public class WebServiceProxy {
     private Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
         MIMEType mimeType = MIMEType.valueOf(contentType);
 
+        String type = mimeType.getType();
+        String subtype = mimeType.getSubtype();
+
         Object value;
-        if (mimeType.getSubtype().equals("json")) {
+        if (type.equals("application") && subtype.equals("json")) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
-        } else if (mimeType.getType().equals("image")) {
-            value = decodeImageResponse(inputStream, mimeType.getSubtype());
-        } else if (mimeType.getSubtype().equals("text")) {
+        } else if (type.equals("image")) {
+            value = decodeImageResponse(inputStream, subtype);
+        } else if (type.equals("text")) {
             String charsetName = mimeType.getParameter("charset");
 
             if (charsetName == null) {
                 charsetName = UTF_8;
             }
 
-            value = decodeTextResponse(inputStream, mimeType.getSubtype(), Charset.forName(charsetName));
+            value = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
         } else {
             throw new UnsupportedOperationException("Unsupported response encoding.");
         }
