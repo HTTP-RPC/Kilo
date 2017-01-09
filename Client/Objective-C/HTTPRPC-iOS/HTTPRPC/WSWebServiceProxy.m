@@ -36,6 +36,12 @@ NSString * const kCRLF = @"\r\n";
 
 @end
 
+@interface NSMutableData (HTTPRPC)
+
+- (void)appendUTF8DataForString:(NSString *)string;
+
+@end
+
 @implementation WSWebServiceProxy
 {
     NSString *_encoding;
@@ -210,14 +216,14 @@ NSString * const kCRLF = @"\r\n";
         NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
 
         for (__strong id value in values) {
-            [body appendData:[[NSString stringWithFormat:@"--%@%@", _multipartBoundary, kCRLF] UTF8Data]];
-            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", name] UTF8Data]];
+            [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@%@", _multipartBoundary, kCRLF]];
+            [body appendUTF8DataForString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", name]];
 
             if ([value isKindOfClass:[NSURL self]]) {
                 NSString *filename = [value lastPathComponent];
 
-                [body appendData:[[NSString stringWithFormat:@"; filename=\"%@\"", filename] UTF8Data]];
-                [body appendData:[kCRLF UTF8Data]];
+                [body appendUTF8DataForString:[NSString stringWithFormat:@"; filename=\"%@\"", filename]];
+                [body appendUTF8DataForString:kCRLF];
 
                 CFStringRef extension = (__bridge CFStringRef)[filename pathExtension];
                 CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, extension, NULL);
@@ -230,22 +236,22 @@ NSString * const kCRLF = @"\r\n";
                     attachmentContentType = @"application/octet-stream";
                 }
 
-                [body appendData:[[NSString stringWithFormat:@"%@: %@%@", @"Content-Type", attachmentContentType, kCRLF] UTF8Data]];
-                [body appendData:[kCRLF UTF8Data]];
+                [body appendUTF8DataForString:[NSString stringWithFormat:@"%@: %@%@", @"Content-Type", attachmentContentType, kCRLF]];
+                [body appendUTF8DataForString:kCRLF];
 
                 [body appendData:[NSData dataWithContentsOfURL:value]];
             } else {
-                [body appendData:[kCRLF UTF8Data]];
+                [body appendUTF8DataForString:kCRLF];
 
-                [body appendData:[kCRLF UTF8Data]];
-                [body appendData:[[WSWebServiceProxy parameterValueForElement:value] UTF8Data]];
+                [body appendUTF8DataForString:kCRLF];
+                [body appendUTF8DataForString:[WSWebServiceProxy parameterValueForElement:value]];
             }
 
-            [body appendData:[kCRLF UTF8Data]];
+            [body appendUTF8DataForString:kCRLF];
         }
     }
 
-    [body appendData:[[NSString stringWithFormat:@"--%@--%@", _multipartBoundary, kCRLF] UTF8Data]];
+    [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@--%@", _multipartBoundary, kCRLF]];
 
     return body;
 }
@@ -261,14 +267,14 @@ NSString * const kCRLF = @"\r\n";
 
         for (NSUInteger j = 0, n = [values count]; j < n; j++) {
             if (i > 0) {
-                [body appendData:[@"&" UTF8Data]];
+                [body appendUTF8DataForString:@"&"];
             }
 
             NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:j]];
 
-            [body appendData:[[name URLEncodedString] UTF8Data]];
-            [body appendData:[@"=" UTF8Data]];
-            [body appendData:[[value URLEncodedString] UTF8Data]];
+            [body appendUTF8DataForString:[name URLEncodedString]];
+            [body appendUTF8DataForString:@"="];
+            [body appendUTF8DataForString:[value URLEncodedString]];
 
             i++;
         }
@@ -340,3 +346,11 @@ NSString * const kCRLF = @"\r\n";
 
 @end
 
+@implementation NSMutableData (HTTPRPC)
+
+- (void)appendUTF8DataForString:(NSString *)string
+{
+    [self appendData:[string UTF8Data]];
+}
+
+@end
