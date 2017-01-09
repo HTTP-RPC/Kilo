@@ -494,24 +494,17 @@ public class WebServiceProxy {
     }
 
     private Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+        // TODO Split content type into type/sub-type and extract parameters
+
         Object value;
         if (contentType.toLowerCase().startsWith("application/json")) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
         } else if (contentType.toLowerCase().startsWith("image/")) {
-            value = decodeImageResponse(inputStream);
+            value = decodeImageResponse(inputStream, null); // TODO Image type
         } else if (contentType.toLowerCase().startsWith("text/")) {
-            StringBuilder textBuilder = new StringBuilder(1024);
-
-            try (InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName(UTF_8_ENCODING))) {
-                int c;
-                while ((c = reader.read()) != EOF) {
-                    textBuilder.append((char)c);
-                }
-            }
-
-            value = textBuilder.toString();
+            value = decodeTextResponse(inputStream, null, Charset.forName(UTF_8_ENCODING)); // TODO Text type, charset
         } else {
             throw new UnsupportedOperationException("Unsupported response encoding.");
         }
@@ -526,11 +519,45 @@ public class WebServiceProxy {
      * @param inputStream
      * The input stream to read from.
      *
+     * @param imageType
+     * The image subtype.
+     *
      * @return
-     * The decoded image.
+     * The decoded image content.
+     *
+     * @throws IOException
+     * If an exception occurs.
      */
-    protected Object decodeImageResponse(InputStream inputStream) {
+    protected Object decodeImageResponse(InputStream inputStream, String imageType) throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Decodes a text response. The default implementation returns a {@link String}.
+     *
+     * @param inputStream
+     * The input stream to read from.
+     *
+     * @param textType
+     * The text subtype.
+     *
+     * @return
+     * The decoded text content.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    protected Object decodeTextResponse(InputStream inputStream, String textType, Charset charset) throws IOException {
+        StringBuilder textBuilder = new StringBuilder(1024);
+
+        try (InputStreamReader reader = new InputStreamReader(inputStream, charset)) {
+            int c;
+            while ((c = reader.read()) != EOF) {
+                textBuilder.append((char)c);
+            }
+        }
+
+        return textBuilder.toString();
     }
 
     /**
