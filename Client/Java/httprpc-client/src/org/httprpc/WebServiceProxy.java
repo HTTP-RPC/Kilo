@@ -54,15 +54,15 @@ public class WebServiceProxy {
     private int connectTimeout = 0;
     private int readTimeout = 0;
 
-    private String encoding = MULTIPART_FORM_DATA_ENCODING;
+    private String encoding = MULTIPART_FORM_DATA_MIME_TYPE;
 
     private PasswordAuthentication authorization = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
-    private static final String MULTIPART_FORM_DATA_ENCODING = "multipart/form-data";
-    private static final String APPLICATION_X_WWW_FORM_URLENCODED_ENCODING = "application/x-www-form-urlencoded";
-    private static final String APPLICATION_JSON_ENCODING = "application/json";
+    private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
+    private static final String APPLICATION_X_WWW_FORM_URLENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
+    private static final String APPLICATION_JSON_MIME_TYPE = "application/json";
 
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CRLF = "\r\n";
@@ -191,7 +191,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        this.encoding = encoding;
+        this.encoding = encoding.toLowerCase();
     }
 
     /**
@@ -280,7 +280,8 @@ public class WebServiceProxy {
                 URL url = new URL(serverURL, path);
 
                 // Construct query
-                if (!method.equalsIgnoreCase("POST") && !(method.equalsIgnoreCase("PUT") && encoding.equalsIgnoreCase(APPLICATION_JSON_ENCODING))) {
+                if (!(method.equalsIgnoreCase("POST")
+                    || (method.equalsIgnoreCase("PUT") && encoding.equalsIgnoreCase(APPLICATION_JSON_MIME_TYPE)))) {
                     StringBuilder queryBuilder = new StringBuilder();
 
                     int i = 0;
@@ -330,7 +331,7 @@ public class WebServiceProxy {
                 Locale locale = Locale.getDefault();
                 String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                connection.setRequestProperty("Accept", "application/json, image/*, text/*");
+                connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON_MIME_TYPE));
                 connection.setRequestProperty("Accept-Language", acceptLanguage);
 
                 // Authenticate request
@@ -346,7 +347,7 @@ public class WebServiceProxy {
                     connection.setDoOutput(true);
 
                     String contentType;
-                    if (encoding.equalsIgnoreCase(MULTIPART_FORM_DATA_ENCODING)) {
+                    if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
                         contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
                     } else {
                         contentType = encoding;
@@ -367,7 +368,7 @@ public class WebServiceProxy {
 
                     if (contentType != null) {
                         try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                            result = (V)decodeResponse(inputStream, contentType);
+                            result = (V)decodeResponse(inputStream, contentType.toLowerCase());
                         }
                     } else {
                         result = null;
@@ -392,7 +393,7 @@ public class WebServiceProxy {
     }
 
     private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
-        if (encoding.equalsIgnoreCase(MULTIPART_FORM_DATA_ENCODING)) {
+        if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
 
             for (Map.Entry<String, ?> argument : arguments.entrySet()) {
@@ -450,7 +451,7 @@ public class WebServiceProxy {
             writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
 
             writer.flush();
-        } else if (encoding.equalsIgnoreCase(APPLICATION_X_WWW_FORM_URLENCODED_ENCODING)) {
+        } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED_MIME_TYPE)) {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
 
             int i = 0;
@@ -484,7 +485,7 @@ public class WebServiceProxy {
             }
 
             writer.flush();
-        } else if (encoding.equalsIgnoreCase(APPLICATION_JSON_ENCODING)) {
+        } else if (encoding.equals(APPLICATION_JSON_MIME_TYPE)) {
             JSONEncoder encoder = new JSONEncoder();
 
             encoder.writeValue(arguments, outputStream);
@@ -497,13 +498,13 @@ public class WebServiceProxy {
         // TODO Split content type into type/sub-type and extract parameters
 
         Object value;
-        if (contentType.toLowerCase().startsWith("application/json")) {
+        if (contentType.startsWith(APPLICATION_JSON_MIME_TYPE)) {
             JSONDecoder decoder = new JSONDecoder();
 
             value = decoder.readValue(inputStream);
-        } else if (contentType.toLowerCase().startsWith("image/")) {
+        } else if (contentType.startsWith("image/")) {
             value = decodeImageResponse(inputStream, null); // TODO Image type
-        } else if (contentType.toLowerCase().startsWith("text/")) {
+        } else if (contentType.startsWith("text/")) {
             value = decodeTextResponse(inputStream, null, Charset.forName(UTF_8_ENCODING)); // TODO Text type, charset
         } else {
             throw new UnsupportedOperationException("Unsupported response encoding.");
