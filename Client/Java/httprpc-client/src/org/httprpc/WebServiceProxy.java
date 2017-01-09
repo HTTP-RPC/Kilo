@@ -533,7 +533,8 @@ public class WebServiceProxy {
     }
 
     /**
-     * Decodes a text response. The default implementation returns a {@link String}.
+     * Decodes a text response. The default implementation returns a
+     * {@link String}.
      *
      * @param inputStream
      * The input stream to read from.
