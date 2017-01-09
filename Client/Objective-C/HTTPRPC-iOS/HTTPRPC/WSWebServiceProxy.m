@@ -23,6 +23,10 @@ NSString * const WSMethodKey = @"method";
 NSString * const WSPathKey = @"path";
 NSString * const WSArgumentsKey = @"arguments";
 
+NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
+NSString * const kApplicationXWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencoded";
+NSString * const kApplicationJSONMIMEType = @"application/json";
+
 NSString * const kCRLF = @"\r\n";
 
 @interface NSString (HTTPRPC)
@@ -34,6 +38,8 @@ NSString * const kCRLF = @"\r\n";
 
 @implementation WSWebServiceProxy
 {
+    NSString *_encoding;
+
     NSString *_multipartBoundary;
 }
 
@@ -45,10 +51,22 @@ NSString * const kCRLF = @"\r\n";
         _session = session;
         _serverURL = serverURL;
 
+        _encoding = kMultipartFormDataMIMEType;
+
         _multipartBoundary = [[NSUUID new] UUIDString];
     }
 
     return self;
+}
+
+- (NSString *)encoding
+{
+    return _encoding;
+}
+
+- (void)setEncoding:(NSString *)encoding
+{
+    _encoding = [encoding lowercaseString];
 }
 
 - (NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
@@ -67,7 +85,8 @@ NSString * const kCRLF = @"\r\n";
 
     if (url != nil) {
         // Construct query
-        if ([method caseInsensitiveCompare:@"POST"] != NSOrderedSame) {
+        if (!([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
+            || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:kApplicationJSONMIMEType]))) {
             NSMutableString *query = [NSMutableString new];
 
             NSUInteger i = 0;
@@ -99,7 +118,7 @@ NSString * const kCRLF = @"\r\n";
 
         [request setHTTPMethod:method];
 
-        [request setValue:@"application/json, image/*, text/*" forHTTPHeaderField:@"Accept"];
+        [request setValue:[NSString stringWithFormat:@"%@, image/*, text/*", kApplicationJSONMIMEType] forHTTPHeaderField:@"Accept"];
 
         // Authenticate request
         if (_authorization != nil) {
@@ -110,45 +129,80 @@ NSString * const kCRLF = @"\r\n";
         }
 
         // Write request body
+        NSError *error = nil;
+
         if ([url query] == nil) {
-            [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", _multipartBoundary] forHTTPHeaderField:@"Content-Type"];
-            [request setHTTPBody:[self encodeRequestWithArguments:arguments]];
+            NSString *contentType;
+            if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
+                contentType = [NSString stringWithFormat:@"%@; boundary=%@", _encoding, _multipartBoundary];
+            } else {
+                contentType = _encoding;
+            }
+
+            [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
+            [request setHTTPBody:[self encodeRequestWithArguments:arguments error:&error]];
         }
 
         // Execute request
         NSOperationQueue *resultHandlerQueue = [NSOperationQueue currentQueue];
 
-        task = [_session dataTaskWithRequest:request completionHandler:^void (NSData *data, NSURLResponse *response, NSError *error) {
-            id result = nil;
+        if (error == nil) {
+            task = [_session dataTaskWithRequest:request completionHandler:^void (NSData *data, NSURLResponse *response, NSError *error) {
+                id result = nil;
 
-            if (error == nil) {
-                NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+                if (error == nil) {
+                    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
 
-                if (statusCode / 100 == 2) {
-                    NSString *mimeType = [response MIMEType];
+                    if (statusCode / 100 == 2) {
+                        NSString *mimeType = [response MIMEType];
 
-                    if (mimeType != nil) {
-                        result = [self decodeResponse:data withContentType:mimeType error:&error];
+                        if (mimeType != nil) {
+                            result = [self decodeResponse:data withContentType:[mimeType lowercaseString] error:&error];
+                        }
+                    } else {
+                        error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
+                            WSMethodKey:method, WSPathKey:path, WSArgumentsKey:arguments
+                        }];
                     }
-                } else {
-                    error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
-                        WSMethodKey:method, WSPathKey:path, WSArgumentsKey:arguments
-                    }];
                 }
-            }
 
-            [resultHandlerQueue addOperationWithBlock:^void () {
-                resultHandler(result, error);
+                [resultHandlerQueue addOperationWithBlock:^void () {
+                    resultHandler(result, error);
+                }];
             }];
-        }];
 
-        [task resume];
+            [task resume];
+        } else {
+            [resultHandlerQueue addOperationWithBlock:^void () {
+                resultHandler(nil, error);
+            }];
+        }
     }
 
     return task;
 }
 
-- (NSData *)encodeRequestWithArguments:(NSDictionary *)arguments
+- (NSData *)encodeRequestWithArguments:(NSDictionary *)arguments error:(NSError **)error
+{
+    NSData *body;
+    if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
+        body = [self encodeMultipartFormDataRequestWithArguments:arguments];
+    } else if ([_encoding isEqual:kApplicationXWWWFormURLEncodedMIMEType]) {
+        body = [self encodeApplicationXWWWFormURLEncodedRequestWithArguments:arguments];
+    } else if ([_encoding isEqual:kApplicationJSONMIMEType]) {
+        body = [NSJSONSerialization dataWithJSONObject:arguments options:0 error:error];
+    } else {
+        body = nil;
+
+        *error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
+            NSLocalizedDescriptionKey:@"Unsupported request encoding."
+        }];
+    }
+
+    return body;
+}
+
+- (NSData *)encodeMultipartFormDataRequestWithArguments:(NSDictionary *)arguments
 {
     NSMutableData *body = [NSMutableData new];
 
@@ -196,17 +250,51 @@ NSString * const kCRLF = @"\r\n";
     return body;
 }
 
+- (NSData *)encodeApplicationXWWWFormURLEncodedRequestWithArguments:(NSDictionary *)arguments
+{
+    NSMutableData *body = [NSMutableData new];
+
+    NSUInteger i = 0;
+
+    for (NSString *name in arguments) {
+        NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+
+        for (NSUInteger j = 0, n = [values count]; j < n; j++) {
+            if (i > 0) {
+                [body appendData:[@"&" UTF8Data]];
+            }
+
+            NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:j]];
+
+            [body appendData:[[name URLEncodedString] UTF8Data]];
+            [body appendData:[@"=" UTF8Data]];
+            [body appendData:[[value URLEncodedString] UTF8Data]];
+
+            i++;
+        }
+    }
+
+    return body;
+}
+
 - (id)decodeResponse:(NSData *)data withContentType:(NSString *)contentType error:(NSError **)error
 {
+    // TODO Split content type into type/sub-type and extract parameters
+
     id value;
-    if ([contentType hasPrefix:@"application/json"]) {
+    if ([contentType hasPrefix:kApplicationJSONMIMEType]) {
         value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
     } else if ([contentType hasPrefix:@"image/"]) {
         value = [UIImage imageWithData:data];
     } else if ([contentType hasPrefix:@"text/"]) {
+        // TODO Character set
         value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     } else {
         value = nil;
+
+        *error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
+            NSLocalizedDescriptionKey:@"Unsupported response encoding."
+        }];
     }
 
     return value;

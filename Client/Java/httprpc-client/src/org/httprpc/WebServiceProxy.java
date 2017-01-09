@@ -281,7 +281,7 @@ public class WebServiceProxy {
 
                 // Construct query
                 if (!(method.equalsIgnoreCase("POST")
-                    || (method.equalsIgnoreCase("PUT") && encoding.equalsIgnoreCase(APPLICATION_JSON_MIME_TYPE)))) {
+                    || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON_MIME_TYPE)))) {
                     StringBuilder queryBuilder = new StringBuilder();
 
                     int i = 0;
@@ -394,97 +394,9 @@ public class WebServiceProxy {
 
     private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
         if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
-
-            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                String name = argument.getKey();
-
-                if (name == null) {
-                    continue;
-                }
-
-                List<?> values = getParameterValues(argument.getValue());
-
-                for (Object value : values) {
-                    if (value == null) {
-                        continue;
-                    }
-
-                    writer.append(String.format("--%s%s", multipartBoundary, CRLF));
-                    writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
-
-                    if (value instanceof URL) {
-                        String path = ((URL)value).getPath();
-                        String filename = path.substring(path.lastIndexOf('/') + 1);
-
-                        writer.append(String.format("; filename=\"%s\"", filename));
-                        writer.append(CRLF);
-
-                        String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                        if (attachmentContentType == null) {
-                            attachmentContentType = "application/octet-stream";
-                        }
-
-                        writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
-                        writer.append(CRLF);
-
-                        writer.flush();
-
-                        try (InputStream inputStream = ((URL)value).openStream()) {
-                            int b;
-                            while ((b = inputStream.read()) != EOF) {
-                                outputStream.write(b);
-                            }
-                        }
-                    } else {
-                        writer.append(CRLF);
-
-                        writer.append(CRLF);
-                        writer.append(value.toString());
-                    }
-
-                    writer.append(CRLF);
-                }
-            }
-
-            writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
-
-            writer.flush();
+            encodeMultipartFormDataRequest(arguments, outputStream);
         } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED_MIME_TYPE)) {
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
-
-            int i = 0;
-
-            for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                String name = argument.getKey();
-
-                if (name == null) {
-                    continue;
-                }
-
-                List<?> values = getParameterValues(argument.getValue());
-
-                for (int j = 0, n = values.size(); j < n; j++) {
-                    Object value = values.get(j);
-
-                    if (value == null) {
-                        continue;
-                    }
-
-                    if (i > 0) {
-                        writer.append("&");
-                    }
-
-                    writer.append(URLEncoder.encode(name, UTF_8_ENCODING));
-                    writer.append("=");
-                    writer.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
-
-                    i++;
-                }
-            }
-
-            writer.flush();
+            encodeApplicationXWWWFormURLEncodedRequest(arguments, outputStream);
         } else if (encoding.equals(APPLICATION_JSON_MIME_TYPE)) {
             JSONEncoder encoder = new JSONEncoder();
 
@@ -492,6 +404,102 @@ public class WebServiceProxy {
         } else {
             throw new UnsupportedOperationException("Unsupported request encoding.");
         }
+    }
+
+    private void encodeMultipartFormDataRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+
+        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+            String name = argument.getKey();
+
+            if (name == null) {
+                continue;
+            }
+
+            List<?> values = getParameterValues(argument.getValue());
+
+            for (Object value : values) {
+                if (value == null) {
+                    continue;
+                }
+
+                writer.append(String.format("--%s%s", multipartBoundary, CRLF));
+                writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
+
+                if (value instanceof URL) {
+                    String path = ((URL)value).getPath();
+                    String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                    writer.append(String.format("; filename=\"%s\"", filename));
+                    writer.append(CRLF);
+
+                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                    if (attachmentContentType == null) {
+                        attachmentContentType = "application/octet-stream";
+                    }
+
+                    writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
+                    writer.append(CRLF);
+
+                    writer.flush();
+
+                    try (InputStream inputStream = ((URL)value).openStream()) {
+                        int b;
+                        while ((b = inputStream.read()) != EOF) {
+                            outputStream.write(b);
+                        }
+                    }
+                } else {
+                    writer.append(CRLF);
+
+                    writer.append(CRLF);
+                    writer.append(value.toString());
+                }
+
+                writer.append(CRLF);
+            }
+        }
+
+        writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
+
+        writer.flush();
+    }
+
+    private void encodeApplicationXWWWFormURLEncodedRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8_ENCODING));
+
+        int i = 0;
+
+        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+            String name = argument.getKey();
+
+            if (name == null) {
+                continue;
+            }
+
+            List<?> values = getParameterValues(argument.getValue());
+
+            for (int j = 0, n = values.size(); j < n; j++) {
+                Object value = values.get(j);
+
+                if (value == null) {
+                    continue;
+                }
+
+                if (i > 0) {
+                    writer.append("&");
+                }
+
+                writer.append(URLEncoder.encode(name, UTF_8_ENCODING));
+                writer.append("=");
+                writer.append(URLEncoder.encode(value.toString(), UTF_8_ENCODING));
+
+                i++;
+            }
+        }
+
+        writer.flush();
     }
 
     private Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
