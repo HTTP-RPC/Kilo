@@ -286,7 +286,13 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
+        // Capture state
+        int connectTimeout = this.connectTimeout;
+        int readTimeout = this.readTimeout;
+
         String encoding = this.encoding;
+
+        PasswordAuthentication authorization = this.authorization;
 
         // TODO Use a lambda expression when Android issue 211386 is resolved:
         // https://code.google.com/p/android/issues/detail?id=211386

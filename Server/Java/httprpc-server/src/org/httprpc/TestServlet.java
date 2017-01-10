@@ -136,17 +136,14 @@ public class TestServlet extends HttpServlet {
         String contentType = request.getContentType();
 
         String result;
-        if (contentType == null) {
-            result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
-        } else if (contentType.startsWith(WebServiceProxy.APPLICATION_JSON)){
+        if (contentType != null && contentType.startsWith(WebServiceProxy.APPLICATION_JSON)) {
             JSONDecoder decoder = new JSONDecoder();
 
             Map<String, ?> arguments = (Map<String, ?>)decoder.readValue(request.getInputStream());
 
             result = arguments.get("text").equals("héllo") ? "göodbye" : null;
         } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
         }
 
         writeResult(result, response);
