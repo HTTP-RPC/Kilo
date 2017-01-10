@@ -18,8 +18,11 @@ import HTTPRPC
 
 class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var getCell: UITableViewCell!
-    @IBOutlet var postCell: UITableViewCell!
+    @IBOutlet var postMultipartCell: UITableViewCell!
+    @IBOutlet var postURLEncodedCell: UITableViewCell!
+    @IBOutlet var postJSONCell: UITableViewCell!
     @IBOutlet var putCell: UITableViewCell!
+    @IBOutlet var putJSONCell: UITableViewCell!
     @IBOutlet var deleteCell: UITableViewCell!
     @IBOutlet var timeoutCell: UITableViewCell!
     @IBOutlet var cancelCell: UITableViewCell!
@@ -78,6 +81,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         let textTestURL = Bundle.main.url(forResource: "test", withExtension: "txt")!
         let imageTestURL = Bundle.main.url(forResource: "test", withExtension: "jpg")!
 
+        serviceProxy.encoding = WSMultipartFormData
         serviceProxy.invoke("POST", path: "/httprpc-server/test", arguments: [
             "string": "héllo",
             "strings": ["a", "b", "c"],
@@ -100,12 +104,50 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
                         "checksum": 1038036
                     ]
                 ]
-            ], error: error, cell: self.postCell)
+            ], error: error, cell: self.postMultipartCell)
+        }
+
+        serviceProxy.encoding = WSApplicationXWWWFormURLEncoded
+        serviceProxy.invoke("POST", path: "/httprpc-server/test", arguments: [
+            "string": "héllo",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true
+            ]) { result, error in
+            self.validate(result as? NSDictionary == [
+                "string": "héllo",
+                "strings": ["a", "b", "c"],
+                "number": 123,
+                "flag": true,
+                "attachmentInfo": [
+                ]
+            ], error: error, cell: self.postURLEncodedCell)
+        }
+
+        serviceProxy.encoding = WSApplicationJSON
+        serviceProxy.invoke("POST", path: "/httprpc-server/test", arguments: [
+            "string": "héllo",
+            "strings": ["a", "b", "c"],
+            "number": 123,
+            "flag": true
+            ]) { result, error in
+            self.validate(result as? NSDictionary == [
+                "string": "héllo",
+                "strings": ["a", "b", "c"],
+                "number": 123,
+                "flag": true
+            ], error: error, cell: self.postJSONCell)
         }
 
         // PUT
+        serviceProxy.encoding = WSMultipartFormData
         serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
             self.validate(result as? String == "göodbye", error: error, cell: self.putCell)
+        }
+
+        serviceProxy.encoding = WSApplicationJSON
+        serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
+            self.validate(result as? String == "göodbye", error: error, cell: self.putJSONCell)
         }
 
         // DELETE
