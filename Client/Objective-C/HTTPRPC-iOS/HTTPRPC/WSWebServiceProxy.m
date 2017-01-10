@@ -287,15 +287,12 @@ NSString * const kCRLF = @"\r\n";
 
 - (id)decodeResponse:(NSData *)data withContentType:(NSString *)contentType error:(NSError **)error
 {
-    // TODO Split content type into type/sub-type and extract parameters
-
     id value;
     if ([contentType hasPrefix:kApplicationJSONMIMEType]) {
         value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
     } else if ([contentType hasPrefix:@"image/"]) {
         value = [UIImage imageWithData:data];
     } else if ([contentType hasPrefix:@"text/"]) {
-        // TODO Character set
         value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     } else {
         value = nil;

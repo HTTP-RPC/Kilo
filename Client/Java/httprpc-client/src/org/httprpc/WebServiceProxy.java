@@ -792,7 +792,7 @@ class MIMEType {
                 break;
             }
 
-            typeBuilder.append(c);
+            typeBuilder.append(Character.toLowerCase(c));
         }
 
         // Subtype
@@ -805,7 +805,7 @@ class MIMEType {
                 break;
             }
 
-            subtypeBuilder.append(c);
+            subtypeBuilder.append(Character.toLowerCase(c));
         }
 
         // Parameters
@@ -821,7 +821,7 @@ class MIMEType {
                     break;
                 }
 
-                keyBuilder.append(c);
+                keyBuilder.append(Character.toLowerCase(c));
             }
 
             StringBuilder valueBuilder = new StringBuilder();
@@ -833,10 +833,10 @@ class MIMEType {
                     break;
                 }
 
-                valueBuilder.append(c);
+                valueBuilder.append(Character.toLowerCase(c));
             }
 
-            mimeType.parameters.put(keyBuilder.toString(), valueBuilder.toString());
+            mimeType.parameters.put(keyBuilder.toString().trim(), valueBuilder.toString().trim());
         }
 
         return mimeType;

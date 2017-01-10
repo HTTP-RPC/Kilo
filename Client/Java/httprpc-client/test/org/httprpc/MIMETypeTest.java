@@ -20,11 +20,11 @@ import org.junit.Test;
 public class MIMETypeTest {
     @Test
     public void testMIMEType() {
-        MIMEType mimeType = MIMEType.valueOf("text/html;charset=UTF-8;foo=bar");
+        MIMEType mimeType = MIMEType.valueOf("text/html; charset=UTF-8; foo=bar");
 
         Assert.assertEquals("text", mimeType.getType());
         Assert.assertEquals("html", mimeType.getSubtype());
-        Assert.assertEquals("UTF-8", mimeType.getParameter("charset"));
+        Assert.assertEquals("utf-8", mimeType.getParameter("charset"));
         Assert.assertEquals("bar", mimeType.getParameter("foo"));
     }
 }
