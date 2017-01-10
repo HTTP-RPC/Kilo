@@ -98,10 +98,10 @@ NSString * const kCRLF = @"\r\n";
 
     if (url != nil) {
         // Construct query
-        BOOL useBody = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
+        BOOL upload = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
             || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:kApplicationJSONMIMEType]));
 
-        if (!useBody) {
+        if (!upload) {
             NSMutableString *query = [NSMutableString new];
 
             NSUInteger i = 0;
@@ -146,7 +146,7 @@ NSString * const kCRLF = @"\r\n";
         // Write request body
         NSError *error = nil;
 
-        if (useBody) {
+        if (upload) {
             NSString *contentType;
             if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
                 contentType = [NSString stringWithFormat:@"%@; boundary=%@", _encoding, _multipartBoundary];

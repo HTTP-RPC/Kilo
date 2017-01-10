@@ -283,19 +283,26 @@ public class WebServiceProxy {
                 // Encode path components
                 String[] pathComponents = path.split("/");
 
+                // TODO Use String#join() when it is supported by Android
+                StringBuilder pathBuilder = new StringBuilder();
+
                 for (int i = 0; i < pathComponents.length; i++) {
-                    pathComponents[i] = URLEncoder.encode(pathComponents[i], UTF_8);
+                    if (i > 0) {
+                        pathBuilder.append("/");
+                    }
+
+                    pathBuilder.append(URLEncoder.encode(pathComponents[i], UTF_8));
                 }
 
                 V result;
                 try {
-                    URL url = new URL(serverURL, String.join("/", pathComponents));
+                    URL url = new URL(serverURL, pathBuilder.toString());
 
                     // Construct query
-                    boolean useBody = (method.equalsIgnoreCase("POST")
+                    boolean upload = (method.equalsIgnoreCase("POST")
                         || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON_MIME_TYPE)));
 
-                    if (!useBody) {
+                    if (!upload) {
                         StringBuilder queryBuilder = new StringBuilder();
 
                         int i = 0;
@@ -357,7 +364,7 @@ public class WebServiceProxy {
                     }
 
                     // Write request body
-                    if (useBody) {
+                    if (upload) {
                         connection.setDoOutput(true);
 
                         String contentType;
