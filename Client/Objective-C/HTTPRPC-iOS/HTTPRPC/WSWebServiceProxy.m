@@ -87,14 +87,21 @@ NSString * const kCRLF = @"\r\n";
 {
     NSURLSessionDataTask *task = nil;
 
-    NSURL *url = [NSURL URLWithString:path relativeToURL:_serverURL];
+    // Encode path components
+    NSMutableArray *pathComponents = [[path componentsSeparatedByString:@"/"] mutableCopy];
+
+    for (NSUInteger i = 0, n = [pathComponents count]; i < n; i++) {
+        [pathComponents replaceObjectAtIndex:i withObject:[[pathComponents objectAtIndex:i] URLEncodedString]];
+    }
+
+    NSURL *url = [NSURL URLWithString:[pathComponents componentsJoinedByString:@"/"] relativeToURL:_serverURL];
 
     if (url != nil) {
         // Construct query
-        BOOL encode = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
+        BOOL useBody = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
             || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:kApplicationJSONMIMEType]));
 
-        if (!encode) {
+        if (!useBody) {
             NSMutableString *query = [NSMutableString new];
 
             NSUInteger i = 0;
@@ -139,7 +146,7 @@ NSString * const kCRLF = @"\r\n";
         // Write request body
         NSError *error = nil;
 
-        if (encode) {
+        if (useBody) {
             NSString *contentType;
             if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
                 contentType = [NSString stringWithFormat:@"%@; boundary=%@", _encoding, _multipartBoundary];

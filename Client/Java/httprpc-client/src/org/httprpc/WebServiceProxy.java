@@ -280,15 +280,22 @@ public class WebServiceProxy {
         return executorService.submit(new Callable<V>() {
             @Override
             public V call() throws IOException {
+                // Encode path components
+                String[] pathComponents = path.split("/");
+
+                for (int i = 0; i < pathComponents.length; i++) {
+                    pathComponents[i] = URLEncoder.encode(pathComponents[i], UTF_8);
+                }
+
                 V result;
                 try {
-                    URL url = new URL(serverURL, path);
+                    URL url = new URL(serverURL, String.join("/", pathComponents));
 
                     // Construct query
-                    boolean encode = (method.equalsIgnoreCase("POST")
+                    boolean useBody = (method.equalsIgnoreCase("POST")
                         || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON_MIME_TYPE)));
 
-                    if (!encode) {
+                    if (!useBody) {
                         StringBuilder queryBuilder = new StringBuilder();
 
                         int i = 0;
@@ -350,7 +357,7 @@ public class WebServiceProxy {
                     }
 
                     // Write request body
-                    if (encode) {
+                    if (useBody) {
                         connection.setDoOutput(true);
 
                         String contentType;
