@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.license         = 'Apache License, Version 2.0'
   s.homepage        = 'https://github.com/gk-brown/MarkupKit'
   s.author          = 'Greg Brown'
-  s.summary         = 'Lightweight multi-platform REST client'
+  s.summary         = 'Lightweight multi-platform REST'
   s.source          = { :git => "https://github.com/gk-brown/HTTP-RPC.git", :tag => s.version.to_s }
 
   s.ios.deployment_target   = '8.0'
