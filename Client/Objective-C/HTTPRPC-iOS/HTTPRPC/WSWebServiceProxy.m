@@ -27,10 +27,6 @@ NSString * const WSMethodKey = @"method";
 NSString * const WSPathKey = @"path";
 NSString * const WSArgumentsKey = @"arguments";
 
-NSString * const kMultipartFormDataMIMEType = @"multipart/form-data";
-NSString * const kApplicationXWWWFormURLEncodedMIMEType = @"application/x-www-form-urlencoded";
-NSString * const kApplicationJSONMIMEType = @"application/json";
-
 NSString * const kCRLF = @"\r\n";
 
 @interface NSString (HTTPRPC)
@@ -61,7 +57,7 @@ NSString * const kCRLF = @"\r\n";
         _session = session;
         _serverURL = serverURL;
 
-        _encoding = kMultipartFormDataMIMEType;
+        _encoding = WSMultipartFormData;
 
         _multipartBoundary = [[NSUUID new] UUIDString];
     }
@@ -103,7 +99,7 @@ NSString * const kCRLF = @"\r\n";
     if (url != nil) {
         // Construct query
         BOOL upload = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
-            || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:kApplicationJSONMIMEType]));
+            || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:WSApplicationJSON]));
 
         if (!upload) {
             NSMutableString *query = [NSMutableString new];
@@ -137,7 +133,7 @@ NSString * const kCRLF = @"\r\n";
 
         [request setHTTPMethod:method];
 
-        [request setValue:[NSString stringWithFormat:@"%@, image/*, text/*", kApplicationJSONMIMEType] forHTTPHeaderField:@"Accept"];
+        [request setValue:[NSString stringWithFormat:@"%@, image/*, text/*", WSApplicationJSON] forHTTPHeaderField:@"Accept"];
 
         // Authenticate request
         if (_authorization != nil) {
@@ -152,7 +148,7 @@ NSString * const kCRLF = @"\r\n";
 
         if (upload) {
             NSString *contentType;
-            if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
+            if ([_encoding isEqual:WSMultipartFormData]) {
                 contentType = [NSString stringWithFormat:@"%@; boundary=%@", _encoding, _multipartBoundary];
             } else {
                 contentType = _encoding;
@@ -204,11 +200,11 @@ NSString * const kCRLF = @"\r\n";
 - (NSData *)encodeRequestWithArguments:(NSDictionary *)arguments error:(NSError **)error
 {
     NSData *body;
-    if ([_encoding isEqual:kMultipartFormDataMIMEType]) {
+    if ([_encoding isEqual:WSMultipartFormData]) {
         body = [self encodeMultipartFormDataRequestWithArguments:arguments];
-    } else if ([_encoding isEqual:kApplicationXWWWFormURLEncodedMIMEType]) {
+    } else if ([_encoding isEqual:WSApplicationXWWWFormURLEncoded]) {
         body = [self encodeApplicationXWWWFormURLEncodedRequestWithArguments:arguments];
-    } else if ([_encoding isEqual:kApplicationJSONMIMEType]) {
+    } else if ([_encoding isEqual:WSApplicationJSON]) {
         body = [NSJSONSerialization dataWithJSONObject:arguments options:0 error:error];
     } else {
         body = nil;
@@ -299,7 +295,7 @@ NSString * const kCRLF = @"\r\n";
 - (id)decodeResponse:(NSData *)data withContentType:(NSString *)contentType error:(NSError **)error
 {
     id value;
-    if ([contentType hasPrefix:kApplicationJSONMIMEType]) {
+    if ([contentType hasPrefix:WSApplicationJSON]) {
         value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
     } else if ([contentType hasPrefix:@"image/"]) {
         value = [UIImage imageWithData:data];
