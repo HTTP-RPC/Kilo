@@ -131,8 +131,25 @@ public class TestServlet extends HttpServlet {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        writeResult(request.getParameter("text").equals("héllo") ? "göodbye" : null, response);
+        String contentType = request.getContentType();
+
+        String result;
+        if (contentType == null) {
+            result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
+        } else if (contentType.startsWith(WebServiceProxy.APPLICATION_JSON)){
+            JSONDecoder decoder = new JSONDecoder();
+
+            Map<String, ?> arguments = (Map<String, ?>)decoder.readValue(request.getInputStream());
+
+            result = arguments.get("text").equals("héllo") ? "göodbye" : null;
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        writeResult(result, response);
     }
 
     @Override

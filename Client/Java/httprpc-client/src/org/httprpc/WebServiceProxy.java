@@ -286,6 +286,8 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
+        String encoding = this.encoding;
+
         // TODO Use a lambda expression when Android issue 211386 is resolved:
         // https://code.google.com/p/android/issues/detail?id=211386
         return executorService.submit(new Callable<V>() {
@@ -388,7 +390,7 @@ public class WebServiceProxy {
                         connection.setRequestProperty("Content-Type", contentType);
 
                         try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                            encodeRequest(arguments, outputStream);
+                            encodeRequest(arguments, outputStream, encoding);
                         }
                     }
 
@@ -437,7 +439,7 @@ public class WebServiceProxy {
         });
     }
 
-    private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
+    private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream, String encoding) throws IOException {
         if (encoding.equals(MULTIPART_FORM_DATA)) {
             encodeMultipartFormDataRequest(arguments, outputStream);
         } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED)) {
