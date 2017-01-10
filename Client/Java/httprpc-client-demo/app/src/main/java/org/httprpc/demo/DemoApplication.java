@@ -50,5 +50,7 @@ public class DemoApplication extends Application {
                 handler.post(command);
             }
         };
+
+        serviceProxy.setEncoding("application/x-www-form-urlencoded");
     }
 }
