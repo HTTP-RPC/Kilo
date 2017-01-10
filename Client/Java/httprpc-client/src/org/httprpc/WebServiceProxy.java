@@ -55,15 +55,26 @@ public class WebServiceProxy {
     private int connectTimeout = 0;
     private int readTimeout = 0;
 
-    private String encoding = MULTIPART_FORM_DATA_MIME_TYPE;
+    private String encoding = MULTIPART_FORM_DATA;
 
     private PasswordAuthentication authorization = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
-    private static final String MULTIPART_FORM_DATA_MIME_TYPE = "multipart/form-data";
-    private static final String APPLICATION_X_WWW_FORM_URLENCODED_MIME_TYPE = "application/x-www-form-urlencoded";
-    private static final String APPLICATION_JSON_MIME_TYPE = "application/json";
+    /**
+     * Multi-part form data encoding.
+     */
+    public static final String MULTIPART_FORM_DATA = "multipart/form-data";
+
+    /**
+     * URL-encoded form data encoding.
+     */
+    public static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+
+    /**
+     * JSON encoding.
+     */
+    public static final String APPLICATION_JSON = "application/json";
 
     private static final String UTF_8 = "UTF-8";
     private static final String CRLF = "\r\n";
@@ -300,7 +311,7 @@ public class WebServiceProxy {
 
                     // Construct query
                     boolean upload = (method.equalsIgnoreCase("POST")
-                        || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON_MIME_TYPE)));
+                        || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON)));
 
                     if (!upload) {
                         StringBuilder queryBuilder = new StringBuilder();
@@ -352,7 +363,7 @@ public class WebServiceProxy {
                     Locale locale = Locale.getDefault();
                     String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
 
-                    connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON_MIME_TYPE));
+                    connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON));
                     connection.setRequestProperty("Accept-Language", acceptLanguage);
 
                     // Authenticate request
@@ -368,7 +379,7 @@ public class WebServiceProxy {
                         connection.setDoOutput(true);
 
                         String contentType;
-                        if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
+                        if (encoding.equals(MULTIPART_FORM_DATA)) {
                             contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
                         } else {
                             contentType = encoding;
@@ -427,11 +438,11 @@ public class WebServiceProxy {
     }
 
     private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
-        if (encoding.equals(MULTIPART_FORM_DATA_MIME_TYPE)) {
+        if (encoding.equals(MULTIPART_FORM_DATA)) {
             encodeMultipartFormDataRequest(arguments, outputStream);
-        } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED_MIME_TYPE)) {
+        } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED)) {
             encodeApplicationXWWWFormURLEncodedRequest(arguments, outputStream);
-        } else if (encoding.equals(APPLICATION_JSON_MIME_TYPE)) {
+        } else if (encoding.equals(APPLICATION_JSON)) {
             JSONEncoder encoder = new JSONEncoder();
 
             encoder.writeValue(arguments, outputStream);

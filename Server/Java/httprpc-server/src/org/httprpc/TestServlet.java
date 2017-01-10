@@ -67,46 +67,67 @@ public class TestServlet extends HttpServlet {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String contentType = request.getContentType();
+
+        if (contentType == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        contentType = contentType.toLowerCase();
+
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding("UTF-8");
         }
 
-        LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
+        Map<String, ?> result;
+        if (contentType.startsWith(WebServiceProxy.APPLICATION_JSON)) {
+            JSONDecoder decoder = new JSONDecoder();
 
-        for (Part part : request.getParts()) {
-            String submittedFileName = part.getSubmittedFileName();
+            result = (Map<String, ?>)decoder.readValue(request.getInputStream());
+        } else {
+            LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-            if (submittedFileName == null || submittedFileName.length() == 0) {
-                continue;
-            }
+            if (contentType.startsWith(WebServiceProxy.MULTIPART_FORM_DATA)) {
+                for (Part part : request.getParts()) {
+                    String submittedFileName = part.getSubmittedFileName();
 
-            if (part.getName().equals("attachments")) {
-                long bytes = 0;
-                long checksum = 0;
+                    if (submittedFileName == null || submittedFileName.length() == 0) {
+                        continue;
+                    }
 
-                try (InputStream inputStream = part.getInputStream()) {
-                    int b;
-                    while ((b = inputStream.read()) != -1) {
-                        bytes++;
-                        checksum += b;
+                    if (part.getName().equals("attachments")) {
+                        long bytes = 0;
+                        long checksum = 0;
+
+                        try (InputStream inputStream = part.getInputStream()) {
+                            int b;
+                            while ((b = inputStream.read()) != -1) {
+                                bytes++;
+                                checksum += b;
+                            }
+                        }
+
+                        attachmentInfo.add(mapOf(
+                            entry("bytes", bytes),
+                            entry("checksum", checksum))
+                        );
                     }
                 }
-
-                attachmentInfo.add(mapOf(
-                    entry("bytes", bytes),
-                    entry("checksum", checksum))
-                );
             }
+
+            result = mapOf(
+                entry("string", request.getParameter("string")),
+                entry("strings", Arrays.asList(request.getParameterValues("strings"))),
+                entry("number", Integer.parseInt(request.getParameter("number"))),
+                entry("flag", Boolean.parseBoolean(request.getParameter("flag"))),
+                entry("attachmentInfo", attachmentInfo)
+            );
         }
 
-        writeResult(mapOf(
-            entry("string", request.getParameter("string")),
-            entry("strings", Arrays.asList(request.getParameterValues("strings"))),
-            entry("number", Integer.parseInt(request.getParameter("number"))),
-            entry("flag", Boolean.parseBoolean(request.getParameter("flag"))),
-            entry("attachmentInfo", attachmentInfo)
-        ), response);
+        writeResult(result, response);
     }
 
     @Override

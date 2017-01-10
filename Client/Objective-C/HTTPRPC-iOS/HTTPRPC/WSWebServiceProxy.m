@@ -17,6 +17,10 @@
 
 #import "WSWebServiceProxy.h"
 
+NSString * const WSMultipartFormData = @"multipart/form-data";
+NSString * const WSApplicationXWWWFormURLEncoded = @"application/x-www-form-urlencoded";
+NSString * const WSApplicationJSON = @"application/json";
+
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
 NSString * const WSMethodKey = @"method";

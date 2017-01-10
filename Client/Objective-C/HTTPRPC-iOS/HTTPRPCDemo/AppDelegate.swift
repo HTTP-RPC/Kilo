@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         AppDelegate.serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "http://localhost:8080")!)
-        AppDelegate.serviceProxy.encoding = "application/x-www-form-urlencoded"
+        AppDelegate.serviceProxy.encoding = WSApplicationXWWWFormURLEncoded
 
         return true
     }

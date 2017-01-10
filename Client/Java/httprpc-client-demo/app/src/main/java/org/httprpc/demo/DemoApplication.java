@@ -51,6 +51,6 @@ public class DemoApplication extends Application {
             }
         };
 
-        serviceProxy.setEncoding("application/x-www-form-urlencoded");
+        serviceProxy.setEncoding(WebServiceProxy.APPLICATION_X_WWW_FORM_URLENCODED);
     }
 }

@@ -17,6 +17,21 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * Multi-part form data encoding.
+ */
+extern NSString * const WSMultipartFormData;
+
+/**
+ * URL-encoded form data encoding.
+ */
+extern NSString * const WSApplicationXWWWFormURLEncoded;
+
+/**
+ * JSON encoding.
+ */
+extern NSString * const WSApplicationJSON;
+
+/**
  * HTTP-RPC web service error domain.
  */
 extern NSString * const WSWebServiceErrorDomain;
