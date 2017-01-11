@@ -299,63 +299,19 @@ public class WebServiceProxy {
         return executorService.submit(new Callable<V>() {
             @Override
             public V call() throws IOException {
-                // Encode path components
-                String[] pathComponents = path.split("/");
-
-                // TODO Use String#join() when it is supported by Android
-                StringBuilder pathBuilder = new StringBuilder();
-
-                for (int i = 0; i < pathComponents.length; i++) {
-                    if (i > 0) {
-                        pathBuilder.append("/");
-                    }
-
-                    pathBuilder.append(URLEncoder.encode(pathComponents[i], UTF_8));
-                }
-
-                V result;
+                Object result;
                 try {
-                    URL url = new URL(serverURL, pathBuilder.toString());
+                    URL url = new URL(serverURL, path);
 
                     // Construct query
                     boolean upload = (method.equalsIgnoreCase("POST")
                         || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON)));
 
                     if (!upload) {
-                        StringBuilder queryBuilder = new StringBuilder();
+                        String query = encodeQuery(arguments);
 
-                        int i = 0;
-
-                        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
-                            String name = argument.getKey();
-
-                            if (name == null) {
-                                continue;
-                            }
-
-                            List<?> values = getParameterValues(argument.getValue());
-
-                            for (int j = 0, n = values.size(); j < n; j++) {
-                                Object value = values.get(j);
-
-                                if (value == null) {
-                                    continue;
-                                }
-
-                                if (i > 0) {
-                                    queryBuilder.append("&");
-                                }
-
-                                queryBuilder.append(URLEncoder.encode(name, UTF_8));
-                                queryBuilder.append("=");
-                                queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
-
-                                i++;
-                            }
-                        }
-
-                        if (queryBuilder.length() > 0) {
-                            url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + queryBuilder);
+                        if (query.length() > 0) {
+                            url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
                         }
                     }
 
@@ -396,7 +352,17 @@ public class WebServiceProxy {
                         connection.setRequestProperty("Content-Type", contentType);
 
                         try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                            encodeRequest(arguments, outputStream, encoding);
+                            if (encoding.equals(MULTIPART_FORM_DATA)) {
+                                encodeMultipartFormDataRequest(arguments, outputStream, multipartBoundary);
+                            } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED)) {
+                                encodeApplicationXWWWFormURLEncodedRequest(arguments, outputStream);
+                            } else if (encoding.equals(APPLICATION_JSON)) {
+                                JSONEncoder encoder = new JSONEncoder();
+
+                                encoder.writeValue(arguments, outputStream);
+                            } else {
+                                throw new UnsupportedOperationException("Unsupported request encoding.");
+                            }
                         }
                     }
 
@@ -408,7 +374,28 @@ public class WebServiceProxy {
 
                         if (contentType != null) {
                             try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                                result = (V)decodeResponse(inputStream, contentType.toLowerCase());
+                                MIMEType mimeType = MIMEType.valueOf(contentType);
+
+                                String type = mimeType.getType();
+                                String subtype = mimeType.getSubtype();
+
+                                if (type.equals("application") && subtype.equals("json")) {
+                                    JSONDecoder decoder = new JSONDecoder();
+
+                                    result = decoder.readValue(inputStream);
+                                } else if (type.equals("image")) {
+                                    result = decodeImageResponse(inputStream, subtype);
+                                } else if (type.equals("text")) {
+                                    String charsetName = mimeType.getParameter("charset");
+
+                                    if (charsetName == null) {
+                                        charsetName = UTF_8;
+                                    }
+
+                                    result = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
+                                } else {
+                                    throw new UnsupportedOperationException("Unsupported response encoding.");
+                                }
                             }
                         } else {
                             result = null;
@@ -435,31 +422,53 @@ public class WebServiceProxy {
                     dispatchResult(new Runnable() {
                         @Override
                         public void run() {
-                            resultHandler.execute(result, null);
+                            resultHandler.execute((V)result, null);
                         }
                     });
                 }
 
-                return result;
+                return (V)result;
             }
         });
     }
 
-    private void encodeRequest(Map<String, ?> arguments, OutputStream outputStream, String encoding) throws IOException {
-        if (encoding.equals(MULTIPART_FORM_DATA)) {
-            encodeMultipartFormDataRequest(arguments, outputStream);
-        } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED)) {
-            encodeApplicationXWWWFormURLEncodedRequest(arguments, outputStream);
-        } else if (encoding.equals(APPLICATION_JSON)) {
-            JSONEncoder encoder = new JSONEncoder();
+    private static String encodeQuery(Map<String, ?> arguments) throws UnsupportedEncodingException {
+        StringBuilder queryBuilder = new StringBuilder();
 
-            encoder.writeValue(arguments, outputStream);
-        } else {
-            throw new UnsupportedOperationException("Unsupported request encoding.");
+        int i = 0;
+
+        for (Map.Entry<String, ?> argument : arguments.entrySet()) {
+            String name = argument.getKey();
+
+            if (name == null) {
+                continue;
+            }
+
+            List<?> values = getParameterValues(argument.getValue());
+
+            for (int j = 0, n = values.size(); j < n; j++) {
+                Object value = values.get(j);
+
+                if (value == null) {
+                    continue;
+                }
+
+                if (i > 0) {
+                    queryBuilder.append("&");
+                }
+
+                queryBuilder.append(URLEncoder.encode(name, UTF_8));
+                queryBuilder.append("=");
+                queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
+
+                i++;
+            }
         }
+
+        return queryBuilder.toString();
     }
 
-    private void encodeMultipartFormDataRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
+    private static void encodeMultipartFormDataRequest(Map<String, ?> arguments, OutputStream outputStream, String boundary) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
         for (Map.Entry<String, ?> argument : arguments.entrySet()) {
@@ -476,7 +485,7 @@ public class WebServiceProxy {
                     continue;
                 }
 
-                writer.append(String.format("--%s%s", multipartBoundary, CRLF));
+                writer.append(String.format("--%s%s", boundary, CRLF));
                 writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
 
                 if (value instanceof URL) {
@@ -514,12 +523,12 @@ public class WebServiceProxy {
             }
         }
 
-        writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
+        writer.append(String.format("--%s--%s", boundary, CRLF));
 
         writer.flush();
     }
 
-    private void encodeApplicationXWWWFormURLEncodedRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
+    private static void encodeApplicationXWWWFormURLEncodedRequest(Map<String, ?> arguments, OutputStream outputStream) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
         int i = 0;
@@ -553,34 +562,6 @@ public class WebServiceProxy {
         }
 
         writer.flush();
-    }
-
-    private Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-        MIMEType mimeType = MIMEType.valueOf(contentType);
-
-        String type = mimeType.getType();
-        String subtype = mimeType.getSubtype();
-
-        Object value;
-        if (type.equals("application") && subtype.equals("json")) {
-            JSONDecoder decoder = new JSONDecoder();
-
-            value = decoder.readValue(inputStream);
-        } else if (type.equals("image")) {
-            value = decodeImageResponse(inputStream, subtype);
-        } else if (type.equals("text")) {
-            String charsetName = mimeType.getParameter("charset");
-
-            if (charsetName == null) {
-                charsetName = UTF_8;
-            }
-
-            value = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
-        } else {
-            throw new UnsupportedOperationException("Unsupported response encoding.");
-        }
-
-        return value;
     }
 
     /**
