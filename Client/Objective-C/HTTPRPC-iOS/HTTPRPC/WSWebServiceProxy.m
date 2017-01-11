@@ -87,14 +87,7 @@ NSString * const kCRLF = @"\r\n";
 {
     NSURLSessionDataTask *task = nil;
 
-    // Encode path components
-    NSMutableArray *pathComponents = [[path componentsSeparatedByString:@"/"] mutableCopy];
-
-    for (NSUInteger i = 0, n = [pathComponents count]; i < n; i++) {
-        [pathComponents replaceObjectAtIndex:i withObject:[[pathComponents objectAtIndex:i] URLEncodedString]];
-    }
-
-    NSURL *url = [NSURL URLWithString:[pathComponents componentsJoinedByString:@"/"] relativeToURL:_serverURL];
+    NSURL *url = [NSURL URLWithString:path relativeToURL:_serverURL];
 
     if (url != nil) {
         // Construct query
@@ -102,27 +95,7 @@ NSString * const kCRLF = @"\r\n";
             || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:WSApplicationJSON]));
 
         if (!upload) {
-            NSMutableString *query = [NSMutableString new];
-
-            NSUInteger i = 0;
-
-            for (NSString *name in arguments) {
-                NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
-
-                for (NSUInteger j = 0, n = [values count]; j < n; j++) {
-                    if (i > 0) {
-                        [query appendString:@"&"];
-                    }
-
-                    NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:j]];
-
-                    [query appendString:[name URLEncodedString]];
-                    [query appendString:@"="];
-                    [query appendString:[value URLEncodedString]];
-
-                    i++;
-                }
-            }
+            NSString *query = [WSWebServiceProxy encodeQueryWithArguments:arguments];
 
             if ([query length] > 0) {
                 url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [url absoluteString], query]];
@@ -155,7 +128,22 @@ NSString * const kCRLF = @"\r\n";
             }
 
             [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
-            [request setHTTPBody:[self encodeRequestWithArguments:arguments error:&error]];
+
+            NSData *body = nil;
+
+            if ([_encoding isEqual:WSMultipartFormData]) {
+                body = [WSWebServiceProxy encodeMultipartFormDataRequestWithArguments:arguments boundary:_multipartBoundary];
+            } else if ([_encoding isEqual:WSApplicationXWWWFormURLEncoded]) {
+                body = [WSWebServiceProxy encodeApplicationXWWWFormURLEncodedRequestWithArguments:arguments];
+            } else if ([_encoding isEqual:WSApplicationJSON]) {
+                body = [NSJSONSerialization dataWithJSONObject:arguments options:0 error:&error];
+            } else {
+                error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
+                    NSLocalizedDescriptionKey:@"Unsupported request encoding."
+                }];
+            }
+
+            [request setHTTPBody:body];
         }
 
         // Execute request
@@ -172,7 +160,17 @@ NSString * const kCRLF = @"\r\n";
                         NSString *mimeType = [response MIMEType];
 
                         if (mimeType != nil) {
-                            result = [self decodeResponse:data withContentType:[mimeType lowercaseString] error:&error];
+                            if ([mimeType hasPrefix:WSApplicationJSON]) {
+                                result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+                            } else if ([mimeType hasPrefix:@"image/"]) {
+                                result = [UIImage imageWithData:data];
+                            } else if ([mimeType hasPrefix:@"text/"]) {
+                                result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                            } else {
+                                error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
+                                    NSLocalizedDescriptionKey:@"Unsupported response encoding."
+                                }];
+                            }
                         }
                     } else {
                         error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
@@ -197,35 +195,42 @@ NSString * const kCRLF = @"\r\n";
     return task;
 }
 
-- (NSData *)encodeRequestWithArguments:(NSDictionary *)arguments error:(NSError **)error
++ (NSString *)encodeQueryWithArguments:(NSDictionary *)arguments
 {
-    NSData *body;
-    if ([_encoding isEqual:WSMultipartFormData]) {
-        body = [self encodeMultipartFormDataRequestWithArguments:arguments];
-    } else if ([_encoding isEqual:WSApplicationXWWWFormURLEncoded]) {
-        body = [self encodeApplicationXWWWFormURLEncodedRequestWithArguments:arguments];
-    } else if ([_encoding isEqual:WSApplicationJSON]) {
-        body = [NSJSONSerialization dataWithJSONObject:arguments options:0 error:error];
-    } else {
-        body = nil;
+    NSMutableString *query = [NSMutableString new];
 
-        *error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
-            NSLocalizedDescriptionKey:@"Unsupported request encoding."
-        }];
+    NSUInteger i = 0;
+
+    for (NSString *name in arguments) {
+        NSArray *values = [self parameterValuesForArgument:[arguments objectForKey:name]];
+
+        for (NSUInteger j = 0, n = [values count]; j < n; j++) {
+            if (i > 0) {
+                [query appendString:@"&"];
+            }
+
+            NSString *value = [self parameterValueForElement:[values objectAtIndex:j]];
+
+            [query appendString:[name URLEncodedString]];
+            [query appendString:@"="];
+            [query appendString:[value URLEncodedString]];
+
+            i++;
+        }
     }
 
-    return body;
+    return query;
 }
 
-- (NSData *)encodeMultipartFormDataRequestWithArguments:(NSDictionary *)arguments
++ (NSData *)encodeMultipartFormDataRequestWithArguments:(NSDictionary *)arguments boundary:(NSString *)boundary
 {
     NSMutableData *body = [NSMutableData new];
 
     for (NSString *name in arguments) {
-        NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+        NSArray *values = [self parameterValuesForArgument:[arguments objectForKey:name]];
 
         for (__strong id value in values) {
-            [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@%@", _multipartBoundary, kCRLF]];
+            [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@%@", boundary, kCRLF]];
             [body appendUTF8DataForString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", name]];
 
             if ([value isKindOfClass:[NSURL self]]) {
@@ -253,33 +258,33 @@ NSString * const kCRLF = @"\r\n";
                 [body appendUTF8DataForString:kCRLF];
 
                 [body appendUTF8DataForString:kCRLF];
-                [body appendUTF8DataForString:[WSWebServiceProxy parameterValueForElement:value]];
+                [body appendUTF8DataForString:[self parameterValueForElement:value]];
             }
 
             [body appendUTF8DataForString:kCRLF];
         }
     }
 
-    [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@--%@", _multipartBoundary, kCRLF]];
+    [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@--%@", boundary, kCRLF]];
 
     return body;
 }
 
-- (NSData *)encodeApplicationXWWWFormURLEncodedRequestWithArguments:(NSDictionary *)arguments
++ (NSData *)encodeApplicationXWWWFormURLEncodedRequestWithArguments:(NSDictionary *)arguments
 {
     NSMutableData *body = [NSMutableData new];
 
     NSUInteger i = 0;
 
     for (NSString *name in arguments) {
-        NSArray *values = [WSWebServiceProxy parameterValuesForArgument:[arguments objectForKey:name]];
+        NSArray *values = [self parameterValuesForArgument:[arguments objectForKey:name]];
 
         for (NSUInteger j = 0, n = [values count]; j < n; j++) {
             if (i > 0) {
                 [body appendUTF8DataForString:@"&"];
             }
 
-            NSString *value = [WSWebServiceProxy parameterValueForElement:[values objectAtIndex:j]];
+            NSString *value = [self parameterValueForElement:[values objectAtIndex:j]];
 
             [body appendUTF8DataForString:[name URLEncodedString]];
             [body appendUTF8DataForString:@"="];
@@ -290,26 +295,6 @@ NSString * const kCRLF = @"\r\n";
     }
 
     return body;
-}
-
-- (id)decodeResponse:(NSData *)data withContentType:(NSString *)contentType error:(NSError **)error
-{
-    id value;
-    if ([contentType hasPrefix:WSApplicationJSON]) {
-        value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
-    } else if ([contentType hasPrefix:@"image/"]) {
-        value = [UIImage imageWithData:data];
-    } else if ([contentType hasPrefix:@"text/"]) {
-        value = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    } else {
-        value = nil;
-
-        *error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
-            NSLocalizedDescriptionKey:@"Unsupported response encoding."
-        }];
-    }
-
-    return value;
 }
 
 + (NSArray *)parameterValuesForArgument:(id)argument {
