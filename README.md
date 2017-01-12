@@ -1,15 +1,17 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to access REST-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. 
+The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system.
 
-For example, the following code snippets show how the various clients might be used to access a simple web service that returns a friendly greeting:
+For example, the following code snippet shows how a Swift client might be used to access a simple web service that returns a friendly greeting:
 
 _Swift_
 
     serviceProxy.invoke("GET", path: "/hello") { result, error in
         print(result) // Prints "Hello, World!"
     }
+
+In Java, the code might look like this:
 
 _Java_
 
@@ -29,7 +31,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Service Operations
 Services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_. 
 
-Arguments are provided either via the query string or in the request body, like an HTML form. Although services may produce any type of content, results are generally returned as JSON. Operations that do not return a value are also supported.
+Arguments are provided either via the query string or in the request body, like an HTML form. Results are typically returned as JSON, though image and text content is also supported. Services may also produce no value.
 
 ## GET
 The `GET` method is used to retrive information from the server. `GET` arguments are passed in the query string. For example, the following request might be used to obtain data about a calendar event:
@@ -47,25 +49,13 @@ Alternatively, the argument values could be specified as a list rather than as t
 In either case, the service would return the value 6 in response.
 
 ## POST
-The `POST` method is typically used to add new information to the server. For example, the following request might be used to create a new calendar event:
-
-    POST /calendar
-
-As with HTML forms, `POST` arguments are passed in the request body. If the arguments contain only text values, they can be encoded using the "application/x-www-form-urlencoded" MIME type:
-
-    title=Planning+Meeting&start=2016-06-28T14:00&end=2016-06-28T15:00
-
-If the arguments contain binary data such as a JPEG or PNG image, the "multipart/form-data" encoding can be used.
+The `POST` method is typically used to send new information to the server. As with HTML forms, `POST` arguments are passed in the request body. Simple argument values can be submitted as [URL-encoded](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) form data, and binary content can be sent using the [multi-part](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encoding. For more complex arguments, the [JSON](http://json.org) encoding can be used.
 
 ## PUT
-The `PUT` method updates existing information on the server. `PUT` arguments are passed in the query string. For example, the following request might be used to modify the end date of a calendar event:
-
-    PUT /calendar?eventID=102&end=2016-06-28T15:30
+The `PUT` method updates existing information on the server. `PUT` arguments are typically passed in the query string. However, when encoded as JSON, they are sent in the request body.
 
 ## DELETE
-The `DELETE` method removes information from the server. `DELETE` arguments are passed in the query string. For example, this request might be used to delete a calendar event:
-
-    DELETE /calendar?eventID=102
+The `DELETE` method removes information from the server. `DELETE` arguments are always passed in the query string.
 
 # Client Implementations
 The project currently supports consuming services in Objective-C/Swift and Java. Each implementation is discussed in more detail below. 
@@ -90,6 +80,8 @@ Service proxies are initialized via `initWithSession:serverURL:`, which takes an
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 #### Arguments and Return Values
+TODO Encodings (request/response) 
+
 Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following types are given special consideration:
 
 * Instances of `URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
@@ -151,6 +143,8 @@ Service operations are initiated by calling the `invoke()` method, which takes t
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
 #### Arguments and Return Values
+TODO Encodings (request/response); note that JSON does not support date types
+
 Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following types are given special consideration:
 
 * Instances of `java.net.URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
@@ -202,6 +196,8 @@ For example, given the following JSON response, a call to `getValue(result, "foo
     }
 
 #### Custom Deserialization
+TODO decodeImageResponse(), decodeTextResponse()
+
 Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to support `Bitmap` data: 
 
     @Override
