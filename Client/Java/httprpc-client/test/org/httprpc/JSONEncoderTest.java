@@ -28,6 +28,8 @@ public class JSONEncoderTest {
     @Test
     public void testString() throws IOException {
         Assert.assertTrue(encode("abcdéfg").equals("\"abcdéfg\""));
+        Assert.assertTrue(encode(new StringBuilder("abcdéfg")).equals("\"abcdéfg\""));
+
         Assert.assertTrue(encode("\b\f\r\n\t").equals("\"\\b\\f\\r\\n\\t\""));
     }
 
@@ -35,6 +37,7 @@ public class JSONEncoderTest {
     public void testNumber() throws IOException {
         Assert.assertTrue(encode(42).equals("42"));
         Assert.assertTrue(encode(42L).equals("42"));
+
         Assert.assertTrue(encode(123F).equals("123.0"));
         Assert.assertTrue(encode(123.0).equals("123.0"));
     }

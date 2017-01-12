@@ -1205,13 +1205,13 @@ class JSONEncoder {
     public void writeValue(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
-        } else if (value instanceof String) {
-            String string = (String)value;
+        } else if (value instanceof CharSequence) {
+            CharSequence text = (CharSequence)value;
 
             writer.append("\"");
 
-            for (int i = 0, n = string.length(); i < n; i++) {
-                char c = string.charAt(i);
+            for (int i = 0, n = text.length(); i < n; i++) {
+                char c = text.charAt(i);
 
                 if (c == '"' || c == '\\') {
                     writer.append("\\" + c);
@@ -1233,16 +1233,14 @@ class JSONEncoder {
             writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
-        } else if (value instanceof List<?>) {
-            List<?> list = (List<?>)value;
-
+        } else if (value instanceof Iterable<?>) {
             writer.append("[");
 
             depth++;
 
             int i = 0;
 
-            for (Object element : list) {
+            for (Object element : (Iterable<?>)value) {
                 if (i > 0) {
                     writer.append(",");
                 }
@@ -1264,15 +1262,13 @@ class JSONEncoder {
 
             writer.append("]");
         } else if (value instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>)value;
-
             writer.append("{");
 
             depth++;
 
             int i = 0;
 
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
                 if (i > 0) {
                     writer.append(",");
                 }
