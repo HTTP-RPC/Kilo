@@ -444,11 +444,7 @@ public class WebServiceProxy {
                 continue;
             }
 
-            List<?> values = getParameterValues(argument.getValue());
-
-            for (int j = 0, n = values.size(); j < n; j++) {
-                Object value = values.get(j);
-
+            for (Object value : getParameterValues(argument.getValue())) {
                 if (value == null) {
                     continue;
                 }
@@ -478,9 +474,7 @@ public class WebServiceProxy {
                 continue;
             }
 
-            List<?> values = getParameterValues(argument.getValue());
-
-            for (Object value : values) {
+            for (Object value : getParameterValues(argument.getValue())) {
                 if (value == null) {
                     continue;
                 }
@@ -540,11 +534,7 @@ public class WebServiceProxy {
                 continue;
             }
 
-            List<?> values = getParameterValues(argument.getValue());
-
-            for (int j = 0, n = values.size(); j < n; j++) {
-                Object value = values.get(j);
-
+            for (Object value : getParameterValues(argument.getValue())) {
                 if (value == null) {
                     continue;
                 }
@@ -726,10 +716,10 @@ public class WebServiceProxy {
         return (V)value;
     }
 
-    private static List<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
-        List<?> values;
-        if (argument instanceof List<?>) {
-            values = (List<?>)argument;
+    private static Iterable<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
+        Iterable<?> values;
+        if (argument instanceof Iterable<?>) {
+            values = (Iterable<?>)argument;
         } else {
             values = Collections.singletonList(argument);
         }
