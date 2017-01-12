@@ -10,7 +10,7 @@
     <property name="warfile" value="${ant.project.name}.war"/>
 
     <target name="build">
-        <ant dir="../../../Client/Java/httprpc-client" target="build" inheritAll="false"/>
+        <ant dir="../../../Client/Java/httprpc" target="build" inheritAll="false"/>
 
         <echo message="Building ${title}..."/>
 
@@ -24,7 +24,7 @@
             <classpath>
                 <fileset dir="${api}" includes="*.jar"/>
 
-                <fileset dir="../../../Client/Java/httprpc-client" includes="*.jar"/>
+                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
             </classpath>
 
             <compilerarg value="-parameters"/>
@@ -38,7 +38,7 @@
             <classes dir="${bin}"/>
             <classes dir="${src}" excludes="**/*.java"/>
 
-            <lib dir="../../../Client/Java/httprpc-client" includes="*.jar"/>
+            <lib dir="../../../Client/Java/httprpc" includes="*.jar"/>
         </war>
     </target>
 </project>

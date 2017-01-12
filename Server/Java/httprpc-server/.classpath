@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="api/servlet-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/httprpc-client"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/httprpc"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
