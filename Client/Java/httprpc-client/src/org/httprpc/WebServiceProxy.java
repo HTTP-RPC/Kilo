@@ -464,6 +464,32 @@ public class WebServiceProxy {
         return queryBuilder.toString();
     }
 
+    private static String base64Encode(String value) {
+        // TODO Use java.util.Base64 when Android fully supports Java 8
+        byte[] bytes = value.getBytes();
+
+        StringBuilder resultBuilder = new StringBuilder(4 * (bytes.length / 3 + 1));
+
+        for (int i = 0, n = bytes.length; i < n; ) {
+            byte byte0 = bytes[i++];
+            byte byte1 = (i++ < n) ? bytes[i - 1] : 0;
+            byte byte2 = (i++ < n) ? bytes[i - 1] : 0;
+
+            resultBuilder.append(lookup[byte0 >> 2]);
+            resultBuilder.append(lookup[((byte0 << 4) | byte1 >> 4) & 63]);
+            resultBuilder.append(lookup[((byte1 << 2) | byte2 >> 6) & 63]);
+            resultBuilder.append(lookup[byte2 & 63]);
+
+            if (i > n) {
+                for (int m = resultBuilder.length(), j = m - (i - n); j < m; j++) {
+                    resultBuilder.setCharAt(j, '=');
+                }
+            }
+        }
+
+        return resultBuilder.toString();
+    }
+
     private static void encodeMultipartFormDataRequest(Map<String, ?> arguments, OutputStream outputStream, String boundary) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
@@ -552,6 +578,17 @@ public class WebServiceProxy {
         }
 
         writer.flush();
+    }
+
+    private static Iterable<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
+        Iterable<?> values;
+        if (argument instanceof Iterable<?>) {
+            values = (Iterable<?>)argument;
+        } else {
+            values = Collections.singletonList(argument);
+        }
+
+        return values;
     }
 
     /**
@@ -714,43 +751,6 @@ public class WebServiceProxy {
         }
 
         return (V)value;
-    }
-
-    private static Iterable<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
-        Iterable<?> values;
-        if (argument instanceof Iterable<?>) {
-            values = (Iterable<?>)argument;
-        } else {
-            values = Collections.singletonList(argument);
-        }
-
-        return values;
-    }
-
-    private static String base64Encode(String value) {
-        // TODO Use java.util.Base64 when Android fully supports Java 8
-        byte[] bytes = value.getBytes();
-
-        StringBuilder resultBuilder = new StringBuilder(4 * (bytes.length / 3 + 1));
-
-        for (int i = 0, n = bytes.length; i < n; ) {
-            byte byte0 = bytes[i++];
-            byte byte1 = (i++ < n) ? bytes[i - 1] : 0;
-            byte byte2 = (i++ < n) ? bytes[i - 1] : 0;
-
-            resultBuilder.append(lookup[byte0 >> 2]);
-            resultBuilder.append(lookup[((byte0 << 4) | byte1 >> 4) & 63]);
-            resultBuilder.append(lookup[((byte1 << 2) | byte2 >> 6) & 63]);
-            resultBuilder.append(lookup[byte2 & 63]);
-
-            if (i > n) {
-                for (int m = resultBuilder.length(), j = m - (i - n); j < m; j++) {
-                    resultBuilder.setCharAt(j, '=');
-                }
-            }
-        }
-
-        return resultBuilder.toString();
     }
 }
 
