@@ -5,13 +5,12 @@
 
     <property name="src" value="src"/>
     <property name="api" value="api"/>
+    <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
 
     <property name="warfile" value="${ant.project.name}.war"/>
 
     <target name="build">
-        <ant dir="../../../Client/Java/httprpc" target="build" inheritAll="false"/>
-
         <echo message="Building ${title}..."/>
 
         <delete dir="${bin}"/>
@@ -23,8 +22,7 @@
             failonerror="true">
             <classpath>
                 <fileset dir="${api}" includes="*.jar"/>
-
-                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
+                <fileset dir="${lib}" includes="*.jar"/>
             </classpath>
 
             <compilerarg value="-parameters"/>
@@ -38,7 +36,7 @@
             <classes dir="${bin}"/>
             <classes dir="${src}" excludes="**/*.java"/>
 
-            <lib dir="../../../Client/Java/httprpc" includes="*.jar"/>
+            <lib dir="${lib}" includes="*.jar"/>
         </war>
     </target>
 </project>

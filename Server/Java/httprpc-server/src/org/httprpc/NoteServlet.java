@@ -25,9 +25,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
-
 /**
  * Note servlet.
  */
@@ -47,9 +44,12 @@ public class NoteServlet extends HttpServlet {
     protected synchronized void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
+        // TODO
+        /*
         JSONEncoder encoder = new JSONEncoder();
 
         encoder.writeValue(new ArrayList<>(notes.values()), response.getOutputStream());
+        */
     }
 
     @Override
@@ -60,11 +60,14 @@ public class NoteServlet extends HttpServlet {
 
         Date date = new Date();
 
+        // TODO
+        /*
         notes.put(nextNoteID, mapOf(
             entry(ID_KEY, nextNoteID),
             entry(DATE_KEY, date.getTime()),
             entry(MESSAGE_KEY, request.getParameter("message"))
         ));
+        */
 
         nextNoteID++;
 

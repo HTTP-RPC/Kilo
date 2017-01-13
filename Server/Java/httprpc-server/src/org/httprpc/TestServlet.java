@@ -28,9 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
-
 /**
  * Test servlet.
  */
@@ -45,12 +42,15 @@ public class TestServlet extends HttpServlet {
 
         Object result;
         if (value == null) {
+            result = null; // TODO
+            /*
             result = mapOf(
                 entry("string", request.getParameter("string")),
                 entry("strings", Arrays.asList(request.getParameterValues("strings"))),
                 entry("number", Integer.parseInt(request.getParameter("number"))),
                 entry("flag", Boolean.parseBoolean(request.getParameter("flag")))
             );
+            */
         } else {
             String delay = request.getParameter("delay");
 
@@ -83,14 +83,17 @@ public class TestServlet extends HttpServlet {
         }
 
         Map<String, ?> result;
-        if (contentType.startsWith(WebServiceProxy.APPLICATION_JSON)) {
+        if (contentType.startsWith("application/json")) { // TODO Constant
+            result = null; // TODO
+            /*
             JSONDecoder decoder = new JSONDecoder();
 
             result = (Map<String, ?>)decoder.readValue(request.getInputStream());
+            */
         } else {
             LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-            if (contentType.startsWith(WebServiceProxy.MULTIPART_FORM_DATA)) {
+            if (contentType.startsWith("multipart/form-data")) { // TODO Constant
                 for (Part part : request.getParts()) {
                     String submittedFileName = part.getSubmittedFileName();
 
@@ -110,14 +113,19 @@ public class TestServlet extends HttpServlet {
                             }
                         }
 
+                        // TODO
+                        /*
                         attachmentInfo.add(mapOf(
                             entry("bytes", bytes),
                             entry("checksum", checksum))
                         );
+                        */
                     }
                 }
             }
 
+            result = null; // TODO
+            /*
             result = mapOf(
                 entry("string", request.getParameter("string")),
                 entry("strings", Arrays.asList(request.getParameterValues("strings"))),
@@ -125,6 +133,7 @@ public class TestServlet extends HttpServlet {
                 entry("flag", Boolean.parseBoolean(request.getParameter("flag"))),
                 entry("attachmentInfo", attachmentInfo)
             );
+            */
         }
 
         writeResult(result, response);
@@ -136,12 +145,16 @@ public class TestServlet extends HttpServlet {
         String contentType = request.getContentType();
 
         String result;
-        if (contentType != null && contentType.startsWith(WebServiceProxy.APPLICATION_JSON)) {
+        if (contentType != null && contentType.startsWith("application/json")) { // TODO Constant
+            // TODO
+            /*
             JSONDecoder decoder = new JSONDecoder();
 
             Map<String, ?> arguments = (Map<String, ?>)decoder.readValue(request.getInputStream());
 
             result = arguments.get("text").equals("héllo") ? "göodbye" : null;
+            */
+            result = null; // TODO
         } else {
             result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
         }
@@ -157,8 +170,11 @@ public class TestServlet extends HttpServlet {
     private void writeResult(Object result, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
+        // TODO
+        /*
         JSONEncoder encoder = new JSONEncoder();
 
         encoder.writeValue(result, response.getOutputStream());
+        */
     }
 }
