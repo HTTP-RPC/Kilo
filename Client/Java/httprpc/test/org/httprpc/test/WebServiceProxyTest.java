@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.test;
 
 import java.net.PasswordAuthentication;
 import java.net.SocketTimeoutException;
@@ -32,6 +32,9 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.httprpc.WebServiceException;
+import org.httprpc.WebServiceProxy;
 
 import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
