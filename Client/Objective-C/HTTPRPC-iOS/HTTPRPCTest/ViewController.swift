@@ -142,12 +142,12 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         // PUT
         serviceProxy.encoding = WSMultipartFormData
         serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
-            self.validate(result as? String == "göodbye", error: error, cell: self.putCell)
+            self.validate(result as? String == "héllo", error: error, cell: self.putCell)
         }
 
         serviceProxy.encoding = WSApplicationJSON
         serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
-            self.validate(result as? String == "göodbye", error: error, cell: self.putJSONCell)
+            self.validate(result as? NSDictionary == ["text": "héllo"], error: error, cell: self.putJSONCell)
         }
 
         // DELETE

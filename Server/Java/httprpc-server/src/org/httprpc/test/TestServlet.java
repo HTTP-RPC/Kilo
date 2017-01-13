@@ -155,7 +155,7 @@ public class TestServlet extends HttpServlet {
                 outputStream.write((byte)b);
             }
         } else {
-            response.getWriter().write("\"" + (request.getParameter("text").equals("héllo") ? "göodbye" : null) + "\"");
+            response.getWriter().write("\"" + request.getParameter("text") + "\"");
         }
     }
 

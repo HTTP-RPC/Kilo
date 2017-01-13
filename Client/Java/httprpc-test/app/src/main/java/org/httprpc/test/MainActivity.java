@@ -241,12 +241,12 @@ public class MainActivity extends AppCompatActivity {
         // PUT
         serviceProxy.setEncoding(WebServiceProxy.MULTIPART_FORM_DATA);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            putCheckBox.setChecked(exception == null && result.equals("göodbye"));
+            putCheckBox.setChecked(exception == null && result.equals("héllo"));
         });
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            putJSONCheckBox.setChecked(exception == null && result.equals("göodbye"));
+            putJSONCheckBox.setChecked(exception == null && result.equals(mapOf(entry("text", "héllo"))));
         });
 
         // Delete

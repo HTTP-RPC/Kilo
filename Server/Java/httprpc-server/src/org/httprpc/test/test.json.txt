@@ -7,8 +7,8 @@
   "flag": {{flag}},
   "attachmentInfo": [{{#attachmentInfo[,]}}
     {
-      "bytes": "{{bytes}}",
-      "checksum": "{{checksum}}"
+      "bytes": {{bytes}},
+      "checksum": {{checksum}}
     }{{/attachmentInfo}}
   ]
 }
