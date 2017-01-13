@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.demo;
 
 import java.io.IOException;
 import java.util.ArrayList;
