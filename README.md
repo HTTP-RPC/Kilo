@@ -3,7 +3,7 @@ HTTP-RPC is an open-source framework for simplifying development of REST applica
 
 The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system.
 
-For example, the following code snippet shows how a Swift client might be used to access a simple web service that returns a friendly greeting:
+For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
 _Swift_
 
@@ -19,6 +19,8 @@ _Java_
         System.out.println(result); // Prints "Hello, World!"
     });
 
+In either case, the operation would return the string "Hello, World!".
+
 This guide introduces the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, please see [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 # Contents
@@ -32,9 +34,9 @@ The Objective-C/Swift client enables iOS and tvOS applications to consume REST-b
 The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 8 or later or tvOS 10 or later is required.
 
 ## WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Plain text content is returned as a string.
+The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
 
-Service proxies are initialized via `initWithSession:serverURL:`, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
+Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the resource path
@@ -53,9 +55,9 @@ Arguments may be of any type, and are generally converted to parameter values vi
 
 The result handler is called upon completion of the operation. If successful, the first argument will contain the value returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
 
-Note that, while requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
+Note that, while requests are actually processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
-## Authentication
+### Authentication
 Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
 HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `NSURLCredential` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
@@ -63,7 +65,7 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
 ## Examples
-The following code snippet demonstrates how `WSWebServiceProxy` can be used to access the hypothetical math operations discussed earlier:
+The following code snippet demonstrates how `WSWebServiceProxy` can be used to access a hypothetical math service:
 
     // Create service proxy
     let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
@@ -88,7 +90,7 @@ The Java client enables Java applications (including Android) to consume REST-ba
 The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
 
 ## WebServiceProxy Class
-The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `WebServiceProxy` deserializes JSON and plain text content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
+The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
 
 Service proxies are initialized via a constructor that takes the following arguments:
 
@@ -106,6 +108,8 @@ A convenience method is also provided for invoking operations that don't take an
 
 ### Arguments and Return Values
 TODO Encodings (request/response); note that JSON does not support date types
+
+`WebServiceProxy` deserializes JSON and plain text content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
 
 Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following types are given special consideration:
 
@@ -190,7 +194,7 @@ While this can be done in the result handler itself, `WebServiceProxy` provides 
 
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
-## Authentication
+### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
 HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `setAuthorization()` method can be used to associate a set of user credentials with a proxy instance. This method takes an instance of `java.net.PasswordAuthentication` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
@@ -198,7 +202,7 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
 ## Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to access the hypothetical math operations discussed earlier:
+The following code snippet demonstrates how `WebServiceProxy` can be used to access a hypothetical math service:
 
     // Create service proxy
     WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), Executors.newSingleThreadExecutor());
