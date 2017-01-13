@@ -176,7 +176,7 @@ public class WebServiceProxyTest {
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            validate("PUT (JSON)", exception == null && result.equals("göodbye"));
+            validate("PUT (JSON)", exception == null && result.equals(mapOf(entry("text", "héllo"))));
         });
 
         // DELETE

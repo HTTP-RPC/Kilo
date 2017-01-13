@@ -16,7 +16,9 @@ package org.httprpc.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -28,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import org.jtemplate.TemplateEncoder;
+
 /**
  * Test servlet.
  */
@@ -38,19 +42,20 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
         String value = request.getParameter("value");
 
-        Object result;
         if (value == null) {
-            result = null; // TODO
-            /*
-            result = mapOf(
-                entry("string", request.getParameter("string")),
-                entry("strings", Arrays.asList(request.getParameterValues("strings"))),
-                entry("number", Integer.parseInt(request.getParameter("number"))),
-                entry("flag", Boolean.parseBoolean(request.getParameter("flag")))
-            );
-            */
+            HashMap<String, Object> result = new HashMap<>();
+
+            result.put("string", request.getParameter("string"));
+            result.put("strings", Arrays.asList(request.getParameterValues("strings")));
+            result.put("number", Integer.parseInt(request.getParameter("number")));
+            result.put("flag", Boolean.parseBoolean(request.getParameter("flag")));
+
+            TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("test.json.txt"));
+            encoder.writeValue(result, response.getOutputStream());
         } else {
             String delay = request.getParameter("delay");
 
@@ -60,40 +65,40 @@ public class TestServlet extends HttpServlet {
                 throw new ServletException(exception);
             }
 
-            result = Integer.parseInt(value);
+            response.getWriter().write(value);
         }
-
-        writeResult(result, response);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String contentType = request.getContentType();
-
-        if (contentType == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        contentType = contentType.toLowerCase();
-
+        // TODO Pass this from client?
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding("UTF-8");
         }
 
-        Map<String, ?> result;
-        if (contentType.startsWith("application/json")) { // TODO Constant
-            result = null; // TODO
-            /*
-            JSONDecoder decoder = new JSONDecoder();
+        response.setContentType("application/json;charset=UTF-8");
 
-            result = (Map<String, ?>)decoder.readValue(request.getInputStream());
-            */
+        String contentType = request.getContentType().toLowerCase();
+
+        if (contentType.startsWith("application/json")) {
+            InputStream inputStream = request.getInputStream();
+            OutputStream outputStream = response.getOutputStream();
+
+            int b;
+            while ((b = inputStream.read()) != -1) {
+                outputStream.write((byte)b);
+            }
         } else {
+            HashMap<String, Object> result = new HashMap<>();
+
+            result.put("string", request.getParameter("string"));
+            result.put("strings", Arrays.asList(request.getParameterValues("strings")));
+            result.put("number", Integer.parseInt(request.getParameter("number")));
+            result.put("flag", Boolean.parseBoolean(request.getParameter("flag")));
+
             LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-            if (contentType.startsWith("multipart/form-data")) { // TODO Constant
+            if (contentType.startsWith("multipart/form-data")) {
                 for (Part part : request.getParts()) {
                     String submittedFileName = part.getSubmittedFileName();
 
@@ -113,68 +118,51 @@ public class TestServlet extends HttpServlet {
                             }
                         }
 
-                        // TODO
-                        /*
-                        attachmentInfo.add(mapOf(
-                            entry("bytes", bytes),
-                            entry("checksum", checksum))
-                        );
-                        */
+                        HashMap<String, Object> values = new HashMap<>();
+
+                        values.put("bytes", bytes);
+                        values.put("checksum", checksum);
+
+                        attachmentInfo.add(values);
                     }
                 }
             }
 
-            result = null; // TODO
-            /*
-            result = mapOf(
-                entry("string", request.getParameter("string")),
-                entry("strings", Arrays.asList(request.getParameterValues("strings"))),
-                entry("number", Integer.parseInt(request.getParameter("number"))),
-                entry("flag", Boolean.parseBoolean(request.getParameter("flag"))),
-                entry("attachmentInfo", attachmentInfo)
-            );
-            */
-        }
+            result.put("attachmentInfo", attachmentInfo);
 
-        writeResult(result, response);
+            TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("test.json.txt"));
+            encoder.writeValue(result, response.getOutputStream());
+        }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
         String contentType = request.getContentType();
 
-        String result;
-        if (contentType != null && contentType.startsWith("application/json")) { // TODO Constant
-            // TODO
-            /*
-            JSONDecoder decoder = new JSONDecoder();
+        if (contentType != null && contentType.toLowerCase().startsWith("application/json")) {
+            // TODO Pass this from client?
+            if (request.getCharacterEncoding() == null) {
+                request.setCharacterEncoding("UTF-8");
+            }
 
-            Map<String, ?> arguments = (Map<String, ?>)decoder.readValue(request.getInputStream());
+            InputStream inputStream = request.getInputStream();
+            OutputStream outputStream = response.getOutputStream();
 
-            result = arguments.get("text").equals("héllo") ? "göodbye" : null;
-            */
-            result = null; // TODO
+            int b;
+            while ((b = inputStream.read()) != -1) {
+                outputStream.write((byte)b);
+            }
         } else {
-            result = request.getParameter("text").equals("héllo") ? "göodbye" : null;
+            response.getWriter().write("\"" + (request.getParameter("text").equals("héllo") ? "göodbye" : null) + "\"");
         }
-
-        writeResult(result, response);
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        writeResult(Integer.parseInt(request.getParameter("id")) == 101, response);
-    }
-
-    private void writeResult(Object result, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        // TODO
-        /*
-        JSONEncoder encoder = new JSONEncoder();
-
-        encoder.writeValue(result, response.getOutputStream());
-        */
+        response.getWriter().write(Boolean.toString(Integer.parseInt(request.getParameter("id")) == 101));
     }
 }
