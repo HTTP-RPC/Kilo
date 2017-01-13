@@ -1,7 +1,7 @@
 {
-  "string": "{{string}}",
+  "string": "{{string:^json}}",
   "strings": [{{#strings[,]}}
-    "{{.}}"{{/strings}}
+    "{{.:^json}}"{{/strings}}
   ],
   "number": {{number}},
   "flag": {{flag}},

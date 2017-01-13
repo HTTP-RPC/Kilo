@@ -17,6 +17,7 @@ package org.httprpc.demo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,6 +25,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jtemplate.TemplateEncoder;
 
 /**
  * Note servlet.
@@ -36,38 +39,23 @@ public class NoteServlet extends HttpServlet {
 
     private static int nextNoteID = 1;
 
-    private static final String ID_KEY = "id";
-    private static final String DATE_KEY = "date";
-    private static final String MESSAGE_KEY = "message";
-
     @Override
     protected synchronized void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        // TODO
-        /*
-        JSONEncoder encoder = new JSONEncoder();
-
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("notes.json.txt"));
         encoder.writeValue(new ArrayList<>(notes.values()), response.getOutputStream());
-        */
     }
 
     @Override
     protected synchronized void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
-        }
+        HashMap<String, Object> note = new HashMap<>();
 
-        Date date = new Date();
+        note.put("id", nextNoteID);
+        note.put("date", new Date());
+        note.put("message", request.getParameter("message"));
 
-        // TODO
-        /*
-        notes.put(nextNoteID, mapOf(
-            entry(ID_KEY, nextNoteID),
-            entry(DATE_KEY, date.getTime()),
-            entry(MESSAGE_KEY, request.getParameter("message"))
-        ));
-        */
+        notes.put(nextNoteID, note);
 
         nextNoteID++;
 
