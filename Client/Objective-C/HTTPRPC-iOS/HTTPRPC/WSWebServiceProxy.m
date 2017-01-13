@@ -127,7 +127,7 @@ NSString * const kCRLF = @"\r\n";
                 contentType = _encoding;
             }
 
-            [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
+            [request setValue:[NSString stringWithFormat:@"%@;charset=UTF-8", contentType] forHTTPHeaderField:@"Content-Type"];
 
             NSData *body = nil;
 

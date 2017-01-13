@@ -349,7 +349,7 @@ public class WebServiceProxy {
                             contentType = encoding;
                         }
 
-                        connection.setRequestProperty("Content-Type", contentType);
+                        connection.setRequestProperty("Content-Type", String.format("%s;charset=%s", contentType, UTF_8));
 
                         try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                             if (encoding.equals(MULTIPART_FORM_DATA)) {

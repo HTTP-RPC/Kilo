@@ -71,11 +71,6 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO Pass this from client?
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
-        }
-
         response.setContentType("application/json;charset=UTF-8");
 
         String contentType = request.getContentType().toLowerCase();
@@ -142,11 +137,6 @@ public class TestServlet extends HttpServlet {
         String contentType = request.getContentType();
 
         if (contentType != null && contentType.toLowerCase().startsWith("application/json")) {
-            // TODO Pass this from client?
-            if (request.getCharacterEncoding() == null) {
-                request.setCharacterEncoding("UTF-8");
-            }
-
             InputStream inputStream = request.getInputStream();
             OutputStream outputStream = response.getOutputStream();
 
