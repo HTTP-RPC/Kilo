@@ -22,53 +22,17 @@ _Java_
 This guide introduces the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, please see [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 # Contents
-* [Service Operations](#service-operations)
-* [Client Implementations](#client-implementations)
-	* [Objective-C/Swift](#objective-cswift)
-	* [Java](#java)
+* [Objective-C/Swift Client](#objective-cswift-client)
+* [Java Client](#java-client)
 * [Additional Information](#additional-information)
 
-# Service Operations
-Services are accessed by applying an HTTP verb such as `GET` or `POST` to a target resource. The target is specified by a path representing the name of the resource, and is generally expressed as a noun such as _/calendar_ or _/contacts_. 
-
-Arguments are provided either via the query string or in the request body, like an HTML form. Results are typically returned as JSON, though image and text content is also supported. Services may also produce no value.
-
-## GET
-The `GET` method is used to retrive information from the server. `GET` arguments are passed in the query string. For example, the following request might be used to obtain data about a calendar event:
-
-    GET /calendar?eventID=101
-
-This request might retrieve the sum of two numbers, whose values are specified by the `a` and `b` query arguments:
-
-    GET /math/sum?a=2&b=4
-
-Alternatively, the argument values could be specified as a list rather than as two fixed variables:
-
-    GET /math/sum?values=1&values=2&values=3
-    
-In either case, the service would return the value 6 in response.
-
-## POST
-The `POST` method is typically used to send new information to the server. As with HTML forms, `POST` arguments are passed in the request body. Simple argument values can be submitted as [URL-encoded](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) form data, and binary content can be sent using the [multi-part](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encoding. For more complex arguments, the [JSON](http://json.org) encoding can be used.
-
-## PUT
-The `PUT` method updates existing information on the server. `PUT` arguments are typically passed in the query string. However, when encoded as JSON, they are sent in the request body.
-
-## DELETE
-The `DELETE` method removes information from the server. `DELETE` arguments are always passed in the query string.
-
-# Client Implementations
-The project currently supports consuming services in Objective-C/Swift and Java. Each implementation is discussed in more detail below. 
-
-## Objective-C/Swift
+# Objective-C/Swift Client
 The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
 The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 8 or later or tvOS 10 or later is required.
 
-### WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
-
-`NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Plain text content is returned as a string.
+## WSWebServiceProxy Class
+The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Plain text content is returned as a string.
 
 Service proxies are initialized via `initWithSession:serverURL:`, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
 
@@ -79,7 +43,7 @@ Service proxies are initialized via `initWithSession:serverURL:`, which takes an
 
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
-#### Arguments and Return Values
+### Arguments and Return Values
 TODO Encodings (request/response) 
 
 Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following types are given special consideration:
@@ -91,14 +55,14 @@ The result handler is called upon completion of the operation. If successful, th
 
 Note that, while requests are typically processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
-### Authentication
+## Authentication
 Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
 HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `NSURLCredential` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
-### Examples
+## Examples
 The following code snippet demonstrates how `WSWebServiceProxy` can be used to access the hypothetical math operations discussed earlier:
 
     // Create service proxy
@@ -114,7 +78,7 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to a
         // result is 6
     }
 
-## Java
+# Java Client
 The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
 * `WebServiceProxy` - web service invocation proxy
@@ -123,10 +87,8 @@ The Java client enables Java applications (including Android) to consume REST-ba
 
 The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
 
-### WebServiceProxy Class
-The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. GET, PUT, and DELETE arguments are submitted via the query string, and `POST` requests are submitted as "multipart/form-data", like an HTML form. 
-
-`WebServiceProxy` deserializes JSON and plain text content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
+## WebServiceProxy Class
+The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. `WebServiceProxy` deserializes JSON and plain text content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
 
 Service proxies are initialized via a constructor that takes the following arguments:
 
@@ -142,7 +104,7 @@ Service operations are initiated by calling the `invoke()` method, which takes t
 
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
-#### Arguments and Return Values
+### Arguments and Return Values
 TODO Encodings (request/response); note that JSON does not support date types
 
 Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following types are given special consideration:
@@ -164,7 +126,7 @@ On successful completion, the first argument will contain the value returned by 
 
 If an error occurs, the first argument will be `null`, and the second will contain an exception representing the error that occurred.
 
-#### Argument Map Creation
+### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
@@ -182,7 +144,7 @@ to this:
     
 A complete example is provided later.
 
-#### Nested Structures
+### Nested Structures
 `WebServiceProxy` also provides the following static method for accessing nested map values by key path:
 
     public static <V> V getValue(Map<String, ?> root, String path) { ... }
@@ -195,7 +157,7 @@ For example, given the following JSON response, a call to `getValue(result, "foo
         }
     }
 
-#### Custom Deserialization
+### Custom Deserialization
 TODO decodeImageResponse(), decodeTextResponse()
 
 Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to support `Bitmap` data: 
@@ -212,7 +174,7 @@ Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to pr
         return value;
     }
 
-#### Multi-Threading Considerations
+### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request. In most cases, this will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
 
 While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `dispatchResult()` method can be overridden to process all result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
@@ -228,14 +190,14 @@ While this can be done in the result handler itself, `WebServiceProxy` provides 
 
 Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
-### Authentication
+## Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
 HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `setAuthorization()` method can be used to associate a set of user credentials with a proxy instance. This method takes an instance of `java.net.PasswordAuthentication` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
-### Examples
+## Examples
 The following code snippet demonstrates how `WebServiceProxy` can be used to access the hypothetical math operations discussed earlier:
 
     // Create service proxy
