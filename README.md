@@ -29,12 +29,12 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 * [Additional Information](#additional-information)
 
 # Objective-C/Swift Client
-The HTTP-RPC Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
+The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
 The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 8 or later or tvOS 10 or later is required.
 
 ## WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
+The `WSWebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
 
 Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
 
@@ -46,7 +46,7 @@ Service proxies are initialized via the `initWithSession:serverURL:` method, whi
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 ### Arguments
-As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either the standard W3C [URL-encoded form](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) or [multi-part form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encodings or as JSON. `PUT` arguments may be submitted either as JSON (sent in the request body) or via the query string.
+As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` arguments may be submitted either as JSON or via the query string.
 
 The request encoding is set via the `encoding` property of the service proxy instance. HTTP-RPC provides the following constants representing the supported encoding types:
 
@@ -56,7 +56,7 @@ The request encoding is set via the `encoding` property of the service proxy ins
 
 The default value is `WSMultipartFormData`.
 
-Arguments sent via the query string or using one of the form encodings are converted to parameter values via the `description` method. Arrays represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part form data encoding, instances of `NSURL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
+Arguments sent via the query string or using one of the form encodings are generally converted to parameter values via the argument's `description` method. However, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `NSURL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
 When using the JSON encoding, a single JSON object containing the entire argument dictionary is sent in the request body. The dictionary is converted to JSON using the `NSJSONSerialization` class.
 
@@ -80,8 +80,8 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
-## Examples
-The following code snippet demonstrates how `WSWebServiceProxy` can be used to access a hypothetical math service:
+## Example
+The following code sample demonstrates how the `WSWebServiceProxy` class might be used to access the operations of a hypothetical math service:
 
     // Create service proxy
     let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
@@ -97,7 +97,7 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to a
     }
 
 # Java Client
-The HTTP-RPC Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
+The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
 * `WebServiceProxy` - web service invocation proxy
 * `WebServiceException` - exception thrown when a service operation returns an error
@@ -106,7 +106,7 @@ The HTTP-RPC Java client enables Java applications (including Android) to consum
 The Java client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
 
 ## WebServiceProxy Class
-The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
+The `WebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
 
 Service proxies are initialized via a constructor that takes the following arguments:
 
@@ -123,9 +123,9 @@ Service operations are initiated by calling the `invoke()` method, which takes t
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
 ### Arguments
-As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either the standard W3C [URL-encoded form](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) or [multi-part form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encodings or as JSON. `PUT` arguments may be submitted either as JSON (sent in the request body) or via the query string.
+As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` arguments may be submitted either as JSON or via the query string.
 
-The request encoding is set via the `encoding` property of the service proxy instance. The `WebServiceProxy` class provides the following constants representing the supported encoding types:
+The request encoding is set via the `setEncoding()` method of the service proxy instance. The `WebServiceProxy` class provides the following constants representing the supported encoding types:
 
 * `APPLICATION_X_WWW_FORM_URLENCODED`
 * `MULTIPART_FORM_DATA`
@@ -133,7 +133,7 @@ The request encoding is set via the `encoding` property of the service proxy ins
 
 The default value is `MULTIPART_FORM_DATA`.
 
-Arguments sent via the query string or using one of the form encodings are converted to parameter values via the `toString()` method. Iterable values (such as lists) represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part form data encoding, instances of `java.net.URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
+Arguments sent via the query string or using one of the form encodings are generally converted to parameter values via the argument's `toString()` method. However, `Iterable` values (such as lists) represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `java.net.URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
 
 When using the JSON encoding, a single JSON object containing the entire argument map is sent in the request body. Arguments are converted to their JSON equivalents as follows:
 
@@ -159,7 +159,7 @@ Using these methods, argument map creation can be reduced from this:
     
 to this:
 
-    Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
+	mapOf(entry("a", 2), entry("b", 4));
 
 ### Return Values
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
@@ -218,7 +218,7 @@ While this can be done in the result handler itself, `WebServiceProxy` provides 
         }
     };
 
-Similar dispatchers can be configured for other Java UI toolkits such as Swing, JavaFX, and SWT. Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
+Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
 ### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
@@ -227,29 +227,11 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
-## Examples
-The following code snippet demonstrates how `WebServiceProxy` can be used to access a hypothetical math service:
+## Example
+The following code sample demonstrates how the `WebServiceProxy` class might be used to access the operations of a hypothetical math service:
 
     // Create service proxy
     WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), Executors.newSingleThreadExecutor());
-
-    // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), new ResultHandler<Number>() {
-        @Override
-        public void execute(Number result, Exception exception) {
-            // result is 6
-        }
-    });
-    
-    // Get sum of all values
-    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))), new ResultHandler<Number>() {
-        @Override
-        public void execute(Number result, Exception exception) {
-            // result is 6
-        }
-    });
-
-Note that lambda expressions can optionally be used instead of anonymous inner classes to implement result handlers, reducing the invocation code to the following:
 
     // Get sum of "a" and "b"
     serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
@@ -262,6 +244,6 @@ Note that lambda expressions can optionally be used instead of anonymous inner c
     });
 
 # Additional Information
-For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+This guide introduced the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 
