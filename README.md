@@ -21,7 +21,7 @@ _Java_
 
 In either case, the operation would return the string "Hello, World!".
 
-This guide introduces the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, please see [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
 # Contents
 * [Objective-C/Swift Client](#objective-cswift-client)
@@ -39,21 +39,45 @@ The `WSWebServiceProxy` class serves as a client-side invocation proxy for web s
 Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
 
 * `method` - the HTTP method to execute
-* `path` - the resource path
+* `path` - the path to the requested resource
 * `arguments` - a dictionary containing the request arguments as key/value pairs
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
-### Arguments and Return Values
-TODO Encodings (request/response) 
+### Arguments
+As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either the standard W3C [URL-encoded form](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) or [multi-part form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encodings or as JSON. `PUT` arguments may be submitted either as JSON (sent in the request body) or via the query string.
 
-Arguments may be of any type, and are generally converted to parameter values via the `description` method. However, the following types are given special consideration:
+The request encoding is set via the `encoding` property of the service proxy instance. HTTP-RPC provides the following constants representing the supported encoding types:
 
-* Instances of `URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
-* Arrays represent multi-value parameters and generally behave similarly to `<select multiple>` tags in HTML forms. However, arrays containing URL values are handled like `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
+* `WSApplicationXWWWFormURLEncoded`
+* `WSMultipartFormData`
+* `WSApplicationJSON`
 
-The result handler is called upon completion of the operation. If successful, the first argument will contain the value returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
+The default value is `WSMultipartFormData`.
+
+#### Query String Encoding
+Arguments may be of any type, and are converted to parameter values via the `description` method. Arrays represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms. 
+
+#### URL-Encoded Form Encoding
+Identical to query string, but values are submitted in request body.
+
+#### Multi-Part Form Data Encoding
+Similar to URL-encoded form encoding, with additional support for uploading binary content. Arguments are generally converted to parameter values via the `description` method. However, instances of `NSURL` represent "files" and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values behave similarly to `<input type="file" multiple>` tags.
+
+#### JSON Encoding
+Arguments are converted to JSON using `NSJSONSerialization`. A root JSON object containing the arguments as top-level elements is sent in the request body.
+
+### Return Values
+The result handler is called upon completion of the operation. If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
+
+`WSWebServiceProxy` accepts the following response types:
+
+* _application/json_
+* _image/*_
+* _text/*_
+
+`NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Text content is returned as a string.
 
 Note that, while requests are actually processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
@@ -100,7 +124,7 @@ Service proxies are initialized via a constructor that takes the following argum
 Service operations are initiated by calling the `invoke()` method, which takes the following arguments:
 
 * `method` - the HTTP method to execute
-* `path` - the resource path
+* `path` - the path to the requested resource
 * `arguments` - a map containing the request arguments as key/value pairs
 * `resultHandler` - an instance of `ResultHandler` that will be invoked upon completion of the service operation
 
@@ -236,4 +260,6 @@ Note that lambda expressions can optionally be used instead of anonymous inner c
     });
 
 # Additional Information
-For additional information and examples, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+
+
