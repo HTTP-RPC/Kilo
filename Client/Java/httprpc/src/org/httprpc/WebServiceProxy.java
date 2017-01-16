@@ -62,14 +62,14 @@ public class WebServiceProxy {
     private String multipartBoundary = UUID.randomUUID().toString();
 
     /**
-     * Multi-part form data encoding.
-     */
-    public static final String MULTIPART_FORM_DATA = "multipart/form-data";
-
-    /**
      * URL-encoded form data encoding.
      */
     public static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+
+    /**
+     * Multi-part form data encoding.
+     */
+    public static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
     /**
      * JSON encoding.

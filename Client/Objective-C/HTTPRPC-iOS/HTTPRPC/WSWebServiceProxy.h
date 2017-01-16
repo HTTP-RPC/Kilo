@@ -17,14 +17,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Multi-part form data encoding.
- */
-extern NSString * const WSMultipartFormData;
-
-/**
  * URL-encoded form data encoding.
  */
 extern NSString * const WSApplicationXWWWFormURLEncoded;
+
+/**
+ * Multi-part form data encoding.
+ */
+extern NSString * const WSMultipartFormData;
 
 /**
  * JSON encoding.
