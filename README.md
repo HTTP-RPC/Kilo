@@ -122,31 +122,30 @@ Service operations are initiated by calling the `invoke()` method, which takes t
 
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
-### Arguments and Return Values
-TODO Encodings (request/response); note that JSON does not support date types
+### Arguments
+As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either the standard W3C [URL-encoded form](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) or [multi-part form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encodings or as JSON. `PUT` arguments may be submitted either as JSON (sent in the request body) or via the query string.
 
-`WebServiceProxy` deserializes JSON and plain text content automatically, and can be extended to support additional content types. Custom deserialization is discussed in more detail later.
+The request encoding is set via the `encoding` property of the service proxy instance. `WebServiceProxy` provides the following constants representing the supported encoding types:
 
-Arguments may be of any type, and are generally converted to parameter values via the `toString()` method. However, the following types are given special consideration:
+* `APPLICATION_X_WWW_FORM_URLENCODED`
+* `MULTIPART_FORM_DATA`
+* `APPLICATION_JSON`
 
-* Instances of `java.net.URL` represent binary content. They behave similarly to `<input type="file">` tags in HTML and can only be used with `POST` requests. 
-* Instances of `java.util.List` represent multi-value parameters and generally behave similarly to `<select multiple>` tags in HTML forms. However, lists containing URL values are handled like `<input type="file" multiple>` tags in HTML and and can only be used with `POST` requests. 
+The default value is `MULTIPART_FORM_DATA`.
 
-The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
+Arguments sent via the query string or using one of the form encodings are converted to parameter values via the `toString()` method. Iterable values (such as lists) represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part form data encoding, instances of `java.net.URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
 
-    public void execute(V result, Exception exception);
+When using the JSON encoding, a single JSON object containing the entire argument dictionary is sent in the request body. Arguments are converted to their JSON equivalents as follows:
 
-On successful completion, the first argument will contain the value returned by the server. This will typically be an instance of one of the following types or `null`:
+* `Number` or numeric primitive: number
+* `Boolean` or `boolean`: true/false
+* `CharSequence`: string
+* `Iterable`: array
+* `java.util.Map`: object
 
-* string: `String`
-* number: `Number`
-* true/false: `Boolean`
-* array: `java.util.List`
-* object: `java.util.Map`
+`Map` implementations must use `String` values for keys. Nested structures are supported, but reference cycles are not permitted.
 
-If an error occurs, the first argument will be `null`, and the second will contain an exception representing the error that occurred.
-
-### Argument Map Creation
+#### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
@@ -164,8 +163,38 @@ to this:
     
 A complete example is provided later.
 
-### Nested Structures
-`WebServiceProxy` also provides the following static method for accessing nested map values by key path:
+### Return Values
+The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
+
+    public void execute(V result, Exception exception);
+
+If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `null`, and the second argument will contain an exception representing the error that occurred.
+
+`WebServiceProxy` accepts the following response types:
+
+* _application/json_
+* _image/*_
+* _text/*_
+
+JSON values are mapped to their Java equivalents as follows:
+
+* string: `String`
+* number: `Number`
+* true/false: `Boolean`
+* array: `java.util.List`
+* object: `java.util.Map`
+
+Image data is decoded via the `decodeImageResponse()` method of the `WebServiceProxy` class. The default implementation throws an `UnsupportedOperationException`. However, subclasses can override this method to provide custom image deserialization behavior. For example, an Android client might override this method to produce `Bitmap` objects:
+
+    @Override
+    protected Object decodeImageResponse(InputStream inputStream, String imageType) {
+        return BitmapFactory.decodeStream(inputStream);
+    }
+
+Text data is decoded via the `decodeTextResponse()` method. The default implentation returns the text content as a string. Subclasses may override this method to produce alternate representations (for example, loading an XML document into a document object model).
+
+#### Nested Structures
+`WebServiceProxy` provides the following static method for accessing nested map values by key path:
 
     public static <V> V getValue(Map<String, ?> root, String path) { ... }
     
@@ -175,23 +204,6 @@ For example, given the following JSON response, a call to `getValue(result, "foo
         "foo": {
             "bar": 123
         }
-    }
-
-### Custom Deserialization
-TODO decodeImageResponse(), decodeTextResponse()
-
-Subclasses of `WebServiceProxy` can override the `decodeResponse()` method to provide custom deserialization behavior. For example, an Android client could override this method to support `Bitmap` data: 
-
-    @Override
-    protected Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-        Object value;
-        if (contentType.toLowerCase().startsWith("image/")) {
-            value = BitmapFactory.decodeStream(inputStream);
-        } else {
-            value = super.decodeResponse(inputStream, contentType);
-        }
-
-        return value;
     }
 
 ### Multi-Threading Considerations
