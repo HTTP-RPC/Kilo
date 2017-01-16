@@ -56,17 +56,9 @@ The request encoding is set via the `encoding` property of the service proxy ins
 
 The default value is `WSMultipartFormData`.
 
-#### Query String Encoding
-Arguments may be of any type, and are converted to parameter values via the `description` method. Arrays represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms. 
+Arguments sent via the query string or using one of the form encodings are converted to parameter values via the `description` method. Arrays represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part form data encoding, instances of `NSURL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
-#### URL-Encoded Form Encoding
-Identical to query string, but values are submitted in request body.
-
-#### Multi-Part Form Data Encoding
-Similar to URL-encoded form encoding, with additional support for uploading binary content. Arguments are generally converted to parameter values via the `description` method. However, instances of `NSURL` represent "files" and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values behave similarly to `<input type="file" multiple>` tags.
-
-#### JSON Encoding
-Arguments are converted to JSON using `NSJSONSerialization`. A root JSON object containing the arguments as top-level elements is sent in the request body.
+When using the JSON encoding, a single JSON object containing the entire argument dictionary is sent in the request body. The dictionary is converted to JSON using the `NSJSONSerialization` class.
 
 ### Return Values
 The result handler is called upon completion of the operation. If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
