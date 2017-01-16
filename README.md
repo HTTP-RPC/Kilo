@@ -29,7 +29,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 * [Additional Information](#additional-information)
 
 # Objective-C/Swift Client
-The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
+The HTTP-RPC Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
 The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 8 or later or tvOS 10 or later is required.
 
@@ -97,13 +97,13 @@ The following code snippet demonstrates how `WSWebServiceProxy` can be used to a
     }
 
 # Java Client
-The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
+The HTTP-RPC Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
 * `WebServiceProxy` - web service invocation proxy
 * `WebServiceException` - exception thrown when a service operation returns an error
 * `ResultHandler` - callback interface for handling service results
 
-The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
+The Java client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
 
 ## WebServiceProxy Class
 The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
@@ -125,7 +125,7 @@ A convenience method is also provided for invoking operations that don't take an
 ### Arguments
 As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either the standard W3C [URL-encoded form](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) or [multi-part form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2) encodings or as JSON. `PUT` arguments may be submitted either as JSON (sent in the request body) or via the query string.
 
-The request encoding is set via the `encoding` property of the service proxy instance. `WebServiceProxy` provides the following constants representing the supported encoding types:
+The request encoding is set via the `encoding` property of the service proxy instance. The `WebServiceProxy` class provides the following constants representing the supported encoding types:
 
 * `APPLICATION_X_WWW_FORM_URLENCODED`
 * `MULTIPART_FORM_DATA`
@@ -135,7 +135,7 @@ The default value is `MULTIPART_FORM_DATA`.
 
 Arguments sent via the query string or using one of the form encodings are converted to parameter values via the `toString()` method. Iterable values (such as lists) represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part form data encoding, instances of `java.net.URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
 
-When using the JSON encoding, a single JSON object containing the entire argument dictionary is sent in the request body. Arguments are converted to their JSON equivalents as follows:
+When using the JSON encoding, a single JSON object containing the entire argument map is sent in the request body. Arguments are converted to their JSON equivalents as follows:
 
 * `Number` or numeric primitive: number
 * `Boolean` or `boolean`: true/false
@@ -160,8 +160,6 @@ Using these methods, argument map creation can be reduced from this:
 to this:
 
     Map<String, Object> arguments = mapOf(entry("a", 2), entry("b", 4));
-    
-A complete example is provided later.
 
 ### Return Values
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
@@ -191,10 +189,10 @@ Image data is decoded via the `decodeImageResponse()` method of the `WebServiceP
         return BitmapFactory.decodeStream(inputStream);
     }
 
-Text data is decoded via the `decodeTextResponse()` method. The default implentation returns the text content as a string. Subclasses may override this method to produce alternate representations (for example, loading an XML document into a document object model).
+Text data is decoded via the `decodeTextResponse()` method. The default implentation simply returns the text content as a string. Subclasses may override this method to produce alternate representations (for example, loading an XML document into a document object model).
 
-#### Nested Structures
-`WebServiceProxy` provides the following static method for accessing nested map values by key path:
+#### Accessing Nested Structures
+`WebServiceProxy` provides the following convenience method for accessing nested map values by key path:
 
     public static <V> V getValue(Map<String, ?> root, String path) { ... }
     
