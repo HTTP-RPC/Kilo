@@ -157,9 +157,13 @@ NSString * const kCRLF = @"\r\n";
                     NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
 
                     if (statusCode / 100 == 2) {
-                        NSString *mimeType = [response MIMEType];
+                        if (statusCode % 100 == 0) {
+                            NSString *mimeType = [response MIMEType];
 
-                        if (mimeType != nil) {
+                            if (mimeType == nil) {
+                                mimeType = WSApplicationJSON;
+                            }
+
                             if ([mimeType hasPrefix:WSApplicationJSON]) {
                                 result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
                             } else if ([mimeType hasPrefix:@"image/"]) {

@@ -370,9 +370,13 @@ public class WebServiceProxy {
                     int responseCode = connection.getResponseCode();
 
                     if (responseCode / 100 == 2) {
-                        String contentType = connection.getContentType();
+                        if (responseCode % 100 == 0) {
+                            String contentType = connection.getContentType();
 
-                        if (contentType != null) {
+                            if (contentType == null) {
+                                contentType = APPLICATION_JSON;
+                            }
+
                             try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
                                 MIMEType mimeType = MIMEType.valueOf(contentType);
 
