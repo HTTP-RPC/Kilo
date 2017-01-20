@@ -157,7 +157,7 @@ NSString * const kCRLF = @"\r\n";
                     NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
 
                     if (statusCode / 100 == 2) {
-                        if (statusCode % 100 == 0) {
+                        if (statusCode % 100 < 4) {
                             NSString *mimeType = [response MIMEType];
 
                             if (mimeType == nil) {

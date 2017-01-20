@@ -370,7 +370,7 @@ public class WebServiceProxy {
                     int responseCode = connection.getResponseCode();
 
                     if (responseCode / 100 == 2) {
-                        if (responseCode % 100 == 0) {
+                        if (responseCode % 100 < 4) {
                             String contentType = connection.getContentType();
 
                             if (contentType == null) {
