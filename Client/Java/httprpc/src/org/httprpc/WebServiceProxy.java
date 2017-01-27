@@ -294,6 +294,7 @@ public class WebServiceProxy {
 
         PasswordAuthentication authorization = this.authorization;
 
+        // Execute request
         // TODO Use a lambda expression when Android issue 211386 is resolved:
         // https://code.google.com/p/android/issues/detail?id=211386
         return executorService.submit(new Callable<V>() {
@@ -407,7 +408,7 @@ public class WebServiceProxy {
                     } else {
                         throw new WebServiceException(connection.getResponseMessage(), responseCode);
                     }
-                } catch (Exception exception) {
+                } catch (IOException exception) {
                     if (resultHandler != null) {
                         // TODO Android issue 211386
                         dispatchResult(new Runnable() {
