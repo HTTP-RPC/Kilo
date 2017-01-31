@@ -45,37 +45,37 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
 @interface UIView (Markup)
 
 /**
- * The view's width, or <code>NaN</code> for no explicit width.
+ * The view's width, or <code>NaN</code> for no explicit width. Negative values will be pinned to 0.0.
  */
 @property (nonatomic) CGFloat width;
 
 /**
- * The view's minimum width, or <code>NaN</code> for no explicit minimum width.
+ * The view's minimum width, or <code>NaN</code> for no explicit minimum width. Negative values will be pinned to 0.0.
  */
 @property (nonatomic) CGFloat minimumWidth;
 
 /**
- * The view's maximum width, or <code>NaN</code> for no explicit maximum width.
+ * The view's maximum width, or <code>NaN</code> for no explicit maximum width. Negative values will be pinned to 0.0.
  */
 @property (nonatomic) CGFloat maximumWidth;
 
 /**
- * The view's height, or <code>NaN</code> for no explicit height.
+ * The view's height, or <code>NaN</code> for no explicit height. Negative values will be pinned to 0.0.
  */
 @property (nonatomic) CGFloat height;
 
 /**
- * The view's minimum height, or <code>NaN</code> for no explicit minimum height.
+ * The view's minimum height, or <code>NaN</code> for no explicit minimum height. Negative values will be pinned to 0.0.
  */
 @property (nonatomic) CGFloat minimumHeight;
 
 /**
- * The view's maximum height, or <code>NaN</code> for no explicit maximum height.
+ * The view's maximum height, or <code>NaN</code> for no explicit maximum height. Negative values will be pinned to 0.0.
  */
 @property (nonatomic) CGFloat maximumHeight;
 
 /**
- * The view's weight, or <code>NaN</code> for no weight.
+ * The view's weight, or <code>NaN</code> for no weight. Values less than or equal to 0.0 are ignored.
  */
 @property (nonatomic) CGFloat weight;
 

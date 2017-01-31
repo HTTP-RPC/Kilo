@@ -34,14 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)applyMarkupPropertyValue:(nullable id)value forKeyPath:(NSString *)keyPath;
 
-
-/**
- * Applies a collection of markup property values.
- *
- * @param dictionary A dictionary containing the values to apply.
- */
-- (void)applyMarkupPropertyValues:(NSDictionary<NSString *, id> *)dictionary;
-
 @end
 
 NS_ASSUME_NONNULL_END

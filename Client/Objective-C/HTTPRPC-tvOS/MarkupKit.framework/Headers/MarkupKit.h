@@ -60,3 +60,4 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/UITableViewCell+Markup.h>
 #import <MarkupKit/UICollectionViewFlowLayout+Markup.h>
 #import <MarkupKit/UIVisualEffectView+Markup.h>
+#import <MarkupKit/UIResponder+Markup.h>
