@@ -43,6 +43,7 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/NSObject+Markup.h>
 #import <MarkupKit/NSString+Markup.h>
 #import <MarkupKit/CALayer+Markup.h>
+#import <MarkupKit/UIResponder+Markup.h>
 #import <MarkupKit/UIView+Markup.h>
 #import <MarkupKit/UIControl+Markup.h>
 #import <MarkupKit/UIButton+Markup.h>
@@ -60,4 +61,3 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/UITableViewCell+Markup.h>
 #import <MarkupKit/UICollectionViewFlowLayout+Markup.h>
 #import <MarkupKit/UIVisualEffectView+Markup.h>
-#import <MarkupKit/UIResponder+Markup.h>

@@ -18,7 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSBundle *)bundleForView;
 
 /**
- * Returns the bundle that will be used to load string tables. The default implementation returns the main bundle.
+ * Returns the bundle that will be used to load images. The default implementation returns the main bundle.
+ */
+- (NSBundle *)bundleForImages;
+
+/**
+ * Returns the bundle that will be used to localize string values. The default implementation returns the main bundle.
  */
 - (NSBundle *)bundleForStrings;
 
