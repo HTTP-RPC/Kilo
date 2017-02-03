@@ -41,6 +41,15 @@ public class TestServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     @Override
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getMethod().equalsIgnoreCase("PATCH")) {
+            doPut(request, response);
+        } else {
+            super.service(request, response);
+        }
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
 
