@@ -46,7 +46,7 @@ Service proxies are initialized via the `initWithSession:serverURL:` method, whi
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 ### Arguments
-As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` arguments may be submitted either as JSON or via the query string.
+As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` and `PATCH` arguments may be submitted either as JSON or via the query string.
 
 The request encoding is set via the `encoding` property of the service proxy instance. HTTP-RPC provides the following constants representing the supported encoding types:
 
@@ -59,6 +59,8 @@ The default value is `WSMultipartFormData`.
 Arguments sent via the query string or using one of the form encodings are generally converted to parameter values via the argument's `description` method. However, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `NSURL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
 When using the JSON encoding, a single JSON object containing the entire argument dictionary is sent in the request body. The dictionary is converted to JSON using the `NSJSONSerialization` class.
+
+Note that `PATCH` requests may not be supported by all platforms. For example, `PATCH` works correctly on Android as of SDK 24 but produces a `ProtocolException` in the Oracle Java 8 runtime.
 
 ### Return Values
 The result handler is called upon completion of the operation. If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
@@ -123,7 +125,7 @@ Service operations are initiated by calling the `invoke()` method, which takes t
 A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
 ### Arguments
-As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` arguments may be submitted either as JSON or via the query string.
+As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` and `PATCH` arguments may be submitted either as JSON or via the query string.
 
 The request encoding is set via the `setEncoding()` method of the service proxy instance. The `WebServiceProxy` class provides the following constants representing the supported encoding types:
 
