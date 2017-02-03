@@ -92,7 +92,8 @@ NSString * const kCRLF = @"\r\n";
     if (url != nil) {
         // Construct query
         BOOL upload = ([method caseInsensitiveCompare:@"POST"] == NSOrderedSame
-            || ([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame && [_encoding isEqual:WSApplicationJSON]));
+            || (([method caseInsensitiveCompare:@"PUT"] == NSOrderedSame || [method caseInsensitiveCompare:@"PATCH"] == NSOrderedSame)
+                && [_encoding isEqual:WSApplicationJSON]));
 
         if (!upload) {
             NSString *query = [WSWebServiceProxy encodeQueryWithArguments:arguments];

@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox postJSONCheckBox;
     private CheckBox putCheckBox;
     private CheckBox putJSONCheckBox;
+    private CheckBox patchCheckBox;
+    private CheckBox patchJSONCheckBox;
     private CheckBox deleteCheckBox;
     private CheckBox errorCheckBox;
     private CheckBox timeoutCheckBox;
@@ -118,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         postJSONCheckBox = (CheckBox)findViewById(R.id.post_json_checkbox);
         putCheckBox = (CheckBox)findViewById(R.id.put_checkbox);
         putJSONCheckBox = (CheckBox)findViewById(R.id.put_json_checkbox);
+        patchCheckBox = (CheckBox)findViewById(R.id.patch_checkbox);
+        patchJSONCheckBox = (CheckBox)findViewById(R.id.patch_json_checkbox);
         deleteCheckBox = (CheckBox)findViewById(R.id.delete_checkbox);
         errorCheckBox = (CheckBox)findViewById(R.id.error_checkbox);
         timeoutCheckBox = (CheckBox)findViewById(R.id.timeout_checkbox);
@@ -247,6 +251,17 @@ public class MainActivity extends AppCompatActivity {
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
             putJSONCheckBox.setChecked(exception == null && result.equals(mapOf(entry("text", "héllo"))));
+        });
+
+        // PATCH
+        serviceProxy.setEncoding(WebServiceProxy.MULTIPART_FORM_DATA);
+        serviceProxy.invoke("PATCH", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
+            patchCheckBox.setChecked(exception == null && result.equals("héllo"));
+        });
+
+        serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
+        serviceProxy.invoke("PATCH", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
+            patchJSONCheckBox.setChecked(exception == null && result.equals(mapOf(entry("text", "héllo"))));
         });
 
         // Delete

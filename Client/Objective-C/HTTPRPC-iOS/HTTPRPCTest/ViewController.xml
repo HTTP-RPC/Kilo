@@ -21,6 +21,8 @@ limitations under the License.
     <UITableViewCell style="value1TableViewCell" id="postJSONCell" textLabel.text="POST (JSON)"/>
     <UITableViewCell style="value1TableViewCell" id="putCell" textLabel.text="PUT"/>
     <UITableViewCell style="value1TableViewCell" id="putJSONCell" textLabel.text="PUT (JSON)"/>
+    <UITableViewCell style="value1TableViewCell" id="patchCell" textLabel.text="PATCH"/>
+    <UITableViewCell style="value1TableViewCell" id="patchJSONCell" textLabel.text="PATCH (JSON)"/>
     <UITableViewCell style="value1TableViewCell" id="deleteCell" textLabel.text="DELETE"/>
     <UITableViewCell style="value1TableViewCell" id="errorCell" textLabel.text="Error"/>
     <UITableViewCell style="value1TableViewCell" id="timeoutCell" textLabel.text="Timeout"/>

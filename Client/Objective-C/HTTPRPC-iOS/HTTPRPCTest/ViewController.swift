@@ -23,6 +23,8 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var postJSONCell: UITableViewCell!
     @IBOutlet var putCell: UITableViewCell!
     @IBOutlet var putJSONCell: UITableViewCell!
+    @IBOutlet var patchCell: UITableViewCell!
+    @IBOutlet var patchJSONCell: UITableViewCell!
     @IBOutlet var deleteCell: UITableViewCell!
     @IBOutlet var timeoutCell: UITableViewCell!
     @IBOutlet var cancelCell: UITableViewCell!
@@ -148,6 +150,17 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         serviceProxy.encoding = WSApplicationJSON
         serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
             self.validate(result as? NSDictionary == ["text": "héllo"], error: error, cell: self.putJSONCell)
+        }
+
+        // PATCH
+        serviceProxy.encoding = WSMultipartFormData
+        serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
+            self.validate(result as? String == "héllo", error: error, cell: self.patchCell)
+        }
+
+        serviceProxy.encoding = WSApplicationJSON
+        serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
+            self.validate(result as? NSDictionary == ["text": "héllo"], error: error, cell: self.patchJSONCell)
         }
 
         // DELETE

@@ -306,7 +306,8 @@ public class WebServiceProxy {
 
                     // Construct query
                     boolean upload = (method.equalsIgnoreCase("POST")
-                        || (method.equalsIgnoreCase("PUT") && encoding.equals(APPLICATION_JSON)));
+                        || ((method.equalsIgnoreCase("PUT") || method.equalsIgnoreCase("PATCH"))
+                            && encoding.equals(APPLICATION_JSON)));
 
                     if (!upload) {
                         String query = encodeQuery(arguments);
