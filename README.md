@@ -161,7 +161,7 @@ Using these methods, argument map creation can be reduced from this:
     
 to this:
 
-	mapOf(entry("a", 2), entry("b", 4));
+    mapOf(entry("a", 2), entry("b", 4));
 
 ### Return Values
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
