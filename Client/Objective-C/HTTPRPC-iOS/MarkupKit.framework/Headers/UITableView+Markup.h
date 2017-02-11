@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UITableView (Markup)
+@interface UITableView (Markup) <UITableViewDataSource, UITableViewDelegate>
 
 /**
  * Returns the name of a section.

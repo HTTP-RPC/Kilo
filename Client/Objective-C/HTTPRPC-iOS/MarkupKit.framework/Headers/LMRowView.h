@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 typedef NS_ENUM(NSInteger, LMBaseline) {
     /** First baseline. */
-	LMBaselineFirst,
+    LMBaselineFirst,
 
     /** Last baseline. */
-	LMBaselineLast
+    LMBaselineLast
 };
 
 /**

@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIPickerView (Markup)
+@interface UIPickerView (Markup) <UIPickerViewDataSource, UIPickerViewDelegate>
 
 /**
  * Returns the name of a component.
