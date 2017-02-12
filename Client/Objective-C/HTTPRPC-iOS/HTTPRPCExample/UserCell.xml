@@ -16,7 +16,7 @@ limitations under the License.
 
 <root accessoryType="disclosureIndicator">
     <LMColumnView>
-        <UILabel id="nameLabel" font="body"/>
-        <UILabel id="emailLabel" font="caption1"/>
+        <UILabel text="$user.name" font="body"/>
+        <UILabel text="$user.email" font="caption1"/>
     </LMColumnView>
 </root>

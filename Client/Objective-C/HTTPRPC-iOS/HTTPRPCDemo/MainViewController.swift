@@ -55,8 +55,8 @@ class MainViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let message = noteList[(indexPath as NSIndexPath).row]["message"] as? String
-        let date = Date(timeIntervalSince1970: noteList[(indexPath as NSIndexPath).row]["date"] as! Double / 1000)
+        let message = noteList[indexPath.row]["message"] as? String
+        let date = Date(timeIntervalSince1970: noteList[indexPath.row]["date"] as! Double / 1000)
 
         var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: noteCellIdentifier)
 
@@ -74,11 +74,11 @@ class MainViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath:IndexPath) {
         if (editingStyle == .delete) {
-            let id = noteList[(indexPath as NSIndexPath).row]["id"] as! Int
+            let id = noteList[indexPath.row]["id"] as! Int
 
             AppDelegate.serviceProxy.invoke("DELETE", path: "/httprpc-server/notes", arguments: ["id": id]) { result, error in
                 if (error == nil) {
-                    self.noteList.remove(at: (indexPath as NSIndexPath).row)
+                    self.noteList.remove(at: indexPath.row)
 
                     tableView.beginUpdates()
                     tableView.deleteRows(at: [indexPath], with: .automatic)

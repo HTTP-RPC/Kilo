@@ -16,8 +16,7 @@ import UIKit
 import MarkupKit
 
 class PostCell: LMTableViewCell {
-    var titleLabel: UILabel!
-    var bodyLabel: UILabel!
+    dynamic var post: [String: AnyObject]?
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -27,5 +26,9 @@ class PostCell: LMTableViewCell {
 
     required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
+    }
+
+    deinit {
+        unbindAll()
     }
 }

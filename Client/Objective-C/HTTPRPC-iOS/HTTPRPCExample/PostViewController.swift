@@ -60,12 +60,9 @@ class PostViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let post = posts[(indexPath as NSIndexPath).row]
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.self.description()) as! PostCell
         
-        cell.titleLabel.text = post["title"] as? String
-        cell.bodyLabel.text = post["body"] as? String
+        cell.post = posts[indexPath.row]
 
         return cell
     }

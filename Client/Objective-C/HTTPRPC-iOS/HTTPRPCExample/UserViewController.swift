@@ -58,12 +58,9 @@ class UserViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let user = users[(indexPath as NSIndexPath).row]
-
         let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.self.description()) as! UserCell
         
-        cell.nameLabel.text = user["name"] as? String
-        cell.emailLabel.text = user["email"] as? String
+        cell.user = users[indexPath.row]
 
         return cell
     }
@@ -71,7 +68,7 @@ class UserViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let postViewController = PostViewController()
         
-        postViewController.userID = users[(indexPath as NSIndexPath).row]["id"] as! Int
+        postViewController.userID = users[indexPath.row]["id"] as! Int
         
         navigationController?.pushViewController(postViewController, animated: true)
     }

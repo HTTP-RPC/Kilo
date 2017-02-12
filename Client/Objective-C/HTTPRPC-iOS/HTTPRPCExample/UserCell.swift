@@ -16,8 +16,7 @@ import UIKit
 import MarkupKit
 
 class UserCell: LMTableViewCell {
-    var nameLabel: UILabel!
-    var emailLabel: UILabel!
+    dynamic var user: [String: AnyObject]?
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -27,5 +26,9 @@ class UserCell: LMTableViewCell {
 
     required init?(coder decoder: NSCoder) {
         super.init(coder: decoder)
+    }
+
+    deinit {
+        unbindAll()
     }
 }
