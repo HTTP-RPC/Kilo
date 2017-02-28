@@ -64,6 +64,7 @@ public class TestServlet extends HttpServlet {
             result.put("flag", Boolean.parseBoolean(request.getParameter("flag")));
 
             TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("test.json.txt"));
+
             encoder.writeValue(result, response.getOutputStream());
         } else {
             String delay = request.getParameter("delay");
@@ -81,6 +82,10 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
+
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding("UTF-8");
+        }
 
         String contentType = request.getContentType().toLowerCase();
 
@@ -135,6 +140,7 @@ public class TestServlet extends HttpServlet {
             result.put("attachmentInfo", attachmentInfo);
 
             TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("test.json.txt"));
+
             encoder.writeValue(result, response.getOutputStream());
         }
     }

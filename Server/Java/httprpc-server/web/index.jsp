@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title>Test Form</title>
+<title>HTTP-RPC Server</title>
 </head>
 <body>
 <a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true">GET</a></br>

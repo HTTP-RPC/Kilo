@@ -44,6 +44,7 @@ public class NoteServlet extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
 
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("notes.json.txt"));
+
         encoder.writeValue(new ArrayList<>(notes.values()), response.getOutputStream());
     }
 
