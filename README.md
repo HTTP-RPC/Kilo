@@ -53,7 +53,7 @@ A convenience method is also provided for invoking operations that don't take an
 ### Arguments
 As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` and `PATCH` arguments may be submitted either as JSON or via the query string.
 
-The request encoding is set via the `encoding` property of the service proxy instance. HTTP-RPC provides the following constants representing the supported encoding types:
+The request encoding is specified via the `encoding` property of the service proxy instance. HTTP-RPC provides the following constants representing the supported encoding types:
 
 * `WSApplicationXWWWFormURLEncoded`
 * `WSMultipartFormData`
@@ -64,8 +64,6 @@ The default value is `WSMultipartFormData`.
 Arguments sent via the query string or using one of the form encodings are generally converted to parameter values via the argument's `description` method. However, array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `NSURL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Arrays of URL values operate similarly to `<input type="file" multiple>` tags.
 
 When using the JSON encoding, a single JSON object containing the entire argument dictionary is sent in the request body. The dictionary is converted to JSON using the `NSJSONSerialization` class.
-
-Note that `PATCH` requests may not be supported by all platforms. For example, `PATCH` works correctly on Android as of SDK 24 but produces a `ProtocolException` in the Oracle Java 8 runtime.
 
 ### Return Values
 The result handler is called upon completion of the operation. If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
@@ -83,7 +81,7 @@ Note that, while requests are actually processed on a background thread, result 
 ### Authentication
 Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
-HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `NSURLCredential` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `authorization` property can be used to associate a set of user credentials with a proxy instance. This property accepts an instance of `NSURLCredential` identifying the user. When specified, the credentials are submitted with each request using basic HTTP authentication.
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
@@ -132,7 +130,7 @@ A convenience method is also provided for invoking operations that don't take an
 ### Arguments
 As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` and `PATCH` arguments may be submitted either as JSON or via the query string.
 
-The request encoding is set via the `setEncoding()` method of the service proxy instance. The `WebServiceProxy` class provides the following constants representing the supported encoding types:
+The request encoding is specified via the `setEncoding()` method of the service proxy instance. The `WebServiceProxy` class provides the following constants representing the supported encoding types:
 
 * `APPLICATION_X_WWW_FORM_URLENCODED`
 * `MULTIPART_FORM_DATA`
@@ -151,6 +149,8 @@ When using the JSON encoding, a single JSON object containing the entire argumen
 * `java.util.Map`: object
 
 `Map` implementations must use `String` values for keys. Nested structures are supported, but reference cycles are not permitted.
+
+Note that `PATCH` requests may not be supported by all platforms. For example, `PATCH` works correctly on Android as of SDK 24 but produces a `ProtocolException` in the Oracle Java 8 runtime.
 
 #### Argument Map Creation
 Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
@@ -214,7 +214,7 @@ For example, given the following JSON response, a call to `getValue(result, "foo
 ### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request. In most cases, this will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
 
-While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `dispatchResult()` method can be overridden to process all result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
+While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `dispatchResult()` method can be overridden to process result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
 
     WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, executorService) {
         private Handler handler = new Handler(Looper.getMainLooper());
@@ -230,7 +230,7 @@ Command line applications can generally use the default dispatcher, which simply
 ### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
 
-HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `setAuthorization()` method can be used to associate a set of user credentials with a proxy instance. This method takes an instance of `java.net.PasswordAuthentication` identifying the user. When specified, the credentials are submitted with each service request using basic HTTP authentication.
+HTTP-RPC provides an additional authentication mechanism that can be specified on a per-proxy basis. The `setAuthorization()` method can be used to associate a set of user credentials with a proxy instance. This method takes an instance of `java.net.PasswordAuthentication` identifying the user. When specified, the credentials are submitted with each request using basic HTTP authentication.
 
 **IMPORTANT** Since basic authentication transmits the encoded username and password in clear text, it should only be used with secure (i.e. HTTPS) connections.
 
