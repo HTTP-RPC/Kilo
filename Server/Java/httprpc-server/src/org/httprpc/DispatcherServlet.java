@@ -220,6 +220,10 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 parameterMap.put(name, valueList);
             }
+
+            if (contentType != null && contentType.startsWith(WebServiceProxy.MULTIPART_FORM_DATA)) {
+                // TODO Add part URLs
+            }
         }
 
         return parameterMap;
@@ -280,7 +284,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(getArgument(value, elementType));
+                        list.add(getArgument(value, (Class<?>)elementType));
                     }
                 } else {
                     list = Collections.emptyList();
@@ -297,7 +301,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                     map = new HashMap<>();
 
                     for (Map.Entry<String, ?> entry : values.entrySet()) {
-                        map.put(entry.getKey(), getArgument(entry.getValue(), valueType));
+                        map.put(entry.getKey(), getArgument(entry.getValue(), (Class<?>)valueType));
                     }
                 } else {
                     map = Collections.emptyMap();
@@ -320,9 +324,11 @@ public abstract class DispatcherServlet extends HttpServlet {
         return arguments;
     }
 
-    private static Object getArgument(Object value, Type type) {
+    private static Object getArgument(Object value, Class<?> type) {
         Object argument;
-        if (type == String.class) {
+        if (type.isInstance(value)) {
+            argument = value;
+        } else if (type == String.class) {
             argument = (value == null) ? null : value.toString();
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
