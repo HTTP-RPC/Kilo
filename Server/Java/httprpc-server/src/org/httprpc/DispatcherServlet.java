@@ -59,6 +59,8 @@ public abstract class DispatcherServlet extends HttpServlet {
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
+    private static final String UTF_8 = "UTF-8";
+
     @Override
     public void init() throws ServletException {
         root = new Resource();
@@ -149,7 +151,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
         // Look up handler method
         if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
+            request.setCharacterEncoding(UTF_8);
         }
 
         Map<String, List<String>> parameterMap = getParameterMap(request);
@@ -180,7 +182,7 @@ public abstract class DispatcherServlet extends HttpServlet {
             Class<?> returnType = method.getReturnType();
 
             if (returnType != Void.TYPE && returnType != Void.class) {
-                response.setContentType("application/json;charset=UTF-8");
+                response.setContentType(String.format("%s;charset=%s", WebServiceProxy.APPLICATION_JSON, UTF_8));
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
