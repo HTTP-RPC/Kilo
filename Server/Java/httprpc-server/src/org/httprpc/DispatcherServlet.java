@@ -188,46 +188,33 @@ public abstract class DispatcherServlet extends HttpServlet {
             try {
                 result = method.invoke(this, getArguments(method, parameterMap, fileMap));
             } catch (InvocationTargetException | IllegalAccessException exception) {
-                if (!response.isCommitted()) {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
+                throw new ServletException(exception);
+            }
 
-                Throwable cause = exception.getCause();
-
-                if (cause != null) {
-                    getServletContext().log(String.format("Error executing method %s().", method.getName()), cause);
-                }
-
+            if (response.isCommitted()) {
                 return;
             }
 
-            // Write response
-            if (!response.isCommitted()) {
-                Class<?> returnType = method.getReturnType();
+            Class<?> returnType = method.getReturnType();
 
-                if (returnType != Void.TYPE && returnType != Void.class) {
-                    response.setContentType(String.format("application/json;charset=UTF-8"));
+            if (returnType != Void.TYPE && returnType != Void.class) {
+                response.setContentType("application/json;charset=UTF-8");
 
-                    JSONEncoder jsonEncoder = new JSONEncoder();
+                JSONEncoder jsonEncoder = new JSONEncoder();
 
-                    try {
-                        jsonEncoder.writeValue(result, response.getOutputStream());
-                    } catch (IOException exception) {
-                        getServletContext().log(String.format("Error writing response for method %s().", method.getName()), exception);
-                    }
-                }
+                jsonEncoder.writeValue(result, response.getOutputStream());
             }
         } finally {
-            this.request.set(null);
-            this.response.set(null);
-
-            this.keys.set(null);
-
             for (LinkedList<File> fileList : fileMap.values()) {
                 for (File file : fileList) {
                     file.delete();
                 }
             }
+
+            this.request.set(null);
+            this.response.set(null);
+
+            this.keys.set(null);
         }
     }
 
