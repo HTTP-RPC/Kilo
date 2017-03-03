@@ -59,8 +59,6 @@ public abstract class DispatcherServlet extends HttpServlet {
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
-    private ThreadLocal<List<String>> keys = new ThreadLocal<>();
-
     @Override
     public void init() throws ServletException {
         root = new Resource();
@@ -119,8 +117,6 @@ public abstract class DispatcherServlet extends HttpServlet {
         // Look up handler list
         Resource resource = root;
 
-        LinkedList<String> keys = new LinkedList<>();
-
         String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
@@ -136,14 +132,8 @@ public abstract class DispatcherServlet extends HttpServlet {
                 Resource child = resource.resources.get(component);
 
                 if (child == null) {
-                    child = resource.resources.get("?");
-
-                    if (child == null) {
-                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-
-                    keys.add(component);
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
                 }
 
                 resource = child;
@@ -175,8 +165,6 @@ public abstract class DispatcherServlet extends HttpServlet {
         this.request.set(request);
         this.response.set(response);
 
-        this.keys.set(Collections.unmodifiableList(new ArrayList<>(keys)));
-
         try {
             Object result;
             try {
@@ -201,8 +189,6 @@ public abstract class DispatcherServlet extends HttpServlet {
         } finally {
             this.request.set(null);
             this.response.set(null);
-
-            this.keys.set(null);
         }
     }
 
@@ -375,15 +361,5 @@ public abstract class DispatcherServlet extends HttpServlet {
      */
     protected HttpServletResponse getResponse() {
         return response.get();
-    }
-
-    /**
-     * Returns the list of keys parsed from the request path.
-     *
-     * @return
-     * The list of keys parsed from the request path.
-     */
-    protected List<String> getKeys() {
-        return keys.get();
     }
 }
