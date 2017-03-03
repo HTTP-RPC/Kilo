@@ -167,8 +167,8 @@ public abstract class DispatcherServlet extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
         }
 
-        HashMap<String, LinkedList<String>> parameterMap = getParameterMap(request);
-        HashMap<String, LinkedList<File>> fileMap = getFileMap(request);
+        Map<String, List<String>> parameterMap = getParameterMap(request);
+        Map<String, List<File>> fileMap = getFileMap(request);
 
         Method method = getMethod(handlerList, parameterMap, fileMap);
 
@@ -205,7 +205,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                 jsonEncoder.writeValue(result, response.getOutputStream());
             }
         } finally {
-            for (LinkedList<File> fileList : fileMap.values()) {
+            for (List<File> fileList : fileMap.values()) {
                 for (File file : fileList) {
                     file.delete();
                 }
@@ -218,10 +218,10 @@ public abstract class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private static HashMap<String, LinkedList<String>> getParameterMap(HttpServletRequest request) {
+    private static Map<String, List<String>> getParameterMap(HttpServletRequest request) {
         // TODO Handle JSON request
 
-        HashMap<String, LinkedList<String>> parameterMap = new HashMap<>();
+        Map<String, List<String>> parameterMap = new HashMap<>();
 
         Enumeration<String> parameterNames = request.getParameterNames();
 
@@ -241,10 +241,10 @@ public abstract class DispatcherServlet extends HttpServlet {
         return parameterMap;
     }
 
-    private static HashMap<String, LinkedList<File>> getFileMap(HttpServletRequest request) throws ServletException, IOException {
+    private static Map<String, List<File>> getFileMap(HttpServletRequest request) throws ServletException, IOException {
         // TODO Handle JSON request
 
-        HashMap<String, LinkedList<File>> fileMap = new HashMap<>();
+        Map<String, List<File>> fileMap = new HashMap<>();
 
         String contentType = request.getContentType();
 
@@ -258,7 +258,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 String name = part.getName();
 
-                LinkedList<File> fileList = fileMap.get(name);
+                List<File> fileList = fileMap.get(name);
 
                 if (fileList == null) {
                     fileList = new LinkedList<>();
@@ -275,8 +275,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         return fileMap;
     }
 
-    private static Method getMethod(LinkedList<Method> handlerList, HashMap<String, LinkedList<String>> parameterMap,
-        HashMap<String, LinkedList<File>> fileMap) {
+    private static Method getMethod(List<Method> handlerList, Map<String, List<String>> parameterMap, Map<String, List<File>> fileMap) {
         Method method = null;
 
         int n = parameterMap.size() + fileMap.size();
@@ -308,8 +307,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         return method;
     }
 
-    private static Object[] getArguments(Method method, HashMap<String, LinkedList<String>> parameterMap,
-        HashMap<String, LinkedList<File>> fileMap) throws IOException {
+    private static Object[] getArguments(Method method, Map<String, List<String>> parameterMap, Map<String, List<File>> fileMap) throws IOException {
         Parameter[] parameters = method.getParameters();
 
         Object[] arguments = new Object[parameters.length];
@@ -327,7 +325,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 List<Object> list;
                 if (elementType == URL.class) {
-                    LinkedList<File> fileList = fileMap.get(name);
+                    List<File> fileList = fileMap.get(name);
 
                     if (fileList != null) {
                         list = new ArrayList<>(fileList.size());
@@ -339,7 +337,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                         list = Collections.emptyList();
                     }
                 } else {
-                    LinkedList<String> valueList = parameterMap.get(name);
+                    List<String> valueList = parameterMap.get(name);
 
                     if (valueList != null) {
                         int n = valueList.size();
@@ -356,19 +354,19 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 argument = Collections.unmodifiableList(list);
             } else if (type == URL.class) {
-                LinkedList<File> fileList = fileMap.get(name);
+                List<File> fileList = fileMap.get(name);
 
                 if (fileList != null) {
-                    argument = fileList.getFirst().toURI().toURL();
+                    argument = fileList.get(0).toURI().toURL();
                 } else {
                     argument = null;
                 }
             } else {
-                LinkedList<String> valueList = parameterMap.get(name);
+                List<String> valueList = parameterMap.get(name);
 
                 String value;
                 if (valueList != null) {
-                    value = valueList.getFirst();
+                    value = valueList.get(0);
                 } else {
                     value = null;
                 }
