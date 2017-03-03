@@ -290,7 +290,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                     list = Collections.emptyList();
                 }
 
-                argument = Collections.unmodifiableList(list);
+                argument = list;
             } else if (type == Map.class) {
                 Map<String, ?> values = (Map<String, ?>)parameterMap.get(name);
 
@@ -307,7 +307,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                     map = Collections.emptyMap();
                 }
 
-                argument = Collections.unmodifiableMap(map);
+                argument = map;
             } else {
                 Object value = parameterMap.get(name);
 
