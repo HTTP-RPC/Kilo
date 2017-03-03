@@ -25,9 +25,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -219,8 +217,6 @@ public abstract class DispatcherServlet extends HttpServlet {
     }
 
     private static Map<String, List<String>> getParameterMap(HttpServletRequest request) {
-        // TODO Handle JSON request
-
         Map<String, List<String>> parameterMap = new HashMap<>();
 
         Enumeration<String> parameterNames = request.getParameterNames();
@@ -242,8 +238,6 @@ public abstract class DispatcherServlet extends HttpServlet {
     }
 
     private static Map<String, List<File>> getFileMap(HttpServletRequest request) throws ServletException, IOException {
-        // TODO Handle JSON request
-
         Map<String, List<File>> fileMap = new HashMap<>();
 
         String contentType = request.getContentType();
@@ -455,59 +449,5 @@ public abstract class DispatcherServlet extends HttpServlet {
      */
     protected List<String> getKeys() {
         return keys.get();
-    }
-
-    /**
-     * Creates a list from a variable length array of elements.
-     *
-     * @param elements
-     * The elements from which the list will be created.
-     *
-     * @return
-     * An immutable list containing the given elements.
-     */
-    @SafeVarargs
-    public static List<?> listOf(Object...elements) {
-        return Collections.unmodifiableList(Arrays.asList(elements));
-    }
-
-    /**
-     * Creates a map from a variable length array of map entries.
-     *
-     * @param <K> The type of the key.
-     *
-     * @param entries
-     * The entries from which the map will be created.
-     *
-     * @return
-     * An immutable map containing the given entries.
-     */
-    @SafeVarargs
-    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
-        HashMap<K, Object> map = new HashMap<>();
-
-        for (Map.Entry<K, ?> entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
-        }
-
-        return Collections.unmodifiableMap(map);
-    }
-
-    /**
-     * Creates a map entry.
-     *
-     * @param <K> The type of the key.
-     *
-     * @param key
-     * The entry's key.
-     *
-     * @param value
-     * The entry's value.
-     *
-     * @return
-     * An immutable map entry containing the key/value pair.
-     */
-    public static <K> Map.Entry<K, ?> entry(K key, Object value) {
-        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 }
