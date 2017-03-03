@@ -14,14 +14,12 @@
 
 package org.httprpc;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,7 +36,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 
 /**
  * Abstract base class for dispatcher servlets.
@@ -48,7 +45,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
     // Resource structure
     private static class Resource {
-        public final HashMap<String, LinkedList<Method>> handlerMap = new HashMap<>();
+        public final HashMap<String, List<Method>> handlerMap = new HashMap<>();
         public final HashMap<String, Resource> resources = new HashMap<>();
 
         @Override
@@ -104,7 +101,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 String verb = requestMethod.value().toLowerCase();
 
-                LinkedList<Method> handlerList = resource.handlerMap.get(verb);
+                List<Method> handlerList = resource.handlerMap.get(verb);
 
                 if (handlerList == null) {
                     handlerList = new LinkedList<>();
@@ -153,7 +150,7 @@ public abstract class DispatcherServlet extends HttpServlet {
             }
         }
 
-        LinkedList<Method> handlerList = resource.handlerMap.get(request.getMethod().toLowerCase());
+        List<Method> handlerList = resource.handlerMap.get(request.getMethod().toLowerCase());
 
         if (handlerList == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -166,9 +163,8 @@ public abstract class DispatcherServlet extends HttpServlet {
         }
 
         Map<String, List<String>> parameterMap = getParameterMap(request);
-        Map<String, List<File>> fileMap = getFileMap(request);
 
-        Method method = getMethod(handlerList, parameterMap, fileMap);
+        Method method = getMethod(handlerList, parameterMap);
 
         if (method == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -184,7 +180,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         try {
             Object result;
             try {
-                result = method.invoke(this, getArguments(method, parameterMap, fileMap));
+                result = method.invoke(this, getArguments(method, parameterMap));
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 throw new ServletException(exception);
             }
@@ -203,12 +199,6 @@ public abstract class DispatcherServlet extends HttpServlet {
                 jsonEncoder.writeValue(result, response.getOutputStream());
             }
         } finally {
-            for (List<File> fileList : fileMap.values()) {
-                for (File file : fileList) {
-                    file.delete();
-                }
-            }
-
             this.request.set(null);
             this.response.set(null);
 
@@ -237,42 +227,10 @@ public abstract class DispatcherServlet extends HttpServlet {
         return parameterMap;
     }
 
-    private static Map<String, List<File>> getFileMap(HttpServletRequest request) throws ServletException, IOException {
-        Map<String, List<File>> fileMap = new HashMap<>();
-
-        String contentType = request.getContentType();
-
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            for (Part part : request.getParts()) {
-                String submittedFileName = part.getSubmittedFileName();
-
-                if (submittedFileName == null || submittedFileName.length() == 0) {
-                    continue;
-                }
-
-                String name = part.getName();
-
-                List<File> fileList = fileMap.get(name);
-
-                if (fileList == null) {
-                    fileList = new LinkedList<>();
-                    fileMap.put(name, fileList);
-                }
-
-                File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
-                part.write(file.getAbsolutePath());
-
-                fileList.add(file);
-            }
-        }
-
-        return fileMap;
-    }
-
-    private static Method getMethod(List<Method> handlerList, Map<String, List<String>> parameterMap, Map<String, List<File>> fileMap) {
+    private static Method getMethod(List<Method> handlerList, Map<String, List<String>> parameterMap) {
         Method method = null;
 
-        int n = parameterMap.size() + fileMap.size();
+        int n = parameterMap.size();
 
         int i = Integer.MAX_VALUE;
 
@@ -285,7 +243,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                 for (int k = 0; k < parameters.length; k++) {
                     String name = parameters[k].getName();
 
-                    if (!(parameterMap.containsKey(name) || fileMap.containsKey(name))) {
+                    if (!(parameterMap.containsKey(name))) {
                         j++;
                     }
                 }
@@ -301,7 +259,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         return method;
     }
 
-    private static Object[] getArguments(Method method, Map<String, List<String>> parameterMap, Map<String, List<File>> fileMap) throws IOException {
+    private static Object[] getArguments(Method method, Map<String, List<String>> parameterMap) throws IOException {
         Parameter[] parameters = method.getParameters();
 
         Object[] arguments = new Object[parameters.length];
@@ -317,44 +275,22 @@ public abstract class DispatcherServlet extends HttpServlet {
                 ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
                 Type elementType = parameterizedType.getActualTypeArguments()[0];
 
+                List<String> valueList = parameterMap.get(name);
+
                 List<Object> list;
-                if (elementType == URL.class) {
-                    List<File> fileList = fileMap.get(name);
+                if (valueList != null) {
+                    int n = valueList.size();
 
-                    if (fileList != null) {
-                        list = new ArrayList<>(fileList.size());
+                    list = new ArrayList<>(n);
 
-                        for (File file : fileList) {
-                            list.add(file.toURI().toURL());
-                        }
-                    } else {
-                        list = Collections.emptyList();
+                    for (String value : valueList) {
+                        list.add(getArgument(value, elementType));
                     }
                 } else {
-                    List<String> valueList = parameterMap.get(name);
-
-                    if (valueList != null) {
-                        int n = valueList.size();
-
-                        list = new ArrayList<>(n);
-
-                        for (String value : valueList) {
-                            list.add(getArgument(value, elementType));
-                        }
-                    } else {
-                        list = Collections.emptyList();
-                    }
+                    list = Collections.emptyList();
                 }
 
                 argument = Collections.unmodifiableList(list);
-            } else if (type == URL.class) {
-                List<File> fileList = fileMap.get(name);
-
-                if (fileList != null) {
-                    argument = fileList.get(0).toURI().toURL();
-                } else {
-                    argument = null;
-                }
             } else {
                 List<String> valueList = parameterMap.get(name);
 

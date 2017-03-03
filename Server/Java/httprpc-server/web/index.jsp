@@ -5,6 +5,12 @@
 <title>HTTP-RPC Server</title>
 </head>
 <body>
+<a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a></br>
+<a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a></br>
+<a href="${pageContext.request.contextPath}/keys/a/123/b/héllo/c/456?d=göodbye">Key List</a></br>
+
+<hr>
+
 <a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true">GET</a></br>
 
 <hr/>
