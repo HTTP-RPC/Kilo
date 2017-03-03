@@ -154,7 +154,7 @@ public abstract class DispatcherServlet extends HttpServlet {
             request.setCharacterEncoding(UTF_8);
         }
 
-        Map<String, List<String>> parameterMap = getParameterMap(request);
+        Map<String, ?> parameterMap = getParameterMap(request);
 
         Method method = getMethod(handlerList, parameterMap);
 
@@ -194,28 +194,38 @@ public abstract class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private static Map<String, List<String>> getParameterMap(HttpServletRequest request) {
-        Map<String, List<String>> parameterMap = new HashMap<>();
+    @SuppressWarnings("unchecked")
+    private static Map<String, ?> getParameterMap(HttpServletRequest request) throws IOException {
+        String contentType = request.getContentType();
 
-        Enumeration<String> parameterNames = request.getParameterNames();
+        Map<String, Object> parameterMap;
+        if (contentType != null && contentType.startsWith(WebServiceProxy.APPLICATION_JSON)) {
+            JSONDecoder jsonDecoder = new JSONDecoder();
 
-        while (parameterNames.hasMoreElements()) {
-            String name = parameterNames.nextElement();
-            String[] values = request.getParameterValues(name);
+            parameterMap = (Map<String, Object>)jsonDecoder.readValue(request.getInputStream());
+        } else {
+            parameterMap = new HashMap<>();
 
-            LinkedList<String> valueList = new LinkedList<>();
+            Enumeration<String> parameterNames = request.getParameterNames();
 
-            for (int i = 0; i < values.length; i++) {
-                valueList.add(values[i]);
+            while (parameterNames.hasMoreElements()) {
+                String name = parameterNames.nextElement();
+                String[] values = request.getParameterValues(name);
+
+                LinkedList<String> valueList = new LinkedList<>();
+
+                for (int i = 0; i < values.length; i++) {
+                    valueList.add(values[i]);
+                }
+
+                parameterMap.put(name, valueList);
             }
-
-            parameterMap.put(name, valueList);
         }
 
         return parameterMap;
     }
 
-    private static Method getMethod(List<Method> handlerList, Map<String, List<String>> parameterMap) {
+    private static Method getMethod(List<Method> handlerList, Map<String, ?> parameterMap) {
         Method method = null;
 
         int n = parameterMap.size();
@@ -247,7 +257,8 @@ public abstract class DispatcherServlet extends HttpServlet {
         return method;
     }
 
-    private static Object[] getArguments(Method method, Map<String, List<String>> parameterMap) throws IOException {
+    @SuppressWarnings("unchecked")
+    private static Object[] getArguments(Method method, Map<String, ?> parameterMap) throws IOException {
         Parameter[] parameters = method.getParameters();
 
         Object[] arguments = new Object[parameters.length];
@@ -260,18 +271,15 @@ public abstract class DispatcherServlet extends HttpServlet {
 
             Object argument;
             if (type == List.class) {
-                ParameterizedType parameterizedType = (ParameterizedType)parameter.getParameterizedType();
-                Type elementType = parameterizedType.getActualTypeArguments()[0];
+                List<?> values = (List<?>)parameterMap.get(name);
 
-                List<String> valueList = parameterMap.get(name);
+                Type elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
                 List<Object> list;
-                if (valueList != null) {
-                    int n = valueList.size();
+                if (values != null) {
+                    list = new ArrayList<>(values.size());
 
-                    list = new ArrayList<>(n);
-
-                    for (String value : valueList) {
+                    for (Object value : values) {
                         list.add(getArgument(value, elementType));
                     }
                 } else {
@@ -279,14 +287,28 @@ public abstract class DispatcherServlet extends HttpServlet {
                 }
 
                 argument = Collections.unmodifiableList(list);
-            } else {
-                List<String> valueList = parameterMap.get(name);
+            } else if (type == Map.class) {
+                Map<String, ?> values = (Map<String, ?>)parameterMap.get(name);
 
-                String value;
-                if (valueList != null) {
-                    value = valueList.get(0);
+                Type valueType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[1];
+
+                Map<String, Object> map;
+                if (values != null) {
+                    map = new HashMap<>();
+
+                    for (Map.Entry<String, ?> entry : values.entrySet()) {
+                        map.put(entry.getKey(), getArgument(entry.getValue(), valueType));
+                    }
                 } else {
-                    value = null;
+                    map = Collections.emptyMap();
+                }
+
+                argument = Collections.unmodifiableMap(map);
+            } else {
+                Object value = parameterMap.get(name);
+
+                if (value instanceof List<?>) {
+                    value = ((List<?>)value).get(0);
                 }
 
                 argument = getArgument(value, type);
@@ -298,46 +320,78 @@ public abstract class DispatcherServlet extends HttpServlet {
         return arguments;
     }
 
-    private static Object getArgument(String value, Type type) {
+    private static Object getArgument(Object value, Type type) {
         Object argument;
         if (type == String.class) {
-            argument = value;
-        } else if (type == Byte.TYPE) {
-            argument = (value == null) ? 0 : Byte.parseByte(value);
-        } else if (type == Byte.class) {
-            argument = (value == null) ? null : Byte.parseByte(value);
-        } else if (type == Short.TYPE) {
-            argument = (value == null) ? 0 : Short.parseShort(value);
-        } else if (type == Short.class) {
-            argument = (value == null) ? null : Short.parseShort(value);
-        } else if (type == Integer.TYPE) {
-            argument = (value == null) ? 0 : Integer.parseInt(value);
-        } else if (type == Integer.class) {
-            argument = (value == null) ? null : Integer.parseInt(value);
-        } else if (type == Long.TYPE) {
-            argument = (value == null) ? 0 : Long.parseLong(value);
-        } else if (type == Long.class) {
-            argument = (value == null) ? null : Long.parseLong(value);
-        } else if (type == Float.TYPE) {
-            argument = (value == null) ? 0 : Float.parseFloat(value);
-        } else if (type == Float.class) {
-            argument = (value == null) ? null : Float.parseFloat(value);
-        } else if (type == Double.TYPE) {
-            argument = (value == null) ? 0 : Double.parseDouble(value);
-        } else if (type == Double.class) {
-            argument = (value == null) ? null : Double.parseDouble(value);
-        } else if (type == Boolean.TYPE) {
-            argument = (value == null) ? false : Boolean.parseBoolean(value);
-        } else if (type == Boolean.class) {
-            argument = (value == null) ? null : Boolean.parseBoolean(value);
+            argument = (value == null) ? null : value.toString();
+        } else if (type == Byte.TYPE || type == Byte.class) {
+            if (value == null) {
+                argument = (type == Byte.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                argument = ((Number)value).byteValue();
+            } else {
+                argument = Byte.parseByte(value.toString());
+            }
+        } else if (type == Short.TYPE || type == Short.class) {
+            if (value == null) {
+                argument = (type == Short.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                argument = ((Number)value).shortValue();
+            } else {
+                argument = Short.parseShort(value.toString());
+            }
+        } else if (type == Integer.TYPE || type == Integer.class) {
+            if (value == null) {
+                argument = (type == Integer.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                argument = ((Number)value).intValue();
+            } else {
+                argument = Integer.parseInt(value.toString());
+            }
+        } else if (type == Long.TYPE || type == Long.class) {
+            if (value == null) {
+                argument = (type == Long.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                argument = ((Number)value).longValue();
+            } else {
+                argument = Long.parseLong(value.toString());
+            }
+        } else if (type == Float.TYPE || type == Float.class) {
+            if (value == null) {
+                argument = (type == Float.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                argument = ((Number)value).floatValue();
+            } else {
+                argument = Float.parseFloat(value.toString());
+            }
+        } else if (type == Double.TYPE || type == Double.class) {
+            if (value == null) {
+                argument = (type == Double.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                argument = ((Number)value).doubleValue();
+            } else {
+                argument = Double.parseDouble(value.toString());
+            }
+        } else if (type == Boolean.TYPE || type == Boolean.class) {
+            if (value == null) {
+                argument = (type == Boolean.TYPE) ? false : null;
+            } else {
+                argument = Boolean.parseBoolean(value.toString());
+            }
         } else if (type == Date.class) {
-            argument = new Date(Long.parseLong(value));
+            if (value == null) {
+                argument = null;
+            } else if (value instanceof Number) {
+                argument = new Date(((Number)value).longValue());
+            } else {
+                argument = new Date(Long.parseLong(value.toString()));
+            }
         } else if (type == LocalDate.class) {
-            argument = LocalDate.parse(value);
+            argument = (value == null) ? null : LocalDate.parse(value.toString());
         } else if (type == LocalTime.class) {
-            argument = LocalTime.parse(value);
+            argument = (value == null) ? null : LocalTime.parse(value.toString());
         } else if (type == LocalDateTime.class) {
-            argument = LocalDateTime.parse(value);
+            argument = (value == null) ? null : LocalDateTime.parse(value.toString());
         } else {
             throw new UnsupportedOperationException("Invalid parameter type.");
         }
