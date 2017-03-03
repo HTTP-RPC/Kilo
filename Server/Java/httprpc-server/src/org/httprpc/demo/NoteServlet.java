@@ -56,7 +56,7 @@ public class NoteServlet extends HttpServlet {
                 writer.write(", ");
             }
 
-            writer.write(String.format("{\"id\": \"%s\", \"date\": %d, \"message\": \"%s\"}",
+            writer.write(String.format("{\"id\": %d, \"date\": %d, \"message\": \"%s\"}",
                 note.get(ID_KEY),
                 note.get(DATE_KEY),
                 note.get(MESSAGE_KEY)));
@@ -79,7 +79,7 @@ public class NoteServlet extends HttpServlet {
 
         note.put(ID_KEY, nextNoteID);
         note.put(DATE_KEY, date.getTime());
-        note.put(MESSAGE_KEY, request.getParameter("message"));
+        note.put(MESSAGE_KEY, request.getParameter(MESSAGE_KEY));
 
         notes.put(nextNoteID, note);
 
@@ -90,7 +90,7 @@ public class NoteServlet extends HttpServlet {
 
     @Override
     protected synchronized void doDelete(HttpServletRequest request, HttpServletResponse response) {
-        notes.remove(Integer.parseInt(request.getParameter("id")));
+        notes.remove(Integer.parseInt(request.getParameter(ID_KEY)));
 
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
