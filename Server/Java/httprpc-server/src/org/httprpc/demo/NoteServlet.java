@@ -15,7 +15,7 @@
 package org.httprpc.demo;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -25,8 +25,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jtemplate.TemplateEncoder;
 
 /**
  * Note servlet.
@@ -39,22 +37,49 @@ public class NoteServlet extends HttpServlet {
 
     private static int nextNoteID = 1;
 
+    private static final String ID_KEY = "id";
+    private static final String DATE_KEY = "date";
+    private static final String MESSAGE_KEY = "message";
+
     @Override
     protected synchronized void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("notes.json.txt"));
+        PrintWriter writer = response.getWriter();
 
-        encoder.writeValue(new ArrayList<>(notes.values()), response.getOutputStream());
+        writer.write("[");
+
+        int i = 0;
+
+        for (Map<String, ?> note : notes.values()) {
+            if (i > 0) {
+                writer.write(", ");
+            }
+
+            writer.write(String.format("{\"id\": \"%s\", \"date\": %d, \"message\": \"%s\"}",
+                note.get(ID_KEY),
+                note.get(DATE_KEY),
+                note.get(MESSAGE_KEY)));
+
+            i++;
+        }
+
+        writer.write("]");
     }
 
     @Override
     protected synchronized void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding("UTF-8");
+        }
+
         HashMap<String, Object> note = new HashMap<>();
 
-        note.put("id", nextNoteID);
-        note.put("date", new Date());
-        note.put("message", request.getParameter("message"));
+        Date date = new Date();
+
+        note.put(ID_KEY, nextNoteID);
+        note.put(DATE_KEY, date.getTime());
+        note.put(MESSAGE_KEY, request.getParameter("message"));
 
         notes.put(nextNoteID, note);
 

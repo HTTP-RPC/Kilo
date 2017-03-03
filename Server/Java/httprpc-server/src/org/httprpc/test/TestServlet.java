@@ -17,10 +17,8 @@ package org.httprpc.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -29,8 +27,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
-import org.jtemplate.TemplateEncoder;
 
 /**
  * Test servlet.
@@ -56,16 +52,31 @@ public class TestServlet extends HttpServlet {
         String value = request.getParameter("value");
 
         if (value == null) {
-            HashMap<String, Object> result = new HashMap<>();
+            PrintWriter writer = response.getWriter();
 
-            result.put("string", request.getParameter("string"));
-            result.put("strings", Arrays.asList(request.getParameterValues("strings")));
-            result.put("number", Integer.parseInt(request.getParameter("number")));
-            result.put("flag", Boolean.parseBoolean(request.getParameter("flag")));
+            writer.write("{");
 
-            TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("test.json.txt"));
+            writer.write(String.format("\"string\": \"%s\", ", request.getParameter("string")));
 
-            encoder.writeValue(result, response.getOutputStream());
+            String[] strings = request.getParameterValues("strings");
+
+            writer.write("\"strings\": [");
+
+            for (int i = 0; i < strings.length; i++) {
+                if (i > 0) {
+                    writer.write(", ");
+                }
+
+                writer.write(String.format("\"%s\"", strings[i]));
+            }
+
+            writer.write("], ");
+
+            writer.write(String.format("\"number\": %d, \"flag\": %b",
+                Integer.parseInt(request.getParameter("number")),
+                Boolean.parseBoolean(request.getParameter("flag"))));
+
+            writer.write("}");
         } else {
             String delay = request.getParameter("delay");
 
@@ -98,16 +109,35 @@ public class TestServlet extends HttpServlet {
                 outputStream.write((byte)b);
             }
         } else {
-            HashMap<String, Object> result = new HashMap<>();
+            PrintWriter writer = response.getWriter();
 
-            result.put("string", request.getParameter("string"));
-            result.put("strings", Arrays.asList(request.getParameterValues("strings")));
-            result.put("number", Integer.parseInt(request.getParameter("number")));
-            result.put("flag", Boolean.parseBoolean(request.getParameter("flag")));
+            writer.write("{");
 
-            LinkedList<Map<String, ?>> attachmentInfo = new LinkedList<>();
+            writer.write(String.format("\"string\": \"%s\", ", request.getParameter("string")));
+
+            String[] strings = request.getParameterValues("strings");
+
+            writer.write("\"strings\": [");
+
+            for (int i = 0; i < strings.length; i++) {
+                if (i > 0) {
+                    writer.write(", ");
+                }
+
+                writer.write(String.format("\"%s\"", strings[i]));
+            }
+
+            writer.write("], ");
+
+            writer.write(String.format("\"number\": %d, \"flag\": %b",
+                Integer.parseInt(request.getParameter("number")),
+                Boolean.parseBoolean(request.getParameter("flag"))));
+
+            writer.write(", \"attachmentInfo\": [");
 
             if (contentType.startsWith("multipart/form-data")) {
+                int i = 0;
+
                 for (Part part : request.getParts()) {
                     String submittedFileName = part.getSubmittedFileName();
 
@@ -127,21 +157,25 @@ public class TestServlet extends HttpServlet {
                             }
                         }
 
+                        if (i > 0) {
+                            writer.write(", ");
+                        }
+
                         HashMap<String, Object> values = new HashMap<>();
 
                         values.put("bytes", bytes);
                         values.put("checksum", checksum);
 
-                        attachmentInfo.add(values);
+                        writer.write(String.format("{\"bytes\": %d, \"checksum\": %d}", bytes, checksum));
+
+                        i++;
                     }
                 }
             }
 
-            result.put("attachmentInfo", attachmentInfo);
+            writer.write("]");
 
-            TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("test.json.txt"));
-
-            encoder.writeValue(result, response.getOutputStream());
+            writer.write("}");
         }
     }
 
