@@ -27,7 +27,7 @@ import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 /**
- * Math servlet.
+ * Math example servlet.
  */
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
 public class MathServlet extends DispatcherServlet {

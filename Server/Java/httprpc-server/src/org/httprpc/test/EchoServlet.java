@@ -15,35 +15,30 @@
 package org.httprpc.test;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.io.PrintWriter;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
-import org.httprpc.ResourcePath;
-
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
 
 /**
- * Key list example servlet.
+ * Servlet that echoes a string value by writing a custom response.
  */
-@WebServlet(urlPatterns={"/keys/*"}, loadOnStartup=1)
-public class KeyListServlet extends DispatcherServlet {
+@WebServlet(urlPatterns={"/echo/*"}, loadOnStartup=1)
+public class EchoServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    @ResourcePath("/a/?/b/?/c/?")
-    public Map<String, ?> getKeys(String d) throws IOException {
-        List<String> keys = getKeys();
+    public void echo(String value) throws IOException {
+        HttpServletResponse response = getResponse();
 
-        return mapOf(
-            entry("a", keys.get(0)),
-            entry("b", keys.get(1)),
-            entry("c", keys.get(2)),
-            entry("d", d)
-        );
+        response.setContentType("text/plain");
+
+        PrintWriter writer = response.getWriter();
+
+        writer.append(value);
+        writer.flush();
     }
 }

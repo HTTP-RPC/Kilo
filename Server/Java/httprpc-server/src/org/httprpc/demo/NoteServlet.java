@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Note servlet.
+ * Note demo servlet.
  */
 @WebServlet(urlPatterns={"/notes/*"}, loadOnStartup=1)
 public class NoteServlet extends HttpServlet {
