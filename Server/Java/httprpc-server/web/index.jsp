@@ -7,7 +7,34 @@
 <body>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a></br>
 <a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a></br>
+<a href="${pageContext.request.contextPath}/math/statistics?values=1&values=3&values=5">Statistics</a></br>
 <a href="${pageContext.request.contextPath}/echo?value=héllo">Echo</a></br>
+
+<hr/>
+
+<form action="${pageContext.request.contextPath}/upload" method="post" enctype="multipart/form-data">
+<table>
+<tr>
+<td>File</td><td><input type="file" name="file"/></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Upload"/></td>
+</tr>
+</table>
+</form>
+
+<hr/>
+
+<form action="${pageContext.request.contextPath}/upload" method="post" enctype="multipart/form-data">
+<table>
+<tr>
+<td>File</td><td><input type="file" name="files" multiple/></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Upload"/></td>
+</tr>
+</table>
+</form>
 
 <hr>
 
