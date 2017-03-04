@@ -182,11 +182,14 @@ public abstract class DispatcherServlet extends HttpServlet {
             Class<?> returnType = method.getReturnType();
 
             if (returnType != Void.TYPE && returnType != Void.class) {
+                response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType(String.format("%s;charset=%s", WebServiceProxy.APPLICATION_JSON, UTF_8));
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
                 jsonEncoder.writeValue(result, response.getOutputStream());
+            } else {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
         } finally {
             this.request.set(null);
