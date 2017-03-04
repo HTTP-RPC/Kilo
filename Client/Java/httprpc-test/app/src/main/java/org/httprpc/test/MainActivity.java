@@ -238,7 +238,8 @@ public class MainActivity extends AppCompatActivity {
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
                 entry("number", 123),
-                entry("flag", true)
+                entry("flag", true),
+                entry("attachmentInfo", listOf())
             )));
         });
 
@@ -250,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            putJSONCheckBox.setChecked(exception == null && result.equals(mapOf(entry("text", "héllo"))));
+            putJSONCheckBox.setChecked(exception == null && result.equals("héllo"));
         });
 
         // PATCH
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
         serviceProxy.invoke("PATCH", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            patchJSONCheckBox.setChecked(exception == null && result.equals(mapOf(entry("text", "héllo"))));
+            patchJSONCheckBox.setChecked(exception == null && result.equals("héllo"));
         });
 
         // Delete

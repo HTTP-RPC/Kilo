@@ -137,7 +137,9 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
                 "string": "héllo",
                 "strings": ["a", "b", "c"],
                 "number": 123,
-                "flag": true
+                "flag": true,
+                "attachmentInfo": [
+                ]
             ], error: error, cell: self.postJSONCell)
         }
 
@@ -149,7 +151,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
 
         serviceProxy.encoding = WSApplicationJSON
         serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
-            self.validate(result as? NSDictionary == ["text": "héllo"], error: error, cell: self.putJSONCell)
+            self.validate(result as? String == "héllo", error: error, cell: self.putJSONCell)
         }
 
         // PATCH
@@ -160,7 +162,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
 
         serviceProxy.encoding = WSApplicationJSON
         serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { result, error in
-            self.validate(result as? NSDictionary == ["text": "héllo"], error: error, cell: self.patchJSONCell)
+            self.validate(result as? String == "héllo", error: error, cell: self.patchJSONCell)
         }
 
         // DELETE

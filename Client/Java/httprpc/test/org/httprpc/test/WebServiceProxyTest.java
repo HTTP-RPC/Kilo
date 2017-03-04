@@ -164,7 +164,8 @@ public class WebServiceProxyTest {
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
                 entry("number", 123),
-                entry("flag", true)
+                entry("flag", true),
+                entry("attachmentInfo", listOf())
             )));
         });
 
@@ -176,7 +177,7 @@ public class WebServiceProxyTest {
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            validate("PUT (JSON)", exception == null && result.equals(mapOf(entry("text", "héllo"))));
+            validate("PUT", exception == null && result.equals("héllo"));
         });
 
         // DELETE
