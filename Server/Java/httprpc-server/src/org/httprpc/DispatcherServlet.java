@@ -348,9 +348,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
     private static Object getArgument(Object value, Class<?> type) {
         Object argument;
-        if (type.isInstance(value)) {
-            argument = value;
-        } else if (type == String.class) {
+        if (type == String.class) {
             argument = (value == null) ? null : value.toString();
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
@@ -421,7 +419,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         } else if (type == LocalDateTime.class) {
             argument = (value == null) ? null : LocalDateTime.parse(value.toString());
         } else {
-            throw new UnsupportedOperationException("Invalid parameter type.");
+            argument = value;
         }
 
         return argument;
