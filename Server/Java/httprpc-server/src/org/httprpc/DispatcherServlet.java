@@ -239,7 +239,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                         parameterMap.put(name, urlList);
                     }
 
-                    File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
+                    File file = File.createTempFile(part.getName(), "_" + submittedFileName);
 
                     part.write(file.getAbsolutePath());
 
