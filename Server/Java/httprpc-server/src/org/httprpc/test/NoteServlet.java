@@ -14,84 +14,55 @@
 
 package org.httprpc.test;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import org.httprpc.DispatcherServlet;
+import org.httprpc.RequestMethod;
 
 /**
  * Note demo servlet.
  */
 @WebServlet(urlPatterns={"/notes/*"}, loadOnStartup=1)
-public class NoteServlet extends HttpServlet {
+public class NoteServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     private static LinkedHashMap<Integer, Map<String, ?>> notes = new LinkedHashMap<>();
 
     private static int nextNoteID = 1;
 
-    private static final String ID_KEY = "id";
-    private static final String DATE_KEY = "date";
-    private static final String MESSAGE_KEY = "message";
-
-    @Override
-    protected synchronized void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        PrintWriter writer = response.getWriter();
-
-        writer.write("[");
-
-        int i = 0;
-
-        for (Map<String, ?> note : notes.values()) {
-            if (i > 0) {
-                writer.write(", ");
-            }
-
-            writer.write(String.format("{\"id\": %d, \"date\": %d, \"message\": \"%s\"}",
-                note.get(ID_KEY),
-                note.get(DATE_KEY),
-                note.get(MESSAGE_KEY)));
-
-            i++;
-        }
-
-        writer.write("]");
+    @RequestMethod("GET")
+    public synchronized List<?> getNotes() {
+        return new ArrayList<>(notes.values());
     }
 
-    @Override
-    protected synchronized void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
+    @RequestMethod("POST")
+    public synchronized void addNote(String message) {
+        if (message == null) {
+            throw new IllegalArgumentException();
         }
 
         HashMap<String, Object> note = new HashMap<>();
 
         Date date = new Date();
 
-        note.put(ID_KEY, nextNoteID);
-        note.put(DATE_KEY, date.getTime());
-        note.put(MESSAGE_KEY, request.getParameter(MESSAGE_KEY));
+        note.put("id", nextNoteID);
+        note.put("date", date.getTime());
+        note.put("message", message);
 
         notes.put(nextNoteID, note);
 
         nextNoteID++;
-
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
-    @Override
-    protected synchronized void doDelete(HttpServletRequest request, HttpServletResponse response) {
-        notes.remove(Integer.parseInt(request.getParameter(ID_KEY)));
-
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    @RequestMethod("DELETE")
+    public synchronized void removeNote(int id) {
+        notes.remove(id);
     }
 }

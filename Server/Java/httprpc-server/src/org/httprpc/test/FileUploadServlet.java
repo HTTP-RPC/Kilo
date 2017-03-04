@@ -26,7 +26,7 @@ import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 
 /**
- * File upload servlet.
+ * File upload example servlet.
  */
 @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
 @MultipartConfig
