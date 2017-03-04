@@ -37,9 +37,11 @@ public class FileUploadServlet extends DispatcherServlet {
     public long upload(URL file) throws IOException {
         long bytes = 0;
 
-        try (InputStream inputStream = file.openStream()) {
-            while (inputStream.read() != -1) {
-                bytes++;
+        if (file != null) {
+            try (InputStream inputStream = file.openStream()) {
+                while (inputStream.read() != -1) {
+                    bytes++;
+                }
             }
         }
 

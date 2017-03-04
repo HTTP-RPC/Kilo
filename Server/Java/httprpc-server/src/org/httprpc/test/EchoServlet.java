@@ -36,9 +36,11 @@ public class EchoServlet extends DispatcherServlet {
 
         response.setContentType("text/plain");
 
-        PrintWriter writer = response.getWriter();
+        if (value != null) {
+            PrintWriter writer = response.getWriter();
 
-        writer.append(value);
-        writer.flush();
+            writer.append(value);
+            writer.flush();
+        }
     }
 }

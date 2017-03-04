@@ -28,7 +28,7 @@
 <form action="${pageContext.request.contextPath}/upload" method="post" enctype="multipart/form-data">
 <table>
 <tr>
-<td>File</td><td><input type="file" name="files" multiple/></td>
+<td>Files</td><td><input type="file" name="files" multiple/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit" value="Upload"/></td>
