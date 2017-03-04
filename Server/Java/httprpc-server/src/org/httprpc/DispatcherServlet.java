@@ -307,14 +307,14 @@ public abstract class DispatcherServlet extends HttpServlet {
             if (type == List.class) {
                 List<?> values = (List<?>)parameterMap.get(name);
 
-                Type elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                Type valueType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
                 List<Object> list;
                 if (values != null) {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(getArgument(value, (Class<?>)elementType));
+                        list.add(getArgument(value, (Class<?>)valueType));
                     }
                 } else {
                     list = Collections.emptyList();
