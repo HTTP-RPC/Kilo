@@ -16,192 +16,88 @@ package org.httprpc.test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+
+import org.httprpc.DispatcherServlet;
+import org.httprpc.RequestMethod;
+
+import static org.httprpc.WebServiceProxy.mapOf;
+import static org.httprpc.WebServiceProxy.entry;
 
 /**
  * Test servlet.
  */
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
-public class TestServlet extends HttpServlet {
+public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
-    @Override
-    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getMethod().equalsIgnoreCase("PATCH")) {
-            doPut(request, response);
-        } else {
-            super.service(request, response);
-        }
+    @RequestMethod("GET")
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag) {
+        return mapOf(
+            entry("string", string),
+            entry("strings", strings),
+            entry("number", number),
+            entry("flag", flag)
+        );
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
+    @RequestMethod("GET")
+    public int getValue(int value, int delay) throws InterruptedException {
+        Thread.sleep(delay);
 
-        String value = request.getParameter("value");
-
-        if (value == null) {
-            PrintWriter writer = response.getWriter();
-
-            writer.write("{");
-
-            writer.write(String.format("\"string\": \"%s\", ", request.getParameter("string")));
-
-            String[] strings = request.getParameterValues("strings");
-
-            writer.write("\"strings\": [");
-
-            for (int i = 0; i < strings.length; i++) {
-                if (i > 0) {
-                    writer.write(", ");
-                }
-
-                writer.write(String.format("\"%s\"", strings[i]));
-            }
-
-            writer.write("], ");
-
-            writer.write(String.format("\"number\": %d, \"flag\": %b",
-                Integer.parseInt(request.getParameter("number")),
-                Boolean.parseBoolean(request.getParameter("flag"))));
-
-            writer.write("}");
-        } else {
-            String delay = request.getParameter("delay");
-
-            try {
-                Thread.sleep((delay == null) ? 0 : Integer.parseInt(delay));
-            } catch (InterruptedException exception) {
-                throw new ServletException(exception);
-            }
-
-            response.getWriter().write(value);
-        }
+        return value;
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
+    @RequestMethod("POST")
+    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, List<URL> attachments) throws IOException {
+        List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
-        }
+        for (URL attachment : attachments) {
+            long bytes = 0;
+            long checksum = 0;
 
-        String contentType = request.getContentType().toLowerCase();
-
-        if (contentType.startsWith("application/json")) {
-            InputStream inputStream = request.getInputStream();
-            OutputStream outputStream = response.getOutputStream();
-
-            int b;
-            while ((b = inputStream.read()) != -1) {
-                outputStream.write((byte)b);
-            }
-        } else {
-            PrintWriter writer = response.getWriter();
-
-            writer.write("{");
-
-            writer.write(String.format("\"string\": \"%s\", ", request.getParameter("string")));
-
-            String[] strings = request.getParameterValues("strings");
-
-            writer.write("\"strings\": [");
-
-            for (int i = 0; i < strings.length; i++) {
-                if (i > 0) {
-                    writer.write(", ");
-                }
-
-                writer.write(String.format("\"%s\"", strings[i]));
-            }
-
-            writer.write("], ");
-
-            writer.write(String.format("\"number\": %d, \"flag\": %b",
-                Integer.parseInt(request.getParameter("number")),
-                Boolean.parseBoolean(request.getParameter("flag"))));
-
-            writer.write(", \"attachmentInfo\": [");
-
-            if (contentType.startsWith("multipart/form-data")) {
-                int i = 0;
-
-                for (Part part : request.getParts()) {
-                    String submittedFileName = part.getSubmittedFileName();
-
-                    if (submittedFileName == null || submittedFileName.length() == 0) {
-                        continue;
-                    }
-
-                    if (part.getName().equals("attachments")) {
-                        long bytes = 0;
-                        long checksum = 0;
-
-                        try (InputStream inputStream = part.getInputStream()) {
-                            int b;
-                            while ((b = inputStream.read()) != -1) {
-                                bytes++;
-                                checksum += b;
-                            }
-                        }
-
-                        if (i > 0) {
-                            writer.write(", ");
-                        }
-
-                        HashMap<String, Object> values = new HashMap<>();
-
-                        values.put("bytes", bytes);
-                        values.put("checksum", checksum);
-
-                        writer.write(String.format("{\"bytes\": %d, \"checksum\": %d}", bytes, checksum));
-
-                        i++;
-                    }
+            try (InputStream inputStream = attachment.openStream()) {
+                int b;
+                while ((b = inputStream.read()) != -1) {
+                    bytes++;
+                    checksum += b;
                 }
             }
 
-            writer.write("]");
-
-            writer.write("}");
+            attachmentInfo.add(mapOf(
+                entry("bytes", bytes),
+                entry("checksum", checksum)
+            ));
         }
+
+        return mapOf(
+            entry("string", string),
+            entry("strings", strings),
+            entry("number", number),
+            entry("flag", flag),
+            entry("attachmentInfo", attachmentInfo)
+        );
     }
 
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        String contentType = request.getContentType();
-
-        if (contentType != null && contentType.toLowerCase().startsWith("application/json")) {
-            InputStream inputStream = request.getInputStream();
-            OutputStream outputStream = response.getOutputStream();
-
-            int b;
-            while ((b = inputStream.read()) != -1) {
-                outputStream.write((byte)b);
-            }
-        } else {
-            response.getWriter().write("\"" + request.getParameter("text") + "\"");
-        }
+    @RequestMethod("PUT")
+    public String testPut(String text) {
+        return text;
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
+    @RequestMethod("PATCH")
+    public String testPatch(String text) {
+        return text;
+    }
 
-        response.getWriter().write(Boolean.toString(Integer.parseInt(request.getParameter("id")) == 101));
+    @RequestMethod("DELETE")
+    public boolean testDelete(int id) {
+        return (id == 101);
     }
 }
