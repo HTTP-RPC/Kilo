@@ -158,7 +158,9 @@ public abstract class DispatcherServlet extends HttpServlet {
             request.setCharacterEncoding(UTF_8);
         }
 
-        Map<String, ?> parameterMap = getParameterMap(request);
+        LinkedList<File> files = new LinkedList<>();
+
+        Map<String, ?> parameterMap = getParameterMap(request, files);
 
         Method method = getMethod(handlerList, parameterMap);
 
@@ -198,11 +200,15 @@ public abstract class DispatcherServlet extends HttpServlet {
         } finally {
             this.request.set(null);
             this.response.set(null);
+
+            for (File file : files) {
+                file.delete();
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, ?> getParameterMap(HttpServletRequest request) throws ServletException, IOException {
+    private static Map<String, ?> getParameterMap(HttpServletRequest request, List<File> files) throws ServletException, IOException {
         String contentType = request.getContentType();
 
         Map<String, Object> parameterMap;
@@ -244,6 +250,8 @@ public abstract class DispatcherServlet extends HttpServlet {
                     part.write(file.getAbsolutePath());
 
                     urlList.add(file.toURI().toURL());
+
+                    files.add(file);
                 }
             }
         }
