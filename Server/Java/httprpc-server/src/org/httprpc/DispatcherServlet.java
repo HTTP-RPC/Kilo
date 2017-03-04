@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -216,15 +217,8 @@ public abstract class DispatcherServlet extends HttpServlet {
 
             while (parameterNames.hasMoreElements()) {
                 String name = parameterNames.nextElement();
-                String[] values = request.getParameterValues(name);
 
-                LinkedList<String> valueList = new LinkedList<>();
-
-                for (int i = 0; i < values.length; i++) {
-                    valueList.add(values[i]);
-                }
-
-                parameterMap.put(name, valueList);
+                parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
             }
 
             if (contentType != null && contentType.startsWith(WebServiceProxy.MULTIPART_FORM_DATA)) {
