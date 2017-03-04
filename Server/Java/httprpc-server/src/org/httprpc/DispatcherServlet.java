@@ -14,12 +14,14 @@
 
 package org.httprpc;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,6 +38,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 /**
  * Abstract base class for dispatcher servlets.
@@ -198,7 +201,7 @@ public abstract class DispatcherServlet extends HttpServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, ?> getParameterMap(HttpServletRequest request) throws IOException {
+    private static Map<String, ?> getParameterMap(HttpServletRequest request) throws ServletException, IOException {
         String contentType = request.getContentType();
 
         Map<String, Object> parameterMap;
@@ -225,7 +228,29 @@ public abstract class DispatcherServlet extends HttpServlet {
             }
 
             if (contentType != null && contentType.startsWith(WebServiceProxy.MULTIPART_FORM_DATA)) {
-                // TODO Add part URLs
+                for (Part part : request.getParts()) {
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null || submittedFileName.length() == 0) {
+                        continue;
+                    }
+
+                    String name = part.getName();
+
+                    LinkedList<URL> urlList = (LinkedList<URL>)parameterMap.get(name);
+
+                    if (urlList == null) {
+                        urlList = new LinkedList<>();
+
+                        parameterMap.put(name, urlList);
+                    }
+
+                    File file = File.createTempFile(part.getName(), "_" + part.getSubmittedFileName());
+
+                    part.write(file.getAbsolutePath());
+
+                    urlList.add(file.toURI().toURL());
+                }
             }
         }
 
