@@ -22,13 +22,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -412,20 +408,6 @@ public abstract class DispatcherServlet extends HttpServlet {
             } else {
                 argument = Boolean.parseBoolean(value.toString());
             }
-        } else if (type == Date.class) {
-            if (value == null) {
-                argument = null;
-            } else if (value instanceof Number) {
-                argument = new Date(((Number)value).longValue());
-            } else {
-                argument = new Date(Long.parseLong(value.toString()));
-            }
-        } else if (type == LocalDate.class) {
-            argument = (value == null) ? null : LocalDate.parse(value.toString());
-        } else if (type == LocalTime.class) {
-            argument = (value == null) ? null : LocalTime.parse(value.toString());
-        } else if (type == LocalDateTime.class) {
-            argument = (value == null) ? null : LocalDateTime.parse(value.toString());
         } else {
             argument = value;
         }
