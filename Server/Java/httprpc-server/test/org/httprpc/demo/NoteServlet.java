@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.test;
+package org.httprpc.demo;
 
 import java.util.ArrayList;
 import java.util.Date;

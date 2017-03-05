@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="httprpc-server" default="build">
+<project name="httprpc-server" default="build-test">
     <property name="title" value="HTTP-RPC Server"/>
+    <property name="version" value="4.1"/>
 
     <property name="src" value="src"/>
+    <property name="test" value="test"/>
     <property name="api" value="api"/>
     <property name="bin" value="bin"/>
+    <property name="bin.test" value="bin.test"/>
+    <property name="doc" value="doc"/>
+
+    <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
+    <property name="docfile" value="${ant.project.name}-${version}-javadoc.zip"/>
+
+    <property name="zipfile" value="${ant.project.name}-${version}.zip"/>
 
     <property name="warfile" value="${ant.project.name}.war"/>
 
@@ -26,6 +35,34 @@
 
                 <fileset dir="${api}" includes="*.jar"/>
             </classpath>
+        </javac>
+
+        <delete dir="." includes="${jarfile}"/>
+
+        <jar basedir="${bin}" destfile="${jarfile}" index="true">
+            <manifest>
+                <attribute name="Implementation-Title" value="${title}"/>
+                <attribute name="Implementation-Version" value="${version}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="build-test" depends="build">
+        <echo message="Building ${title} test..."/>
+
+        <delete dir="${bin.test}"/>
+        <mkdir dir="${bin.test}"/>
+
+        <javac srcDir="${test}" destDir="${bin.test}"
+            includejavaruntime="true" includeantruntime="true"
+            encoding="UTF-8" deprecation="true" debug="true"
+            failonerror="true">
+            <classpath>
+                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
+                <fileset dir="." includes="*.jar"/>
+
+                <fileset dir="${api}" includes="*.jar"/>
+            </classpath>
 
             <compilerarg value="-parameters"/>
         </javac>
@@ -35,10 +72,34 @@
         <war destfile="${warfile}" webxml="web.xml">
             <fileset dir="web"/>
 
-            <classes dir="${bin}"/>
+            <classes dir="${bin.test}"/>
             <classes dir="${src}" excludes="**/*.java"/>
 
             <lib dir="../../../Client/Java/httprpc" includes="*.jar"/>
+            <lib dir="." includes="*.jar"/>
         </war>
+    </target>
+
+    <target name="doc">
+        <delete dir="${doc}"/>
+
+        <javadoc sourcepath="${src}" destdir="${doc}"
+            link="http://docs.oracle.com/javase/8/docs/api/"
+            version="true" use="true">
+            <classpath>
+                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
+
+                <fileset dir="${api}" includes="*.jar"/>
+            </classpath>
+        </javadoc>
+
+        <delete dir="." includes="${docfile}"/>
+
+        <zip destfile="${docfile}" basedir="doc"/>
+    </target>
+
+    <target name="package" depends="build, doc">
+        <delete dir="." includes="${zipfile}"/>
+        <zip destfile="${zipfile}" basedir="." includes="${jarfile}, ${docfile}"/>
     </target>
 </project>

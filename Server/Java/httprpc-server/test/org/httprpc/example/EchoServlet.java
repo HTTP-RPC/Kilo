@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.test;
+package org.httprpc.example;
 
 import java.io.IOException;
 import java.io.PrintWriter;
