@@ -6,7 +6,7 @@
 # Introduction
 HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to access REST-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
 
-The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system.
+The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. An optional library for implementing REST services in Java is also provided.
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
@@ -31,6 +31,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Contents
 * [Objective-C/Swift Client](#objective-cswift-client)
 * [Java Client](#java-client)
+* [Java Server](#java-server)
 * [Additional Information](#additional-information)
 
 # Objective-C/Swift Client
@@ -142,8 +143,8 @@ Arguments sent via the query string or using one of the form encodings are gener
 
 When using the JSON encoding, a single JSON object containing the entire argument map is sent in the request body. Arguments are converted to their JSON equivalents as follows:
 
-* `Number` or numeric primitive: number
-* `Boolean` or `boolean`: true/false
+* `Number`: number
+* `Boolean`: true/false
 * `CharSequence`: string
 * `Iterable`: array
 * `java.util.Map`: object
@@ -250,7 +251,111 @@ The following code sample demonstrates how the `WebServiceProxy` class might be 
         // result is 6
     });
 
+# Java Server
+The optional Java server library allows developers to implement REST services in Java. It is distributed as a JAR file containing the following types:
+
+* `DispatcherServlet` - abstract base class for REST services
+* `RequestMethod` - annotation that associates an HTTP verb with a service method
+* `ResourcePath` - annotation that associates a resource path with a service method
+
+The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It requires the Java client library but otherwise has no dependencies.
+
+## DispatcherServlet
+`DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 
+
+Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. Arguments may also be provided as JSON. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
+
+The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. 
+
+Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following class might be used to implement the simple addition operations discussed earlier:
+
+    @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
+    public class MathServlet extends DispatcherServlet {
+        private static final long serialVersionUID = 0;
+    
+        @RequestMethod("GET")
+        @ResourcePath("/sum")
+        public double getSum(double a, double b) {
+            return a + b;
+        }
+    
+        @RequestMethod("GET")
+        @ResourcePath("/sum")
+        public double getSum(List<Double> values) {
+            double total = 0;
+    
+            for (double value : values) {
+                total += value;
+            }
+    
+            return total;
+        }
+    }
+
+The following request would cause the first method to be invoked:
+
+    GET /math/sum?a=2&b=4
+    
+This request would invoke the second method:
+
+    GET /math/sum?values=1&values=2&values=3
+
+Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+
+## Method Arguments
+Method arguments may be any of the following types:
+
+* Numeric primitive or wrapper class (e.g. `int` or `Integer`)
+* `boolean` or `Boolean`
+* `String`
+* `java.util.List`
+* `java.util.Map`
+* `java.net.URL`
+
+List arguments represent either multi-value parameters submitted using one of the W3C form encodings or an array structure submitted as JSON. Values are automatically converted to the declared element type (e.g. `List<Double>`). 
+
+Map arguments represent object structures submitted as JSON. They can only be used with the JSON encoding, and must use strings for keys. Values are automatically converted to the declared value type (e.g. `Map<String, Double>`).
+
+`URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the "multipart/form-data" encoding. Multi-file uploads may be represented as lists. For example:
+
+    @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
+    @MultipartConfig
+    public class FileUploadServlet extends DispatcherServlet {
+        private static final long serialVersionUID = 0;
+    
+        @RequestMethod("POST")
+        public void upload(URL file) throws IOException {
+            ...
+        }
+
+        @RequestMethod("POST")
+        public long upload(List<URL> files) throws IOException {
+            ...
+        }
+    }
+
+## Return Values
+Return values are converted to their JSON equivalents as described earlier:
+
+* `Number`: number
+* `Boolean`: true/false
+* `CharSequence`: string
+* `Iterable`: array
+* `java.util.Map`: object
+
+Methods may also return void to indicate that they do not produce a value.
+
+## Request and Repsonse Properties
+`DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
+
+    protected HttpServletRequest getRequest() { ... }
+    protected HttpServletResponse getResponse() { ... }
+
+For example, a service might use the request object to get the name of the current user, or use the response to return a custom header.
+
+The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or alternative text formats.
+
 # Additional Information
-This guide introduced the HTTP-RPC framework and provides an overview of its key features. For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+This guide introduced the HTTP-RPC framework and provided an overview of its key features. For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 
