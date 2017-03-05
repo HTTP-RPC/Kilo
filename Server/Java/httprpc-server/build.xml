@@ -73,7 +73,7 @@
             <fileset dir="web"/>
 
             <classes dir="${bin.test}"/>
-            <classes dir="${src}" excludes="**/*.java"/>
+            <classes dir="${test}" excludes="**/*.java"/>
 
             <lib dir="../../../Client/Java/httprpc" includes="*.jar"/>
             <lib dir="." includes="*.jar"/>
