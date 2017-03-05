@@ -191,8 +191,7 @@ public class MainActivity extends AppCompatActivity {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
-            entry("attachments", listOf(textTestURL, imageTestURL))),
-            (Map<String, ?> result, Exception exception) -> {
+            entry("attachments", listOf(textTestURL, imageTestURL))), (result, exception) -> {
             postMultipartCheckBox.setChecked(exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
@@ -216,8 +215,7 @@ public class MainActivity extends AppCompatActivity {
         entry("string", "héllo"),
         entry("strings", listOf("a", "b", "c")),
         entry("number", 123),
-        entry("flag", true)),
-        (Map<String, ?> result, Exception exception) -> {
+        entry("flag", true)), (result, exception) -> {
             postURLEncodedCheckBox.setChecked(exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
@@ -232,8 +230,7 @@ public class MainActivity extends AppCompatActivity {
         entry("string", "héllo"),
         entry("strings", listOf("a", "b", "c")),
         entry("number", 123),
-        entry("flag", true)),
-        (Map<String, ?> result, Exception exception) -> {
+        entry("flag", true)),(result, exception) -> {
             postJSONCheckBox.setChecked(exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
@@ -246,12 +243,19 @@ public class MainActivity extends AppCompatActivity {
         // PUT
         serviceProxy.setEncoding(WebServiceProxy.MULTIPART_FORM_DATA);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            putCheckBox.setChecked(exception == null && result.equals("héllo"));
+            putCheckBox.setChecked(exception == null && result.equals(listOf("héllo", mapOf(), listOf())));
         });
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
-        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            putJSONCheckBox.setChecked(exception == null && result.equals("héllo"));
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
+            entry("text", "héllo"),
+            entry("map", mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 123))))))),
+            entry("list", listOf(mapOf(entry("abc", 123))))), (result, exception) -> {
+            putJSONCheckBox.setChecked(exception == null && result.equals(listOf(
+                "héllo",
+                mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 123)))))),
+                listOf(mapOf(entry("abc", 123)))
+            )));
         });
 
         // PATCH

@@ -27,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 
+import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
@@ -49,7 +50,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    public int getValue(int value, int delay) throws InterruptedException {
+    public int testGet(int value, int delay) throws InterruptedException {
         Thread.sleep(delay);
 
         return value;
@@ -87,8 +88,8 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("PUT")
-    public String testPut(String text) {
-        return text;
+    public List<?> testPut(String text, Map<String, Object> map, List<Object> list) {
+        return listOf(text, map, list);
     }
 
     @RequestMethod("PATCH")

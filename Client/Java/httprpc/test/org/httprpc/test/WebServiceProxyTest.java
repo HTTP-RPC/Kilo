@@ -97,8 +97,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("flag", true)),
-            (Map<String, ?> result, Exception exception) -> {
+            entry("flag", true)), (Map<String, ?> result, Exception exception) -> {
             validate("GET", exception == null
                 && valueAt(result, "string").equals("héllo")
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
@@ -117,8 +116,7 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
-            entry("attachments", listOf(textTestURL, imageTestURL))),
-            (Map<String, ?> result, Exception exception) -> {
+            entry("attachments", listOf(textTestURL, imageTestURL))), (result, exception) -> {
             validate("POST (multipart)", exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
@@ -142,8 +140,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("flag", true)),
-            (Map<String, ?> result, Exception exception) -> {
+            entry("flag", true)), (result, exception) -> {
             validate("POST (URL-encoded)", exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
@@ -158,8 +155,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("flag", true)),
-            (Map<String, ?> result, Exception exception) -> {
+            entry("flag", true)), (result, exception) -> {
             validate("POST (JSON)", exception == null && result.equals(mapOf(
                 entry("string", "héllo"),
                 entry("strings", listOf("a", "b", "c")),
@@ -172,12 +168,19 @@ public class WebServiceProxyTest {
         // PUT
         serviceProxy.setEncoding(WebServiceProxy.MULTIPART_FORM_DATA);
         serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            validate("PUT", exception == null && result.equals("héllo"));
+            validate("PUT", exception == null && result.equals(listOf("héllo", mapOf(), listOf())));
         });
 
         serviceProxy.setEncoding(WebServiceProxy.APPLICATION_JSON);
-        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(entry("text", "héllo")), (result, exception) -> {
-            validate("PUT", exception == null && result.equals("héllo"));
+        serviceProxy.invoke("PUT", "/httprpc-server/test", mapOf(
+            entry("text", "héllo"),
+            entry("map", mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 123))))))),
+            entry("list", listOf(mapOf(entry("abc", 123))))), (result, exception) -> {
+            validate("PUT (JSON)", exception == null && result.equals(listOf(
+                "héllo",
+                mapOf(entry("a", mapOf(entry("b", mapOf(entry("c", 123)))))),
+                listOf(mapOf(entry("abc", 123)))
+            )));
         });
 
         // DELETE
