@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="httprpc-server" default="build-test">
+<project name="httprpc-server" default="build-war">
     <property name="title" value="HTTP-RPC Server"/>
     <property name="version" value="4.1"/>
 
     <property name="src" value="src"/>
-    <property name="test" value="test"/>
+    <property name="war" value="war"/>
     <property name="api" value="api"/>
     <property name="bin" value="bin"/>
-    <property name="bin.test" value="bin.test"/>
+    <property name="bin.war" value="bin.war"/>
     <property name="doc" value="doc"/>
 
     <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
@@ -47,13 +47,13 @@
         </jar>
     </target>
 
-    <target name="build-test" depends="build">
-        <echo message="Building ${title} test..."/>
+    <target name="build-war" depends="build">
+        <echo message="Building ${title} web archive..."/>
 
-        <delete dir="${bin.test}"/>
-        <mkdir dir="${bin.test}"/>
+        <delete dir="${bin.war}"/>
+        <mkdir dir="${bin.war}"/>
 
-        <javac srcDir="${test}" destDir="${bin.test}"
+        <javac srcDir="${war}" destDir="${bin.war}"
             includejavaruntime="true" includeantruntime="true"
             encoding="UTF-8" deprecation="true" debug="true"
             failonerror="true">
@@ -72,8 +72,8 @@
         <war destfile="${warfile}" webxml="web.xml">
             <fileset dir="web"/>
 
-            <classes dir="${bin.test}"/>
-            <classes dir="${test}" excludes="**/*.java"/>
+            <classes dir="${bin.war}"/>
+            <classes dir="${war}" excludes="**/*.java"/>
 
             <lib dir="../../../Client/Java/httprpc" includes="*.jar"/>
             <lib dir="." includes="*.jar"/>
