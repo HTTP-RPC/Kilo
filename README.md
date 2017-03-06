@@ -258,7 +258,7 @@ The optional Java server library allows developers to implement REST services in
 * `RequestMethod` - annotation that associates an HTTP verb with a service method
 * `ResourcePath` - annotation that associates a resource path with a service method
 
-The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It requires the Java client library but otherwise has no dependencies.
+The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). The Java client library and Java 8 or later are required.
 
 ## DispatcherServlet
 `DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 
@@ -312,11 +312,9 @@ Method arguments may be any of the following types:
 * `java.util.Map`
 * `java.net.URL`
 
-List arguments represent either multi-value parameters submitted using one of the W3C form encodings or an array structure submitted as JSON. Values are automatically converted to the declared element type (e.g. `List<Double>`). 
+List arguments represent either multi-value parameters submitted using one of the W3C form encodings or array structures submitted as JSON. Map arguments represent object structures submitted as JSON, and must use strings for keys. List and map values are automatically converted to their declared types when possible.
 
-Map arguments represent object structures submitted as JSON. They can only be used with the JSON encoding, and must use strings for keys. Values are automatically converted to the declared value type (e.g. `Map<String, Double>`).
-
-`URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the "multipart/form-data" encoding. Multi-file uploads may be represented as lists. For example:
+`URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
     @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
     @MultipartConfig
@@ -343,7 +341,7 @@ Return values are converted to their JSON equivalents as described earlier:
 * `Iterable`: array
 * `java.util.Map`: object
 
-Methods may also return void to indicate that they do not produce a value.
+Methods may also return `void` or `Void` to indicate that they do not produce a value.
 
 ## Request and Repsonse Properties
 `DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
@@ -351,7 +349,7 @@ Methods may also return void to indicate that they do not produce a value.
     protected HttpServletRequest getRequest() { ... }
     protected HttpServletResponse getResponse() { ... }
 
-For example, a service might use the request object to get the name of the current user, or use the response to return a custom header.
+For example, a service might access the request to get the name of the current user, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or alternative text formats.
 
