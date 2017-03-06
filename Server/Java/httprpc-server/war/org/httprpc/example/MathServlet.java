@@ -15,16 +15,12 @@
 package org.httprpc.example;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
 
 /**
  * Math example servlet.
@@ -49,25 +45,5 @@ public class MathServlet extends DispatcherServlet {
         }
 
         return total;
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("/statistics")
-    public Map<String, ?> getStatistics(List<Double> values) {
-        int count = values.size();
-
-        double sum = 0;
-
-        for (int i = 0; i < count; i++) {
-            sum += values.get(i);
-        }
-
-        double average = sum / count;
-
-        return mapOf(
-            entry("count", count),
-            entry("sum", sum),
-            entry("average", average)
-        );
     }
 }

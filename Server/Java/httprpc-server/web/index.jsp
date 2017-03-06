@@ -7,7 +7,6 @@
 <body>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a></br>
 <a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a></br>
-<a href="${pageContext.request.contextPath}/math/statistics?values=1&values=3&values=5">Statistics</a></br>
 <a href="${pageContext.request.contextPath}/echo?value=héllo">Echo</a></br>
 
 <hr/>
