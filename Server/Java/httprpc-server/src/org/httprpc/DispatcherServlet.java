@@ -310,7 +310,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(getArgument(value, (Class<?>)valueType));
+                        list.add(getArgument(value, (valueType instanceof Class<?>) ? (Class<?>)valueType : Object.class));
                     }
                 } else {
                     list = Collections.emptyList();
@@ -327,7 +327,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                     map = new HashMap<>();
 
                     for (Map.Entry<String, ?> entry : values.entrySet()) {
-                        map.put(entry.getKey(), getArgument(entry.getValue(), (Class<?>)valueType));
+                        map.put(entry.getKey(), getArgument(entry.getValue(), (valueType instanceof Class<?>) ? (Class<?>)valueType : Object.class));
                     }
                 } else {
                     map = Collections.emptyMap();

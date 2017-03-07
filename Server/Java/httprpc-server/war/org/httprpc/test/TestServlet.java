@@ -88,7 +88,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("PUT")
-    public List<?> testPut(String text, Map<String, Object> map, List<Object> list) {
+    public List<?> testPut(String text, Map<String, ?> map, List<?> list) {
         return listOf(text, map, list);
     }
 
