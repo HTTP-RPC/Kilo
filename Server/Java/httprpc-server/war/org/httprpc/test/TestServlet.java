@@ -26,6 +26,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
+import org.httprpc.ResourcePath;
 
 import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
@@ -54,6 +55,12 @@ public class TestServlet extends DispatcherServlet {
         Thread.sleep(delay);
 
         return value;
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("/a/?/b/?/c/?/d/?")
+    public List<String> testGet() {
+        return getKeys();
     }
 
     @RequestMethod("POST")

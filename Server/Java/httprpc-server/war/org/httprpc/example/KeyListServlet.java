@@ -15,7 +15,7 @@
 package org.httprpc.example;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -23,8 +23,7 @@ import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
+import static org.httprpc.WebServiceProxy.listOf;
 
 /**
  * Key list example servlet.
@@ -34,11 +33,13 @@ public class KeyListServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    @ResourcePath("/a/?/b/?/c/?")
-    public Map<String, ?> getKeys(String d) throws IOException {
-        return mapOf(
-            entry("keys", getKeys()),
-            entry("d", d)
-        );
+    public List<?> getValues() throws IOException {
+        return listOf("a", "b", "c");
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("/?")
+    public String getValue() throws IOException {
+        return getKeys().get(0);
     }
 }
