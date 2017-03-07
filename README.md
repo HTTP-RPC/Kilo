@@ -353,6 +353,25 @@ For example, a service might access the request to get the name of the current u
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or alternative text formats.
 
+## Path Variables
+Path variables may be specified by a "?" character in the resource path. For example:
+
+    @RequestMethod("GET")
+    @ResourcePath("/contacts/?/addresses/?")
+    public List<Map<String, ?>> getContactAddresses() { ... }
+
+The `getKeys()` method returns the list of variables associated with the current request:
+
+    protected List<String> getKeys() { ... }
+    
+For example, given the following path:
+
+    /contacts/jsmith/addresses/home
+
+`getKeys()` would return the following:
+
+    ["jsmith", "home"]
+
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
