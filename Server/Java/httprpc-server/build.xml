@@ -2,7 +2,7 @@
 
 <project name="httprpc-server" default="build-war">
     <property name="title" value="HTTP-RPC Server"/>
-    <property name="version" value="4.1"/>
+    <property name="version" value="4.1.1"/>
 
     <property name="src" value="src"/>
     <property name="war" value="war"/>
