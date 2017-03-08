@@ -24,8 +24,6 @@ _Java_
         System.out.println(result); // Prints "Hello, World!"
     });
 
-In either case, the operation would return the string "Hello, World!".
-
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
 # Contents

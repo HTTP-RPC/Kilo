@@ -14,9 +14,11 @@
 
 package org.httprpc.demo;
 
+import static org.httprpc.WebServiceProxy.entry;
+import static org.httprpc.WebServiceProxy.mapOf;
+
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,15 +50,13 @@ public class NoteServlet extends DispatcherServlet {
             throw new IllegalArgumentException();
         }
 
-        HashMap<String, Object> note = new HashMap<>();
-
         Date date = new Date();
 
-        note.put("id", nextNoteID);
-        note.put("date", date.getTime());
-        note.put("message", message);
-
-        notes.put(nextNoteID, note);
+        notes.put(nextNoteID, mapOf(
+            entry("id", nextNoteID),
+            entry("date", date.getTime()),
+            entry("message", message)
+        ));
 
         nextNoteID++;
     }

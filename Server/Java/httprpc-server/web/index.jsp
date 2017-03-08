@@ -8,8 +8,8 @@
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a></br>
 <a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a></br>
 <a href="${pageContext.request.contextPath}/echo?value=héllo">Echo</a></br>
-<a href="${pageContext.request.contextPath}/keys">Values</a></br>
-<a href="${pageContext.request.contextPath}/keys/abc">Value</a></br>
+<a href="${pageContext.request.contextPath}/catalog/items">Items</a></br>
+<a href="${pageContext.request.contextPath}/catalog/items/1">Item 1</a></br>
 
 <hr/>
 
