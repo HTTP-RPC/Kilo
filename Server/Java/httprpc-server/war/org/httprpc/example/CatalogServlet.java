@@ -30,7 +30,7 @@ import static org.httprpc.WebServiceProxy.entry;
  * Servlet that simulates a product catalog.
  */
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
-public class KeyListServlet extends DispatcherServlet {
+public class CatalogServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     private List<?> items = listOf(
