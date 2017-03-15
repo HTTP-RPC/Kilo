@@ -2,7 +2,7 @@
 
 <project name="httprpc" default="build">
     <property name="title" value="HTTP-RPC"/>
-    <property name="version" value="4.1.2"/>
+    <property name="version" value="4.1.3"/>
 
     <property name="src" value="src"/>
     <property name="bin" value="bin"/>
@@ -32,6 +32,15 @@
                 <attribute name="Implementation-Version" value="${version}"/>
             </manifest>
         </jar>
+
+        <delete dir="../${ant.project.name}-demo/app/libs" includes="${ant.project.name}-*.jar"/>
+        <copy file="${jarfile}" todir="../${ant.project.name}-demo/app/libs"/>
+
+        <delete dir="../${ant.project.name}-example/app/libs" includes="${ant.project.name}-*.jar"/>
+        <copy file="${jarfile}" todir="../${ant.project.name}-example/app/libs"/>
+
+        <delete dir="../${ant.project.name}-test/app/libs" includes="${ant.project.name}-*.jar"/>
+        <copy file="${jarfile}" todir="../${ant.project.name}-test/app/libs"/>
     </target>
 
     <target name="doc">
