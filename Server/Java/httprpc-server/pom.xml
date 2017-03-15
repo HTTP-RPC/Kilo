@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.httprpc</groupId>
     <artifactId>httprpc-server</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <name>HTTP-RPC Server</name>
     <description>Lightweight multi-platform REST</description>
     <url>http://httprpc.org</url>
