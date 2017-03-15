@@ -231,7 +231,8 @@ public class WebServiceProxy {
     /**
      * Executes a service operation.
      *
-     * @param <V> The type of the value returned by the operation.
+     * @param <V>
+     * The type of the value returned by the operation.
      *
      * @param method
      * The HTTP verb associated with the request.
@@ -254,7 +255,8 @@ public class WebServiceProxy {
     /**
      * Executes a service operation.
      *
-     * @param <V> The type of the value returned by the operation.
+     * @param <V>
+     * The type of the value returned by the operation.
      *
      * @param method
      * The HTTP verb associated with the request.
@@ -678,7 +680,8 @@ public class WebServiceProxy {
     /**
      * Creates a map from a variable length array of map entries.
      *
-     * @param <K> The type of the key.
+     * @param <K>
+     * The type of the key.
      *
      * @param entries
      * The entries from which the map will be created.
@@ -700,7 +703,8 @@ public class WebServiceProxy {
     /**
      * Creates a map entry.
      *
-     * @param <K> The type of the key.
+     * @param <K>
+     * The type of the key.
      *
      * @param key
      * The entry's key.

@@ -27,7 +27,7 @@ import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
 
 /**
- * Servlet that simulates a product catalog.
+ * Servlet that simulates a product catalog using path variables.
  */
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 public class CatalogServlet extends DispatcherServlet {
