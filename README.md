@@ -107,7 +107,7 @@ The Java client enables Java applications (including Android) to consume REST-ba
 * `WebServiceException` - exception thrown when a service operation returns an error
 * `ResultHandler` - callback interface for handling service results
 
-The Java client can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). Java 8 or later is required.
+The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). A POM file for local Maven deployment is also included. Java 8 or later is required.
 
 ## WebServiceProxy Class
 The `WebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
@@ -256,7 +256,7 @@ The optional Java server library allows developers to implement REST services in
 * `RequestMethod` - annotation that associates an HTTP verb with a service method
 * `ResourcePath` - annotation that associates a resource path with a service method
 
-The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). The Java client library and Java 8 or later are required.
+The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). A POM file for local Maven deployment is also included. The Java client library and Java 8 or later are required.
 
 ## DispatcherServlet
 `DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 
@@ -269,8 +269,6 @@ Multiple methods may be associated with the same verb and path. `DispatcherServl
 
     @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
     public class MathServlet extends DispatcherServlet {
-        private static final long serialVersionUID = 0;
-    
         @RequestMethod("GET")
         @ResourcePath("/sum")
         public double getSum(double a, double b) {
@@ -298,6 +296,8 @@ This request would invoke the second method:
 
     GET /math/sum?values=1&values=2&values=3
 
+In either case, the service would return the value 6 in response.
+
 Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 ## Method Arguments
@@ -317,15 +317,13 @@ List arguments represent either multi-value parameters submitted using one of th
     @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
     @MultipartConfig
     public class FileUploadServlet extends DispatcherServlet {
-        private static final long serialVersionUID = 0;
-    
         @RequestMethod("POST")
         public void upload(URL file) throws IOException {
             ...
         }
 
         @RequestMethod("POST")
-        public long upload(List<URL> files) throws IOException {
+        public void upload(List<URL> files) throws IOException {
             ...
         }
     }
@@ -340,6 +338,25 @@ Return values are converted to their JSON equivalents as described earlier:
 * `java.util.Map`: object
 
 Methods may also return `void` or `Void` to indicate that they do not produce a value.
+
+For example, the following method would produce a JSON object containing three values:
+
+    @RequestMethod("GET")
+    public Map<String, ?> getMap() {
+        return mapOf(
+            entry("text", "Lorem ipsum"),
+            entry("number", 123),
+            entry("flag", true)
+        );
+    }
+
+The service would return the following in response:
+
+    {
+        "text": "Lorem ipsum",
+        "number": 123,
+        "flag": true
+    }
 
 ## Request and Repsonse Properties
 `DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
