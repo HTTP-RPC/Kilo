@@ -267,7 +267,7 @@ The `RequestMethod` annotation is used to associate a service method with an HTT
 
 Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following class might be used to implement the simple addition operations discussed earlier:
 
-    @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
+    @WebServlet(urlPatterns={"/math/*"})
     public class MathServlet extends DispatcherServlet {
         @RequestMethod("GET")
         @ResourcePath("/sum")
@@ -314,7 +314,7 @@ List arguments represent either multi-value parameters submitted using one of th
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
-    @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
+    @WebServlet(urlPatterns={"/upload/*"})
     @MultipartConfig
     public class FileUploadServlet extends DispatcherServlet {
         @RequestMethod("POST")
