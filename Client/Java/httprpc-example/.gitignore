@@ -1,6 +1,7 @@
 *.iml
 .gradle
 .idea
+app/libs/httprpc-*.jar
 build
 captures
 local.properties
