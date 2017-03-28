@@ -673,7 +673,7 @@ public class WebServiceProxy {
      * An immutable list containing the given elements.
      */
     @SafeVarargs
-    public static List<?> listOf(Object...elements) {
+    public static List<?> listOf(Object... elements) {
         return Collections.unmodifiableList(Arrays.asList(elements));
     }
 
