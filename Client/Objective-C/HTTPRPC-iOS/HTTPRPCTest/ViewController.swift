@@ -184,7 +184,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
 
         // Error
         serviceProxy.invoke("GET", path: "/httprpc-server/xyz") { result, error in
-            let error = error as? NSError
+            let error = error as NSError?
 
             self.validate(error != nil && error!.domain == WSWebServiceErrorDomain && error!.code == 404, error: error, cell: self.errorCell)
         }
