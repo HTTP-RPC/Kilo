@@ -200,15 +200,27 @@ Text data is decoded via the `decodeTextResponse()` method. The default implenta
 #### Accessing Nested Structures
 `WebServiceProxy` provides the following convenience method for accessing nested map values by key path:
 
-    public static <V> V getValue(Map<String, ?> root, String path) { ... }
-    
-For example, given the following JSON response, a call to `getValue(result, "foo.bar")` would return 123:
+    public static <V> V valueAt(Map<String, ?> root, String path) { ... }
+
+For example, given the following JSON response:
 
     {
         "foo": {
             "bar": 123
         }
     }
+
+this method could be used to retrieve the value at "foo.bar":
+
+    System.out.println(valueAt(result, "foo.bar")); // Prints 123
+
+Additionally, `WebServiceProxy` provides the following method to assist in handling `null` values. This method identifies the first non-`null` value in a list of values:
+
+    public static <V> V coalesce(V... values) { ... }
+
+For example:
+
+    System.out.println(coalesce(valueAt(result, "xyz"), "not found")); // Prints "not found"
 
 ### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request. In most cases, this will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.

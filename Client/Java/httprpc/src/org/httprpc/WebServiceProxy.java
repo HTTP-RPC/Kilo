@@ -762,6 +762,31 @@ public class WebServiceProxy {
 
         return (V)value;
     }
+
+    /**
+     * Identifies the first non-<tt>null</tt> value in a list of values.
+     *
+     * @param values
+     * The list of values to test.
+     *
+     * @return
+     * The first non-<tt>null</tt> value in the list, or <tt>null</tt> if the
+     * list is empty.
+     */
+    @SafeVarargs
+    public static <V> V coalesce(V... values) {
+        V value = null;
+
+        for (int i = 0; i < values.length; i++) {
+            value = values[i];
+
+            if (value != null) {
+                break;
+            }
+        }
+
+        return value;
+    }
 }
 
 // MIME type

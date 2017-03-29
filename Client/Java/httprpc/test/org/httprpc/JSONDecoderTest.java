@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +26,8 @@ import org.junit.Test;
 import static org.httprpc.WebServiceProxy.listOf;
 import static org.httprpc.WebServiceProxy.mapOf;
 import static org.httprpc.WebServiceProxy.entry;
+import static org.httprpc.WebServiceProxy.valueAt;
+import static org.httprpc.WebServiceProxy.coalesce;
 
 public class JSONDecoderTest {
     @Test
@@ -148,6 +151,22 @@ public class JSONDecoderTest {
             entry("d", listOf(1, 2L, 3.0)),
             entry("e", mapOf(entry("x", 1), entry("y", 2F), entry("z", 3.0)))
         )));
+    }
+
+    @Test
+    public void testValueAt() throws IOException {
+        Map<String, ?> map = decode("{\"a\": {\"b\": {\"c\": 123}}}");
+
+        Assert.assertTrue(valueAt(map, "a.b.c").equals(123));
+        Assert.assertTrue(valueAt(map, "x.y.z") == null);
+    }
+
+    @Test
+    public void testCoalesce() throws IOException {
+        Map<String, ?> map = decode("{\"abc\": null}");
+
+        Assert.assertTrue(coalesce(valueAt(map, "abc"), null, 123).equals(123));
+        Assert.assertTrue(coalesce(valueAt(map, "xyz"), 456).equals(456));
     }
 
     @SuppressWarnings("unchecked")
