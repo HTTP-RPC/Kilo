@@ -152,12 +152,12 @@ When using the JSON encoding, a single JSON object containing the entire argumen
 Note that `PATCH` requests may not be supported by all platforms. For example, `PATCH` works correctly on Android as of SDK 24 but produces a `ProtocolException` in the Oracle Java 8 runtime.
 
 #### Argument Map Creation
-Since explicit creation and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
+Since explicit construction and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
     public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
     public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
     
-Using these methods, argument map creation can be reduced from this:
+Using these methods, argument map declaration can be reduced from this:
 
     HashMap<String, Object> arguments = new HashMap<>();
     arguments.put("a", 2);
@@ -166,6 +166,10 @@ Using these methods, argument map creation can be reduced from this:
 to this:
 
     mapOf(entry("a", 2), entry("b", 4));
+    
+A convenience method for declaring lists is also provided:
+
+    public static List<?> listOf(Object... elements) { ... }
 
 ### Return Values
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
