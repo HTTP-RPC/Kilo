@@ -14,7 +14,7 @@ cp -RL $FRAMEWORK-iOS/$BUILD/Release-iphoneos $FRAMEWORK-iOS/$BUILD/Release-univ
 
 lipo -create $FRAMEWORK-iOS/$BUILD/Release-iphoneos/$FRAMEWORK_PATH/$FRAMEWORK $FRAMEWORK-iOS/$BUILD/Release-iphonesimulator/$FRAMEWORK_PATH/$FRAMEWORK -output $FRAMEWORK-iOS/$BUILD/Release-universal/$FRAMEWORK_PATH/$FRAMEWORK
 
-tar -czv -C $FRAMEWORK-iOS/$BUILD/Release-universal -f $FRAMEWORK-iOS.framework.tar.gz $FRAMEWORK_PATH
+tar -czv -C $FRAMEWORK-iOS/$BUILD/Release-universal -f $FRAMEWORK-iOS.tar.gz $FRAMEWORK_PATH $FRAMEWORK_PATH.dSYM
 
 # tvOS
 rm -Rf $FRAMEWORK-tvOS/$BUILD
@@ -27,4 +27,4 @@ cp -RL $FRAMEWORK-tvOS/$BUILD/Release-appletvos $FRAMEWORK-tvOS/$BUILD/Release-u
 
 lipo -create $FRAMEWORK-tvOS/$BUILD/Release-appletvos/$FRAMEWORK_PATH/$FRAMEWORK $FRAMEWORK-tvOS/$BUILD/Release-appletvsimulator/$FRAMEWORK_PATH/$FRAMEWORK -output $FRAMEWORK-tvOS/$BUILD/Release-universal/$FRAMEWORK_PATH/$FRAMEWORK
 
-tar -czv -C $FRAMEWORK-tvOS/$BUILD/Release-universal -f $FRAMEWORK-tvOS.framework.tar.gz $FRAMEWORK_PATH
+tar -czv -C $FRAMEWORK-tvOS/$BUILD/Release-universal -f $FRAMEWORK-tvOS.tar.gz $FRAMEWORK_PATH $FRAMEWORK_PATH.dSYM
