@@ -24,7 +24,7 @@ _Java_
         System.out.println(result); // Prints "Hello, World!"
     });
 
-This guide introduces the HTTP-RPC framework and provides an overview of its key features.
+This guide introduces the HTTP-RPC framework and provides an overview of its key features. For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 # Contents
 * [Objective-C/Swift Client](#objective-cswift-client)
@@ -404,6 +404,6 @@ For example, given the following path:
     ["jsmith", "home"]
 
 # Additional Information
-This guide introduced the HTTP-RPC framework and provided an overview of its key features. For examples and additional information, see the [the wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
+For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
 
