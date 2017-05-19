@@ -18,6 +18,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIScrollView (Markup)
 
+/**
+ * The top content inset.
+ */
+@property (nonatomic) CGFloat contentInsetTop;
+
+/**
+ * The left content inset.
+ */
+@property (nonatomic) CGFloat contentInsetLeft;
+
+/**
+ * The bottom content inset.
+ */
+@property (nonatomic) CGFloat contentInsetBottom;
+
+/**
+ * The right content inset.
+ */
+@property (nonatomic) CGFloat contentInsetRight;
+
 #if TARGET_OS_IOS
 /**
  * The index of the current page.

@@ -22,7 +22,7 @@ __TVOS_PROHIBITED
 /**
  * The list of pages managed by the page view.
  */
-@property (nonatomic, readonly, copy) NSArray<UIView *> *pages;
+@property (nonatomic, readonly, copy) NSArray<__kindof UIView *> *pages;
 
 /**
  * Adds a page.

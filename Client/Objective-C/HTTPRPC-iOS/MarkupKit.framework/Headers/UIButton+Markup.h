@@ -49,9 +49,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *title;
 
 /**
+ * The button's title color.
+ */
+@property (nonatomic, nullable) UIColor *titleColor UI_APPEARANCE_SELECTOR;
+
+/**
+ * The button's title shadow color.
+ */
+@property (nonatomic, nullable) UIColor *titleShadowColor UI_APPEARANCE_SELECTOR;
+
+/**
+ * The button's attributed title.
+ */
+@property (nonatomic, nullable) NSAttributedString *attributedTitle;
+
+/**
  * The button's image.
  */
 @property (nonatomic, nullable) UIImage *image;
+
+/**
+ * The button's background image.
+ */
+@property (nonatomic, nullable) UIImage *backgroundImage UI_APPEARANCE_SELECTOR;
 
 /**
  * The top content edge inset.

@@ -37,30 +37,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)componentWithName:(NSString *)name;
 
 /**
- * Returns the title for the given row and component.
+ * Returns the value associated with the selected row in the given component.
  *
- * @param row The row index.
  * @param component The component index.
+ *
+ * @return The selected value, or <code>nil</code> if no row is selected.
  */
-- (nullable NSString *)titleForRow:(NSInteger)row forComponent:(NSInteger)component;
+- (nullable id)valueForComponent:(NSInteger)component;
 
 /**
- * Returns the value for the given row and component.
+ * Selects the first row in the given component whose value matches the given value.
  *
- * @param row The row index.
+ * @param value The value to select, or <code>nil</code> for no selection.
  * @param component The component index.
+ * @param animated <code>YES</code> if the selection should be animated; <code>NO</code>, otherwise.
  */
-- (nullable id)valueForRow:(NSInteger)row forComponent:(NSInteger)component;
-
-/**
- * Returns the index of the first row in the given component whose value matches the given value.
- *
- * @param value The row value.
- * @param component The component index.
- * 
- * @return The row index, or <code>NSNotFound</code> if a matching row was not found.
- */
-- (NSInteger)rowWithValue:(nullable id)value inComponent:(NSInteger)component;
+- (void)setValue:(nullable id)value forComponent:(NSInteger)component animated:(BOOL)animated;
 
 @end
 

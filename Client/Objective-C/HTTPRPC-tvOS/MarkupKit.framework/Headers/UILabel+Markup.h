@@ -16,7 +16,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIActivityIndicatorView (Markup)
+@interface UILabel (Markup)
+
+/**
+ * The shadow offset width.
+ */
+@property (nonatomic) CGFloat shadowOffsetWidth;
+
+/**
+ * The shadow offset height.
+ */
+@property (nonatomic) CGFloat shadowOffsetHeight;
 
 @end
 

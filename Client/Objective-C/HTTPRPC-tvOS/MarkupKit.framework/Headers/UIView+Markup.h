@@ -138,7 +138,7 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
  * @param tag The element's tag.
  * @param properties The element's properties.
  */
-- (void)processMarkupElement:(NSString *)tag properties:(NSDictionary *)properties;
+- (void)processMarkupElement:(NSString *)tag properties:(NSDictionary<NSString *, NSString *> *)properties;
 
 /**
  * Appends a markup element view.

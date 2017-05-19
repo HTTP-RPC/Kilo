@@ -60,6 +60,14 @@ __TVOS_PROHIBITED
 - (void)deleteRow:(NSInteger)row inComponent:(NSInteger)component;
 
 /**
+ * Returns the title for the given row and component.
+ *
+ * @param row The row index.
+ * @param component The component index.
+ */
+- (nullable NSString *)titleForRow:(NSInteger)row forComponent:(NSInteger)component;
+
+/**
  * Sets the title for the given row and component.
  * 
  * @param title The row title.
@@ -67,6 +75,14 @@ __TVOS_PROHIBITED
  * @param component The component index.
  */
 - (void)setTitle:(nullable NSString *)title forRow:(NSInteger)row forComponent:(NSInteger)component;
+
+/**
+ * Returns the value for the given row and component.
+ *
+ * @param row The row index.
+ * @param component The component index.
+ */
+- (nullable id)valueForRow:(NSInteger)row forComponent:(NSInteger)component;
 
 /**
  * Sets the value for the given row and component.

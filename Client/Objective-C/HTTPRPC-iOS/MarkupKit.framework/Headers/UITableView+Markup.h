@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)nameForSection:(NSInteger)section;
 
 /**
- * Returns the index of the first section whose name matches the given name.
+ * Returns the index of the first section with the given name.
  *
  * @param name The section name.
  *
@@ -37,23 +37,38 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)sectionWithName:(NSString *)name;
 
 /**
- * Returns the index of the first row in the given section whose cell value matches the given value.
+ * Returns the value associated with the first checked row in the given section.
  *
- * @param value The cell value.
  * @param section The section index.
- * 
- * @return The row index, or <code>NSNotFound</code> if a matching row was not found.
+ *
+ * @return The selected value, or <code>nil</code> if no row is checked.
  */
-- (NSInteger)rowForCellWithValue:(nullable id)value inSection:(NSInteger)section;
+- (nullable id)valueForSection:(NSInteger)section;
 
 /**
- * Returns the index of the first row in the given section whose cell is checked.
+ * Checks all rows in the given section whose value matches the given value.
+ *
+ * @param value The value to select, or <code>nil</code> for no selection.
+ * @param section The section index.
+ */
+- (void)setValue:(nullable id)value forSection:(NSInteger)section;
+
+/**
+ * Returns the values associated with the checked rows in the given section.
  *
  * @param section The section index.
- * 
- * @return The row index, or <code>NSNotFound</code> if a matching row was not found.
+ *
+ * @return The selected values. The array will be empty if no rows are checked.
  */
-- (NSInteger)rowForCheckedCellInSection:(NSInteger)section;
+- (NSArray *)valuesForSection:(NSInteger)section;
+
+/**
+ * Checks all rows in the given section whose value matches any value in the given array.
+ *
+ * @param values The values to select.
+ * @param section The section index.
+ */
+- (void)setValues:(NSArray *)values forSection:(NSInteger)section;
 
 @end
 

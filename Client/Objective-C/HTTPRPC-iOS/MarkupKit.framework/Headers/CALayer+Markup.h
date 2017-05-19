@@ -19,12 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CALayer (Markup)
 
 /**
- * The drop shadow offset width.
+ * The shadow offset width.
  */
 @property (nonatomic) CGFloat shadowOffsetWidth;
 
 /**
- * The drop shadow offset height.
+ * The shadow offset height.
  */
 @property (nonatomic) CGFloat shadowOffsetHeight;
 

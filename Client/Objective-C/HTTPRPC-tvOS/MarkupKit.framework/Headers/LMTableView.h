@@ -85,6 +85,40 @@ typedef NS_ENUM(NSInteger, LMTableViewSelectionMode) {
 - (void)setSelectionMode:(LMTableViewSelectionMode)selectionMode forSection:(NSInteger)section;
 
 /**
+ * Returns the header title for a section.
+ *
+ * @param section The section index.
+ *
+ * @return The header title for the section.
+ */
+- (nullable NSString *)titleForHeaderInSection:(NSInteger)section;
+
+/**
+ * Sets the header title for a section.
+ * 
+ * @param title The header title.
+ * @param section The section index.
+ */
+- (void)setTitle:(nullable NSString *)title forHeaderInSection:(NSInteger)section;
+
+/**
+ * Returns the footer title for a section.
+ *
+ * @param section The section index.
+ *
+ * @return The footer title for the section.
+ */
+- (nullable NSString *)titleForFooterInSection:(NSInteger)section;
+
+/**
+ * Sets the footer title for a section.
+ * 
+ * @param title The footer title.
+ * @param section The section index.
+ */
+- (void)setTitle:(nullable NSString *)title forFooterInSection:(NSInteger)section;
+
+/**
  * Returns the header view for a section.
  *
  * @param section The section index.
@@ -113,10 +147,10 @@ typedef NS_ENUM(NSInteger, LMTableViewSelectionMode) {
 /**
  * Sets the footer view for a section.
  * 
- * @param footerView The footer view.
+ * @param view The footer view.
  * @param section The section index.
  */
-- (void)setView:(nullable UIView *)footerView forFooterInSection:(NSInteger)section;
+- (void)setView:(nullable UIView *)view forFooterInSection:(NSInteger)section;
 
 /**
  * Inserts a new row into the table view.
