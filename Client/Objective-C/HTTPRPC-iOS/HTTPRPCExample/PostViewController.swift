@@ -30,7 +30,7 @@ class PostViewController: UITableViewController {
         tableView.estimatedRowHeight = 2
         tableView.backgroundView = activityIndicatorView
         
-        tableView.register(PostCell.self, forCellReuseIdentifier: PostCell.self.description())
+        tableView.register(PostCell.self, forCellReuseIdentifier: PostCell.description())
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -60,7 +60,7 @@ class PostViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.self.description()) as! PostCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.description(), for: indexPath) as! PostCell
         
         cell.post = posts[indexPath.row]
 

@@ -28,7 +28,7 @@ class UserViewController: UITableViewController {
         tableView.estimatedRowHeight = 2
         tableView.backgroundView = activityIndicatorView
 
-        tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.self.description())
+        tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.description())
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -58,7 +58,7 @@ class UserViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.self.description()) as! UserCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.description(), for: indexPath) as! UserCell
         
         cell.user = users[indexPath.row]
 
