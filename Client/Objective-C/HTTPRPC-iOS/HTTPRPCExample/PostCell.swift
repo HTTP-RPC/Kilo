@@ -16,7 +16,8 @@ import UIKit
 import MarkupKit
 
 class PostCell: LMTableViewCell {
-    dynamic var post: [String: AnyObject]?
+    dynamic var title: String?
+    dynamic var body: String?
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

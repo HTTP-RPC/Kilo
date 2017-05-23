@@ -59,8 +59,11 @@ class UserViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.description(), for: indexPath) as! UserCell
-        
-        cell.user = users[indexPath.row]
+
+        let user = users[indexPath.row]
+
+        cell.name = user["name"] as? String
+        cell.email = user["email"] as? String
 
         return cell
     }

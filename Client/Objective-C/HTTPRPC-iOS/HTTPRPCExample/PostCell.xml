@@ -16,7 +16,7 @@ limitations under the License.
 
 <root>
     <LMColumnView>
-        <UILabel text="$post.title" font="headline" numberOfLines="0"/>
-        <UILabel text="$post.body" font="body" numberOfLines="0"/>
+        <UILabel text="$title" font="headline" numberOfLines="0"/>
+        <UILabel text="$body" font="body" numberOfLines="0"/>
     </LMColumnView>
 </root>
