@@ -42,7 +42,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The index of the current page.
  */
-@property (nonatomic, readonly) NSInteger currentPage;
+@property (nonatomic) NSInteger currentPage;
+
+/**
+ * Sets the current page.
+ *
+ * @param currentPage The page index.
+ * @param animated <code>YES</code> if the transition should be animated; <code>NO</code>, otherwise.
+ */
+- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
 #endif
 
 @end

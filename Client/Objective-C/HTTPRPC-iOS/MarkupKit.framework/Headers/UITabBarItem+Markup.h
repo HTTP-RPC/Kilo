@@ -12,20 +12,16 @@
 // limitations under the License.
 //
 
-#import "LMBoxView.h"
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Box view that arranges subviews vertically in a column.
- */
-@interface LMColumnView : LMBoxView
+@interface UITabBarItem (Markup)
 
 /**
- * Specifies that nested subviews should be vertically aligned. The default value
- * is <code>NO</code>.
+ * The name associated with the tab bar item, or <code>nil</code> for no name.
  */
-@property (nonatomic) BOOL alignToGrid;
+@property (nonatomic) NSString *name;
 
 @end
 

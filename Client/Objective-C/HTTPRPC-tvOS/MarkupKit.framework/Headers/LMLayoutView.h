@@ -57,6 +57,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) BOOL layoutMarginsRelativeArrangement;
 
+/**
+ * The amount of space to reserve at the top of the view. The default is 0.
+ */
+@property (nonatomic) CGFloat topSpacing;
+
+/**
+ * The amount of space to reserve at the bottom of the view. The default is 0.
+ */
+@property (nonatomic) CGFloat bottomSpacing;
+
 @end
 
 NS_ASSUME_NONNULL_END

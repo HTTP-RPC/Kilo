@@ -27,16 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) BOOL alignToGrid;
 
-/**
- * The amount of spacing before the first view. The default is 0.
- */
-@property (nonatomic) CGFloat topSpacing;
-
-/**
- * The amount of spacing after the last view. The default is 0.
- */
-@property (nonatomic) CGFloat bottomSpacing;
-
 @end
 
 NS_ASSUME_NONNULL_END

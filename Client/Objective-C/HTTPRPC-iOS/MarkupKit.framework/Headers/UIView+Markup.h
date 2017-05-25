@@ -39,7 +39,10 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
     LMAnchorLeading     = 1 << 4,
 
     /** Trailing anchor. */
-    LMAnchorTrailing    = 1 << 5
+    LMAnchorTrailing    = 1 << 5,
+
+    /** All anchors. */
+    LMAnchorAll = 0xFFFFFFFF
 };
 
 @interface UIView (Markup)
