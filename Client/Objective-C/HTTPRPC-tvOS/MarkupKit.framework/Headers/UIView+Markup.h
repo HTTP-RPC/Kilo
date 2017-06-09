@@ -42,43 +42,48 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
     LMAnchorTrailing    = 1 << 5,
 
     /** All anchors. */
-    LMAnchorAll = 0xFFFFFFFF
+    LMAnchorAll = LMAnchorTop | LMAnchorBottom | LMAnchorLeading | LMAnchorTrailing
 };
 
 @interface UIView (Markup)
 
 /**
- * The view's width, or <code>NaN</code> for no explicit width. Negative values will be pinned to 0.0.
+ * The view's width, or <code>NaN</code> for no explicit width.
  */
 @property (nonatomic) CGFloat width;
 
 /**
- * The view's minimum width, or <code>NaN</code> for no explicit minimum width. Negative values will be pinned to 0.0.
+ * The view's minimum width, or <code>NaN</code> for no explicit minimum width.
  */
 @property (nonatomic) CGFloat minimumWidth;
 
 /**
- * The view's maximum width, or <code>NaN</code> for no explicit maximum width. Negative values will be pinned to 0.0.
+ * The view's maximum width, or <code>NaN</code> for no explicit maximum width.
  */
 @property (nonatomic) CGFloat maximumWidth;
 
 /**
- * The view's height, or <code>NaN</code> for no explicit height. Negative values will be pinned to 0.0.
+ * The view's height, or <code>NaN</code> for no explicit height.
  */
 @property (nonatomic) CGFloat height;
 
 /**
- * The view's minimum height, or <code>NaN</code> for no explicit minimum height. Negative values will be pinned to 0.0.
+ * The view's minimum height, or <code>NaN</code> for no explicit minimum height.
  */
 @property (nonatomic) CGFloat minimumHeight;
 
 /**
- * The view's maximum height, or <code>NaN</code> for no explicit maximum height. Negative values will be pinned to 0.0.
+ * The view's maximum height, or <code>NaN</code> for no explicit maximum height.
  */
 @property (nonatomic) CGFloat maximumHeight;
 
 /**
- * The view's weight, or <code>NaN</code> for no weight. Values less than or equal to 0.0 are ignored.
+ * The view's aspect ratio, or <code>NaN</code> for no explicit aspect ratio.
+ */
+@property (nonatomic) CGFloat aspectRatio;
+
+/**
+ * The view's weight, or <code>NaN</code> for no weight.
  */
 @property (nonatomic) CGFloat weight;
 
