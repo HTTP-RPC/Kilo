@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -293,146 +292,133 @@ public class WebServiceProxy {
         PasswordAuthentication authorization = this.authorization;
 
         // Execute request
-        // TODO Use a lambda expression when Android issue 211386 is resolved:
-        // https://code.google.com/p/android/issues/detail?id=211386
-        return executorService.submit(new Callable<V>() {
-            @Override
-            public V call() throws IOException {
-                Object result;
-                try {
-                    URL url = new URL(serverURL, path);
+        return executorService.submit(() -> {
+            Object result;
+            try {
+                URL url = new URL(serverURL, path);
 
-                    // Construct query
-                    boolean upload = (method.equalsIgnoreCase("POST")
-                        || ((method.equalsIgnoreCase("PUT") || method.equalsIgnoreCase("PATCH"))
-                            && encoding.equals(APPLICATION_JSON)));
+                // Construct query
+                boolean upload = (method.equalsIgnoreCase("POST")
+                    || ((method.equalsIgnoreCase("PUT") || method.equalsIgnoreCase("PATCH"))
+                        && encoding.equals(APPLICATION_JSON)));
 
-                    if (!upload) {
-                        String query = encodeQuery(arguments);
+                if (!upload) {
+                    String query = encodeQuery(arguments);
 
-                        if (query.length() > 0) {
-                            url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
-                        }
+                    if (query.length() > 0) {
+                        url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "?" + query);
                     }
-
-                    // Open URL connection
-                    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-                    connection.setRequestMethod(method);
-
-                    connection.setConnectTimeout(connectTimeout);
-                    connection.setReadTimeout(readTimeout);
-
-                    // Set language
-                    Locale locale = Locale.getDefault();
-                    String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
-
-                    connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON));
-                    connection.setRequestProperty("Accept-Language", acceptLanguage);
-
-                    // Authenticate request
-                    if (authorization != null) {
-                        String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
-                        String value = String.format("Basic %s", base64Encode(credentials));
-
-                        connection.setRequestProperty("Authorization", value);
-                    }
-
-                    // Write request body
-                    if (upload) {
-                        connection.setDoOutput(true);
-
-                        String contentType;
-                        if (encoding.equals(MULTIPART_FORM_DATA)) {
-                            contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
-                        } else {
-                            contentType = encoding;
-                        }
-
-                        connection.setRequestProperty("Content-Type", String.format("%s;charset=%s", contentType, UTF_8));
-
-                        try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
-                            if (encoding.equals(MULTIPART_FORM_DATA)) {
-                                encodeMultipartFormDataRequest(arguments, outputStream, multipartBoundary);
-                            } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED)) {
-                                encodeApplicationXWWWFormURLEncodedRequest(arguments, outputStream);
-                            } else if (encoding.equals(APPLICATION_JSON)) {
-                                JSONEncoder encoder = new JSONEncoder();
-
-                                encoder.writeValue(arguments, outputStream);
-                            } else {
-                                throw new UnsupportedOperationException("Unsupported request encoding.");
-                            }
-                        }
-                    }
-
-                    // Read response
-                    int responseCode = connection.getResponseCode();
-
-                    if (responseCode / 100 == 2) {
-                        if (responseCode % 100 < 4) {
-                            String contentType = connection.getContentType();
-
-                            if (contentType == null) {
-                                contentType = APPLICATION_JSON;
-                            }
-
-                            try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                                MIMEType mimeType = MIMEType.valueOf(contentType);
-
-                                String type = mimeType.getType();
-                                String subtype = mimeType.getSubtype();
-
-                                if (type.equals("application") && subtype.equals("json")) {
-                                    JSONDecoder decoder = new JSONDecoder();
-
-                                    result = decoder.readValue(inputStream);
-                                } else if (type.equals("image")) {
-                                    result = decodeImageResponse(inputStream, subtype);
-                                } else if (type.equals("text")) {
-                                    String charsetName = mimeType.getParameter("charset");
-
-                                    if (charsetName == null) {
-                                        charsetName = UTF_8;
-                                    }
-
-                                    result = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
-                                } else {
-                                    throw new UnsupportedOperationException("Unsupported response encoding.");
-                                }
-                            }
-                        } else {
-                            result = null;
-                        }
-                    } else {
-                        throw new WebServiceException(connection.getResponseMessage(), responseCode);
-                    }
-                } catch (IOException exception) {
-                    if (resultHandler != null) {
-                        // TODO Android issue 211386
-                        dispatchResult(new Runnable() {
-                            @Override
-                            public void run() {
-                                resultHandler.execute(null, exception);
-                            }
-                        });
-                    }
-
-                    throw exception;
                 }
 
-                if (resultHandler != null) {
-                    // TODO Android issue 211386
-                    dispatchResult(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultHandler.execute((V)result, null);
+                // Open URL connection
+                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+                connection.setRequestMethod(method);
+
+                connection.setConnectTimeout(connectTimeout);
+                connection.setReadTimeout(readTimeout);
+
+                // Set language
+                Locale locale = Locale.getDefault();
+                String acceptLanguage = locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase();
+
+                connection.setRequestProperty("Accept", String.format("%s, image/*, text/*", APPLICATION_JSON));
+                connection.setRequestProperty("Accept-Language", acceptLanguage);
+
+                // Authenticate request
+                if (authorization != null) {
+                    String credentials = String.format("%s:%s", authorization.getUserName(), new String(authorization.getPassword()));
+                    String value = String.format("Basic %s", base64Encode(credentials));
+
+                    connection.setRequestProperty("Authorization", value);
+                }
+
+                // Write request body
+                if (upload) {
+                    connection.setDoOutput(true);
+
+                    String contentType;
+                    if (encoding.equals(MULTIPART_FORM_DATA)) {
+                        contentType = String.format("%s; boundary=%s", encoding, multipartBoundary);
+                    } else {
+                        contentType = encoding;
+                    }
+
+                    connection.setRequestProperty("Content-Type", String.format("%s;charset=%s", contentType, UTF_8));
+
+                    try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+                        if (encoding.equals(MULTIPART_FORM_DATA)) {
+                            encodeMultipartFormDataRequest(arguments, outputStream, multipartBoundary);
+                        } else if (encoding.equals(APPLICATION_X_WWW_FORM_URLENCODED)) {
+                            encodeApplicationXWWWFormURLEncodedRequest(arguments, outputStream);
+                        } else if (encoding.equals(APPLICATION_JSON)) {
+                            JSONEncoder encoder = new JSONEncoder();
+
+                            encoder.writeValue(arguments, outputStream);
+                        } else {
+                            throw new UnsupportedOperationException("Unsupported request encoding.");
                         }
+                    }
+                }
+
+                // Read response
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode / 100 == 2) {
+                    if (responseCode % 100 < 4) {
+                        String contentType = connection.getContentType();
+
+                        if (contentType == null) {
+                            contentType = APPLICATION_JSON;
+                        }
+
+                        try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                            MIMEType mimeType = MIMEType.valueOf(contentType);
+
+                            String type = mimeType.getType();
+                            String subtype = mimeType.getSubtype();
+
+                            if (type.equals("application") && subtype.equals("json")) {
+                                JSONDecoder decoder = new JSONDecoder();
+
+                                result = decoder.readValue(inputStream);
+                            } else if (type.equals("image")) {
+                                result = decodeImageResponse(inputStream, subtype);
+                            } else if (type.equals("text")) {
+                                String charsetName = mimeType.getParameter("charset");
+
+                                if (charsetName == null) {
+                                    charsetName = UTF_8;
+                                }
+
+                                result = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
+                            } else {
+                                throw new UnsupportedOperationException("Unsupported response encoding.");
+                            }
+                        }
+                    } else {
+                        result = null;
+                    }
+                } else {
+                    throw new WebServiceException(connection.getResponseMessage(), responseCode);
+                }
+            } catch (IOException exception) {
+                if (resultHandler != null) {
+                    dispatchResult(() -> {
+                        resultHandler.execute(null, exception);
                     });
                 }
 
-                return (V)result;
+                throw exception;
             }
+
+            if (resultHandler != null) {
+                dispatchResult(() -> {
+                    resultHandler.execute((V)result, null);
+                });
+            }
+
+            return (V)result;
         });
     }
 
@@ -469,7 +455,6 @@ public class WebServiceProxy {
     }
 
     private static String base64Encode(String value) {
-        // TODO Use java.util.Base64 when Android fully supports Java 8
         byte[] bytes = value.getBytes();
 
         StringBuilder resultBuilder = new StringBuilder(4 * (bytes.length / 3 + 1));
