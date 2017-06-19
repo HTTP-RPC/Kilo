@@ -18,7 +18,7 @@ import MarkupKit
 class UserViewController: UITableViewController {
     let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
 
-    var users: [[String: AnyObject]]! = nil
+    var users: [[String: Any]]! = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +43,7 @@ class UserViewController: UITableViewController {
                 self.activityIndicatorView.stopAnimating()
 
                 if (error == nil) {
-                    self.users = result as! [[String: AnyObject]]
+                    self.users = result as! [[String: Any]]
 
                     self.tableView.reloadData()
                 } else {

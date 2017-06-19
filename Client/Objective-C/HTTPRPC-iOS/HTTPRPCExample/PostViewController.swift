@@ -20,7 +20,7 @@ class PostViewController: UITableViewController {
 
     let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
 
-    var posts: [[String: AnyObject]]! = nil
+    var posts: [[String: Any]]! = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ class PostViewController: UITableViewController {
                 self.activityIndicatorView.stopAnimating()
 
                 if (error == nil) {
-                    self.posts = result as! [[String: AnyObject]]
+                    self.posts = result as! [[String: Any]]
 
                     self.tableView.reloadData()
                 } else {

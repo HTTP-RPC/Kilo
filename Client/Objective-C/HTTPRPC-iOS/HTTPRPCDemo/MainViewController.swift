@@ -17,7 +17,7 @@ import MarkupKit
 import HTTPRPC
 
 class MainViewController: UITableViewController {
-    var noteList: [[String: AnyObject]] = []
+    var noteList: [[String: Any]] = []
 
     let noteCellIdentifier = "noteCell"
 
@@ -37,7 +37,7 @@ class MainViewController: UITableViewController {
 
         AppDelegate.serviceProxy.invoke("GET", path: "/httprpc-server/notes") { result, error in
             if (error == nil) {
-                self.noteList = result as! [[String: AnyObject]]
+                self.noteList = result as! [[String: Any]]
 
                 self.tableView.reloadData()
             } else {
