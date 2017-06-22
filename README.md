@@ -107,6 +107,8 @@ The Java client enables Java applications (including Android) to consume REST-ba
 * `WebServiceException` - exception thrown when a service operation returns an error
 * `ResultHandler` - callback interface for handling service results
 
+Additionally, the framework includes two classes, `JSONEncoder` and `JSONDecoder`, that are used internally for processing JSON data. However, these classes are public and may also be used by application code.
+
 The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). A POM file for local Maven deployment is also included. Java 8 or later is required.
 
 ## WebServiceProxy Class

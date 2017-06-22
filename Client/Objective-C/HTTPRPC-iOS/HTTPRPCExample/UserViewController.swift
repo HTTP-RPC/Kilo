@@ -38,7 +38,7 @@ class UserViewController: UITableViewController {
             tableView.separatorStyle = UITableViewCellSeparatorStyle.none
             activityIndicatorView.startAnimating()
 
-            AppDelegate.serviceProxy.invoke("GET", path: "/users") {(result, error) in
+            AppDelegate.serviceProxy.invoke("GET", path: "/users") { result, error in
                 self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLine
                 self.activityIndicatorView.stopAnimating()
 

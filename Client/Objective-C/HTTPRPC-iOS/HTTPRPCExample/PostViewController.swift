@@ -40,7 +40,7 @@ class PostViewController: UITableViewController {
             tableView.separatorStyle = UITableViewCellSeparatorStyle.none
             activityIndicatorView.startAnimating()
 
-            AppDelegate.serviceProxy.invoke("GET", path: "/posts", arguments: ["userId": userID]) {(result, error) in
+            AppDelegate.serviceProxy.invoke("GET", path: "/posts", arguments: ["userId": userID]) { result, error in
                 self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLine
                 self.activityIndicatorView.stopAnimating()
 
