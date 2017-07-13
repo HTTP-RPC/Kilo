@@ -24,7 +24,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +76,7 @@ public class UserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_user);
 
         userListView = (ListView)findViewById(R.id.user_list_view);
 
