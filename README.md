@@ -10,19 +10,17 @@ The project currently includes support for consuming web services in Objective-C
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
-_Swift_
-
     serviceProxy.invoke("GET", path: "/hello") { result, error in
         print(result) // Prints "Hello, World!"
     }
 
 In Java, the code might look like this:
 
-_Java_
-
     serviceProxy.invoke("GET", "/hello", (result, exception) -> {
         System.out.println(result); // Prints "Hello, World!"
     });
+
+In both cases, the request will be executed asynchronously and the result printed when the call returns.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features. For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
