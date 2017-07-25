@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name            = 'HTTPRPC'
-  s.version         = '4.1.6'
+  s.version         = '4.1.7'
   s.license         = 'Apache License, Version 2.0'
-  s.homepage        = 'https://github.com/gk-brown/MarkupKit'
+  s.homepage        = 'https://github.com/gk-brown/HTTP-RPC'
   s.author          = 'Greg Brown'
   s.summary         = 'Lightweight multi-platform REST'
   s.source          = { :git => "https://github.com/gk-brown/HTTP-RPC.git", :tag => s.version.to_s }

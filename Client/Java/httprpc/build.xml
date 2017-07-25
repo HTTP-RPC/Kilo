@@ -2,7 +2,7 @@
 
 <project name="httprpc" default="build">
     <property name="title" value="HTTP-RPC"/>
-    <property name="version" value="4.1.6"/>
+    <property name="version" value="4.1.7"/>
 
     <property name="src" value="src"/>
     <property name="bin" value="bin"/>
