@@ -10,9 +10,6 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        jackOptions {
-            enabled true
-        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
