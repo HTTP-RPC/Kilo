@@ -68,12 +68,12 @@ public class MainActivity extends AppCompatActivity {
 
             String message = (String)note.get("message");
 
-            TextView messageTextView = (TextView)convertView.findViewById(R.id.message_text_view);
+            TextView messageTextView = convertView.findViewById(R.id.message_text_view);
             messageTextView.setText(message);
 
             Date date = new Date(((Number)note.get("date")).longValue());
 
-            TextView dateTextView = (TextView)convertView.findViewById(R.id.date_text_view);
+            TextView dateTextView = convertView.findViewById(R.id.date_text_view);
             dateTextView.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date));
 
             return convertView;
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        noteListView = (ListView)findViewById(R.id.note_list_view);
+        noteListView = findViewById(R.id.note_list_view);
 
         noteListView.setOnItemClickListener((parent, view, position, id) -> {
             deleteButton.setEnabled(true);
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         noteListView.setAdapter(noteListAdapter);
 
-        deleteButton = (Button)findViewById(R.id.delete_button);
+        deleteButton = findViewById(R.id.delete_button);
 
         deleteButton.setOnClickListener(v -> {
             final int position = noteListView.getCheckedItemPosition();

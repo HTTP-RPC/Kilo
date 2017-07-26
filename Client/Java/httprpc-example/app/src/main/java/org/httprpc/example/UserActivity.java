@@ -58,12 +58,12 @@ public class UserActivity extends AppCompatActivity {
 
             String name = (String)note.get("name");
 
-            TextView nameTextView = (TextView)convertView.findViewById(R.id.name_text_view);
+            TextView nameTextView = convertView.findViewById(R.id.name_text_view);
             nameTextView.setText(name);
 
             String email = (String)note.get("email");
 
-            TextView emailTextView = (TextView)convertView.findViewById(R.id.email_text_view);
+            TextView emailTextView = convertView.findViewById(R.id.email_text_view);
             emailTextView.setText(email);
 
             return convertView;
@@ -78,7 +78,7 @@ public class UserActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_user);
 
-        userListView = (ListView)findViewById(R.id.user_list_view);
+        userListView = findViewById(R.id.user_list_view);
 
         userListView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(UserActivity.this, PostActivity.class);

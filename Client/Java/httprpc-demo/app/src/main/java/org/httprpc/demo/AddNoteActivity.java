@@ -34,15 +34,15 @@ public class AddNoteActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_add_note);
 
-        messageEditText = (EditText)findViewById(R.id.message_edit_text);
+        messageEditText = findViewById(R.id.message_edit_text);
 
-        Button cancelButton = (Button)findViewById(R.id.cancel_button);
+        Button cancelButton = findViewById(R.id.cancel_button);
 
         cancelButton.setOnClickListener(v -> {
             finish();
         });
 
-        Button okButton = (Button) findViewById(R.id.ok_button);
+        Button okButton = findViewById(R.id.ok_button);
 
         okButton.setOnClickListener(v -> {
             String message = messageEditText.getText().toString();

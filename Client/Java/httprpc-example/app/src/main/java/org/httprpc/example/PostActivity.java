@@ -23,7 +23,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,12 +60,12 @@ public class PostActivity extends AppCompatActivity {
 
             String title = (String)note.get("title");
 
-            TextView titleTextView = (TextView)convertView.findViewById(R.id.title_text_view);
+            TextView titleTextView = convertView.findViewById(R.id.title_text_view);
             titleTextView.setText(title);
 
             String body = (String)note.get("body");
 
-            TextView bodyTextView = (TextView)convertView.findViewById(R.id.body_text_view);
+            TextView bodyTextView = convertView.findViewById(R.id.body_text_view);
             bodyTextView.setText(body);
 
             return convertView;
@@ -83,7 +82,7 @@ public class PostActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_post);
 
-        postListView = (ListView)findViewById(R.id.post_list_view);
+        postListView = findViewById(R.id.post_list_view);
     }
 
     @Override

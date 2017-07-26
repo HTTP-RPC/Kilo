@@ -113,22 +113,22 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        getCheckBox = (CheckBox)findViewById(R.id.get_checkbox);
-        postMultipartCheckBox = (CheckBox)findViewById(R.id.post_multipart_checkbox);
-        postURLEncodedCheckBox = (CheckBox)findViewById(R.id.post_url_encoded_checkbox);
-        postJSONCheckBox = (CheckBox)findViewById(R.id.post_json_checkbox);
-        putCheckBox = (CheckBox)findViewById(R.id.put_checkbox);
-        putJSONCheckBox = (CheckBox)findViewById(R.id.put_json_checkbox);
-        patchCheckBox = (CheckBox)findViewById(R.id.patch_checkbox);
-        patchJSONCheckBox = (CheckBox)findViewById(R.id.patch_json_checkbox);
-        deleteCheckBox = (CheckBox)findViewById(R.id.delete_checkbox);
-        errorCheckBox = (CheckBox)findViewById(R.id.error_checkbox);
-        timeoutCheckBox = (CheckBox)findViewById(R.id.timeout_checkbox);
-        cancelCheckBox = (CheckBox)findViewById(R.id.cancel_checkbox);
-        imageCheckBox = (CheckBox)findViewById(R.id.image_checkbox);
-        imageView = (ImageView)findViewById(R.id.image_view);
-        textCheckBox = (CheckBox)findViewById(R.id.text_checkbox);
-        textView = (TextView)findViewById(R.id.text_view);
+        getCheckBox = findViewById(R.id.get_checkbox);
+        postMultipartCheckBox = findViewById(R.id.post_multipart_checkbox);
+        postURLEncodedCheckBox = findViewById(R.id.post_url_encoded_checkbox);
+        postJSONCheckBox = findViewById(R.id.post_json_checkbox);
+        putCheckBox = findViewById(R.id.put_checkbox);
+        putJSONCheckBox = findViewById(R.id.put_json_checkbox);
+        patchCheckBox = findViewById(R.id.patch_checkbox);
+        patchJSONCheckBox = findViewById(R.id.patch_json_checkbox);
+        deleteCheckBox = findViewById(R.id.delete_checkbox);
+        errorCheckBox = findViewById(R.id.error_checkbox);
+        timeoutCheckBox = findViewById(R.id.timeout_checkbox);
+        cancelCheckBox = findViewById(R.id.cancel_checkbox);
+        imageCheckBox = findViewById(R.id.image_checkbox);
+        imageView = findViewById(R.id.image_view);
+        textCheckBox = findViewById(R.id.text_checkbox);
+        textView = findViewById(R.id.text_view);
     }
 
     @Override
