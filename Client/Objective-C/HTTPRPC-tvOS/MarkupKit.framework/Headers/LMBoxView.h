@@ -17,9 +17,53 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * Horizontal alignment options.
+ */
+typedef NS_ENUM(NSInteger, LMHorizontalAlignment) {
+    /** Fill horizontal alignment. */
+    LMHorizontalAlignmentFill,
+
+    /** Leading horizontal alignment. */
+    LMHorizontalAlignmentLeading,
+
+    /** Trailing horizontal alignment. */
+    LMHorizontalAlignmentTrailing,
+
+    /** Center horizontal alignment. */
+    LMHorizontalAlignmentCenter
+};
+
+/**
+ * Vertical alignment options.
+ */
+typedef NS_ENUM(NSInteger, LMVerticalAlignment) {
+    /** Fill vertical alignment. */
+    LMVerticalAlignmentFill,
+
+    /** Top vertical alignment. */
+    LMVerticalAlignmentTop,
+
+    /** Bottom vertical alignment. */
+    LMVerticalAlignmentBottom,
+
+    /** Center vertical alignment. */
+    LMVerticalAlignmentCenter
+};
+
+/**
  * Abstract base class for box views.
  */
 @interface LMBoxView : LMLayoutView
+
+/**
+ * The horizontal alignment of the subviews. The default is "fill".
+ */
+@property (nonatomic) LMHorizontalAlignment horizontalAlignment;
+
+/**
+ * The vertical alignment of the subviews. The default is "fill".
+ */
+@property (nonatomic) LMVerticalAlignment verticalAlignment;
 
 /**
  * The amount of spacing between successive subviews. The default is 8.
