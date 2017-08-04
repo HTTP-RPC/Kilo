@@ -28,3 +28,8 @@ cp -RL $FRAMEWORK-tvOS/$BUILD/Release-appletvos $FRAMEWORK-tvOS/$BUILD/Release-u
 lipo -create $FRAMEWORK-tvOS/$BUILD/Release-appletvos/$FRAMEWORK_PATH/$FRAMEWORK $FRAMEWORK-tvOS/$BUILD/Release-appletvsimulator/$FRAMEWORK_PATH/$FRAMEWORK -output $FRAMEWORK-tvOS/$BUILD/Release-universal/$FRAMEWORK_PATH/$FRAMEWORK
 
 tar -czv -C $FRAMEWORK-tvOS/$BUILD/Release-universal -f $FRAMEWORK-tvOS.tar.gz $FRAMEWORK_PATH $FRAMEWORK_PATH.dSYM
+
+# Xcode
+rm -f Xcode.tar.gz
+
+tar -czv -f Xcode.tar.gz Xcode
