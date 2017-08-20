@@ -16,6 +16,9 @@ package org.httprpc;
 
 /**
  * Interface representing a result handler.
+ *
+ * @param <V>
+ * The type of the value returned by the operation.
  */
 public interface ResultHandler<V> {
     /**

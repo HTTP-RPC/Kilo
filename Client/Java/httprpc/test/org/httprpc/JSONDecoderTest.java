@@ -169,10 +169,9 @@ public class JSONDecoderTest {
         Assert.assertTrue(coalesce(valueAt(map, "xyz"), 456).equals(456));
     }
 
-    @SuppressWarnings("unchecked")
-    private <V> V decode(String text) throws IOException {
+    private static <T> T decode(String text) throws IOException {
         JSONDecoder decoder = new JSONDecoder();
 
-        return (V)decoder.readValue(new StringReader(text));
+        return decoder.readValue(new StringReader(text));
     }
 }

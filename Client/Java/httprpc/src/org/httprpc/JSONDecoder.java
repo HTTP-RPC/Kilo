@@ -96,6 +96,9 @@ public class JSONDecoder {
     /**
      * Reads a value from an input stream.
      *
+     * @param <T>
+     * The type of the value to return.
+     *
      * @param inputStream
      * The input stream to read from.
      *
@@ -104,12 +107,15 @@ public class JSONDecoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public Object readValue(InputStream inputStream) throws IOException {
+    public <T> T readValue(InputStream inputStream) throws IOException {
         return readValue(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
     }
 
     /**
      * Reads a value from a character stream.
+     *
+     * @param <T>
+     * The type of the value to return.
      *
      * @param reader
      * The character stream to read from.
@@ -120,7 +126,7 @@ public class JSONDecoder {
      * If an exception occurs.
      */
     @SuppressWarnings("unchecked")
-    public Object readValue(Reader reader) throws IOException {
+    public <T> T readValue(Reader reader) throws IOException {
         c = reader.read();
 
         Object value = null;
@@ -226,7 +232,7 @@ public class JSONDecoder {
             skipWhitespace(reader);
         }
 
-        return value;
+        return (T)value;
     }
 
     private void skipWhitespace(Reader reader) throws IOException {
