@@ -17,7 +17,7 @@ import MarkupKit
 import HTTPRPC
 
 class AddNoteViewController: UITableViewController {
-    var messageTextView: UITextView!
+    @IBOutlet var messageTextView: UITextView!
     
     override func loadView() {
         view = LMViewBuilder.view(withName: "AddNoteViewController", owner: self, root: nil)
@@ -40,11 +40,11 @@ class AddNoteViewController: UITableViewController {
         messageTextView.becomeFirstResponder()
     }
 
-    func cancel() {
+    @objc func cancel() {
         dismiss(animated: true)
     }
 
-    func done() {
+    @objc func done() {
         AppDelegate.serviceProxy.invoke("POST", path: "/httprpc-server/notes", arguments: ["message": messageTextView.text]) { result, error in
             if (error == nil) {
                 self.dismiss(animated: true)

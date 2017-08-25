@@ -90,7 +90,7 @@ class MainViewController: UITableViewController {
         }
     }
 
-    func add() {
+    @objc func add() {
         present(UINavigationController(rootViewController:AddNoteViewController()), animated: true)
     }
 }

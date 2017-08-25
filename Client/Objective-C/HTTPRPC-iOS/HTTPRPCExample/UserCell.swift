@@ -16,8 +16,8 @@ import UIKit
 import MarkupKit
 
 class UserCell: LMTableViewCell {
-    dynamic var name: String?
-    dynamic var email: String?
+    @objc dynamic var name: String?
+    @objc dynamic var email: String?
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
