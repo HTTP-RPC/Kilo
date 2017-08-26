@@ -219,7 +219,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         }
 
         // Custom response
-        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt", arguments: [:], responseHandler: { data, contentType, error in
+        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt", arguments: [:], responseHandler: { data, contentType in
             return String(data: data, encoding: .utf8)?.lowercased()
         }) { result, error in
             self.validate(result != nil, error: error, cell: self.customResponseCell)
@@ -239,7 +239,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             cell.textLabel!.textColor = UIColor.red
 
             if (error != nil) {
-                print(error!)
+                print(error!.localizedDescription)
             }
         }
     }

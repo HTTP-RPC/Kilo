@@ -31,6 +31,7 @@
 		3719C45A1DF1D7A3000D80F6 /* PostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3719C4591DF1D7A3000D80F6 /* PostViewController.swift */; };
 		3719C45D1DF1D7A9000D80F6 /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3719C45B1DF1D7A9000D80F6 /* PostCell.swift */; };
 		3719C45E1DF1D7A9000D80F6 /* PostCell.xml in Resources */ = {isa = PBXBuildFile; fileRef = 3719C45C1DF1D7A9000D80F6 /* PostCell.xml */; };
+		375907C01F51C49400D5E979 /* WSWebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375907BF1F51C49400D5E979 /* WSWebServiceProxy.swift */; };
 		378623581DF1CF1B0013C797 /* HTTPRPC.h in Headers */ = {isa = PBXBuildFile; fileRef = 378623551DF1CF1B0013C797 /* HTTPRPC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		378623591DF1CF1B0013C797 /* WSWebServiceProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 378623561DF1CF1B0013C797 /* WSWebServiceProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3786235A1DF1CF1B0013C797 /* WSWebServiceProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 378623571DF1CF1B0013C797 /* WSWebServiceProxy.m */; };
@@ -131,6 +132,7 @@
 		3719C4591DF1D7A3000D80F6 /* PostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostViewController.swift; sourceTree = "<group>"; };
 		3719C45B1DF1D7A9000D80F6 /* PostCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 		3719C45C1DF1D7A9000D80F6 /* PostCell.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PostCell.xml; sourceTree = "<group>"; };
+		375907BF1F51C49400D5E979 /* WSWebServiceProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSWebServiceProxy.swift; sourceTree = "<group>"; };
 		3786233E1DF1CE3B0013C797 /* HTTPRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTTPRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		378623421DF1CE3B0013C797 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		378623551DF1CF1B0013C797 /* HTTPRPC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRPC.h; sourceTree = "<group>"; };
@@ -247,6 +249,7 @@
 				378623551DF1CF1B0013C797 /* HTTPRPC.h */,
 				378623561DF1CF1B0013C797 /* WSWebServiceProxy.h */,
 				378623571DF1CF1B0013C797 /* WSWebServiceProxy.m */,
+				375907BF1F51C49400D5E979 /* WSWebServiceProxy.swift */,
 				378623421DF1CE3B0013C797 /* Info.plist */,
 			);
 			path = HTTPRPC;
@@ -380,6 +383,7 @@
 					};
 					3786233D1DF1CE3B0013C797 = {
 						CreatedOnToolsVersion = 8.1;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 					378623641DF1D0850013C797 = {
@@ -483,6 +487,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3786235A1DF1CF1B0013C797 /* WSWebServiceProxy.m in Sources */,
+				375907C01F51C49400D5E979 /* WSWebServiceProxy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,6 +559,7 @@
 		3719C41D1DF1D5DD000D80F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -615,6 +621,7 @@
 		3719C41E1DF1D5DD000D80F6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -669,6 +676,7 @@
 		3719C4481DF1D74F000D80F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -730,6 +738,7 @@
 		3719C4491DF1D74F000D80F6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -887,6 +896,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -943,6 +954,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -953,6 +965,7 @@
 		378623751DF1D0850013C797 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1014,6 +1027,7 @@
 		378623761DF1D0850013C797 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
