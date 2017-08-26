@@ -125,7 +125,7 @@ extern NSString * const WSArgumentsKey;
  */
 - (nullable NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
     arguments:(NSDictionary<NSString *, id> *)arguments
-    responseHandler:(id (^)(NSData *data, NSString *contentType, NSError **error))responseHandler
+    responseHandler:(nullable id (^)(NSData *data, NSString *contentType, NSError **error))responseHandler
     resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
 
 @end
