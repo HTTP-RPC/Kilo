@@ -226,11 +226,6 @@ public class WebServiceProxyTest {
 
         validate("Blocking", value1.get().intValue() + value2.get().intValue() + value3.get().intValue() == 6);
 
-        // Error
-        serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
-            validate("Error", exception instanceof WebServiceException);
-        });
-
         // Shut down thread pool
         threadPool.shutdown();
     }

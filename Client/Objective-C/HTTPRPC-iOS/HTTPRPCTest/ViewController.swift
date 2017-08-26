@@ -31,6 +31,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
     @IBOutlet var errorCell: UITableViewCell!
     @IBOutlet var imageCell: UITableViewCell!
     @IBOutlet var textCell: UITableViewCell!
+    @IBOutlet var customResponseCell: UITableViewCell!
 
     override func loadView() {
         // Load view from markup
@@ -215,6 +216,15 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             self.validate(result != nil, error: error, cell: self.textCell)
 
             self.textCell.textLabel?.text = result as? String
+        }
+
+        // Custom response
+        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt", arguments: [:], responseHandler: { data, contentType, error in
+            return String(data: data, encoding: .utf8)?.lowercased() ?? ""
+        }) { result, error in
+            self.validate(result != nil, error: error, cell: self.customResponseCell)
+
+            self.customResponseCell.textLabel?.text = result as? String
         }
     }
 

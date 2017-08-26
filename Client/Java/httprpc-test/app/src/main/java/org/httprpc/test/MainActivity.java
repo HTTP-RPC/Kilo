@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.SocketTimeoutException;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     private CheckBox textCheckBox;
     private TextView textView;
+    private CheckBox customResponseCheckBox;
+    private TextView customResponseTextView;
 
     static {
         // Allow self-signed certificates for testing purposes
@@ -129,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.image_view);
         textCheckBox = findViewById(R.id.text_checkbox);
         textView = findViewById(R.id.text_view);
+        customResponseCheckBox = findViewById(R.id.custom_response_checkbox);
+        customResponseTextView = findViewById(R.id.custom_response_text_view);
     }
 
     @Override
@@ -309,6 +314,23 @@ public class MainActivity extends AppCompatActivity {
         serviceProxy.invoke("GET", "/httprpc-server/test.txt", (String result, Exception exception) -> {
             textCheckBox.setChecked(exception == null && result != null);
             textView.setText(result);
+        });
+
+        // Custom response
+        serviceProxy.invoke("GET", "/httprpc-server/test.txt", mapOf(), (inputStream, contentType) -> {
+            StringBuilder textBuilder = new StringBuilder(1024);
+
+            try (InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8")) {
+                int c;
+                while ((c = reader.read()) != -1) {
+                    textBuilder.append((char)c);
+                }
+            }
+
+            return textBuilder.toString().toLowerCase();
+        }, (String result, Exception exception) -> {
+            customResponseCheckBox.setChecked(exception == null && result != null);
+            customResponseTextView.setText(result);
         });
 
         // Shut down thread pool
