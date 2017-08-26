@@ -85,6 +85,30 @@ NSString * const kCRLF = @"\r\n";
     arguments:(NSDictionary *)arguments
     resultHandler:(void (^)(id, NSError *))resultHandler
 {
+    return [self invoke:method path:path arguments:arguments responseHandler:^id (NSData *data, NSString *contentType, NSError **error) {
+        id result = nil;
+
+        if ([contentType hasPrefix:WSApplicationJSON]) {
+            result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:error];
+        } else if ([contentType hasPrefix:@"image/"]) {
+            result = [UIImage imageWithData:data];
+        } else if ([contentType hasPrefix:@"text/"]) {
+            result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        } else {
+            *error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
+                NSLocalizedDescriptionKey:@"Unsupported response encoding."
+            }];
+        }
+
+        return result;
+    } resultHandler:resultHandler];
+}
+
+- (NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
+    arguments:(NSDictionary<NSString *, id> *)arguments
+    responseHandler:(id (^)(NSData *data, NSString *contentType, NSError **error))responseHandler
+    resultHandler:(void (^)(id, NSError *))resultHandler;
+{
     NSURLSessionDataTask *task = nil;
 
     NSURL *url = [NSURL URLWithString:path relativeToURL:_serverURL];
@@ -159,23 +183,13 @@ NSString * const kCRLF = @"\r\n";
 
                     if (statusCode / 100 == 2) {
                         if (statusCode % 100 < 4) {
-                            NSString *mimeType = [response MIMEType];
+                            NSString *contentType = [response MIMEType];
 
-                            if (mimeType == nil) {
-                                mimeType = WSApplicationJSON;
+                            if (contentType == nil) {
+                                contentType = WSApplicationJSON;
                             }
 
-                            if ([mimeType hasPrefix:WSApplicationJSON]) {
-                                result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-                            } else if ([mimeType hasPrefix:@"image/"]) {
-                                result = [UIImage imageWithData:data];
-                            } else if ([mimeType hasPrefix:@"text/"]) {
-                                result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                            } else {
-                                error = [NSError errorWithDomain:WSWebServiceErrorDomain code:-1 userInfo:@{
-                                    NSLocalizedDescriptionKey:@"Unsupported response encoding."
-                                }];
-                            }
+                            result = responseHandler(data, contentType, &error);
                         }
                     } else {
                         error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
