@@ -38,14 +38,21 @@ The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown
 ## WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
 
-Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling the `invoke:path:arguments:resultHandler:` method, which takes the following arguments:
+Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling one of the following methods:
+
+* `invoke:path:resultHandler:`
+* `invoke:path:arguments:resultHandler:`
+* `invoke:path:arguments:responseHandler:resultHandler:`
+
+These methods accept the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource
-* `arguments` - a dictionary containing the request arguments as key/value pairs
+* `arguments` - a dictionary containing the request arguments as key/value pairs (optional)
+* `responseHandler` - a callback that will be used to decode the server response (optional)
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
-A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
+The methods return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
 
 ### Arguments
 As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` and `PATCH` arguments may be submitted either as JSON or via the query string.
@@ -117,14 +124,21 @@ Service proxies are initialized via a constructor that takes the following argum
 * `serverURL` - an instance of `java.net.URL` representing the base URL of the service
 * `executorService` - an instance of `java.util.concurrent.ExecutorService` that is used to  dispatch service requests
 
-Service operations are initiated by calling the `invoke()` method, which takes the following arguments:
+Service operations are initiated by calling one of the following methods:
+
+* `public <V> Future<V> invoke(String method, String path, ResultHandler<V> resultHandler) { ... }`
+* `public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) { ... }`
+* `public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResponseHandler<V> responseHandler, ResultHandler<V> resultHandler) { ... }`
+
+These methods accept the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource
-* `arguments` - a map containing the request arguments as key/value pairs
-* `resultHandler` - an instance of `ResultHandler` that will be invoked upon completion of the service operation
+* `arguments` - a map containing the request arguments as key/value pairs (optional)
+* `responseHandler` - a callback that will be used to decode the server response (optional)
+* `resultHandler` - a callback that will be invoked upon completion of the request (optional)
 
-A convenience method is also provided for invoking operations that don't take any arguments. Both variants return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
+The methods return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
 ### Arguments
 As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET` and `DELETE` requests are always sent in the query string. `POST` arguments are always sent in the request body, and may be submitted using either standard W3C URL-encoded or multi-part form encodings or as JSON. `PUT` and `PATCH` arguments may be submitted either as JSON or via the query string.
