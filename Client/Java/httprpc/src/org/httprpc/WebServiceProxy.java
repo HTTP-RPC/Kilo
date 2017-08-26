@@ -271,6 +271,61 @@ public class WebServiceProxy {
      */
     @SuppressWarnings("unchecked")
     public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResultHandler<V> resultHandler) {
+        return invoke(method, path, arguments, (inputStream, contentType) -> {
+            MIMEType mimeType = MIMEType.valueOf(contentType);
+
+            String type = mimeType.getType();
+            String subtype = mimeType.getSubtype();
+
+            Object result;
+            if (type.equals("application") && subtype.equals("json")) {
+                JSONDecoder decoder = new JSONDecoder();
+
+                result = decoder.readValue(inputStream);
+            } else if (type.equals("image")) {
+                result = decodeImageResponse(inputStream, subtype);
+            } else if (type.equals("text")) {
+                String charsetName = mimeType.getParameter("charset");
+
+                if (charsetName == null) {
+                    charsetName = UTF_8;
+                }
+
+                result = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
+            } else {
+                throw new UnsupportedOperationException("Unsupported response encoding.");
+            }
+
+            return (V)result;
+        }, resultHandler);
+    }
+
+    /**
+     * Executes a service operation.
+     *
+     * @param <V>
+     * The type of the value returned by the operation.
+     *
+     * @param method
+     * The HTTP verb associated with the request.
+     *
+     * @param path
+     * The path associated with the request.
+     *
+     * @param arguments
+     * The request arguments.
+     *
+     * @param responseHandler
+     * A callback that will be used to decode the server response.
+     *
+     * @param resultHandler
+     * A callback that will be invoked upon completion of the request, or
+     * <tt>null</tt> for no result handler.
+     *
+     * @return
+     * A future representing the invocation request.
+     */
+    public <V> Future<V> invoke(String method, String path, Map<String, ?> arguments, ResponseHandler<V> responseHandler, ResultHandler<V> resultHandler) {
         if (method == null) {
             throw new IllegalArgumentException();
         }
@@ -293,7 +348,7 @@ public class WebServiceProxy {
 
         // Execute request
         return executorService.submit(() -> {
-            Object result;
+            V result;
             try {
                 URL url = new URL(serverURL, path);
 
@@ -373,28 +428,7 @@ public class WebServiceProxy {
                         }
 
                         try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                            MIMEType mimeType = MIMEType.valueOf(contentType);
-
-                            String type = mimeType.getType();
-                            String subtype = mimeType.getSubtype();
-
-                            if (type.equals("application") && subtype.equals("json")) {
-                                JSONDecoder decoder = new JSONDecoder();
-
-                                result = decoder.readValue(inputStream);
-                            } else if (type.equals("image")) {
-                                result = decodeImageResponse(inputStream, subtype);
-                            } else if (type.equals("text")) {
-                                String charsetName = mimeType.getParameter("charset");
-
-                                if (charsetName == null) {
-                                    charsetName = UTF_8;
-                                }
-
-                                result = decodeTextResponse(inputStream, subtype, Charset.forName(charsetName));
-                            } else {
-                                throw new UnsupportedOperationException("Unsupported response encoding.");
-                            }
+                            result = responseHandler.decode(inputStream, contentType);
                         }
                     } else {
                         result = null;
@@ -414,11 +448,11 @@ public class WebServiceProxy {
 
             if (resultHandler != null) {
                 dispatchResult(() -> {
-                    resultHandler.execute((V)result, null);
+                    resultHandler.execute(result, null);
                 });
             }
 
-            return (V)result;
+            return result;
         });
     }
 
