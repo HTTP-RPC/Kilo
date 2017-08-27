@@ -96,7 +96,7 @@ extern NSString * const WSArgumentsKey;
  * @return A URL session task representing the invocation request, or <code>nil</code> if the task could not be created.
  */
 - (nullable NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
-    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler NS_REFINED_FOR_SWIFT;
 
 /**
  * Executes a service operation.
@@ -110,7 +110,7 @@ extern NSString * const WSArgumentsKey;
  */
 - (nullable NSURLSessionTask *)invoke:(NSString *)method path:(NSString *)path
     arguments:(NSDictionary<NSString *, id> *)arguments
-    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler;
+    resultHandler:(void (^)(id _Nullable, NSError * _Nullable))resultHandler NS_REFINED_FOR_SWIFT;
 
 /**
  * Executes a service operation.

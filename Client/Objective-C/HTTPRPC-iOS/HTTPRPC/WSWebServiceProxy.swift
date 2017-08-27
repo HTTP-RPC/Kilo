@@ -19,9 +19,23 @@ import Foundation
  */
 public extension WSWebServiceProxy {
     @discardableResult
-    func invoke(_ method: String, path: String, arguments: [String: Any],
-        responseHandler: @escaping (Data, String) throws -> Any?,
-        resultHandler: @escaping (Any?, Error?) -> Void) -> URLSessionTask? {
+    func invoke<T>(_ method: String, path: String, resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
+        return __invoke(method, path: path) { result, error in
+            resultHandler(result as! T?, error)
+        }
+    }
+
+    @discardableResult
+    func invoke<T>(_ method: String, path: String, arguments: [String: Any], resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
+        return __invoke(method, path: path, arguments: arguments) { result, error in
+            resultHandler(result as! T?, error)
+        }
+    }
+
+    @discardableResult
+    func invoke<T>(_ method: String, path: String, arguments: [String: Any],
+        responseHandler: @escaping (Data, String) throws -> T?,
+        resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments, responseHandler: { data, contentType, errorPointer in
             let result: Any?
             do {
@@ -35,6 +49,8 @@ public extension WSWebServiceProxy {
             }
 
             return result
-        }, resultHandler: resultHandler)
+        }) { result, error in
+            resultHandler(result as! T?, error)
+        }
     }
 }

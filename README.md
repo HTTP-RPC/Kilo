@@ -10,7 +10,7 @@ The project currently includes support for consuming web services in Objective-C
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
-    serviceProxy.invoke("GET", path: "/hello") { result, error in
+    serviceProxy.invoke("GET", path: "/hello") { (result: Any?, error) in
         print(result) // Prints "Hello, World!"
     }
 
@@ -96,12 +96,12 @@ The following code sample demonstrates how the `WSWebServiceProxy` class might b
     let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
     
     // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { result, error in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { result: Int, error in
         // result is 6
     }
 
     // Get sum of all values
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { result, error in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { result: Int, error in
         // result is 6
     }
 

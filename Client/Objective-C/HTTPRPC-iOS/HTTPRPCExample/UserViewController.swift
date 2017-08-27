@@ -38,12 +38,12 @@ class UserViewController: UITableViewController {
             tableView.separatorStyle = UITableViewCellSeparatorStyle.none
             activityIndicatorView.startAnimating()
 
-            AppDelegate.serviceProxy.invoke("GET", path: "/users") { result, error in
+            AppDelegate.serviceProxy.invoke("GET", path: "/users") { (result: [[String: Any]]?, error) in
                 self.tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLine
                 self.activityIndicatorView.stopAnimating()
 
                 if (error == nil) {
-                    self.users = result as! [[String: Any]]
+                    self.users = result
 
                     self.tableView.reloadData()
                 } else {
