@@ -20,6 +20,7 @@
 		378623A81DF1D2D70013C797 /* ViewController.xml in Resources */ = {isa = PBXBuildFile; fileRef = 378623A31DF1D2D70013C797 /* ViewController.xml */; };
 		378623A91DF1D2D70013C797 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 378623A41DF1D2D70013C797 /* test.jpg */; };
 		378623AA1DF1D2D70013C797 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 378623A51DF1D2D70013C797 /* test.txt */; };
+		379CE4A11F52EC8300DCE55C /* WSWebServiceProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379CE4A01F52EC8300DCE55C /* WSWebServiceProxy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		378623A31DF1D2D70013C797 /* ViewController.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = ViewController.xml; path = "../../HTTPRPC-iOS/HTTPRPCTest/ViewController.xml"; sourceTree = "<group>"; };
 		378623A41DF1D2D70013C797 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.jpg; path = "../../HTTPRPC-iOS/HTTPRPCTest/test.jpg"; sourceTree = "<group>"; };
 		378623A51DF1D2D70013C797 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.txt; path = "../../HTTPRPC-iOS/HTTPRPCTest/test.txt"; sourceTree = "<group>"; };
+		379CE4A01F52EC8300DCE55C /* WSWebServiceProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WSWebServiceProxy.swift; path = "../../HTTPRPC-iOS/HTTPRPC/WSWebServiceProxy.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 				3786235B1DF1CFC50013C797 /* HTTPRPC.h */,
 				3786235C1DF1CFC50013C797 /* WSWebServiceProxy.h */,
 				3786235D1DF1CFC50013C797 /* WSWebServiceProxy.m */,
+				379CE4A01F52EC8300DCE55C /* WSWebServiceProxy.swift */,
 				378623501DF1CE770013C797 /* Info.plist */,
 			);
 			path = HTTPRPC;
@@ -191,6 +194,7 @@
 				TargetAttributes = {
 					3786234B1DF1CE770013C797 = {
 						CreatedOnToolsVersion = 8.1;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 					3786238C1DF1D29F0013C797 = {
@@ -246,6 +250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				378623601DF1CFC50013C797 /* WSWebServiceProxy.m in Sources */,
+				379CE4A11F52EC8300DCE55C /* WSWebServiceProxy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,6 +378,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -428,6 +435,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 				VALIDATE_PRODUCT = YES;
@@ -439,6 +447,7 @@
 		3786239A1DF1D29F0013C797 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -500,6 +509,7 @@
 		3786239B1DF1D29F0013C797 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
