@@ -11,13 +11,17 @@ The project currently includes support for consuming web services in Objective-C
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
     serviceProxy.invoke("GET", path: "/hello") { (result: Any?, error) in
-        print(result) // Prints "Hello, World!"
+        if (error == nil) {
+            print(result!) // Prints "Hello, World!"
+        }
     }
 
 In Java, the code might look like this:
 
     serviceProxy.invoke("GET", "/hello", (result, exception) -> {
-        System.out.println(result); // Prints "Hello, World!"
+        if (error == null) {
+            System.out.println(result); // Prints "Hello, World!"
+        }
     });
 
 In both cases, the request will be executed asynchronously and the result printed when the call returns.
@@ -38,7 +42,12 @@ The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown
 ## WSWebServiceProxy Class
 The `WSWebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
 
-Service proxies are initialized via the `initWithSession:serverURL:` method, which takes an `NSURLSession` instance and the service's base URL as arguments. Service operations are initiated by calling one of the following methods:
+Service proxies are initialized via the `initWithSession:serverURL:` method, which takes the following arguments:
+
+* `session` - an `NSURLSession` instance that is used to dispatch service requests
+* `serverURL` - the base URL of the service
+
+Service operations are initiated by calling one of the following methods:
 
 * `invoke:path:resultHandler:`
 * `invoke:path:arguments:resultHandler:`
@@ -48,8 +57,8 @@ These methods accept the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource
-* `arguments` - a dictionary containing the request arguments as key/value pairs (optional)
-* `responseHandler` - a callback that will be used to decode the server response (optional)
+* `arguments` - an optional dictionary containing the request arguments as key/value pairs
+* `responseHandler` - an optional callback that will be used to decode the server response
 * `resultHandler` - a callback that will be invoked upon completion of the method
 
 The methods return an instance of `NSURLSessionTask` representing the invocation request. This allows an application to cancel a task, if necessary.
@@ -78,7 +87,15 @@ The result handler is called upon completion of the operation. If successful, th
 * _image/*_
 * _text/*_
 
-`NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Text content is returned as a string.
+By default, `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Text content is returned as a string. Custom deserialization can be implemented via the optional response handler callback; for example, the following code uses Swift's `JSONDecoder` class to return a strongly-typed result value:
+
+    serviceProxy.invoke("GET", path: "/example", arguments: [:], responseHandler: { data, contentType in
+        let decoder = JSONDecoder()
+
+        return try? decoder.decode(Example.self, from: data)
+    }) { (result: Example?, error) in
+        // Handle result
+    }
 
 Note that, while requests are actually processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
 
@@ -96,12 +113,12 @@ The following code sample demonstrates how the `WSWebServiceProxy` class might b
     let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
     
     // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { result: Int, error in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { (result: Int?, error) in
         // result is 6
     }
 
     // Get sum of all values
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { result: Int, error in
+    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { (result: Int?, error) in
         // result is 6
     }
 
@@ -134,9 +151,9 @@ These methods accept the following arguments:
 
 * `method` - the HTTP method to execute
 * `path` - the path to the requested resource
-* `arguments` - a map containing the request arguments as key/value pairs (optional)
-* `responseHandler` - a callback that will be used to decode the server response (optional)
-* `resultHandler` - a callback that will be invoked upon completion of the request (optional)
+* `arguments` - an optional map containing the request arguments as key/value pairs
+* `responseHandler` - an optional callback that will be used to decode the server response
+* `resultHandler` - an optional callback that will be invoked upon completion of the request
 
 The methods return an instance of `java.util.concurrent.Future` representing the invocation request. This object allows a caller to cancel an outstanding request, obtain information about a request that has completed, or block the current thread while waiting for an operation to complete.
 
@@ -214,6 +231,16 @@ Image data is decoded via the `decodeImageResponse()` method of the `WebServiceP
     }
 
 Text data is decoded via the `decodeTextResponse()` method. The default implentation simply returns the text content as a string. Subclasses may override this method to produce alternate representations (for example, loading an XML document into a document object model).
+
+Custom deserialization can also be implemented via the response handler callback; for example, the following code uses the [Jackson](https://github.com/FasterXML/jackson) JSON parser to return a strongly-typed result value:
+
+    serviceProxy.invoke("GET", "/example", mapOf(), (inputStream, contentType) -> {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.readValue(input, Example.class);
+    }, (Example result, Exception exception) -> {
+        // Handle result
+    });
 
 #### Accessing Nested Structures
 `WebServiceProxy` provides the following convenience method for accessing nested map values by key path:
