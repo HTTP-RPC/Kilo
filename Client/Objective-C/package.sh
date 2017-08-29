@@ -11,6 +11,7 @@ xcodebuild archive -project $FRAMEWORK-iOS/$FRAMEWORK-iOS.xcodeproj -scheme $FRA
 xcodebuild build -project $FRAMEWORK-iOS/$FRAMEWORK-iOS.xcodeproj -target $FRAMEWORK -sdk iphonesimulator SYMROOT=$BUILD
 
 cp -RL $FRAMEWORK-iOS/$BUILD/Release-iphoneos $FRAMEWORK-iOS/$BUILD/Release-universal
+cp -RL $FRAMEWORK-iOS/$BUILD/Release-iphonesimulator/$FRAMEWORK_PATH/Modules/$FRAMEWORK.swiftmodule/* $FRAMEWORK-iOS/$BUILD/Release-universal/$FRAMEWORK_PATH/Modules/$FRAMEWORK.swiftmodule
 
 lipo -create $FRAMEWORK-iOS/$BUILD/Release-iphoneos/$FRAMEWORK_PATH/$FRAMEWORK $FRAMEWORK-iOS/$BUILD/Release-iphonesimulator/$FRAMEWORK_PATH/$FRAMEWORK -output $FRAMEWORK-iOS/$BUILD/Release-universal/$FRAMEWORK_PATH/$FRAMEWORK
 
@@ -24,6 +25,7 @@ xcodebuild archive -project $FRAMEWORK-tvOS/$FRAMEWORK-tvOS.xcodeproj -scheme $F
 xcodebuild build -project $FRAMEWORK-tvOS/$FRAMEWORK-tvOS.xcodeproj -target $FRAMEWORK -sdk appletvsimulator SYMROOT=$BUILD
 
 cp -RL $FRAMEWORK-tvOS/$BUILD/Release-appletvos $FRAMEWORK-tvOS/$BUILD/Release-universal
+cp -RL $FRAMEWORK-tvOS/$BUILD/Release-appletvsimulator/$FRAMEWORK_PATH/Modules/$FRAMEWORK.swiftmodule/* $FRAMEWORK-tvOS/$BUILD/Release-universal/$FRAMEWORK_PATH/Modules/$FRAMEWORK.swiftmodule
 
 lipo -create $FRAMEWORK-tvOS/$BUILD/Release-appletvos/$FRAMEWORK_PATH/$FRAMEWORK $FRAMEWORK-tvOS/$BUILD/Release-appletvsimulator/$FRAMEWORK_PATH/$FRAMEWORK -output $FRAMEWORK-tvOS/$BUILD/Release-universal/$FRAMEWORK_PATH/$FRAMEWORK
 

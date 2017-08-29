@@ -17,23 +17,23 @@ import Foundation
 /**
  * Swift refinements to web service proxy.
  */
-public extension WSWebServiceProxy {
+extension WSWebServiceProxy {
     @discardableResult
-    func invoke<T>(_ method: String, path: String, resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
+    open func invoke<T>(_ method: String, path: String, resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path) { result, error in
             resultHandler(result as! T?, error)
         }
     }
 
     @discardableResult
-    func invoke<T>(_ method: String, path: String, arguments: [String: Any], resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
+    open func invoke<T>(_ method: String, path: String, arguments: [String: Any], resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments) { result, error in
             resultHandler(result as! T?, error)
         }
     }
 
     @discardableResult
-    func invoke<T>(_ method: String, path: String, arguments: [String: Any],
+    open func invoke<T>(_ method: String, path: String, arguments: [String: Any],
         responseHandler: @escaping (Data, String) throws -> T?,
         resultHandler: @escaping (T?, Error?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments, responseHandler: { data, contentType, errorPointer in
