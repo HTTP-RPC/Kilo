@@ -1,5 +1,6 @@
-build
 bin
+build
+bundle
 doc
 httprpc-*.jar
 httprpc-*.zip

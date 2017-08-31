@@ -1,6 +1,7 @@
-build
 bin
 bin.war
+build
+bundle
 doc
 httprpc-server-*.jar
 httprpc-server-*.zip

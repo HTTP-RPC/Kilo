@@ -60,5 +60,14 @@
         <delete dir="." includes="${srcfile}"/>
 
         <zip destfile="${srcfile}" basedir="src"/>
+
+        <delete dir="bundle"/>
+        <mkdir dir="bundle"/>
+
+        <copy file="pom.xml" tofile="bundle/${ant.project.name}-${version}.pom"/>
+
+        <copy todir="bundle">
+            <fileset dir="." includes="${ant.project.name}-${version}*.jar"/>
+        </copy>
     </target>
 </project>
