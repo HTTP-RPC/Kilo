@@ -131,7 +131,15 @@ The Java client enables Java applications (including Android) to consume REST-ba
 
 Additionally, the framework includes two classes, `JSONEncoder` and `JSONDecoder`, that are used internally for processing JSON data. However, these classes are public and may also be used by application code.
 
-The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). A POM file for local Maven deployment is also included. Java 8 or later is required.
+The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
+
+    <dependency>
+        <groupId>org.httprpc</groupId>
+        <artifactId>httprpc</artifactId>
+        <version>...</version>
+    </dependency>
+
+Java 8 or later is required.
 
 ## WebServiceProxy Class
 The `WebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
@@ -313,7 +321,15 @@ The optional Java server library allows developers to implement REST services in
 * `RequestMethod` - annotation that associates an HTTP verb with a service method
 * `ResourcePath` - annotation that associates a resource path with a service method
 
-The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). A POM file for local Maven deployment is also included. The Java client library and Java 8 or later are required.
+The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
+
+    <dependency>
+        <groupId>org.httprpc</groupId>
+        <artifactId>httprpc-server</artifactId>
+        <version>...</version>
+    </dependency>
+
+The Java client library and Java 8 or later are required.
 
 ## DispatcherServlet
 `DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 

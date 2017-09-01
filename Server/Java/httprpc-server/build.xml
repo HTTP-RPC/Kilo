@@ -112,5 +112,7 @@
         <copy todir="bundle">
             <fileset dir="." includes="${ant.project.name}-${version}*.jar"/>
         </copy>
+
+        <zip destfile="${ant.project.name}-${version}-bundle.zip" basedir="bundle"/>
     </target>
 </project>
