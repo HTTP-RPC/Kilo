@@ -1,4 +1,3 @@
-![Supported Platforms](https://img.shields.io/cocoapods/p/HTTPRPC.svg) 
 [![Releases](https://img.shields.io/github/release/gk-brown/HTTP-RPC.svg)](https://github.com/gk-brown/HTTP-RPC/releases)
 [![CocoaPods](https://img.shields.io/cocoapods/v/HTTPRPC.svg)](https://cocoapods.org/pods/HTTPRPC)
 [![Discussion](https://badges.gitter.im/gk-brown/HTTP-RPC.svg)](https://gitter.im/HTTP-RPC/Lobby)
