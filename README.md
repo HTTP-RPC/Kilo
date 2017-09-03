@@ -138,6 +138,13 @@ The Java client library can be downloaded [here](https://github.com/gk-brown/HTT
         <version>...</version>
     </dependency>
 
+In Android Studio:
+
+    dependencies {
+        ...
+        compile 'org.httprpc:httprpc:...'
+    }
+
 Java 8 or later is required.
 
 ## WebServiceProxy Class
