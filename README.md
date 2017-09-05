@@ -1,5 +1,6 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/HTTP-RPC.svg)](https://github.com/gk-brown/HTTP-RPC/releases)
 [![CocoaPods](https://img.shields.io/cocoapods/v/HTTPRPC.svg)](https://cocoapods.org/pods/HTTPRPC)
+[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 [![Discussion](https://badges.gitter.im/gk-brown/HTTP-RPC.svg)](https://gitter.im/HTTP-RPC/Lobby)
 
 # Introduction

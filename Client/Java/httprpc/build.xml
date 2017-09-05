@@ -8,11 +8,11 @@
     <property name="bin" value="bin"/>
     <property name="doc" value="doc"/>
 
+    <property name="bundle" value="bundle"/>
+
     <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
     <property name="srcfile" value="${ant.project.name}-${version}-sources.jar"/>
     <property name="docfile" value="${ant.project.name}-${version}-javadoc.jar"/>
-
-    <property name="zipfile" value="${ant.project.name}-${version}.zip"/>
 
     <target name="build">
         <echo message="Building ${title}..."/>
@@ -25,9 +25,10 @@
             encoding="UTF-8" deprecation="true" debug="true"
             failonerror="true"/>
 
-        <delete dir="." includes="${jarfile}"/>
+        <delete dir="${bundle}"/>
+        <mkdir dir="${bundle}"/>
 
-        <jar basedir="${bin}" destfile="${jarfile}" index="true">
+        <jar basedir="${bin}" destfile="${bundle}/${jarfile}" index="true">
             <manifest>
                 <attribute name="Implementation-Title" value="${title}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
@@ -35,13 +36,13 @@
         </jar>
 
         <delete dir="../${ant.project.name}-demo/app/libs" includes="${ant.project.name}-*.jar"/>
-        <copy file="${jarfile}" todir="../${ant.project.name}-demo/app/libs"/>
+        <copy file="${bundle}/${jarfile}" todir="../${ant.project.name}-demo/app/libs"/>
 
         <delete dir="../${ant.project.name}-example/app/libs" includes="${ant.project.name}-*.jar"/>
-        <copy file="${jarfile}" todir="../${ant.project.name}-example/app/libs"/>
+        <copy file="${bundle}/${jarfile}" todir="../${ant.project.name}-example/app/libs"/>
 
         <delete dir="../${ant.project.name}-test/app/libs" includes="${ant.project.name}-*.jar"/>
-        <copy file="${jarfile}" todir="../${ant.project.name}-test/app/libs"/>
+        <copy file="${bundle}/${jarfile}" todir="../${ant.project.name}-test/app/libs"/>
     </target>
 
     <target name="doc">
@@ -50,26 +51,12 @@
         <javadoc sourcepath="${src}" destdir="${doc}"
             link="http://docs.oracle.com/javase/8/docs/api/"
             version="true" use="true"/>
-
-        <delete dir="." includes="${docfile}"/>
-
-        <zip destfile="${docfile}" basedir="doc"/>
     </target>
 
     <target name="package" depends="build, doc">
-        <delete dir="." includes="${srcfile}"/>
-
-        <zip destfile="${srcfile}" basedir="src"/>
-
-        <delete dir="bundle"/>
-        <mkdir dir="bundle"/>
+        <zip destfile="${bundle}/${srcfile}" basedir="src"/>
+        <zip destfile="${bundle}/${docfile}" basedir="doc"/>
 
         <copy file="pom.xml" tofile="bundle/${ant.project.name}-${version}.pom"/>
-
-        <copy todir="bundle">
-            <fileset dir="." includes="${ant.project.name}-${version}*.jar"/>
-        </copy>
-
-        <zip destfile="${ant.project.name}-${version}-bundle.zip" basedir="bundle"/>
     </target>
 </project>

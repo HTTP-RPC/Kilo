@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="httprpc-server" default="build-war">
+<project name="httprpc-server" default="war">
     <property name="title" value="HTTP-RPC Server"/>
     <property name="version" value="4.2"/>
 
     <property name="src" value="src"/>
-    <property name="war" value="war"/>
     <property name="api" value="api"/>
+    <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
-    <property name="bin.war" value="bin.war"/>
     <property name="doc" value="doc"/>
+    <property name="test" value="test"/>
+    <property name="war" value="war"/>
+    <property name="classes" value="classes"/>
+
+    <property name="bundle" value="bundle"/>
 
     <property name="jarfile" value="${ant.project.name}-${version}.jar"/>
     <property name="srcfile" value="${ant.project.name}-${version}-sources.jar"/>
     <property name="docfile" value="${ant.project.name}-${version}-javadoc.jar"/>
-
-    <property name="zipfile" value="${ant.project.name}-${version}.zip"/>
-
-    <property name="warfile" value="${ant.project.name}.war"/>
 
     <target name="build">
         <ant dir="../../../Client/Java/httprpc" target="build" inheritAll="false"/>
@@ -32,53 +32,21 @@
             encoding="UTF-8" deprecation="true" debug="true"
             failonerror="true">
             <classpath>
-                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
+                <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
 
                 <fileset dir="${api}" includes="*.jar"/>
             </classpath>
         </javac>
 
-        <delete dir="." includes="${jarfile}"/>
+        <delete dir="${bundle}"/>
+        <mkdir dir="${bundle}"/>
 
-        <jar basedir="${bin}" destfile="${jarfile}" index="true">
+        <jar basedir="${bin}" destfile="${bundle}/${jarfile}" index="true">
             <manifest>
                 <attribute name="Implementation-Title" value="${title}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
             </manifest>
         </jar>
-    </target>
-
-    <target name="build-war" depends="build">
-        <echo message="Building ${title} web archive..."/>
-
-        <delete dir="${bin.war}"/>
-        <mkdir dir="${bin.war}"/>
-
-        <javac srcDir="${war}" destDir="${bin.war}"
-            includejavaruntime="true" includeantruntime="true"
-            encoding="UTF-8" deprecation="true" debug="true"
-            failonerror="true">
-            <classpath>
-                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
-                <fileset dir="." includes="*.jar"/>
-
-                <fileset dir="${api}" includes="*.jar"/>
-            </classpath>
-
-            <compilerarg value="-parameters"/>
-        </javac>
-
-        <delete dir="." includes="${warfile}"/>
-
-        <war destfile="${warfile}" webxml="web.xml">
-            <fileset dir="web"/>
-
-            <classes dir="${bin.war}"/>
-            <classes dir="${war}" excludes="**/*.java"/>
-
-            <lib dir="../../../Client/Java/httprpc" includes="*.jar"/>
-            <lib dir="." includes="*.jar"/>
-        </war>
     </target>
 
     <target name="doc">
@@ -88,31 +56,47 @@
             link="http://docs.oracle.com/javase/8/docs/api/"
             version="true" use="true">
             <classpath>
-                <fileset dir="../../../Client/Java/httprpc" includes="*.jar"/>
+                <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
 
                 <fileset dir="${api}" includes="*.jar"/>
             </classpath>
         </javadoc>
+    </target>
 
-        <delete dir="." includes="${docfile}"/>
+    <target name="war" depends="build">
+        <echo message="Building ${title} web archive..."/>
 
-        <zip destfile="${docfile}" basedir="doc"/>
+        <delete dir="${war}/WEB-INF/${classes}"/>
+        <mkdir dir="${war}/WEB-INF/${classes}"/>
+
+        <javac srcDir="${test}" destDir="${war}/WEB-INF/${classes}"
+            includejavaruntime="true" includeantruntime="true"
+            encoding="UTF-8" deprecation="true" debug="true"
+            failonerror="true">
+            <classpath>
+                <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
+                <fileset dir="bundle" includes="*.jar"/>
+
+                <fileset dir="${api}" includes="*.jar"/>
+            </classpath>
+
+            <compilerarg value="-parameters"/>
+        </javac>
+
+        <copy todir="${war}/WEB-INF/${classes}">
+            <fileset dir="${test}" excludes="*.java"/>
+        </copy>
+
+        <copy todir="${war}/WEB-INF/${lib}">
+            <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
+            <fileset dir="bundle" includes="*.jar"/>
+        </copy>
     </target>
 
     <target name="package" depends="build, doc">
-        <delete dir="." includes="${srcfile}"/>
-
-        <zip destfile="${srcfile}" basedir="src"/>
-
-        <delete dir="bundle"/>
-        <mkdir dir="bundle"/>
+        <zip destfile="${bundle}/${srcfile}" basedir="src"/>
+        <zip destfile="${bundle}/${docfile}" basedir="doc"/>
 
         <copy file="pom.xml" tofile="bundle/${ant.project.name}-${version}.pom"/>
-
-        <copy todir="bundle">
-            <fileset dir="." includes="${ant.project.name}-${version}*.jar"/>
-        </copy>
-
-        <zip destfile="${ant.project.name}-${version}-bundle.zip" basedir="bundle"/>
     </target>
 </project>
