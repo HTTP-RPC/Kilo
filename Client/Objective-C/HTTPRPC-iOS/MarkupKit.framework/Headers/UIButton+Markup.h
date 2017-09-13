@@ -44,6 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIButton *)contactAddButton;
 
 /**
+ * Creates a "plain" button.
+ */
++ (UIButton *)plainButton API_AVAILABLE(tvos(11.0)) __IOS_PROHIBITED;
+
+/**
  * The button's title.
  */
 @property (nonatomic, nullable) NSString *title;

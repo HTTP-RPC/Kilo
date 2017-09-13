@@ -16,37 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIVisualEffectView (Markup)
-
-/**
- * Creates an extra-light blur effect view.
- */
-+ (UIVisualEffectView *)extraLightBlurEffectView;
-
-/**
- * Creates a light blur effect view.
- */
-+ (UIVisualEffectView *)lightBlurEffectView;
-
-/**
- * Creates a dark blur effect view.
- */
-+ (UIVisualEffectView *)darkBlurEffectView;
-
-/**
- * Creates an extra-dark blur effect view.
- */
-+ (UIVisualEffectView *)extraDarkBlurEffectView __IOS_PROHIBITED;
-
-/**
- * Creates a regular blur effect view.
- */
-+ (UIVisualEffectView *)regularBlurEffectView;
-
-/**
- * Creates a prominent blur effect view.
- */
-+ (UIVisualEffectView *)prominentBlurEffectView;
+@interface UIImageView (Markup)
 
 @end
 

@@ -38,11 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) CGFloat contentInsetRight;
 
-#if TARGET_OS_IOS
 /**
  * The index of the current page.
  */
-@property (nonatomic) NSInteger currentPage;
+@property (nonatomic) NSInteger currentPage __TVOS_PROHIBITED;
 
 /**
  * Sets the current page.
@@ -50,8 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param currentPage The page index.
  * @param animated <code>YES</code> if the transition should be animated; <code>NO</code>, otherwise.
  */
-- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated;
-#endif
+- (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated __TVOS_PROHIBITED;
 
 @end
 

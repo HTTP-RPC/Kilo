@@ -93,26 +93,6 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
 @property (nonatomic) LMAnchor anchor;
 
 /**
- * The view's horizontal content compression resistance priority.
- */
-@property (nonatomic) CGFloat horizontalContentCompressionResistancePriority;
-
-/**
- * The view's horizontal content hugging priority.
- */
-@property (nonatomic) CGFloat horizontalContentHuggingPriority;
-
-/**
- * The view's vertical content compression resistance priority.
- */
-@property (nonatomic) CGFloat verticalContentCompressionResistancePriority;
-
-/**
- * The view's vertical content hugging priority.
- */
-@property (nonatomic) CGFloat verticalContentHuggingPriority;
-
-/**
  * The top layout margin.
  */
 @property (nonatomic) CGFloat layoutMarginTop;
@@ -131,6 +111,36 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
  * The right layout margin.
  */
 @property (nonatomic) CGFloat layoutMarginRight;
+
+/**
+ * The leading layout margin.
+ */
+@property (nonatomic) CGFloat layoutMarginLeading;
+
+/**
+ * The trailing layout margin.
+ */
+@property (nonatomic) CGFloat layoutMarginTrailing;
+
+/**
+ * The view's horizontal content compression resistance priority.
+ */
+@property (nonatomic) CGFloat horizontalContentCompressionResistancePriority;
+
+/**
+ * The view's horizontal content hugging priority.
+ */
+@property (nonatomic) CGFloat horizontalContentHuggingPriority;
+
+/**
+ * The view's vertical content compression resistance priority.
+ */
+@property (nonatomic) CGFloat verticalContentCompressionResistancePriority;
+
+/**
+ * The view's vertical content hugging priority.
+ */
+@property (nonatomic) CGFloat verticalContentHuggingPriority;
 
 /**
  * Processes a markup instruction.

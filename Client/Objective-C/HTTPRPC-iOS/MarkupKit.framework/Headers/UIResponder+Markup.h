@@ -19,19 +19,24 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIResponder (Markup)
 
 /**
- * Returns the bundle that will be used to load view documents. The default implementation returns the bundle used to load this class.
+ * Returns the bundle that will be used to load view documents.
  */
 - (NSBundle *)bundleForView;
 
 /**
- * Returns the bundle that will be used to load images. The default implementation returns the main bundle.
+ * Returns the bundle that will be used to load images.
  */
 - (NSBundle *)bundleForImages;
 
 /**
- * Returns the bundle that will be used to localize string values. The default implementation returns the main bundle.
+ * Returns the bundle that will be used to localize string values.
  */
 - (NSBundle *)bundleForStrings;
+
+/**
+ * Returns the name of the string table that will be used to localize string values.
+ */
+- (nullable NSString *)tableForStrings;
 
 /**
  * Establishes a two-way binding between this object and an associated view instance.

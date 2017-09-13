@@ -16,37 +16,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIVisualEffectView (Markup)
+/**
+ * Table view header/footer view that hosts custom content.
+ */
+@interface LMTableViewHeaderFooterView : UITableViewHeaderFooterView
 
 /**
- * Creates an extra-light blur effect view.
+ * Specifies that the view's content will be arranged relative to its layout margins.
+ * The default value is <code>YES</code>.
  */
-+ (UIVisualEffectView *)extraLightBlurEffectView;
-
-/**
- * Creates a light blur effect view.
- */
-+ (UIVisualEffectView *)lightBlurEffectView;
-
-/**
- * Creates a dark blur effect view.
- */
-+ (UIVisualEffectView *)darkBlurEffectView;
-
-/**
- * Creates an extra-dark blur effect view.
- */
-+ (UIVisualEffectView *)extraDarkBlurEffectView __IOS_PROHIBITED;
-
-/**
- * Creates a regular blur effect view.
- */
-+ (UIVisualEffectView *)regularBlurEffectView;
-
-/**
- * Creates a prominent blur effect view.
- */
-+ (UIVisualEffectView *)prominentBlurEffectView;
+@property (nonatomic) BOOL layoutMarginsRelativeArrangement;
 
 @end
 

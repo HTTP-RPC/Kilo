@@ -66,9 +66,16 @@ typedef NS_ENUM(NSInteger, LMVerticalAlignment) {
 @property (nonatomic) LMVerticalAlignment verticalAlignment;
 
 /**
- * The amount of spacing between successive subviews. The default is 8.
+ * The amount of spacing between successive subviews. The default value is 8
+ * in iOS 10 and earlier and is system-dependent in iOS 11 and later.
  */
 @property (nonatomic) CGFloat spacing;
+
+/**
+ * Specifies that subviews should be baseline-aligned. The default value is
+ * <code>NO</code>.
+ */
+@property (nonatomic) BOOL alignToBaseline;
 
 @end
 

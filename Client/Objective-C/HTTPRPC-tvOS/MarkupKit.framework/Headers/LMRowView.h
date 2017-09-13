@@ -33,12 +33,6 @@ typedef NS_ENUM(NSInteger, LMBaseline) {
 @interface LMRowView : LMBoxView
 
 /**
- * Specifies that subviews should be baseline-aligned. The default value is
- * <code>NO</code>.
- */
-@property (nonatomic) BOOL alignToBaseline;
-
-/**
  * The baseline to which subviews will be aligned when aligning to baseline.
  * By default, subviews will be aligned to the first baseline.
  */

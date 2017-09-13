@@ -23,12 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (UIProgressView *)defaultProgressView;
 
-#if TARGET_OS_IOS
 /**
  * Creates a bar progress view.
  */
-+ (UIProgressView *)barProgressView;
-#endif
++ (UIProgressView *)barProgressView __TVOS_PROHIBITED;
 
 @end
 
