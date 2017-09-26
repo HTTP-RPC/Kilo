@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIResponder (Markup)
 
 /**
- * Returns the bundle that will be used to load view documents.
+ * Returns the bundle that will be used to load the view document.
  */
 - (NSBundle *)bundleForView;
 
