@@ -97,7 +97,9 @@ By default, `NSJSONSerialization` is used to decode JSON response data, and `UII
         // Handle result
     }
 
-Note that, while requests are actually processed on a background thread, result handlers are called on the same operation queue that initially invoked the service method. This is typically the application's main queue, which allows result handlers to update the application's user interface directly, rather than posting a separate update operation to the main queue.
+Note that, while requests are typically processed on a background thread, result handlers are executed on the queue that initially invoked the service method (usually the application's main queue). This allows result handlers to update the user interface directly, rather than posting a separate update operation to the main queue. 
+
+Custom response handlers are executed on the request handler queue, before the result handler is invoked.
 
 ### Authentication
 Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
@@ -297,6 +299,8 @@ While this can be done in the result handler itself, `WebServiceProxy` provides 
     };
 
 Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
+
+Note that custom response handlers are executed on the background thread, before `dispatchResult()` is invoked. 
 
 ### Authentication
 Although it is possible to use the `java.net.Authenticator` class to authenticate service requests, this class can be difficult to work with, especially when dealing with multiple concurrent requests or authenticating to multiple services with different credentials. It also requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
