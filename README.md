@@ -10,19 +10,23 @@ The project currently includes support for consuming web services in Objective-C
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
-    serviceProxy.invoke("GET", path: "/hello") { (result: Any?, error) in
-        if (error == nil) {
-            print(result!) // Prints "Hello, World!"
-        }
+```swift
+serviceProxy.invoke("GET", path: "/hello") { (result: Any?, error) in
+    if (error == nil) {
+        print(result!) // Prints "Hello, World!"
     }
+}
+```
 
 In Java, the code might look like this:
 
-    serviceProxy.invoke("GET", "/hello", (result, exception) -> {
-        if (error == null) {
-            System.out.println(result); // Prints "Hello, World!"
-        }
-    });
+```java
+serviceProxy.invoke("GET", "/hello", (result, exception) -> {
+    if (error == null) {
+        System.out.println(result); // Prints "Hello, World!"
+    }
+});
+```
 
 In both cases, the request will be executed asynchronously and the result printed when the call returns.
 
@@ -89,13 +93,15 @@ The result handler is called upon completion of the operation. If successful, th
 
 By default, `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Text content is returned as a string. Custom deserialization can be implemented via the optional response handler callback; for example, the following code uses Swift's `JSONDecoder` class to return a strongly-typed result value:
 
-    serviceProxy.invoke("GET", path: "/example", arguments: [:], responseHandler: { data, contentType in
-        let decoder = JSONDecoder()
+```swift
+serviceProxy.invoke("GET", path: "/example", arguments: [:], responseHandler: { data, contentType in
+    let decoder = JSONDecoder()
 
-        return try? decoder.decode(Example.self, from: data)
-    }) { (result: Example?, error) in
-        // Handle result
-    }
+    return try? decoder.decode(Example.self, from: data)
+}) { (result: Example?, error) in
+    // Handle result
+}
+```
 
 Note that, while requests are typically processed on a background thread, result handlers are executed on the queue that initially invoked the service method (usually the application's main queue). This allows result handlers to update the user interface directly, rather than posting a separate update operation to the main queue. 
 
@@ -111,18 +117,20 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 ## Example
 The following code sample demonstrates how the `WSWebServiceProxy` class might be used to access the operations of a hypothetical math service:
 
-    // Create service proxy
-    let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
+```swift
+// Create service proxy
+let serviceProxy = WSWebServiceProxy(session: URLSession.shared, serverURL: URL(string: "https://localhost:8443")!)
     
-    // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { (result: Int?, error) in
-        // result is 6
-    }
+// Get sum of "a" and "b"
+serviceProxy.invoke("GET", path: "/math/sum", arguments: ["a": 2, "b": 4]) { (result: Int?, error) in
+    // result is 6
+}
 
-    // Get sum of all values
-    serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { (result: Int?, error) in
-        // result is 6
-    }
+// Get sum of all values
+serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]]) { (result: Int?, error) in
+    // result is 6
+}
+```
 
 # Java Client
 The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
@@ -135,18 +143,22 @@ Additionally, the framework includes two classes, `JSONEncoder` and `JSONDecoder
 
 The Java client library can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
 
-    <dependency>
-        <groupId>org.httprpc</groupId>
-        <artifactId>httprpc</artifactId>
-        <version>...</version>
-    </dependency>
+```xml
+<dependency>
+    <groupId>org.httprpc</groupId>
+    <artifactId>httprpc</artifactId>
+    <version>...</version>
+</dependency>
+```
 
 In Android Studio:
 
-    dependencies {
-        ...
-        compile 'org.httprpc:httprpc:...'
-    }
+```
+dependencies {
+    ...
+    compile 'org.httprpc:httprpc:...'
+}
+```
 
 Java 8 or later is required.
 
@@ -202,27 +214,37 @@ Note that `PATCH` requests may not be supported by all platforms. For example, `
 #### Argument Map Creation
 Since explicit construction and population of the argument map can be cumbersome, `WebServiceProxy` provides the following static convenience methods to help simplify map creation:
 
-    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
-    public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
-    
+```java
+public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) { ... }
+public static <K> Map.Entry<K, ?> entry(K key, Object value) { ... }
+```
+
 Using these methods, argument map declaration can be reduced from this:
 
-    HashMap<String, Object> arguments = new HashMap<>();
-    arguments.put("a", 2);
-    arguments.put("b", 4);
-    
+```java
+HashMap<String, Object> arguments = new HashMap<>();
+arguments.put("a", 2);
+arguments.put("b", 4);
+```
+
 to this:
 
-    mapOf(entry("a", 2), entry("b", 4));
-    
+```java
+mapOf(entry("a", 2), entry("b", 4));
+```
+ 
 A convenience method for declaring lists is also provided:
 
-    public static List<?> listOf(Object... elements) { ... }
+```java
+public static List<?> listOf(Object... elements) { ... }
+```
 
 ### Return Values
 The result handler is called upon completion of the operation. `ResultHandler` is a functional interface whose single method, `execute()`, is defined as follows:
 
-    public void execute(V result, Exception exception);
+```java
+public void execute(V result, Exception exception);
+```
 
 If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `null`, and the second argument will contain an exception representing the error that occurred.
 
@@ -242,61 +264,77 @@ JSON values are mapped to their Java equivalents as follows:
 
 Image data is decoded via the `decodeImageResponse()` method of the `WebServiceProxy` class. The default implementation throws an `UnsupportedOperationException`. However, subclasses can override this method to provide custom image deserialization behavior. For example, an Android client might override this method to produce `Bitmap` objects:
 
-    @Override
-    protected Object decodeImageResponse(InputStream inputStream, String imageType) {
-        return BitmapFactory.decodeStream(inputStream);
-    }
+```java
+@Override
+protected Object decodeImageResponse(InputStream inputStream, String imageType) {
+    return BitmapFactory.decodeStream(inputStream);
+}
+```
 
 Text data is decoded via the `decodeTextResponse()` method. The default implentation simply returns the text content as a string. Subclasses may override this method to produce alternate representations (for example, loading an XML document into a document object model).
 
 Custom deserialization can also be implemented via the response handler callback; for example, the following code uses the [Jackson](https://github.com/FasterXML/jackson) JSON parser to return a strongly-typed result value:
 
-    serviceProxy.invoke("GET", "/example", mapOf(), (inputStream, contentType) -> {
-        ObjectMapper objectMapper = new ObjectMapper();
+```java
+serviceProxy.invoke("GET", "/example", mapOf(), (inputStream, contentType) -> {
+    ObjectMapper objectMapper = new ObjectMapper();
 
-        return objectMapper.readValue(input, Example.class);
-    }, (Example result, Exception exception) -> {
-        // Handle result
-    });
+    return objectMapper.readValue(input, Example.class);
+}, (Example result, Exception exception) -> {
+    // Handle result
+});
+```
 
 #### Accessing Nested Structures
 `WebServiceProxy` provides the following convenience method for accessing nested map values by key path:
 
-    public static <V> V valueAt(Map<String, ?> root, String path) { ... }
+```java
+public static <V> V valueAt(Map<String, ?> root, String path) { ... }
+```
 
 For example, given the following JSON response:
 
-    {
-        "foo": {
-            "bar": 123
-        }
+```json
+{
+    "foo": {
+        "bar": 123
     }
+}
+```
 
 this method could be used to retrieve the value at "foo.bar":
 
-    System.out.println(valueAt(result, "foo.bar")); // Prints 123
+```java
+System.out.println(valueAt(result, "foo.bar")); // Prints 123
+```
 
 Additionally, `WebServiceProxy` provides the following method to assist in handling `null` values. This method identifies the first non-`null` value in a list of values:
 
-    public static <V> V coalesce(V... values) { ... }
+```java
+public static <V> V coalesce(V... values) { ... }
+```
 
 For example:
 
-    System.out.println(coalesce(valueAt(result, "xyz"), "not found")); // Prints "not found"
+```java
+System.out.println(coalesce(valueAt(result, "xyz"), "not found")); // Prints "not found"
+```
 
 ### Multi-Threading Considerations
 By default, a result handler is called on the thread that executed the remote request. In most cases, this will be a background thread. However, user interface toolkits generally require updates to be performed on the main thread. As a result, handlers typically need to "post" a message back to the UI thread in order to update the application's state. For example, a Swing application might call `SwingUtilities#invokeAndWait()`, whereas an Android application might call `Activity#runOnUiThread()` or `Handler#post()`.
 
 While this can be done in the result handler itself, `WebServiceProxy` provides a more convenient alternative. The protected `dispatchResult()` method can be overridden to process result handler notifications. For example, the following Android-specific code ensures that all result handlers will be executed on the main UI thread:
 
-    WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, executorService) {
-        private Handler handler = new Handler(Looper.getMainLooper());
+```java
+WebServiceProxy serviceProxy = new WebServiceProxy(serverURL, executorService) {
+    private Handler handler = new Handler(Looper.getMainLooper());
 
-        @Override
-        protected void dispatchResult(Runnable command) {
-            handler.post(command);
-        }
-    };
+    @Override
+    protected void dispatchResult(Runnable command) {
+        handler.post(command);
+    }
+};
+```
 
 Command line applications can generally use the default dispatcher, which simply performs result handler notifications on the current thread.
 
@@ -312,18 +350,20 @@ HTTP-RPC provides an additional authentication mechanism that can be specified o
 ## Example
 The following code sample demonstrates how the `WebServiceProxy` class might be used to access the operations of a hypothetical math service:
 
-    // Create service proxy
-    WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), Executors.newSingleThreadExecutor());
+```java
+// Create service proxy
+WebServiceProxy serviceProxy = new WebServiceProxy(new URL("https://localhost:8443"), Executors.newSingleThreadExecutor());
 
-    // Get sum of "a" and "b"
-    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
-        // result is 6
-    });
+// Get sum of "a" and "b"
+serviceProxy.invoke("GET", "/math/sum", mapOf(entry("a", 2), entry("b", 4)), (result, exception) -> {
+    // result is 6
+});
 
-    // Get sum of all values
-    serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))), (result, exception) -> {
-        // result is 6
-    });
+// Get sum of all values
+serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))), (result, exception) -> {
+    // result is 6
+});
+```
 
 # Java Server
 The optional Java server library allows developers to implement REST services in Java. It is distributed as a JAR file containing the following types:
@@ -334,11 +374,13 @@ The optional Java server library allows developers to implement REST services in
 
 The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
 
-    <dependency>
-        <groupId>org.httprpc</groupId>
-        <artifactId>httprpc-server</artifactId>
-        <version>...</version>
-    </dependency>
+```xml
+<dependency>
+    <groupId>org.httprpc</groupId>
+    <artifactId>httprpc-server</artifactId>
+    <version>...</version>
+</dependency>
+```
 
 The Java client library and Java 8 or later are required.
 
@@ -351,26 +393,28 @@ The `RequestMethod` annotation is used to associate a service method with an HTT
 
 Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following class might be used to implement the simple addition operations discussed earlier:
 
-    @WebServlet(urlPatterns={"/math/*"})
-    public class MathServlet extends DispatcherServlet {
-        @RequestMethod("GET")
-        @ResourcePath("/sum")
-        public double getSum(double a, double b) {
-            return a + b;
-        }
-    
-        @RequestMethod("GET")
-        @ResourcePath("/sum")
-        public double getSum(List<Double> values) {
-            double total = 0;
-    
-            for (double value : values) {
-                total += value;
-            }
-    
-            return total;
-        }
+```java
+@WebServlet(urlPatterns={"/math/*"})
+public class MathServlet extends DispatcherServlet {
+    @RequestMethod("GET")
+    @ResourcePath("/sum")
+    public double getSum(double a, double b) {
+        return a + b;
     }
+    
+    @RequestMethod("GET")
+    @ResourcePath("/sum")
+    public double getSum(List<Double> values) {
+        double total = 0;
+    
+        for (double value : values) {
+            total += value;
+        }
+    
+        return total;
+    }
+}
+```
 
 The following request would cause the first method to be invoked:
 
@@ -398,19 +442,21 @@ List arguments represent either multi-value parameters submitted using one of th
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
-    @WebServlet(urlPatterns={"/upload/*"})
-    @MultipartConfig
-    public class FileUploadServlet extends DispatcherServlet {
-        @RequestMethod("POST")
-        public void upload(URL file) throws IOException {
-            ...
-        }
-
-        @RequestMethod("POST")
-        public void upload(List<URL> files) throws IOException {
-            ...
-        }
+```java
+@WebServlet(urlPatterns={"/upload/*"})
+@MultipartConfig
+public class FileUploadServlet extends DispatcherServlet {
+    @RequestMethod("POST")
+    public void upload(URL file) throws IOException {
+        ...
     }
+
+    @RequestMethod("POST")
+    public void upload(List<URL> files) throws IOException {
+        ...
+    }
+}
+```
 
 ## Return Values
 Return values are converted to their JSON equivalents as described earlier:
@@ -425,22 +471,26 @@ Methods may also return `void` or `Void` to indicate that they do not produce a 
 
 For example, the following method would produce a JSON object containing three values:
 
-    @RequestMethod("GET")
-    public Map<String, ?> getMap() {
-        return mapOf(
-            entry("text", "Lorem ipsum"),
-            entry("number", 123),
-            entry("flag", true)
-        );
-    }
+```java
+@RequestMethod("GET")
+public Map<String, ?> getMap() {
+    return mapOf(
+        entry("text", "Lorem ipsum"),
+        entry("number", 123),
+        entry("flag", true)
+    );
+}
+```
 
 The service would return the following in response:
 
-    {
-        "text": "Lorem ipsum",
-        "number": 123,
-        "flag": true
-    }
+```json
+{
+    "text": "Lorem ipsum",
+    "number": 123,
+    "flag": true
+}
+```
 
 ## Request and Repsonse Properties
 `DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
@@ -455,21 +505,27 @@ The response object can also be used to produce a custom result. If a service me
 ## Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
 
-    @RequestMethod("GET")
-    @ResourcePath("/contacts/?/addresses/?")
-    public List<Map<String, ?>> getContactAddresses() { ... }
+```java
+@RequestMethod("GET")
+@ResourcePath("/contacts/?/addresses/?")
+public List<Map<String, ?>> getContactAddresses() { ... }
+```
 
 The `getKeys()` method returns the list of variables associated with the current request:
 
-    protected List<String> getKeys() { ... }
-    
+```java
+protected List<String> getKeys() { ... }
+```
+ 
 For example, given the following path:
 
     /contacts/jsmith/addresses/home
 
 `getKeys()` would return the following:
 
-    ["jsmith", "home"]
+```json
+["jsmith", "home"]
+```
 
 # Additional Information
 For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
