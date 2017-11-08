@@ -25,8 +25,8 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/LMBoxView.h>
 #import <MarkupKit/LMColumnView.h>
 #import <MarkupKit/LMRowView.h>
-#import <MarkupKit/LMLayerView.h>
 #import <MarkupKit/LMAnchorView.h>
+#import <MarkupKit/LMRootView.h>
 #import <MarkupKit/LMSpacer.h>
 #import <MarkupKit/LMGradientView.h>
 #import <MarkupKit/LMLinearGradientView.h>
@@ -62,7 +62,6 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/UITabBar+Markup.h>
 #import <MarkupKit/UITabBarItem+Markup.h>
 #import <MarkupKit/UIToolbar+Markup.h>
-#import <MarkupKit/UIStackView+Markup.h>
 #import <MarkupKit/UIScrollView+Markup.h>
 #import <MarkupKit/UITableView+Markup.h>
 #import <MarkupKit/UITableViewCell+Markup.h>

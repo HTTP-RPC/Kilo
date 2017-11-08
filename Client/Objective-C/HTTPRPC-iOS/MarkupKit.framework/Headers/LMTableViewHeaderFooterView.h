@@ -21,12 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface LMTableViewHeaderFooterView : UITableViewHeaderFooterView
 
-/**
- * Specifies that the view's content will be arranged relative to its layout margins.
- * The default value is <code>YES</code>.
- */
-@property (nonatomic) BOOL layoutMarginsRelativeArrangement;
-
 @end
 
 NS_ASSUME_NONNULL_END

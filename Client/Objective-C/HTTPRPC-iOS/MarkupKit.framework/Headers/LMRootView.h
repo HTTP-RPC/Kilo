@@ -17,9 +17,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Layout view that arranges subviews in layers.
+ * Layout view that provides a margin-independent root for a view hierarchy.
  */
-@interface LMLayerView : LMLayoutView
+@interface LMRootView : LMLayoutView
+
+/**
+ * The amount of space to reserve at the top of the view. The default is 0.
+ */
+@property (nonatomic) CGFloat topSpacing;
+
+/**
+ * The amount of space to reserve at the bottom of the view. The default is 0.
+ */
+@property (nonatomic) CGFloat bottomSpacing;
 
 @end
 

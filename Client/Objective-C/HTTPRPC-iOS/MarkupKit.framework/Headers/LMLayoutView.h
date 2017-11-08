@@ -20,62 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Abstract base class for layout views.
  */
 @interface LMLayoutView : UIView
-{
-    NSMutableArray *_arrangedSubviews;
-}
-
-/**
- * The list of subviews whose sizes and positions are managed by the layout view.
- */
-@property (nonatomic, readonly, copy) NSArray<__kindof UIView *> *arrangedSubviews;
-
-/**
- * Adds an arranged subview.
- * 
- * @param view The view to add.
- */
-- (void)addArrangedSubview:(UIView *)view;
-
-/**
- * Inserts an arranged subview.
- *
- * @param view The view to insert.
- * @param index The index at which to insert the view.
- */
-- (void)insertArrangedSubview:(UIView *)view atIndex:(NSUInteger)index;
-
-/**
- * Removes an arranged subview.
- *
- * @param view The view to remove.
- */
-- (void)removeArrangedSubview:(UIView *)view;
-
-/**
- * Specifies that subviews will be arranged relative to the view's layout margins.
- * The default value is <code>YES</code>.
- */
-@property (nonatomic) BOOL layoutMarginsRelativeArrangement;
-
-/**
- * The amount of space to reserve at the top of the view. The default is 0.
- */
-@property (nonatomic) CGFloat topSpacing;
-
-/**
- * The amount of space to reserve at the bottom of the view. The default is 0.
- */
-@property (nonatomic) CGFloat bottomSpacing;
-
-/**
- * The amount of space to reserve at the view's leading edge. The default is 0.
- */
-@property (nonatomic) CGFloat leadingSpacing;
-
-/**
- * The amount of space to reserve at the view's trailing edge. The default is 0.
- */
-@property (nonatomic) CGFloat trailingSpacing;
 
 @end
 

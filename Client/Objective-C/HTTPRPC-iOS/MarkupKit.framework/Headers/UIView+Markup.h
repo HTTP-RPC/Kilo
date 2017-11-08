@@ -123,26 +123,6 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
 @property (nonatomic) CGFloat layoutMarginTrailing;
 
 /**
- * The view's horizontal content compression resistance priority.
- */
-@property (nonatomic) CGFloat horizontalContentCompressionResistancePriority;
-
-/**
- * The view's horizontal content hugging priority.
- */
-@property (nonatomic) CGFloat horizontalContentHuggingPriority;
-
-/**
- * The view's vertical content compression resistance priority.
- */
-@property (nonatomic) CGFloat verticalContentCompressionResistancePriority;
-
-/**
- * The view's vertical content hugging priority.
- */
-@property (nonatomic) CGFloat verticalContentHuggingPriority;
-
-/**
  * Processes a markup instruction.
  *
  * @param target The markup instruction's target.
