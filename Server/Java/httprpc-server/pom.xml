@@ -6,7 +6,7 @@
 
     <groupId>org.httprpc</groupId>
     <artifactId>httprpc-server</artifactId>
-    <version>4.2.1</version>
+    <version>4.2</version>
     <packaging>jar</packaging>
 
     <name>HTTP-RPC Server</name>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.httprpc</groupId>
             <artifactId>httprpc</artifactId>
-            <version>4.2.1</version>
+            <version>4.2</version>
         </dependency>
     </dependencies>
 
