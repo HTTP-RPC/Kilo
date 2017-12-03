@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The cell's checked state.
  */
-@property (nonatomic) BOOL checked;
+@property (nonatomic) BOOL checked NS_SWIFT_NAME(isChecked);
 
 @end
 

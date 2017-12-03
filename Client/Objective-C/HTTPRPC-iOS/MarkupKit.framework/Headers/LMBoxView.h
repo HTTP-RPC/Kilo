@@ -75,7 +75,7 @@ typedef NS_ENUM(NSInteger, LMVerticalAlignment) {
  * Specifies that subviews should be baseline-aligned. The default value is
  * <code>NO</code>.
  */
-@property (nonatomic) BOOL alignToBaseline;
+@property (nonatomic) BOOL alignToBaseline NS_SWIFT_NAME(isAlignToBaseline);
 
 @end
 

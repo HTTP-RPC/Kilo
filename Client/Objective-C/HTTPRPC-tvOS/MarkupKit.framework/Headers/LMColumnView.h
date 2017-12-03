@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Specifies that nested subviews should be vertically aligned. The default value
  * is <code>NO</code>.
  */
-@property (nonatomic) BOOL alignToGrid;
+@property (nonatomic) BOOL alignToGrid NS_SWIFT_NAME(isAlignToGrid);
 
 @end
 

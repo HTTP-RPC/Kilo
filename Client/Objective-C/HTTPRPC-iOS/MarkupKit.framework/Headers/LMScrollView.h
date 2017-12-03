@@ -30,13 +30,13 @@ NS_ASSUME_NONNULL_BEGIN
  * Indicates that the width of the scroll view's content should match the scroll view's width.
  * The default value is <code>NO</code>.
  */
-@property (nonatomic) BOOL fitToWidth;
+@property (nonatomic) BOOL fitToWidth NS_SWIFT_NAME(isFitToWidth);
 
 /**
  * Indicates that the height of the scroll view's content should match the scroll view's height.
  * The default value is <code>NO</code>.
  */
-@property (nonatomic) BOOL fitToHeight;
+@property (nonatomic) BOOL fitToHeight NS_SWIFT_NAME(isFitToHeight);
 
 @end
 
