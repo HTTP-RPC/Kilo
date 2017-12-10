@@ -85,13 +85,13 @@ When using the JSON encoding, a single JSON object containing the entire argumen
 ### Return Values
 The result handler is called upon completion of the operation. If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `nil`, and the second argument will be populated with an `NSError` instance describing the problem that occurred.
 
-`WSWebServiceProxy` accepts the following response types:
+`WSWebServiceProxy` supports the following response types:
 
 * _application/json_
 * _image/*_
 * _text/*_
 
-By default, `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Text content is returned as a string. Custom deserialization can be implemented via the optional response handler callback; for example, the following code uses Swift's `JSONDecoder` class to return a strongly-typed result value:
+By default, `NSJSONSerialization` is used to decode JSON response data, and `UIImage` is used to decode image content. Text content is returned as a string. Custom deserialization can be implemented via the optional response handler callback. For example, the following code uses Swift's `JSONDecoder` class to return a strongly-typed result value:
 
 ```swift
 serviceProxy.invoke("GET", path: "/example", arguments: [:], responseHandler: { data, contentType in
@@ -103,9 +103,9 @@ serviceProxy.invoke("GET", path: "/example", arguments: [:], responseHandler: { 
 }
 ```
 
-Note that, while requests are typically processed on a background thread, result handlers are executed on the queue that initially invoked the service method (usually the application's main queue). This allows result handlers to update the user interface directly, rather than posting a separate update operation to the main queue. 
+Note that, while requests are typically processed on a background thread, result handlers are executed on the queue that initially invoked the service method (usually the application's main queue). This allows result handlers to update the user interface directly, rather than posting a separate update operation to the main queue. Custom response handlers are executed on the request handler queue, before the result handler is invoked.
 
-Custom response handlers are executed on the request handler queue, before the result handler is invoked.
+If the server returns an error response with a content type of "text/plain", the response body will be returned in the localized description of the error parameter. Otherwise, a default error message will be returned.
 
 ### Authentication
 Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
@@ -248,7 +248,7 @@ public void execute(V result, Exception exception);
 
 If successful, the first argument will contain a deserialized representation of the content returned by the server. Otherwise, the first argument will be `null`, and the second argument will contain an exception representing the error that occurred.
 
-`WebServiceProxy` accepts the following response types:
+`WebServiceProxy` supports the following response types:
 
 * _application/json_
 * _image/*_
@@ -273,7 +273,7 @@ protected Object decodeImageResponse(InputStream inputStream, String imageType) 
 
 Text data is decoded via the `decodeTextResponse()` method. The default implentation simply returns the text content as a string. Subclasses may override this method to produce alternate representations (for example, loading an XML document into a document object model).
 
-Custom deserialization can also be implemented via the response handler callback; for example, the following code uses the [Jackson](https://github.com/FasterXML/jackson) JSON parser to return a strongly-typed result value:
+Custom deserialization can also be implemented via the response handler callback. For example, the following code uses the [Jackson](https://github.com/FasterXML/jackson) JSON parser to return a strongly-typed result value:
 
 ```java
 serviceProxy.invoke("GET", "/example", mapOf(), (inputStream, contentType) -> {
@@ -284,6 +284,8 @@ serviceProxy.invoke("GET", "/example", mapOf(), (inputStream, contentType) -> {
     // Handle result
 });
 ```
+
+If the server returns an error response with a content type of "text/plain", the response body will be returned in the `message` property of the exception parameter. Otherwise, a default error message will be returned.
 
 #### Accessing Nested Structures
 `WebServiceProxy` provides the following convenience method for accessing nested map values by key path:
