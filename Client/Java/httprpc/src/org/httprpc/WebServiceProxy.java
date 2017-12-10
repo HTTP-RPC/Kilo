@@ -434,6 +434,9 @@ public class WebServiceProxy {
                         result = null;
                     }
                 } else {
+                    // TODO If the content type is "text/plain", use response as exception message
+                    // TODO Add method, path, and arguments properties to WebServiceException
+
                     throw new WebServiceException(connection.getResponseMessage(), responseCode);
                 }
             } catch (IOException exception) {

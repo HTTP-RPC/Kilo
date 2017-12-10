@@ -192,6 +192,8 @@ NSString * const kCRLF = @"\r\n";
                             result = responseHandler(data, contentType, &error);
                         }
                     } else {
+                        // TODO If the content type is "text/plain", use response as error message
+                        
                         error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
                             WSMethodKey:method, WSPathKey:path, WSArgumentsKey:arguments
                         }];
