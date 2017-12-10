@@ -192,7 +192,7 @@ NSString * const kCRLF = @"\r\n";
                         
                         if ([[response MIMEType] hasPrefix:@"text/plain"]) {
                             userInfo = @{
-                                NSLocalizedFailureReasonErrorKey: [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
+                                NSLocalizedDescriptionKey: [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
                             };
                         }
                         

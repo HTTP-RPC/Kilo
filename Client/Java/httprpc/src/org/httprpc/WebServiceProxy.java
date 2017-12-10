@@ -434,7 +434,7 @@ public class WebServiceProxy {
                         result = null;
                     }
                 } else {
-                    String message = null;
+                    String responseMessage = null;
 
                     String contentType = connection.getContentType();
 
@@ -458,12 +458,16 @@ public class WebServiceProxy {
                                     }
                                 }
 
-                                message = textBuilder.toString();
+                                responseMessage = textBuilder.toString();
                             }
                         }
                     }
 
-                    throw new WebServiceException(message, responseCode);
+                    if (responseMessage == null) {
+                        responseMessage = connection.getResponseMessage();
+                    }
+
+                    throw new WebServiceException(responseMessage, responseCode);
                 }
             } catch (IOException exception) {
                 if (resultHandler != null) {
