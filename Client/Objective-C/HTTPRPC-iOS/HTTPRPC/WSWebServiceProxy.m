@@ -190,7 +190,7 @@ NSString * const kCRLF = @"\r\n";
                     } else {
                         NSDictionary *userInfo = nil;
                         
-                        if ([[response MIMEType] hasPrefix:@"text/"]) {
+                        if ([[response MIMEType] hasPrefix:@"text/plain"]) {
                             userInfo = @{
                                 NSLocalizedFailureReasonErrorKey: [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
                             };

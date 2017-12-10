@@ -441,9 +441,7 @@ public class WebServiceProxy {
                     if (contentType != null) {
                         MIMEType mimeType = MIMEType.valueOf(contentType);
 
-                        String type = mimeType.getType();
-
-                        if (type.equals("text")) {
+                        if (mimeType.getType().equals("text") && mimeType.getSubtype().equals("plain")) {
                             String charsetName = mimeType.getParameter("charset");
 
                             if (charsetName == null) {
