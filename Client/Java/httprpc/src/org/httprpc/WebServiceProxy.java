@@ -434,10 +434,38 @@ public class WebServiceProxy {
                         result = null;
                     }
                 } else {
-                    // TODO If the content type is "text/plain", use response as exception message
-                    // TODO Add method, path, and arguments properties to WebServiceException
+                    String message = null;
 
-                    throw new WebServiceException(connection.getResponseMessage(), responseCode);
+                    String contentType = connection.getContentType();
+
+                    if (contentType != null) {
+                        MIMEType mimeType = MIMEType.valueOf(contentType);
+
+                        String type = mimeType.getType();
+
+                        if (type.equals("text")) {
+                            String charsetName = mimeType.getParameter("charset");
+
+                            if (charsetName == null) {
+                                charsetName = UTF_8;
+                            }
+
+                            try (InputStream inputStream = new MonitoredInputStream(connection.getErrorStream())) {
+                                StringBuilder textBuilder = new StringBuilder(1024);
+
+                                try (InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName(charsetName))) {
+                                    int c;
+                                    while ((c = reader.read()) != EOF) {
+                                        textBuilder.append((char)c);
+                                    }
+                                }
+
+                                message = textBuilder.toString();
+                            }
+                        }
+                    }
+
+                    throw new WebServiceException(message, responseCode);
                 }
             } catch (IOException exception) {
                 if (resultHandler != null) {

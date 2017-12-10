@@ -280,6 +280,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Error
         serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
+            System.out.println(exception.getMessage());
+
             errorCheckBox.setChecked(exception instanceof WebServiceException
                 && ((WebServiceException)exception).getCode() == 404);
         });

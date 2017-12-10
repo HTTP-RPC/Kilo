@@ -37,21 +37,6 @@ extern NSString * const WSApplicationJSON;
 extern NSString * const WSWebServiceErrorDomain;
 
 /**
- * HTTP-RPC method key.
- */
-extern NSString * const WSMethodKey;
-
-/**
- * HTTP-RPC path key.
- */
-extern NSString * const WSPathKey;
-
-/**
- * HTTP-RPC arguments key.
- */
-extern NSString * const WSArgumentsKey;
-
-/**
  * Web service invocation proxy.
  */
 @interface WSWebServiceProxy : NSObject

@@ -23,10 +23,6 @@ NSString * const WSApplicationJSON = @"application/json";
 
 NSString * const WSWebServiceErrorDomain = @"WSWebServiceErrorDomain";
 
-NSString * const WSMethodKey = @"method";
-NSString * const WSPathKey = @"path";
-NSString * const WSArgumentsKey = @"arguments";
-
 NSString * const kCRLF = @"\r\n";
 
 @interface NSString (HTTPRPC)
@@ -192,11 +188,15 @@ NSString * const kCRLF = @"\r\n";
                             result = responseHandler(data, contentType, &error);
                         }
                     } else {
-                        // TODO If the content type is "text/plain", use response as error message
+                        NSDictionary *userInfo = nil;
                         
-                        error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:@{
-                            WSMethodKey:method, WSPathKey:path, WSArgumentsKey:arguments
-                        }];
+                        if ([[response MIMEType] hasPrefix:@"text/"]) {
+                            userInfo = @{
+                                NSLocalizedFailureReasonErrorKey: [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
+                            };
+                        }
+                        
+                        error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:userInfo];
                     }
                 }
 
