@@ -189,9 +189,9 @@ public class WebServiceProxyTest {
         });
 
         // Error
-        serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/error", (result, exception) -> {
             validate("Error", exception instanceof WebServiceException
-                && ((WebServiceException)exception).getCode() == 404);
+                && ((WebServiceException)exception).getCode() == 500);
         });
 
         // Timeout

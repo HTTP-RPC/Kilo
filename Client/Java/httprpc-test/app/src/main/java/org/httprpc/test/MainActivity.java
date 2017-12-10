@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox patchJSONCheckBox;
     private CheckBox deleteCheckBox;
     private CheckBox errorCheckBox;
+    private TextView errorTextView;
     private CheckBox timeoutCheckBox;
     private CheckBox cancelCheckBox;
     private CheckBox imageCheckBox;
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         patchJSONCheckBox = findViewById(R.id.patch_json_checkbox);
         deleteCheckBox = findViewById(R.id.delete_checkbox);
         errorCheckBox = findViewById(R.id.error_checkbox);
+        errorTextView = findViewById(R.id.error_text_view);
         timeoutCheckBox = findViewById(R.id.timeout_checkbox);
         cancelCheckBox = findViewById(R.id.cancel_checkbox);
         imageCheckBox = findViewById(R.id.image_checkbox);
@@ -279,9 +281,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Error
-        serviceProxy.invoke("GET", "/httprpc-server/xyz", (result, exception) -> {
+        serviceProxy.invoke("GET", "/httprpc-server/test/error", (result, exception) -> {
+            errorTextView.setText(exception == null ? null : exception.getMessage());
+
             errorCheckBox.setChecked(exception instanceof WebServiceException
-                && ((WebServiceException)exception).getCode() == 404);
+                && ((WebServiceException)exception).getCode() == 500);
         });
 
         // Timeout

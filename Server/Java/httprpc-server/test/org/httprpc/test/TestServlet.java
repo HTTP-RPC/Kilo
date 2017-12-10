@@ -16,6 +16,7 @@ package org.httprpc.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
@@ -61,6 +63,20 @@ public class TestServlet extends DispatcherServlet {
     @ResourcePath("/a/?/b/?/c/?/d/?")
     public List<String> testGet() {
         return getKeys();
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("/error")
+    public void testError() throws IOException {
+        HttpServletResponse response = getResponse();
+
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.setContentType("text/plain");
+
+        PrintWriter writer = response.getWriter();
+
+        writer.append("Sample error message");
+        writer.flush();
     }
 
     @RequestMethod("POST")
