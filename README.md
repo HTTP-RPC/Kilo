@@ -504,6 +504,9 @@ For example, a service might access the request to get the name of the current u
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or alternative text formats.
 
+## Exceptions
+If an exception is thrown during execution of a method and the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to optionally provide the caller with insight into the cause of the failure, such as an invalid argument.
+
 ## Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
 
