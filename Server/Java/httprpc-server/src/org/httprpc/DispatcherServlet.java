@@ -16,6 +16,7 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -186,7 +187,25 @@ public abstract class DispatcherServlet extends HttpServlet {
             try {
                 result = method.invoke(this, getArguments(method, parameterMap));
             } catch (InvocationTargetException | IllegalAccessException exception) {
-                throw new ServletException(exception);
+                if (response.isCommitted()) {
+                    throw new ServletException(exception);
+                } else {
+                    Throwable cause = exception.getCause();
+
+                    if (cause != null) {
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        response.setContentType(String.format("%s;charset=%s", "text/plain", UTF_8));
+
+                        PrintWriter writer = response.getWriter();
+
+                        writer.append(cause.getMessage());
+                        writer.flush();
+
+                        return;
+                    } else {
+                        throw new ServletException(exception);
+                    }
+                }
             }
 
             if (response.isCommitted()) {
