@@ -220,23 +220,21 @@ NSString * const kCRLF = @"\r\n";
 {
     NSMutableString *query = [NSMutableString new];
 
-    NSUInteger i = 0;
-
     for (NSString *name in arguments) {
         NSArray *values = [self parameterValuesForArgument:[arguments objectForKey:name]];
 
-        for (NSUInteger j = 0, n = [values count]; j < n; j++) {
-            if (i > 0) {
+        for (id value in values) {
+            if (value == [NSNull null]) {
+                continue;
+            }
+
+            if ([query length] > 0) {
                 [query appendString:@"&"];
             }
 
-            NSString *value = [self parameterValueForElement:[values objectAtIndex:j]];
-
             [query appendString:[name URLEncodedString]];
             [query appendString:@"="];
-            [query appendString:[value URLEncodedString]];
-
-            i++;
+            [query appendString:[[self parameterValueForElement:value] URLEncodedString]];
         }
     }
 
@@ -250,7 +248,11 @@ NSString * const kCRLF = @"\r\n";
     for (NSString *name in arguments) {
         NSArray *values = [self parameterValuesForArgument:[arguments objectForKey:name]];
 
-        for (__strong id value in values) {
+        for (id value in values) {
+            if (value == [NSNull null]) {
+                continue;
+            }
+
             [body appendUTF8DataForString:[NSString stringWithFormat:@"--%@%@", boundary, kCRLF]];
             [body appendUTF8DataForString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"", name]];
 
@@ -295,23 +297,21 @@ NSString * const kCRLF = @"\r\n";
 {
     NSMutableData *body = [NSMutableData new];
 
-    NSUInteger i = 0;
-
     for (NSString *name in arguments) {
         NSArray *values = [self parameterValuesForArgument:[arguments objectForKey:name]];
 
-        for (NSUInteger j = 0, n = [values count]; j < n; j++) {
-            if (i > 0) {
+        for (id value in values) {
+            if (value == [NSNull null]) {
+                continue;
+            }
+
+            if ([body length] > 0) {
                 [body appendUTF8DataForString:@"&"];
             }
 
-            NSString *value = [self parameterValueForElement:[values objectAtIndex:j]];
-
             [body appendUTF8DataForString:[name URLEncodedString]];
             [body appendUTF8DataForString:@"="];
-            [body appendUTF8DataForString:[value URLEncodedString]];
-
-            i++;
+            [body appendUTF8DataForString:[[self parameterValueForElement:value] URLEncodedString]];
         }
     }
 
