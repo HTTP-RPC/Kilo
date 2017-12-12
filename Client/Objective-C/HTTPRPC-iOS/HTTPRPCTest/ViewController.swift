@@ -72,10 +72,10 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "flag": true,
             ]) { (result: NSDictionary?, error) in
             if let dictionary = result {
-                self.validate(dictionary.value(forKeyPath: "string") as! String == "héllo"
-                    && dictionary.value(forKeyPath: "strings") as! [String] == ["a", "b", "c"]
-                    && dictionary.value(forKeyPath: "number") as! Int == 123
-                    && dictionary.value(forKeyPath: "flag") as! Bool == true,
+                self.validate(dictionary.value(forKeyPath: "string") as? String == "héllo"
+                    && dictionary.value(forKeyPath: "strings") as? [String] ?? [] == ["a", "b", "c"]
+                    && dictionary.value(forKeyPath: "number") as? Int == 123
+                    && dictionary.value(forKeyPath: "flag") as? Bool == true,
                     error: error, cell: self.getCell)
             }
         }
