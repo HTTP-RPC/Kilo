@@ -37,6 +37,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)componentWithName:(NSString *)name;
 
 /**
+ * Returns the value for the given row and component.
+ *
+ * @param row The row index.
+ * @param component The component index.
+ */
+- (nullable id)valueForRow:(NSInteger)row forComponent:(NSInteger)component;
+
+/**
+ * Sets the value for the given row and component.
+ *
+ * @param value The row value.
+ * @param row The row index.
+ * @param component The component index.
+ */
+- (void)setValue:(nullable id)value forRow:(NSInteger)row forComponent:(NSInteger)component;
+
+/**
  * Returns the value associated with the selected row in the given component.
  *
  * @param component The component index.

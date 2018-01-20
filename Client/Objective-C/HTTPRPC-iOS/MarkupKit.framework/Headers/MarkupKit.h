@@ -31,6 +31,7 @@ FOUNDATION_EXPORT const unsigned char MarkupKitVersionString[];
 #import <MarkupKit/LMGradientView.h>
 #import <MarkupKit/LMLinearGradientView.h>
 #import <MarkupKit/LMRadialGradientView.h>
+#import <MarkupKit/LMSegmentedControl.h>
 #import <MarkupKit/LMPickerView.h>
 #import <MarkupKit/LMScrollView.h>
 #import <MarkupKit/LMPageView.h>

@@ -37,7 +37,7 @@ __TVOS_PROHIBITED
  * @param page The page to insert.
  * @param index The index at which to insert the page.
  */
-- (void)insertPage:(UIView *)page atIndex:(NSUInteger)index;
+- (void)insertPage:(UIView *)page atIndex:(NSUInteger)index NS_REFINED_FOR_SWIFT;
 
 /**
  * Removes a page.

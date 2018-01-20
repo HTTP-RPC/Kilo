@@ -4,3 +4,8 @@ framework module MarkupKit {
   export *
   module * { export * }
 }
+
+module MarkupKit.Swift {
+    header "MarkupKit-Swift.h"
+    requires objc
+}
