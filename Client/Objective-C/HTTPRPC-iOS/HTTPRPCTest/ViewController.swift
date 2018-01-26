@@ -70,7 +70,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true,
-            ]) { (result: NSDictionary?, error) in
+            ]) { (result: NSDictionary?, error: NSError?) in
             if let dictionary = result {
                 self.validate(dictionary.value(forKeyPath: "string") as? String == "héllo"
                     && dictionary.value(forKeyPath: "strings") as? [String] ?? [] == ["a", "b", "c"]
@@ -91,7 +91,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "number": 123,
             "flag": true,
             "attachments": [textTestURL, imageTestURL]
-            ]) { (result: NSDictionary?, error) in
+            ]) { (result: NSDictionary?, error: NSError?) in
             self.validate(result == [
                 "string": "héllo",
                 "strings": ["a", "b", "c"],
@@ -116,7 +116,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true
-            ]) { (result: NSDictionary?, error) in
+            ]) { (result: NSDictionary?, error: NSError?) in
             self.validate(result == [
                 "string": "héllo",
                 "strings": ["a", "b", "c"],
@@ -133,7 +133,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "strings": ["a", "b", "c"],
             "number": 123,
             "flag": true
-            ]) { (result: NSDictionary?, error) in
+            ]) { (result: NSDictionary?, error: NSError?) in
             self.validate(result == [
                 "string": "héllo",
                 "strings": ["a", "b", "c"],
@@ -148,7 +148,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         serviceProxy.encoding = WSMultipartFormData
         serviceProxy.invoke("PUT", path: "/httprpc-server/test", arguments: [
             "text": "héllo"
-            ]) { (result: NSArray?, error) in
+            ]) { (result: NSArray?, error: NSError?) in
             self.validate(result == [
                 "héllo",
                 NSDictionary(),
@@ -161,7 +161,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
             "text": "héllo",
             "map": ["a": ["b": ["c": 123]]],
             "list": [["abc": 123]]
-            ]) { (result: NSArray?, error) in
+            ]) { (result: NSArray?, error: NSError?) in
             self.validate(result == [
                 "héllo",
                 ["a": ["b": ["c": 123]]],
@@ -171,36 +171,34 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
 
         // PATCH
         serviceProxy.encoding = WSMultipartFormData
-        serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { (result: String?, error) in
+        serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { (result: String?, error: NSError?) in
             self.validate(result == "héllo", error: error, cell: self.patchCell)
         }
 
         serviceProxy.encoding = WSApplicationJSON
-        serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { (result: String?, error) in
+        serviceProxy.invoke("PATCH", path: "/httprpc-server/test", arguments: ["text": "héllo"]) { (result: String?, error: NSError?) in
             self.validate(result == "héllo", error: error, cell: self.patchJSONCell)
         }
 
         // DELETE
-        serviceProxy.invoke("DELETE", path: "/httprpc-server/test", arguments: ["id": 101]) { (result: Bool?, error) in
+        serviceProxy.invoke("DELETE", path: "/httprpc-server/test", arguments: ["id": 101]) { (result: Bool?, error: NSError?) in
             self.validate(result == true, error: error, cell: self.deleteCell)
         }
 
         // Error
-        serviceProxy.invoke("GET", path: "/httprpc-server/test/error") { (_: Any?, error) in
-            let error = error as NSError?
-            
+        serviceProxy.invoke("GET", path: "/httprpc-server/test/error") { (_: Any?, error: NSError?) in
             self.errorCell.detailTextLabel?.text = error?.localizedDescription
 
             self.validate(error != nil && error!.domain == WSWebServiceErrorDomain && error!.code == 500, error: error, cell: self.errorCell)
         }
 
         // Timeout
-        serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["value": 123, "delay": 6000]) { (_: Any?, error) in
+        serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["value": 123, "delay": 6000]) { (_: Any?, error: NSError?) in
             self.validate(error != nil, error: error, cell: self.timeoutCell)
         }
 
         // Cancel
-        let task = serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["value": 123, "delay": 6000]) { (_: Any?, error) in
+        let task = serviceProxy.invoke("GET", path: "/httprpc-server/test", arguments: ["value": 123, "delay": 6000]) { (_: Any?, error: NSError?) in
             self.validate(error != nil, error: error, cell: self.cancelCell)
         }
 
@@ -209,14 +207,14 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         }), selector: #selector(Operation.main), userInfo: nil, repeats: false)
 
         // Image
-        serviceProxy.invoke("GET", path: "/httprpc-server/test.jpg") { (result: UIImage?, error) in
+        serviceProxy.invoke("GET", path: "/httprpc-server/test.jpg") { (result: UIImage?, error: NSError?) in
             self.validate(result != nil, error: error, cell: self.imageCell)
 
             self.imageCell.imageView?.image = result
         }
 
         // Image
-        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt") { (result: String?, error) in
+        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt") { (result: String?, error: NSError?) in
             self.validate(result != nil, error: error, cell: self.textCell)
 
             self.textCell.textLabel?.text = result
@@ -225,7 +223,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         // Custom response
         serviceProxy.invoke("GET", path: "/httprpc-server/test.txt", arguments: [:], responseHandler: { data, contentType in
             return String(data: data, encoding: .utf8)?.lowercased()
-        }) { (result: String?, error) in
+        }) { (result: String?, error: NSError?) in
             self.validate(result != nil, error: error, cell: self.customResponseCell)
 
             self.customResponseCell.textLabel?.text = result

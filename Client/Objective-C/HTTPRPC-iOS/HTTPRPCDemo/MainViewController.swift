@@ -35,7 +35,7 @@ class MainViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        AppDelegate.serviceProxy.invoke("GET", path: "/httprpc-server/notes") { (result: [[String: Any]]?, error) in
+        AppDelegate.serviceProxy.invoke("GET", path: "/httprpc-server/notes") { (result: [[String: Any]]?, error: NSError?) in
             if (error == nil) {
                 self.noteList = result!
 
@@ -76,7 +76,7 @@ class MainViewController: UITableViewController {
         if (editingStyle == .delete) {
             let id = noteList[indexPath.row]["id"] as! Int
 
-            AppDelegate.serviceProxy.invoke("DELETE", path: "/httprpc-server/notes", arguments: ["id": id]) { (_: Any?, error) in
+            AppDelegate.serviceProxy.invoke("DELETE", path: "/httprpc-server/notes", arguments: ["id": id]) { (_: Any?, error: NSError?) in
                 if (error == nil) {
                     self.noteList.remove(at: indexPath.row)
 
