@@ -48,16 +48,13 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         tableView.delegate = self
 
         // Configure session
-        let configuration = URLSessionConfiguration.default
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
-        configuration.timeoutIntervalForRequest = 3
-        configuration.timeoutIntervalForResource = 3
+        let sessionConfiguration = URLSessionConfiguration.default
 
-        let delegateQueue = OperationQueue()
-        delegateQueue.maxConcurrentOperationCount = 10
+        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        sessionConfiguration.timeoutIntervalForResource = 3
 
         // Create service proxy
-        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
+        let session = URLSession(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
         let serviceProxy = WSWebServiceProxy(session: session, serverURL: URL(string: "https://localhost:8443")!)
 
