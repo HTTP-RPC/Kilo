@@ -218,7 +218,7 @@ class ViewController: UITableViewController, URLSessionDataDelegate {
         }
 
         // Custom response
-        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt", arguments: [:], responseHandler: { data, contentType in
+        serviceProxy.invoke("GET", path: "/httprpc-server/test.txt", responseHandler: { data, contentType in
             return String(data: data, encoding: .utf8)?.lowercased()
         }) { (result: String?, error: NSError?) in
             self.validate(result != nil, error: error, cell: self.customResponseCell)

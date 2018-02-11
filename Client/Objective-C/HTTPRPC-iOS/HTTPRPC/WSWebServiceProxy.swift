@@ -19,21 +19,23 @@ import Foundation
  */
 extension WSWebServiceProxy {
     @discardableResult
-    open func invoke<T, E: Error>(_ method: String, path: String, resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
+    open func invoke<T, E: Error>(_ method: String, path: String,
+        resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path) { result, error in
             resultHandler(result as! T?, error as! E?)
         }
     }
 
     @discardableResult
-    open func invoke<T, E: Error>(_ method: String, path: String, arguments: [String: Any], resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
+    open func invoke<T, E: Error>(_ method: String, path: String, arguments: [String: Any],
+        resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments) { result, error in
             resultHandler(result as! T?, error as! E?)
         }
     }
 
     @discardableResult
-    open func invoke<T, E: Error>(_ method: String, path: String, arguments: [String: Any],
+    open func invoke<T, E: Error>(_ method: String, path: String, arguments: [String: Any] = [:],
         responseHandler: @escaping (Data, String) throws -> T?,
         resultHandler: @escaping (T?, E?) -> Void) -> URLSessionTask? {
         return __invoke(method, path: path, arguments: arguments, responseHandler: { data, contentType, errorPointer in

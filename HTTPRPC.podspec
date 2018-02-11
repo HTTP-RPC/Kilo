@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name            = 'HTTPRPC'
-  s.version         = '4.2.3'
+  s.version         = '4.2.4'
   s.license         = 'Apache License, Version 2.0'
   s.homepage        = 'https://github.com/gk-brown/HTTP-RPC'
   s.author          = 'Greg Brown'

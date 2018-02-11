@@ -89,6 +89,10 @@ public class WebServiceProxyTest {
         serviceProxy.setConnectTimeout(3000);
         serviceProxy.setReadTimeout(3000);
 
+        serviceProxy.setHeaders(mapOf(
+            entry("foo", "bar")
+        ));
+
         // Set credentials
         serviceProxy.setAuthorization(new PasswordAuthentication("tomcat", "tomcat".toCharArray()));
 

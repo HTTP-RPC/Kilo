@@ -52,6 +52,8 @@ public class WebServiceProxy {
 
     private String encoding = MULTIPART_FORM_DATA;
 
+    private Map<String, ?> headers = null;
+
     private PasswordAuthentication authorization = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
@@ -199,6 +201,27 @@ public class WebServiceProxy {
         }
 
         this.encoding = encoding.toLowerCase();
+    }
+
+    /**
+     * Returns the custom headers that will be sent with each service request.
+     *
+     * @return
+     * The custom headers that will be sent with each service request.
+     */
+    public Map<String, ?> getHeaders() {
+        return headers;
+    }
+
+    /**
+     * Sets the custom headers that will be sent with each service request.
+     *
+     * @param headers
+     * The custom headers that will be sent with each service request, or
+     * <tt>null</tt> for no custom headers.
+     */
+    public void setHeaders(Map<String, ?> headers) {
+        this.headers = headers;
     }
 
     /**
@@ -372,6 +395,20 @@ public class WebServiceProxy {
 
                 connection.setConnectTimeout(connectTimeout);
                 connection.setReadTimeout(readTimeout);
+
+                // Apply custom headers
+                if (headers != null) {
+                    for (Map.Entry<String, ?> entry : headers.entrySet()) {
+                        String key = entry.getKey();
+                        Object value = entry.getValue();
+
+                        if (value == null) {
+                            continue;
+                        }
+
+                        connection.setRequestProperty(key, value.toString());
+                    }
+                }
 
                 // Set language
                 Locale locale = Locale.getDefault();
