@@ -194,7 +194,7 @@ NSString * const kCRLF = @"\r\n";
                                 NSLocalizedDescriptionKey: [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
                             };
                         } else if ([[response MIMEType] hasPrefix:WSApplicationJSON]) {
-                            userInfo = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                            userInfo = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                         } else {
                             userInfo = nil;
                         }

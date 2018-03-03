@@ -471,14 +471,16 @@ public class WebServiceProxy {
                         result = null;
                     }
                 } else {
-                    String responseMessage = null;
-
                     String contentType = connection.getContentType();
 
+                    WebServiceException exception;
                     if (contentType != null) {
                         MIMEType mimeType = MIMEType.valueOf(contentType);
 
-                        if (mimeType.getType().equals("text") && mimeType.getSubtype().equals("plain")) {
+                        String type = mimeType.getType();
+                        String subtype = mimeType.getSubtype();
+
+                        if (type.equals("text") && subtype.equals("plain")) {
                             String charsetName = mimeType.getParameter("charset");
 
                             if (charsetName == null) {
@@ -495,16 +497,22 @@ public class WebServiceProxy {
                                     }
                                 }
 
-                                responseMessage = textBuilder.toString();
+                                exception = new WebServiceException(textBuilder.toString(), responseCode, null);
                             }
+                        } else if (type.equals("application") && subtype.equals("json")) {
+                            JSONDecoder decoder = new JSONDecoder();
+
+                            try (InputStream inputStream = new MonitoredInputStream(connection.getErrorStream())) {
+                                exception = new WebServiceException(connection.getResponseMessage(), responseCode, decoder.readValue(inputStream));
+                            }
+                        } else {
+                            exception = new WebServiceException(connection.getResponseMessage(), responseCode, null);
                         }
+                    } else {
+                        exception = new WebServiceException(connection.getResponseMessage(), responseCode, null);
                     }
 
-                    if (responseMessage == null) {
-                        responseMessage = connection.getResponseMessage();
-                    }
-
-                    throw new WebServiceException(responseMessage, responseCode);
+                    throw exception;
                 }
             } catch (IOException exception) {
                 if (resultHandler != null) {

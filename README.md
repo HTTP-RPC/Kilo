@@ -105,7 +105,7 @@ serviceProxy.invoke("GET", path: "/example", arguments: [:], responseHandler: { 
 
 Note that, while requests are typically processed on a background thread, result handlers are executed on the queue that initially invoked the service method (usually the application's main queue). This allows result handlers to update the user interface directly, rather than posting a separate update operation to the main queue. Custom response handlers are executed on the request handler queue, before the result handler is invoked.
 
-If the server returns an error response with a content type of "text/plain", the response body will be returned in the localized description of the error parameter. Otherwise, a default error message will be returned.
+If the server returns an error response with a content type of "text/plain", the response body will be returned in the localized description of the error parameter. If the response type is "application/json", the response body will be returned as the `userInfo` property of the error object. Otherwise, a default error message will be returned.
 
 ### Authentication
 Although it is possible to use the `URLSession:didReceiveChallenge:completionHandler:` method of the `NSURLSessionDelegate` protocol to authenticate service requests, this method requires an unnecessary round trip to the server if a user's credentials are already known up front, as is often the case.
@@ -136,7 +136,7 @@ serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]
 The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
 * `WebServiceProxy` - web service invocation proxy
-* `WebServiceException` - exception thrown when a service operation returns an error
+* `WebServiceException` - exception generated when a service operation returns an error
 * `ResultHandler` - callback interface for handling service results
 
 Additionally, the framework includes two classes, `JSONEncoder` and `JSONDecoder`, that are used internally for processing JSON data. However, these classes are public and may also be used by application code.
@@ -285,7 +285,7 @@ serviceProxy.invoke("GET", "/example", mapOf(), (inputStream, contentType) -> {
 });
 ```
 
-If the server returns an error response with a content type of "text/plain", the response body will be returned in the `message` property of the exception parameter. Otherwise, a default error message will be returned.
+If the server returns an error response with a content type of "text/plain", the response body will be returned in the `message` property of the exception parameter. If the response type is "application/json", the response body will be returned in the `error` property of the exception. Otherwise, a default error message will be returned.
 
 #### Accessing Nested Structures
 `WebServiceProxy` provides the following convenience method for accessing nested map values by key path:
