@@ -188,12 +188,15 @@ NSString * const kCRLF = @"\r\n";
                             result = responseHandler(data, contentType, &error);
                         }
                     } else {
-                        NSDictionary *userInfo = nil;
-                        
+                        NSDictionary *userInfo;
                         if ([[response MIMEType] hasPrefix:@"text/plain"]) {
                             userInfo = @{
                                 NSLocalizedDescriptionKey: [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
                             };
+                        } else if ([[response MIMEType] hasPrefix:WSApplicationJSON]) {
+                            userInfo = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                        } else {
+                            userInfo = nil;
                         }
                         
                         error = [NSError errorWithDomain:WSWebServiceErrorDomain code:statusCode userInfo:userInfo];
