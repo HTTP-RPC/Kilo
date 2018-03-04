@@ -98,12 +98,12 @@ public class WebServiceProxyTest {
 
         // GET
         serviceProxy.invoke("GET", "/httprpc-server/test", mapOf(
-            entry("string", "héllo"),
+            entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true)), (Map<String, ?> result, Exception exception) -> {
             validate("GET", exception == null
-                && valueAt(result, "string").equals("héllo")
+                && valueAt(result, "string").equals("héllo+gøodbye")
                 && valueAt(result, "strings").equals(listOf("a", "b", "c"))
                 && valueAt(result, "number").equals(123)
                 && valueAt(result, "flag").equals(true)

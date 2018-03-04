@@ -356,7 +356,8 @@ NSString * const kCRLF = @"\r\n";
 
 - (NSString *)URLEncodedString
 {
-    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    return [[self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]
+        stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
 }
 
 @end
