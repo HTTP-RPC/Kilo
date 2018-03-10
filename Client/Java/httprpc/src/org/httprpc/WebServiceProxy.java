@@ -460,12 +460,12 @@ public class WebServiceProxy {
                     if (responseCode % 100 < 4) {
                         String contentType = connection.getContentType();
 
-                        if (contentType == null) {
-                            contentType = APPLICATION_JSON;
-                        }
-
-                        try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
-                            result = responseHandler.decode(inputStream, contentType);
+                        if (contentType != null) {
+                            try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                                result = responseHandler.decode(inputStream, contentType);
+                            }
+                        } else {
+                            result = null;
                         }
                     } else {
                         result = null;

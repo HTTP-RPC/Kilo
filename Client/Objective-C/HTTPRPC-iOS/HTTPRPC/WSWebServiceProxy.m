@@ -181,11 +181,9 @@ NSString * const kCRLF = @"\r\n";
                         if (statusCode % 100 < 4) {
                             NSString *contentType = [response MIMEType];
 
-                            if (contentType == nil) {
-                                contentType = WSApplicationJSON;
+                            if (contentType != nil) {
+                                result = responseHandler(data, contentType, &error);
                             }
-
-                            result = responseHandler(data, contentType, &error);
                         }
                     } else {
                         NSDictionary *userInfo;
