@@ -43,7 +43,7 @@ extension WSWebServiceProxy {
             do {
                 result = try responseHandler(data, contentType)
             } catch {
-                if errorPointer != nil {
+                if (errorPointer != nil) {
                     errorPointer!.pointee = error as NSError
                 }
 
