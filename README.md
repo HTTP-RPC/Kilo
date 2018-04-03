@@ -32,6 +32,8 @@ In both cases, the request will be executed asynchronously and the result printe
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features. For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
 
+_Feedback is welcome and encouraged. If you have any questions or comments about HTTP-RPC, please feel free to [contact me](mailto:gk_brown@icloud.com?subject=HTTP-RPC)._
+
 # Contents
 * [Objective-C/Swift Client](#objective-cswift-client)
 * [Java Client](#java-client)
