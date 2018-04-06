@@ -31,12 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow()
 
-        window!.rootViewController = UINavigationController(rootViewController: MainViewController())
+        window?.rootViewController = UINavigationController(rootViewController: MainViewController())
 
-        window!.backgroundColor = UIColor.white
-        window!.frame = UIScreen.main.bounds
+        window?.backgroundColor = UIColor.white
+        window?.frame = UIScreen.main.bounds
 
-        window!.makeKeyAndVisible()
+        window?.makeKeyAndVisible()
 
         return true
     }
