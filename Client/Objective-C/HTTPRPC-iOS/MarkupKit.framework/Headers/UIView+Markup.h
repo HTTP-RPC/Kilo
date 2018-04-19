@@ -145,6 +145,14 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
  */
 - (void)appendMarkupElementView:(UIView *)view;
 
+/**
+ * Previews a named view.
+ *
+ * @param viewName The name of the view to preview.
+ * @param owner The view's owner, or <code>nil</code> for no owner.
+ */
+- (void)preview:(NSString *)viewName owner:(nullable id)owner;
+
 @end
 
 NS_ASSUME_NONNULL_END

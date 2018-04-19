@@ -17,7 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * View that provides flexible space between other views.
+ * View that provides fixed or flexible space between other views.
  */
 @interface LMSpacer : UIView
 
