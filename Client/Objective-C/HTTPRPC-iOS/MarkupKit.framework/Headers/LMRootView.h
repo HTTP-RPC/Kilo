@@ -24,12 +24,22 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The amount of space to reserve at the top of the view. The default is 0.
  */
-@property (nonatomic) CGFloat topSpacing;
+@property (nonatomic) CGFloat topSpacing DEPRECATED_MSG_ATTRIBUTE("Use 'topPadding' instead.");
 
 /**
  * The amount of space to reserve at the bottom of the view. The default is 0.
  */
-@property (nonatomic) CGFloat bottomSpacing;
+@property (nonatomic) CGFloat bottomSpacing DEPRECATED_MSG_ATTRIBUTE("Use 'bottomPadding' instead.");
+
+/**
+ * The amount of space to reserve at the top of the view. The default is 0.
+ */
+@property (nonatomic) CGFloat topPadding;
+
+/**
+ * The amount of space to reserve at the bottom of the view. The default is 0.
+ */
+@property (nonatomic) CGFloat bottomPadding;
 
 @end
 

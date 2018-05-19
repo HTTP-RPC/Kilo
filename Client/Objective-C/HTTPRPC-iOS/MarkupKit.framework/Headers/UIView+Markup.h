@@ -123,6 +123,26 @@ typedef NS_OPTIONS(NSUInteger, LMAnchor) {
 @property (nonatomic) CGFloat layoutMarginTrailing;
 
 /**
+ * The amount of space to reserve above the view. The default is 0.
+ */
+@property (nonatomic) CGFloat topSpacing;
+
+/**
+ * The amount of space to reserve below the view. The default is 0.
+ */
+@property (nonatomic) CGFloat bottomSpacing;
+
+/**
+ * The amount of space to reserve at the view's leading edge. The default is 0.
+ */
+@property (nonatomic) CGFloat leadingSpacing;
+
+/**
+ * The amount of space to reserve at the view's trailing edge. The default is 0.
+ */
+@property (nonatomic) CGFloat trailingSpacing;
+
+/**
  * Processes a markup instruction.
  *
  * @param target The markup instruction's target.
