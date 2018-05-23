@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (char)charValue;
 - (short)shortValue;
 - (long)longValue;
+- (unsigned long long) unsignedLongLongValue;
 
 @end
 
