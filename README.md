@@ -4,9 +4,7 @@
 [![Discussion](https://badges.gitter.im/gk-brown/HTTP-RPC.svg)](https://gitter.im/HTTP-RPC/Lobby)
 
 # Introduction
-HTTP-RPC is an open-source framework for simplifying development of connected applications. It allows developers to access HTTP-based web services using a convenient, RPC-like metaphor.
-
-The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. An optional library for implementing services in Java is also provided.
+HTTP-RPC is an open-source framework for accessing HTTP-based web services using a convenient, RPC-like metaphor. The project currently includes support for consuming services in Objective-C, Swift and Java, and provides a consistent, callback-based API that makes it easy to interact with services regardless of target platform. An optional library for implementing services in Java is also provided.
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
@@ -392,7 +390,7 @@ The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/rel
 The Java client library and Java 8 or later are required.
 
 ## DispatcherServlet
-`DispatcherServlet` is an abstract base class for web services. Service operations are defined by adding public methods to a concrete service implementation. 
+`DispatcherServlet` is an abstract base class for HTTP-based web services. Service operations are defined by adding public methods to a concrete service implementation. 
 
 Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. Arguments may also be provided as JSON. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 

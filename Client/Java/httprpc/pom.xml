@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>HTTP-RPC</name>
-    <description>Lightweight multi-platform REST</description>
+    <description>Multi-platform RPC over HTTP</description>
     <url>http://httprpc.org</url>
 
     <licenses>
