@@ -4,9 +4,9 @@
 [![Discussion](https://badges.gitter.im/gk-brown/HTTP-RPC.svg)](https://gitter.im/HTTP-RPC/Lobby)
 
 # Introduction
-HTTP-RPC is an open-source framework for simplifying development of REST applications. It allows developers to access REST-based web services using a convenient, RPC-like metaphor while preserving fundamental REST principles such as statelessness and uniform resource access.
+HTTP-RPC is an open-source framework for simplifying development of connected applications. It allows developers to access HTTP-based web services using a convenient, RPC-like metaphor.
 
-The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. An optional library for implementing REST services in Java is also provided.
+The project currently includes support for consuming web services in Objective-C/Swift and Java (including Android). It provides a consistent, callback-based API that makes it easy to interact with services regardless of target device or operating system. An optional library for implementing services in Java is also provided.
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
@@ -44,12 +44,12 @@ Also, if you like using HTTP-RPC, please consider [starring](https://github.com/
 * [Additional Information](#additional-information)
 
 # Objective-C/Swift Client
-The Objective-C/Swift client enables iOS and tvOS applications to consume REST-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
+The Objective-C/Swift client enables iOS and tvOS applications to consume HTTP-based web services. It is distributed as a universal framework that contains a single `WSWebServiceProxy` class, discussed in more detail below. 
 
 The iOS and tvOS frameworks can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). They are also available via [CocoaPods](https://cocoapods.org/pods/HTTPRPC). iOS 9 or later or tvOS 10 or later is required.
 
 ## WSWebServiceProxy Class
-The `WSWebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
+The `WSWebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `NSURLSession` to issue HTTP requests. 
 
 Service proxies are initialized via the `initWithSession:serverURL:` method, which takes the following arguments:
 
@@ -138,7 +138,7 @@ serviceProxy.invoke("GET", path: "/math/sum", arguments: ["values": [1, 2, 3, 4]
 ```
 
 # Java Client
-The Java client enables Java applications (including Android) to consume REST-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
+The Java client enables Java applications (including Android) to consume HTTP-based web services. It is distributed as a JAR file that contains the following types, discussed in more detail below:
 
 * `WebServiceProxy` - web service invocation proxy
 * `WebServiceException` - exception generated when a service operation returns an error
@@ -168,7 +168,7 @@ dependencies {
 Java 8 or later is required.
 
 ## WebServiceProxy Class
-The `WebServiceProxy` class serves as a client-side invocation proxy for REST services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
+The `WebServiceProxy` class serves as a client-side invocation proxy for web services. Internally, it uses an instance of `HttpURLConnection` to send and receive data. 
 
 Service proxies are initialized via a constructor that takes the following arguments:
 
@@ -373,9 +373,9 @@ serviceProxy.invoke("GET", "/math/sum", mapOf(entry("values", listOf(1, 2, 3))),
 ```
 
 # Java Server
-The optional Java server library allows developers to implement REST services in Java. It is distributed as a JAR file containing the following types:
+The optional Java server library allows developers to implement HTTP-based web services in Java. It is distributed as a JAR file containing the following types:
 
-* `DispatcherServlet` - abstract base class for REST services
+* `DispatcherServlet` - abstract base class for web services
 * `RequestMethod` - annotation that associates an HTTP verb with a service method
 * `ResourcePath` - annotation that associates a resource path with a service method
 
@@ -392,7 +392,7 @@ The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/rel
 The Java client library and Java 8 or later are required.
 
 ## DispatcherServlet
-`DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 
+`DispatcherServlet` is an abstract base class for web services. Service operations are defined by adding public methods to a concrete service implementation. 
 
 Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. Arguments may also be provided as JSON. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 

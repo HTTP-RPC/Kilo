@@ -12,41 +12,36 @@
 // limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UITableViewCell (Markup)
+@interface NSObject (Markup)
 
 /**
- * Creates a default table view cell.
+ * Applies a markup property value.
+ *
+ * @param value The value to apply.
+ * @param key The property's key.
  */
-+ (UITableViewCell *)defaultTableViewCell;
+- (void)applyMarkupPropertyValue:(nullable id)value forKey:(NSString *)key;
 
 /**
- * Creates a "value 1" table view cell.
+ * Applies a markup property value.
+ *
+ * @param value The value to apply.
+ * @param keyPath The property's key path.
  */
-+ (UITableViewCell *)value1TableViewCell;
+- (void)applyMarkupPropertyValue:(nullable id)value forKeyPath:(NSString *)keyPath;
 
-/**
- * Creates a "value 2" table view cell.
- */
-+ (UITableViewCell *)value2TableViewCell;
+@end
 
-/**
- * Creates a subtitled table view cell.
- */
-+ (UITableViewCell *)subtitleTableViewCell;
+@interface NSString (Markup)
 
-/**
- * An optional value associated with the cell.
- */
-@property (nonatomic, nullable) id value;
-
-/**
- * The cell's checked state.
- */
-@property (nonatomic) BOOL checked NS_SWIFT_NAME(isChecked);
+- (char)charValue;
+- (short)shortValue;
+- (long)longValue;
+- (unsigned long long) unsignedLongLongValue;
 
 @end
 
