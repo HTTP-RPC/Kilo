@@ -4,7 +4,7 @@
 [![Discussion](https://badges.gitter.im/gk-brown/HTTP-RPC.svg)](https://gitter.im/HTTP-RPC/Lobby)
 
 # Introduction
-HTTP-RPC is an open-source framework for accessing HTTP-based web services using a convenient, RPC-like metaphor. The project currently includes support for consuming services in Objective-C, Swift and Java, and provides a consistent, callback-based API that makes it easy to interact with services regardless of target platform. An optional library for implementing services in Java is also provided.
+HTTP-RPC is an open-source framework for accessing HTTP-based web services using a convenient, RPC-like metaphor. The project currently includes support for consuming services in Objective-C, Swift, and Java, and provides a consistent, callback-based API that makes it easy to interact with services regardless of target platform. An optional library for implementing services in Java is also provided.
 
 For example, the following code snippet shows how a Swift client might access a simple web service that returns a friendly greeting:
 
