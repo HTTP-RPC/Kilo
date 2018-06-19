@@ -6,7 +6,7 @@
 
     <groupId>org.httprpc</groupId>
     <artifactId>httprpc</artifactId>
-    <version>4.2.8</version>
+    <version>4.3</version>
     <packaging>jar</packaging>
 
     <name>HTTP-RPC</name>
