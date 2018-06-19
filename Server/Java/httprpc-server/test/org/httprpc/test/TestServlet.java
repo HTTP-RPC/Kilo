@@ -59,8 +59,8 @@ public class TestServlet extends DispatcherServlet {
 
     @RequestMethod("GET")
     @ResourcePath("/a/?/b/?/c/?/d/?")
-    public List<String> testGet() {
-        return getKeys();
+    public List<?> testGet() {
+        return listOf(getKey(0), getKey(1), getKey(2), getKey(3));
     }
 
     @RequestMethod("GET")

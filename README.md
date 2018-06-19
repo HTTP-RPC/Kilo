@@ -519,21 +519,17 @@ Path variables may be specified by a "?" character in the resource path. For exa
 public List<Map<String, ?>> getContactAddresses() { ... }
 ```
 
-The `getKeys()` method returns the list of variables associated with the current request:
+The `getKey()` method returns the value of a path variable associated with the current request:
 
 ```java
-protected List<String> getKeys() { ... }
+protected String getKeys(int index) { ... }
 ```
  
 For example, given the following path:
 
     /contacts/jsmith/addresses/home
 
-`getKeys()` would return the following:
-
-```json
-["jsmith", "home"]
-```
+the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
 # Additional Information
 For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).

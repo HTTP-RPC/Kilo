@@ -180,7 +180,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         this.request.set(request);
         this.response.set(response);
 
-        this.keys.set(Collections.unmodifiableList(new ArrayList<>(keys)));
+        this.keys.set(new ArrayList<>(keys));
 
         try {
             Object result;
@@ -469,12 +469,15 @@ public abstract class DispatcherServlet extends HttpServlet {
     }
 
     /**
-     * Returns the list of keys parsed from the request path.
+     * Returns the value of a key in the request path.
+     *
+     * @param index
+     * The index of the key to return.
      *
      * @return
-     * The list of keys parsed from the request path.
+     * The key value.
      */
-    protected List<String> getKeys() {
-        return keys.get();
+    protected String getKey(int index) {
+        return keys.get().get(index);
     }
 }

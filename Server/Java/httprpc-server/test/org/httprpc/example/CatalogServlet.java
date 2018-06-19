@@ -57,7 +57,7 @@ public class CatalogServlet extends DispatcherServlet {
     @RequestMethod("GET")
     @ResourcePath("/items/?")
     public Object getItem() {
-        int index = Integer.parseInt(getKeys().get(0));
+        int index = Integer.parseInt(getKey(0));
 
         return (index < items.size()) ? items.get(index) : null;
     }
