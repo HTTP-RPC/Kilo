@@ -73,9 +73,9 @@
         <mkdir dir="${war}/WEB-INF/${lib}"/>
 
             <javac srcDir="${test}" destDir="${war}/WEB-INF/${classes}"
-            includejavaruntime="true" includeantruntime="true"
-            encoding="UTF-8" deprecation="true" debug="true"
-            failonerror="true">
+                includejavaruntime="true" includeantruntime="true"
+                encoding="UTF-8" deprecation="true" debug="true"
+                failonerror="true">
             <classpath>
                 <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
                 <fileset dir="bundle" includes="*.jar"/>
