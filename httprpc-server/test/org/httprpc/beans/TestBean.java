@@ -23,10 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TestBean {
-    public enum Value {
-        A, B, C
-    }
-
     public static class NestedBean {
         public boolean getFlag() {
             return true;
@@ -59,10 +55,6 @@ public class TestBean {
 
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.parse("2018-06-28T10:45");
-    }
-
-    public Value getValue() {
-        return Value.A;
     }
 
     public NestedBean getNestedBean() {

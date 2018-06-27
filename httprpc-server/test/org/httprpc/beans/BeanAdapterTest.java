@@ -37,7 +37,6 @@ public class BeanAdapterTest extends AbstractTest {
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
-            entry("value", TestBean.Value.A),
             entry("nestedBean", mapOf(entry("flag", true))),
             entry("nestedBeanList", listOf(mapOf(entry("flag", true)))),
             entry("nestedBeanMap", mapOf(entry("xyz", mapOf(entry("flag", true)))))
