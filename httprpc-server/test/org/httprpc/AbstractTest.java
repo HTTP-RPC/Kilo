@@ -23,12 +23,12 @@ import java.util.Map;
 
 public abstract class AbstractTest {
     @SafeVarargs
-    public static List<?> listOf(Object... elements) {
+    protected static List<?> listOf(Object... elements) {
         return Collections.unmodifiableList(Arrays.asList(elements));
     }
 
     @SafeVarargs
-    public static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
+    protected static <K> Map<K, ?> mapOf(Map.Entry<K, ?>... entries) {
         HashMap<K, Object> map = new HashMap<>();
 
         for (Map.Entry<K, ?> entry : entries) {
@@ -38,7 +38,7 @@ public abstract class AbstractTest {
         return Collections.unmodifiableMap(map);
     }
 
-    public static <K> Map.Entry<K, ?> entry(K key, Object value) {
+    protected static <K> Map.Entry<K, ?> entry(K key, Object value) {
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 }
