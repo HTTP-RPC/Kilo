@@ -19,6 +19,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -90,6 +93,12 @@ public class JSONEncoder {
             writer.append(String.valueOf(value));
         } else if (value instanceof Date) {
             writer.append(String.valueOf(((Date)value).getTime()));
+        } else if (value instanceof LocalDate) {
+            writer.append(String.valueOf(((LocalDate)value).toString()));
+        } else if (value instanceof LocalTime) {
+            writer.append(String.valueOf(((LocalTime)value).toString()));
+        } else if (value instanceof Date) {
+            writer.append(String.valueOf(((LocalDateTime)value).toString()));
         } else if (value instanceof Iterable<?>) {
             writer.append("[");
 

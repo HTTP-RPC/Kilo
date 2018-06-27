@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +44,8 @@ public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, Date date) {
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
+        Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
         HashMap<String, Object> result = new HashMap<>();
 
         result.put("string", string);
@@ -49,6 +53,9 @@ public class TestServlet extends DispatcherServlet {
         result.put("number", number);
         result.put("flag", flag);
         result.put("date", date);
+        result.put("localDate", localDate);
+        result.put("localTime", localTime);
+        result.put("localDateTime", localDateTime);
 
         return result;
     }
@@ -73,7 +80,9 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("POST")
-    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, Date date, List<URL> attachments) throws IOException {
+    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag,
+        Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (URL attachment : attachments) {
@@ -103,6 +112,9 @@ public class TestServlet extends DispatcherServlet {
         result.put("number", number);
         result.put("flag", flag);
         result.put("date", date);
+        result.put("localDate", localDate);
+        result.put("localTime", localTime);
+        result.put("localDateTime", localDateTime);
         result.put("attachmentInfo", attachmentInfo);
 
         return result;

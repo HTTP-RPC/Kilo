@@ -429,14 +429,23 @@ public abstract class DispatcherServlet extends HttpServlet {
                 argument = new Date(Long.parseLong(value.toString()));
             }
         } else if (type == LocalDate.class) {
-            // TODO
-            argument = null;
+            if (value == null) {
+                argument = null;
+            } else {
+                argument = LocalDate.parse(value.toString());
+            }
         } else if (type == LocalTime.class) {
-            // TODO
-            argument = null;
+            if (value == null) {
+                argument = null;
+            } else {
+                argument = LocalTime.parse(value.toString());
+            }
         } else if (type == LocalDateTime.class) {
-            // TODO
-            argument = null;
+            if (value == null) {
+                argument = null;
+            } else {
+                argument = LocalDateTime.parse(value.toString());
+            }
         } else {
             argument = value;
         }

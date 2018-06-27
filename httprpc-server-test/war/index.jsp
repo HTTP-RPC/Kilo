@@ -46,7 +46,7 @@
 
 <hr>
 
-<a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true">GET</a></br>
+<a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a></br>
 <a href="${pageContext.request.contextPath}/test/a/123/b/héllo/c/456/d/göodbye">GET (Key List)</a></br>
 
 <hr/>
@@ -71,6 +71,15 @@
 </tr>
 <tr>
 <td>Flag</td><td><input type="text" name="flag" value="true"/></td>
+</tr>
+<tr>
+<td>Local Date</td><td><input type="date" name="localDate" value="2018-06-28"/></td>
+</tr>
+<tr>
+<td>Local Time</td><td><input type="time" name="localTime" value="10:45"/></td>
+</tr>
+<tr>
+<td>Local Date/Time</td><td><input type="datetime-local" name="localDateTime" value="2018-06-28T10:45"/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit"/></td>
@@ -100,6 +109,15 @@
 </tr>
 <tr>
 <td>Flag</td><td><input type="text" name="flag" value="true"/></td>
+</tr>
+<tr>
+<td>Local Date</td><td><input type="date" name="localDate" value="2018-06-28"/></td>
+</tr>
+<tr>
+<td>Local Time</td><td><input type="time" name="localTime" value="10:45"/></td>
+</tr>
+<tr>
+<td>Local Date/Time</td><td><input type="datetime-local" name="localDateTime" value="2018-06-28T10:45"/></td>
 </tr>
 <tr>
 <td>Attachments</td><td><input type="file" name="attachments" multiple/></td>
