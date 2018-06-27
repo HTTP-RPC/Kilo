@@ -16,17 +16,13 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -479,127 +475,6 @@ public abstract class DispatcherServlet extends HttpServlet {
      */
     protected String getKey(int index) {
         return keys.get().get(index);
-    }
-}
-
-class JSONEncoder {
-    private int depth = 0;
-
-    public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        Writer writer = new OutputStreamWriter(outputStream, Charset.forName("UTF-8"));
-        writeValue(value, writer);
-
-        writer.flush();
-    }
-
-    private void writeValue(Object value, Writer writer) throws IOException {
-        if (value == null) {
-            writer.append(null);
-        } else if (value instanceof CharSequence) {
-            CharSequence text = (CharSequence)value;
-
-            writer.append("\"");
-
-            for (int i = 0, n = text.length(); i < n; i++) {
-                char c = text.charAt(i);
-
-                if (c == '"' || c == '\\') {
-                    writer.append("\\" + c);
-                } else if (c == '\b') {
-                    writer.append("\\b");
-                } else if (c == '\f') {
-                    writer.append("\\f");
-                } else if (c == '\n') {
-                    writer.append("\\n");
-                } else if (c == '\r') {
-                    writer.append("\\r");
-                } else if (c == '\t') {
-                    writer.append("\\t");
-                } else {
-                    writer.append(c);
-                }
-            }
-
-            writer.append("\"");
-        } else if (value instanceof Number || value instanceof Boolean) {
-            writer.append(String.valueOf(value));
-        } else if (value instanceof Date) {
-            writer.append(String.valueOf(((Date)value).getTime()));
-        } else if (value instanceof Iterable<?>) {
-            writer.append("[");
-
-            depth++;
-
-            int i = 0;
-
-            for (Object element : (Iterable<?>)value) {
-                if (i > 0) {
-                    writer.append(",");
-                }
-
-                writer.append("\n");
-
-                indent(writer);
-
-                writeValue(element, writer);
-
-                i++;
-            }
-
-            depth--;
-
-            writer.append("\n");
-
-            indent(writer);
-
-            writer.append("]");
-        } else if (value instanceof Map<?, ?>) {
-            writer.append("{");
-
-            depth++;
-
-            int i = 0;
-
-            for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-                if (i > 0) {
-                    writer.append(",");
-                }
-
-                writer.append("\n");
-
-                Object key = entry.getKey();
-
-                if (key == null) {
-                    continue;
-                }
-
-                indent(writer);
-
-                writeValue(key.toString(), writer);
-
-                writer.append(": ");
-
-                writeValue(entry.getValue(), writer);
-
-                i++;
-            }
-
-            depth--;
-
-            writer.append("\n");
-
-            indent(writer);
-
-            writer.append("}");
-        } else {
-            throw new IOException("Unsupported value type.");
-        }
-    }
-
-    private void indent(Writer writer) throws IOException {
-        for (int i = 0; i < depth; i++) {
-            writer.append("  ");
-        }
     }
 }
 

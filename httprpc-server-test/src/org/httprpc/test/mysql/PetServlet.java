@@ -23,10 +23,10 @@ import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.httprpc.DispatcherServlet;
+import org.httprpc.JSONEncoder;
+import org.httprpc.RequestMethod;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 import org.jtemplate.TemplateEncoder;
@@ -34,8 +34,8 @@ import org.jtemplate.TemplateEncoder;
 /**
  * Pet servlet.
  */
-@WebServlet(urlPatterns={"/pets.csv", "/pets.html", "/pets.json", "/pets.xml"}, loadOnStartup=1)
-public class PetServlet extends HttpServlet {
+@WebServlet(urlPatterns={"/pets"}, loadOnStartup=1)
+public class PetServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     private static final String DB_URL = "jdbc:mysql://db.local:3306/menagerie?user=root&password=password";
@@ -51,30 +51,37 @@ public class PetServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getServletPath().substring(1);
-
-        response.setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
-
-        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(String.format("%s.txt", name)));
-
-        templateEncoder.setBaseName(getClass().getName());
-
+    @RequestMethod("GET")
+    public void getPets(String owner, String format) throws SQLException, IOException {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             Parameters parameters = Parameters.parse("select name, species, sex, birth from pet where owner = :owner");
 
-            parameters.put("owner", request.getParameter("owner"));
+            parameters.put("owner", owner);
 
             try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
                 parameters.apply(statement);
 
                 try (ResultSet resultSet = statement.executeQuery()) {
-                    templateEncoder.writeValue(new ResultSetAdapter(resultSet), response.getOutputStream(), request.getLocale());
+                    ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+
+                    if (format == null) {
+                        JSONEncoder jsonEncoder = new JSONEncoder();
+
+                        jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
+                    } else {
+                        String name = String.format("%s~%s", getRequest().getServletPath().substring(1), format);
+
+                        getResponse().setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
+
+                        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(String.format("%s.txt", name)));
+
+                        templateEncoder.setBaseName(getClass().getName());
+                        templateEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream(), getRequest().getLocale());
+                    }
                 }
             }
-        } catch (SQLException exception) {
-            throw new ServletException(exception);
+        } finally {
+            getResponse().flushBuffer();
         }
     }
 }

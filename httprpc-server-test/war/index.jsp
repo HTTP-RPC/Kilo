@@ -107,16 +107,16 @@
 </form>
 
 <h2>MongoDB</h2>
-<a href="${pageContext.request.contextPath}/restaurants.csv?zipCode=10462">restaurants.csv</a></br>
-<a href="${pageContext.request.contextPath}/restaurants.html?zipCode=10462">restaurants.html</a></br>
-<a href="${pageContext.request.contextPath}/restaurants.json?zipCode=10462">restaurants.json</a></br>
-<a href="${pageContext.request.contextPath}/restaurants.xml?zipCode=10462">restaurants.xml</a></br>
+<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462">Restaurants</a></br>
+<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=csv">Restaurants (CSV)</a></br>
+<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=html">Restaurants (HTML)</a></br>
+<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=xml">Restaurants (XML)</a></br>
 
 <h2>MySQL</h2>
-<a href="${pageContext.request.contextPath}/pets.csv?owner=Gwen">pets.csv</a></br>
-<a href="${pageContext.request.contextPath}/pets.html?owner=Gwen">pets.html</a></br>
-<a href="${pageContext.request.contextPath}/pets.json?owner=Gwen">pets.json</a></br>
-<a href="${pageContext.request.contextPath}/pets.xml?owner=Gwen">pets.xml</a></br>
+<a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets</a></br>
+<a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=csv">Pets (CSV)</a></br>
+<a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=html">Pets (HTML)</a></br>
+<a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=xml">Pets (XML)</a></br>
 
 </body>
 </html>

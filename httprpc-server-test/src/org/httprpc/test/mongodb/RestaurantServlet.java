@@ -14,13 +14,15 @@
 
 package org.httprpc.test.mongodb;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
+import org.httprpc.DispatcherServlet;
+import org.httprpc.JSONEncoder;
+import org.httprpc.RequestMethod;
 import org.httprpc.util.IteratorAdapter;
 import org.jtemplate.TemplateEncoder;
 
@@ -32,8 +34,8 @@ import com.mongodb.client.MongoDatabase;
 /**
  * Restaurant service.
  */
-@WebServlet(urlPatterns={"/restaurants.csv", "/restaurants.html", "/restaurants.json", "/restaurants.xml"}, loadOnStartup=1)
-public class RestaurantServlet extends HttpServlet {
+@WebServlet(urlPatterns={"/restaurants"}, loadOnStartup=1)
+public class RestaurantServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     private MongoClient mongoClient = null;
@@ -54,24 +56,29 @@ public class RestaurantServlet extends HttpServlet {
         super.destroy();
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        String name = request.getServletPath().substring(1);
-
-        response.setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
-
-        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(String.format("%s.txt", name)));
-
-        templateEncoder.setBaseName(getClass().getName());
-
+    @RequestMethod("GET")
+    public void getRestaurants(String zipCode, String format) throws IOException {
         MongoDatabase db = mongoClient.getDatabase("test");
 
-        FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", request.getParameter("zipCode")));
+        FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
 
         try (MongoCursor<Document> cursor = iterable.iterator()) {
-            templateEncoder.writeValue(new IteratorAdapter(cursor), response.getOutputStream(), request.getLocale());
-        } catch (Exception exception) {
-            throw new ServletException(exception);
+            if (format == null) {
+                JSONEncoder jsonEncoder = new JSONEncoder();
+
+                jsonEncoder.writeValue(cursor, getResponse().getOutputStream());
+            } else {
+                String name = String.format("%s~%s", getRequest().getServletPath().substring(1), format);
+
+                getResponse().setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
+
+                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(String.format("%s.txt", name)));
+
+                templateEncoder.setBaseName(getClass().getName());
+                templateEncoder.writeValue(new IteratorAdapter(cursor), getResponse().getOutputStream(), getRequest().getLocale());
+            }
+        } finally {
+            getResponse().flushBuffer();
         }
     }
 }
