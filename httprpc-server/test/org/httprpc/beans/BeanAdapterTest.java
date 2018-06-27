@@ -31,8 +31,9 @@ public class BeanAdapterTest extends AbstractTest {
             entry("b", 4.0),
             entry("c", "abc"),
             entry("d", new Date(0)),
-            entry("e", mapOf(entry("g", true))),
-            entry("f", listOf(mapOf(entry("g", true))))
+            entry("e", mapOf(entry("i", true))),
+            entry("f", listOf(mapOf(entry("i", true)))),
+            entry("g", mapOf(entry("h", mapOf(entry("i", true)))))
         ), adapter);
     }
 }

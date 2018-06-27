@@ -28,23 +28,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that presents the properties of a Java Bean object as a map. Property
- * values are adapted as described for {@link #adapt(Object)}.
+ * Class that presents the properties of a Java Bean object as a map.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
         private List<Object> list;
-        private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public ListAdapter(List<Object> list, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+        public ListAdapter(List<Object> list) {
             this.list = list;
-            this.accessorCache = accessorCache;
         }
 
         @Override
         public Object get(int index) {
-            return adapt(list.get(index), accessorCache);
+            return adapt(list.get(index));
         }
 
         @Override
@@ -64,7 +61,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 @Override
                 public Object next() {
-                    return adapt(iterator.next(), accessorCache);
+                    return adapt(iterator.next());
                 }
             };
         }
@@ -73,7 +70,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         private Map<Object, Object> map;
-        private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
         private Set<Entry<Object, Object>> entrySet = new AbstractSet<Entry<Object, Object>>() {
             @Override
@@ -103,7 +99,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                             @Override
                             public Object getValue() {
-                                return adapt(entry.getValue(), accessorCache);
+                                return adapt(entry.getValue());
                             }
 
                             @Override
@@ -116,14 +112,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         };
 
-        public MapAdapter(Map<Object, Object> map, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+        public MapAdapter(Map<Object, Object> map) {
             this.map = map;
-            this.accessorCache = accessorCache;
         }
 
         @Override
         public Object get(Object key) {
-            return adapt(map.get(key), accessorCache);
+            return adapt(map.get(key));
         }
 
         @Override
@@ -133,9 +128,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private Object bean;
-    private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-    private HashMap<String, Method> accessors;
+    private HashMap<String, Method> accessors = new HashMap<>();
 
     private Set<Entry<String, Object>> entrySet = new AbstractSet<Entry<String, Object>>() {
         @Override
@@ -173,64 +167,73 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The source Bean.
      */
     public BeanAdapter(Object bean) {
-        this(bean, new HashMap<>());
-    }
-
-    private BeanAdapter(Object bean, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
         if (bean == null) {
             throw new IllegalArgumentException();
         }
 
         this.bean = bean;
-        this.accessorCache = accessorCache;
 
         Class<?> type = bean.getClass();
 
-        accessors = accessorCache.get(type);
+        Method[] methods = type.getMethods();
 
-        if (accessors == null) {
-            accessors = new HashMap<>();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
 
-            Method[] methods = type.getMethods();
+            if (method.getDeclaringClass() != Object.class) {
+                String methodName = method.getName();
 
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
+                String prefix;
+                if (methodName.startsWith(GET_PREFIX)) {
+                    prefix = GET_PREFIX;
+                } else if (methodName.startsWith(IS_PREFIX)) {
+                    prefix = IS_PREFIX;
+                } else {
+                    prefix = null;
+                }
 
-                if (method.getDeclaringClass() != Object.class) {
-                    String methodName = method.getName();
+                if (prefix != null)  {
+                    int j = prefix.length();
+                    int n = methodName.length();
 
-                    String prefix;
-                    if (methodName.startsWith(GET_PREFIX)) {
-                        prefix = GET_PREFIX;
-                    } else if (methodName.startsWith(IS_PREFIX)) {
-                        prefix = IS_PREFIX;
-                    } else {
-                        prefix = null;
-                    }
+                    if (j < n && method.getParameterCount() == 0) {
+                        char c = methodName.charAt(j++);
 
-                    if (prefix != null)  {
-                        int j = prefix.length();
-                        int n = methodName.length();
-
-                        if (j < n && method.getParameterCount() == 0) {
-                            char c = methodName.charAt(j++);
-
-                            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                                c = Character.toLowerCase(c);
-                            }
-
-                            String key = c + methodName.substring(j);
-
-                            accessors.put(key, method);
+                        if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                            c = Character.toLowerCase(c);
                         }
+
+                        String key = c + methodName.substring(j);
+
+                        accessors.put(key, method);
                     }
                 }
             }
-
-            accessorCache.put(type, accessors);
         }
     }
 
+    /**
+     * Retrieves a Bean property value. If the value is <tt>null</tt> or an
+     * instance of one of the following types, it is returned as-is:
+     * <ul>
+     * <li>{@link String}</li>
+     * <li>{@link Number}</li>
+     * <li>{@link Boolean}</li>
+     * <li>{@link Enum}</li>
+     * <li>{@link Date}</li>
+     * <li>{@link TemporalAccessor}</li>
+     * </ul>
+     * If the value is a {@link List}, it is wrapped in an adapter that will
+     * adapt the list's elements. If the value is a {@link Map}, it is wrapped
+     * in an adapter that will adapt the map's values. Otherwise, the value is
+     * considered a nested Bean and is wrapped in a {@link BeanAdapter}.
+     *
+     * @param key
+     * The property name.
+     *
+     * @return
+     * The property value.
+     */
     @Override
     public Object get(Object key) {
         if (key == null) {
@@ -242,7 +245,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         Object value;
         if (method != null) {
             try {
-                value = adapt(method.invoke(bean), accessorCache);
+                value = adapt(method.invoke(bean));
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 throw new RuntimeException(exception);
             }
@@ -258,37 +261,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return entrySet;
     }
 
-    /**
-     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
-     * the following types, it is returned as-is:
-     * <ul>
-     * <li>{@link String}</li>
-     * <li>{@link Number}</li>
-     * <li>{@link Boolean}</li>
-     * <li>{@link Enum}</li>
-     * <li>{@link Date}</li>
-     * <li>{@link TemporalAccessor}</li>
-     * </ul>
-     * If the value is a {@link List}, it is wrapped in an adapter that will
-     * adapt the list's elements. If the value is a {@link Map}, it is wrapped
-     * in an adapter that will adapt the map's values. Otherwise, the value is
-     * considered a nested Bean and is wrapped in a Bean adapter.
-     *
-     * @param <T>
-     * The expected type of the adapted value.
-     *
-     * @param value
-     * The value to adapt.
-     *
-     * @return
-     * The adapted value.
-     */
-    public static <T> T adapt(Object value) {
-        return adapt(value, new HashMap<>());
-    }
-
     @SuppressWarnings("unchecked")
-    private static <T> T adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+    private static Object adapt(Object value) {
         if (!(value == null
             || value instanceof String
             || value instanceof Number
@@ -297,14 +271,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Date
             || value instanceof TemporalAccessor)) {
             if (value instanceof List<?>) {
-                value = new ListAdapter((List<Object>)value, accessorCache);
+                value = new ListAdapter((List<Object>)value);
             } else if (value instanceof Map<?, ?>) {
-                value = new MapAdapter((Map<Object, Object>)value, accessorCache);
+                value = new MapAdapter((Map<Object, Object>)value);
             } else {
-                value = new BeanAdapter(value, accessorCache);
+                value = new BeanAdapter(value);
             }
         }
 
-        return (T)value;
+        return value;
     }
 }

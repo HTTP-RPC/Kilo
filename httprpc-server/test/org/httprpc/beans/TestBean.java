@@ -17,10 +17,11 @@ package org.httprpc.beans;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class TestBean {
     public static class NestedBean {
-        public boolean getG() {
+        public boolean getI() {
             return true;
         }
     }
@@ -47,5 +48,9 @@ public class TestBean {
 
     public List<NestedBean> getF() {
         return Collections.singletonList(new NestedBean());
+    }
+
+    public Map<String, NestedBean> getG() {
+        return Collections.singletonMap("h", new NestedBean());
     }
 }
