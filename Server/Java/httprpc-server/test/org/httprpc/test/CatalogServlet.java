@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.example;
+package org.httprpc.test;
 
 import java.util.ArrayList;
 import java.util.HashMap;

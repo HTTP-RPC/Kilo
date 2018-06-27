@@ -12,38 +12,35 @@
  * limitations under the License.
  */
 
-package org.httprpc.example;
+package org.httprpc.test;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
-import org.httprpc.ResourcePath;
 
 /**
- * Math example servlet.
+ * Servlet that echoes a string value by writing a custom response.
  */
-@WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
-public class MathServlet extends DispatcherServlet {
+@WebServlet(urlPatterns={"/echo/*"}, loadOnStartup=1)
+public class EchoServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    @ResourcePath("/sum")
-    public double getSum(double a, double b) {
-        return a + b;
-    }
+    public void echo(String value) throws IOException {
+        HttpServletResponse response = getResponse();
 
-    @RequestMethod("GET")
-    @ResourcePath("/sum")
-    public double getSum(List<Double> values) {
-        double total = 0;
+        response.setContentType("text/plain");
 
-        for (double value : values) {
-            total += value;
+        if (value != null) {
+            PrintWriter writer = response.getWriter();
+
+            writer.append(value);
+            writer.flush();
         }
-
-        return total;
     }
 }
