@@ -63,10 +63,12 @@ public class RestaurantServlet extends DispatcherServlet {
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
 
         try (MongoCursor<Document> cursor = iterable.iterator()) {
+            IteratorAdapter cursorAdapter = new IteratorAdapter(cursor);
+
             if (format == null) {
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.writeValue(cursor, getResponse().getOutputStream());
+                jsonEncoder.writeValue(cursorAdapter, getResponse().getOutputStream());
             } else {
                 String name = String.format("%s~%s", getRequest().getServletPath().substring(1), format);
 
@@ -75,7 +77,7 @@ public class RestaurantServlet extends DispatcherServlet {
                 TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(String.format("%s.txt", name)));
 
                 templateEncoder.setBaseName(getClass().getName());
-                templateEncoder.writeValue(new IteratorAdapter(cursor), getResponse().getOutputStream(), getRequest().getLocale());
+                templateEncoder.writeValue(cursorAdapter, getResponse().getOutputStream(), getRequest().getLocale());
             }
         } finally {
             getResponse().flushBuffer();

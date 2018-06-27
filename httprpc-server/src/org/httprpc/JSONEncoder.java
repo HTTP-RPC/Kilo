@@ -60,9 +60,7 @@ public class JSONEncoder {
      * If an exception occurs.
      */
     public void writeValue(Object value, Writer writer) throws IOException {
-        if (value == null) {
-            writer.append(null);
-        } else if (value instanceof CharSequence) {
+        if (value instanceof CharSequence) {
             CharSequence text = (CharSequence)value;
 
             writer.append("\"");
@@ -159,7 +157,7 @@ public class JSONEncoder {
 
             writer.append("}");
         } else {
-            throw new IOException("Unsupported value type.");
+            writer.append(null);
         }
     }
 
