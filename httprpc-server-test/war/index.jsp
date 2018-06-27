@@ -7,7 +7,7 @@
 
 <body>
 
-<h2>MongoDB</h2>
+<h2>Test</h2>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a></br>
 <a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a></br>
 <a href="${pageContext.request.contextPath}/echo?value=héllo">Echo</a></br>
@@ -39,6 +39,10 @@
 </tr>
 </table>
 </form>
+
+<hr>
+
+<a href="${pageContext.request.contextPath}/tree">Tree</a></br>
 
 <hr>
 
