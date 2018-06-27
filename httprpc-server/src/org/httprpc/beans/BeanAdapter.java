@@ -196,7 +196,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             for (int i = 0; i < methods.length; i++) {
                 Method method = methods[i];
 
-                if (type.isAssignableFrom(method.getDeclaringClass())) {
+                if (method.getDeclaringClass() != Object.class) {
                     String methodName = method.getName();
 
                     String prefix;
