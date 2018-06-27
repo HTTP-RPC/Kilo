@@ -38,6 +38,10 @@
             <fileset dir="${src}" excludes="*.java"/>
         </copy>
 
+        <delete>
+            <fileset dir="${war}/WEB-INF/${lib}" includes="httprpc-server-*.jar"/>
+        </delete>
+
         <copy todir="${war}/WEB-INF/${lib}">
             <fileset dir="../httprpc-server/bundle" includes="*.jar"/>
         </copy>
