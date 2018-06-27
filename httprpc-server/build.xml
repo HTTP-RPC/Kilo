@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="jtemplate" default="build">
-    <property name="title" value="JTemplate"/>
+<project name="httprpc-server" default="build">
+    <property name="title" value="HTTP-RPC Server"/>
     <property name="version" value="2.0"/>
 
     <property name="src" value="src"/>

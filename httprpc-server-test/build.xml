@@ -27,6 +27,7 @@
 
                 <fileset dir="${war}/WEB-INF/${lib}">
                     <include name="mongo-java-driver-*.jar"/>
+                    <include name="jtemplate-*.jar"/>
                 </fileset>
             </classpath>
 

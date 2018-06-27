@@ -1,0 +1,3 @@
+name,address_building,address_street,borough,cuisine,grades
+{{#.}}"{{name:^csv}}","{{address.building:^csv}}","{{address.street:^csv}}","{{borough:^csv}}","{{cuisine:^csv}}","{{#grades[;]}}{{date:format=shortDate:^csv}} {{grade:^csv}} {{score:^csv}}{{/grades}}"
+{{/.}}

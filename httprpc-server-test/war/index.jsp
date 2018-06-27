@@ -4,7 +4,10 @@
 <head>
 <title>HTTP-RPC Server</title>
 </head>
+
 <body>
+
+<h2>MongoDB</h2>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a></br>
 <a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a></br>
 <a href="${pageContext.request.contextPath}/echo?value=héllo">Echo</a></br>
@@ -102,5 +105,18 @@
 </tr>
 </table>
 </form>
+
+<h2>MongoDB</h2>
+<a href="${pageContext.request.contextPath}/restaurants.csv?zipCode=10462">restaurants.csv</a></br>
+<a href="${pageContext.request.contextPath}/restaurants.html?zipCode=10462">restaurants.html</a></br>
+<a href="${pageContext.request.contextPath}/restaurants.json?zipCode=10462">restaurants.json</a></br>
+<a href="${pageContext.request.contextPath}/restaurants.xml?zipCode=10462">restaurants.xml</a></br>
+
+<h2>MySQL</h2>
+<a href="${pageContext.request.contextPath}/pets.csv?owner=Gwen">pets.csv</a></br>
+<a href="${pageContext.request.contextPath}/pets.html?owner=Gwen">pets.html</a></br>
+<a href="${pageContext.request.contextPath}/pets.json?owner=Gwen">pets.json</a></br>
+<a href="${pageContext.request.contextPath}/pets.xml?owner=Gwen">pets.xml</a></br>
+
 </body>
 </html>

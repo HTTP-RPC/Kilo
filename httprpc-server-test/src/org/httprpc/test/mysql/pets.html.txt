@@ -1,0 +1,14 @@
+<html>
+<head>
+<title>{{@pets:^html}}</title>
+</head>
+<body>
+{{#.}}
+<p>
+{{@name:^html}}: {{name:^html}}<br/>
+{{@species:^html}}: {{species:^html}}<br/>
+{{@sex:^html}}: {{sex:^html}}<br/>
+{{@birth:^html}}: {{birth:format=mediumDate:^html}}</p>
+{{/.}}
+</body>
+</html>
