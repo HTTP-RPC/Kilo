@@ -14,43 +14,66 @@
 
 package org.httprpc.beans;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class TestBean {
+    public enum Value {
+        A, B, C
+    }
+
     public static class NestedBean {
-        public boolean getI() {
+        public boolean getFlag() {
             return true;
         }
     }
 
-    public long getA() {
+    public long getLong() {
         return 2L;
     }
 
-    public double getB() {
+    public double getDouble() {
         return 4.0;
     }
 
-    public String getC() {
+    public String getString() {
         return "abc";
     }
 
-    public Date getD() {
+    public Date getDate() {
         return new Date(0);
     }
 
-    public NestedBean getE() {
+    public LocalDate getLocalDate() {
+        return LocalDate.parse("2018-06-28");
+    }
+
+    public LocalTime getLocalTime() {
+        return LocalTime.parse("10:45");
+    }
+
+    public LocalDateTime getLocalDateTime() {
+        return LocalDateTime.parse("2018-06-28T10:45");
+    }
+
+    public Value getValue() {
+        return Value.A;
+    }
+
+    public NestedBean getNestedBean() {
         return new NestedBean();
     }
 
-    public List<NestedBean> getF() {
+    public List<NestedBean> getNestedBeanList() {
         return Collections.singletonList(new NestedBean());
     }
 
-    public Map<String, NestedBean> getG() {
-        return Collections.singletonMap("h", new NestedBean());
+    public Map<String, NestedBean> getNestedBeanMap() {
+        return Collections.singletonMap("xyz", new NestedBean());
     }
 }

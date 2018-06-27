@@ -16,7 +16,9 @@ package org.httprpc.beans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.temporal.TemporalAccessor;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -219,9 +221,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link String}</li>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
-     * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
-     * <li>{@link TemporalAccessor}</li>
+     * <li>{@link LocalDate}</li>
+     * <li>{@link LocalTime}</li>
+     * <li>{@link LocalDateTime}</li>
+     * <li>{@link Enum}</li>
      * </ul>
      * If the value is a {@link List}, it is wrapped in an adapter that will
      * adapt the list's elements. If the value is a {@link Map}, it is wrapped
@@ -267,9 +271,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof String
             || value instanceof Number
             || value instanceof Boolean
-            || value instanceof Enum<?>
             || value instanceof Date
-            || value instanceof TemporalAccessor)) {
+            || value instanceof LocalDate
+            || value instanceof LocalTime
+            || value instanceof LocalDateTime
+            || value instanceof Enum<?>)) {
             if (value instanceof List<?>) {
                 value = new ListAdapter((List<Object>)value);
             } else if (value instanceof Map<?, ?>) {

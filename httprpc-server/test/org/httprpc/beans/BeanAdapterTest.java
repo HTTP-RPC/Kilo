@@ -19,6 +19,9 @@ import org.httprpc.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class BeanAdapterTest extends AbstractTest {
@@ -27,13 +30,17 @@ public class BeanAdapterTest extends AbstractTest {
         BeanAdapter adapter = new BeanAdapter(new TestBean());
 
         Assert.assertEquals(mapOf(
-            entry("a", 2L),
-            entry("b", 4.0),
-            entry("c", "abc"),
-            entry("d", new Date(0)),
-            entry("e", mapOf(entry("i", true))),
-            entry("f", listOf(mapOf(entry("i", true)))),
-            entry("g", mapOf(entry("h", mapOf(entry("i", true)))))
+            entry("long", 2L),
+            entry("double", 4.0),
+            entry("string", "abc"),
+            entry("date", new Date(0)),
+            entry("localDate", LocalDate.parse("2018-06-28")),
+            entry("localTime", LocalTime.parse("10:45")),
+            entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
+            entry("value", TestBean.Value.A),
+            entry("nestedBean", mapOf(entry("flag", true))),
+            entry("nestedBeanList", listOf(mapOf(entry("flag", true)))),
+            entry("nestedBeanMap", mapOf(entry("xyz", mapOf(entry("flag", true)))))
         ), adapter);
     }
 }
