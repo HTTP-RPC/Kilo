@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="httprpc-server" default="war">
-    <property name="title" value="HTTP-RPC Server"/>
-    <property name="version" value="5.0"/>
+<project name="jtemplate" default="build">
+    <property name="title" value="JTemplate"/>
+    <property name="version" value="2.0"/>
 
     <property name="src" value="src"/>
     <property name="api" value="api"/>
-    <property name="lib" value="lib"/>
     <property name="bin" value="bin"/>
     <property name="doc" value="doc"/>
-    <property name="test" value="test"/>
-    <property name="war" value="war"/>
-    <property name="classes" value="classes"/>
 
     <property name="bundle" value="bundle"/>
 
@@ -55,37 +51,6 @@
                 <fileset dir="${api}" includes="*.jar"/>
             </classpath>
         </javadoc>
-    </target>
-
-    <target name="war" depends="build">
-        <echo message="Building ${title} web archive..."/>
-
-        <delete dir="${war}/WEB-INF/${classes}"/>
-        <mkdir dir="${war}/WEB-INF/${classes}"/>
-
-        <delete dir="${war}/WEB-INF/${lib}"/>
-        <mkdir dir="${war}/WEB-INF/${lib}"/>
-
-            <javac srcDir="${test}" destDir="${war}/WEB-INF/${classes}"
-                includejavaruntime="true" includeantruntime="true"
-                encoding="UTF-8" deprecation="true" debug="true"
-                failonerror="true">
-            <classpath>
-                <fileset dir="bundle" includes="*.jar"/>
-
-                <fileset dir="${api}" includes="*.jar"/>
-            </classpath>
-
-            <compilerarg value="-parameters"/>
-        </javac>
-
-        <copy todir="${war}/WEB-INF/${classes}">
-            <fileset dir="${test}" excludes="*.java"/>
-        </copy>
-
-        <copy todir="${war}/WEB-INF/${lib}">
-            <fileset dir="bundle" includes="*.jar"/>
-        </copy>
     </target>
 
     <target name="package" depends="build, doc">

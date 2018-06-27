@@ -1,0 +1,4 @@
+build
+bin
+war/WEB-INF/classes
+war/WEB-INF/lib/httprpc-server-*.jar
