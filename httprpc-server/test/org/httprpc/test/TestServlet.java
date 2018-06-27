@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, long date) {
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, Date date) {
         HashMap<String, Object> result = new HashMap<>();
 
         result.put("string", string);
@@ -72,7 +73,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("POST")
-    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, long date, List<URL> attachments) throws IOException {
+    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, Date date, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (URL attachment : attachments) {

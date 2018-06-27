@@ -425,8 +425,13 @@ public abstract class DispatcherServlet extends HttpServlet {
                 argument = Boolean.parseBoolean(value.toString());
             }
         } else if (type == Date.class) {
-            // TODO
-            argument = null;
+            if (value == null) {
+                argument = null;
+            } else if (value instanceof Number) {
+                argument = new Date(((Number)value).longValue());
+            } else {
+                argument = new Date(Long.parseLong(value.toString()));
+            }
         } else if (type == LocalDate.class) {
             // TODO
             argument = null;
@@ -518,6 +523,8 @@ class JSONEncoder {
             writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
+        } else if (value instanceof Date) {
+            writer.append(String.valueOf(((Date)value).getTime()));
         } else if (value instanceof Iterable<?>) {
             writer.append("[");
 
