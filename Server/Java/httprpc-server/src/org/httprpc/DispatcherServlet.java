@@ -16,16 +16,24 @@ package org.httprpc;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -194,7 +202,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                     if (cause != null) {
                         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        response.setContentType(String.format("%s;charset=%s", "text/plain", UTF_8));
+                        response.setContentType(String.format("text/plain;charset=%s", UTF_8));
 
                         PrintWriter writer = response.getWriter();
 
@@ -216,7 +224,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
             if (returnType != Void.TYPE && returnType != Void.class) {
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.setContentType(String.format("%s;charset=%s", WebServiceProxy.APPLICATION_JSON, UTF_8));
+                response.setContentType(String.format("application/json;charset=%s", UTF_8));
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
@@ -238,50 +246,43 @@ public abstract class DispatcherServlet extends HttpServlet {
 
     @SuppressWarnings("unchecked")
     private static Map<String, ?> getParameterMap(HttpServletRequest request, List<File> files) throws ServletException, IOException {
+        Map<String, Object> parameterMap = new HashMap<>();
+
+        Enumeration<String> parameterNames = request.getParameterNames();
+
+        while (parameterNames.hasMoreElements()) {
+            String name = parameterNames.nextElement();
+
+            parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
+        }
+
         String contentType = request.getContentType();
 
-        Map<String, Object> parameterMap;
-        if (contentType != null && contentType.startsWith(WebServiceProxy.APPLICATION_JSON)) {
-            JSONDecoder jsonDecoder = new JSONDecoder();
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            for (Part part : request.getParts()) {
+                String submittedFileName = part.getSubmittedFileName();
 
-            parameterMap = (Map<String, Object>)jsonDecoder.readValue(request.getInputStream());
-        } else {
-            parameterMap = new HashMap<>();
-
-            Enumeration<String> parameterNames = request.getParameterNames();
-
-            while (parameterNames.hasMoreElements()) {
-                String name = parameterNames.nextElement();
-
-                parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
-            }
-
-            if (contentType != null && contentType.startsWith(WebServiceProxy.MULTIPART_FORM_DATA)) {
-                for (Part part : request.getParts()) {
-                    String submittedFileName = part.getSubmittedFileName();
-
-                    if (submittedFileName == null || submittedFileName.length() == 0) {
-                        continue;
-                    }
-
-                    String name = part.getName();
-
-                    LinkedList<URL> urlList = (LinkedList<URL>)parameterMap.get(name);
-
-                    if (urlList == null) {
-                        urlList = new LinkedList<>();
-
-                        parameterMap.put(name, urlList);
-                    }
-
-                    File file = File.createTempFile(part.getName(), "_" + submittedFileName);
-
-                    part.write(file.getAbsolutePath());
-
-                    urlList.add(file.toURI().toURL());
-
-                    files.add(file);
+                if (submittedFileName == null || submittedFileName.length() == 0) {
+                    continue;
                 }
+
+                String name = part.getName();
+
+                LinkedList<URL> urlList = (LinkedList<URL>)parameterMap.get(name);
+
+                if (urlList == null) {
+                    urlList = new LinkedList<>();
+
+                    parameterMap.put(name, urlList);
+                }
+
+                File file = File.createTempFile(part.getName(), "_" + submittedFileName);
+
+                part.write(file.getAbsolutePath());
+
+                urlList.add(file.toURI().toURL());
+
+                files.add(file);
             }
         }
 
@@ -320,7 +321,6 @@ public abstract class DispatcherServlet extends HttpServlet {
         return method;
     }
 
-    @SuppressWarnings("unchecked")
     private static Object[] getArguments(Method method, Map<String, ?> parameterMap) throws IOException {
         Parameter[] parameters = method.getParameters();
 
@@ -350,23 +350,6 @@ public abstract class DispatcherServlet extends HttpServlet {
                 }
 
                 argument = list;
-            } else if (type == Map.class) {
-                Map<String, ?> values = (Map<String, ?>)parameterMap.get(name);
-
-                Type valueType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[1];
-
-                Map<String, Object> map;
-                if (values != null) {
-                    map = new HashMap<>();
-
-                    for (Map.Entry<String, ?> entry : values.entrySet()) {
-                        map.put(entry.getKey(), getArgument(entry.getValue(), (valueType instanceof Class<?>) ? (Class<?>)valueType : Object.class));
-                    }
-                } else {
-                    map = Collections.emptyMap();
-                }
-
-                argument = map;
             } else {
                 Object value = parameterMap.get(name);
 
@@ -441,6 +424,18 @@ public abstract class DispatcherServlet extends HttpServlet {
             } else {
                 argument = Boolean.parseBoolean(value.toString());
             }
+        } else if (type == Date.class) {
+            // TODO
+            argument = null;
+        } else if (type == LocalDate.class) {
+            // TODO
+            argument = null;
+        } else if (type == LocalTime.class) {
+            // TODO
+            argument = null;
+        } else if (type == LocalDateTime.class) {
+            // TODO
+            argument = null;
         } else {
             argument = value;
         }
@@ -481,3 +476,123 @@ public abstract class DispatcherServlet extends HttpServlet {
         return keys.get().get(index);
     }
 }
+
+class JSONEncoder {
+    private int depth = 0;
+
+    public void writeValue(Object value, OutputStream outputStream) throws IOException {
+        Writer writer = new OutputStreamWriter(outputStream, Charset.forName("UTF-8"));
+        writeValue(value, writer);
+
+        writer.flush();
+    }
+
+    private void writeValue(Object value, Writer writer) throws IOException {
+        if (value == null) {
+            writer.append(null);
+        } else if (value instanceof CharSequence) {
+            CharSequence text = (CharSequence)value;
+
+            writer.append("\"");
+
+            for (int i = 0, n = text.length(); i < n; i++) {
+                char c = text.charAt(i);
+
+                if (c == '"' || c == '\\') {
+                    writer.append("\\" + c);
+                } else if (c == '\b') {
+                    writer.append("\\b");
+                } else if (c == '\f') {
+                    writer.append("\\f");
+                } else if (c == '\n') {
+                    writer.append("\\n");
+                } else if (c == '\r') {
+                    writer.append("\\r");
+                } else if (c == '\t') {
+                    writer.append("\\t");
+                } else {
+                    writer.append(c);
+                }
+            }
+
+            writer.append("\"");
+        } else if (value instanceof Number || value instanceof Boolean) {
+            writer.append(String.valueOf(value));
+        } else if (value instanceof Iterable<?>) {
+            writer.append("[");
+
+            depth++;
+
+            int i = 0;
+
+            for (Object element : (Iterable<?>)value) {
+                if (i > 0) {
+                    writer.append(",");
+                }
+
+                writer.append("\n");
+
+                indent(writer);
+
+                writeValue(element, writer);
+
+                i++;
+            }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("]");
+        } else if (value instanceof Map<?, ?>) {
+            writer.append("{");
+
+            depth++;
+
+            int i = 0;
+
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
+                if (i > 0) {
+                    writer.append(",");
+                }
+
+                writer.append("\n");
+
+                Object key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                indent(writer);
+
+                writeValue(key.toString(), writer);
+
+                writer.append(": ");
+
+                writeValue(entry.getValue(), writer);
+
+                i++;
+            }
+
+            depth--;
+
+            writer.append("\n");
+
+            indent(writer);
+
+            writer.append("}");
+        } else {
+            throw new IOException("Unsupported value type.");
+        }
+    }
+
+    private void indent(Writer writer) throws IOException {
+        for (int i = 0; i < depth; i++) {
+            writer.append("  ");
+        }
+    }
+}
+

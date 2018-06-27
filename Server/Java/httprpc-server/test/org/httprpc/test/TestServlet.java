@@ -16,7 +16,10 @@ package org.httprpc.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +31,6 @@ import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
-import static org.httprpc.WebServiceProxy.listOf;
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
-
 /**
  * Test servlet.
  */
@@ -41,13 +40,16 @@ public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag) {
-        return mapOf(
-            entry("string", string),
-            entry("strings", strings),
-            entry("number", number),
-            entry("flag", flag)
-        );
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, long date) {
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("string", string);
+        result.put("strings", strings);
+        result.put("number", number);
+        result.put("flag", flag);
+        result.put("date", date);
+
+        return result;
     }
 
     @RequestMethod("GET")
@@ -60,7 +62,7 @@ public class TestServlet extends DispatcherServlet {
     @RequestMethod("GET")
     @ResourcePath("/a/?/b/?/c/?/d/?")
     public List<?> testGet() {
-        return listOf(getKey(0), getKey(1), getKey(2), getKey(3));
+        return Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3));
     }
 
     @RequestMethod("GET")
@@ -70,7 +72,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("POST")
-    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, List<URL> attachments) throws IOException {
+    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag, long date, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (URL attachment : attachments) {
@@ -85,33 +87,55 @@ public class TestServlet extends DispatcherServlet {
                 }
             }
 
-            attachmentInfo.add(mapOf(
-                entry("bytes", bytes),
-                entry("checksum", checksum)
-            ));
+            HashMap<String, Long> map = new HashMap<>();
+
+            map.put("bytes", bytes);
+            map.put("checksum", checksum);
+
+            attachmentInfo.add(map);
         }
 
-        return mapOf(
-            entry("string", string),
-            entry("strings", strings),
-            entry("number", number),
-            entry("flag", flag),
-            entry("attachmentInfo", attachmentInfo)
-        );
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("string", string);
+        result.put("strings", strings);
+        result.put("number", number);
+        result.put("flag", flag);
+        result.put("date", date);
+        result.put("attachmentInfo", attachmentInfo);
+
+        return result;
+    }
+
+    @RequestMethod("POST")
+    public void testPost(String name) throws IOException {
+        echo();
     }
 
     @RequestMethod("PUT")
-    public List<?> testPut(String text, Map<String, ?> map, List<?> list) {
-        return listOf(text, map, list);
+    public void testPut(int id) throws IOException {
+        echo();
     }
 
     @RequestMethod("PATCH")
-    public String testPatch(String text) {
-        return text;
+    public void testPatch(int id) throws IOException {
+        echo();
+    }
+
+    private void echo() throws IOException {
+        InputStream inputStream = getRequest().getInputStream();
+        OutputStream outputStream = getResponse().getOutputStream();
+
+        int b;
+        while ((b = inputStream.read()) != -1) {
+            outputStream.write(b);
+        }
+
+        outputStream.flush();
     }
 
     @RequestMethod("DELETE")
-    public boolean testDelete(int id) {
-        return (id == 101);
+    public void testDelete(int id) {
+        // No-op
     }
 }

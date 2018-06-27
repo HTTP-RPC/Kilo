@@ -14,17 +14,16 @@
 
 package org.httprpc.example;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-
-import static org.httprpc.WebServiceProxy.listOf;
-import static org.httprpc.WebServiceProxy.mapOf;
-import static org.httprpc.WebServiceProxy.entry;
 
 /**
  * Servlet that simulates a product catalog using path variables.
@@ -33,20 +32,37 @@ import static org.httprpc.WebServiceProxy.entry;
 public class CatalogServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
-    private List<?> items = listOf(
-        mapOf(
-            entry("description", "Hat"),
-            entry("price", 15.00)
-        ),
-        mapOf(
-            entry("description", "Mittens"),
-            entry("price", 12.00)
-        ),
-        mapOf(
-            entry("description", "Scarf"),
-            entry("price", 9.00)
-        )
-    );
+    private List<?> items = null;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        ArrayList<HashMap<String, Object>> items = new ArrayList<>();
+
+        HashMap<String, Object> item1 = new HashMap<>();
+
+        item1.put("description", "Hat");
+        item1.put("price", 15.00);
+
+        items.add(item1);
+
+        HashMap<String, Object> item2 = new HashMap<>();
+
+        item2.put("description", "Mittens");
+        item2.put("price", 12.00);
+
+        items.add(item2);
+
+        HashMap<String, Object> item3 = new HashMap<>();
+
+        item3.put("description", "Scarf");
+        item3.put("price", 9.00);
+
+        items.add(item3);
+
+        this.items = items;
+    }
 
     @RequestMethod("GET")
     @ResourcePath("/items")
@@ -59,6 +75,6 @@ public class CatalogServlet extends DispatcherServlet {
     public Object getItem() {
         int index = Integer.parseInt(getKey(0));
 
-        return (index < items.size()) ? items.get(index) : null;
+        return (index < items.size()) ? items.get(index - 1) : null;
     }
 }

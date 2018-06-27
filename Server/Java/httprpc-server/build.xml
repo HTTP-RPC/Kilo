@@ -2,7 +2,7 @@
 
 <project name="httprpc-server" default="war">
     <property name="title" value="HTTP-RPC Server"/>
-    <property name="version" value="4.3"/>
+    <property name="version" value="5.0"/>
 
     <property name="src" value="src"/>
     <property name="api" value="api"/>
@@ -20,8 +20,6 @@
     <property name="docfile" value="${ant.project.name}-${version}-javadoc.jar"/>
 
     <target name="build">
-        <ant dir="../../../Client/Java/httprpc" target="build" inheritAll="false"/>
-
         <echo message="Building ${title}..."/>
 
         <delete dir="${bin}"/>
@@ -32,8 +30,6 @@
             encoding="UTF-8" deprecation="true" debug="true"
             failonerror="true">
             <classpath>
-                <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
-
                 <fileset dir="${api}" includes="*.jar"/>
             </classpath>
         </javac>
@@ -56,8 +52,6 @@
             link="http://docs.oracle.com/javase/8/docs/api/"
             version="true" use="true">
             <classpath>
-                <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
-
                 <fileset dir="${api}" includes="*.jar"/>
             </classpath>
         </javadoc>
@@ -77,7 +71,6 @@
                 encoding="UTF-8" deprecation="true" debug="true"
                 failonerror="true">
             <classpath>
-                <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
                 <fileset dir="bundle" includes="*.jar"/>
 
                 <fileset dir="${api}" includes="*.jar"/>
@@ -91,7 +84,6 @@
         </copy>
 
         <copy todir="${war}/WEB-INF/${lib}">
-            <fileset dir="../../../Client/Java/httprpc/bundle" includes="*.jar"/>
             <fileset dir="bundle" includes="*.jar"/>
         </copy>
     </target>
