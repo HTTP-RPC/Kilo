@@ -1,6 +1,6 @@
 bin
 build
 bundle
-bundle.jar
 doc
 war/WEB-INF/classes
+war/WEB-INF/lib/httprpc-server-*.jar
