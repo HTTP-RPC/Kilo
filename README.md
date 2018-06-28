@@ -1,13 +1,8 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/HTTP-RPC.svg)](https://github.com/gk-brown/HTTP-RPC/releases)
-[![CocoaPods](https://img.shields.io/cocoapods/v/HTTPRPC.svg)](https://cocoapods.org/pods/HTTPRPC)
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing REST services in Java. It provides a lightweight alternative to ...
-
-... TODO
-
-For example, the following code snippet shows ... TODO
+HTTP-RPC is an open-source framework for implementing REST services in Java. It requires only a servlet container and is distributed as a single JAR file that is less than 30KB in size, making it an ideal choice for applications where a minimal footprint is required.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -15,19 +10,17 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_brown@icloud.com?subject=HTTP-RPC) with any questions, comments, or suggestions. Also, if you like using HTTP-RPC, please consider [starring](https://github.com/gk-brown/HTTP-RPC/stargazers) it!
 
 # Contents
-TODO
+* [Getting HTTP-RPC](#getting-http-rpc)
+* [HTTP-RPC Classes](#http-rpc-classes)
+    * [DispatcherServlet](#dispatcher-servlet)
+    * [JSONEncoder](#json-encoder)
+    * [BeanAdapter](#bean-adapter)
+    * [ResultSetAdapter](#result-set-adapter)
+    * [IteratorAdapter](#iterator-adapter)
+* [Additional Information](#additional-information)
 
-
-HTTP-RPC is distributed as a JAR file containing the following types:
-
-* `DispatcherServlet` - abstract base class for web services
-* `JSONEncoder` - TODO
-* `RequestMethod` - annotation that associates an HTTP verb with a service method
-* `ResourcePath` - annotation that associates a resource path with a service method
-
-TODO Adapter classes
-
-The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
+# Getting HTTP-RPC
+The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
 
 ```xml
 <dependency>
@@ -37,12 +30,30 @@ The server JAR can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/rel
 </dependency>
 ```
 
-Java 8 or later is required.
+HTTP-RPC requires Java 8 or later and a servlet container supporting Servlet specification 3.1 or later.
+
+# HTTP-RPC Classes
+HTTP-RPC provides the following classes for implementing REST services:
+
+* `org.httprpc`
+    * `DispatcherServlet` - abstract base class for web services
+    * `RequestMethod` - annotation that associates an HTTP verb with a service method
+    * `ResourcePath` - annotation that associates a resource path with a service method
+    * `JSONEncoder` - class that encodes service results as JSON
+* `org.httprpc.beans`
+    * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map
+* `org.httprpc.sql`
+    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable cursor
+    * `Parameters` - class for simplifying execution of prepared statements 
+* `org.httprpc.util`
+    * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable cursor
+
+These classes are explained in more detail in the following sections.
 
 ## DispatcherServlet
 `DispatcherServlet` is an abstract base class for HTTP-based web services. Service operations are defined by adding public methods to a concrete service implementation. 
 
-Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. Arguments may also be provided as JSON. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
+Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. 
 
@@ -81,9 +92,9 @@ This request would invoke the second method:
 
 In either case, the service would return the value 6 in response.
 
-Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+**IMPORTANT** Service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
-## Method Arguments
+### Method Arguments
 Method arguments may be any of the following types:
 
 * `String`
@@ -101,7 +112,7 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-List arguments represent multi-value parameters. List values are automatically converted to their declared types when possible.
+`List` arguments represent multi-value parameters. List values are automatically converted to their declared types when possible.
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
@@ -121,7 +132,7 @@ public class FileUploadServlet extends DispatcherServlet {
 }
 ```
 
-## Return Values
+### Return Values
 Return values are converted to their JSON equivalents as follows:
 
 * `Number`: number
@@ -137,6 +148,8 @@ Return values are converted to their JSON equivalents as follows:
 Methods may also return `void` or `Void` to indicate that they do not produce a value.
 
 For example, the following method would produce a JSON object containing three values:
+
+TODO Update example
 
 ```java
 @RequestMethod("GET")
@@ -159,7 +172,10 @@ The service would return the following in response:
 }
 ```
 
-## Request and Repsonse Properties
+### Exceptions
+If an exception is thrown during execution of a method and the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure.
+
+### Request and Repsonse Properties
 `DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
 
     protected HttpServletRequest getRequest() { ... }
@@ -169,10 +185,7 @@ For example, a service might access the request to get the name of the current u
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or alternative text formats.
 
-## Exceptions
-If an exception is thrown during execution of a method and the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure, such as an invalid argument.
-
-## Path Variables
+### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
 
 ```java
@@ -193,13 +206,19 @@ For example, given the following path:
 
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
-# BeanAdapter
+## JSONEncoder
 TODO
 
-# ResultSetAdapter
+## BeanAdapter
 TODO
 
-# IteratorAdapter
+## ResultSetAdapter
+TODO
+
+### Parameters
+TODO
+
+## IteratorAdapter
 TODO
 
 # Additional Information
