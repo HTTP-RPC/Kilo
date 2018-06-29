@@ -15,7 +15,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
     * [DispatcherServlet](#dispatcher-servlet)
     * [JSONEncoder](#json-encoder)
     * [BeanAdapter](#bean-adapter)
-    * [ResultSetAdapter](#result-set-adapter)
+    * [ResultSetAdapter and Parameters](#result-set-adapter-and-parameters)
     * [IteratorAdapter](#iterator-adapter)
 * [Additional Information](#additional-information)
 
@@ -84,11 +84,15 @@ public class MathServlet extends DispatcherServlet {
 
 The following request would cause the first method to be invoked:
 
-    GET /math/sum?a=2&b=4
-    
+```
+GET /math/sum?a=2&b=4
+```
+ 
 This request would invoke the second method:
 
-    GET /math/sum?values=1&values=2&values=3
+```
+GET /math/sum?values=1&values=2&values=3
+```
 
 In either case, the service would return the value 6 in response.
 
@@ -135,9 +139,9 @@ public class FileUploadServlet extends DispatcherServlet {
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
 
+* `CharSequence`: string
 * `Number`: number
 * `Boolean`: true/false
-* `CharSequence`: string
 * `java.util.Date`: long value representing epoch time in milliseconds
 * `java.util.time.LocalDate`: "yyyy-mm-dd"
 * `java.util.time.LocalTime`: "hh:mm"
@@ -149,16 +153,17 @@ Methods may also return `void` or `Void` to indicate that they do not produce a 
 
 For example, the following method would produce a JSON object containing three values:
 
-TODO Update example
-
 ```java
 @RequestMethod("GET")
+@ResourcePath("/map")
 public Map<String, ?> getMap() {
-    return mapOf(
-        entry("text", "Lorem ipsum"),
-        entry("number", 123),
-        entry("flag", true)
-    );
+    HashMap<String, Object> map = new HashMap<>();
+
+    map.put("text", "Lorem ipsum");
+    map.put("number", 123);
+    map.put("flag", true);
+    
+    return map;
 }
 ```
 
@@ -207,21 +212,247 @@ For example, given the following path:
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
 ## JSONEncoder
-TODO
+The `JSONEncoder` class is used internally by `DispatcherServlet` to serialize a JSON response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
+
+```java
+@RequestMethod("GET")
+@ResourcePath("/map")
+public void getMap() throws IOException {
+    HashMap<String, Object> map = new HashMap<>();
+
+    map.put("text", "Lorem ipsum");
+    map.put("number", 123);
+    map.put("flag", true);
+
+    JSONEncoder jsonEncoder = new JSONEncoder();
+
+    try {
+        jsonEncoder.writeValue(map, getResponse().getOutputStream());
+    } finally {
+        getResponse().flushBuffer();
+    }
+}
+```
 
 ## BeanAdapter
-TODO
+The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects. 
 
-## ResultSetAdapter
-TODO
+If a property value is `null` or an instance of one of the following types, it is returned as-is:
 
-### Parameters
-TODO
+* `String`
+* `Number`
+* `Boolean`
+* `java.util.Date`
+* `java.util.time.LocalDate`
+* `java.util.time.LocalTime`
+* `java.util.time.LocalDateTime`
+
+If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is considered a nested Bean and will be wrapped in a `BeanAdapter`.
+
+For example, the following class might be used to represent a node in a hierarchical object graph:
+
+```java
+public class TreeNode {
+    private String name;
+
+    private List<TreeNode> children = null;
+
+    public TreeNode(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<TreeNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TreeNode> children) {
+        this.children = children;
+    }
+```
+
+An example service method that returns a `TreeNode` structure is shown below:
+
+```
+@RequestMethod("GET")
+public Map<String, ?> getTree() {
+    TreeNode root = new TreeNode("Seasons");
+
+    TreeNode winter = new TreeNode("Winter");
+    winter.setChildren(Arrays.asList(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
+
+    TreeNode spring = new TreeNode("Spring");
+    spring.setChildren(Arrays.asList(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
+
+    TreeNode summer = new TreeNode("Summer");
+    summer.setChildren(Arrays.asList(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
+
+    TreeNode fall = new TreeNode("Fall");
+    fall.setChildren(Arrays.asList(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
+
+    root.setChildren(Arrays.asList(winter, spring, summer, fall));
+
+    return new BeanAdapter(root);
+}
+```
+
+Although the values are actually stored in the strongly typed properties of the `TreeNode` object, the adapter makes the data appear as a map; for example:
+
+```json
+{
+  "name": "Seasons",
+  "children": [
+    {
+      "name": "Winter",
+      "children": [
+        {
+          "name": "January",
+          "children": null
+        },
+        {
+          "name": "February",
+          "children": null
+        },
+        {
+          "name": "March",
+          "children": null
+        }
+      ]
+    },
+    ...
+  ]
+}
+```
+
+## ResultSetAdapter and Parameters
+The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be serialized as an array of JSON objects. For example:
+
+```java
+JSONEncoder jsonEncoder = new JSONEncoder();
+
+try (ResultSet resultSet = statement.executeQuery()) {
+    jsonEncoder.writeValue(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
+}
+```
+
+The `Parameters` class can be used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
+
+```sql
+SELECT * FROM some_table 
+WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
+```
+ 
+The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
+
+```java
+Parameters parameters = Parameters.parse(sql);
+```
+
+The `getSQL()` method returns the parsed SQL in standard JDBC syntax:
+
+```sql
+SELECT * FROM some_table 
+WHERE column_a = ? OR column_b = ? OR column_c = COALESCE(?, 4.0)
+```
+
+This value is used to create the actual prepared statement:
+
+```java
+PreparedStatement statement = connection.prepareStatement(parameters.getSQL());
+```
+
+Parameter values are specified via the `put()` method:
+
+```java
+parameters.put("a", "hello");
+parameters.put("b", 3);
+```
+
+The values are applied to the statement via the `apply()` method:
+
+```java
+parameters.apply(statement);
+```
+
+Once applied, the statement can be executed:
+
+```java
+return new ResultSetAdapter(statement.executeQuery());    
+```
+
+A complete example of a service method that uses both classes is shown below. It is based on the MySQL sample database, and retrieves a list of all pets belonging to a given owner:
+
+```
+@RequestMethod("GET")
+public void getPets(String owner) throws SQLException, IOException {
+    try (Connection connection = DriverManager.getConnection(DB_URL)) {
+        Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
+
+        parameters.put("owner", owner);
+
+        try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+            parameters.apply(statement);
+
+            JSONEncoder jsonEncoder = new JSONEncoder();
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                jsonEncoder.writeValue(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
+            }
+        }
+    } finally {
+        getResponse().flushBuffer();
+    }
+}
+```
+
+For example, given this request:
+
+```
+GET /pets?owner=Gwen
+```
+
+The service would return something like the following:
+
+```json
+[
+  {
+    "name": "Claws",
+    "species": "cat",
+    "sex": "m",
+    "birth": 763880400000
+  },
+  {
+    "name": "Chirpy",
+    "species": "bird",
+    "sex": "f",
+    "birth": 905486400000
+  },
+  {
+    "name": "Whistler",
+    "species": "bird",
+    "sex": null,
+    "birth": 881643600000
+  }
+]
+```
 
 ## IteratorAdapter
+The `IteratorAdapter` class implements the `Iterable` interface and makes each value produced by an iterator appear to be an element of the adapter, allowing the iterator's contents to be serialized as a JSON array.
+
+`IteratorAdapter` is typically used to transform result data produced by NoSQL databases such as MongoDB. For example:
+
+```java
 TODO
+```
+
+It can also be used to transform the result of stream operations on Java collection types. For example:
+
+```java
+TODO
+```
 
 # Additional Information
-For additional information and examples, see the [wiki](https://github.com/gk-brown/HTTP-RPC/wiki).
-
-
+This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).

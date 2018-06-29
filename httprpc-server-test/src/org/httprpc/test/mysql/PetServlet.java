@@ -54,7 +54,7 @@ public class PetServlet extends DispatcherServlet {
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
-            Parameters parameters = Parameters.parse("select name, species, sex, birth from pet where owner = :owner");
+            Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
             parameters.put("owner", owner);
 
