@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 /**
- * Abstract base class for HTTP-based web services.
+ * Abstract base class for REST-based web services.
  */
 public abstract class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;

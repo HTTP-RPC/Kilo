@@ -51,7 +51,7 @@ HTTP-RPC provides the following classes for implementing REST services:
 These classes are explained in more detail in the following sections.
 
 ## DispatcherServlet
-`DispatcherServlet` is an abstract base class for HTTP-based web services. Service operations are defined by adding public methods to a concrete service implementation. 
+`DispatcherServlet` is an abstract base class for REST-based web services. Service operations are defined by adding public methods to a concrete service implementation. 
 
 Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 
