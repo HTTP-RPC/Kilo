@@ -448,10 +448,23 @@ The `IteratorAdapter` class implements the `Iterable` interface and makes each v
 TODO
 ```
 
-It can also be used to transform the result of stream operations on Java collection types. For example:
+`IteratorAdapter` can also be used to transform the result of stream operations on Java collection types. For example:
 
 ```java
-TODO
+@RequestMethod("GET")
+public Iterable<?> getStream() {
+    return new IteratorAdapter(Arrays.asList("a", "b", "c").stream().iterator());
+}
+```
+
+A call to this service method would produce the following:
+
+```json
+[
+  "a",
+  "b",
+  "c"
+]
 ```
 
 # Additional Information
