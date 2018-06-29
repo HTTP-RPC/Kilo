@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>HTTP-RPC Server</name>
-    <description>Multi-platform RPC over HTTP</description>
+    <description>Lightweight REST services for Java</description>
     <url>http://httprpc.org</url>
 
     <licenses>
@@ -29,6 +29,6 @@
 
     <scm>
         <connection>scm:git:git://github.com/gk-brown/HTTP-RPC.git</connection>
-        <url>https://github.com/gk-brown/HTTP-RPC/tree/master/Server/Java/httprpc-server</url>
+        <url>https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server</url>
     </scm>
 </project>
