@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing REST services in Java. It requires only a servlet container and is distributed as a single JAR file that is less than 30KB in size, making it an ideal choice for applications where a minimal footprint is required.
+HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 30KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -30,7 +30,7 @@ The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-
 </dependency>
 ```
 
-HTTP-RPC requires Java 8 or later and a servlet container supporting Servlet specification 3.1 or later.
+HTTP-RPC requires Java 8 or later and a servlet container supporting the Java Servlet specification 3.1 or later.
 
 # HTTP-RPC Classes
 HTTP-RPC provides the following classes for implementing REST services:
@@ -57,7 +57,7 @@ Methods are invoked by submitting an HTTP request for a path associated with a s
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. 
 
-Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following class might be used to implement the simple addition operations discussed earlier:
+Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following class might be used to implement some simple addition operations:
 
 ```java
 @WebServlet(urlPatterns={"/math/*"})
@@ -116,7 +116,7 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-`List` arguments represent multi-value parameters. List values are automatically converted to their declared types when possible.
+`List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
@@ -151,7 +151,7 @@ Return values are converted to their JSON equivalents as follows:
 
 Methods may also return `void` or `Void` to indicate that they do not produce a value. Unsupported types are returned as `null`.
 
-For example, the following method would produce a JSON object containing three values:
+For example, this method returns a `Map` instance containing three values:
 
 ```java
 @RequestMethod("GET")
@@ -167,7 +167,7 @@ public Map<String, ?> getMap() {
 }
 ```
 
-The service would return the following in response:
+The service would produce the following in response:
 
 ```json
 {
@@ -178,7 +178,15 @@ The service would return the following in response:
 ```
 
 ### Exceptions
-If an exception is thrown during execution of a method and the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure.
+If an exception is thrown during execution of a method and the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
+
+```java
+@RequestMethod("GET")
+@ResourcePath("/error")
+public void generateError() throws Exception {
+    throw new Exception("This is an error message.");
+}
+```
 
 ### Request and Repsonse Properties
 `DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
@@ -188,7 +196,7 @@ If an exception is thrown during execution of a method and the response has not 
 
 For example, a service might access the request to get the name of the current user, or use the response to return a custom header.
 
-The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or alternative text formats.
+The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
 
 ### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
@@ -249,7 +257,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalTime`
 * `java.util.time.LocalDateTime`
 
-If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is considered a nested Bean and will be wrapped in a `BeanAdapter`.
+If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is considered a nested Bean and is wrapped in a `BeanAdapter`.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 
@@ -301,7 +309,7 @@ public Map<String, ?> getTree() {
 }
 ```
 
-Although the values are actually stored in the strongly typed properties of the `TreeNode` object, the adapter makes the data appear as a map; for example:
+Although the values are actually stored in the strongly typed properties of the `TreeNode` object, the adapter makes the data appear as a map, producing the following output:
 
 ```json
 {
@@ -340,7 +348,7 @@ try (ResultSet resultSet = statement.executeQuery()) {
 }
 ```
 
-The `Parameters` class can be used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
+The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 
 ```sql
 SELECT * FROM some_table 
@@ -385,7 +393,7 @@ Once applied, the statement can be executed:
 return new ResultSetAdapter(statement.executeQuery());    
 ```
 
-A complete example of a service method that uses both classes is shown below. It is based on the MySQL sample database, and retrieves a list of all pets belonging to a given owner:
+A complete example that uses both classes is shown below. It is based on the MySQL sample database, and retrieves a list of all pets belonging to a given owner:
 
 ```
 @RequestMethod("GET")
@@ -444,7 +452,7 @@ The service would return something like the following:
 ## IteratorAdapter
 The `IteratorAdapter` class implements the `Iterable` interface and makes each value produced by an iterator appear to be an element of the adapter, allowing the iterator's contents to be serialized as a JSON array.
 
-`IteratorAdapter` is typically used to transform result data produced by NoSQL databases such as MongoDB. For example, the following service method (based on the MongoDB sample database) returns a list of restaurants in a given zip code:
+`IteratorAdapter` is typically used to transform result data produced by NoSQL databases such as MongoDB. For example, the following method (based on the MongoDB sample database) returns a list of restaurants in a given zip code:
 
 ```java
 @RequestMethod("GET")
