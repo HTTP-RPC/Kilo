@@ -149,7 +149,7 @@ Return values are converted to their JSON equivalents as follows:
 * `Iterable`: array
 * `java.util.Map`: object
 
-Methods may also return `void` or `Void` to indicate that they do not produce a value.
+Methods may also return `void` or `Void` to indicate that they do not produce a value. Unsupported types are returned as `null`.
 
 For example, the following method would produce a JSON object containing three values:
 
@@ -233,6 +233,8 @@ public void getMap() throws IOException {
     }
 }
 ```
+
+Values are converted to their JSON equivalents as described earlier.
 
 ## BeanAdapter
 The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects. 
@@ -396,9 +398,9 @@ public void getPets(String owner) throws SQLException, IOException {
         try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement);
 
-            JSONEncoder jsonEncoder = new JSONEncoder();
-
             try (ResultSet resultSet = statement.executeQuery()) {
+                JSONEncoder jsonEncoder = new JSONEncoder();
+                
                 jsonEncoder.writeValue(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
             }
         }
@@ -442,12 +444,78 @@ The service would return something like the following:
 ## IteratorAdapter
 The `IteratorAdapter` class implements the `Iterable` interface and makes each value produced by an iterator appear to be an element of the adapter, allowing the iterator's contents to be serialized as a JSON array.
 
-`IteratorAdapter` is typically used to transform result data produced by NoSQL databases such as MongoDB. For example:
+`IteratorAdapter` is typically used to transform result data produced by NoSQL databases such as MongoDB. For example, the following service method (based on the MongoDB sample database) returns a list of restaurants in a given zip code:
 
 ```java
-TODO
+@RequestMethod("GET")
+public void getRestaurants(String zipCode) throws IOException {
+    MongoDatabase db = mongoClient.getDatabase("test");
+
+    FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
+
+    try (MongoCursor<Document> cursor = iterable.iterator()) {
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.writeValue(new IteratorAdapter(cursor), getResponse().getOutputStream());
+    } finally {
+        getResponse().flushBuffer();
+    }
+}
 ```
 
+The service would return something like the following:
+
+```json
+[
+  {
+    "_id": null,
+    "name": "Morris Park Bake Shop",
+    "restaurant_id": "30075445",
+    "address": {
+      "building": "1007",
+      "coord": [
+        -73.856077,
+        40.848447
+      ],
+      "street": "Morris Park Ave",
+      "zipcode": "10462"
+    },
+    "borough": "Bronx",
+    "cuisine": "Bakery",
+    "grades": [
+      {
+        "date": 1393804800000,
+        "grade": "A",
+        "score": 2
+      },
+      {
+        "date": 1378857600000,
+        "grade": "A",
+        "score": 6
+      },
+      {
+        "date": 1358985600000,
+        "grade": "A",
+        "score": 10
+      },
+      {
+        "date": 1322006400000,
+        "grade": "A",
+        "score": 9
+      },
+      {
+        "date": 1299715200000,
+        "grade": "B",
+        "score": 14
+      }
+    ]
+  },
+  ...  
+```
+
+Note that the value of "_id" is `null` because MongoDB's `ObjectId` class is not a valid JSON type.
+
+### Adapting Streams
 `IteratorAdapter` can also be used to transform the result of stream operations on Java collection types. For example:
 
 ```java
