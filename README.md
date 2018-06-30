@@ -1,5 +1,5 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/HTTP-RPC.svg)](https://github.com/gk-brown/HTTP-RPC/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
 HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 30KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
