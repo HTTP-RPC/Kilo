@@ -286,7 +286,7 @@ public class TreeNode {
 
 An example service method that returns a `TreeNode` structure is shown below:
 
-```
+```java
 @RequestMethod("GET")
 public Map<String, ?> getTree() {
     TreeNode root = new TreeNode("Seasons");
@@ -395,7 +395,7 @@ return new ResultSetAdapter(statement.executeQuery());
 
 A complete example that uses both classes is shown below. It is based on the MySQL sample database, and retrieves a list of all pets belonging to a given owner:
 
-```
+```java
 @RequestMethod("GET")
 public void getPets(String owner) throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(DB_URL)) {
