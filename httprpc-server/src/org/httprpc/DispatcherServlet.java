@@ -264,10 +264,10 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 String name = part.getName();
 
-                LinkedList<URL> urls = (LinkedList<URL>)parameterMap.get(name);
+                ArrayList<URL> urls = (ArrayList<URL>)parameterMap.get(name);
 
                 if (urls == null) {
-                    urls = new LinkedList<>();
+                    urls = new ArrayList<>();
 
                     parameterMap.put(name, urls);
                 }
@@ -332,14 +332,18 @@ public abstract class DispatcherServlet extends HttpServlet {
 
             Object argument;
             if (type == List.class) {
-                Type valueType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                Type elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+
+                if (!(elementType instanceof Class<?>)) {
+                    throw new UnsupportedOperationException("Unsupported argument type.");
+                }
 
                 List<Object> list;
                 if (values != null) {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(getArgument(value, (valueType instanceof Class<?>) ? (Class<?>)valueType : Object.class));
+                        list.add(getArgument(value, (Class<?>)elementType));
                     }
                 } else {
                     list = Collections.emptyList();
@@ -349,7 +353,7 @@ public abstract class DispatcherServlet extends HttpServlet {
             } else {
                 Object value;
                 if (values != null) {
-                    value = values.get(0);
+                    value = values.get(values.size() - 1);
                 } else {
                     value = null;
                 }
@@ -365,7 +369,9 @@ public abstract class DispatcherServlet extends HttpServlet {
 
     private static Object getArgument(Object value, Class<?> type) {
         Object argument;
-        if (type == String.class) {
+        if (type.isInstance(value)) {
+            argument = value;
+        } else if (type == String.class) {
             argument = (value == null) ? null : value.toString();
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
@@ -448,7 +454,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                 argument = LocalDateTime.parse(value.toString());
             }
         } else {
-            argument = value;
+            throw new UnsupportedOperationException("Unsupported argument type.");
         }
 
         return argument;
