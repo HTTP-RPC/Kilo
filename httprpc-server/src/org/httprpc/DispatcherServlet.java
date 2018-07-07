@@ -171,7 +171,7 @@ public abstract class DispatcherServlet extends HttpServlet {
 
         LinkedList<File> files = new LinkedList<>();
 
-        Map<String, ?> parameterMap = getParameterMap(request, files);
+        Map<String, List<?>> parameterMap = getParameterMap(request, files);
 
         Method method = getMethod(handlerList, parameterMap);
 
@@ -241,8 +241,8 @@ public abstract class DispatcherServlet extends HttpServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, ?> getParameterMap(HttpServletRequest request, List<File> files) throws ServletException, IOException {
-        Map<String, Object> parameterMap = new HashMap<>();
+    private static Map<String, List<?>> getParameterMap(HttpServletRequest request, List<File> files) throws ServletException, IOException {
+        Map<String, List<?>> parameterMap = new HashMap<>();
 
         Enumeration<String> parameterNames = request.getParameterNames();
 
@@ -264,19 +264,19 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 String name = part.getName();
 
-                LinkedList<URL> urlList = (LinkedList<URL>)parameterMap.get(name);
+                LinkedList<URL> urls = (LinkedList<URL>)parameterMap.get(name);
 
-                if (urlList == null) {
-                    urlList = new LinkedList<>();
+                if (urls == null) {
+                    urls = new LinkedList<>();
 
-                    parameterMap.put(name, urlList);
+                    parameterMap.put(name, urls);
                 }
 
                 File file = File.createTempFile(part.getName(), "_" + submittedFileName);
 
                 part.write(file.getAbsolutePath());
 
-                urlList.add(file.toURI().toURL());
+                urls.add(file.toURI().toURL());
 
                 files.add(file);
             }
@@ -285,7 +285,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         return parameterMap;
     }
 
-    private static Method getMethod(List<Method> handlerList, Map<String, ?> parameterMap) {
+    private static Method getMethod(List<Method> handlerList, Map<String, List<?>> parameterMap) {
         Method method = null;
 
         int n = parameterMap.size();
@@ -317,7 +317,7 @@ public abstract class DispatcherServlet extends HttpServlet {
         return method;
     }
 
-    private static Object[] getArguments(Method method, Map<String, ?> parameterMap) throws IOException {
+    private static Object[] getArguments(Method method, Map<String, List<?>> parameterMap) throws IOException {
         Parameter[] parameters = method.getParameters();
 
         Object[] arguments = new Object[parameters.length];
@@ -328,10 +328,10 @@ public abstract class DispatcherServlet extends HttpServlet {
             String name = parameter.getName();
             Class<?> type = parameter.getType();
 
+            List<?> values = parameterMap.get(name);
+
             Object argument;
             if (type == List.class) {
-                List<?> values = (List<?>)parameterMap.get(name);
-
                 Type valueType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
                 List<Object> list;
@@ -347,10 +347,11 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 argument = list;
             } else {
-                Object value = parameterMap.get(name);
-
-                if (value instanceof List<?>) {
-                    value = ((List<?>)value).get(0);
+                Object value;
+                if (values != null) {
+                    value = values.get(0);
+                } else {
+                    value = null;
                 }
 
                 argument = getArgument(value, type);
