@@ -48,7 +48,6 @@ import javax.servlet.http.Part;
 public abstract class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 0;
 
-    // Resource structure
     private static class Resource {
         public final HashMap<String, List<Method>> handlerMap = new HashMap<>();
         public final HashMap<String, Resource> resources = new HashMap<>();
@@ -123,7 +122,6 @@ public abstract class DispatcherServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Look up handler list
         Resource resource = root;
 
         LinkedList<String> keys = new LinkedList<>();
@@ -164,29 +162,27 @@ public abstract class DispatcherServlet extends HttpServlet {
             return;
         }
 
-        // Look up handler method
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding(UTF_8);
         }
 
-        LinkedList<File> files = new LinkedList<>();
-
-        Map<String, List<?>> parameterMap = getParameterMap(request, files);
-
-        Method method = getMethod(handlerList, parameterMap);
-
-        if (method == null) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return;
-        }
-
-        // Invoke handler method
         this.request.set(request);
         this.response.set(response);
 
         this.keys.set(new ArrayList<>(keys));
 
+        LinkedList<File> files = new LinkedList<>();
+
         try {
+            Map<String, List<?>> parameterMap = getParameterMap(request, files);
+
+            Method method = getMethod(handlerList, parameterMap);
+
+            if (method == null) {
+                response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                return;
+            }
+
             Object result;
             try {
                 result = method.invoke(this, getArguments(method, parameterMap));
@@ -274,11 +270,11 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 File file = File.createTempFile(part.getName(), "_" + submittedFileName);
 
+                files.add(file);
+
                 part.write(file.getAbsolutePath());
 
                 urls.add(file.toURI().toURL());
-
-                files.add(file);
             }
         }
 
