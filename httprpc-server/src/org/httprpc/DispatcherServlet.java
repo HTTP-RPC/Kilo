@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -260,21 +261,20 @@ public abstract class DispatcherServlet extends HttpServlet {
 
                 String name = part.getName();
 
-                ArrayList<URL> urls = (ArrayList<URL>)parameterMap.get(name);
+                ArrayList<File> values = (ArrayList<File>)parameterMap.get(name);
 
-                if (urls == null) {
-                    urls = new ArrayList<>();
+                if (values == null) {
+                    values = new ArrayList<>();
 
-                    parameterMap.put(name, urls);
+                    parameterMap.put(name, values);
                 }
 
                 File file = File.createTempFile(part.getName(), "_" + submittedFileName);
 
                 files.add(file);
+                values.add(file);
 
                 part.write(file.getAbsolutePath());
-
-                urls.add(file.toURI().toURL());
             }
         }
 
@@ -365,55 +365,41 @@ public abstract class DispatcherServlet extends HttpServlet {
 
     private static Object getArgument(Object value, Class<?> type) {
         Object argument;
-        if (type.isInstance(value)) {
-            argument = value;
-        } else if (type == String.class) {
+        if (type == String.class) {
             argument = (value == null) ? null : value.toString();
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
                 argument = (type == Byte.TYPE) ? 0 : null;
-            } else if (value instanceof Number) {
-                argument = ((Number)value).byteValue();
             } else {
                 argument = Byte.parseByte(value.toString());
             }
         } else if (type == Short.TYPE || type == Short.class) {
             if (value == null) {
                 argument = (type == Short.TYPE) ? 0 : null;
-            } else if (value instanceof Number) {
-                argument = ((Number)value).shortValue();
             } else {
                 argument = Short.parseShort(value.toString());
             }
         } else if (type == Integer.TYPE || type == Integer.class) {
             if (value == null) {
                 argument = (type == Integer.TYPE) ? 0 : null;
-            } else if (value instanceof Number) {
-                argument = ((Number)value).intValue();
             } else {
                 argument = Integer.parseInt(value.toString());
             }
         } else if (type == Long.TYPE || type == Long.class) {
             if (value == null) {
                 argument = (type == Long.TYPE) ? 0 : null;
-            } else if (value instanceof Number) {
-                argument = ((Number)value).longValue();
             } else {
                 argument = Long.parseLong(value.toString());
             }
         } else if (type == Float.TYPE || type == Float.class) {
             if (value == null) {
                 argument = (type == Float.TYPE) ? 0 : null;
-            } else if (value instanceof Number) {
-                argument = ((Number)value).floatValue();
             } else {
                 argument = Float.parseFloat(value.toString());
             }
         } else if (type == Double.TYPE || type == Double.class) {
             if (value == null) {
                 argument = (type == Double.TYPE) ? 0 : null;
-            } else if (value instanceof Number) {
-                argument = ((Number)value).doubleValue();
             } else {
                 argument = Double.parseDouble(value.toString());
             }
@@ -424,30 +410,24 @@ public abstract class DispatcherServlet extends HttpServlet {
                 argument = Boolean.parseBoolean(value.toString());
             }
         } else if (type == Date.class) {
-            if (value == null) {
-                argument = null;
-            } else if (value instanceof Number) {
-                argument = new Date(((Number)value).longValue());
-            } else {
-                argument = new Date(Long.parseLong(value.toString()));
-            }
+            argument = (value == null) ? null : new Date(Long.parseLong(value.toString()));
         } else if (type == LocalDate.class) {
-            if (value == null) {
-                argument = null;
-            } else {
-                argument = LocalDate.parse(value.toString());
-            }
+            argument = (value == null) ? null : LocalDate.parse(value.toString());
         } else if (type == LocalTime.class) {
-            if (value == null) {
-                argument = null;
-            } else {
-                argument = LocalTime.parse(value.toString());
-            }
+            argument = (value == null) ? null : LocalTime.parse(value.toString());
         } else if (type == LocalDateTime.class) {
+            argument = (value == null) ? null : LocalDateTime.parse(value.toString());
+        } else if (type == URL.class) {
             if (value == null) {
                 argument = null;
+            } else if (value instanceof File) {
+                try {
+                    argument = ((File)value).toURI().toURL();
+                } catch (MalformedURLException exception) {
+                    throw new RuntimeException(exception);
+                }
             } else {
-                argument = LocalDateTime.parse(value.toString());
+                throw new IllegalArgumentException();
             }
         } else {
             throw new UnsupportedOperationException("Unsupported argument type.");
