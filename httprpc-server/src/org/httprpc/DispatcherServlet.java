@@ -122,6 +122,7 @@ public abstract class DispatcherServlet extends HttpServlet {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Resource resource = root;
 
@@ -175,7 +176,44 @@ public abstract class DispatcherServlet extends HttpServlet {
         LinkedList<File> files = new LinkedList<>();
 
         try {
-            Map<String, List<?>> parameterMap = getParameterMap(request, files);
+            Map<String, List<?>> parameterMap = new HashMap<>();
+
+            Enumeration<String> parameterNames = request.getParameterNames();
+
+            while (parameterNames.hasMoreElements()) {
+                String name = parameterNames.nextElement();
+
+                parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
+            }
+
+            String contentType = request.getContentType();
+
+            if (contentType != null && contentType.startsWith("multipart/form-data")) {
+                for (Part part : request.getParts()) {
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null || submittedFileName.length() == 0) {
+                        continue;
+                    }
+
+                    String name = part.getName();
+
+                    ArrayList<File> values = (ArrayList<File>)parameterMap.get(name);
+
+                    if (values == null) {
+                        values = new ArrayList<>();
+
+                        parameterMap.put(name, values);
+                    }
+
+                    File file = File.createTempFile(part.getName(), "_" + submittedFileName);
+
+                    files.add(file);
+                    values.add(file);
+
+                    part.write(file.getAbsolutePath());
+                }
+            }
 
             Method method = getMethod(handlerList, parameterMap);
 
@@ -235,50 +273,6 @@ public abstract class DispatcherServlet extends HttpServlet {
                 file.delete();
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, List<?>> getParameterMap(HttpServletRequest request, List<File> files) throws ServletException, IOException {
-        Map<String, List<?>> parameterMap = new HashMap<>();
-
-        Enumeration<String> parameterNames = request.getParameterNames();
-
-        while (parameterNames.hasMoreElements()) {
-            String name = parameterNames.nextElement();
-
-            parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
-        }
-
-        String contentType = request.getContentType();
-
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            for (Part part : request.getParts()) {
-                String submittedFileName = part.getSubmittedFileName();
-
-                if (submittedFileName == null || submittedFileName.length() == 0) {
-                    continue;
-                }
-
-                String name = part.getName();
-
-                ArrayList<File> values = (ArrayList<File>)parameterMap.get(name);
-
-                if (values == null) {
-                    values = new ArrayList<>();
-
-                    parameterMap.put(name, values);
-                }
-
-                File file = File.createTempFile(part.getName(), "_" + submittedFileName);
-
-                files.add(file);
-                values.add(file);
-
-                part.write(file.getAbsolutePath());
-            }
-        }
-
-        return parameterMap;
     }
 
     private static Method getMethod(List<Method> handlerList, Map<String, List<?>> parameterMap) {
