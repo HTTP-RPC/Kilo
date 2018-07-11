@@ -36,14 +36,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
         private List<Object> list;
+        private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public ListAdapter(List<Object> list) {
+        public ListAdapter(List<Object> list, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
             this.list = list;
+            this.accessorCache = accessorCache;
         }
 
         @Override
         public Object get(int index) {
-            return adapt(list.get(index));
+            return adapt(list.get(index), accessorCache);
         }
 
         @Override
@@ -63,7 +65,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 @Override
                 public Object next() {
-                    return adapt(iterator.next());
+                    return adapt(iterator.next(), accessorCache);
                 }
             };
         }
@@ -72,14 +74,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         private Map<Object, Object> map;
+        private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public MapAdapter(Map<Object, Object> map) {
+        public MapAdapter(Map<Object, Object> map, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
             this.map = map;
+            this.accessorCache = accessorCache;
         }
 
         @Override
         public Object get(Object key) {
-            return adapt(map.get(key));
+            return adapt(map.get(key), accessorCache);
         }
 
         @Override
@@ -112,7 +116,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                                 @Override
                                 public Object getValue() {
-                                    return adapt(entry.getValue());
+                                    return adapt(entry.getValue(), accessorCache);
                                 }
 
                                 @Override
@@ -128,8 +132,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private Object bean;
+    private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-    private HashMap<String, Method> accessors = new HashMap<>();
+    private HashMap<String, Method> accessors;
 
     private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
@@ -141,48 +146,59 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The source Bean.
      */
     public BeanAdapter(Object bean) {
+        this(bean, new HashMap<>());
+    }
+
+    private BeanAdapter(Object bean, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
         if (bean == null) {
             throw new IllegalArgumentException();
         }
 
         this.bean = bean;
+        this.accessorCache = accessorCache;
 
         Class<?> type = bean.getClass();
 
-        Method[] methods = type.getMethods();
+        if (accessors == null) {
+            accessors = new HashMap<>();
 
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+            Method[] methods = type.getMethods();
 
-            if (method.getDeclaringClass() != Object.class) {
-                String methodName = method.getName();
+            for (int i = 0; i < methods.length; i++) {
+                Method method = methods[i];
 
-                String prefix;
-                if (methodName.startsWith(GET_PREFIX)) {
-                    prefix = GET_PREFIX;
-                } else if (methodName.startsWith(IS_PREFIX)) {
-                    prefix = IS_PREFIX;
-                } else {
-                    prefix = null;
-                }
+                if (method.getDeclaringClass() != Object.class) {
+                    String methodName = method.getName();
 
-                if (prefix != null)  {
-                    int j = prefix.length();
-                    int n = methodName.length();
+                    String prefix;
+                    if (methodName.startsWith(GET_PREFIX)) {
+                        prefix = GET_PREFIX;
+                    } else if (methodName.startsWith(IS_PREFIX)) {
+                        prefix = IS_PREFIX;
+                    } else {
+                        prefix = null;
+                    }
 
-                    if (j < n && method.getParameterCount() == 0) {
-                        char c = methodName.charAt(j++);
+                    if (prefix != null)  {
+                        int j = prefix.length();
+                        int n = methodName.length();
 
-                        if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                            c = Character.toLowerCase(c);
+                        if (j < n && method.getParameterCount() == 0) {
+                            char c = methodName.charAt(j++);
+
+                            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                                c = Character.toLowerCase(c);
+                            }
+
+                            String key = c + methodName.substring(j);
+
+                            accessors.put(key, method);
                         }
-
-                        String key = c + methodName.substring(j);
-
-                        accessors.put(key, method);
                     }
                 }
             }
+
+            accessorCache.put(type, accessors);
         }
     }
 
@@ -220,7 +236,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         Object value;
         if (method != null) {
             try {
-                value = adapt(method.invoke(bean));
+                value = adapt(method.invoke(bean), accessorCache);
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 throw new RuntimeException(exception);
             }
@@ -261,7 +277,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object adapt(Object value) {
+    private static Object adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
         if (!(value == null
             || value instanceof String
             || value instanceof Number
@@ -271,11 +287,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof LocalTime
             || value instanceof LocalDateTime)) {
             if (value instanceof List<?>) {
-                value = new ListAdapter((List<Object>)value);
+                value = new ListAdapter((List<Object>)value, accessorCache);
             } else if (value instanceof Map<?, ?>) {
-                value = new MapAdapter((Map<Object, Object>)value);
+                value = new MapAdapter((Map<Object, Object>)value, accessorCache);
             } else {
-                value = new BeanAdapter(value);
+                value = new BeanAdapter(value, accessorCache);
             }
         }
 
