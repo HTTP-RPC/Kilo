@@ -73,47 +73,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     private static class MapAdapter extends AbstractMap<Object, Object> {
         private Map<Object, Object> map;
 
-        private Set<Entry<Object, Object>> entrySet = new AbstractSet<Entry<Object, Object>>() {
-            @Override
-            public int size() {
-                return map.size();
-            }
-
-            @Override
-            public Iterator<Entry<Object, Object>> iterator() {
-                return new Iterator<Entry<Object, Object>>() {
-                    private Iterator<Entry<Object, Object>> iterator = map.entrySet().iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
-
-                    @Override
-                    public Entry<Object, Object> next() {
-                        return new Entry<Object, Object>() {
-                            private Entry<Object, Object> entry = iterator.next();
-
-                            @Override
-                            public Object getKey() {
-                                return entry.getKey();
-                            }
-
-                            @Override
-                            public Object getValue() {
-                                return adapt(entry.getValue());
-                            }
-
-                            @Override
-                            public Object setValue(Object value) {
-                                throw new UnsupportedOperationException();
-                            }
-                        };
-                    }
-                };
-            }
-        };
-
         public MapAdapter(Map<Object, Object> map) {
             this.map = map;
         }
@@ -125,39 +84,52 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public Set<Entry<Object, Object>> entrySet() {
-            return entrySet;
+            return new AbstractSet<Entry<Object, Object>>() {
+                @Override
+                public int size() {
+                    return map.size();
+                }
+
+                @Override
+                public Iterator<Entry<Object, Object>> iterator() {
+                    return new Iterator<Entry<Object, Object>>() {
+                        private Iterator<Entry<Object, Object>> iterator = map.entrySet().iterator();
+
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Entry<Object, Object> next() {
+                            return new Entry<Object, Object>() {
+                                private Entry<Object, Object> entry = iterator.next();
+
+                                @Override
+                                public Object getKey() {
+                                    return entry.getKey();
+                                }
+
+                                @Override
+                                public Object getValue() {
+                                    return adapt(entry.getValue());
+                                }
+
+                                @Override
+                                public Object setValue(Object value) {
+                                    throw new UnsupportedOperationException();
+                                }
+                            };
+                        }
+                    };
+                }
+            };
         }
     }
 
     private Object bean;
 
     private HashMap<String, Method> accessors = new HashMap<>();
-
-    private Set<Entry<String, Object>> entrySet = new AbstractSet<Entry<String, Object>>() {
-        @Override
-        public int size() {
-            return accessors.size();
-        }
-
-        @Override
-        public Iterator<Entry<String, Object>> iterator() {
-            return new Iterator<Entry<String, Object>>() {
-                private Iterator<String> keys = accessors.keySet().iterator();
-
-                @Override
-                public boolean hasNext() {
-                    return keys.hasNext();
-                }
-
-                @Override
-                public Entry<String, Object> next() {
-                    String key = keys.next();
-
-                    return new SimpleImmutableEntry<>(key, get(key));
-                }
-            };
-        }
-    };
 
     private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
@@ -261,7 +233,31 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        return entrySet;
+        return new AbstractSet<Entry<String, Object>>() {
+            @Override
+            public int size() {
+                return accessors.size();
+            }
+
+            @Override
+            public Iterator<Entry<String, Object>> iterator() {
+                return new Iterator<Entry<String, Object>>() {
+                    private Iterator<String> keys = accessors.keySet().iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return keys.hasNext();
+                    }
+
+                    @Override
+                    public Entry<String, Object> next() {
+                        String key = keys.next();
+
+                        return new SimpleImmutableEntry<>(key, get(key));
+                    }
+                };
+            }
+        };
     }
 
     @SuppressWarnings("unchecked")
