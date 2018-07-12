@@ -35,10 +35,10 @@ import java.util.Set;
 public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
-        private List<Object> list;
+        private List<?> list;
         private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public ListAdapter(List<Object> list, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+        public ListAdapter(List<?> list, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
             this.list = list;
             this.accessorCache = accessorCache;
         }
@@ -56,7 +56,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public Iterator<Object> iterator() {
             return new Iterator<Object>() {
-                private Iterator<Object> iterator = list.iterator();
+                private Iterator<?> iterator = list.iterator();
 
                 @Override
                 public boolean hasNext() {
@@ -73,10 +73,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
-        private Map<Object, Object> map;
+        private Map<?, ?> map;
         private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public MapAdapter(Map<Object, Object> map, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+        public MapAdapter(Map<?, ?> map, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
             this.map = map;
             this.accessorCache = accessorCache;
         }
@@ -97,7 +97,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 @Override
                 public Iterator<Entry<Object, Object>> iterator() {
                     return new Iterator<Entry<Object, Object>>() {
-                        private Iterator<Entry<Object, Object>> iterator = map.entrySet().iterator();
+                        private Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
                         @Override
                         public boolean hasNext() {
@@ -107,7 +107,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         @Override
                         public Entry<Object, Object> next() {
                             return new Entry<Object, Object>() {
-                                private Entry<Object, Object> entry = iterator.next();
+                                private Entry<?, ?> entry = iterator.next();
 
                                 @Override
                                 public Object getKey() {
@@ -274,6 +274,32 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 };
             }
         };
+    }
+
+    /**
+     * Adapts a list instance.
+     *
+     * @param list
+     * The list to adapt.
+     *
+     * @return
+     * An adapter that will adapt the list's elements.
+     */
+    public static List<?> adapt(List<?> list) {
+        return new ListAdapter(list, new HashMap<>());
+    }
+
+    /**
+     * Adapts a map instance.
+     *
+     * @param map
+     * The map to adapt.
+     *
+     * @return
+     * An adapter that will adapt the map's values.
+     */
+    public static Map<?, ?> adapt(Map<?, ?> map) {
+        return new MapAdapter(map, new HashMap<>());
     }
 
     @SuppressWarnings("unchecked")
