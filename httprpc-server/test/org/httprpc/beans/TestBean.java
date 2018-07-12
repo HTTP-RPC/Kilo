@@ -17,8 +17,9 @@ package org.httprpc.beans;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,15 +58,21 @@ public class TestBean {
         return LocalDateTime.parse("2018-06-28T10:45");
     }
 
+    public List<?> getList() {
+        return Arrays.asList(2L, 4.0, new NestedBean());
+    }
+
+    public Map<?, ?> getMap() {
+        HashMap<String, Object> map = new HashMap<>();
+
+        map.put("long", 2L);
+        map.put("double", 4.0);
+        map.put("nestedBean", new NestedBean());
+
+        return map;
+    }
+
     public NestedBean getNestedBean() {
         return new NestedBean();
-    }
-
-    public List<NestedBean> getNestedBeanList() {
-        return Collections.singletonList(new NestedBean());
-    }
-
-    public Map<String, NestedBean> getNestedBeanMap() {
-        return Collections.singletonMap("xyz", new NestedBean());
     }
 }

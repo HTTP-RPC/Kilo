@@ -27,8 +27,6 @@ import java.util.Date;
 public class BeanAdapterTest extends AbstractTest {
     @Test
     public void testBeanAdapter() {
-        BeanAdapter adapter = new BeanAdapter(new TestBean());
-
         Assert.assertEquals(mapOf(
             entry("long", 2L),
             entry("double", 4.0),
@@ -37,9 +35,35 @@ public class BeanAdapterTest extends AbstractTest {
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
-            entry("nestedBean", mapOf(entry("flag", true))),
-            entry("nestedBeanList", listOf(mapOf(entry("flag", true)))),
-            entry("nestedBeanMap", mapOf(entry("xyz", mapOf(entry("flag", true)))))
-        ), adapter);
+            entry("list", listOf(2L, 4.0, mapOf(
+                entry("flag", true)
+            ))),
+            entry("map", mapOf(
+                entry("long", 2L),
+                entry("double", 4.0),
+                entry("nestedBean", mapOf(
+                    entry("flag", true)
+                )))
+            ),
+            entry("nestedBean", mapOf(
+                entry("flag", true)
+            ))
+        ), new BeanAdapter(new TestBean()));
+
+        Assert.assertEquals(listOf(2L, 4.0, mapOf(
+            entry("flag", true)
+        )), BeanAdapter.adapt(listOf(2L, 4.0, new TestBean.NestedBean())));
+
+        Assert.assertEquals(mapOf(
+            entry("long", 2L),
+            entry("double", 4.0),
+            entry("nestedBean", mapOf(
+                entry("flag", true)
+            ))
+        ), BeanAdapter.adapt(mapOf(
+            entry("long", 2L),
+            entry("double", 4.0),
+            entry("nestedBean", new TestBean.NestedBean())
+        )));
     }
 }
