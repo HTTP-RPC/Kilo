@@ -97,7 +97,7 @@ public class JSONEncoder {
             writer.append(String.valueOf(((LocalDate)value).toString()));
         } else if (value instanceof LocalTime) {
             writer.append(String.valueOf(((LocalTime)value).toString()));
-        } else if (value instanceof Date) {
+        } else if (value instanceof LocalDateTime) {
             writer.append(String.valueOf(((LocalDateTime)value).toString()));
         } else if (value instanceof Iterable<?>) {
             writer.append("[");
