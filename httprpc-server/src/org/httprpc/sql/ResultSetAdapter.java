@@ -30,6 +30,8 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
 
+    private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+
     /**
      * Creates a new result set adapter.
      *
@@ -53,19 +55,19 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     @Override
     public Iterator<Map<String, Object>> iterator() {
         return new Iterator<Map<String, Object>>() {
-            private Boolean next = null;
+            private Boolean hasNext = null;
 
             @Override
             public boolean hasNext() {
-                if (next == null) {
+                if (hasNext == null) {
                     try {
-                        next = resultSet.next() ? Boolean.TRUE : Boolean.FALSE;
+                        hasNext = resultSet.next() ? Boolean.TRUE : Boolean.FALSE;
                     } catch (SQLException exception) {
                         throw new RuntimeException(exception);
                     }
                 }
 
-                return next.booleanValue();
+                return hasNext.booleanValue();
             }
 
             @Override
@@ -74,7 +76,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                     throw new NoSuchElementException();
                 }
 
-                LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+                row.clear();
 
                 try {
                     for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
@@ -84,7 +86,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                     throw new RuntimeException(exception);
                 }
 
-                next = null;
+                hasNext = null;
 
                 return row;
             }

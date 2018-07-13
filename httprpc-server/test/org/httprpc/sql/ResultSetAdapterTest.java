@@ -16,6 +16,7 @@ package org.httprpc.sql;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -33,16 +34,36 @@ public class ResultSetAdapterTest extends AbstractTest {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
 
             for (Map<String, Object> row : adapter) {
-                list.add(row);
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+
+                map.putAll(row);
+
+                list.add(map);
             }
         }
 
-        Assert.assertEquals(listOf(mapOf(
-            entry("a", 2L),
-            entry("b", 4.0),
-            entry("c", "abc"),
-            entry("d", true),
-            entry("e", new Date(0))
-        )), list);
+        Assert.assertEquals(listOf(
+            mapOf(
+                entry("a", 2L),
+                entry("b", 3.0),
+                entry("c", "abc"),
+                entry("d", true),
+                entry("e", new Date(0))
+            ),
+            mapOf(
+                entry("a", 4L),
+                entry("b", 6.0),
+                entry("c", "def"),
+                entry("d", false),
+                entry("e", new Date(0))
+            ),
+            mapOf(
+                entry("a", 8L),
+                entry("b", 9.0),
+                entry("c", "ghi"),
+                entry("d", false),
+                entry("e", null)
+            )
+        ), list);
     }
 }

@@ -155,9 +155,13 @@ public class TestResultSet implements ResultSet {
 
     private String[] labels = {"a", "b", "c", "d", "e"};
 
-    private Object[] values = {2L, 4.0, "abc", true, new Date(0)};
+    private Object[][] values = {
+        {2L, 3.0, "abc", true, new Date(0)},
+        {4L, 6.0, "def", false, new Date(0)},
+        {8L, 9.0, "ghi", false, null}
+    };
 
-    private boolean hasNext = true;
+    private int i = -1;
     private boolean closed = false;
 
     @Override
@@ -172,11 +176,7 @@ public class TestResultSet implements ResultSet {
 
     @Override
     public boolean next() {
-        boolean hasNext = this.hasNext;
-
-        this.hasNext = false;
-
-        return hasNext;
+        return (++i < values.length);
     }
 
     @Override
@@ -370,7 +370,7 @@ public class TestResultSet implements ResultSet {
 
     @Override
     public Object getObject(int columnIndex) {
-        return values[columnIndex - 1];
+        return values[i][columnIndex - 1];
     }
 
     @Override
