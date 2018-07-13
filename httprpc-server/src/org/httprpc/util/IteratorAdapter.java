@@ -51,9 +51,4 @@ public class IteratorAdapter implements Iterable<Object> {
             }
         };
     }
-
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
 }

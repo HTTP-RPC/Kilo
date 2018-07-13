@@ -90,9 +90,4 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
             }
         };
     }
-
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
 }
