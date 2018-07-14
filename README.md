@@ -13,7 +13,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
     * [DispatcherServlet](#dispatcherservlet)
-    * [JSONEncoder](#jsonencoder)
+    * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
     * [IteratorAdapter](#iteratoradapter)
@@ -219,7 +219,7 @@ For example, given the following path:
 
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
-## JSONEncoder
+## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `DispatcherServlet` to serialize a JSON response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
 
 ```java
@@ -243,6 +243,22 @@ public void getMap() throws IOException {
 ```
 
 Values are converted to their JSON equivalents as described earlier.
+
+The `JSONDecoder` class deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
+
+* string: `String`
+* number: `Number`
+* true/false: `Boolean`
+* array: `java.util.List`
+* object: `java.util.Map`
+
+For example, the following code snippet uses `JSONDecoder` to parse a JSON array containing the first 6 values of the Fibonacci sequence:
+
+```java
+JSONDecoder jsonDecoder = new JSONDecoder();
+
+List<Integer> fibonacci = decoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
+```
 
 ## BeanAdapter
 The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects. 
