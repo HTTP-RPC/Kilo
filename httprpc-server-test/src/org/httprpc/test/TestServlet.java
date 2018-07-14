@@ -77,7 +77,7 @@ public class TestServlet extends DispatcherServlet {
 
     @RequestMethod("GET")
     @ResourcePath("/fibonacci")
-    public List<Integer> testGetFibonacci() throws IOException {
+    public List<Number> testGetFibonacci() throws IOException {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
         return jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
