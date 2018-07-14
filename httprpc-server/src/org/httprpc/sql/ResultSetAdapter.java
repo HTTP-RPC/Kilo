@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Class that presents the contents of a JDBC result set as an iterable list of
- * maps.
+ * Class that presents the contents of a result set as an iterable sequence
+ * of maps.
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSet resultSet;

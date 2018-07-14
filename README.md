@@ -43,10 +43,10 @@ HTTP-RPC provides the following classes for implementing REST services:
 * `org.httprpc.beans`
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map
 * `org.httprpc.sql`
-    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable cursor
+    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable sequence of maps
     * `Parameters` - class for simplifying execution of prepared statements 
 * `org.httprpc.util`
-    * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable cursor
+    * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable sequence of values
 
 These classes are explained in more detail in the following sections.
 

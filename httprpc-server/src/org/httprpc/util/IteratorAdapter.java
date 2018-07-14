@@ -17,7 +17,7 @@ package org.httprpc.util;
 import java.util.Iterator;
 
 /**
- * Class that presents the contents of an iterator as an iterable list of
+ * Class that presents the contents of an iterator as an iterable sequence of
  * values.
  */
 public class IteratorAdapter implements Iterable<Object> {
