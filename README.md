@@ -30,7 +30,7 @@ The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-
 </dependency>
 ```
 
-HTTP-RPC requires Java 8 or later and a servlet container supporting the Java Servlet specification 3.1 or later.
+HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servlet specification 3.1 or later.
 
 # HTTP-RPC Classes
 HTTP-RPC provides the following classes for implementing REST services:
@@ -51,7 +51,7 @@ HTTP-RPC provides the following classes for implementing REST services:
 These classes are explained in more detail in the following sections.
 
 ## DispatcherServlet
-`DispatcherServlet` is an abstract base class for REST-based web services. Service operations are defined by adding public methods to a concrete service implementation. 
+`DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 
 
 Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 
@@ -96,8 +96,6 @@ GET /math/sum?values=1&values=2&values=3
 
 In either case, the service would return the value 6 in response.
 
-**IMPORTANT** Service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
-
 ### Method Arguments
 Method arguments may be any of the following types:
 
@@ -135,6 +133,8 @@ public class FileUploadServlet extends DispatcherServlet {
     }
 }
 ```
+
+**IMPORTANT** Service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -178,7 +178,7 @@ The service would produce the following in response:
 ```
 
 ### Exceptions
-If an exception is thrown during execution of a method and the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
+If an exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
 
 ```java
 @RequestMethod("GET")
