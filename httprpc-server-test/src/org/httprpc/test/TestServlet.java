@@ -17,6 +17,7 @@ package org.httprpc.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ import javax.servlet.annotation.WebServlet;
 import org.httprpc.DispatcherServlet;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
+import org.jtemplate.JSONDecoder;
 
 /**
  * Test servlet.
@@ -71,6 +73,14 @@ public class TestServlet extends DispatcherServlet {
     @ResourcePath("/a/?/b/?/c/?/d/?")
     public List<?> testGet() {
         return Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3));
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("/fibonacci")
+    public List<Integer> testGetFibonacci() throws IOException {
+        JSONDecoder jsonDecoder = new JSONDecoder();
+
+        return jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
     }
 
     @RequestMethod("GET")

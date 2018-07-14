@@ -257,7 +257,7 @@ For example, the following code snippet uses `JSONDecoder` to parse a JSON array
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
 
-List<Integer> fibonacci = decoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
+List<Integer> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
 ```
 
 ## BeanAdapter
