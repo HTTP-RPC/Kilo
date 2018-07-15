@@ -33,9 +33,9 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.DispatcherServlet;
+import org.httprpc.JSONDecoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-import org.jtemplate.JSONDecoder;
 
 /**
  * Test servlet.
