@@ -480,7 +480,7 @@ public void getRestaurants(String zipCode) throws IOException {
     try (MongoCursor<Document> cursor = iterable.iterator()) {
         JSONEncoder jsonEncoder = new JSONEncoder();
 
-        jsonEncoder.writeValue(new IteratorAdapter(cursor), getResponse().getOutputStream());
+        jsonEncoder.writeValue(new IteratorAdapter<>(cursor), getResponse().getOutputStream());
     } finally {
         getResponse().flushBuffer();
     }
@@ -545,7 +545,7 @@ Note that the value of "_id" is `null` because MongoDB's `ObjectId` class is not
 ```java
 @RequestMethod("GET")
 public Iterable<?> getStream() {
-    return new IteratorAdapter(Arrays.asList("a", "b", "c").stream().iterator());
+    return new IteratorAdapter<>(Arrays.asList("a", "b", "c").stream().iterator());
 }
 ```
 

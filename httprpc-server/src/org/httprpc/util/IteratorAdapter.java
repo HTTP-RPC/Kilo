@@ -19,9 +19,12 @@ import java.util.Iterator;
 /**
  * Class that presents the contents of an iterator as an iterable sequence of
  * values.
+ *
+ * @param <T>
+ * The type of the values produced by the iterable.
  */
-public class IteratorAdapter implements Iterable<Object> {
-    private Iterator<?> iterator;
+public class IteratorAdapter<T> implements Iterable<T> {
+    private Iterator<T> iterator;
 
     /**
      * Constructs a new iterator adapter.
@@ -29,7 +32,7 @@ public class IteratorAdapter implements Iterable<Object> {
      * @param iterator
      * The source iterator.
      */
-    public IteratorAdapter(Iterator<?> iterator) {
+    public IteratorAdapter(Iterator<T> iterator) {
         if (iterator == null) {
             throw new IllegalArgumentException();
         }
@@ -38,15 +41,15 @@ public class IteratorAdapter implements Iterable<Object> {
     }
 
     @Override
-    public Iterator<Object> iterator() {
-        return new Iterator<Object>() {
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
             @Override
             public boolean hasNext() {
                 return iterator.hasNext();
             }
 
             @Override
-            public Object next() {
+            public T next() {
                 return iterator.next();
             }
         };

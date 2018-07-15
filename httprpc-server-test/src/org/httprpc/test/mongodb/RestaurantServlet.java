@@ -63,7 +63,7 @@ public class RestaurantServlet extends DispatcherServlet {
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
 
         try (MongoCursor<Document> cursor = iterable.iterator()) {
-            IteratorAdapter cursorAdapter = new IteratorAdapter(cursor);
+            IteratorAdapter<Document> cursorAdapter = new IteratorAdapter<>(cursor);
 
             if (format == null) {
                 JSONEncoder jsonEncoder = new JSONEncoder();

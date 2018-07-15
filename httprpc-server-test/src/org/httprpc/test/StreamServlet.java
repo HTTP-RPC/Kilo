@@ -31,6 +31,6 @@ public class StreamServlet extends DispatcherServlet {
 
     @RequestMethod("GET")
     public Iterable<?> getStream() {
-        return new IteratorAdapter(Arrays.asList("a", "b", "c").stream().iterator());
+        return new IteratorAdapter<>(Arrays.asList("a", "b", "c").stream().iterator());
     }
 }
