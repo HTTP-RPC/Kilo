@@ -15,6 +15,7 @@
 package org.httprpc.test.mongodb;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,7 +24,6 @@ import org.bson.Document;
 import org.httprpc.DispatcherServlet;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
-import org.httprpc.util.IteratorAdapter;
 import org.jtemplate.TemplateEncoder;
 
 import com.mongodb.MongoClient;
@@ -63,7 +63,12 @@ public class RestaurantServlet extends DispatcherServlet {
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
 
         try (MongoCursor<Document> cursor = iterable.iterator()) {
-            IteratorAdapter<Document> cursorAdapter = new IteratorAdapter<>(cursor);
+            Iterable<Document> cursorAdapter = new Iterable<Document>() {
+                @Override
+                public Iterator<Document> iterator() {
+                    return cursor;
+                }
+            };
 
             if (format == null) {
                 JSONEncoder jsonEncoder = new JSONEncoder();

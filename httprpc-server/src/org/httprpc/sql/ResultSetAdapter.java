@@ -110,6 +110,9 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
      *
      * @return
      * A typed iterable over the result set.
+     *
+     * @param <T>
+     * The row type.
      */
     @SuppressWarnings("unchecked")
     public static <T> Iterable<T> adapt(ResultSet resultSet, Class<T> rowType) {

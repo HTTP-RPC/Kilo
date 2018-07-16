@@ -5,7 +5,6 @@
 
     <property name="src" value="src"/>
     <property name="lib" value="lib"/>
-    <property name="bin" value="bin"/>
     <property name="war" value="war"/>
     <property name="classes" value="classes"/>
 

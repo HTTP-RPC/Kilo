@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 32KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 32KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -16,7 +16,6 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
-    * [IteratorAdapter](#iteratoradapter)
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
@@ -46,7 +45,6 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable sequence of maps
     * `Parameters` - class for simplifying execution of prepared statements 
 * `org.httprpc.util`
-    * `IteratorAdapter` - adapter class that presents the contents of an iterator as an iterable sequence of values
 
 These classes are explained in more detail in the following sections.
 
@@ -462,100 +460,6 @@ The service would return something like the following:
     "sex": null,
     "birth": 881643600000
   }
-]
-```
-
-## IteratorAdapter
-The `IteratorAdapter` class implements the `Iterable` interface and makes each value produced by an iterator appear to be an element of the adapter, allowing the iterator's contents to be serialized as a JSON array.
-
-`IteratorAdapter` is typically used to transform result data produced by NoSQL databases such as MongoDB. For example, the following method (based on the MongoDB sample database) returns a list of restaurants in a given zip code:
-
-```java
-@RequestMethod("GET")
-public void getRestaurants(String zipCode) throws IOException {
-    MongoDatabase db = mongoClient.getDatabase("test");
-
-    FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
-
-    try (MongoCursor<Document> cursor = iterable.iterator()) {
-        JSONEncoder jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.writeValue(new IteratorAdapter<>(cursor), getResponse().getOutputStream());
-    } finally {
-        getResponse().flushBuffer();
-    }
-}
-```
-
-The service would return something like the following:
-
-```json
-[
-  {
-    "_id": null,
-    "name": "Morris Park Bake Shop",
-    "restaurant_id": "30075445",
-    "address": {
-      "building": "1007",
-      "coord": [
-        -73.856077,
-        40.848447
-      ],
-      "street": "Morris Park Ave",
-      "zipcode": "10462"
-    },
-    "borough": "Bronx",
-    "cuisine": "Bakery",
-    "grades": [
-      {
-        "date": 1393804800000,
-        "grade": "A",
-        "score": 2
-      },
-      {
-        "date": 1378857600000,
-        "grade": "A",
-        "score": 6
-      },
-      {
-        "date": 1358985600000,
-        "grade": "A",
-        "score": 10
-      },
-      {
-        "date": 1322006400000,
-        "grade": "A",
-        "score": 9
-      },
-      {
-        "date": 1299715200000,
-        "grade": "B",
-        "score": 14
-      }
-    ]
-  },
-  ...  
-```
-
-Note that the value of "_id" is `null` because MongoDB's `ObjectId` class is not a valid JSON type.
-
-### Adapting Streams
-`IteratorAdapter` can also be used to transform the result of stream operations on Java collection types. For example:
-
-```java
-@RequestMethod("GET")
-public Iterable<?> getStream() {
-    return new IteratorAdapter<>(Arrays.asList("a", "b", "c").stream().iterator());
-}
-```
-
-A call to this service method would produce the following:
-
-```json
-[
-  "a",
-  "b",
-  "c"
 ]
 ```
 
