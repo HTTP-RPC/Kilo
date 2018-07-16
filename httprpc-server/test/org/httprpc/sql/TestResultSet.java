@@ -156,9 +156,9 @@ public class TestResultSet implements ResultSet {
     private String[] labels = {"a", "b", "c", "d", "e"};
 
     private Object[][] values = {
-        {2L, 3.0, "abc", true, new Date(0)},
-        {4L, 6.0, "def", false, new Date(0)},
-        {8L, 9.0, "ghi", false, null}
+        {2L, 3.0, true, "abc", new Date(0)},
+        {4L, 6.0, false, "def", new Date(0)},
+        {8L, 9.0, false, "ghi", null}
     };
 
     private int i = -1;

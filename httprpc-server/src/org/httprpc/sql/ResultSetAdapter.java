@@ -14,6 +14,9 @@
 
 package org.httprpc.sql;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -31,6 +34,9 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSetMetaData resultSetMetaData;
 
     private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+
+    private static final String GET_PREFIX = "get";
+    private static final String IS_PREFIX = "is";
 
     /**
      * Creates a new result set adapter.
@@ -89,6 +95,77 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 hasNext = null;
 
                 return row;
+            }
+        };
+    }
+
+    /**
+     * Adapts a result set for typed iteration.
+     *
+     * @param resultSet
+     * The result set to adapt.
+     *
+     * @param rowType
+     * The row type.
+     *
+     * @return
+     * A typed iterable over the result set.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Iterable<T> adapt(ResultSet resultSet, Class<T> rowType) {
+        ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+
+        return new Iterable<T>() {
+            private Iterator<Map<String, Object>> iterator = resultSetAdapter.iterator();
+
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    private Map<String, Object> row = null;
+
+                    private T proxy = (T)Proxy.newProxyInstance(rowType.getClassLoader(), new Class[] {rowType}, new InvocationHandler() {
+                        @Override
+                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                            String methodName = method.getName();
+
+                            String prefix;
+                            if (methodName.startsWith(GET_PREFIX)) {
+                                prefix = GET_PREFIX;
+                            } else if (methodName.startsWith(IS_PREFIX)) {
+                                prefix = IS_PREFIX;
+                            } else {
+                                throw new UnsupportedOperationException();
+                            }
+
+                            int j = prefix.length();
+                            int n = methodName.length();
+
+                            if (j == n || method.getParameterCount() > 0) {
+                                throw new UnsupportedOperationException();
+                            }
+
+                            char c = methodName.charAt(j++);
+
+                            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                                c = Character.toLowerCase(c);
+                            }
+
+                            return row.get(c + methodName.substring(j));
+                        }
+                    });
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public T next() {
+                        row = iterator.next();
+
+                        return proxy;
+                    }
+                };
             }
         };
     }

@@ -16,25 +16,26 @@ package org.httprpc.sql;
 
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import org.httprpc.AbstractTest;
+import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.ResultSetAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ResultSetAdapterTest extends AbstractTest {
     @Test
-    public void testResultSetAdapter() throws SQLException {
+    public void testResultSetAdapter1() throws SQLException {
         LinkedList<Map<String, Object>> list = new LinkedList<>();
 
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
 
             for (Map<String, Object> row : adapter) {
-                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                HashMap<String, Object> map = new HashMap<>();
 
                 map.putAll(row);
 
@@ -46,22 +47,61 @@ public class ResultSetAdapterTest extends AbstractTest {
             mapOf(
                 entry("a", 2L),
                 entry("b", 3.0),
-                entry("c", "abc"),
-                entry("d", true),
+                entry("c", true),
+                entry("d", "abc"),
                 entry("e", new Date(0))
             ),
             mapOf(
                 entry("a", 4L),
                 entry("b", 6.0),
-                entry("c", "def"),
-                entry("d", false),
+                entry("c", false),
+                entry("d", "def"),
                 entry("e", new Date(0))
             ),
             mapOf(
                 entry("a", 8L),
                 entry("b", 9.0),
-                entry("c", "ghi"),
-                entry("d", false),
+                entry("c", false),
+                entry("d", "ghi"),
+                entry("e", null)
+            )
+        ), list);
+    }
+
+    @Test
+    public void testResultSetAdapter2() throws SQLException {
+        LinkedList<Map<String, Object>> list = new LinkedList<>();
+
+        try (TestResultSet resultSet = new TestResultSet()) {
+            for (TestRow row : ResultSetAdapter.adapt(resultSet, TestRow.class)) {
+                HashMap<String, Object> map = new HashMap<>();
+
+                map.putAll(new BeanAdapter(row));
+
+                list.add(map);
+            }
+        }
+
+        Assert.assertEquals(listOf(
+            mapOf(
+                entry("a", 2L),
+                entry("b", 3.0),
+                entry("c", true),
+                entry("d", "abc"),
+                entry("e", new Date(0))
+            ),
+            mapOf(
+                entry("a", 4L),
+                entry("b", 6.0),
+                entry("c", false),
+                entry("d", "def"),
+                entry("e", new Date(0))
+            ),
+            mapOf(
+                entry("a", 8L),
+                entry("b", 9.0),
+                entry("c", false),
+                entry("d", "ghi"),
                 entry("e", null)
             )
         ), list);
