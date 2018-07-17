@@ -409,7 +409,20 @@ Once applied, the statement can be executed:
 return new ResultSetAdapter(statement.executeQuery());    
 ```
 
-A complete example that uses both classes is shown below. It is based on the MySQL sample database, and retrieves a list of all pets belonging to a given owner:
+A complete example that uses both classes is shown below. It is based on the "pet" table from the MySQL sample database:
+
+```sql
+CREATE TABLE pet (
+    name VARCHAR(20),
+    owner VARCHAR(20),
+    species VARCHAR(20), 
+    sex CHAR(1), 
+    birth DATE, 
+    death DATE
+);
+```
+
+The following service method queries this table to retrieve a list of all pets belonging to a given owner:
 
 ```java
 @RequestMethod("GET")
@@ -466,7 +479,7 @@ The service would return something like the following:
 ```
 
 ### Typed Result Set Iteration
-The `adapt()` method of `ResultSetAdapter` can be used to support typed iteration of result sets. For example, the following interface might be used to model the results of the pet query shown in the previous section:
+The `adapt()` method of `ResultSetAdapter` can be used to support typed iteration of result sets. For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
 ```java
 public interface Pet {
@@ -478,10 +491,9 @@ public interface Pet {
 }
 ```
 
-TODO Explain how adapt() uses dynamic proxy internally
-TODO Explain efficiency
+Internally, the returned adapter uses dynamic proxy invocation to map property names to column labels. A single proxy instance is used for all rows to minimize heap allocation.
 
-This service method uses `adapt()` to create an iterable sequence of `Pet` instances. It wraps the iterator in a stream, which is then used to calculate the average age of all pets in the database:
+The following service method uses `adapt()` to create an iterable sequence of `Pet` instances. It wraps the adapter's iterator in a stream, which is then used to calculate the average age of all pets in the database:
 
 ```java
 @RequestMethod("GET")
