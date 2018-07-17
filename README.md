@@ -49,13 +49,13 @@ HTTP-RPC provides the following classes for implementing REST services:
 These classes are explained in more detail in the following sections.
 
 ## DispatcherServlet
-`DispatcherServlet` is an abstract base class for REST services. Service operations are defined by adding public methods to a concrete service implementation. 
+`DispatcherServlet` is an abstract base class for REST services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. 
 
-Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following class might be used to implement some simple addition operations:
+Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
 ```java
 @WebServlet(urlPatterns={"/math/*"})
@@ -112,7 +112,7 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-`List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
+As shown in the previous example, `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
@@ -479,7 +479,9 @@ The service would return something like the following:
 ```
 
 ### Typed Result Set Iteration
-The `adapt()` method of `ResultSetAdapter` can be used to support typed iteration of result sets. For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method takes a `ResultSet` and an interface type as arguments, and returns an iterable sequence of values of the given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map property names to column labels. A single proxy instance is used for all rows to minimize heap allocation. 
+
+For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
 ```java
 public interface Pet {
@@ -491,9 +493,7 @@ public interface Pet {
 }
 ```
 
-Internally, the returned adapter uses dynamic proxy invocation to map property names to column labels. A single proxy instance is used for all rows to minimize heap allocation.
-
-The following service method uses `adapt()` to create an iterable sequence of `Pet` instances. It wraps the adapter's iterator in a stream, which is then used to calculate the average age of all pets in the database:
+This service method uses `adapt()` to create an iterable sequence of `Pet` values. It wraps the adapter's iterator in a stream, and then uses the stream to calculate the average age of all pets in the database. The `getBirth()` method is used to retrieve each pet's age in epoch time, and the average value is converted to years at the end of the method:
 
 ```java
 @RequestMethod("GET")
