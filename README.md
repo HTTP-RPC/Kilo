@@ -38,13 +38,13 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `DispatcherServlet` - abstract base class for web services
     * `RequestMethod` - annotation that associates an HTTP verb with a service method
     * `ResourcePath` - annotation that associates a resource path with a service method
-    * `JSONEncoder` - class that encodes service results as JSON
+    * `JSONEncoder` - class that serializes an object hierarchy to JSON
+    * `JSONDecoder` - class that deserializes an object hierarchy from JSON
 * `org.httprpc.beans`
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map
 * `org.httprpc.sql`
     * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable sequence of maps
     * `Parameters` - class for simplifying execution of prepared statements 
-* `org.httprpc.util`
 
 These classes are explained in more detail in the following sections.
 
@@ -362,6 +362,8 @@ try (ResultSet resultSet = statement.executeQuery()) {
 }
 ```
 
+Note that, instead of producing a new map instance per iteration, `ResultSetAdapter` uses a single map value to represent all rows. The contents of this map are updated on each call to the adapter's `next()` method, reducing execution time and keeping memory footprint to a minimum.
+
 The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 
 ```sql
@@ -464,9 +466,7 @@ The service would return something like the following:
 ```
 
 ### Typed Result Set Iteration
-The `adapt()` method of `ResultSetAdapter` can be used to support typed iteration of result sets. This allows the contents of a result set to be easily consumed by stream operations, among other things.
-
-For example, the following interface might be used to model the pets results shown in the previous example:
+The `adapt()` method of `ResultSetAdapter` can be used to support typed iteration of result sets. For example, the following interface might be used to model the results of the pet query shown in the previous section:
 
 ```java
 public interface Pet {
@@ -477,6 +477,9 @@ public interface Pet {
     public Date getBirth();
 }
 ```
+
+TODO Explain how adapt() uses dynamic proxy internally
+TODO Explain efficiency
 
 This service method uses `adapt()` to create an iterable sequence of `Pet` instances. It wraps the iterator in a stream, which is then used to calculate the average age of all pets in the database:
 
