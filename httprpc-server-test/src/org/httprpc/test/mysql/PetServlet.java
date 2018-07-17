@@ -20,6 +20,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,6 +31,7 @@ import javax.servlet.annotation.WebServlet;
 import org.httprpc.DispatcherServlet;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
+import org.httprpc.ResourcePath;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 import org.jtemplate.TemplateEncoder;
@@ -34,7 +39,7 @@ import org.jtemplate.TemplateEncoder;
 /**
  * Pet servlet.
  */
-@WebServlet(urlPatterns={"/pets"}, loadOnStartup=1)
+@WebServlet(urlPatterns={"/pets/*"}, loadOnStartup=1)
 public class PetServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
@@ -83,5 +88,24 @@ public class PetServlet extends DispatcherServlet {
         } finally {
             getResponse().flushBuffer();
         }
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("/average-age")
+    public double getAverageAge() throws SQLException {
+        Date now = new Date();
+
+        double averageAge;
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
+            Iterable<Pet> pets = ResultSetAdapter.adapt(resultSet, Pet.class);
+
+            Stream<Pet> stream = StreamSupport.stream(pets.spliterator(), false);
+
+            averageAge = stream.mapToLong(pet -> now.getTime() - pet.getBirth().getTime()).average().getAsDouble();
+        }
+
+        return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
     }
 }

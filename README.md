@@ -463,5 +463,43 @@ The service would return something like the following:
 ]
 ```
 
+### Typed Result Set Iteration
+The `adapt()` method of `ResultSetAdapter` can be used to support typed iteration of result sets. This allows the contents of a result set to be easily consumed by stream operations, among other things.
+
+For example, the following interface might be used to model the pets results shown in the previous example:
+
+```java
+public interface Pet {
+    public String getName();
+    public String getOwner();
+    public String getSpecies();
+    public String getSex();
+    public Date getBirth();
+}
+```
+
+This service method uses `adapt()` to create an iterable sequence of `Pet` instances. It wraps the iterator in a stream, which is then used to calculate the average age of all pets in the database:
+
+```java
+@RequestMethod("GET")
+@ResourcePath("/average-age")
+public double getAverageAge() throws SQLException {
+    Date now = new Date();
+
+    double averageAge;
+    try (Connection connection = DriverManager.getConnection(DB_URL);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
+        Iterable<Pet> pets = ResultSetAdapter.adapt(resultSet, Pet.class);
+
+        Stream<Pet> stream = StreamSupport.stream(pets.spliterator(), false);
+
+        averageAge = stream.mapToLong(pet -> now.getTime() - pet.getBirth().getTime()).average().getAsDouble();
+    }
+
+    return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
+}
+```
+
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).

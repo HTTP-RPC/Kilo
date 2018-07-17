@@ -26,7 +26,7 @@ import org.httprpc.beans.BeanAdapter;
 /**
  * Tree servlet.
  */
-@WebServlet(urlPatterns={"/tree"}, loadOnStartup=1)
+@WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
 public class TreeServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 

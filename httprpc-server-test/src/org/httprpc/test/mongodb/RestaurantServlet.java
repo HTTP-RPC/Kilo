@@ -34,7 +34,7 @@ import com.mongodb.client.MongoDatabase;
 /**
  * Restaurant service.
  */
-@WebServlet(urlPatterns={"/restaurants"}, loadOnStartup=1)
+@WebServlet(urlPatterns={"/restaurants/*"}, loadOnStartup=1)
 public class RestaurantServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
