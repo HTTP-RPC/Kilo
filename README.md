@@ -43,7 +43,7 @@ HTTP-RPC provides the following classes for implementing REST services:
 * `org.httprpc.beans`
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map
 * `org.httprpc.sql`
-    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable sequence of maps
+    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable sequence of maps or typed values
     * `Parameters` - class for simplifying execution of prepared statements 
 
 These classes are explained in more detail in the following sections.
@@ -105,10 +105,10 @@ Method arguments may be any of the following types:
 * `Float`/`float`
 * `Double`/`double`
 * `Boolean`/`boolean`
-* `java.util.Date`
-* `java.util.time.LocalDate`
-* `java.util.time.LocalTime`
-* `java.util.time.LocalDateTime`
+* `java.util.Date` (from a long value representing epoch time in milliseconds)
+* `java.util.time.LocalDate` ("yyyy-mm-dd")
+* `java.util.time.LocalTime` ("hh:mm")
+* `java.util.time.LocalDateTime` ("yyyy-mm-ddThh:mm")
 * `java.util.List`
 * `java.net.URL`
 
@@ -147,8 +147,6 @@ Return values are converted to their JSON equivalents as follows:
 * `Iterable`: array
 * `java.util.Map`: object
 
-Methods may also return `void` or `Void` to indicate that they do not produce a value. Unsupported types are returned as `null`.
-
 For example, this method returns a `Map` instance containing three values:
 
 ```java
@@ -174,6 +172,8 @@ The service would produce the following in response:
     "flag": true
 }
 ```
+
+Methods may also return `void` or `Void` to indicate that they do not produce a value. Unsupported types are returned as `null`.
 
 ### Exceptions
 If an exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
@@ -362,7 +362,7 @@ try (ResultSet resultSet = statement.executeQuery()) {
 }
 ```
 
-Note that, instead of producing a new map instance per iteration, `ResultSetAdapter` uses a single map value to represent all rows. The contents of this map are updated on each call to the adapter's `next()` method, reducing execution time and keeping memory footprint to a minimum.
+Note that, instead of producing a new map instance for each iteration, `ResultSetAdapter` returns a single map value for all rows. The contents of this map are updated on each call to the adapter's `next()` method, reducing execution time and keeping memory footprint to a minimum.
 
 The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 
@@ -390,16 +390,12 @@ This value is used to create the actual prepared statement:
 PreparedStatement statement = connection.prepareStatement(parameters.getSQL());
 ```
 
-Parameter values are specified via the `put()` method:
+Parameter values are set via the `put()` method, and applied to the statement via the `apply()` method:
 
 ```java
 parameters.put("a", "hello");
 parameters.put("b", 3);
-```
 
-The values are applied to the statement via the `apply()` method:
-
-```java
 parameters.apply(statement);
 ```
 
@@ -479,7 +475,7 @@ The service would return something like the following:
 ```
 
 ### Typed Result Set Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method takes a `ResultSet` and an interface type as arguments, and returns an iterable sequence of values of the given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map property names to column labels. A single proxy instance is used for all rows to minimize heap allocation. 
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method takes a `ResultSet` and an interface type as arguments, and returns an `Iterable` of the given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
@@ -493,7 +489,7 @@ public interface Pet {
 }
 ```
 
-This service method uses `adapt()` to create an iterable sequence of `Pet` values. It wraps the adapter's iterator in a stream, and then uses the stream to calculate the average age of all pets in the database. The `getBirth()` method is used to retrieve each pet's age in epoch time, and the average value is converted to years at the end of the method:
+This service method uses `adapt()` to create an iterable sequence of `Pet` values. It wraps the adapter's iterator in a stream, and then uses the stream to calculate the average age of all pets in the database. The `getBirth()` method declared by the `Pet` interface is used to retrieve each pet's age in epoch time. The average value is converted to years at the end of the method:
 
 ```java
 @RequestMethod("GET")
