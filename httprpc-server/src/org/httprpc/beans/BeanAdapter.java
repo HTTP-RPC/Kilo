@@ -14,8 +14,10 @@
 
 package org.httprpc.beans;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -302,25 +304,68 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return new MapAdapter(map, new HashMap<>());
     }
 
-    @SuppressWarnings("unchecked")
     private static Object adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
-        if (!(value == null
+        if (value == null
             || value instanceof String
             || value instanceof Number
             || value instanceof Boolean
             || value instanceof Date
             || value instanceof LocalDate
             || value instanceof LocalTime
-            || value instanceof LocalDateTime)) {
-            if (value instanceof List<?>) {
-                value = new ListAdapter((List<Object>)value, accessorCache);
-            } else if (value instanceof Map<?, ?>) {
-                value = new MapAdapter((Map<Object, Object>)value, accessorCache);
-            } else {
-                value = new BeanAdapter(value, accessorCache);
-            }
+            || value instanceof LocalDateTime) {
+            return value;
+        } else if (value instanceof List<?>) {
+            return new ListAdapter((List<?>)value, accessorCache);
+        } else if (value instanceof Map<?, ?>) {
+            return new MapAdapter((Map<?, ?>)value, accessorCache);
+        } else {
+            return new BeanAdapter(value, accessorCache);
         }
+    }
 
-        return value;
+    /**
+     * Adapts a map for typed access.
+     *
+     * @param map
+     * The map to adapt.
+     *
+     * @param type
+     * The result type.
+     *
+     * @return
+     * An instance of the given type that provides typed access to the entries
+     * in the map.
+     */
+    public static <T> T adapt(Map<String, ?> map, Class<T> type) {
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                String methodName = method.getName();
+
+                String prefix;
+                if (methodName.startsWith(GET_PREFIX)) {
+                    prefix = GET_PREFIX;
+                } else if (methodName.startsWith(IS_PREFIX)) {
+                    prefix = IS_PREFIX;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+
+                int j = prefix.length();
+                int n = methodName.length();
+
+                if (j == n || method.getParameterCount() > 0) {
+                    throw new UnsupportedOperationException();
+                }
+
+                char c = methodName.charAt(j++);
+
+                if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                    c = Character.toLowerCase(c);
+                }
+
+                return map.get(c + methodName.substring(j));
+            }
+        }));
     }
 }
