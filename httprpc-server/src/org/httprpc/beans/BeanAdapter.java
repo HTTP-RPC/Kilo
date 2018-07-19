@@ -285,7 +285,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The list to adapt.
      *
      * @return
-     * An adapter that will adapt the list's elements.
+     * A list implementation that will adapt the list's elements as documented for
+     * {@linkplain BeanAdapter#get(Object)}.
      */
     public static List<?> adapt(List<?> list) {
         return new ListAdapter(list, new HashMap<>());
@@ -298,7 +299,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The map to adapt.
      *
      * @return
-     * An adapter that will adapt the map's values.
+     * A map implementation that will adapt the map's values as documented for
+     * {@linkplain BeanAdapter#get(Object)}.
      */
     public static Map<?, ?> adapt(Map<?, ?> map) {
         return new MapAdapter(map, new HashMap<>());
@@ -367,5 +369,41 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return map.get(c + methodName.substring(j));
             }
         }));
+    }
+
+    /**
+     * Adapts a list of maps for typed access.
+     *
+     * @param list
+     * The list to adapt.
+     *
+     * @param elementType
+     * The list element type.
+     *
+     * @return
+     * A list implementation that will adapt each value as documented for
+     * {@link #adapt(Map, Class).
+     */
+    public static <E> List<E> adaptList(List<Map<String, ?>> list, Class<E> elementType) {
+        // TODO
+        return null;
+    }
+
+    /**
+     * Adapts a map of maps for typed access.
+     *
+     * @param map
+     * The map to adapt.
+     *
+     * @param valueType
+     * The map value type.
+     *
+     * @return
+     * A map implementation that will adapt each value as documented for
+     * {@link #adapt(Map, Class).
+     */
+    public static <K, V> Map<K, V> adaptMap(Map<K, Map<String, ?>> map, Class<V> valueType) {
+        // TODO
+        return null;
     }
 }
