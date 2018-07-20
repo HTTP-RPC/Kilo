@@ -385,8 +385,34 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #adapt(Map, Class).
      */
     public static <E> List<E> adaptList(List<Map<String, ?>> list, Class<E> elementType) {
-        // TODO
-        return null;
+        return new AbstractList<E>() {
+            @Override
+            public E get(int index) {
+                return adapt(list.get(index), elementType);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+
+            @Override
+            public Iterator<E> iterator() {
+                return new Iterator<E>() {
+                    private Iterator<Map<String, ?>> iterator = list.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public E next() {
+                        return adapt(iterator.next(), elementType);
+                    }
+                };
+            }
+        };
     }
 
     /**
@@ -403,7 +429,55 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #adapt(Map, Class).
      */
     public static <K, V> Map<K, V> adaptMap(Map<K, Map<String, ?>> map, Class<V> valueType) {
-        // TODO
-        return null;
+        return new AbstractMap<K, V>() {
+            @Override
+            public V get(Object key) {
+                return adapt(map.get(key), valueType);
+            }
+
+            @Override
+            public Set<Entry<K, V>> entrySet() {
+                return new AbstractSet<Entry<K, V>>() {
+                    @Override
+                    public int size() {
+                        return map.size();
+                    }
+
+                    @Override
+                    public Iterator<Entry<K, V>> iterator() {
+                        return new Iterator<Entry<K, V>>() {
+                            private Iterator<Entry<K, Map<String, ?>>> iterator = map.entrySet().iterator();
+
+                            @Override
+                            public boolean hasNext() {
+                                return iterator.hasNext();
+                            }
+
+                            @Override
+                            public Entry<K, V> next() {
+                                return new Entry<K, V>() {
+                                    private Entry<K, Map<String, ?>> entry = iterator.next();
+
+                                    @Override
+                                    public K getKey() {
+                                        return entry.getKey();
+                                    }
+
+                                    @Override
+                                    public V getValue() {
+                                        return adapt(entry.getValue(), valueType);
+                                    }
+
+                                    @Override
+                                    public V setValue(V value) {
+                                        throw new UnsupportedOperationException();
+                                    }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        };
     }
 }
