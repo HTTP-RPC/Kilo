@@ -17,7 +17,9 @@ package org.httprpc.beans;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -326,65 +328,135 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a map for typed access.
+     * Adapts a value for typed access. If the value is already an instance of
+     * the given type, it is returned as-is. Otherwise:
+     * <ul>
+     * <li>If the target type is a number, the value is coerced using the
+     * appropriate conversion method.</li>
+     * <li>If the target type is {@link Date}, the value is coerced to a long
+     * value and passed to {@link Date#Date(long)}.</li>
+     * <li>If the target type is {@link LocalDate}, the value is parsed using
+     * {@link LocalDate#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link LocalTime}, the value is parsed using
+     * {@link LocalTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link LocalDateTime}, the value is parsed using
+     * {@link LocalDateTime#parse(CharSequence)}.</li>
+     *</ul>
+     * If the target type is a {@link List}, the value is wrapped in an adapter
+     * that will adapt the list's elements. If the target type is a {@link Map},
+     * the value is wrapped in an adapter that will adapt the map's values.
+     * Otherwise, the value is considered a nested Bean and is adapted by a
+     * dynamic proxy instance that implements the given interface.
      *
-     * @param map
-     * The map to adapt.
+     * @param <T>
+     * The target type.
+     *
+     * @param value
+     * The value to adapt.
      *
      * @param type
-     * The result type.
+     * The target type.
      *
      * @return
-     * An instance of the given type that provides typed access to the entries
-     * in the map.
+     * An instance of the given type that adapts the given value.
      */
-    public static <T> T adapt(Map<String, ?> map, Class<T> type) {
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                String methodName = method.getName();
+    @SuppressWarnings("unchecked")
+    public static <T> T adapt(Object value, Type type) {
+        if (type instanceof Class<?>) {
+            return (T)adapt(value, (Class<?>)type);
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType)type;
 
-                String prefix;
-                if (methodName.startsWith(GET_PREFIX)) {
-                    prefix = GET_PREFIX;
-                } else if (methodName.startsWith(IS_PREFIX)) {
-                    prefix = IS_PREFIX;
-                } else {
-                    throw new UnsupportedOperationException();
-                }
+            Type rawType = parameterizedType.getRawType();
 
-                int j = prefix.length();
-                int n = methodName.length();
-
-                if (j == n || method.getParameterCount() > 0) {
-                    throw new UnsupportedOperationException();
-                }
-
-                char c = methodName.charAt(j++);
-
-                if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                    c = Character.toLowerCase(c);
-                }
-
-                return map.get(c + methodName.substring(j));
+            if (rawType == List.class) {
+                return (T)adaptList((List<?>)value, parameterizedType.getActualTypeArguments()[0]);
+            } else if (rawType == Map.class) {
+                return (T)adaptMap((Map<?, ?>)value, parameterizedType.getActualTypeArguments()[1]);
+            } else {
+                throw new IllegalArgumentException();
             }
-        }));
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static Object adapt(Object value, Class<?> type) {
+        if (type.isInstance(value)) {
+            return value;
+        } else if (type == Byte.TYPE || type == Byte.class) {
+            return (value == null) ? 0 : ((Number)value).byteValue();
+        } else if (type == Short.TYPE || type == Short.class) {
+            return (value == null) ? 0 : ((Number)value).shortValue();
+        } else if (type == Integer.TYPE || type == Integer.class) {
+            return (value == null) ? 0 : ((Number)value).intValue();
+        } else if (type == Long.TYPE || type == Long.class) {
+            return (value == null) ? 0 : ((Number)value).longValue();
+        } else if (type == Float.TYPE || type == Float.class) {
+            return (value == null) ? 0 : ((Number)value).floatValue();
+        } else if (type == Double.TYPE || type == Double.class) {
+            return (value == null) ? 0 : ((Number)value).doubleValue();
+        } else if (type == Date.class) {
+            return (value == null) ? null : new Date(((Number)value).longValue());
+        } else if (type == LocalDate.class) {
+            return (value == null) ? null : LocalDate.parse(value.toString());
+        } else if (type == LocalTime.class) {
+            return (value == null) ? null : LocalTime.parse(value.toString());
+        } else if (type == LocalDateTime.class) {
+            return (value == null) ? null : LocalDateTime.parse(value.toString());
+        } else if (type.isInterface()){
+            return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    String methodName = method.getName();
+
+                    String prefix;
+                    if (methodName.startsWith(GET_PREFIX)) {
+                        prefix = GET_PREFIX;
+                    } else if (methodName.startsWith(IS_PREFIX)) {
+                        prefix = IS_PREFIX;
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    int j = prefix.length();
+                    int n = methodName.length();
+
+                    if (j == n || method.getParameterCount() > 0) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    char c = methodName.charAt(j++);
+
+                    if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                        c = Character.toLowerCase(c);
+                    }
+
+                    return ((Map<?, ?>)value).get(c + methodName.substring(j));
+                }
+            }));
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
-     * Adapts a list of maps for typed access.
+     * Adapts a list instance for typed access.
+     *
+     * @param <E>
+     * The target element type.
      *
      * @param list
      * The list to adapt.
      *
      * @param elementType
-     * The list element type.
+     * The target element type.
      *
      * @return
-     * A list implementation that will adapt each value as documented for
-     * {@link #adapt(Map, Class).
+     * An list implementation that will adapt the list's elements as documented for
+     * {@link #adapt(Object, Type)}.
      */
-    public static <E> List<E> adaptList(List<Map<String, ?>> list, Class<E> elementType) {
+    public static <E> List<E> adaptList(List<?> list, Type elementType) {
         return new AbstractList<E>() {
             @Override
             public E get(int index) {
@@ -399,7 +471,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             @Override
             public Iterator<E> iterator() {
                 return new Iterator<E>() {
-                    private Iterator<Map<String, ?>> iterator = list.iterator();
+                    private Iterator<?> iterator = list.iterator();
 
                     @Override
                     public boolean hasNext() {
@@ -416,19 +488,25 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a map of maps for typed access.
+     * Adapts a map instance for typed access.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The target value type.
      *
      * @param map
      * The map to adapt.
      *
      * @param valueType
-     * The map value type.
+     * The target value type.
      *
      * @return
-     * A map implementation that will adapt each value as documented for
-     * {@link #adapt(Map, Class).
+     * An map implementation that will adapt the map's values as documented for
+     * {@link #adapt(Object, Type)}.
      */
-    public static <K, V> Map<K, V> adaptMap(Map<K, Map<String, ?>> map, Class<V> valueType) {
+    public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType) {
         return new AbstractMap<K, V>() {
             @Override
             public V get(Object key) {
@@ -446,7 +524,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     @Override
                     public Iterator<Entry<K, V>> iterator() {
                         return new Iterator<Entry<K, V>>() {
-                            private Iterator<Entry<K, Map<String, ?>>> iterator = map.entrySet().iterator();
+                            private Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
 
                             @Override
                             public boolean hasNext() {
@@ -456,7 +534,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             @Override
                             public Entry<K, V> next() {
                                 return new Entry<K, V>() {
-                                    private Entry<K, Map<String, ?>> entry = iterator.next();
+                                    private Entry<K, ?> entry = iterator.next();
 
                                     @Override
                                     public K getKey() {
