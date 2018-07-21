@@ -22,7 +22,6 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -107,7 +106,6 @@ public class WebServiceProxy {
     private String multipartBoundary = UUID.randomUUID().toString();
 
     private static final String UTF_8 = "UTF-8";
-    private static final String CRLF = "\r\n";
 
     private static final int EOF = -1;
 
@@ -440,7 +438,7 @@ public class WebServiceProxy {
     }
 
     private String encodeQuery() throws UnsupportedEncodingException {
-        StringBuilder queryBuilder = new StringBuilder();
+        StringBuilder queryBuilder = new StringBuilder(256);
 
         int i = 0;
 
@@ -492,24 +490,15 @@ public class WebServiceProxy {
                     continue;
                 }
 
-                writer.append(String.format("--%s%s", multipartBoundary, CRLF));
+                writer.append(String.format("--%s\r\n", multipartBoundary));
                 writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
 
                 if (value instanceof URL) {
                     String path = ((URL)value).getPath();
                     String filename = path.substring(path.lastIndexOf('/') + 1);
 
-                    writer.append(String.format("; filename=\"%s\"", filename));
-                    writer.append(CRLF);
-
-                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
-
-                    if (attachmentContentType == null) {
-                        attachmentContentType = "application/octet-stream";
-                    }
-
-                    writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
-                    writer.append(CRLF);
+                    writer.append(String.format("; filename=\"%s\"\r\n", filename));
+                    writer.append("Content-Type: application/octet-stream\r\n\r\n");
 
                     writer.flush();
 
@@ -520,17 +509,15 @@ public class WebServiceProxy {
                         }
                     }
                 } else {
-                    writer.append(CRLF);
-
-                    writer.append(CRLF);
+                    writer.append("\r\n\r\n");
                     writer.append(value.toString());
                 }
 
-                writer.append(CRLF);
+                writer.append("\r\n");
             }
         }
 
-        writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
+        writer.append(String.format("--%s--\r\n", multipartBoundary));
 
         writer.flush();
     }
