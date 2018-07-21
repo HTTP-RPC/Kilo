@@ -291,6 +291,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@linkplain BeanAdapter#get(Object)}.
      */
     public static List<?> adapt(List<?> list) {
+        if (list == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new ListAdapter(list, new HashMap<>());
     }
 
@@ -305,6 +309,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@linkplain BeanAdapter#get(Object)}.
      */
     public static Map<?, ?> adapt(Map<?, ?> map) {
+        if (map == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new MapAdapter(map, new HashMap<>());
     }
 
@@ -457,6 +465,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #adapt(Object, Type)}.
      */
     public static <E> List<E> adaptList(List<?> list, Type elementType) {
+        if (list == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new AbstractList<E>() {
             @Override
             public E get(int index) {
@@ -507,6 +523,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #adapt(Object, Type)}.
      */
     public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType) {
+        if (map == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (valueType == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new AbstractMap<K, V>() {
             @Override
             public V get(Object key) {

@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.UUID;
+
+import org.httprpc.beans.BeanAdapter;
 
 /**
  * Web service proxy class.
@@ -77,6 +80,14 @@ public class WebServiceProxy {
 
     private LinkedHashMap<String, String> headers = new LinkedHashMap<>();
     private LinkedHashMap<String, String> arguments = new LinkedHashMap<>();
+
+    private int connectTimeout = 0;
+    private int readTimeout = 0;
+
+    private String multipartBoundary = UUID.randomUUID().toString();
+
+    private static final String UTF_8 = "UTF-8";
+    private static final String CRLF = "\r\n";
 
     /**
      * Creates a new web service proxy.
@@ -161,6 +172,46 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns the connect timeout.
+     *
+     * @return
+     * The connect timeout.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
+     * Sets the connect timeout.
+     *
+     * @param connectTimeout
+     * The connect timeout.
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    /**
+     * Returns the read timeout.
+     *
+     * @return
+     * The read timeout.
+     */
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    /**
+     * Sets the read timeout.
+     *
+     * @param readTimeout
+     * The read timeout.
+     */
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    /**
      * Invokes the service method.
      *
      * @param <T>
@@ -183,7 +234,7 @@ public class WebServiceProxy {
      * The result type.
      *
      * @param resultType
-     * The result type.
+     * The result type, or <tt>null</tt> for the default type.
      *
      * @return
      * The result of the operation.
@@ -192,7 +243,12 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public <T> T invoke(Class<T> resultType) throws IOException {
-        return invoke(null, resultType);
+        return invoke(new RequestHandler() {
+            @Override
+            public void encodeRequest(OutputStream outputStream) throws IOException {
+                // TODO
+            }
+        }, resultType);
     }
 
     /**
@@ -205,7 +261,7 @@ public class WebServiceProxy {
      * The request handler.
      *
      * @param resultType
-     * The result type.
+     * The result type, or <tt>null</tt> for the default type.
      *
      * @return
      * The result of the operation.
@@ -213,13 +269,27 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
+    @SuppressWarnings("unchecked")
     public <T> T invoke(RequestHandler requestHandler, Class<T> resultType) throws IOException {
         return invoke(requestHandler, new ResponseHandler<T>() {
             @Override
             public T decodeResponse(InputStream inputStream, String contentType) throws IOException {
-                // TODO If the content is JSON and a result type was specified, adapt to
-                // the given type; otherwise, return the raw response
-                return null;
+                T result;
+                if (contentType.startsWith("application/json")) {
+                    JSONDecoder decoder = new JSONDecoder();
+
+                    Object value = decoder.readValue(inputStream);
+
+                    if (resultType == null) {
+                        result = (T)value;
+                    } else {
+                        result = BeanAdapter.adapt(value, resultType);
+                    }
+                } else {
+                    result = null;
+                }
+
+                return result;
             }
         });
     }
@@ -243,6 +313,14 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public <T> T invoke(RequestHandler requestHandler, ResponseHandler<T> responseHandler) throws IOException {
+        if (requestHandler == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (responseHandler == null) {
+            throw new IllegalArgumentException();
+        }
+
         // TODO Execute the request
         return null;
     }
