@@ -18,9 +18,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -287,12 +292,12 @@ public class WebServiceProxy {
             public void encodeRequest(OutputStream outputStream) throws IOException {
                 switch (encoding) {
                     case APPLICATION_X_WWW_FORM_URLENCODED: {
-                        // TODO
+                        encodeApplicationXWWWFormURLEncodedRequest(outputStream);
                         break;
                     }
 
                     case MULTIPART_FORM_DATA: {
-                        // TODO
+                        encodeMultipartFormDataRequest(outputStream);
                         break;
                     }
 
@@ -398,7 +403,7 @@ public class WebServiceProxy {
             String key = entry.getKey();
             Object value = entry.getValue();
 
-            if (value == null) {
+            if (key == null || value == null) {
                 continue;
             }
 
@@ -453,5 +458,112 @@ public class WebServiceProxy {
         }
 
         return result;
+    }
+
+    private String encodeQuery() throws UnsupportedEncodingException {
+        StringBuilder queryBuilder = new StringBuilder();
+
+        int i = 0;
+
+        for (Map.Entry<String, Object> argument : arguments.entrySet()) {
+            String key = argument.getKey();
+
+            if (key == null) {
+                continue;
+            }
+
+            for (Object value : getParameterValues(argument.getValue())) {
+                if (value == null) {
+                    continue;
+                }
+
+                if (i > 0) {
+                    queryBuilder.append("&");
+                }
+
+                queryBuilder.append(URLEncoder.encode(key, UTF_8));
+                queryBuilder.append("=");
+                queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
+
+                i++;
+            }
+        }
+
+        return queryBuilder.toString();
+    }
+
+    private void encodeApplicationXWWWFormURLEncodedRequest(OutputStream outputStream) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
+
+        writer.append(encodeQuery());
+    }
+
+    private void encodeMultipartFormDataRequest(OutputStream outputStream) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
+
+        for (Map.Entry<String, Object> argument : arguments.entrySet()) {
+            String name = argument.getKey();
+
+            if (name == null) {
+                continue;
+            }
+
+            for (Object value : getParameterValues(argument.getValue())) {
+                if (value == null) {
+                    continue;
+                }
+
+                writer.append(String.format("--%s%s", multipartBoundary, CRLF));
+                writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
+
+                if (value instanceof URL) {
+                    String path = ((URL)value).getPath();
+                    String filename = path.substring(path.lastIndexOf('/') + 1);
+
+                    writer.append(String.format("; filename=\"%s\"", filename));
+                    writer.append(CRLF);
+
+                    String attachmentContentType = URLConnection.guessContentTypeFromName(filename);
+
+                    if (attachmentContentType == null) {
+                        attachmentContentType = "application/octet-stream";
+                    }
+
+                    writer.append(String.format("%s: %s%s", "Content-Type", attachmentContentType, CRLF));
+                    writer.append(CRLF);
+
+                    writer.flush();
+
+                    try (InputStream inputStream = ((URL)value).openStream()) {
+                        int b;
+                        while ((b = inputStream.read()) != EOF) {
+                            outputStream.write(b);
+                        }
+                    }
+                } else {
+                    writer.append(CRLF);
+
+                    writer.append(CRLF);
+                    writer.append(value.toString());
+                }
+
+                writer.append(CRLF);
+            }
+        }
+
+        writer.append(String.format("--%s--%s", multipartBoundary, CRLF));
+
+        writer.flush();
+    }
+
+    private static Iterable<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
+        Iterable<?> values;
+        if (argument instanceof Iterable<?>) {
+            values = (Iterable<?>)argument;
+        } else {
+            values = Collections.singletonList(argument);
+        }
+
+        return values;
     }
 }
