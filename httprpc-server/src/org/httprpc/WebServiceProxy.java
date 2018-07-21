@@ -16,9 +16,14 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import org.httprpc.beans.BeanAdapter;
@@ -39,6 +44,16 @@ public class WebServiceProxy {
      * Interface representing a request handler.
      */
     public interface RequestHandler {
+        /**
+         * Returns the content type produced by the handler.
+         *
+         * @return
+         * The content type produced by the handler.
+         */
+        public default String getContentType() {
+            return "application/octet-stream";
+        }
+
         /**
          * Encodes a request to an output stream.
          *
@@ -78,8 +93,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
 
-    private LinkedHashMap<String, String> headers = new LinkedHashMap<>();
-    private LinkedHashMap<String, String> arguments = new LinkedHashMap<>();
+    private LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
+    private LinkedHashMap<String, Object> arguments = new LinkedHashMap<>();
 
     private int connectTimeout = 0;
     private int readTimeout = 0;
@@ -88,6 +103,8 @@ public class WebServiceProxy {
 
     private static final String UTF_8 = "UTF-8";
     private static final String CRLF = "\r\n";
+
+    private static final int EOF = -1;
 
     /**
      * Creates a new web service proxy.
@@ -157,7 +174,7 @@ public class WebServiceProxy {
      * @return
      * The header map.
      */
-    public LinkedHashMap<String, String> getHeaders() {
+    public LinkedHashMap<String, Object> getHeaders() {
         return headers;
     }
 
@@ -167,7 +184,7 @@ public class WebServiceProxy {
      * @return
      * The argument map.
      */
-    public LinkedHashMap<String, String> getArguments() {
+    public LinkedHashMap<String, Object> getArguments() {
         return arguments;
     }
 
@@ -245,8 +262,44 @@ public class WebServiceProxy {
     public <T> T invoke(Class<T> resultType) throws IOException {
         return invoke(new RequestHandler() {
             @Override
+            public String getContentType() {
+                String contentType;
+                switch (encoding) {
+                    case APPLICATION_X_WWW_FORM_URLENCODED: {
+                        contentType = "application/x-www-form-urlencoded";
+                        break;
+                    }
+
+                    case MULTIPART_FORM_DATA: {
+                        contentType = String.format("multipart/form-data; boundary=%s", multipartBoundary);
+                        break;
+                    }
+
+                    default: {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+
+                return contentType;
+            }
+
+            @Override
             public void encodeRequest(OutputStream outputStream) throws IOException {
-                // TODO
+                switch (encoding) {
+                    case APPLICATION_X_WWW_FORM_URLENCODED: {
+                        // TODO
+                        break;
+                    }
+
+                    case MULTIPART_FORM_DATA: {
+                        // TODO
+                        break;
+                    }
+
+                    default: {
+                        throw new UnsupportedOperationException();
+                    }
+                }
             }
         }, resultType);
     }
@@ -321,7 +374,84 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        // TODO Execute the request
-        return null;
+        // TODO Construct query
+
+        // Open URL connection
+        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+        connection.setRequestMethod(method);
+
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
+
+        // Set standard headers
+        connection.setRequestProperty("Accept", "*/*");
+
+        Locale locale = Locale.getDefault();
+
+        connection.setRequestProperty("Accept-Language", String.format("%s-%s",
+            locale.getLanguage().toLowerCase(),
+            locale.getCountry().toLowerCase()));
+
+        // Apply custom headers
+        for (Map.Entry<String, Object> entry : headers.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value == null) {
+                continue;
+            }
+
+            connection.setRequestProperty(key, value.toString());
+        }
+
+        // Write request body
+        if (method.equalsIgnoreCase("POST")
+            || method.equalsIgnoreCase("PATCH")
+            || method.equalsIgnoreCase("PUT")) {
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", requestHandler.getContentType());
+
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                requestHandler.encodeRequest(outputStream);
+            }
+        }
+
+        // Read response
+        int responseCode = connection.getResponseCode();
+
+        T result;
+        if (responseCode / 100 == 2) {
+            if (responseCode % 100 < 4) {
+                try (InputStream inputStream = connection.getInputStream()) {
+                    result = responseHandler.decodeResponse(inputStream, connection.getContentType());
+                }
+            } else {
+                result = null;
+            }
+        } else {
+            String contentType = connection.getContentType();
+
+            String message;
+            if (contentType != null && contentType.startsWith("text/plain")) {
+                StringBuilder messageBuilder = new StringBuilder(1024);
+
+                try (InputStream inputStream = connection.getErrorStream();
+                    InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName(UTF_8))) {
+                    int c;
+                    while ((c = reader.read()) != EOF) {
+                        messageBuilder.append((char)c);
+                    }
+                }
+
+                message = messageBuilder.toString();
+            } else {
+                message = connection.getResponseMessage();
+            }
+
+            throw new WebServiceException(message, responseCode);
+        }
+
+        return result;
     }
 }

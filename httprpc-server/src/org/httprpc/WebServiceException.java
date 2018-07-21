@@ -15,7 +15,6 @@
 package org.httprpc;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Thrown to indicate that a service operation returned an error.
@@ -23,8 +22,7 @@ import java.util.Map;
 public class WebServiceException extends IOException {
     private static final long serialVersionUID = 0;
 
-    private int code;
-    private Map<String, ?> error;
+    private int status;
 
     /**
      * Constructs a new web service exception.
@@ -32,18 +30,13 @@ public class WebServiceException extends IOException {
      * @param message
      * The error message returned by the service.
      *
-     * @param code
+     * @param status
      * The HTTP status code returned by the service.
-     *
-     * @param error
-     * Additional error information returned by the service, or <tt>null</tt>
-     * if no additional information was provided.
      */
-    public WebServiceException(String message, int code, Map<String, ?> error) {
+    public WebServiceException(String message, int status) {
         super(message);
 
-        this.code = code;
-        this.error = error;
+        this.status = status;
     }
 
     /**
@@ -52,18 +45,7 @@ public class WebServiceException extends IOException {
      * @return
      * The HTTP status code returned by the service.
      */
-    public int getCode() {
-        return code;
-    }
-
-    /**
-     * Returns additional error information returned by the service.
-     *
-     * @return
-     * Additional error information returned by the service, or <tt>null</tt>
-     * if no additional information was provided.
-     */
-    public Map<String, ?> getError() {
-        return error;
+    public int getStatus() {
+        return status;
     }
 }
