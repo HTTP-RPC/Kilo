@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -525,11 +526,19 @@ public class WebServiceProxy {
     private static Iterable<?> getParameterValues(Object argument) throws UnsupportedEncodingException {
         Iterable<?> values;
         if (argument instanceof Iterable<?>) {
-            values = (Iterable<?>)argument;
+            values = (Iterable<?>)getParameterValue(argument);
         } else {
-            values = Collections.singletonList(argument);
+            values = Collections.singletonList(getParameterValue(argument));
         }
 
         return values;
+    }
+
+    private static Object getParameterValue(Object argument) {
+        if (argument instanceof Date) {
+            return ((Date)argument).getTime();
+        } else {
+            return argument;
+        }
     }
 }

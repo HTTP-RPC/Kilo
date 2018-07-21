@@ -92,13 +92,13 @@ public class JSONEncoder {
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(String.valueOf(value));
         } else if (value instanceof Date) {
-            writer.append(String.valueOf(((Date)value).getTime()));
+            writeValue(((Date)value).getTime(), writer);
         } else if (value instanceof LocalDate) {
-            writer.append(String.valueOf(((LocalDate)value).toString()));
+            writeValue(((LocalDate)value).toString(), writer);
         } else if (value instanceof LocalTime) {
-            writer.append(String.valueOf(((LocalTime)value).toString()));
+            writeValue(((LocalTime)value).toString(), writer);
         } else if (value instanceof LocalDateTime) {
-            writer.append(String.valueOf(((LocalDateTime)value).toString()));
+            writeValue(((LocalDateTime)value).toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.append("[");
 
