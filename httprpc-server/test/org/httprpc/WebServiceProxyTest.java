@@ -66,7 +66,30 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testURLEncodedPost() throws Exception {
-        // TODO
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server/test"));
+
+        webServiceProxy.getArguments().putAll(mapOf(
+            entry("string", "héllo+gøodbye"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("flag", true),
+            entry("date", date),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime))
+        );
+
+        Map<String, ?> result = webServiceProxy.invoke();
+
+        validate("POST (URL-encoded)", result.get("string").equals("héllo+gøodbye")
+            && result.get("strings").equals(listOf("a", "b", "c"))
+            && result.get("number").equals(123)
+            && result.get("flag").equals(true)
+            && result.get("date").equals(date.getTime())
+            && result.get("localDate").equals(localDate.toString())
+            && result.get("localTime").equals(localTime.toString())
+            && result.get("localDateTime").equals(localDateTime.toString())
+            && result.get("attachmentInfo").equals(listOf()));
     }
 
     public static void testMultipartPost() throws Exception {

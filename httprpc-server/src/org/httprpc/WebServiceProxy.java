@@ -80,7 +80,7 @@ public class WebServiceProxy {
          * The input stream to read from.
          *
          * @param contentType
-         * The content type.
+         * The content type, or <tt>null</tt> if the content type is not known.
          *
          * @throws IOException
          * If an exception occurs.
@@ -269,7 +269,7 @@ public class WebServiceProxy {
             @Override
             public T decodeResponse(InputStream inputStream, String contentType) throws IOException {
                 T result;
-                if (contentType.startsWith("application/json")) {
+                if (contentType != null && contentType.startsWith("application/json")) {
                     JSONDecoder decoder = new JSONDecoder();
 
                     result = decoder.readValue(inputStream);
@@ -474,6 +474,8 @@ public class WebServiceProxy {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
         writer.append(encodeQuery());
+
+        writer.flush();
     }
 
     private void encodeMultipartFormDataRequest(OutputStream outputStream) throws IOException {

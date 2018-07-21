@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -147,69 +146,9 @@ public class JSONDecoderTest extends AbstractTest {
         )));
     }
 
-    @Test
-    public void testValueAt() throws IOException {
-        Map<String, ?> map = decode("{\"a\": {\"b\": {\"c\": 123}}}");
-
-        Assert.assertTrue(valueAt(map, "a.b.c").equals(123));
-        Assert.assertTrue(valueAt(map, "x.y.z") == null);
-    }
-
-    @Test
-    public void testCoalesce() throws IOException {
-        Map<String, ?> map = decode("{\"abc\": null}");
-
-        Assert.assertTrue(coalesce(valueAt(map, "abc"), null, 123).equals(123));
-        Assert.assertTrue(coalesce(valueAt(map, "xyz"), 456).equals(456));
-    }
-
     private static <T> T decode(String text) throws IOException {
         JSONDecoder decoder = new JSONDecoder();
 
         return decoder.readValue(new StringReader(text));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <V> V valueAt(Map<String, ?> root, String path) {
-        if (root == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (path == null) {
-            throw new IllegalArgumentException();
-        }
-
-        Object value = root;
-
-        String[] components = path.split("\\.");
-
-        for (int i = 0; i < components.length; i++) {
-            String component = components[i];
-
-            if (value instanceof Map<?, ?>) {
-                value = ((Map<?, ?>)value).get(component);
-            } else {
-                value = null;
-
-                break;
-            }
-        }
-
-        return (V)value;
-    }
-
-    @SafeVarargs
-    private static <V> V coalesce(V... values) {
-        V value = null;
-
-        for (int i = 0; i < values.length; i++) {
-            value = values[i];
-
-            if (value != null) {
-                break;
-            }
-        }
-
-        return value;
     }
 }
