@@ -19,9 +19,29 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import org.httprpc.beans.BeanAdapter;
+
 public class WebServiceProxyTest extends AbstractTest {
+    public interface Response {
+        public interface AttachmentInfo {
+            public int getBytes();
+            public int getChecksum();
+        }
+
+        public String getString();
+        public List<String> getStrings();
+        public int getNumber();
+        public boolean getFlag();
+        public Date getDate();
+        public LocalDate getLocalDate();
+        public LocalTime getLocalTime();
+        public LocalDateTime getLocalDateTime();
+        public List<AttachmentInfo> getAttachmentInfo();
+    }
+
     private static Date date = new Date();
 
     private static LocalDate localDate = LocalDate.now();
@@ -112,26 +132,20 @@ public class WebServiceProxyTest extends AbstractTest {
             entry("attachments", listOf(textTestURL, imageTestURL)))
         );
 
-        Map<String, ?> result = webServiceProxy.invoke();
+        Response response = BeanAdapter.adapt(webServiceProxy.invoke(), Response.class);
 
-        validate("POST (multipart)", result.get("string").equals("héllo+gøodbye")
-            && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123)
-            && result.get("flag").equals(true)
-            && result.get("date").equals(date.getTime())
-            && result.get("localDate").equals(localDate.toString())
-            && result.get("localTime").equals(localTime.toString())
-            && result.get("localDateTime").equals(localDateTime.toString())
-            && result.get("attachmentInfo").equals(listOf(
-                mapOf(
-                    entry("bytes", 26),
-                    entry("checksum", 2412)
-                ),
-                mapOf(
-                    entry("bytes", 10392),
-                    entry("checksum", 1038036)
-                )
-            )));
+        validate("POST (multipart)", response.getString().equals("héllo+gøodbye")
+            && response.getStrings().equals(listOf("a", "b", "c"))
+            && response.getNumber() == 123
+            && response.getFlag() == true
+            && response.getDate().equals(date)
+            && response.getLocalDate().equals(localDate)
+            && response.getLocalTime().equals(localTime)
+            && response.getLocalDateTime().equals(localDateTime)
+            && response.getAttachmentInfo().get(0).getBytes() == 26
+            && response.getAttachmentInfo().get(0).getChecksum() == 2412
+            && response.getAttachmentInfo().get(1).getBytes() == 10392
+            && response.getAttachmentInfo().get(1).getChecksum() == 1038036);
     }
 
     public static void testCustomPost() throws Exception {

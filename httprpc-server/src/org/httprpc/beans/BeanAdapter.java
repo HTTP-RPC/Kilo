@@ -404,6 +404,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return (value == null) ? 0 : ((Number)value).floatValue();
         } else if (type == Double.TYPE || type == Double.class) {
             return (value == null) ? 0 : ((Number)value).doubleValue();
+        } else if (type == Boolean.TYPE) {
+            return (value == null) ? false : ((Boolean)value).booleanValue();
         } else if (type == Date.class) {
             return (value == null) ? null : new Date(((Number)value).longValue());
         } else if (type == LocalDate.class) {
@@ -440,7 +442,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         c = Character.toLowerCase(c);
                     }
 
-                    return ((Map<?, ?>)value).get(c + methodName.substring(j));
+                    return adapt(((Map<?, ?>)value).get(c + methodName.substring(j)), method.getGenericReturnType());
                 }
             }));
         } else {
