@@ -31,8 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import org.httprpc.beans.BeanAdapter;
-
 /**
  * Web service proxy class.
  */
@@ -100,6 +98,8 @@ public class WebServiceProxy {
 
     private LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
     private LinkedHashMap<String, Object> arguments = new LinkedHashMap<>();
+
+    private RequestHandler requestHandler = null;
 
     private int connectTimeout = 0;
     private int readTimeout = 0;
@@ -194,6 +194,26 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns the request handler.
+     *
+     * @return
+     * The request handler, or <tt>null</tt> if no request handler has been set.
+     */
+    public RequestHandler getRequestHandler() {
+        return requestHandler;
+    }
+
+    /**
+     * Sets the request handler.
+     *
+     * @param requestHandler
+     * The request handler, or <tt>null</tt> for no request handler.
+     */
+    public void setRequestHandler(RequestHandler requestHandler) {
+        this.requestHandler = requestHandler;
+    }
+
+    /**
      * Returns the connect timeout.
      *
      * @return
@@ -246,103 +266,14 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public <T> T invoke() throws IOException {
-        return invoke(null);
-    }
-
-    /**
-     * Invokes the service method.
-     *
-     * @param <T>
-     * The result type.
-     *
-     * @param resultType
-     * The result type, or <tt>null</tt> for the default type.
-     *
-     * @return
-     * The result of the operation.
-     *
-     * @throws IOException
-     * If an exception occurs while executing the operation.
-     */
-    public <T> T invoke(Class<T> resultType) throws IOException {
-        return invoke(new RequestHandler() {
-            @Override
-            public String getContentType() {
-                String contentType;
-                switch (encoding) {
-                    case APPLICATION_X_WWW_FORM_URLENCODED: {
-                        contentType = "application/x-www-form-urlencoded";
-                        break;
-                    }
-
-                    case MULTIPART_FORM_DATA: {
-                        contentType = String.format("multipart/form-data; boundary=%s", multipartBoundary);
-                        break;
-                    }
-
-                    default: {
-                        throw new UnsupportedOperationException();
-                    }
-                }
-
-                return contentType;
-            }
-
-            @Override
-            public void encodeRequest(OutputStream outputStream) throws IOException {
-                switch (encoding) {
-                    case APPLICATION_X_WWW_FORM_URLENCODED: {
-                        encodeApplicationXWWWFormURLEncodedRequest(outputStream);
-                        break;
-                    }
-
-                    case MULTIPART_FORM_DATA: {
-                        encodeMultipartFormDataRequest(outputStream);
-                        break;
-                    }
-
-                    default: {
-                        throw new UnsupportedOperationException();
-                    }
-                }
-            }
-        }, resultType);
-    }
-
-    /**
-     * Invokes the service method.
-     *
-     * @param <T>
-     * The result type.
-     *
-     * @param requestHandler
-     * The request handler.
-     *
-     * @param resultType
-     * The result type, or <tt>null</tt> for the default type.
-     *
-     * @return
-     * The result of the operation.
-     *
-     * @throws IOException
-     * If an exception occurs while executing the operation.
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T invoke(RequestHandler requestHandler, Class<T> resultType) throws IOException {
-        return invoke(requestHandler, new ResponseHandler<T>() {
+        return invoke(new ResponseHandler<T>() {
             @Override
             public T decodeResponse(InputStream inputStream, String contentType) throws IOException {
                 T result;
                 if (contentType.startsWith("application/json")) {
                     JSONDecoder decoder = new JSONDecoder();
 
-                    Object value = decoder.readValue(inputStream);
-
-                    if (resultType == null) {
-                        result = (T)value;
-                    } else {
-                        result = BeanAdapter.adapt(value, resultType);
-                    }
+                    result = decoder.readValue(inputStream);
                 } else {
                     result = null;
                 }
@@ -358,9 +289,6 @@ public class WebServiceProxy {
      * @param <T>
      * The result type.
      *
-     * @param requestHandler
-     * The request handler.
-     *
      * @param responseHandler
      * The response handler.
      *
@@ -370,16 +298,69 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(RequestHandler requestHandler, ResponseHandler<T> responseHandler) throws IOException {
-        if (requestHandler == null) {
-            throw new IllegalArgumentException();
-        }
-
+    public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
         if (responseHandler == null) {
             throw new IllegalArgumentException();
         }
 
-        // TODO Construct query
+        URL url;
+        RequestHandler requestHandler;
+        if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
+            url = this.url;
+
+            requestHandler = new RequestHandler() {
+                @Override
+                public String getContentType() {
+                    String contentType;
+                    switch (encoding) {
+                        case APPLICATION_X_WWW_FORM_URLENCODED: {
+                            contentType = "application/x-www-form-urlencoded";
+                            break;
+                        }
+
+                        case MULTIPART_FORM_DATA: {
+                            contentType = String.format("multipart/form-data; boundary=%s", multipartBoundary);
+                            break;
+                        }
+
+                        default: {
+                            throw new UnsupportedOperationException();
+                        }
+                    }
+
+                    return contentType;
+                }
+
+                @Override
+                public void encodeRequest(OutputStream outputStream) throws IOException {
+                    switch (encoding) {
+                        case APPLICATION_X_WWW_FORM_URLENCODED: {
+                            encodeApplicationXWWWFormURLEncodedRequest(outputStream);
+                            break;
+                        }
+
+                        case MULTIPART_FORM_DATA: {
+                            encodeMultipartFormDataRequest(outputStream);
+                            break;
+                        }
+
+                        default: {
+                            throw new UnsupportedOperationException();
+                        }
+                    }
+                }
+            };
+        } else {
+            String query = encodeQuery();
+
+            if (query.length() == 0) {
+                url = this.url;
+            } else {
+                url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), this.url.getFile() + "?" + query);
+            }
+
+            requestHandler = this.requestHandler;
+        }
 
         // Open URL connection
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
@@ -411,9 +392,7 @@ public class WebServiceProxy {
         }
 
         // Write request body
-        if (method.equalsIgnoreCase("POST")
-            || method.equalsIgnoreCase("PATCH")
-            || method.equalsIgnoreCase("PUT")) {
+        if (requestHandler != null) {
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", requestHandler.getContentType());
 
@@ -465,14 +444,14 @@ public class WebServiceProxy {
 
         int i = 0;
 
-        for (Map.Entry<String, Object> argument : arguments.entrySet()) {
-            String key = argument.getKey();
+        for (Map.Entry<String, Object> entry : arguments.entrySet()) {
+            String key = entry.getKey();
 
             if (key == null) {
                 continue;
             }
 
-            for (Object value : getParameterValues(argument.getValue())) {
+            for (Object value : getParameterValues(entry.getValue())) {
                 if (value == null) {
                     continue;
                 }
@@ -501,14 +480,14 @@ public class WebServiceProxy {
     private void encodeMultipartFormDataRequest(OutputStream outputStream) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
-        for (Map.Entry<String, Object> argument : arguments.entrySet()) {
-            String name = argument.getKey();
+        for (Map.Entry<String, Object> entry : arguments.entrySet()) {
+            String name = entry.getKey();
 
             if (name == null) {
                 continue;
             }
 
-            for (Object value : getParameterValues(argument.getValue())) {
+            for (Object value : getParameterValues(entry.getValue())) {
                 if (value == null) {
                     continue;
                 }
