@@ -93,7 +93,45 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testMultipartPost() throws Exception {
-        // TODO
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server/test"));
+
+        webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
+
+        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
+        webServiceProxy.getArguments().putAll(mapOf(
+            entry("string", "héllo+gøodbye"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("flag", true),
+            entry("date", date),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime),
+            entry("attachments", listOf(textTestURL, imageTestURL)))
+        );
+
+        Map<String, ?> result = webServiceProxy.invoke();
+
+        validate("POST (multipart)", result.get("string").equals("héllo+gøodbye")
+            && result.get("strings").equals(listOf("a", "b", "c"))
+            && result.get("number").equals(123)
+            && result.get("flag").equals(true)
+            && result.get("date").equals(date.getTime())
+            && result.get("localDate").equals(localDate.toString())
+            && result.get("localTime").equals(localTime.toString())
+            && result.get("localDateTime").equals(localDateTime.toString())
+            && result.get("attachmentInfo").equals(listOf(
+                mapOf(
+                    entry("bytes", 26),
+                    entry("checksum", 2412)
+                ),
+                mapOf(
+                    entry("bytes", 10392),
+                    entry("checksum", 1038036)
+                )
+            )));
     }
 
     public static void testCustomPost() throws Exception {
