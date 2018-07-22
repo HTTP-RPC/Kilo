@@ -17,14 +17,11 @@ package org.httprpc.beans;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.AbstractTest;
 import org.httprpc.JSONDecoder;
-import org.httprpc.JSONEncoder;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -86,25 +83,31 @@ public class BeanAdapterTest extends AbstractTest {
     public void testBeanAdapter2() throws IOException {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
-        Map<String, ?> map1;
+        Map<String, ?> map;
         try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
-            map1 = jsonDecoder.readValue(inputStream);
+            map = jsonDecoder.readValue(inputStream);
         }
 
-        JSONEncoder jsonEncoder = new JSONEncoder();
+        TestInterface result = BeanAdapter.adapt(map, TestInterface.class);
 
-        String json;
-        try (StringWriter jsonWriter = new StringWriter()) {
-            jsonEncoder.writeValue(new BeanAdapter(BeanAdapter.adapt(map1, TestInterface.class)), jsonWriter);
+        Assert.assertEquals(2L, result.getLong());
+        Assert.assertEquals(4.0, result.getDouble(), 0.0);
+        Assert.assertEquals("abc", result.getString());
+        Assert.assertEquals(new Date(0), result.getDate());
+        Assert.assertEquals(LocalDate.parse("2018-06-28"), result.getLocalDate());
+        Assert.assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
+        Assert.assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
 
-            json = jsonWriter.toString();
-        }
+        Assert.assertEquals(2L, ((Number)result.getList().get(0)).longValue());
+        Assert.assertEquals(4.0, ((Number)result.getList().get(1)).doubleValue(), 0.0);
+        Assert.assertEquals(true, ((Map<?, ?>)result.getList().get(2)).get("flag"));
+        Assert.assertEquals(true, result.getNestedBeanList().get(0).getFlag());
 
-        Map<String, ?> map2;
-        try (StringReader jsonReader = new StringReader(json)) {
-            map2 = jsonDecoder.readValue(jsonReader);
-        }
+        Assert.assertEquals(2L, ((Number)result.getMap().get("long")).longValue());
+        Assert.assertEquals(4.0, ((Number)result.getMap().get("double")).doubleValue(), 0.0);
+        Assert.assertEquals(true, ((Map<?, ?>)result.getMap().get("nestedBean")).get("flag"));
+        Assert.assertEquals(true, result.getNestedBeanMap().get("nestedBean").getFlag());
 
-        Assert.assertEquals(map1, map2);
+        Assert.assertEquals(true, result.getNestedBean().getFlag());
     }
 }

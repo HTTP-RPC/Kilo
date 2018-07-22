@@ -374,7 +374,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (type instanceof Class<?>) {
             return (T)adapt(value, (Class<?>)type);
         } else if (type instanceof WildcardType) {
-            return (T)adapt(value, Object.class);
+            WildcardType wildcardType = (WildcardType)type;
+
+            return (T)adapt(value, wildcardType.getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
 
