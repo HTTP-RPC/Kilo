@@ -33,6 +33,11 @@ public class TestBean implements TestInterface {
     }
 
     @Override
+    public int getInt() {
+        return 1;
+    }
+
+    @Override
     public long getLong() {
         return 2L;
     }

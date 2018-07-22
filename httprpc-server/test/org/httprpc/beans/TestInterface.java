@@ -26,6 +26,7 @@ public interface TestInterface {
         public boolean getFlag();
     }
 
+    public int getInt();
     public long getLong();
     public double getDouble();
     public String getString();

@@ -32,6 +32,7 @@ public class BeanAdapterTest extends AbstractTest {
     @Test
     public void testBeanAdapter1() {
         Assert.assertEquals(mapOf(
+            entry("int", 1),
             entry("long", 2L),
             entry("double", 4.0),
             entry("string", "abc"),
@@ -90,6 +91,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         TestInterface result = BeanAdapter.adapt(map, TestInterface.class);
 
+        Assert.assertEquals(0, result.getInt());
         Assert.assertEquals(2L, result.getLong());
         Assert.assertEquals(4.0, result.getDouble(), 0.0);
         Assert.assertEquals("abc", result.getString());
