@@ -545,11 +545,9 @@ The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of 
 * `method` - the HTTP method to execute
 * `url` - an instance of `java.net.URL` representing the target of the operation
 
-Request headers and arguments are provided via the `getHeaders()` and `getArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+Request headers and arguments are specified via the `getHeaders()` and `getArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
 
-The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970).
-
-Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
 
 Service operations are invoked via one of the following methods:
 
@@ -560,7 +558,7 @@ public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ...
 
 The first version automatically deserializes a successful server response using `JSONDecoder`. The second version allows a caller to provide a custom response handler. 
 
-If the server returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the response body will be returned in the exception message.
+If the server returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 
 ### Example
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
