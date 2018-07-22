@@ -63,6 +63,7 @@ public class WebServiceProxyTest extends AbstractTest {
         testCustomPost();
         testPut();
         testDelete();
+        testError();
         testTimeout();
     }
 
@@ -224,6 +225,21 @@ public class WebServiceProxyTest extends AbstractTest {
         webServiceProxy.invoke();
 
         validate("DELETE", true);
+    }
+
+    public static void testError() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/test/error"));
+
+        boolean error;
+        try {
+            webServiceProxy.invoke();
+
+            error = false;
+        } catch (WebServiceException exception) {
+            error = true;
+        }
+
+        validate("Error", error);
     }
 
     public static void testTimeout() throws Exception {
