@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 32KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 50KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -41,6 +41,8 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `JSONEncoder` - class that serializes an object hierarchy to JSON
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
+    * `WebServiceProxy` - web service invocation proxy
+    * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.beans`
     * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map
 * `org.httprpc.sql`
@@ -353,7 +355,7 @@ Although the values are actually stored in the strongly typed properties of the 
 ```
 
 ### Typed Map Access
-`BeanAdapter` can also be used to facilitate type-safe access to JSON data. For example, `JSONDecoder` would deserialize the content returned by the previous example into a graph of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that adapts the underlying value.
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a graph of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that adapts the underlying value.
 
 For example, given the following interface definition:
 
@@ -364,7 +366,7 @@ public interface TreeNode {
 }
 ```
 
-the `adapt()` method can be used to model the result data as a collection of `TreeNode` instances:
+the `adapt()` method can be used to model the result data as a collection of `TreeNode` values:
 
 ```java
 TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
@@ -374,7 +376,7 @@ root.getChildren().get(0).getName(); // "Winter"
 root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
-Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. Nested interfaces are supported. Additionally, if a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
+Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. If a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be serialized as an array of JSON objects. For example:
@@ -538,7 +540,41 @@ public double getAverageAge() throws SQLException {
 ```
 
 ## WebServiceProxy
-TODO
+The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of other REST-based web services. Service proxies are initialized via a constructor that takes the following arguments:
+
+* `method` - the HTTP method to execute
+* `url` - an instance of `java.net.URL` representing the target of the operation
+
+Request headers and arguments are provided via the `getHeaders()` and `getArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970).
+
+Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
+
+Service operations are invoked via one of the following methods:
+
+```java
+public <T> T invoke() throws IOException { ... }
+public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
+```
+
+The first version automatically deserializes a successful server response using `JSONDecoder`. The second version allows a caller to provide a custom response handler. 
+
+If the server returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the response body will be returned in the exception message.
+
+### Example
+The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+
+```java
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+
+webServiceProxy.getArguments().put("a", 4);
+webServiceProxy.getArguments().put("b", 2);
+
+Number result = webServiceProxy.invoke();
+
+System.out.println(result); // 6.0
+```
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).

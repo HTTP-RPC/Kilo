@@ -71,6 +71,7 @@ public class WebServiceProxyTest extends AbstractTest {
         testError();
         testTimeout();
 
+        testMath();
         testTree();
     }
 
@@ -270,6 +271,17 @@ public class WebServiceProxyTest extends AbstractTest {
         }
 
         validate("Timeout", timeout);
+    }
+
+    public static void testMath() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+
+        webServiceProxy.getArguments().put("a", 4);
+        webServiceProxy.getArguments().put("b", 2);
+
+        Number result = webServiceProxy.invoke();
+
+        validate("Math", result.equals(6));
     }
 
     public static void testTree() throws Exception {
