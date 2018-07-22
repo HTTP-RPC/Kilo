@@ -14,6 +14,8 @@
 
 package org.httprpc;
 
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +23,8 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import org.httprpc.beans.BeanAdapter;
 
@@ -149,7 +153,28 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testCustomPost() throws Exception {
-        // TODO
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server/test"));
+
+        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
+        webServiceProxy.setRequestHandler((outputStream) -> {
+            try (InputStream inputStream = imageTestURL.openStream()) {
+                int b;
+                while ((b = inputStream.read()) != -1) {
+                    outputStream.write(b);
+                }
+            }
+        });
+
+        webServiceProxy.getArguments().putAll(mapOf(
+            entry("name", imageTestURL.getFile()))
+        );
+
+        BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> {
+            return ImageIO.read(inputStream);
+        });
+
+        validate("POST (custom)", image != null);
     }
 
     public static void testPut() throws Exception {
