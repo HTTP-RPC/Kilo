@@ -16,6 +16,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
+    * [WebServiceProxy](#webserviceproxy)
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
@@ -351,6 +352,30 @@ Although the values are actually stored in the strongly typed properties of the 
 }
 ```
 
+### Typed Map Access
+`BeanAdapter` can also be used to facilitate type-safe access to JSON data. For example, `JSONDecoder` would deserialize the content returned by the previous example into a graph of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that adapts the underlying value.
+
+For example, given the following interface definition:
+
+```java
+public interface TreeNode {
+    public String getName();
+    public List<TreeNode> getChildren();
+}
+```
+
+the `adapt()` method can be used to model the result data as a collection of `TreeNode` instances:
+
+```java
+TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
+
+root.getName(); // "Seasons"
+root.getChildren().get(0).getName(); // "Winter"
+root.getChildren().get(0).getChildren().get(0).getName(); // "January"
+```
+
+Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. Nested interfaces are supported. Additionally, if a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
+
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be serialized as an array of JSON objects. For example:
 
@@ -475,7 +500,7 @@ The service would return something like the following:
 ```
 
 ### Typed Result Set Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method takes a `ResultSet` and an interface type as arguments, and returns an `Iterable` of the given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method takes a `ResultSet` and an interface type as arguments, and returns an `Iterable` of the given type representing the rows in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
@@ -511,6 +536,9 @@ public double getAverageAge() throws SQLException {
     return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
 }
 ```
+
+## WebServiceProxy
+TODO
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).

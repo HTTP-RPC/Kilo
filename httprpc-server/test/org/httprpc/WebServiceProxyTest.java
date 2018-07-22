@@ -48,6 +48,11 @@ public class WebServiceProxyTest extends AbstractTest {
         public List<AttachmentInfo> getAttachmentInfo();
     }
 
+    public interface TreeNode {
+        public String getName();
+        public List<TreeNode> getChildren();
+    }
+
     private static Date date = new Date();
 
     private static LocalDate localDate = LocalDate.now();
@@ -65,6 +70,8 @@ public class WebServiceProxyTest extends AbstractTest {
         testDelete();
         testError();
         testTimeout();
+
+        testTree();
     }
 
     public static void testGet() throws Exception {
@@ -263,6 +270,16 @@ public class WebServiceProxyTest extends AbstractTest {
         }
 
         validate("Timeout", timeout);
+    }
+
+    public static void testTree() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/tree"));
+
+        TreeNode root = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
+
+        validate("Tree", root.getName().equals("Seasons")
+            && root.getChildren().get(0).getName().equals("Winter")
+            && root.getChildren().get(0).getChildren().get(0).getName().equals("January"));
     }
 
     private static void validate(String test, boolean condition) {
