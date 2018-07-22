@@ -270,9 +270,9 @@ public class WebServiceProxy {
             public T decodeResponse(InputStream inputStream, String contentType) throws IOException {
                 T result;
                 if (contentType != null && contentType.startsWith("application/json")) {
-                    JSONDecoder decoder = new JSONDecoder();
+                    JSONDecoder jsonDecoder = new JSONDecoder();
 
-                    result = decoder.readValue(inputStream);
+                    result = jsonDecoder.readValue(inputStream);
                 } else {
                     result = null;
                 }

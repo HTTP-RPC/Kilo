@@ -16,17 +16,24 @@ package org.httprpc.beans;
 
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.AbstractTest;
+import org.httprpc.JSONDecoder;
+import org.httprpc.JSONEncoder;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.Map;
 
 public class BeanAdapterTest extends AbstractTest {
     @Test
-    public void testBeanAdapter() {
+    public void testBeanAdapter1() {
         Assert.assertEquals(mapOf(
             entry("long", 2L),
             entry("double", 4.0),
@@ -38,9 +45,17 @@ public class BeanAdapterTest extends AbstractTest {
             entry("list", listOf(2L, 4.0, mapOf(
                 entry("flag", true)
             ))),
+            entry("nestedBeanList", listOf(mapOf(
+                entry("flag", true)
+            ))),
             entry("map", mapOf(
                 entry("long", 2L),
                 entry("double", 4.0),
+                entry("nestedBean", mapOf(
+                    entry("flag", true)
+                )))
+            ),
+            entry("nestedBeanMap", mapOf(
                 entry("nestedBean", mapOf(
                     entry("flag", true)
                 )))
@@ -65,5 +80,31 @@ public class BeanAdapterTest extends AbstractTest {
             entry("double", 4.0),
             entry("nestedBean", new TestBean.NestedBean())
         )));
+    }
+
+    @Test
+    public void testBeanAdapter2() throws IOException {
+        JSONDecoder jsonDecoder = new JSONDecoder();
+
+        Map<String, ?> map1;
+        try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
+            map1 = jsonDecoder.readValue(inputStream);
+        }
+
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        String json;
+        try (StringWriter jsonWriter = new StringWriter()) {
+            jsonEncoder.writeValue(new BeanAdapter(BeanAdapter.adapt(map1, TestInterface.class)), jsonWriter);
+
+            json = jsonWriter.toString();
+        }
+
+        Map<String, ?> map2;
+        try (StringReader jsonReader = new StringReader(json)) {
+            map2 = jsonDecoder.readValue(jsonReader);
+        }
+
+        Assert.assertEquals(map1, map2);
     }
 }

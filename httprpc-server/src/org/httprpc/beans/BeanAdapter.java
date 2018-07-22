@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -372,6 +373,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     public static <T> T adapt(Object value, Type type) {
         if (type instanceof Class<?>) {
             return (T)adapt(value, (Class<?>)type);
+        } else if (type instanceof WildcardType) {
+            return (T)adapt(value, Object.class);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
 

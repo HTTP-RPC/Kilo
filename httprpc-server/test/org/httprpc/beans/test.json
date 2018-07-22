@@ -1,0 +1,36 @@
+{
+    "long": 2,
+    "double": 4.0,
+    "string": "abc",
+    "date": 0,
+    "localDate": "2018-06-28",
+    "localTime": "10:45",
+    "localDateTime": "2018-06-28T10:45",
+    "list": [
+        2, 
+        4.0, 
+        {
+            "flag": true
+        }
+    ],
+    "nestedBeanList": [
+        {
+            "flag": true
+        }
+    ],
+    "map": {
+        "long": 2,
+        "double": 4.0,
+        "nestedBean": {
+            "flag": true
+        }
+    },
+    "nestedBeanMap": {
+        "nestedBean": {
+            "flag": true
+        }
+    },
+    "nestedBean": {
+        "flag": true
+    }
+}
