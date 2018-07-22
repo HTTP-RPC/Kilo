@@ -16,6 +16,8 @@ package org.httprpc;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,13 +54,14 @@ public class WebServiceProxyTest extends AbstractTest {
     private static LocalTime localTime = LocalTime.now();
     private static LocalDateTime localDateTime = LocalDateTime.now();
 
+    private static final int EOF = -1;
+
     public static void main(String[] args) throws Exception {
         testGet();
         testURLEncodedPost();
         testMultipartPost();
         testCustomPost();
         testPut();
-        testPatch();
         testDelete();
         testTimeout();
     }
@@ -74,8 +77,8 @@ public class WebServiceProxyTest extends AbstractTest {
             entry("date", date),
             entry("localDate", localDate),
             entry("localTime", localTime),
-            entry("localDateTime", localDateTime))
-        );
+            entry("localDateTime", localDateTime)
+        ));
 
         Map<String, ?> result = webServiceProxy.invoke();
 
@@ -100,8 +103,8 @@ public class WebServiceProxyTest extends AbstractTest {
             entry("date", date),
             entry("localDate", localDate),
             entry("localTime", localTime),
-            entry("localDateTime", localDateTime))
-        );
+            entry("localDateTime", localDateTime)
+        ));
 
         Map<String, ?> result = webServiceProxy.invoke();
 
@@ -133,8 +136,8 @@ public class WebServiceProxyTest extends AbstractTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
-            entry("attachments", listOf(textTestURL, imageTestURL)))
-        );
+            entry("attachments", listOf(textTestURL, imageTestURL))
+        ));
 
         Response response = BeanAdapter.adapt(webServiceProxy.invoke(), Response.class);
 
@@ -167,8 +170,8 @@ public class WebServiceProxyTest extends AbstractTest {
         });
 
         webServiceProxy.getArguments().putAll(mapOf(
-            entry("name", imageTestURL.getFile()))
-        );
+            entry("name", imageTestURL.getFile())
+        ));
 
         BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> {
             return ImageIO.read(inputStream);
@@ -178,19 +181,72 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testPut() throws Exception {
-        // TODO
-    }
+        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL("http://localhost:8080/httprpc-server/test"));
 
-    public static void testPatch() throws Exception {
-        // TODO
+        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+
+        webServiceProxy.setRequestHandler((outputStream) -> {
+            try (InputStream inputStream = textTestURL.openStream()) {
+                int b;
+                while ((b = inputStream.read()) != EOF) {
+                    outputStream.write(b);
+                }
+            }
+        });
+
+        webServiceProxy.getArguments().putAll(mapOf(
+            entry("id", 101)
+        ));
+
+        String text = webServiceProxy.invoke((inputStream, contentType) -> {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
+            StringBuilder textBuilder = new StringBuilder();
+
+            int c;
+            while ((c = inputStreamReader.read()) != EOF) {
+                textBuilder.append((char)c);
+            }
+
+            return textBuilder.toString();
+        });
+
+        validate("PUT", text != null);
     }
 
     public static void testDelete() throws Exception {
-        // TODO
+        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL("http://localhost:8080/httprpc-server/test"));
+
+        webServiceProxy.getArguments().putAll(mapOf(
+            entry("id", 101)
+        ));
+
+        webServiceProxy.invoke();
+
+        validate("DELETE", true);
     }
 
     public static void testTimeout() throws Exception {
-        // TODO
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/test"));
+
+        webServiceProxy.setConnectTimeout(3000);
+        webServiceProxy.setReadTimeout(3000);
+
+        webServiceProxy.getArguments().putAll(mapOf(
+            entry("value", 123),
+            entry("delay", 6000)
+        ));
+
+        boolean timeout;
+        try {
+            webServiceProxy.invoke();
+
+            timeout = false;
+        } catch (SocketTimeoutException exception) {
+            timeout = true;
+        }
+
+        validate("Timeout", timeout);
     }
 
     private static void validate(String test, boolean condition) {
