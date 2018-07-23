@@ -41,13 +41,13 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `JSONEncoder` - class that serializes an object hierarchy to JSON
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
-    * `WebServiceProxy` - web service invocation proxy
+    * `WebServiceProxy` - class for consuming remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.beans`
-    * `BeanAdapter` - adapter class that presents the contents of a Java Bean instance as a map
+    * `BeanAdapter` - class that presents the contents of a Java Bean instance as a map or vice versa
 * `org.httprpc.sql`
-    * `ResultSetAdapter` - adapter class that presents the contents of a JDBC result set as an iterable sequence of maps or typed values
-    * `Parameters` - class for simplifying execution of prepared statements 
+    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed values
+    * `Parameters` - class for applying named parameters values to prepared statements 
 
 These classes are explained in more detail in the following sections.
 
@@ -115,7 +115,7 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-As shown in the previous example, `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
+As shown in the previous section, `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
@@ -301,7 +301,7 @@ public class TreeNode {
     }
 ```
 
-An example service method that returns a `TreeNode` structure is shown below:
+A service method that returns a `TreeNode` structure is shown below:
 
 ```java
 @RequestMethod("GET")
@@ -355,7 +355,7 @@ Although the values are actually stored in the strongly typed properties of the 
 ```
 
 ### Typed Map Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a graph of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that adapts the underlying value.
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that wraps the underlying value.
 
 For example, given the following interface definition:
 
@@ -556,9 +556,9 @@ public <T> T invoke() throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version automatically deserializes a successful server response using `JSONDecoder`. The second version allows a caller to provide a custom response handler. 
+The first version automatically deserializes a successful response using `JSONDecoder`. The second version allows a caller to provide a custom response handler. 
 
-If the server returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
+If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 
 ### Example
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
