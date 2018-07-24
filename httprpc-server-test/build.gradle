@@ -10,8 +10,9 @@ repositories {
 dependencies {
     compile project(':httprpc-server')
 
-    // TODO Remove; add external dependencies
-    providedCompile fileTree(dir: '../httprpc-server/api', include: '*.jar')
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.+'
+
+    // TODO
     implementation fileTree(dir: 'lib', include: '*.jar')
 }
 
