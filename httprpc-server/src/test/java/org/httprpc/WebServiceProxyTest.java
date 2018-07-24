@@ -76,7 +76,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testGet() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         webServiceProxy.getArguments().putAll(mapOf(
             entry("string", "héllo+gøodbye"),
@@ -102,7 +102,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testURLEncodedPost() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         webServiceProxy.getArguments().putAll(mapOf(
             entry("string", "héllo+gøodbye"),
@@ -129,7 +129,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testMultipartPost() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
 
@@ -165,7 +165,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testCustomPost() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
@@ -190,7 +190,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testPut() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
 
@@ -224,7 +224,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testDelete() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         webServiceProxy.getArguments().putAll(mapOf(
             entry("id", 101)
@@ -251,7 +251,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testTimeout() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/test"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server-test/test"));
 
         webServiceProxy.setConnectTimeout(3000);
         webServiceProxy.setReadTimeout(3000);
@@ -274,7 +274,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testMath() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server-test/math/sum"));
 
         webServiceProxy.getArguments().put("a", 4);
         webServiceProxy.getArguments().put("b", 2);
@@ -285,7 +285,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testTree() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/tree"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server-test/tree"));
 
         TreeNode root = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
 
