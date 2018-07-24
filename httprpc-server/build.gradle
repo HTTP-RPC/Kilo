@@ -1,0 +1,85 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = 'org.httprpc'
+version = '5.4.1'
+
+dependencies {
+    api fileTree(dir: 'api', include: '*.jar')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes (
+            'Implementation-Title': project.name, 
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+publishing {
+    repositories {
+        mavenCentral()
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'httprpc-server'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = project.name
+                description = 'Lightweight REST services for Java'
+                url = 'http://httprpc.org'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'Greg Brown'
+                        email = 'gk_brown@icloud.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/gk-brown/HTTP-RPC.git'
+                    url = 'https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
