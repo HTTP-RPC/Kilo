@@ -1,33 +1,22 @@
 plugins {
     id 'war'
+    id 'eclipse'
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
     compile project(':httprpc-server')
+
+    // TODO Remove; add external dependencies
     providedCompile fileTree(dir: '../httprpc-server/api', include: '*.jar')
     implementation fileTree(dir: 'lib', include: '*.jar')
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src']
-        }
-    }
-
-    resources {
-        java {
-            srcDirs = ['src']
-        }
-    }
 }
 
 compileJava {
     options.compilerArgs = [
         '-parameters'
     ] 
-}
-
-war {
-    webAppDirName = 'war'
 }

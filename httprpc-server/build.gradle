@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'eclipse'
     id 'maven-publish'
     id 'signing'
 }
@@ -7,22 +8,15 @@ plugins {
 group = 'org.httprpc'
 version = '5.4.1'
 
-dependencies {
-    compile fileTree(dir: 'api', include: '*.jar')
+repositories {
+    mavenCentral()
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src']
-        }
-    }
+dependencies {
+    // TODO Remove; add external dependency
+    compile fileTree(dir: 'api', include: '*.jar')
 
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
+    testCompile 'junit:junit:4.+'
 }
 
 jar {
