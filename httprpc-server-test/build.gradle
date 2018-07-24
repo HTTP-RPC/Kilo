@@ -1,0 +1,22 @@
+plugins {
+    id 'war'
+}
+
+dependencies {
+    compile project(':httprpc-server')
+    implementation fileTree(dir: 'war/WEB-INF/lib', include: '*.jar')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+compileJava {
+    options.compilerArgs = [
+        '-parameters'
+    ] 
+}
