@@ -20,6 +20,12 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1/2a1d3675e0c35f031ee60237598b3b69ac335916/jtemplate-2.1-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1/e0c83bf15b09da887c81b77e970f09302d5da969/jtemplate-2.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/javax.servlet/javax.servlet-api/3.1.0/ab3976d4574c48d22dc1abf6a9e8bd0fdf928223/javax.servlet-api-3.1.0-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/javax.servlet/javax.servlet-api/3.1.0/3cd63d075497751784b2fa84be59432f4905bf7c/javax.servlet-api-3.1.0.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
@@ -27,12 +33,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/greg/work/HTTP-RPC/httprpc-server-test/lib/mysql-connector-java-5.1.36-bin.jar">
-		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/greg/work/HTTP-RPC/httprpc-server-test/lib/jtemplate-2.1.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>

@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-    compile 'javax.servlet:javax.servlet-api:3.1.+'
-    testCompile 'junit:junit:4.+'
+    compile 'javax.servlet:javax.servlet-api:3.1+'
+    testCompile 'junit:junit:4+'
 }
 
 jar {
