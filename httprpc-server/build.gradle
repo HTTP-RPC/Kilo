@@ -8,7 +8,7 @@ group = 'org.httprpc'
 version = '5.4.1'
 
 dependencies {
-    api fileTree(dir: 'api', include: '*.jar')
+    compile fileTree(dir: 'api', include: '*.jar')
 }
 
 sourceSets {

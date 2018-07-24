@@ -4,11 +4,18 @@ plugins {
 
 dependencies {
     compile project(':httprpc-server')
-    implementation fileTree(dir: 'war/WEB-INF/lib', include: '*.jar')
+    providedCompile fileTree(dir: '../httprpc-server/api', include: '*.jar')
+    implementation fileTree(dir: 'lib', include: '*.jar')
 }
 
 sourceSets {
     main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+
+    resources {
         java {
             srcDirs = ['src']
         }
@@ -19,4 +26,8 @@ compileJava {
     options.compilerArgs = [
         '-parameters'
     ] 
+}
+
+war {
+    webAppDirName = 'war'
 }
