@@ -52,7 +52,14 @@ task javadocJar(type: Jar) {
 
 publishing {
     repositories {
-        mavenCentral()
+        maven {
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+            credentials {
+                username nexusUsername
+                password nexusPassword
+            }
+        }
     }
 
     publications {
