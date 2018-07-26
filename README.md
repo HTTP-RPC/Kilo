@@ -577,7 +577,27 @@ Number result = webServiceProxy.invoke();
 System.out.println(result); // 6.0
 ```
 
-TODO Add typed example
+TODO
+
+```java
+public interface MathService {
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    public Number getSum(double a, double b) throws IOException;
+
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    public Number getSum(List<Double> values) throws IOException;
+}
+```
+
+```java
+MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/math/"), MathService.class);
+
+Number result = mathService.getSum(4, 2);
+
+System.out.println(result); // 6.0
+```
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).

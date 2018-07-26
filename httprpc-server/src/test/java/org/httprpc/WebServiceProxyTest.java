@@ -47,6 +47,16 @@ public class WebServiceProxyTest extends AbstractTest {
             List<URL> attachments) throws IOException;
     }
 
+    public interface MathService {
+        @RequestMethod("GET")
+        @ResourcePath("sum")
+        public Number getSum(double a, double b) throws IOException;
+
+        @RequestMethod("GET")
+        @ResourcePath("sum")
+        public Number getSum(List<Double> values) throws IOException;
+    }
+
     public interface Response {
         public interface AttachmentInfo {
             public int getBytes();
@@ -89,6 +99,8 @@ public class WebServiceProxyTest extends AbstractTest {
         testTimeout();
 
         testMath();
+        testMathService();
+
         testTree();
     }
 
@@ -287,6 +299,13 @@ public class WebServiceProxyTest extends AbstractTest {
         Number result = webServiceProxy.invoke();
 
         validate("Math", result.equals(6));
+    }
+
+    public static void testMathService() throws Exception {
+        MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/math/"), MathService.class);
+
+        validate("Math (service)", mathService.getSum(4, 2).equals(6)
+            && mathService.getSum(listOf(1.0, 2.0, 3.0)).equals(6));
     }
 
     public static void testTree() throws Exception {
