@@ -63,13 +63,6 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    public int testGet(int value, int delay) throws InterruptedException {
-        Thread.sleep(delay);
-
-        return value;
-    }
-
-    @RequestMethod("GET")
     @ResourcePath("/a/?/b/?/c/?/d/?")
     public List<?> testGet() {
         return Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3));
@@ -81,12 +74,6 @@ public class TestServlet extends DispatcherServlet {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
         return jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("/error")
-    public void testError() throws Exception {
-        throw new Exception("Sample error message.");
     }
 
     @RequestMethod("POST")
@@ -143,6 +130,19 @@ public class TestServlet extends DispatcherServlet {
     @RequestMethod("PATCH")
     public void testPatch(int id) throws IOException {
         echo();
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("/error")
+    public void testError() throws Exception {
+        throw new Exception("Sample error message.");
+    }
+
+    @RequestMethod("GET")
+    public int testTimeout(int value, int delay) throws InterruptedException {
+        Thread.sleep(delay);
+
+        return value;
     }
 
     private void echo() throws IOException {

@@ -32,7 +32,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 /**
- * Restaurant service.
+ * Restaurant servlet.
  */
 @WebServlet(urlPatterns={"/restaurants/*"}, loadOnStartup=1)
 public class RestaurantServlet extends DispatcherServlet {
