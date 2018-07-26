@@ -15,6 +15,7 @@
 package org.httprpc;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
@@ -31,6 +32,21 @@ import javax.imageio.ImageIO;
 import org.httprpc.beans.BeanAdapter;
 
 public class WebServiceProxyTest extends AbstractTest {
+    public interface TestService {
+        @RequestMethod("GET")
+        public Map<String, Object> testGet(String string, List<String> strings, int number, boolean flag,
+            Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) throws IOException;
+
+        @RequestMethod("GET")
+        @ResourcePath("fibonacci")
+        public List<Number> testGetFibonacci() throws IOException;
+
+        @RequestMethod("POST")
+        public Map<String, Object> testPost(String string, List<String> strings, int number, boolean flag,
+            Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+            List<URL> attachments) throws IOException;
+    }
+
     public interface Response {
         public interface AttachmentInfo {
             public int getBytes();
@@ -63,6 +79,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     public static void main(String[] args) throws Exception {
         testGet();
+        testGetFibonnaci();
         testURLEncodedPost();
         testMultipartPost();
         testCustomPost();
@@ -76,20 +93,10 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testGet() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server-test/test"));
+        TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/test"), TestService.class);
 
-        webServiceProxy.getArguments().putAll(mapOf(
-            entry("string", "héllo+gøodbye"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
-            entry("flag", true),
-            entry("date", date),
-            entry("localDate", localDate),
-            entry("localTime", localTime),
-            entry("localDateTime", localDateTime)
-        ));
-
-        Map<String, ?> result = webServiceProxy.invoke();
+        Map<String, ?> result = testService.testGet("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
+            date, localDate, localTime, localDateTime);
 
         validate("GET", result.get("string").equals("héllo+gøodbye")
             && result.get("strings").equals(listOf("a", "b", "c"))
@@ -99,6 +106,14 @@ public class WebServiceProxyTest extends AbstractTest {
             && result.get("localDate").equals(localDate.toString())
             && result.get("localTime").equals(localTime.toString())
             && result.get("localDateTime").equals(localDateTime.toString()));
+    }
+
+    public static void testGetFibonnaci() throws Exception {
+        TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/test/"), TestService.class);
+
+        List<Number> fibonacci = testService.testGetFibonacci();
+
+        validate("GET (Fibonacci)", fibonacci.equals(listOf(1, 2, 3, 5, 8, 13)));
     }
 
     public static void testURLEncodedPost() throws Exception {
@@ -129,26 +144,16 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     public static void testMultipartPost() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-server-test/test"));
-
-        webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
-
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        webServiceProxy.getArguments().putAll(mapOf(
-            entry("string", "héllo+gøodbye"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
-            entry("flag", true),
-            entry("date", date),
-            entry("localDate", localDate),
-            entry("localTime", localTime),
-            entry("localDateTime", localDateTime),
-            entry("attachments", listOf(textTestURL, imageTestURL))
-        ));
+        TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/test"), TestService.class);
 
-        Response response = BeanAdapter.adapt(webServiceProxy.invoke(), Response.class);
+        Map<String, ?> result = testService.testPost("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
+            date, localDate, localTime, localDateTime,
+            listOf(textTestURL, imageTestURL));
+
+        Response response = BeanAdapter.adapt(result, Response.class);
 
         validate("POST (multipart)", response.getString().equals("héllo+gøodbye")
             && response.getStrings().equals(listOf("a", "b", "c"))

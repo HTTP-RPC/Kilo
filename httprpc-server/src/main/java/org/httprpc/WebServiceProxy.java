@@ -20,6 +20,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -542,5 +546,90 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
+    }
+
+    /**
+     * Creates a type-safe web service proxy adapter.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param baseURL
+     * The base URL of the web service.
+     *
+     * @param type
+     * The type of the adapter.
+     *
+     * @return
+     * An instance of the given type that adapts the target service.
+     */
+    public static <T> T adapt(URL baseURL, Class<T> type) {
+        return adapt(baseURL, type, Collections.emptyMap());
+    }
+
+    /**
+     * Creates a type-safe web service proxy adapter.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param baseURL
+     * The base URL of the web service.
+     *
+     * @param type
+     * The type of the adapter.
+     *
+     * @param headers
+     * A map of header values that will be submitted with service requests.
+     *
+     * @return
+     * An instance of the given type that adapts the target service.
+     */
+    public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) {
+        if (baseURL == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (headers == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+                RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
+
+                if (requestMethod == null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
+
+                URL url;
+                if (resourcePath != null) {
+                    url = new URL(baseURL, resourcePath.value());
+                } else {
+                    url = baseURL;
+                }
+
+                WebServiceProxy webServiceProxy = new WebServiceProxy(requestMethod.value(), url);
+
+                if (webServiceProxy.getMethod().equalsIgnoreCase("POST")) {
+                    webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+                }
+
+                webServiceProxy.getHeaders().putAll(headers);
+
+                Parameter[] parameters = method.getParameters();
+
+                for (int i = 0; i < parameters.length; i++) {
+                    Parameter parameter = parameters[i];
+
+                    webServiceProxy.getArguments().put(parameter.getName(), arguments[i]);
+                }
+
+                return webServiceProxy.invoke();
+            }
+        }));
     }
 }

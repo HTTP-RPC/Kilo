@@ -63,13 +63,13 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/a/?/b/?/c/?/d/?")
+    @ResourcePath("a/?/b/?/c/?/d/?")
     public List<?> testGet() {
         return Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3));
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/fibonacci")
+    @ResourcePath("fibonacci")
     public List<?> testGetFibonacci() throws IOException {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
@@ -133,7 +133,7 @@ public class TestServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/error")
+    @ResourcePath("error")
     public void testError() throws Exception {
         throw new Exception("Sample error message.");
     }

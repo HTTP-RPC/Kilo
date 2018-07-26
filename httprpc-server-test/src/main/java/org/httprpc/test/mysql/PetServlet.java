@@ -91,7 +91,7 @@ public class PetServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/average-age")
+    @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
         Date now = new Date();
 

@@ -30,13 +30,13 @@ public class MathServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    @ResourcePath("/sum")
+    @ResourcePath("sum")
     public double getSum(double a, double b) {
         return a + b;
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/sum")
+    @ResourcePath("sum")
     public double getSum(List<Double> values) {
         double total = 0;
 

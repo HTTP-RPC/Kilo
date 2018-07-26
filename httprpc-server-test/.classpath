@@ -20,7 +20,7 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1/2a1d3675e0c35f031ee60237598b3b69ac335916/jtemplate-2.1-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1/e0c83bf15b09da887c81b77e970f09302d5da969/jtemplate-2.1.jar">
+	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1.1/7152e0721e6acc3531bae4f19c1270500a6d029c/jtemplate-2.1.1-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1.1/bae5215c7324e45005ad398173fee1dc846b522d/jtemplate-2.1.1.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -32,7 +32,7 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.36/f8365eeb000436dc8edc96352a9a13d8696b4864/mysql-connector-java-5.1.36-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.36/6bb5861f44c21c775ee713a438e5bc493c095f7a/mysql-connector-java-5.1.36.jar">
+	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.46/8fe6b8b1360a1fb5d3abdfbf99978c1bc336339/mysql-connector-java-5.1.46-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.46/9a3e63b387e376364211e96827bc27db8d7a92e9/mysql-connector-java-5.1.46.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>

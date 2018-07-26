@@ -65,13 +65,13 @@ public class CatalogServlet extends DispatcherServlet {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/items")
+    @ResourcePath("items")
     public List<?> getItems() {
         return items;
     }
 
     @RequestMethod("GET")
-    @ResourcePath("/items/?")
+    @ResourcePath("items/?")
     public Object getItem() {
         int index = Integer.parseInt(getKey(0));
 

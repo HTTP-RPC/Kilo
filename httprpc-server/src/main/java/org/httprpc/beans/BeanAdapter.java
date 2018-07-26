@@ -422,7 +422,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type.isInterface()){
             return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
                 @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
                     String methodName = method.getName();
 
                     String prefix;

@@ -64,13 +64,13 @@ Multiple methods may be associated with the same verb and path. `DispatcherServl
 @WebServlet(urlPatterns={"/math/*"})
 public class MathServlet extends DispatcherServlet {
     @RequestMethod("GET")
-    @ResourcePath("/sum")
+    @ResourcePath("sum")
     public double getSum(double a, double b) {
         return a + b;
     }
     
     @RequestMethod("GET")
-    @ResourcePath("/sum")
+    @ResourcePath("sum")
     public double getSum(List<Double> values) {
         double total = 0;
     
@@ -154,7 +154,7 @@ For example, this method returns a `Map` instance containing three values:
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("/map")
+@ResourcePath("map")
 public Map<String, ?> getMap() {
     HashMap<String, Object> map = new HashMap<>();
 
@@ -183,7 +183,7 @@ If an exception is thrown by a service method, an HTTP 500 response will be retu
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("/error")
+@ResourcePath("error")
 public void generateError() throws Exception {
     throw new Exception("This is an error message.");
 }
@@ -204,7 +204,7 @@ Path variables may be specified by a "?" character in the resource path. For exa
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("/contacts/?/addresses/?")
+@ResourcePath("contacts/?/addresses/?")
 public List<Map<String, ?>> getContactAddresses() { ... }
 ```
 
@@ -225,7 +225,7 @@ The `JSONEncoder` class is used internally by `DispatcherServlet` to serialize a
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("/map")
+@ResourcePath("map")
 public void getMap() throws IOException {
     HashMap<String, Object> map = new HashMap<>();
 
@@ -520,7 +520,7 @@ This service method uses `adapt()` to create an iterable sequence of `Pet` value
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("/average-age")
+@ResourcePath("average-age")
 public double getAverageAge() throws SQLException {
     Date now = new Date();
 
@@ -560,6 +560,9 @@ The first version automatically deserializes a successful response using `JSONDe
 
 If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 
+### Typed Web Service Access
+TODO
+
 ### Example
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
@@ -573,6 +576,8 @@ Number result = webServiceProxy.invoke();
 
 System.out.println(result); // 6.0
 ```
+
+TODO Add typed example
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).
