@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 50KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 52KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -134,6 +134,8 @@ public class FileUploadServlet extends DispatcherServlet {
     }
 }
 ```
+
+TODO @RequestParameter
 
 Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
@@ -354,6 +356,8 @@ Although the values are actually stored in the strongly typed properties of the 
 }
 ```
 
+TODO @Key
+
 ### Typed Map Access
 `BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that wraps the underlying value.
 
@@ -377,6 +381,8 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. If a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
+
+TODO @Key
 
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be serialized as an array of JSON objects. For example:
@@ -584,6 +590,8 @@ public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { 
 Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
 
 The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. Path variables are not supported. If unspecified, the method is associated with the base URL itself.
+
+TODO @RequestParameter
 
 Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime. `POST` methods are sent using the multi-part encoding. Values are returned as described above for `WebServiceProxy`.
 
