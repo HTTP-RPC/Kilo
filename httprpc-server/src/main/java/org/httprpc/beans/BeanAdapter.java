@@ -173,6 +173,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 Method method = methods[i];
 
                 if (method.getDeclaringClass() != Object.class) {
+                    if (method.getParameterCount() > 0) {
+                        continue;
+                    }
+
                     String methodName = method.getName();
 
                     String prefix;
@@ -187,7 +191,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     int j = prefix.length();
                     int n = methodName.length();
 
-                    if (j == n || method.getParameterCount() > 0) {
+                    if (j == n) {
                         continue;
                     }
 
@@ -421,6 +425,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+                    if (method.getParameterCount() > 0) {
+                        throw new UnsupportedOperationException();
+                    }
+
                     String methodName = method.getName();
 
                     String prefix;
@@ -435,7 +443,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     int j = prefix.length();
                     int n = methodName.length();
 
-                    if (j == n || method.getParameterCount() > 0) {
+                    if (j == n) {
                         throw new UnsupportedOperationException();
                     }
 
