@@ -560,11 +560,7 @@ The first version automatically deserializes a successful response using `JSONDe
 
 If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 
-### Typed Web Service Access
-TODO
-
-### Example
-The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
@@ -577,7 +573,19 @@ Number result = webServiceProxy.invoke();
 System.out.println(result); // 6.0
 ```
 
-TODO
+### Typed Web Service Access
+The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services. 
+
+```java
+public static <T> T adapt(URL baseURL, Class<T> type) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { ... }
+```
+
+Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
+
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. 
+
+For example, the following interface might be used to model the addition operations of the math service:
 
 ```java
 public interface MathService {
@@ -591,6 +599,8 @@ public interface MathService {
 }
 ```
 
+This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
+
 ```java
 MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/math/"), MathService.class);
 
@@ -598,6 +608,8 @@ Number result = mathService.getSum(4, 2);
 
 System.out.println(result); // 6.0
 ```
+
+**IMPORTANT** Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).
