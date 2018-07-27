@@ -574,7 +574,7 @@ System.out.println(result); // 6.0
 ```
 
 ### Typed Web Service Access
-The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services. 
+The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services:
 
 ```java
 public static <T> T adapt(URL baseURL, Class<T> type) { ... }
@@ -583,7 +583,7 @@ public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { 
 
 Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
 
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself.
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. Path variables are not supported. If unspecified, the method is associated with the base URL itself.
 
 Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime. `POST` methods are sent using the multi-part encoding. Values are returned as described above for `WebServiceProxy`.
 
