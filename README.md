@@ -135,7 +135,7 @@ public class FileUploadServlet extends DispatcherServlet {
 }
 ```
 
-**IMPORTANT** Service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -583,7 +583,9 @@ public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { 
 
 Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
 
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. 
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself.
+
+Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime. `POST` methods are sent using the multi-part encoding. Values are returned as described above for `WebServiceProxy`.
 
 For example, the following interface might be used to model the addition operations of the math service:
 
@@ -608,8 +610,6 @@ Number result = mathService.getSum(4, 2);
 
 System.out.println(result); // 6.0
 ```
-
-**IMPORTANT** Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).
