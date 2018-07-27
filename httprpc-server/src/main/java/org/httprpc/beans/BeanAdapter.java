@@ -181,24 +181,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     } else if (methodName.startsWith(IS_PREFIX)) {
                         prefix = IS_PREFIX;
                     } else {
-                        prefix = null;
+                        continue;
                     }
 
-                    if (prefix != null)  {
-                        int j = prefix.length();
-                        int n = methodName.length();
+                    int j = prefix.length();
+                    int n = methodName.length();
 
-                        if (j < n && method.getParameterCount() == 0) {
-                            char c = methodName.charAt(j++);
+                    if (j < n && method.getParameterCount() == 0) {
+                        char c = methodName.charAt(j++);
 
-                            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                                c = Character.toLowerCase(c);
-                            }
-
-                            String key = c + methodName.substring(j);
-
-                            accessors.put(key, method);
+                        if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                            c = Character.toLowerCase(c);
                         }
+
+                        accessors.put(c + methodName.substring(j), method);
                     }
                 }
             }
