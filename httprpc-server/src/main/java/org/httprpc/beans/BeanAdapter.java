@@ -173,39 +173,53 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 Method method = methods[i];
 
                 if (method.getDeclaringClass() != Object.class) {
-                    if (method.getParameterCount() > 0) {
-                        continue;
+                    String key = getKey(method);
+
+                    if (key != null) {
+                        accessors.put(key, method);
                     }
-
-                    String methodName = method.getName();
-
-                    String prefix;
-                    if (methodName.startsWith(GET_PREFIX)) {
-                        prefix = GET_PREFIX;
-                    } else if (methodName.startsWith(IS_PREFIX)) {
-                        prefix = IS_PREFIX;
-                    } else {
-                        continue;
-                    }
-
-                    int j = prefix.length();
-                    int n = methodName.length();
-
-                    if (j == n) {
-                        continue;
-                    }
-
-                    char c = methodName.charAt(j++);
-
-                    if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                        c = Character.toLowerCase(c);
-                    }
-
-                    accessors.put(c + methodName.substring(j), method);
                 }
             }
 
             accessorCache.put(type, accessors);
+        }
+    }
+
+    private static String getKey(Method method) {
+        if (method.getParameterCount() > 0) {
+            return null;
+        }
+
+        Key key = method.getAnnotation(Key.class);
+
+        if (key == null) {
+            String methodName = method.getName();
+
+            String prefix;
+            if (methodName.startsWith(GET_PREFIX)) {
+                prefix = GET_PREFIX;
+            } else if (methodName.startsWith(IS_PREFIX)) {
+                prefix = IS_PREFIX;
+            } else {
+                return null;
+            }
+
+            int j = prefix.length();
+            int n = methodName.length();
+
+            if (j == n) {
+                return null;
+            }
+
+            char c = methodName.charAt(j++);
+
+            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                c = Character.toLowerCase(c);
+            }
+
+            return c + methodName.substring(j);
+        } else {
+            return key.value();
         }
     }
 
@@ -425,35 +439,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-                    if (method.getParameterCount() > 0) {
+                    String key = getKey(method);
+
+                    if (key == null) {
                         throw new UnsupportedOperationException();
                     }
 
-                    String methodName = method.getName();
-
-                    String prefix;
-                    if (methodName.startsWith(GET_PREFIX)) {
-                        prefix = GET_PREFIX;
-                    } else if (methodName.startsWith(IS_PREFIX)) {
-                        prefix = IS_PREFIX;
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    int j = prefix.length();
-                    int n = methodName.length();
-
-                    if (j == n) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    char c = methodName.charAt(j++);
-
-                    if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                        c = Character.toLowerCase(c);
-                    }
-
-                    return adapt(((Map<?, ?>)value).get(c + methodName.substring(j)), method.getGenericReturnType());
+                    return adapt(((Map<?, ?>)value).get(key), method.getGenericReturnType());
                 }
             }));
         } else {

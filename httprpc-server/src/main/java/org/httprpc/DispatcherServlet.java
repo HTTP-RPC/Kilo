@@ -289,7 +289,7 @@ public abstract class DispatcherServlet extends HttpServlet {
                 int j = 0;
 
                 for (int k = 0; k < parameters.length; k++) {
-                    String name = parameters[k].getName();
+                    String name = getName(parameters[k]);
 
                     if (!(parameterMap.containsKey(name))) {
                         j++;
@@ -315,7 +315,8 @@ public abstract class DispatcherServlet extends HttpServlet {
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
 
-            String name = parameter.getName();
+            String name = getName(parameter);
+
             Class<?> type = parameter.getType();
 
             List<?> values = parameterMap.get(name);
@@ -355,6 +356,12 @@ public abstract class DispatcherServlet extends HttpServlet {
         }
 
         return arguments;
+    }
+
+    private static String getName(Parameter parameter) {
+        RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
+
+        return (requestParameter == null) ? parameter.getName() : requestParameter.value();
     }
 
     private static Object getArgument(Object value, Class<?> type) {

@@ -624,8 +624,11 @@ public class WebServiceProxy {
 
                 for (int i = 0; i < parameters.length; i++) {
                     Parameter parameter = parameters[i];
+                    RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
 
-                    webServiceProxy.getArguments().put(parameter.getName(), arguments[i]);
+                    String name = (requestParameter == null) ? parameter.getName() : requestParameter.value();
+
+                    webServiceProxy.getArguments().put(name, arguments[i]);
                 }
 
                 return webServiceProxy.invoke();
