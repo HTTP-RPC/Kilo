@@ -20,7 +20,7 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1.1/7152e0721e6acc3531bae4f19c1270500a6d029c/jtemplate-2.1.1-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.1.1/bae5215c7324e45005ad398173fee1dc846b522d/jtemplate-2.1.1.jar">
+	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.2/92db4e885fbe5e08df53bab47e8cc9b34d8d7681/jtemplate-2.2-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.2/69b3c9ed1f8a792f84b717412a79a7310a6f218e/jtemplate-2.2.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
