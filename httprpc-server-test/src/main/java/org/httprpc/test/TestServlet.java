@@ -35,6 +35,7 @@ import javax.servlet.annotation.WebServlet;
 import org.httprpc.DispatcherServlet;
 import org.httprpc.JSONDecoder;
 import org.httprpc.RequestMethod;
+import org.httprpc.RequestParameter;
 import org.httprpc.ResourcePath;
 
 /**
@@ -46,11 +47,11 @@ public class TestServlet extends DispatcherServlet {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
+    public Map<String, ?> testGet(@RequestParameter("string") String text, List<String> strings, int number, boolean flag,
         Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
         HashMap<String, Object> result = new HashMap<>();
 
-        result.put("string", string);
+        result.put("string", text);
         result.put("strings", strings);
         result.put("number", number);
         result.put("flag", flag);

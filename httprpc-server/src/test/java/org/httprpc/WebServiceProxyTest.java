@@ -34,7 +34,7 @@ import org.httprpc.beans.BeanAdapter;
 public class WebServiceProxyTest extends AbstractTest {
     public interface TestService {
         @RequestMethod("GET")
-        public Map<String, Object> testGet(String string, List<String> strings, int number, boolean flag,
+        public Map<String, Object> testGet(@RequestParameter("string") String text, List<String> strings, int number, boolean flag,
             Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) throws IOException;
 
         @RequestMethod("GET")
