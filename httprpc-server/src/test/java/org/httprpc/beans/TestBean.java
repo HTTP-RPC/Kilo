@@ -32,6 +32,7 @@ public class TestBean implements TestInterface {
         }
     }
 
+    @Key("i")
     @Override
     public int getInt() {
         return 1;

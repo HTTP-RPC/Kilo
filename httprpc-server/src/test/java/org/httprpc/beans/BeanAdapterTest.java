@@ -32,7 +32,7 @@ public class BeanAdapterTest extends AbstractTest {
     @Test
     public void testBeanAdapter1() {
         Assert.assertEquals(mapOf(
-            entry("int", 1),
+            entry("i", 1),
             entry("long", 2L),
             entry("double", 4.0),
             entry("string", "abc"),
