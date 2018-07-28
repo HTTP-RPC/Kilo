@@ -38,6 +38,7 @@ HTTP-RPC provides the following classes for implementing REST services:
 * `org.httprpc`
     * `DispatcherServlet` - abstract base class for web services
     * `RequestMethod` - annotation that associates an HTTP verb with a service method
+    * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `JSONEncoder` - class that serializes an object hierarchy to JSON
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
@@ -45,6 +46,7 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.beans`
     * `BeanAdapter` - class that presents the contents of a Java Bean instance as a map or vice versa
+    * `Key` - annotation that associates a custom key with a Bean property
 * `org.httprpc.sql`
     * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed values
     * `Parameters` - class for applying named parameters values to prepared statements 
@@ -135,9 +137,24 @@ public class FileUploadServlet extends DispatcherServlet {
 }
 ```
 
-TODO @RequestParameter
+In general, service classes should be compiled with the `-parameters` flag so their method parameter names are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example, the following service might allow a caller to look up the name of the city associated with a particular zip code:
 
-Note that service classes must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+```java
+@WebServlet(urlPatterns={"/lookup/*"})
+public class FileUploadServlet extends DispatcherServlet {
+    @RequestMethod("GET")
+    @ResourcePath("city")
+    public String getCity(@RequestParameter("zip_code") String zipCode) { 
+        ...
+    }
+}
+```
+
+This request would invoke the `getCity()` method, passing "02101" as the `zipCode` argument:
+
+```
+GET /lookup/city?zip_code=02101
+```
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -356,8 +373,6 @@ Although the values are actually stored in the strongly typed properties of the 
 }
 ```
 
-TODO @Key
-
 ### Typed Map Access
 `BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that wraps the underlying value.
 
@@ -382,7 +397,22 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 
 Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. If a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-TODO @Key
+### Custom Property Keys
+The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the resulting map rather than "firstName":
+
+```java
+@Key("first_name")
+public String getFirstName() {
+    return firstName;
+}
+```
+
+Similarly, when adapting an existing map using an interface, the following method would return the value of the "first_name" key:
+
+```java
+@Key("first_name")
+public String getFirstName();
+```
 
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be serialized as an array of JSON objects. For example:
@@ -591,9 +621,9 @@ Both versions take a base URL and an interface type as arguments and return an i
 
 The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. Path variables are not supported. If unspecified, the method is associated with the base URL itself.
 
-TODO @RequestParameter
+In general, service adapters should be compiled with the `-parameters` flag so their method parameter names are available at runtime. However, the `RequestParameter` annotation can be used to associate a custom parameter name with a request argument. 
 
-Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime. `POST` methods are sent using the multi-part encoding. Values are returned as described above for `WebServiceProxy`.
+`POST` requests are always submitted using the multi-part encoding. Values are returned as described above for `WebServiceProxy`.
 
 For example, the following interface might be used to model the addition operations of the math service:
 
