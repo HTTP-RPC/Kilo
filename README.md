@@ -599,7 +599,7 @@ If the server returns an error response, a `WebServiceException` will be thrown.
 For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc/math/sum"));
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
 
 webServiceProxy.getArguments().put("a", 4);
 webServiceProxy.getArguments().put("b", 2);
@@ -650,4 +650,4 @@ System.out.println(result); // 6.0
 ```
 
 # Additional Information
-This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-test/src/org/httprpc/test).
+This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test).
