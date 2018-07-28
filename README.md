@@ -141,7 +141,7 @@ In general, service classes should be compiled with the `-parameters` flag so th
 
 ```java
 @WebServlet(urlPatterns={"/lookup/*"})
-public class FileUploadServlet extends DispatcherServlet {
+public class LookupServlet extends DispatcherServlet {
     @RequestMethod("GET")
     @ResourcePath("city")
     public String getCity(@RequestParameter("zip_code") String zipCode) { 
