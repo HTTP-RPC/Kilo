@@ -1,5 +1,5 @@
 [![Releases](https://img.shields.io/github/release/gk-brown/HTTP-RPC.svg)](https://github.com/gk-brown/HTTP-RPC/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
 HTTP-RPC is an open-source framework for implementing REST services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 52KB in size, making it an ideal choice for applications such as microservices where a minimal footprint is desired.
@@ -25,7 +25,7 @@ The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-
 ```xml
 <dependency>
     <groupId>org.httprpc</groupId>
-    <artifactId>httprpc-server</artifactId>
+    <artifactId>httprpc</artifactId>
     <version>...</version>
 </dependency>
 ```
@@ -599,7 +599,7 @@ If the server returns an error response, a `WebServiceException` will be thrown.
 For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc/math/sum"));
 
 webServiceProxy.getArguments().put("a", 4);
 webServiceProxy.getArguments().put("b", 2);
@@ -642,7 +642,7 @@ public interface MathService {
 This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
 
 ```java
-MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-server-test/math/"), MathService.class);
+MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
 
 Number result = mathService.getSum(4, 2);
 
@@ -650,4 +650,4 @@ System.out.println(result); // 6.0
 ```
 
 # Additional Information
-This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server-test/src/org/httprpc/test).
+This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-test/src/org/httprpc/test).

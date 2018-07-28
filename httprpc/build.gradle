@@ -20,7 +20,7 @@ plugins {
 }
 
 group = 'org.httprpc'
-version = '5.4.2'
+version = '5.5'
 
 repositories {
     mavenCentral()
@@ -64,7 +64,7 @@ publishing {
 
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'httprpc-server'
+            artifactId = 'httprpc'
             from components.java
             artifact sourcesJar
             artifact javadocJar
@@ -86,7 +86,7 @@ publishing {
                 }
                 scm {
                     connection = 'scm:git:git://github.com/gk-brown/HTTP-RPC.git'
-                    url = 'https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-server'
+                    url = 'https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc'
                 }
             }
         }
