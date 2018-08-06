@@ -35,7 +35,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that presents the properties of a Java Bean object as a map.
+ * Class that presents the properties of a Java Bean object as a map. Property
+ * values are adapted as described for {@link #adapt(Object)}.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
@@ -223,29 +224,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * Retrieves a Bean property value. If the value is <tt>null</tt> or an
-     * instance of one of the following types, it is returned as-is:
-     * <ul>
-     * <li>{@link String}</li>
-     * <li>{@link Number}</li>
-     * <li>{@link Boolean}</li>
-     * <li>{@link Date}</li>
-     * <li>{@link LocalDate}</li>
-     * <li>{@link LocalTime}</li>
-     * <li>{@link LocalDateTime}</li>
-     * </ul>
-     * If the value is a {@link List}, it is wrapped in an adapter that will
-     * adapt the list's elements. If the value is a {@link Map}, it is wrapped
-     * in an adapter that will adapt the map's values. Otherwise, the value is
-     * considered a nested Bean and is wrapped in a {@link BeanAdapter}.
-     *
-     * @param key
-     * The property name.
-     *
-     * @return
-     * The property value.
-     */
     @Override
     public Object get(Object key) {
         if (key == null) {
@@ -298,39 +276,34 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a list instance.
+     * Adapts a value. If the value is <tt>null</tt> or an
+     * instance of one of the following types, it is returned as-is:
+     * <ul>
+     * <li>{@link String}</li>
+     * <li>{@link Number}</li>
+     * <li>{@link Boolean}</li>
+     * <li>{@link Date}</li>
+     * <li>{@link LocalDate}</li>
+     * <li>{@link LocalTime}</li>
+     * <li>{@link LocalDateTime}</li>
+     * </ul>
+     * If the value is a {@link List}, it is wrapped in an adapter that will
+     * adapt the list's elements. If the value is a {@link Map}, it is wrapped
+     * in an adapter that will adapt the map's values. Otherwise, the value is
+     * considered a nested Bean and is wrapped in a {@link BeanAdapter}.
      *
-     * @param list
-     * The list to adapt.
+     * @param <T>
+     * The target type.
+     *
+     * @param value
+     * The value to adapt.
      *
      * @return
-     * A list implementation that will adapt the list's elements as documented for
-     * {@linkplain BeanAdapter#get(Object)}.
+     * The adapted value.
      */
-    public static List<?> adapt(List<?> list) {
-        if (list == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new ListAdapter(list, new HashMap<>());
-    }
-
-    /**
-     * Adapts a map instance.
-     *
-     * @param map
-     * The map to adapt.
-     *
-     * @return
-     * A map implementation that will adapt the map's values as documented for
-     * {@linkplain BeanAdapter#get(Object)}.
-     */
-    public static Map<?, ?> adapt(Map<?, ?> map) {
-        if (map == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new MapAdapter(map, new HashMap<>());
+    @SuppressWarnings("unchecked")
+    public static <T> T adapt(Object value) {
+        return (T)adapt(value, new HashMap<>());
     }
 
     private static Object adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
@@ -411,6 +384,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object adapt(Object value, Class<?> type) {
+        // TODO Only coerce null to 0/false for primitive numerics/boolean
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
