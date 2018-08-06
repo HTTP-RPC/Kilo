@@ -442,38 +442,40 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
-        } else if (type == String.class) {
-            return (value == null) ? null : value.toString();
-        } else if (type == Date.class) {
-            if (value == null) {
-                return null;
-            } else if (value instanceof Number) {
-                return new Date(((Number)value).longValue());
-            } else {
-                return new Date(Long.parseLong(value.toString()));
-            }
-        } else if (type == LocalDate.class) {
-            return (value == null) ? null : LocalDate.parse(value.toString());
-        } else if (type == LocalTime.class) {
-            return (value == null) ? null : LocalTime.parse(value.toString());
-        } else if (type == LocalDateTime.class) {
-            return (value == null) ? null : LocalDateTime.parse(value.toString());
-        } else if (type.isInterface()){
-            return (value == null) ? null : type.cast(Proxy.newProxyInstance(type.getClassLoader(),
-                new Class[] {type}, new InvocationHandler() {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-                    String key = getKey(method);
-
-                    if (key == null) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    return adapt(((Map<?, ?>)value).get(key), method.getGenericReturnType());
+        } else if (value != null) {
+            if (type == String.class) {
+                return value.toString();
+            } else if (type == Date.class) {
+                if (value instanceof Number) {
+                    return new Date(((Number)value).longValue());
+                } else {
+                    return new Date(Long.parseLong(value.toString()));
                 }
-            }));
+            } else if (type == LocalDate.class) {
+                return LocalDate.parse(value.toString());
+            } else if (type == LocalTime.class) {
+                return LocalTime.parse(value.toString());
+            } else if (type == LocalDateTime.class) {
+                return LocalDateTime.parse(value.toString());
+            } else if (type.isInterface()){
+                return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+                    new Class[] {type}, new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+                        String key = getKey(method);
+
+                        if (key == null) {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        return adapt(((Map<?, ?>)value).get(key), method.getGenericReturnType());
+                    }
+                }));
+            } else {
+                throw new IllegalArgumentException();
+            }
         } else {
-            throw new IllegalArgumentException();
+            return null;
         }
     }
 
