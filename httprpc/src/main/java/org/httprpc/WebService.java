@@ -24,13 +24,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,6 +38,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.httprpc.beans.BeanAdapter;
 
 /**
  * Abstract base class for REST-based web services.
@@ -366,59 +364,7 @@ public abstract class WebService extends HttpServlet {
 
     private static Object getArgument(Object value, Class<?> type) {
         Object argument;
-        if (type == String.class) {
-            argument = (value == null) ? null : value.toString();
-        } else if (type == Byte.TYPE || type == Byte.class) {
-            if (value == null) {
-                argument = (type == Byte.TYPE) ? 0 : null;
-            } else {
-                argument = Byte.parseByte(value.toString());
-            }
-        } else if (type == Short.TYPE || type == Short.class) {
-            if (value == null) {
-                argument = (type == Short.TYPE) ? 0 : null;
-            } else {
-                argument = Short.parseShort(value.toString());
-            }
-        } else if (type == Integer.TYPE || type == Integer.class) {
-            if (value == null) {
-                argument = (type == Integer.TYPE) ? 0 : null;
-            } else {
-                argument = Integer.parseInt(value.toString());
-            }
-        } else if (type == Long.TYPE || type == Long.class) {
-            if (value == null) {
-                argument = (type == Long.TYPE) ? 0 : null;
-            } else {
-                argument = Long.parseLong(value.toString());
-            }
-        } else if (type == Float.TYPE || type == Float.class) {
-            if (value == null) {
-                argument = (type == Float.TYPE) ? 0 : null;
-            } else {
-                argument = Float.parseFloat(value.toString());
-            }
-        } else if (type == Double.TYPE || type == Double.class) {
-            if (value == null) {
-                argument = (type == Double.TYPE) ? 0 : null;
-            } else {
-                argument = Double.parseDouble(value.toString());
-            }
-        } else if (type == Boolean.TYPE || type == Boolean.class) {
-            if (value == null) {
-                argument = (type == Boolean.TYPE) ? false : null;
-            } else {
-                argument = Boolean.parseBoolean(value.toString());
-            }
-        } else if (type == Date.class) {
-            argument = (value == null) ? null : new Date(Long.parseLong(value.toString()));
-        } else if (type == LocalDate.class) {
-            argument = (value == null) ? null : LocalDate.parse(value.toString());
-        } else if (type == LocalTime.class) {
-            argument = (value == null) ? null : LocalTime.parse(value.toString());
-        } else if (type == LocalDateTime.class) {
-            argument = (value == null) ? null : LocalDateTime.parse(value.toString());
-        } else if (type == URL.class) {
+        if (type == URL.class) {
             if (value == null) {
                 argument = null;
             } else if (value instanceof File) {
@@ -431,7 +377,7 @@ public abstract class WebService extends HttpServlet {
                 throw new IllegalArgumentException();
             }
         } else {
-            throw new UnsupportedOperationException("Unsupported argument type.");
+            argument = BeanAdapter.adapt(value, type);
         }
 
         return argument;

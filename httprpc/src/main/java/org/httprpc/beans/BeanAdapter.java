@@ -384,25 +384,74 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object adapt(Object value, Class<?> type) {
-        // TODO Only coerce null to 0/false for primitive numerics/boolean
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
-            return (value == null) ? 0 : ((Number)value).byteValue();
+            if (value == null) {
+                return (type == Byte.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).byteValue();
+            } else {
+                return Byte.parseByte(value.toString());
+            }
         } else if (type == Short.TYPE || type == Short.class) {
-            return (value == null) ? 0 : ((Number)value).shortValue();
+            if (value == null) {
+                return (type == Short.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).shortValue();
+            } else {
+                return Short.parseShort(value.toString());
+            }
         } else if (type == Integer.TYPE || type == Integer.class) {
-            return (value == null) ? 0 : ((Number)value).intValue();
+            if (value == null) {
+                return (type == Integer.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).intValue();
+            } else {
+                return Integer.parseInt(value.toString());
+            }
         } else if (type == Long.TYPE || type == Long.class) {
-            return (value == null) ? 0 : ((Number)value).longValue();
+            if (value == null) {
+                return (type == Long.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).longValue();
+            } else {
+                return Long.parseLong(value.toString());
+            }
         } else if (type == Float.TYPE || type == Float.class) {
-            return (value == null) ? 0 : ((Number)value).floatValue();
+            if (value == null) {
+                return (type == Float.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).floatValue();
+            } else {
+                return Float.parseFloat(value.toString());
+            }
         } else if (type == Double.TYPE || type == Double.class) {
-            return (value == null) ? 0 : ((Number)value).doubleValue();
+            if (value == null) {
+                return (type == Double.TYPE) ? 0 : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).doubleValue();
+            } else {
+                return Double.parseDouble(value.toString());
+            }
         } else if (type == Boolean.TYPE) {
-            return (value == null) ? false : ((Boolean)value).booleanValue();
+            if (value == null) {
+                return (type == Boolean.TYPE) ? false : null;
+            } else if (value instanceof Boolean) {
+                return ((Boolean)value).booleanValue();
+            } else {
+                return Boolean.parseBoolean(value.toString());
+            }
+        } else if (type == String.class) {
+            return (value == null) ? null : value.toString();
         } else if (type == Date.class) {
-            return (value == null) ? null : new Date(((Number)value).longValue());
+            if (value == null) {
+                return null;
+            } else if (value instanceof Number) {
+                return new Date(((Number)value).longValue());
+            } else {
+                return new Date(Long.parseLong(value.toString()));
+            }
         } else if (type == LocalDate.class) {
             return (value == null) ? null : LocalDate.parse(value.toString());
         } else if (type == LocalTime.class) {
@@ -410,7 +459,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type == LocalDateTime.class) {
             return (value == null) ? null : LocalDateTime.parse(value.toString());
         } else if (type.isInterface()){
-            return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, new InvocationHandler() {
+            return (value == null) ? null : type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+                new Class[] {type}, new InvocationHandler() {
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
                     String key = getKey(method);
