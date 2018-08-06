@@ -28,7 +28,7 @@ import java.util.stream.StreamSupport;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
@@ -40,7 +40,7 @@ import org.jtemplate.TemplateEncoder;
  * Pet servlet.
  */
 @WebServlet(urlPatterns={"/pets/*"}, loadOnStartup=1)
-public class PetServlet extends DispatcherServlet {
+public class PetServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     private static final String DB_URL = "jdbc:mysql://db.local:3306/menagerie?user=root&password=password";

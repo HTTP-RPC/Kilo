@@ -22,7 +22,7 @@ import java.util.List;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 
 /**
@@ -30,7 +30,7 @@ import org.httprpc.RequestMethod;
  */
 @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
 @MultipartConfig
-public class FileUploadServlet extends DispatcherServlet {
+public class FileUploadServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("POST")

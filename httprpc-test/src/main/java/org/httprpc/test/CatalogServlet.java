@@ -21,7 +21,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
@@ -29,7 +29,7 @@ import org.httprpc.ResourcePath;
  * Servlet that simulates a product catalog using path variables.
  */
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
-public class CatalogServlet extends DispatcherServlet {
+public class CatalogServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     private List<?> items = null;

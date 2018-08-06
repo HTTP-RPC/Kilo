@@ -538,7 +538,7 @@ The service would return something like the following:
 ```
 
 ### Typed Result Set Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method takes a `ResultSet` and an interface type as arguments, and returns an `Iterable` of the given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
@@ -563,8 +563,10 @@ public double getAverageAge() throws SQLException {
     double averageAge;
     try (Connection connection = DriverManager.getConnection(DB_URL);
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
-        Iterable<Pet> pets = ResultSetAdapter.adapt(resultSet, Pet.class);
+        ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {        
+        ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+
+        Iterable<Pet> pets = resultSetAdapter.adapt(Pet.class);
 
         Stream<Pet> stream = StreamSupport.stream(pets.spliterator(), false);
 

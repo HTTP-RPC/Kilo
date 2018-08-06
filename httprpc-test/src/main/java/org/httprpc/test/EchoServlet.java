@@ -20,14 +20,14 @@ import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 
 /**
  * Servlet that echoes a string value by writing a custom response.
  */
 @WebServlet(urlPatterns={"/echo/*"}, loadOnStartup=1)
-public class EchoServlet extends DispatcherServlet {
+public class EchoServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

@@ -32,7 +32,7 @@ import java.util.Map;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.JSONDecoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.RequestParameter;
@@ -43,7 +43,7 @@ import org.httprpc.ResourcePath;
  */
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
-public class TestServlet extends DispatcherServlet {
+public class TestServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

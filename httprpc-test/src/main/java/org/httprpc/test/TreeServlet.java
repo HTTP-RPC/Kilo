@@ -19,7 +19,7 @@ import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 import org.httprpc.beans.BeanAdapter;
 
@@ -27,7 +27,7 @@ import org.httprpc.beans.BeanAdapter;
  * Tree servlet.
  */
 @WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
-public class TreeServlet extends DispatcherServlet {
+public class TreeServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

@@ -18,7 +18,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
@@ -26,7 +26,7 @@ import org.httprpc.ResourcePath;
  * Math example servlet.
  */
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
-public class MathServlet extends DispatcherServlet {
+public class MathServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

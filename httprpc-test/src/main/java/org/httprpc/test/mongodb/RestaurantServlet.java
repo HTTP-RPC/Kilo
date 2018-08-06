@@ -21,7 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import org.bson.Document;
-import org.httprpc.DispatcherServlet;
+import org.httprpc.WebService;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.jtemplate.TemplateEncoder;
@@ -35,7 +35,7 @@ import com.mongodb.client.MongoDatabase;
  * Restaurant servlet.
  */
 @WebServlet(urlPatterns={"/restaurants/*"}, loadOnStartup=1)
-public class RestaurantServlet extends DispatcherServlet {
+public class RestaurantServlet extends WebService {
     private static final long serialVersionUID = 0;
 
     private MongoClient mongoClient = null;
