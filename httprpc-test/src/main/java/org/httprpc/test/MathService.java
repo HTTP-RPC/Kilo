@@ -23,10 +23,10 @@ import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
 /**
- * Math example servlet.
+ * Math example service.
  */
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
-public class MathServlet extends WebService {
+public class MathService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

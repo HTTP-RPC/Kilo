@@ -24,10 +24,10 @@ import org.httprpc.RequestMethod;
 import org.httprpc.beans.BeanAdapter;
 
 /**
- * Tree servlet.
+ * Tree service.
  */
 @WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
-public class TreeServlet extends WebService {
+public class TreeService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

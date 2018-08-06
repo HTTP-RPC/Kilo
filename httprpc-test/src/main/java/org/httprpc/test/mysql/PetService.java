@@ -37,10 +37,10 @@ import org.httprpc.sql.ResultSetAdapter;
 import org.jtemplate.TemplateEncoder;
 
 /**
- * Pet servlet.
+ * Pet service.
  */
 @WebServlet(urlPatterns={"/pets/*"}, loadOnStartup=1)
-public class PetServlet extends WebService {
+public class PetService extends WebService {
     private static final long serialVersionUID = 0;
 
     private static final String DB_URL = "jdbc:mysql://db.local:3306/menagerie?user=root&password=password";

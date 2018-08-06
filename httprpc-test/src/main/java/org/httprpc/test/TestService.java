@@ -39,11 +39,11 @@ import org.httprpc.RequestParameter;
 import org.httprpc.ResourcePath;
 
 /**
- * Test servlet.
+ * Test service.
  */
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
-public class TestServlet extends WebService {
+public class TestService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

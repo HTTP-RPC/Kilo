@@ -32,10 +32,10 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 /**
- * Restaurant servlet.
+ * Restaurant service.
  */
 @WebServlet(urlPatterns={"/restaurants/*"}, loadOnStartup=1)
-public class RestaurantServlet extends WebService {
+public class RestaurantService extends WebService {
     private static final long serialVersionUID = 0;
 
     private MongoClient mongoClient = null;

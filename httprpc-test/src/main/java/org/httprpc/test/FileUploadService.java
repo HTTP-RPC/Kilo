@@ -26,11 +26,11 @@ import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 
 /**
- * File upload example servlet.
+ * File upload example service.
  */
 @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
 @MultipartConfig
-public class FileUploadServlet extends WebService {
+public class FileUploadService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("POST")

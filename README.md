@@ -12,7 +12,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 # Contents
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
-    * [DispatcherServlet](#dispatcherservlet)
+    * [WebService](#webservice)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
@@ -36,7 +36,7 @@ HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servle
 HTTP-RPC provides the following classes for implementing REST services:
 
 * `org.httprpc`
-    * `DispatcherServlet` - abstract base class for web services
+    * `WebService` - abstract base class for web services
     * `RequestMethod` - annotation that associates an HTTP verb with a service method
     * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
     * `ResourcePath` - annotation that associates a resource path with a service method
@@ -53,18 +53,18 @@ HTTP-RPC provides the following classes for implementing REST services:
 
 These classes are explained in more detail in the following sections.
 
-## DispatcherServlet
-`DispatcherServlet` is an abstract base class for REST services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
+## WebService
+`WebService` is an abstract base class for REST services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `DispatcherServlet` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. 
 
-Multiple methods may be associated with the same verb and path. `DispatcherServlet` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
+Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
 ```java
 @WebServlet(urlPatterns={"/math/*"})
-public class MathServlet extends DispatcherServlet {
+public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
     public double getSum(double a, double b) {
@@ -124,7 +124,7 @@ As shown in the previous section, `List` arguments represent multi-value paramet
 ```java
 @WebServlet(urlPatterns={"/upload/*"})
 @MultipartConfig
-public class FileUploadServlet extends DispatcherServlet {
+public class FileUploadService extends WebService {
     @RequestMethod("POST")
     public void upload(URL file) throws IOException {
         ...
@@ -141,7 +141,7 @@ In general, service classes should be compiled with the `-parameters` flag so th
 
 ```java
 @WebServlet(urlPatterns={"/lookup/*"})
-public class LookupServlet extends DispatcherServlet {
+public class LookupService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("city")
     public String getCity(@RequestParameter("zip_code") String zipCode) { 
@@ -209,14 +209,14 @@ public void generateError() throws Exception {
 ```
 
 ### Request and Repsonse Properties
-`DispatcherServlet` provides the following methods to allow a service to access the request and response objects associated with the current operation:
+`WebService` provides the following methods to allow a service to access the request and response objects associated with the current operation:
 
     protected HttpServletRequest getRequest() { ... }
     protected HttpServletResponse getResponse() { ... }
 
 For example, a service might access the request to get the name of the current user, or use the response to return a custom header.
 
-The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `DispatcherServlet`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
+The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
 
 ### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
@@ -240,7 +240,7 @@ For example, given the following path:
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `DispatcherServlet` to serialize a JSON response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
+The `JSONEncoder` class is used internally by `WebService` to serialize a JSON response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
 
 ```java
 @RequestMethod("GET")

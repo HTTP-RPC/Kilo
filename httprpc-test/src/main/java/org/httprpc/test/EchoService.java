@@ -24,10 +24,10 @@ import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
 
 /**
- * Servlet that echoes a string value by writing a custom response.
+ * Service that echoes a string value by writing a custom response.
  */
 @WebServlet(urlPatterns={"/echo/*"}, loadOnStartup=1)
-public class EchoServlet extends WebService {
+public class EchoService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")

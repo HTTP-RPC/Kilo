@@ -26,10 +26,10 @@ import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
 /**
- * Servlet that simulates a product catalog using path variables.
+ * Service that simulates a product catalog using path variables.
  */
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
-public class CatalogServlet extends WebService {
+public class CatalogService extends WebService {
     private static final long serialVersionUID = 0;
 
     private List<?> items = null;
