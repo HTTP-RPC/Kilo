@@ -99,7 +99,9 @@ public class PetServlet extends DispatcherServlet {
         try (Connection connection = DriverManager.getConnection(DB_URL);
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
-            Iterable<Pet> pets = ResultSetAdapter.adapt(resultSet, Pet.class);
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+
+            Iterable<Pet> pets = resultSetAdapter.adapt(Pet.class);
 
             Stream<Pet> stream = StreamSupport.stream(pets.spliterator(), false);
 

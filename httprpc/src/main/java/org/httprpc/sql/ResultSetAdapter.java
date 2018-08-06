@@ -96,30 +96,25 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     }
 
     /**
-     * Adapts a result set for typed iteration.
-     *
-     * @param resultSet
-     * The result set to adapt.
-     *
-     * @param rowType
-     * The row type.
-     *
-     * @return
-     * A typed iterable over the result set.
+     * Adapts the result set adapter for typed access.
      *
      * @param <T>
-     * The row type.
+     * The element type.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * An iterable sequence of the given type.
      */
-    public static <T> Iterable<T> adapt(ResultSet resultSet, Class<T> rowType) {
+    public <T> Iterable<T> adapt(Class<T> elementType) {
         return new Iterable<T>() {
-            private ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
-
             @Override
             public Iterator<T> iterator() {
                 return new Iterator<T>() {
-                    private Iterator<Map<String, Object>> iterator = resultSetAdapter.iterator();
+                    private Iterator<Map<String, Object>> iterator = ResultSetAdapter.this.iterator();
 
-                    private T proxy = BeanAdapter.adapt(resultSetAdapter.row, rowType);
+                    private T proxy = BeanAdapter.adapt(row, elementType);
 
                     @Override
                     public boolean hasNext() {

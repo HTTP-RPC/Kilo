@@ -73,7 +73,9 @@ public class ResultSetAdapterTest extends AbstractTest {
         LinkedList<Map<String, Object>> list = new LinkedList<>();
 
         try (TestResultSet resultSet = new TestResultSet()) {
-            for (TestRow row : ResultSetAdapter.adapt(resultSet, TestRow.class)) {
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+
+            for (TestRow row : resultSetAdapter.adapt(TestRow.class)) {
                 HashMap<String, Object> map = new HashMap<>();
 
                 map.putAll(new BeanAdapter(row));

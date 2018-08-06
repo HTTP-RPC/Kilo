@@ -27,16 +27,28 @@ public class CSVDecoder {
     /**
      * CSV cursor.
      */
-    public static class Cursor implements Iterable<Map<String, Object>>, AutoCloseable {
+    public static class Cursor implements Iterable<Map<String, Object>> {
         @Override
         public Iterator<Map<String, Object>> iterator() {
             // TODO
             return null;
         }
 
-        @Override
-        public void close() throws IOException {
+        /**
+         * Adapts the cursor for typed access.
+         *
+         * @param <T>
+         * The element type.
+         *
+         * @param elementType
+         * The element type.
+         *
+         * @return
+         * An iterable sequence of the given type.
+         */
+        public <T> Iterable<T> adapt(Class<T> elementType) {
             // TODO
+            return null;
         }
     }
 
