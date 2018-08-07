@@ -367,16 +367,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             return (T)adapt(value, wildcardType.getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType)type;
+            if (value != null) {
+                ParameterizedType parameterizedType = (ParameterizedType)type;
 
-            Type rawType = parameterizedType.getRawType();
+                Type rawType = parameterizedType.getRawType();
 
-            if (rawType == List.class) {
-                return (T)adaptList((List<?>)value, parameterizedType.getActualTypeArguments()[0]);
-            } else if (rawType == Map.class) {
-                return (T)adaptMap((Map<?, ?>)value, parameterizedType.getActualTypeArguments()[1]);
+                if (rawType == List.class) {
+                    return (T)adaptList((List<?>)value, parameterizedType.getActualTypeArguments()[0]);
+                } else if (rawType == Map.class) {
+                    return (T)adaptMap((Map<?, ?>)value, parameterizedType.getActualTypeArguments()[1]);
+                } else {
+                    throw new IllegalArgumentException();
+                }
             } else {
-                throw new IllegalArgumentException();
+                return null;
             }
         } else {
             throw new IllegalArgumentException();

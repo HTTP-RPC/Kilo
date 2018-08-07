@@ -1,5 +1,5 @@
 {
-    "i": null,
+    "i": 1,
     "long": 2,
     "double": 4.0,
     "string": "abc",
@@ -16,7 +16,7 @@
     ],
     "nestedBeanList": [
         {
-            "flag": true
+            "flag": false
         }
     ],
     "map": {
@@ -28,7 +28,7 @@
     },
     "nestedBeanMap": {
         "nestedBean": {
-            "flag": true
+            "flag": false
         }
     },
     "nestedBean": {

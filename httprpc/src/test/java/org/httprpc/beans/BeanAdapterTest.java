@@ -30,8 +30,8 @@ import java.util.Map;
 
 public class BeanAdapterTest extends AbstractTest {
     @Test
-    public void testBeanAdapter1() {
-        Assert.assertEquals(mapOf(
+    public void testBeanAdapter1() throws IOException {
+        Map<String, ?> expected = mapOf(
             entry("i", 1),
             entry("long", 2L),
             entry("double", 4.0),
@@ -44,7 +44,7 @@ public class BeanAdapterTest extends AbstractTest {
                 entry("flag", true)
             ))),
             entry("nestedBeanList", listOf(mapOf(
-                entry("flag", true)
+                entry("flag", false)
             ))),
             entry("map", mapOf(
                 entry("long", 2L),
@@ -55,29 +55,24 @@ public class BeanAdapterTest extends AbstractTest {
             ),
             entry("nestedBeanMap", mapOf(
                 entry("nestedBean", mapOf(
-                    entry("flag", true)
+                    entry("flag", false)
                 )))
             ),
             entry("nestedBean", mapOf(
                 entry("flag", true)
             ))
-        ), new BeanAdapter(new TestBean()));
+        );
 
-        Assert.assertEquals(listOf(2L, 4.0, mapOf(
-            entry("flag", true)
-        )), BeanAdapter.adapt(listOf(2L, 4.0, new TestBean.NestedBean())));
+        JSONDecoder jsonDecoder = new JSONDecoder();
 
-        Assert.assertEquals(mapOf(
-            entry("long", 2L),
-            entry("double", 4.0),
-            entry("nestedBean", mapOf(
-                entry("flag", true)
-            ))
-        ), BeanAdapter.adapt(mapOf(
-            entry("long", 2L),
-            entry("double", 4.0),
-            entry("nestedBean", new TestBean.NestedBean())
-        )));
+        Map<String, ?> map;
+        try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
+            map = jsonDecoder.readValue(inputStream);
+        }
+
+        BeanAdapter adapter = new BeanAdapter(BeanAdapter.adapt(map, TestBean.class));
+
+        Assert.assertEquals(expected, adapter);
     }
 
     @Test
@@ -91,7 +86,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         TestInterface result = BeanAdapter.adapt(map, TestInterface.class);
 
-        Assert.assertEquals(0, result.getInt());
+        Assert.assertEquals(1, result.getInt());
         Assert.assertEquals(2L, result.getLong());
         Assert.assertEquals(4.0, result.getDouble(), 0.0);
         Assert.assertEquals("abc", result.getString());
@@ -103,12 +98,12 @@ public class BeanAdapterTest extends AbstractTest {
         Assert.assertEquals(2L, ((Number)result.getList().get(0)).longValue());
         Assert.assertEquals(4.0, ((Number)result.getList().get(1)).doubleValue(), 0.0);
         Assert.assertEquals(true, ((Map<?, ?>)result.getList().get(2)).get("flag"));
-        Assert.assertEquals(true, result.getNestedBeanList().get(0).getFlag());
+        Assert.assertEquals(false, result.getNestedBeanList().get(0).getFlag());
 
         Assert.assertEquals(2L, ((Number)result.getMap().get("long")).longValue());
         Assert.assertEquals(4.0, ((Number)result.getMap().get("double")).doubleValue(), 0.0);
         Assert.assertEquals(true, ((Map<?, ?>)result.getMap().get("nestedBean")).get("flag"));
-        Assert.assertEquals(true, result.getNestedBeanMap().get("nestedBean").getFlag());
+        Assert.assertEquals(false, result.getNestedBeanMap().get("nestedBean").getFlag());
 
         Assert.assertEquals(true, result.getNestedBean().getFlag());
     }

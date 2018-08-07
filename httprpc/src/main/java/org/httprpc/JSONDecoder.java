@@ -29,60 +29,6 @@ import java.util.Map;
  * JSON decoder.
  */
 public class JSONDecoder {
-    // Number adapter
-    private static class NumberAdapter extends Number {
-        private static final long serialVersionUID = 0;
-
-        private Number number;
-
-        public NumberAdapter(Number number) {
-            this.number = number;
-        }
-
-        @Override
-        public int intValue() {
-            return number.intValue();
-        }
-
-        @Override
-        public long longValue() {
-            return number.longValue();
-        }
-
-        @Override
-        public float floatValue() {
-            return number.floatValue();
-        }
-
-        @Override
-        public double doubleValue() {
-            return number.doubleValue();
-        }
-
-        @Override
-        public int hashCode() {
-            long bits = Double.doubleToLongBits(doubleValue());
-
-            return (int)(bits ^ (bits >>> 32));
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return (object instanceof Number && equals((Number)object));
-        }
-
-        private boolean equals(Number number) {
-            long l1 = Double.doubleToLongBits(doubleValue());
-            long l2 = Double.doubleToLongBits(number.doubleValue());
-            return (l1 == l2);
-        }
-
-        @Override
-        public String toString() {
-            return number.toString();
-        }
-    }
-
     private int c = EOF;
 
     private LinkedList<Object> collections = new LinkedList<>();
@@ -312,14 +258,14 @@ public class JSONDecoder {
             c = reader.read();
         }
 
-        Number value;
+        Number number;
         if (decimal) {
-            value = Double.valueOf(numberBuilder.toString());
+            number = Double.valueOf(numberBuilder.toString());
         } else {
-            value = Long.valueOf(numberBuilder.toString());
+            number = Long.valueOf(numberBuilder.toString());
         }
 
-        return new NumberAdapter(value);
+        return number;
     }
 
     private boolean readKeyword(Reader reader, String keyword) throws IOException {
