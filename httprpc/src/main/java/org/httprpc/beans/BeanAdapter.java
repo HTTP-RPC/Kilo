@@ -472,7 +472,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
                 }));
             } else {
-                throw new IllegalArgumentException();
+                Object object;
+                try {
+                    object = type.newInstance();
+                } catch (InstantiationException | IllegalAccessException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                // TODO Populate object properties
+
+                return object;
             }
         } else {
             return null;

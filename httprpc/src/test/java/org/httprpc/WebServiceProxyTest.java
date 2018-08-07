@@ -33,6 +33,23 @@ import org.httprpc.beans.BeanAdapter;
 
 public class WebServiceProxyTest extends AbstractTest {
     public interface TestService {
+        public interface Response {
+            public interface AttachmentInfo {
+                public int getBytes();
+                public int getChecksum();
+            }
+
+            public String getString();
+            public List<String> getStrings();
+            public int getNumber();
+            public boolean getFlag();
+            public Date getDate();
+            public LocalDate getLocalDate();
+            public LocalTime getLocalTime();
+            public LocalDateTime getLocalDateTime();
+            public List<AttachmentInfo> getAttachmentInfo();
+        }
+
         @RequestMethod("GET")
         public Map<String, Object> testGet(@RequestParameter("string") String text, List<String> strings, int number, boolean flag,
             Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) throws IOException;
@@ -42,7 +59,7 @@ public class WebServiceProxyTest extends AbstractTest {
         public List<Number> testGetFibonacci() throws IOException;
 
         @RequestMethod("POST")
-        public Map<String, Object> testPost(String string, List<String> strings, int number, boolean flag,
+        public Response testPost(String string, List<String> strings, int number, boolean flag,
             Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
             List<URL> attachments) throws IOException;
     }
@@ -55,23 +72,6 @@ public class WebServiceProxyTest extends AbstractTest {
         @RequestMethod("GET")
         @ResourcePath("sum")
         public Number getSum(List<Double> values) throws IOException;
-    }
-
-    public interface Response {
-        public interface AttachmentInfo {
-            public int getBytes();
-            public int getChecksum();
-        }
-
-        public String getString();
-        public List<String> getStrings();
-        public int getNumber();
-        public boolean getFlag();
-        public Date getDate();
-        public LocalDate getLocalDate();
-        public LocalTime getLocalTime();
-        public LocalDateTime getLocalDateTime();
-        public List<AttachmentInfo> getAttachmentInfo();
     }
 
     public interface TreeNode {
@@ -161,11 +161,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/test"), TestService.class);
 
-        Map<String, ?> result = testService.testPost("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
+        TestService.Response response = testService.testPost("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
             date, localDate, localTime, localDateTime,
             listOf(textTestURL, imageTestURL));
-
-        Response response = BeanAdapter.adapt(result, Response.class);
 
         validate("POST (multipart)", response.getString().equals("héllo+gøodbye")
             && response.getStrings().equals(listOf("a", "b", "c"))

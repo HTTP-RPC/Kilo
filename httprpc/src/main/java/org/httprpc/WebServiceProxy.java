@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import org.httprpc.beans.BeanAdapter;
+
 /**
  * Web service proxy class.
  */
@@ -631,7 +633,7 @@ public class WebServiceProxy {
                     webServiceProxy.getArguments().put(name, arguments[i]);
                 }
 
-                return webServiceProxy.invoke();
+                return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
             }
         }));
     }

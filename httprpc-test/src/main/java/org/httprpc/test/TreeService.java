@@ -15,13 +15,11 @@
 package org.httprpc.test;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.WebService;
 import org.httprpc.RequestMethod;
-import org.httprpc.beans.BeanAdapter;
 
 /**
  * Tree service.
@@ -31,7 +29,7 @@ public class TreeService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    public Map<String, ?> getTree() {
+    public TreeNode getTree() {
         TreeNode root = new TreeNode("Seasons");
 
         TreeNode winter = new TreeNode("Winter");
@@ -48,6 +46,6 @@ public class TreeService extends WebService {
 
         root.setChildren(Arrays.asList(winter, spring, summer, fall));
 
-        return new BeanAdapter(root);
+        return root;
     }
 }

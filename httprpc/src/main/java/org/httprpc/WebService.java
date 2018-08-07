@@ -257,7 +257,7 @@ public abstract class WebService extends HttpServlet {
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.writeValue(result, response.getOutputStream());
+                jsonEncoder.writeValue(BeanAdapter.adapt(result), response.getOutputStream());
             } else {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }

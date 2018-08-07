@@ -14,6 +14,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [HTTP-RPC Classes](#http-rpc-classes)
     * [WebService](#webservice)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
+    * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
     * [WebServiceProxy](#webserviceproxy)
@@ -195,7 +196,9 @@ The service would produce the following in response:
 }
 ```
 
-Methods may also return `void` or `Void` to indicate that they do not produce a value. Unsupported types are returned as `null`.
+Methods may also return `void` or `Void` to indicate that they do not produce a value. 
+
+If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail later.
 
 ### Exceptions
 If an exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
@@ -262,7 +265,7 @@ public void getMap() throws IOException {
 }
 ```
 
-Values are converted to their JSON equivalents as described earlier.
+Values are converted to their JSON equivalents as described earlier. Unsupported types are serialized as `null`.
 
 The `JSONDecoder` class deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
@@ -279,6 +282,12 @@ JSONDecoder jsonDecoder = new JSONDecoder();
 
 List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
 ```
+
+## CSVEncoder and CSVDecoder
+TODO
+
+### Typed Iteration
+TODO
 
 ## BeanAdapter
 The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects. 
@@ -345,6 +354,18 @@ public Map<String, ?> getTree() {
 }
 ```
 
+Since `WebService` automatically wraps return values in a `BeanAdapter` as needed, the method could also be written as follows:
+
+```java
+public TreeNode getTree() {
+    TreeNode root = new TreeNode("Seasons");
+
+    ...
+
+    return root;
+)
+```
+
 Although the values are actually stored in the strongly typed properties of the `TreeNode` object, the adapter makes the data appear as a map, producing the following output:
 
 ```json
@@ -394,6 +415,8 @@ root.getName(); // "Seasons"
 root.getChildren().get(0).getName(); // "Winter"
 root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
+
+TODO Elaborate on coercion behavior
 
 Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. If a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
@@ -537,7 +560,7 @@ The service would return something like the following:
 ]
 ```
 
-### Typed Result Set Iteration
+### Typed Iteration
 The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
@@ -625,7 +648,7 @@ The `RequestMethod` annotation is used to associate an HTTP verb with an interfa
 
 In general, service adapters should be compiled with the `-parameters` flag so their method parameter names are available at runtime. However, the `RequestParameter` annotation can be used to associate a custom parameter name with a request argument. 
 
-`POST` requests are always submitted using the multi-part encoding. Values are returned as described above for `WebServiceProxy`.
+`POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#typed-map-access) based on the method return type.
 
 For example, the following interface might be used to model the addition operations of the math service:
 
