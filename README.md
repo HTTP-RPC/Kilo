@@ -118,6 +118,8 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
+Missing or `null` values are automatically converted to 0 or `false` for primitive argument types.
+
 As shown in the previous section, `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
 `URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
@@ -416,9 +418,9 @@ root.getChildren().get(0).getName(); // "Winter"
 root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
-TODO Elaborate on coercion behavior
-
 Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. If a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
+
+See the `BeanAdapter` documentation for more information.
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the resulting map rather than "firstName":

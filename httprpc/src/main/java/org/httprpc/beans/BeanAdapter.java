@@ -177,12 +177,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             for (int i = 0; i < methods.length; i++) {
                 Method method = methods[i];
 
-                if (method.getDeclaringClass() != Object.class) {
-                    String key = getKey(method, true);
+                if (method.getDeclaringClass() == Object.class) {
+                    continue;
+                }
 
-                    if (key != null) {
-                        accessors.put(key, method);
-                    }
+                String key = getKey(method, true);
+
+                if (key != null) {
+                    accessors.put(key, method);
                 }
             }
 
@@ -344,9 +346,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Adapts a value for typed access. If the value is already an instance of
      * the given type, it is returned as-is. Otherwise:
+     *
      * <ul>
-     * <li>If the target type is a number, the value is coerced using the
-     * appropriate conversion method.</li>
+     * <li>If the target type is a number or boolean, the value is parsed or
+     * coerced using the appropriate conversion method. Missing or <tt>null</tt>
+     * values are automatically converted to 0 or `false` for primitive
+     * argument types.</li>
+     * <li>If the target type is {@link String}, the value is adapted via
+     * {@link String#toString()}.</li>
      * <li>If the target type is {@link Date}, the value is coerced to a long
      * value and passed to {@link Date#Date(long)}.</li>
      * <li>If the target type is {@link LocalDate}, the value is parsed using
@@ -359,8 +366,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * If the target type is a {@link List}, the value is wrapped in an adapter
      * that will adapt the list's elements. If the target type is a {@link Map},
      * the value is wrapped in an adapter that will adapt the map's values.
-     * Otherwise, the value is considered a nested Bean and is adapted by a
-     * dynamic proxy instance that implements the given interface.
+     *
+     * If the value is not an instance of any of the aforementioned types, it
+     * is considered a nested Bean, and the given value is assumed to be a map.
+     * If the target type is an interface, the return value is an implementation
+     * of the interface that maps accessor methods to entries in the map.
+     * Otherwise, an instance of the given type is dynamically created and
+     * populated using the entries in the map. Property values are adapted as
+     * described above.
      *
      * @param <T>
      * The target type.
@@ -499,6 +512,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new RuntimeException(exception);
                 }
 
+                // TODO Cache mutators
                 HashMap<String, Method> mutators = new HashMap<>();
 
                 Method[] methods = type.getMethods();
@@ -506,12 +520,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 for (int i = 0; i < methods.length; i++) {
                     Method method = methods[i];
 
-                    if (method.getDeclaringClass() != Object.class) {
-                        String key = getKey(method, false);
+                    if (method.getDeclaringClass() == Object.class) {
+                        continue;
+                    }
 
-                        if (key != null) {
-                            mutators.put(key, method);
-                        }
+                    String key = getKey(method, false);
+
+                    if (key != null) {
+                        mutators.put(key, method);
                     }
                 }
 
