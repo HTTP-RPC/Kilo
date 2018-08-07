@@ -350,19 +350,19 @@ public Map<String, ?> getTree() {
 
     root.setChildren(Arrays.asList(winter, spring, summer, fall));
 
-    return new BeanAdapter(root);
+    return root;
 }
 ```
 
-Since `WebService` automatically wraps return values in a `BeanAdapter` as needed, the method could also be written as follows:
+`WebService` automatically wraps the return value in a `BeanAdapter`. However, the method could also be written (slightly more verbosely) as follows:
 
 ```java
-public TreeNode getTree() {
+public Map<String, ?> getTree() {
     TreeNode root = new TreeNode("Seasons");
 
     ...
 
-    return root;
+    return new BeanAdapter(root);    
 )
 ```
 
