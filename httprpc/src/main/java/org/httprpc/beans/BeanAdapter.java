@@ -165,6 +165,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         Class<?> type = bean.getClass();
 
+        accessors = accessorCache.get(type);
+
         if (accessors == null) {
             accessors = new HashMap<>();
 
