@@ -145,6 +145,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
 
+    private static final String SET_PREFIX = "set";
+
     /**
      * Constructs a new Bean adapter.
      *
@@ -176,7 +178,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 Method method = methods[i];
 
                 if (method.getDeclaringClass() != Object.class) {
-                    String key = getKey(method);
+                    String key = getKey(method, true);
 
                     if (key != null) {
                         accessors.put(key, method);
@@ -188,20 +190,32 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static String getKey(Method method) {
+    private static String getKey(Method method, boolean accessor) {
         String methodName = method.getName();
 
         String prefix;
-        if (methodName.startsWith(GET_PREFIX)) {
-            prefix = GET_PREFIX;
-        } else if (methodName.startsWith(IS_PREFIX)) {
-            prefix = IS_PREFIX;
-        } else {
-            return null;
-        }
+        if (accessor) {
+            if (methodName.startsWith(GET_PREFIX)) {
+                prefix = GET_PREFIX;
+            } else if (methodName.startsWith(IS_PREFIX)) {
+                prefix = IS_PREFIX;
+            } else {
+                return null;
+            }
 
-        if (method.getParameterCount() > 0) {
-            return null;
+            if (method.getParameterCount() > 0) {
+                return null;
+            }
+        } else {
+            if (methodName.startsWith(SET_PREFIX)) {
+                prefix = SET_PREFIX;
+            } else {
+                return null;
+            }
+
+            if (method.getParameterCount() != 1) {
+                return null;
+            }
         }
 
         Key key = method.getAnnotation(Key.class);
@@ -468,7 +482,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     new Class[] {type}, new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-                        String key = getKey(method);
+                        String key = getKey(method, true);
 
                         if (key == null) {
                             throw new UnsupportedOperationException();
@@ -485,7 +499,37 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new RuntimeException(exception);
                 }
 
-                // TODO Populate object properties
+                HashMap<String, Method> mutators = new HashMap<>();
+
+                Method[] methods = type.getMethods();
+
+                for (int i = 0; i < methods.length; i++) {
+                    Method method = methods[i];
+
+                    if (method.getDeclaringClass() != Object.class) {
+                        String key = getKey(method, false);
+
+                        if (key != null) {
+                            mutators.put(key, method);
+                        }
+                    }
+                }
+
+                Map<?, ?> map = (Map<?, ?>)value;
+
+                for (Entry<?, ?> entry : map.entrySet()) {
+                    Object key = entry.getKey();
+
+                    Method method = mutators.get(key);
+
+                    if (method != null) {
+                        try {
+                            method.invoke(object, BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType()));
+                        } catch (InvocationTargetException | IllegalAccessException exception) {
+                            throw new RuntimeException(exception);
+                        }
+                    }
+                }
 
                 return object;
             }
