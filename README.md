@@ -664,11 +664,11 @@ For example, the following interface might be used to model the addition operati
 public interface MathService {
     @RequestMethod("GET")
     @ResourcePath("sum")
-    public Number getSum(double a, double b) throws IOException;
+    public double getSum(double a, double b) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("sum")
-    public Number getSum(List<Double> values) throws IOException;
+    public double getSum(List<Double> values) throws IOException;
 }
 ```
 
@@ -677,7 +677,7 @@ This code uses the `adapt()` method to create an instance of `MathService`, then
 ```java
 MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
 
-Number result = mathService.getSum(4, 2);
+double result = mathService.getSum(4, 2);
 
 System.out.println(result); // 6.0
 ```

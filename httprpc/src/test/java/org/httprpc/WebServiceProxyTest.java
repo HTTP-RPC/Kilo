@@ -56,7 +56,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
         @RequestMethod("GET")
         @ResourcePath("fibonacci")
-        public List<Number> testGetFibonacci() throws IOException;
+        public List<Integer> testGetFibonacci() throws IOException;
 
         @RequestMethod("POST")
         public Response testPost(String string, List<String> strings, int number, boolean flag,
@@ -67,11 +67,11 @@ public class WebServiceProxyTest extends AbstractTest {
     public interface MathService {
         @RequestMethod("GET")
         @ResourcePath("sum")
-        public Number getSum(double a, double b) throws IOException;
+        public double getSum(double a, double b) throws IOException;
 
         @RequestMethod("GET")
         @ResourcePath("sum")
-        public Number getSum(List<Double> values) throws IOException;
+        public double getSum(List<Double> values) throws IOException;
     }
 
     public interface TreeNode {
@@ -112,7 +112,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
         validate("GET", result.get("string").equals("héllo+gøodbye")
             && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123)
+            && result.get("number").equals(123L)
             && result.get("flag").equals(true)
             && result.get("date").equals(date.getTime())
             && result.get("localDate").equals(localDate.toString())
@@ -123,7 +123,7 @@ public class WebServiceProxyTest extends AbstractTest {
     public static void testGetFibonnaci() throws Exception {
         TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/test/"), TestService.class);
 
-        List<Number> fibonacci = testService.testGetFibonacci();
+        List<Integer> fibonacci = testService.testGetFibonacci();
 
         validate("GET (Fibonacci)", fibonacci.equals(listOf(1, 2, 3, 5, 8, 13)));
     }
@@ -134,7 +134,7 @@ public class WebServiceProxyTest extends AbstractTest {
         webServiceProxy.getArguments().putAll(mapOf(
             entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
+            entry("number", 123L),
             entry("flag", true),
             entry("date", date),
             entry("localDate", localDate),
@@ -146,7 +146,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
         validate("POST (URL-encoded)", result.get("string").equals("héllo+gøodbye")
             && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123)
+            && result.get("number").equals(123L)
             && result.get("flag").equals(true)
             && result.get("date").equals(date.getTime())
             && result.get("localDate").equals(localDate.toString())
@@ -296,14 +296,14 @@ public class WebServiceProxyTest extends AbstractTest {
 
         Number result = webServiceProxy.invoke();
 
-        validate("Math", result.equals(6));
+        validate("Math", result.equals(6.0));
     }
 
     public static void testMathService() throws Exception {
         MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
 
-        validate("Math (service)", mathService.getSum(4, 2).equals(6)
-            && mathService.getSum(listOf(1.0, 2.0, 3.0)).equals(6));
+        validate("Math (service)", mathService.getSum(4, 2) == 6.0
+            && mathService.getSum(listOf(1.0, 2.0, 3.0)) == 6.0);
     }
 
     public static void testTree() throws Exception {
