@@ -387,14 +387,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * An instance of the given type that adapts the given value.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T adapt(Object value, Type type) {
+        return adapt(value, type, new HashMap<>());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T adapt(Object value, Type type, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
         if (type instanceof Class<?>) {
-            return (T)adapt(value, (Class<?>)type);
+            return (T)adapt(value, (Class<?>)type, mutatorCache);
         } else if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)type;
 
-            return (T)adapt(value, wildcardType.getUpperBounds()[0]);
+            return (T)adapt(value, wildcardType.getUpperBounds()[0], mutatorCache);
         } else if (type instanceof ParameterizedType) {
             if (value != null) {
                 ParameterizedType parameterizedType = (ParameterizedType)type;
@@ -402,9 +406,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 Type rawType = parameterizedType.getRawType();
 
                 if (rawType == List.class) {
-                    return (T)adaptList((List<?>)value, parameterizedType.getActualTypeArguments()[0]);
+                    return (T)adaptList((List<?>)value, parameterizedType.getActualTypeArguments()[0], mutatorCache);
                 } else if (rawType == Map.class) {
-                    return (T)adaptMap((Map<?, ?>)value, parameterizedType.getActualTypeArguments()[1]);
+                    return (T)adaptMap((Map<?, ?>)value, parameterizedType.getActualTypeArguments()[1], mutatorCache);
                 } else {
                     throw new IllegalArgumentException();
                 }
@@ -416,7 +420,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object adapt(Object value, Class<?> type) {
+    private static Object adapt(Object value, Class<?> type, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
@@ -501,7 +505,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             throw new UnsupportedOperationException();
                         }
 
-                        return adapt(((Map<?, ?>)value).get(key), method.getGenericReturnType());
+                        return adapt(((Map<?, ?>)value).get(key), method.getGenericReturnType(), mutatorCache);
                     }
                 }));
             } else {
@@ -512,24 +516,30 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new RuntimeException(exception);
                 }
 
-                // TODO Cache mutators
-                HashMap<String, Method> mutators = new HashMap<>();
+                HashMap<String, Method> mutators = mutatorCache.get(type);
 
-                Method[] methods = type.getMethods();
+                if (mutators == null) {
+                    mutators = new HashMap<>();
 
-                for (int i = 0; i < methods.length; i++) {
-                    Method method = methods[i];
+                    Method[] methods = type.getMethods();
 
-                    if (method.getDeclaringClass() == Object.class) {
-                        continue;
+                    for (int i = 0; i < methods.length; i++) {
+                        Method method = methods[i];
+
+                        if (method.getDeclaringClass() == Object.class) {
+                            continue;
+                        }
+
+                        String key = getKey(method, false);
+
+                        if (key != null) {
+                            mutators.put(key, method);
+                        }
                     }
 
-                    String key = getKey(method, false);
-
-                    if (key != null) {
-                        mutators.put(key, method);
-                    }
+                    mutatorCache.put(type, mutators);
                 }
+
 
                 Map<?, ?> map = (Map<?, ?>)value;
 
@@ -540,7 +550,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     if (method != null) {
                         try {
-                            method.invoke(object, BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType()));
+                            method.invoke(object, BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType(), mutatorCache));
                         } catch (InvocationTargetException | IllegalAccessException exception) {
                             throw new RuntimeException(exception);
                         }
@@ -571,6 +581,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #adapt(Object, Type)}.
      */
     public static <E> List<E> adaptList(List<?> list, Type elementType) {
+        return adaptList(list, elementType, new HashMap<>());
+    }
+
+    private static <E> List<E> adaptList(List<?> list, Type elementType, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
         if (list == null) {
             throw new IllegalArgumentException();
         }
@@ -582,7 +596,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return new AbstractList<E>() {
             @Override
             public E get(int index) {
-                return adapt(list.get(index), elementType);
+                return adapt(list.get(index), elementType, mutatorCache);
             }
 
             @Override
@@ -602,7 +616,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     @Override
                     public E next() {
-                        return adapt(iterator.next(), elementType);
+                        return adapt(iterator.next(), elementType, mutatorCache);
                     }
                 };
             }
@@ -629,6 +643,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link #adapt(Object, Type)}.
      */
     public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType) {
+        return adaptMap(map, valueType, new HashMap<>());
+    }
+
+    private static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
         if (map == null) {
             throw new IllegalArgumentException();
         }
@@ -640,7 +658,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return new AbstractMap<K, V>() {
             @Override
             public V get(Object key) {
-                return adapt(map.get(key), valueType);
+                return adapt(map.get(key), valueType, mutatorCache);
             }
 
             @Override
@@ -673,7 +691,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                                     @Override
                                     public V getValue() {
-                                        return adapt(entry.getValue(), valueType);
+                                        return adapt(entry.getValue(), valueType, mutatorCache);
                                     }
 
                                     @Override

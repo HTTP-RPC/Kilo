@@ -40,4 +40,9 @@ public interface TestInterface {
     public Map<String, ?> getMap();
     public Map<String, ? extends NestedInterface> getNestedBeanMap();
     public NestedInterface getNestedBean();
+    public void foo();
+    public void bar(int i);
+    public int getX(int y);
+    public void setX();
+    public void setX(int y, int z);
 }

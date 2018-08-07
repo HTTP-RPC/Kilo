@@ -171,4 +171,25 @@ public class TestBean implements TestInterface {
     public void setNestedBean(NestedBean nestedBean) {
         this.nestedBean = nestedBean;
     }
+
+    @Override
+    public void foo() {
+    }
+
+    @Override
+    public void bar(int i) {
+    }
+
+    @Override
+    public int getX(int y) {
+        return y;
+    }
+
+    @Override
+    public void setX() {
+    }
+
+    @Override
+    public void setX(int y, int z) {
+    }
 }

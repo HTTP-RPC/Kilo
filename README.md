@@ -397,7 +397,17 @@ Although the values are actually stored in the strongly typed properties of the 
 ```
 
 ### Typed Map Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object (typically a map) and a result type as arguments, and returns an instance of the result type that wraps the underlying value.
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments and returns an instance of the given type that adapts the underlying value.
+
+If the value is already an instance of the requested type, it is returned as-is. Otherwise:
+
+* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to 0 or `false` for primitive argument types.
+* If the target type is a `String`, the value is adapted via its `toString()` method.
+* If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
+* If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
+* If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
+
+If the value is not an instance of any of the aforementioned types, it is considered a nested Bean, and the given value is assumed to be a map. If the target type is an interface, the return value is an implementation of the given interface that maps accessor methods to entries in the map. Otherwise, an instance of the given type is dynamically created and populated using the entries in the map. Property values are adapted as described above.
 
 For example, given the following interface definition:
 
@@ -417,10 +427,6 @@ root.getName(); // "Seasons"
 root.getChildren().get(0).getName(); // "Winter"
 root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
-
-Internally, the returned adapter uses dynamic proxy invocation to map properties declared by the interface to entries in the map. If a property returns an instance of `List` or `Map`, it will be wrapped in an adapter of the same type that automatically adapts its sub-elements.
-
-See the `BeanAdapter` documentation for more information.
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the resulting map rather than "firstName":
