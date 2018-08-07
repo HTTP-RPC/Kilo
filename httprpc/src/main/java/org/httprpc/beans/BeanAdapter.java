@@ -189,6 +189,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static String getKey(Method method) {
+        String methodName = method.getName();
+
+        String prefix;
+        if (methodName.startsWith(GET_PREFIX)) {
+            prefix = GET_PREFIX;
+        } else if (methodName.startsWith(IS_PREFIX)) {
+            prefix = IS_PREFIX;
+        } else {
+            return null;
+        }
+
         if (method.getParameterCount() > 0) {
             return null;
         }
@@ -196,17 +207,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         Key key = method.getAnnotation(Key.class);
 
         if (key == null) {
-            String methodName = method.getName();
-
-            String prefix;
-            if (methodName.startsWith(GET_PREFIX)) {
-                prefix = GET_PREFIX;
-            } else if (methodName.startsWith(IS_PREFIX)) {
-                prefix = IS_PREFIX;
-            } else {
-                return null;
-            }
-
             int j = prefix.length();
             int n = methodName.length();
 
