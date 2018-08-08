@@ -97,7 +97,11 @@ public class CSVEncoder {
                     writer.append(',');
                 }
 
-                writeValue(valueAt(map, key), writer);
+                Object value = valueAt(map, key);
+
+                if (value != null) {
+                    writeValue(value, writer);
+                }
 
                 i++;
             }
