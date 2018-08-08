@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.httprpc.AbstractTest;
@@ -27,9 +28,41 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ResultSetAdapterTest extends AbstractTest {
+    public interface TestRow {
+        public long getA();
+        public double getB();
+        public boolean getC();
+        public String getD();
+        public Date getE();
+    }
+
+    private List<?> expected = listOf(
+        mapOf(
+            entry("a", 2L),
+            entry("b", 3.0),
+            entry("c", true),
+            entry("d", "abc"),
+            entry("e", new Date(0))
+        ),
+        mapOf(
+            entry("a", 4L),
+            entry("b", 6.0),
+            entry("c", false),
+            entry("d", "def"),
+            entry("e", new Date(0))
+        ),
+        mapOf(
+            entry("a", 8L),
+            entry("b", 9.0),
+            entry("c", false),
+            entry("d", "ghi"),
+            entry("e", null)
+        )
+    );
+
     @Test
     public void testResultSetAdapter1() throws SQLException {
-        LinkedList<Map<String, Object>> list = new LinkedList<>();
+        LinkedList<Map<String, Object>> actual = new LinkedList<>();
 
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
@@ -39,38 +72,16 @@ public class ResultSetAdapterTest extends AbstractTest {
 
                 map.putAll(row);
 
-                list.add(map);
+                actual.add(map);
             }
         }
 
-        Assert.assertEquals(listOf(
-            mapOf(
-                entry("a", 2L),
-                entry("b", 3.0),
-                entry("c", true),
-                entry("d", "abc"),
-                entry("e", new Date(0))
-            ),
-            mapOf(
-                entry("a", 4L),
-                entry("b", 6.0),
-                entry("c", false),
-                entry("d", "def"),
-                entry("e", new Date(0))
-            ),
-            mapOf(
-                entry("a", 8L),
-                entry("b", 9.0),
-                entry("c", false),
-                entry("d", "ghi"),
-                entry("e", null)
-            )
-        ), list);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testResultSetAdapter2() throws SQLException {
-        LinkedList<Map<String, Object>> list = new LinkedList<>();
+        LinkedList<Map<String, Object>> actual = new LinkedList<>();
 
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
@@ -80,32 +91,10 @@ public class ResultSetAdapterTest extends AbstractTest {
 
                 map.putAll(new BeanAdapter(row));
 
-                list.add(map);
+                actual.add(map);
             }
         }
 
-        Assert.assertEquals(listOf(
-            mapOf(
-                entry("a", 2L),
-                entry("b", 3.0),
-                entry("c", true),
-                entry("d", "abc"),
-                entry("e", new Date(0))
-            ),
-            mapOf(
-                entry("a", 4L),
-                entry("b", 6.0),
-                entry("c", false),
-                entry("d", "def"),
-                entry("e", new Date(0))
-            ),
-            mapOf(
-                entry("a", 8L),
-                entry("b", 9.0),
-                entry("c", false),
-                entry("d", "ghi"),
-                entry("e", null)
-            )
-        ), list);
+        Assert.assertEquals(expected, actual);
     }
 }
