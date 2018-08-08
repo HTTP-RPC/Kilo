@@ -16,15 +16,35 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
  * CSV encoder.
  */
 public class CSVEncoder {
+    private List<String> keys;
+
     /**
-     * Writes a collection of values to an output stream.
+     * Creates a new CSV encoder.
+     *
+     * @param keys
+     * The column keys.
+     */
+    public CSVEncoder(List<String> keys) {
+        if (keys == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.keys = keys;
+    }
+
+    /**
+     * Writes a sequence of values to an output stream.
      *
      * @param values
      * The values to encode.
@@ -36,11 +56,14 @@ public class CSVEncoder {
      * If an exception occurs.
      */
     public void writeValues(Iterable<Map<String, ?>> values, OutputStream outputStream) throws IOException {
-        // TODO
+        Writer writer = new OutputStreamWriter(outputStream, Charset.forName("ISO-8859-1"));
+        writeValues(values, writer);
+
+        writer.flush();
     }
 
     /**
-     * Writes a collection of values to a character stream.
+     * Writes a sequence of values to a character stream.
      *
      * @param values
      * The values to encode.
@@ -52,7 +75,46 @@ public class CSVEncoder {
      * If an exception occurs.
      */
     public void writeValues(Iterable<Map<String, ?>> values, Writer writer) throws IOException {
-        // TODO
+        int i = 0;
+
+        for (String key : keys) {
+            if (i > 0) {
+                writer.append(',');
+            }
+
+            writeValue(key, writer);
+
+            i++;
+        }
+
+        writer.append("\r\n");
+
+        for (Map<String, ?> map : values) {
+            i = 0;
+
+            for (String key : keys) {
+                if (i > 0) {
+                    writer.append(',');
+                }
+
+                writeValue(map.get(key), writer);
+
+                i++;
+            }
+
+            writer.append("\r\n");
+        }
     }
 
+    private void writeValue(Object value, Writer writer) throws IOException {
+        if (value instanceof CharSequence) {
+            writer.write('"');
+            writer.write(value.toString().replace("\"", "\"\""));
+            writer.write('"');
+        } else if (value instanceof Date) {
+            writeValue(((Date)value).getTime(), writer);
+        } else {
+            writer.append(value.toString());
+        }
+    }
 }

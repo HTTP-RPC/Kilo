@@ -16,7 +16,9 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class CSVDecoder {
     }
 
     /**
-     * Reads a collection of values from an input stream.
+     * Reads a sequence of values from an input stream.
      *
      * @param inputStream
      * The input stream to read from.
@@ -65,12 +67,11 @@ public class CSVDecoder {
      * If an exception occurs.
      */
     public Cursor readValues(InputStream inputStream) throws IOException {
-        // TODO
-        return null;
+        return readValues(new InputStreamReader(inputStream, Charset.forName("ISO-8859-1")));
     }
 
     /**
-     * Reads a collection of values from a character stream.
+     * Reads a sequence of values from a character stream.
      *
      * @param reader
      * The character stream to read from.
