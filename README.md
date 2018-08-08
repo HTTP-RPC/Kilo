@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 52KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -288,7 +288,7 @@ List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8,
 ```
 
 ## CSVEncoder and CSVDecoder
-TODO
+TODO Mention Date and key path support in CSVEncoder
 
 ### Typed Iteration
 TODO

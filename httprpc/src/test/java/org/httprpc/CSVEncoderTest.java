@@ -17,6 +17,7 @@ package org.httprpc;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +27,9 @@ import org.junit.Test;
 public class CSVEncoderTest extends AbstractTest {
     @Test
     public void testWriteValues() throws IOException {
-        String expected = "\"a\",\"b\",\"c\",\"d.e\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
-            + "\" D\r\nE\r\nF\r\n\",2,4.0,\r\n";
+        String expected = "\"a\",\"b\",\"c\",\"d.e\",\"f\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,0\r\n"
+            + "\" D\r\nE\r\nF\r\n\",2,4.0,,\r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -37,7 +38,8 @@ public class CSVEncoderTest extends AbstractTest {
                 entry("c", 2.0),
                 entry("d", mapOf(
                     entry("e", true)
-                ))
+                )),
+                entry("f", new Date(0))
             ),
             mapOf(
                 entry("a", " D\r\nE\r\nF\r\n"),
@@ -48,7 +50,7 @@ public class CSVEncoderTest extends AbstractTest {
 
         StringWriter writer = new StringWriter();
 
-        CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("a", "b", "c", "d.e"));
+        CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("a", "b", "c", "d.e", "f"));
 
         csvEncoder.writeValues(values, writer);
 
