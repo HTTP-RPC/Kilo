@@ -247,7 +247,7 @@ For example, given the following path:
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` to serialize a JSON response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
+The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
 
 ```java
 @RequestMethod("GET")
@@ -288,6 +288,10 @@ List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8,
 ```
 
 ## CSVEncoder and CSVDecoder
+Although `WebService` automatically serializes a method return value as JSON, in some cases it may be preferable to return a a CSV (comma-separated value) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally has a smaller payload than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
+
+TODO
+
 TODO Mention Date and key path support in CSVEncoder
 
 ### Typed Iteration
