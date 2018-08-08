@@ -19,8 +19,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+
+import org.httprpc.beans.BeanAdapter;
 
 /**
  * CSV decoder.
@@ -30,10 +36,33 @@ public class CSVDecoder {
      * CSV cursor.
      */
     public static class Cursor implements Iterable<Map<String, Object>> {
+        private List<String> keys;
+
+        private LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+
+        private Cursor(List<String> keys, Reader reader) {
+            this.keys = keys;
+        }
+
         @Override
         public Iterator<Map<String, Object>> iterator() {
-            // TODO
-            return null;
+        return new Iterator<Map<String, Object>>() {
+            @Override
+            public boolean hasNext() {
+                // TODO
+                return false;
+            }
+
+            @Override
+            public Map<String, Object> next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                // TODO
+                return map;
+            }
+        };
         }
 
         /**
@@ -49,8 +78,28 @@ public class CSVDecoder {
          * An iterable sequence of the given type.
          */
         public <T> Iterable<T> adapt(Class<T> elementType) {
-            // TODO
-            return null;
+            return new Iterable<T>() {
+                @Override
+                public Iterator<T> iterator() {
+                    return new Iterator<T>() {
+                        private Iterator<Map<String, Object>> iterator = Cursor.this.iterator();
+
+                        private T proxy = BeanAdapter.adapt(map, elementType);
+
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public T next() {
+                            iterator.next();
+
+                            return proxy;
+                        }
+                    };
+                }
+            };
         }
     }
 
@@ -83,6 +132,13 @@ public class CSVDecoder {
      * If an exception occurs.
      */
     public Cursor readValues(Reader reader) throws IOException {
+        // TODO Read keys from first line
+        ArrayList<String> keys = new ArrayList<>();
+
+        return new Cursor(keys, reader);
+    }
+
+    private static String readValue(Reader reader) {
         // TODO
         return null;
     }

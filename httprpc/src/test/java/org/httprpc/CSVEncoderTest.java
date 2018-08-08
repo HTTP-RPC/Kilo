@@ -26,6 +26,10 @@ import org.junit.Test;
 public class CSVEncoderTest extends AbstractTest {
     @Test
     public void testWriteValues() throws IOException {
+        String expected = "\"a\",\"b\",\"c\",\"d.e\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
+            + "\" D\r\nE\r\nF\r\n\",2,4.0,false\r\n";
+
         List<Map<String, ?>> values = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
@@ -45,15 +49,12 @@ public class CSVEncoderTest extends AbstractTest {
             )
         );
 
-
         StringWriter writer = new StringWriter();
 
         CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("a", "b", "c", "d.e"));
 
         csvEncoder.writeValues(values, writer);
 
-        Assert.assertEquals("\"a\",\"b\",\"c\",\"d.e\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
-            + "\" D\r\nE\r\nF\r\n\",2,4.0,false\r\n", writer.toString());
+        Assert.assertEquals(expected, writer.toString());
     }
 }

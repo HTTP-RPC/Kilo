@@ -14,11 +14,56 @@
 
 package org.httprpc;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Assert;
 import org.junit.Test;
 
-public class CSVDecoderTest {
+public class CSVDecoderTest extends AbstractTest {
     @Test
-    public void testReadValues() {
-        // TODO
+    public void testReadValues() throws IOException {
+        List<Map<String, ?>> expected = listOf(
+            mapOf(
+                entry("a", "A,B,\"C\" "),
+                entry("b", 1),
+                entry("c", 2.0),
+                entry("d", mapOf(
+                    entry("e", true)
+                ))
+            ),
+            mapOf(
+                entry("a", " D\r\nE\r\nF\r\n"),
+                entry("b", 2),
+                entry("c", 4.0),
+                entry("d", mapOf(
+                    entry("e", false)
+                ))
+            )
+        );
+
+        LinkedList<Map<String, Object>> actual = new LinkedList<>();
+
+        StringReader reader = new StringReader("\"a\",\"b\",\"c\",\"d.e\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
+            + "\" D\r\nE\r\nF\r\n\",2,4.0,false\r\n");
+
+        CSVDecoder csvDecoder = new CSVDecoder();
+
+        CSVDecoder.Cursor cursor = csvDecoder.readValues(reader);
+
+        for (Map<String, Object> row : cursor) {
+            HashMap<String, Object> map = new HashMap<>();
+
+            map.putAll(row);
+
+            actual.add(map);
+        }
+
+        Assert.assertEquals(expected, actual);
     }
 }
