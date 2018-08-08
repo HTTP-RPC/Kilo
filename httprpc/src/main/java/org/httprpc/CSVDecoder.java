@@ -37,32 +37,58 @@ public class CSVDecoder {
      */
     public static class Cursor implements Iterable<Map<String, Object>> {
         private List<String> keys;
+        private Reader reader;
 
+        private ArrayList<String> values = new ArrayList<>();
         private LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
         private Cursor(List<String> keys, Reader reader) {
             this.keys = keys;
+            this.reader = reader;
         }
 
         @Override
         public Iterator<Map<String, Object>> iterator() {
-        return new Iterator<Map<String, Object>>() {
-            @Override
-            public boolean hasNext() {
-                // TODO
-                return false;
-            }
+            return new Iterator<Map<String, Object>>() {
+                private Boolean hasNext = null;
 
-            @Override
-            public Map<String, Object> next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
+                @Override
+                public boolean hasNext() {
+                    if (hasNext == null) {
+                        values.clear();
+
+                        try {
+                            String value;
+                            while ((value = readValue(reader)) != null) {
+                                values.add(value);
+                            }
+                        } catch (IOException exception) {
+                            throw new RuntimeException(exception);
+                        }
+
+                        hasNext = !values.isEmpty();
+                    }
+
+                    return hasNext.booleanValue();
                 }
 
-                // TODO
-                return map;
-            }
-        };
+                @Override
+                public Map<String, Object> next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+
+                    map.clear();
+
+                    for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
+                        map.put(keys.get(i), values.get(i));
+                    }
+
+                    hasNext = null;
+
+                    return map;
+                }
+            };
         }
 
         /**
@@ -103,6 +129,8 @@ public class CSVDecoder {
         }
     }
 
+    private static final int EOF = -1;
+
     /**
      * Reads a sequence of values from an input stream.
      *
@@ -132,14 +160,59 @@ public class CSVDecoder {
      * If an exception occurs.
      */
     public Cursor readValues(Reader reader) throws IOException {
-        // TODO Read keys from first line
         ArrayList<String> keys = new ArrayList<>();
+
+        String key;
+        while ((key = readValue(reader)) != null) {
+            keys.add(key);
+        }
 
         return new Cursor(keys, reader);
     }
 
-    private static String readValue(Reader reader) {
-        // TODO
-        return null;
+    private static String readValue(Reader reader) throws IOException {
+        int c = reader.read();
+
+        if (c == EOF) {
+            return null;
+        }
+
+        StringBuilder valueBuilder = new StringBuilder();
+
+        boolean quoted = false;
+
+        if (c == '"') {
+            quoted = true;
+
+            c = reader.read();
+        }
+
+        while (c != EOF && (quoted || (c != ',' && c == '\r'))) {
+            valueBuilder.append((char)c);
+
+            c = reader.read();
+
+            if (c == '"') {
+                c = reader.read();
+
+                if (c != '"') {
+                    quoted = false;
+                }
+            }
+        }
+
+        if (quoted) {
+            throw new IOException("Unterminated quoted value.");
+        }
+
+        if (c == '\r') {
+            c = reader.read();
+
+            if (c != '\n') {
+                throw new IOException("Improperly terminated record.");
+            }
+        }
+
+        return valueBuilder.toString();
     }
 }

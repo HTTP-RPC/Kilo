@@ -154,7 +154,7 @@ public class JSONDecoder {
 
                     c = reader.read();
                 } else {
-                    throw new IOException("Unexpected character in input stream.");
+                    throw new IOException("Unexpected character.");
                 }
 
                 // Add the value to the current collection
@@ -195,7 +195,7 @@ public class JSONDecoder {
 
         while (c != EOF && c != '"') {
             if (Character.isISOControl(c)) {
-                throw new IOException("Illegal character in input stream.");
+                throw new IOException("Illegal character.");
             }
 
             if (c == '\\') {
@@ -227,7 +227,7 @@ public class JSONDecoder {
 
                     c = (char)Integer.parseInt(unicodeValue, 16);
                 } else if (c != '"' && c != '\\' && c != '/') {
-                    throw new IOException("Unsupported escape sequence in input stream.");
+                    throw new IOException("Unsupported escape sequence.");
                 }
             }
 
@@ -237,7 +237,7 @@ public class JSONDecoder {
         }
 
         if (c != '"') {
-            throw new IOException("Unterminated string in input stream.");
+            throw new IOException("Unterminated string.");
         }
 
         // Move to the next character after the closing quotes
