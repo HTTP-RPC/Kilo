@@ -30,19 +30,15 @@ public class CSVDecoderTest extends AbstractTest {
         List<Map<String, ?>> expected = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
-                entry("b", 1),
-                entry("c", 2.0),
-                entry("d", mapOf(
-                    entry("e", true)
-                ))
+                entry("b", "1"),
+                entry("c", "2.0"),
+                entry("d.e", "true")
             ),
             mapOf(
                 entry("a", " D\r\nE\r\nF\r\n"),
-                entry("b", 2),
-                entry("c", 4.0),
-                entry("d", mapOf(
-                    entry("e", false)
-                ))
+                entry("b", "2"),
+                entry("c", "4.0"),
+                entry("d.e", "false")
             )
         );
 

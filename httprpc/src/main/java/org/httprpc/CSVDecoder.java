@@ -55,13 +55,8 @@ public class CSVDecoder {
                 @Override
                 public boolean hasNext() {
                     if (hasNext == null) {
-                        values.clear();
-
                         try {
-                            String value;
-                            while ((value = readValue(reader)) != null) {
-                                values.add(value);
-                            }
+                            readRecord(reader, values);
                         } catch (IOException exception) {
                             throw new RuntimeException(exception);
                         }
@@ -129,6 +124,8 @@ public class CSVDecoder {
         }
     }
 
+    private static StringBuilder fieldBuilder = new StringBuilder();
+
     private static final int EOF = -1;
 
     /**
@@ -162,47 +159,50 @@ public class CSVDecoder {
     public Cursor readValues(Reader reader) throws IOException {
         ArrayList<String> keys = new ArrayList<>();
 
-        String key;
-        while ((key = readValue(reader)) != null) {
-            keys.add(key);
-        }
+        readRecord(reader, keys);
 
         return new Cursor(keys, reader);
     }
 
-    private static String readValue(Reader reader) throws IOException {
+    private static void readRecord(Reader reader, ArrayList<String> fields) throws IOException {
+        fields.clear();
+
         int c = reader.read();
 
-        if (c == EOF) {
-            return null;
-        }
+        while (c != '\r' && c != EOF) {
+            fieldBuilder.setLength(0);
 
-        StringBuilder valueBuilder = new StringBuilder();
-
-        boolean quoted = false;
-
-        if (c == '"') {
-            quoted = true;
-
-            c = reader.read();
-        }
-
-        while (c != EOF && (quoted || (c != ',' && c == '\r'))) {
-            valueBuilder.append((char)c);
-
-            c = reader.read();
+            boolean quoted = false;
 
             if (c == '"') {
+                quoted = true;
+
+                c = reader.read();
+            }
+
+            while ((quoted || (c != ',' && c != '\r')) && c != EOF) {
+                fieldBuilder.append((char)c);
+
                 c = reader.read();
 
-                if (c != '"') {
-                    quoted = false;
+                if (c == '"') {
+                    c = reader.read();
+
+                    if (c != '"') {
+                        quoted = false;
+                    }
                 }
             }
-        }
 
-        if (quoted) {
-            throw new IOException("Unterminated quoted value.");
+            if (quoted) {
+                throw new IOException("Unterminated quoted value.");
+            }
+
+            fields.add(fieldBuilder.toString());
+
+            if (c == ',') {
+                c = reader.read();
+            }
         }
 
         if (c == '\r') {
@@ -212,7 +212,5 @@ public class CSVDecoder {
                 throw new IOException("Improperly terminated record.");
             }
         }
-
-        return valueBuilder.toString();
     }
 }
