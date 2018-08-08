@@ -14,6 +14,11 @@
 
 package org.httprpc;
 
+import org.junit.Test;
+
 public class CSVDecoderTest {
-    // TODO
+    @Test
+    public void testReadValues() {
+        // TODO
+    }
 }
