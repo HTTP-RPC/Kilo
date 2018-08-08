@@ -55,7 +55,7 @@ public class CSVEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValues(Iterable<Map<String, ?>> values, OutputStream outputStream) throws IOException {
+    public void writeValues(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
         Writer writer = new OutputStreamWriter(outputStream, Charset.forName("ISO-8859-1"));
         writeValues(values, writer);
 
@@ -74,7 +74,7 @@ public class CSVEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValues(Iterable<Map<String, ?>> values, Writer writer) throws IOException {
+    public void writeValues(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         int i = 0;
 
         for (String key : keys) {
@@ -97,7 +97,7 @@ public class CSVEncoder {
                     writer.append(',');
                 }
 
-                writeValue(map.get(key), writer);
+                writeValue(valueAt(map, key), writer);
 
                 i++;
             }
@@ -116,5 +116,26 @@ public class CSVEncoder {
         } else {
             writer.append(value.toString());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <V> V valueAt(Map<String, ?> root, String path) {
+        Object value = root;
+
+        String[] components = path.split("\\.");
+
+        for (int i = 0; i < components.length; i++) {
+            String component = components[i];
+
+            if (value instanceof Map<?, ?>) {
+                value = ((Map<?, ?>)value).get(component);
+            } else {
+                value = null;
+
+                break;
+            }
+        }
+
+        return (V)value;
     }
 }

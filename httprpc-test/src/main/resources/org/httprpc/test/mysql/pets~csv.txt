@@ -1,3 +1,0 @@
-name,species,sex,birth
-{{#.}}"{{name:^csv}}","{{species:^csv}}","{{sex:^csv}}","{{birth:format=shortDate:^csv}}"
-{{/.}}

@@ -15,6 +15,7 @@
 package org.httprpc.test.mongodb;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
@@ -22,6 +23,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.bson.Document;
 import org.httprpc.WebService;
+import org.httprpc.CSVEncoder;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.jtemplate.TemplateEncoder;
@@ -74,6 +76,10 @@ public class RestaurantService extends WebService {
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
                 jsonEncoder.writeValue(cursorAdapter, getResponse().getOutputStream());
+            } else if (format.equals("csv")) {
+                CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "address.building", "address.street", "borough", "cuisine"));
+
+                csvEncoder.writeValues(cursorAdapter, getResponse().getOutputStream());
             } else {
                 String name = String.format("%s~%s", getRequest().getServletPath().substring(1), format);
 

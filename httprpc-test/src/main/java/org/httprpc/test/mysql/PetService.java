@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -29,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.WebService;
+import org.httprpc.CSVEncoder;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
@@ -73,6 +75,10 @@ public class PetService extends WebService {
                         JSONEncoder jsonEncoder = new JSONEncoder();
 
                         jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
+                    } else if (format.equals("csv")) {
+                        CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
+
+                        csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
                     } else {
                         String name = String.format("%s~%s", getRequest().getServletPath().substring(1), format);
 

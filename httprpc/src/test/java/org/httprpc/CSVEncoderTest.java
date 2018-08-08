@@ -31,24 +31,28 @@ public class CSVEncoderTest extends AbstractTest {
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
                 entry("c", 2.0),
-                entry("d", true)
+                entry("d", mapOf(
+                    entry("e", true)
+                ))
             ),
             mapOf(
                 entry("a", " D\r\nE\r\nF\r\n"),
                 entry("b", 2),
                 entry("c", 4.0),
-                entry("d", false)
+                entry("d", mapOf(
+                    entry("e", false)
+                ))
             )
         );
 
 
         StringWriter writer = new StringWriter();
 
-        CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("a", "b", "c", "d"));
+        CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("a", "b", "c", "d.e"));
 
         csvEncoder.writeValues(values, writer);
 
-        Assert.assertEquals("\"a\",\"b\",\"c\",\"d\"\r\n"
+        Assert.assertEquals("\"a\",\"b\",\"c\",\"d.e\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
             + "\" D\r\nE\r\nF\r\n\",2,4.0,false\r\n", writer.toString());
     }
