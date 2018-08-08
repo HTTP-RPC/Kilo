@@ -43,13 +43,15 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `JSONEncoder` - class that serializes an object hierarchy to JSON
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
+    * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
+    * `CSVDecoder` - class that deserializes an iterable sequence of values from CSV
     * `WebServiceProxy` - class for consuming remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.beans`
-    * `BeanAdapter` - class that presents the contents of a Java Bean instance as a map or vice versa
+    * `BeanAdapter` - class that presents the properties of a Java Bean object as a map and vice versa
     * `Key` - annotation that associates a custom key with a Bean property
 * `org.httprpc.sql`
-    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed values
+    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
     * `Parameters` - class for applying named parameters values to prepared statements 
 
 These classes are explained in more detail in the following sections.
@@ -118,11 +120,11 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-Missing or `null` values are automatically converted to 0 or `false` for primitive argument types.
+Missing or `null` values are automatically converted to 0 or `false` for primitive types.
 
-As shown in the previous section, `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
+`List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
-`URL` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
+`URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
 ```java
 @WebServlet(urlPatterns={"/upload/*"})
@@ -160,7 +162,7 @@ GET /lookup/city?zip_code=02101
 ```
 
 ### Return Values
-Return values are converted to their JSON equivalents as follows:
+Return values are converted to JSON as follows:
 
 * `CharSequence`: string
 * `Number`: number
@@ -335,7 +337,7 @@ A service method that returns a `TreeNode` structure is shown below:
 
 ```java
 @RequestMethod("GET")
-public Map<String, ?> getTree() {
+public TreeNode getTree() {
     TreeNode root = new TreeNode("Seasons");
 
     TreeNode winter = new TreeNode("Winter");
@@ -356,7 +358,7 @@ public Map<String, ?> getTree() {
 }
 ```
 
-`WebService` automatically wraps the return value in a `BeanAdapter`. However, the method could also be written (slightly more verbosely) as follows:
+`WebService` automatically wraps the return value in a `BeanAdapter` so it can be serialized to JSON. However, the method could also be written (slightly more verbosely) as follows:
 
 ```java
 public Map<String, ?> getTree() {
@@ -407,7 +409,7 @@ If the value is already an instance of the requested type, it is returned as-is.
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-If the value is not an instance of any of the aforementioned types, it is considered a nested Bean, and the given value is assumed to be a map. If the target type is an interface, the return value is an implementation of the given interface that maps accessor methods to entries in the map. Otherwise, an instance of the given type is dynamically created and populated using the entries in the map. Property values are adapted as described above.
+If the value is not an instance of any of the above types, it is considered a nested Bean, and the given value is assumed to be a map. If the target type is an interface, the return value is a dynamic implementation of the interface that maps accessor methods to entries in the map. Otherwise, an instance of the given class is dynamically created and populated using the entries in the map.
 
 For example, given the following interface definition:
 
