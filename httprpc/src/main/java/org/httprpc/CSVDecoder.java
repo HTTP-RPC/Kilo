@@ -35,12 +35,12 @@ public class CSVDecoder {
     /**
      * CSV cursor.
      */
-    public static class Cursor implements Iterable<Map<String, Object>> {
+    public static class Cursor implements Iterable<Map<String, String>> {
         private List<String> keys;
         private Reader reader;
 
         private ArrayList<String> values = new ArrayList<>();
-        private LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        private LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
         private Cursor(List<String> keys, Reader reader) {
             this.keys = keys;
@@ -48,8 +48,8 @@ public class CSVDecoder {
         }
 
         @Override
-        public Iterator<Map<String, Object>> iterator() {
-            return new Iterator<Map<String, Object>>() {
+        public Iterator<Map<String, String>> iterator() {
+            return new Iterator<Map<String, String>>() {
                 private Boolean hasNext = null;
 
                 @Override
@@ -68,7 +68,7 @@ public class CSVDecoder {
                 }
 
                 @Override
-                public Map<String, Object> next() {
+                public Map<String, String> next() {
                     if (!hasNext()) {
                         throw new NoSuchElementException();
                     }
@@ -103,7 +103,7 @@ public class CSVDecoder {
                 @Override
                 public Iterator<T> iterator() {
                     return new Iterator<T>() {
-                        private Iterator<Map<String, Object>> iterator = Cursor.this.iterator();
+                        private Iterator<Map<String, String>> iterator = Cursor.this.iterator();
 
                         private T proxy = BeanAdapter.adapt(map, elementType);
 

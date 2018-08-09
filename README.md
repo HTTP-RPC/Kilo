@@ -288,11 +288,21 @@ List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8,
 ```
 
 ## CSVEncoder and CSVDecoder
-Although `WebService` automatically serializes a method return value as JSON, in some cases it may be preferable to return a a CSV (comma-separated value) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally has a smaller payload than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
+Although `WebService` automatically serializes a method return value as JSON, in some cases it may be preferable to return a a CSV document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally has a smaller payload than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
+
+The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV.
+
+TODO Mention Date and key path support in CSVEncoder
+
+For example:
+
+TODO Example
+
+The `CSVDecoder` class deserializes a CSV document as an iterable sequence of maps. Rather than reading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a cursor over the records in the document. This allows a consumer to read records effectively as they are being produced, significantly improving throughput:
 
 TODO
 
-TODO Mention Date and key path support in CSVEncoder
+A single map instance is used for all rows to minimize memory consumption.
 
 ### Typed Iteration
 TODO
