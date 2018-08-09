@@ -142,7 +142,8 @@ public class FileUploadService extends WebService {
 }
 ```
 
-In general, service classes should be compiled with the `-parameters` flag so their method parameter names are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example, the following service might allow a caller to look up the name of the city associated with a particular zip code:
+#### Custom Parameter Names
+In general, service classes should be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example, the following service might allow a caller to look up the name of the city associated with a particular zip code:
 
 ```java
 @WebServlet(urlPatterns={"/lookup/*"})
@@ -162,7 +163,7 @@ GET /lookup/city?zip_code=02101
 ```
 
 ### Return Values
-Return values are converted to JSON as follows:
+Return values are converted to their JSON equivalents as follows:
 
 * `CharSequence`: string
 * `Number`: number
@@ -202,7 +203,7 @@ The service would produce the following in response:
 
 Methods may also return `void` or `Void` to indicate that they do not produce a value. 
 
-If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail later.
+If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail [later](#beanadapter).
 
 ### Exceptions
 If an exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
@@ -321,7 +322,7 @@ try (InputStream inputStream = getClass().getResourceAsStream("months.json")) {
 }
 ```
 
-`CSVEncoder` could then be used to export the map values as CSV:
+`CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (as well as the map keys to which the columns correspond):
 
 ```
 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
@@ -329,7 +330,7 @@ CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 csvEncoder.writeValues(months, System.out);
 ```
 
-producing output similar to the following:
+String values are automatically wrapped in double-quotes and escaped. All other values are encoded via `toString()` with the exception of `java.util.Date`, which is encoded as a long value representing epoch time. The preceding code snippet would produce output similar to the following:
 
 ```csv
 "name","days"
@@ -339,9 +340,7 @@ producing output similar to the following:
 ...
 ```
 
-String values are automatically wrapped in double-quotes and escaped. All other values are encoded via `toString()` with the exception of `java.util.Date`, which is encoded as a long value representing epoch time.
-
-Due to its compact and tabular nature, CSV is ideally suited to serializing the results of relational database queries. HTTP-RPC's `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to either JSON or CSV. `ResultSetAdapter` is discussed in more detail later.
+Due to its compact and tabular nature, CSV is ideally suited to serializing the results of relational database queries. HTTP-RPC's `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to either JSON or CSV. `ResultSetAdapter` is discussed in more detail [later](#resultsetadapter-and-parameters).
 
 The `CSVDecoder` class deserializes a CSV document as an iterable sequence of maps. Rather than reading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a cursor over the records in the document. This allows a consumer to read records essentially as they are being produced, reducing memory consumption and improving throughput. 
 
@@ -371,7 +370,7 @@ public interface Month {
 }
 ```
 
-This code snippet uses `adapt()` to create an iterable sequence of `Month` values from the CSV file: 
+This code snippet uses `adapt()` to create an iterable sequence of `Month` values from the CSV document: 
 
 ```java
 try (InputStream inputStream = getClass().getResourceAsStream("months.csv")) {
@@ -395,9 +394,9 @@ March has 31 days
 ```
 
 ## BeanAdapter
-The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects. 
+The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects or CSV records. 
 
-If a property value is `null` or an instance of one of the following types, it is returned as-is:
+If a property value is `null` or an instance of one of the following types, it is returned as is:
 
 * `String`
 * `Number`
@@ -500,9 +499,9 @@ Although the values are actually stored in the strongly typed properties of the 
 ```
 
 ### Typed Map Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments and returns an instance of the given type that adapts the underlying value.
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value.
 
-If the value is already an instance of the requested type, it is returned as-is. Otherwise:
+If the value is already an instance of the requested type, it is returned as is. Otherwise:
 
 * If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive argument types.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
@@ -532,7 +531,7 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the resulting map rather than "firstName":
+The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the adapted map rather than "firstName":
 
 ```java
 @Key("first_name")
@@ -728,7 +727,7 @@ public <T> T invoke() throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version automatically deserializes a successful response using `JSONDecoder`. The second version allows a caller to provide a custom response handler. 
+The first version automatically deserializes a successful response using `JSONDecoder`. The second version allows a caller to provide a custom response handler (for example, to iterate over the contents of a CSV document). 
 
 If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 

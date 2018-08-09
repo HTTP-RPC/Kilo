@@ -295,7 +295,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     /**
      * Adapts a value. If the value is <tt>null</tt> or an
-     * instance of one of the following types, it is returned as-is:
+     * instance of one of the following types, it is returned as is:
      * <ul>
      * <li>{@link String}</li>
      * <li>{@link Number}</li>
@@ -345,7 +345,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     /**
      * Adapts a value for typed access. If the value is already an instance of
-     * the given type, it is returned as-is. Otherwise:
+     * the given type, it is returned as is. Otherwise:
      *
      * <ul>
      * <li>If the target type is a number or boolean, the value is parsed or
