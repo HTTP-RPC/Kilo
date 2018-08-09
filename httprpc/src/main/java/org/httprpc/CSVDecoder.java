@@ -124,8 +124,6 @@ public class CSVDecoder {
         }
     }
 
-    private static StringBuilder fieldBuilder = new StringBuilder();
-
     private static final int EOF = -1;
 
     /**
@@ -170,7 +168,7 @@ public class CSVDecoder {
         int c = reader.read();
 
         while (c != '\r' && c != EOF) {
-            fieldBuilder.setLength(0);
+            StringBuilder fieldBuilder = new StringBuilder();
 
             boolean quoted = false;
 
