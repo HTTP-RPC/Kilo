@@ -288,24 +288,111 @@ List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8,
 ```
 
 ## CSVEncoder and CSVDecoder
-Although `WebService` automatically serializes method return values as JSON, in some cases it may be preferable to return a CSV document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
+Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a CSV document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
-The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV.
+The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV. For example, the following JSON document contains a list of objects representing the months of the year and their day counts:
 
-TODO Mention Date and key path support in CSVEncoder
+```json
+[
+    {
+        "name": "January",
+        "days": 31
+    },
+    {
+        "name": "February",
+        "days": 28
+    },
+    {
+        "name": "March",
+        "days": 31
+    },
+    ...
+]
+```
 
-For example:
+`JSONDecoder` could be used to parse this document into a list of maps as shown below:
 
-TODO Example
+```java
+List<Map<String, ?>> months;
+try (InputStream inputStream = getClass().getResourceAsStream("months.json")) {
+    JSONDecoder jsonDecoder = new JSONDecoder();
 
-The `CSVDecoder` class deserializes a CSV document as an iterable sequence of maps. Rather than reading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a cursor over the records in the document. This allows a consumer to read records essentially as they are being produced, significantly improving throughput:
+    months = jsonDecoder.readValue(inputStream);
+}
+```
 
-TODO
+`CSVEncoder` could then be used to export the map values as CSV:
 
-A single map instance is used for all rows to minimize memory consumption.
+```
+CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
+
+csvEncoder.writeValues(months, System.out);
+```
+
+producing output similar to the following:
+
+```csv
+"name","days"
+"January",31
+"February",28
+"March",31
+...
+```
+
+String values are automatically wrapped in double-quotes and escaped. All other values are encoded via `toString()` with the exception of `java.util.Date`, which is encoded as a long value representing epoch time.
+
+Due to its compact and tabular nature, CSV is ideally suited to serializing the results of relational database queries. HTTP-RPC's `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to either JSON or CSV. `ResultSetAdapter` is discussed in more detail later.
+
+The `CSVDecoder` class deserializes a CSV document as an iterable sequence of maps. Rather than reading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a cursor over the records in the document. This allows a consumer to read records essentially as they are being produced, reducing memory consumption and improving throughput. 
+
+The following code would perform the reverse conversion (from CSV to JSON):
+
+```java
+try (InputStream inputStream = getClass().getResourceAsStream("months.csv")) {
+    CSVDecoder csvDecoder = new CSVDecoder();
+
+    CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
+
+    JSONEncoder jsonEncoder = new JSONEncoder();
+
+    jsonEncoder.writeValue(months, System.out);
+}
+```
 
 ### Typed Iteration
-TODO
+The `adapt()` method of the `CSVDecoder.Cursor` class can be used to facilitate typed iteration of CSV data. This method produces an `Iterable` sequence of values of a given type representing the rows in the document. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to map values in the cursor. A single proxy instance is used for all rows to minimize heap allocation. 
+
+For example, the following interface might be used to model the month records shown in the previous section:
+
+```java
+public interface Month {
+    public String getName();
+    public int getDays();
+}
+```
+
+This code snippet uses `adapt()` to create an iterable sequence of `Month` values from the CSV file: 
+
+```java
+try (InputStream inputStream = getClass().getResourceAsStream("months.csv")) {
+    CSVDecoder csvDecoder = new CSVDecoder();
+
+    CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
+
+    for (Month month : months.adapt(Month.class)) {
+        System.out.println(String.format("%s has %d days", month.getName(), month.getDays()));
+    }
+}
+```
+
+The output of this code is shown below:
+
+```
+January has 31 days
+February has 28 days
+March has 31 days
+...
+```
 
 ## BeanAdapter
 The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects. 
@@ -462,7 +549,7 @@ public String getFirstName();
 ```
 
 ## ResultSetAdapter and Parameters
-The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be serialized as an array of JSON objects. For example:
+The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON or CSV. For example:
 
 ```java
 JSONEncoder jsonEncoder = new JSONEncoder();
@@ -632,7 +719,7 @@ The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of 
 
 Request headers and arguments are specified via the `getHeaders()` and `getArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
 
-The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time (the number of milliseconds that have elapsed since midnight on January 1, 1970). Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
 
 Service operations are invoked via one of the following methods:
 

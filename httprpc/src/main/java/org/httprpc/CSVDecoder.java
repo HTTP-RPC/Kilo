@@ -167,7 +167,7 @@ public class CSVDecoder {
 
         int c = reader.read();
 
-        while (c != '\r' && c != EOF) {
+        while (c != '\r' && c != '\n' && c != EOF) {
             StringBuilder fieldBuilder = new StringBuilder();
 
             boolean quoted = false;
@@ -178,7 +178,7 @@ public class CSVDecoder {
                 c = reader.read();
             }
 
-            while ((quoted || (c != ',' && c != '\r')) && c != EOF) {
+            while ((quoted || (c != ',' && c != '\r' && c != '\n')) && c != EOF) {
                 fieldBuilder.append((char)c);
 
                 c = reader.read();
