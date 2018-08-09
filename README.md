@@ -120,7 +120,7 @@ Method arguments may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-Missing or `null` values are automatically converted to 0 or `false` for primitive types.
+Missing or `null` values are automatically converted to `0` or `false` for primitive types.
 
 `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
@@ -504,7 +504,7 @@ Although the values are actually stored in the strongly typed properties of the 
 
 If the value is already an instance of the requested type, it is returned as-is. Otherwise:
 
-* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to 0 or `false` for primitive argument types.
+* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive argument types.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
 * If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.

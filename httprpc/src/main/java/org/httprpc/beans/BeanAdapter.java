@@ -350,8 +350,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <ul>
      * <li>If the target type is a number or boolean, the value is parsed or
      * coerced using the appropriate conversion method. Missing or <tt>null</tt>
-     * values are automatically converted to 0 or `false` for primitive
-     * argument types.</li>
+     * values are automatically converted to <tt>0</tt> or <tt>false</tt> for
+     * primitive argument types.</li>
      * <li>If the target type is {@link String}, the value is adapted via
      * {@link String#toString()}.</li>
      * <li>If the target type is {@link Date}, the value is coerced to a long
