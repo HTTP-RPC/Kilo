@@ -45,6 +45,17 @@ import org.jtemplate.TemplateEncoder;
 public class PetService extends WebService {
     private static final long serialVersionUID = 0;
 
+    /**
+     * Pet interface.
+     */
+    public interface Pet {
+        public String getName();
+        public String getOwner();
+        public String getSpecies();
+        public String getSex();
+        public Date getBirth();
+    }
+
     private static final String DB_URL = "jdbc:mysql://db.local:3306/menagerie?user=root&password=password";
 
     @Override
