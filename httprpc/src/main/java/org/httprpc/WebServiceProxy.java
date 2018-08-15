@@ -102,8 +102,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
 
-    private LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
-    private LinkedHashMap<String, Object> arguments = new LinkedHashMap<>();
+    private Map<String, Object> headers = new LinkedHashMap<>();
+    private Map<String, Object> arguments = new LinkedHashMap<>();
 
     private RequestHandler requestHandler = null;
 
@@ -175,6 +175,10 @@ public class WebServiceProxy {
      * The encoding used for POST requests.
      */
     public void setEncoding(Encoding encoding) {
+        if (encoding == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.encoding = encoding;
     }
 
@@ -184,8 +188,22 @@ public class WebServiceProxy {
      * @return
      * The header map.
      */
-    public LinkedHashMap<String, Object> getHeaders() {
+    public Map<String, Object> getHeaders() {
         return headers;
+    }
+
+    /**
+     * Sets the header map.
+     *
+     * @param headers
+     * The header map.
+     */
+    public void setHeaders(Map<String, Object> headers) {
+        if (headers == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.headers = headers;
     }
 
     /**
@@ -194,8 +212,22 @@ public class WebServiceProxy {
      * @return
      * The argument map.
      */
-    public LinkedHashMap<String, Object> getArguments() {
+    public Map<String, Object> getArguments() {
         return arguments;
+    }
+
+    /**
+     * Sets the argument map.
+     *
+     * @param arguments
+     * The argument map.
+     */
+    public void setArguments(Map<String, Object> arguments) {
+        if (arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.arguments = arguments;
     }
 
     /**

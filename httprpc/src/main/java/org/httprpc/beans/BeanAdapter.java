@@ -296,6 +296,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Adapts a value. If the value is <tt>null</tt> or an
      * instance of one of the following types, it is returned as is:
+     *
      * <ul>
      * <li>{@link String}</li>
      * <li>{@link Number}</li>
@@ -305,10 +306,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link LocalTime}</li>
      * <li>{@link LocalDateTime}</li>
      * </ul>
+     *
      * If the value is a {@link List}, it is wrapped in an adapter that will
      * adapt the list's elements. If the value is a {@link Map}, it is wrapped
      * in an adapter that will adapt the map's values. Otherwise, the value is
-     * considered a nested Bean and is wrapped in a {@link BeanAdapter}.
+     * assumed to be a Bean and is wrapped in a {@link BeanAdapter}.
      *
      * @param <T>
      * The target type.
@@ -363,17 +365,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>If the target type is {@link LocalDateTime}, the value is parsed using
      * {@link LocalDateTime#parse(CharSequence)}.</li>
      *</ul>
+     *
      * If the target type is a {@link List}, the value is wrapped in an adapter
      * that will adapt the list's elements. If the target type is a {@link Map},
      * the value is wrapped in an adapter that will adapt the map's values.
      *
-     * If the value is not an instance of any of the aforementioned types, it
-     * is considered a nested Bean, and the given value is assumed to be a map.
+     * Otherwise, the target is assumed to be a Bean, and the value is assumed
+     * to be a map. If the type is not an interface, an instance is dynamically
+     * created and populated using the entries in the map. Property values are
+     * adapted as described above.
+     *
      * If the target type is an interface, the return value is an implementation
      * of the interface that maps accessor methods to entries in the map.
-     * Otherwise, an instance of the given type is dynamically created and
-     * populated using the entries in the map. Property values are adapted as
-     * described above.
      *
      * @param <T>
      * The target type.
@@ -494,70 +497,73 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
-            } else if (type.isInterface()){
-                return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
-                    new Class[] {type}, new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-                        String key = getKey(method, true);
-
-                        if (key == null) {
-                            throw new UnsupportedOperationException();
-                        }
-
-                        return adapt(((Map<?, ?>)value).get(key), method.getGenericReturnType(), mutatorCache);
-                    }
-                }));
-            } else {
-                Object object;
-                try {
-                    object = type.newInstance();
-                } catch (InstantiationException | IllegalAccessException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                HashMap<String, Method> mutators = mutatorCache.get(type);
-
-                if (mutators == null) {
-                    mutators = new HashMap<>();
-
-                    Method[] methods = type.getMethods();
-
-                    for (int i = 0; i < methods.length; i++) {
-                        Method method = methods[i];
-
-                        if (method.getDeclaringClass() == Object.class) {
-                            continue;
-                        }
-
-                        String key = getKey(method, false);
-
-                        if (key != null) {
-                            mutators.put(key, method);
-                        }
-                    }
-
-                    mutatorCache.put(type, mutators);
-                }
-
-
+            } else if (value instanceof Map<?, ?>) {
                 Map<?, ?> map = (Map<?, ?>)value;
 
-                for (Entry<?, ?> entry : map.entrySet()) {
-                    Object key = entry.getKey();
+                if (!type.isInterface()) {
+                    Object object;
+                    try {
+                        object = type.newInstance();
+                    } catch (InstantiationException | IllegalAccessException exception) {
+                        throw new RuntimeException(exception);
+                    }
 
-                    Method method = mutators.get(key);
+                    HashMap<String, Method> mutators = mutatorCache.get(type);
 
-                    if (method != null) {
-                        try {
-                            method.invoke(object, BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType(), mutatorCache));
-                        } catch (InvocationTargetException | IllegalAccessException exception) {
-                            throw new RuntimeException(exception);
+                    if (mutators == null) {
+                        mutators = new HashMap<>();
+
+                        Method[] methods = type.getMethods();
+
+                        for (int i = 0; i < methods.length; i++) {
+                            Method method = methods[i];
+
+                            if (method.getDeclaringClass() == Object.class) {
+                                continue;
+                            }
+
+                            String key = getKey(method, false);
+
+                            if (key != null) {
+                                mutators.put(key, method);
+                            }
+                        }
+
+                        mutatorCache.put(type, mutators);
+                    }
+
+                    for (Entry<?, ?> entry : map.entrySet()) {
+                        Object key = entry.getKey();
+
+                        Method method = mutators.get(key);
+
+                        if (method != null) {
+                            try {
+                                method.invoke(object, BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType(), mutatorCache));
+                            } catch (InvocationTargetException | IllegalAccessException exception) {
+                                throw new RuntimeException(exception);
+                            }
                         }
                     }
-                }
 
-                return object;
+                    return object;
+                } else {
+                    return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+                        new Class[] {type}, new InvocationHandler() {
+                        @Override
+                        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+                            String key = getKey(method, true);
+
+                            if (key == null) {
+                                throw new UnsupportedOperationException();
+                            }
+
+                            return adapt(map.get(key), method.getGenericReturnType(), mutatorCache);
+                        }
+                    }));
+                }
+            } else {
+                throw new IllegalArgumentException();
             }
         } else {
             return null;

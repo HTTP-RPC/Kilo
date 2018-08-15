@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -34,7 +34,7 @@ The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-
 HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servlet specification 3.1 or later.
 
 # HTTP-RPC Classes
-HTTP-RPC provides the following classes for implementing REST services:
+HTTP-RPC provides the following classes for creating and consuming REST services:
 
 * `org.httprpc`
     * `WebService` - abstract base class for web services
@@ -45,7 +45,7 @@ HTTP-RPC provides the following classes for implementing REST services:
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
     * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
     * `CSVDecoder` - class that deserializes an iterable sequence of values from CSV
-    * `WebServiceProxy` - class for consuming remote web services
+    * `WebServiceProxy` - class for invoking remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.beans`
     * `BeanAdapter` - class that presents the properties of a Java Bean object as a map and vice versa
@@ -330,7 +330,7 @@ CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 csvEncoder.writeValues(months, System.out);
 ```
 
-String values are automatically wrapped in double-quotes and escaped. All other values are encoded via `toString()` with the exception of `java.util.Date`, which is encoded as a long value representing epoch time. The preceding code snippet would produce output similar to the following:
+Keys actually represent "key paths" and can refer to nested values using dot notation (e.g. "name.first"). String values are automatically wrapped in double-quotes and escaped. All other values are encoded via `toString()` with the exception of `java.util.Date`, which is encoded as a long value representing epoch time. The preceding code snippet would produce output similar to the following:
 
 ```csv
 "name","days"
@@ -406,7 +406,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalTime`
 * `java.util.time.LocalDateTime`
 
-If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is considered a nested Bean and is wrapped in a `BeanAdapter`.
+If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a Bean and is wrapped in a `BeanAdapter`.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 
@@ -498,7 +498,7 @@ Although the values are actually stored in the strongly typed properties of the 
 }
 ```
 
-### Typed Map Access
+### Typed Access
 `BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value.
 
 If the value is already an instance of the requested type, it is returned as is. Otherwise:
@@ -509,7 +509,9 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-If the value is not an instance of any of the above types, it is considered a nested Bean, and the given value is assumed to be a map. If the target type is an interface, the return value is a dynamic implementation of the interface that maps accessor methods to entries in the map. Otherwise, an instance of the given class is dynamically created and populated using the entries in the map.
+Otherwise, the target is assumed to be a Bean, and the value is assumed to be a map. If the type is not an interface, an instance is dynamically created and populated using the entries in the map. Property values are adapted as described above. 
+
+If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map.
 
 For example, given the following interface definition:
 
@@ -744,7 +746,7 @@ Number result = webServiceProxy.invoke();
 System.out.println(result); // 6.0
 ```
 
-### Typed Web Service Access
+### Typed Access
 The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services:
 
 ```java
@@ -782,6 +784,35 @@ MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/h
 double result = mathService.getSum(4, 2);
 
 System.out.println(result); // 6.0
+```
+
+### JavaScript
+`WebServiceProxy` can also be used from JavaScript, via the Nashorn scripting engine. For example:
+
+```javascript
+var webServiceProxy = new org.httprpc.WebServiceProxy("GET", new java.net.URL("http://localhost:8080/httprpc-test/math/sum"));
+
+webServiceProxy.arguments["a"] = 4;
+webServiceProxy.arguments["b"] = 2;
+
+print(webServiceProxy.invoke()); // 6
+
+webServiceProxy.arguments = {"values": Java.asJSONCompatible([1, 2, 3])};
+
+print(webServiceProxy.invoke()); // 6
+```
+
+Note that, because Nashorn automatically translates Java `List` and `Map` values to JavaScript array and object instances respectively, transformation or adaptation of service responses is not generally necessary.
+
+For example, the following script would print the third value in the Fibonacci sequence:
+
+```javascript
+var webServiceProxy = new org.httprpc.WebServiceProxy("GET", new java.net.URL("http://localhost:8080/httprpc-test/test/fibonacci"));
+
+// [1, 2, 3, 5, 8, 13]
+var fibonacci = webServiceProxy.invoke();
+
+print(fibonacci[2]); // 3
 ```
 
 # Additional Information

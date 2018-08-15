@@ -78,6 +78,10 @@ public class CSVEncoder {
         int i = 0;
 
         for (String key : keys) {
+            if (key == null) {
+                continue;
+            }
+
             if (i > 0) {
                 writer.append(',');
             }
@@ -93,6 +97,10 @@ public class CSVEncoder {
             i = 0;
 
             for (String key : keys) {
+                if (key == null) {
+                    continue;
+                }
+
                 if (i > 0) {
                     writer.append(',');
                 }
