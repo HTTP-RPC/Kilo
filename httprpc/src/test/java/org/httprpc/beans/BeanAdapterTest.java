@@ -40,6 +40,7 @@ public class BeanAdapterTest extends AbstractTest {
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
+            entry("testEnum", TestBean.TestEnum.TWO),
             entry("list", listOf(2L, 4.0, mapOf(
                 entry("flag", true)
             ))),

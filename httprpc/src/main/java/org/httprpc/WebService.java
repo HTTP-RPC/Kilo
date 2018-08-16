@@ -48,7 +48,7 @@ public abstract class WebService extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     private static class Resource {
-        public final HashMap<String, List<Method>> handlerMap = new HashMap<>();
+        public final HashMap<String, LinkedList<Method>> handlerMap = new HashMap<>();
         public final HashMap<String, Resource> resources = new HashMap<>();
 
         @Override
@@ -106,7 +106,7 @@ public abstract class WebService extends HttpServlet {
 
                 String verb = requestMethod.value().toLowerCase();
 
-                List<Method> handlerList = resource.handlerMap.get(verb);
+                LinkedList<Method> handlerList = resource.handlerMap.get(verb);
 
                 if (handlerList == null) {
                     handlerList = new LinkedList<>();

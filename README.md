@@ -401,6 +401,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `String`
 * `Number`
 * `Boolean`
+* `Enum`
 * `java.util.Date`
 * `java.util.time.LocalDate`
 * `java.util.time.LocalTime`
@@ -509,7 +510,7 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-Otherwise, the target is assumed to be a Bean, and the value is assumed to be a map. If the type is not an interface, an instance is dynamically created and populated using the entries in the map. Property values are adapted as described above. 
+Otherwise, the target is assumed to be a Bean, and the value is assumed to be a map. If the target type is not an interface, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
 
 If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map.
 

@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 public class TestBean implements TestInterface {
+    public enum TestEnum {
+        ONE, TWO, THREE
+    }
+
     public static class NestedBean implements TestInterface.NestedInterface {
         private boolean flag = false;
 
@@ -44,6 +48,8 @@ public class TestBean implements TestInterface {
     private LocalDate localDate = null;
     private LocalTime localTime = null;
     private LocalDateTime localDateTime = null;
+
+    private TestEnum testEnum = null;
 
     private List<?> list = null;
     private List<NestedBean> nestedBeanList = null;
@@ -125,6 +131,18 @@ public class TestBean implements TestInterface {
 
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
+    }
+
+    public TestEnum getTestEnum() {
+        return testEnum;
+    }
+
+    public void setTestEnum(TestEnum testEnum) {
+        this.testEnum = testEnum;
+    }
+
+    public void setTestEnum(String testEnum) {
+        setTestEnum(TestEnum.valueOf(testEnum));
     }
 
     @Override

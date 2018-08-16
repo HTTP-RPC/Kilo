@@ -30,6 +30,7 @@ import java.util.AbstractSet;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -301,6 +302,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link String}</li>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
+     * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link LocalDate}</li>
      * <li>{@link LocalTime}</li>
@@ -331,6 +333,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof String
             || value instanceof Number
             || value instanceof Boolean
+            || value instanceof Enum<?>
             || value instanceof Date
             || value instanceof LocalDate
             || value instanceof LocalTime
@@ -371,9 +374,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * the value is wrapped in an adapter that will adapt the map's values.
      *
      * Otherwise, the target is assumed to be a Bean, and the value is assumed
-     * to be a map. If the type is not an interface, an instance is dynamically
-     * created and populated using the entries in the map. Property values are
-     * adapted as described above.
+     * to be a map. If the target type is not an interface, an instance is
+     * dynamically created and populated using the entries in the map. Property
+     * values are adapted as described above. If a property provides multiple
+     * setters, the first applicable setter will be applied.
      *
      * If the target type is an interface, the return value is an implementation
      * of the interface that maps accessor methods to entries in the map.
@@ -395,7 +399,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T adapt(Object value, Type type, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
+    private static <T> T adapt(Object value, Type type, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
         if (type instanceof Class<?>) {
             return (T)adapt(value, (Class<?>)type, mutatorCache);
         } else if (type instanceof WildcardType) {
@@ -423,7 +427,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object adapt(Object value, Class<?> type, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
+    private static Object adapt(Object value, Class<?> type, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
@@ -498,75 +502,103 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
             } else if (value instanceof Map<?, ?>) {
-                Map<?, ?> map = (Map<?, ?>)value;
-
-                if (!type.isInterface()) {
-                    Object object;
-                    try {
-                        object = type.newInstance();
-                    } catch (InstantiationException | IllegalAccessException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    HashMap<String, Method> mutators = mutatorCache.get(type);
-
-                    if (mutators == null) {
-                        mutators = new HashMap<>();
-
-                        Method[] methods = type.getMethods();
-
-                        for (int i = 0; i < methods.length; i++) {
-                            Method method = methods[i];
-
-                            if (method.getDeclaringClass() == Object.class) {
-                                continue;
-                            }
-
-                            String key = getKey(method, false);
-
-                            if (key != null) {
-                                mutators.put(key, method);
-                            }
-                        }
-
-                        mutatorCache.put(type, mutators);
-                    }
-
-                    for (Entry<?, ?> entry : map.entrySet()) {
-                        Object key = entry.getKey();
-
-                        Method method = mutators.get(key);
-
-                        if (method != null) {
-                            try {
-                                method.invoke(object, BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType(), mutatorCache));
-                            } catch (InvocationTargetException | IllegalAccessException exception) {
-                                throw new RuntimeException(exception);
-                            }
-                        }
-                    }
-
-                    return object;
-                } else {
-                    return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
-                        new Class[] {type}, new InvocationHandler() {
-                        @Override
-                        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-                            String key = getKey(method, true);
-
-                            if (key == null) {
-                                throw new UnsupportedOperationException();
-                            }
-
-                            return adapt(map.get(key), method.getGenericReturnType(), mutatorCache);
-                        }
-                    }));
-                }
+                return adapt((Map<?, ?>)value, type, mutatorCache);
             } else {
                 throw new IllegalArgumentException();
             }
         } else {
             return null;
+        }
+    }
+
+    private static Object adapt(Map<?, ?> map, Class<?> type, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
+        if (!type.isInterface()) {
+            Object object;
+            try {
+                object = type.newInstance();
+            } catch (InstantiationException | IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            HashMap<String, LinkedList<Method>> mutatorMap = mutatorCache.get(type);
+
+            if (mutatorMap == null) {
+                mutatorMap = new HashMap<>();
+
+                Method[] methods = type.getMethods();
+
+                for (int i = 0; i < methods.length; i++) {
+                    Method method = methods[i];
+
+                    if (method.getDeclaringClass() == Object.class) {
+                        continue;
+                    }
+
+                    String key = getKey(method, false);
+
+                    if (key != null) {
+                        LinkedList<Method> mutatorList = mutatorMap.get(key);
+
+                        if (mutatorList == null) {
+                            mutatorList = new LinkedList<>();
+
+                            mutatorMap.put(key, mutatorList);
+                        }
+
+                        mutatorList.add(method);
+                    }
+                }
+
+                mutatorCache.put(type, mutatorMap);
+            }
+
+            for (Entry<?, ?> entry : map.entrySet()) {
+                Object key = entry.getKey();
+
+                LinkedList<Method> mutatorList = mutatorMap.get(key);
+
+                if (mutatorList != null) {
+                    int i = 0;
+
+                    for (Method method : mutatorList) {
+                        try {
+                            Object value = BeanAdapter.adapt(map.get(key), method.getParameters()[0].getType(), mutatorCache);
+
+                            try {
+                                method.invoke(object, value);
+                            } catch (InvocationTargetException | IllegalAccessException exception) {
+                                throw new RuntimeException(exception);
+                            }
+
+                            break;
+                        } catch (IllegalArgumentException exception) {
+                            // No-op
+                        }
+
+                        i++;
+                    }
+
+                    if (i == mutatorList.size()) {
+                        throw new IllegalArgumentException(String.format("No applicable setter for \"%s\".", key));
+                    }
+                }
+            }
+
+            return object;
+        } else {
+            return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+                new Class[] {type}, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+                    String key = getKey(method, true);
+
+                    if (key == null) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    return adapt(map.get(key), method.getGenericReturnType(), mutatorCache);
+                }
+            }));
         }
     }
 
@@ -590,7 +622,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return adaptList(list, elementType, new HashMap<>());
     }
 
-    private static <E> List<E> adaptList(List<?> list, Type elementType, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
+    private static <E> List<E> adaptList(List<?> list, Type elementType, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
         if (list == null) {
             throw new IllegalArgumentException();
         }
@@ -652,7 +684,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return adaptMap(map, valueType, new HashMap<>());
     }
 
-    private static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType, HashMap<Class<?>, HashMap<String, Method>> mutatorCache) {
+    private static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
         if (map == null) {
             throw new IllegalArgumentException();
         }
