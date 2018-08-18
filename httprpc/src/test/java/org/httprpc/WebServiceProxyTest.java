@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -150,7 +151,7 @@ public class WebServiceProxyTest extends AbstractTest {
     public static void testURLEncodedPost() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-test/test"));
 
-        webServiceProxy.getArguments().putAll(mapOf(
+        webServiceProxy.setArguments(mapOf(
             entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
@@ -212,7 +213,7 @@ public class WebServiceProxyTest extends AbstractTest {
             }
         });
 
-        webServiceProxy.getArguments().putAll(mapOf(
+        webServiceProxy.setArguments(mapOf(
             entry("name", imageTestURL.getFile())
         ));
 
@@ -237,7 +238,7 @@ public class WebServiceProxyTest extends AbstractTest {
             }
         });
 
-        webServiceProxy.getArguments().putAll(mapOf(
+        webServiceProxy.setArguments(mapOf(
             entry("id", 101)
         ));
 
@@ -260,7 +261,7 @@ public class WebServiceProxyTest extends AbstractTest {
     public static void testDelete() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL("http://localhost:8080/httprpc-test/test"));
 
-        webServiceProxy.getArguments().putAll(mapOf(
+        webServiceProxy.setArguments(mapOf(
             entry("id", 101)
         ));
 
@@ -290,7 +291,7 @@ public class WebServiceProxyTest extends AbstractTest {
         webServiceProxy.setConnectTimeout(3000);
         webServiceProxy.setReadTimeout(3000);
 
-        webServiceProxy.getArguments().putAll(mapOf(
+        webServiceProxy.setArguments(mapOf(
             entry("value", 123),
             entry("delay", 6000)
         ));
@@ -310,8 +311,12 @@ public class WebServiceProxyTest extends AbstractTest {
     public static void testMath() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
 
-        webServiceProxy.getArguments().put("a", 4);
-        webServiceProxy.getArguments().put("b", 2);
+        HashMap<String, Integer> arguments = new HashMap<>();
+
+        arguments.put("a", 4);
+        arguments.put("b", 2);
+
+        webServiceProxy.setArguments(arguments);
 
         Number result = webServiceProxy.invoke();
 
@@ -333,9 +338,13 @@ public class WebServiceProxyTest extends AbstractTest {
 
         engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE).put("webServiceProxy", webServiceProxy);
 
-        Number result = (Number)engine.eval("webServiceProxy.arguments = {'values': Java.asJSONCompatible([1, 2, 3])}; webServiceProxy.invoke();");
+        Number result1 = (Number)engine.eval("webServiceProxy.arguments = {'a': 4, 'b': 2}; webServiceProxy.invoke();");
 
-        validate("Math (script)", result.doubleValue() == 6.0);
+        validate("Math (script 1)", result1.doubleValue() == 6.0);
+
+        Number result2 = (Number)engine.eval("webServiceProxy.arguments = {'values': Java.asJSONCompatible([1, 2, 3])}; webServiceProxy.invoke();");
+
+        validate("Math (script 2)", result2.doubleValue() == 6.0);
     }
 
     public static void testTree() throws Exception {

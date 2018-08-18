@@ -742,8 +742,12 @@ For example, the following code snippet demonstrates how `WebServiceProxy` might
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
 
-webServiceProxy.getArguments().put("a", 4);
-webServiceProxy.getArguments().put("b", 2);
+HashMap<String, Integer> arguments = new HashMap<>();
+
+arguments.put("a", 4);
+arguments.put("b", 2);
+
+webServiceProxy.setArguments(arguments);
 
 Number result = webServiceProxy.invoke();
 
@@ -796,8 +800,7 @@ System.out.println(result); // 6.0
 ```javascript
 var webServiceProxy = new org.httprpc.WebServiceProxy("GET", new java.net.URL("http://localhost:8080/httprpc-test/math/sum"));
 
-webServiceProxy.arguments["a"] = 4;
-webServiceProxy.arguments["b"] = 2;
+webServiceProxy.arguments = {"a": 4, "b": 2};
 
 print(webServiceProxy.invoke()); // 6
 

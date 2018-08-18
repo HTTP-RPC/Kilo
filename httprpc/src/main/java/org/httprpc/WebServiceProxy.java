@@ -30,7 +30,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -102,8 +102,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
 
-    private Map<String, Object> headers = new LinkedHashMap<>();
-    private Map<String, Object> arguments = new LinkedHashMap<>();
+    private Map<String, ?> headers = Collections.emptyMap();
+    private Map<String, ?> arguments = Collections.emptyMap();
 
     private RequestHandler requestHandler = null;
 
@@ -188,7 +188,7 @@ public class WebServiceProxy {
      * @return
      * The header map.
      */
-    public Map<String, Object> getHeaders() {
+    public Map<String, ?> getHeaders() {
         return headers;
     }
 
@@ -198,7 +198,7 @@ public class WebServiceProxy {
      * @param headers
      * The header map.
      */
-    public void setHeaders(Map<String, Object> headers) {
+    public void setHeaders(Map<String, ?> headers) {
         if (headers == null) {
             throw new IllegalArgumentException();
         }
@@ -212,7 +212,7 @@ public class WebServiceProxy {
      * @return
      * The argument map.
      */
-    public Map<String, Object> getArguments() {
+    public Map<String, ?> getArguments() {
         return arguments;
     }
 
@@ -222,7 +222,7 @@ public class WebServiceProxy {
      * @param arguments
      * The argument map.
      */
-    public void setArguments(Map<String, Object> arguments) {
+    public void setArguments(Map<String, ?> arguments) {
         if (arguments == null) {
             throw new IllegalArgumentException();
         }
@@ -417,7 +417,7 @@ public class WebServiceProxy {
             locale.getCountry().toLowerCase()));
 
         // Apply custom headers
-        for (Map.Entry<String, Object> entry : headers.entrySet()) {
+        for (Map.Entry<String, ?> entry : headers.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
@@ -481,7 +481,7 @@ public class WebServiceProxy {
 
         int i = 0;
 
-        for (Map.Entry<String, Object> entry : arguments.entrySet()) {
+        for (Map.Entry<String, ?> entry : arguments.entrySet()) {
             String key = entry.getKey();
 
             if (key == null) {
@@ -519,7 +519,7 @@ public class WebServiceProxy {
     private void encodeMultipartFormDataRequest(OutputStream outputStream) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, Charset.forName(UTF_8));
 
-        for (Map.Entry<String, Object> entry : arguments.entrySet()) {
+        for (Map.Entry<String, ?> entry : arguments.entrySet()) {
             String name = entry.getKey();
 
             if (name == null) {
@@ -652,9 +652,11 @@ public class WebServiceProxy {
                     webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
                 }
 
-                webServiceProxy.getHeaders().putAll(headers);
+                webServiceProxy.setHeaders(headers);
 
                 Parameter[] parameters = method.getParameters();
+
+                HashMap<String, Object> argumentMap = new HashMap<>();
 
                 for (int i = 0; i < parameters.length; i++) {
                     Parameter parameter = parameters[i];
@@ -662,8 +664,10 @@ public class WebServiceProxy {
 
                     String name = (requestParameter == null) ? parameter.getName() : requestParameter.value();
 
-                    webServiceProxy.getArguments().put(name, arguments[i]);
+                    argumentMap.put(name, arguments[i]);
                 }
+
+                webServiceProxy.setArguments(argumentMap);
 
                 return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
             }
