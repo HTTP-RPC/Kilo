@@ -123,6 +123,8 @@ public class CSVEncoder {
             writer.write('"');
             writer.write(value.toString().replace("\"", "\"\""));
             writer.write('"');
+        } else if (value instanceof Enum<?>) {
+            writeValue(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
             writeValue(((Date)value).getTime(), writer);
         } else {

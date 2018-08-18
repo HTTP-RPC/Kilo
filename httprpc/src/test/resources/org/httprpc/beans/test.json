@@ -3,11 +3,12 @@
     "long": 2,
     "double": 4.0,
     "string": "abc",
+    "bigInteger": 8192,
+    "dayOfWeek": 3,
     "date": 0,
     "localDate": "2018-06-28",
     "localTime": "10:45",
     "localDateTime": "2018-06-28T10:45",
-    "testEnum": "TWO",
     "list": [
         2, 
         4.0, 

@@ -168,6 +168,7 @@ Return values are converted to their JSON equivalents as follows:
 * `CharSequence`: string
 * `Number`: number
 * `Boolean`: true/false
+* `Enum`: ordinal value
 * `java.util.Date`: long value representing epoch time in milliseconds
 * `java.util.time.LocalDate`: "yyyy-mm-dd"
 * `java.util.time.LocalTime`: "hh:mm"
@@ -330,7 +331,9 @@ CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 csvEncoder.writeValues(months, System.out);
 ```
 
-Keys actually represent "key paths" and can refer to nested values using dot notation (e.g. "name.first"). String values are automatically wrapped in double-quotes and escaped. All other values are encoded via `toString()` with the exception of `java.util.Date`, which is encoded as a long value representing epoch time. The preceding code snippet would produce output similar to the following:
+Keys actually represent "key paths" and can refer to nested values using dot notation (e.g. "name.first"). String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
+
+The preceding code snippet would produce output similar to the following:
 
 ```csv
 "name","days"

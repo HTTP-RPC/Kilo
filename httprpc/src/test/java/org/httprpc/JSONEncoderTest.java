@@ -16,6 +16,8 @@ package org.httprpc;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.DayOfWeek;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +44,16 @@ public class JSONEncoderTest extends AbstractTest {
     public void testBoolean() throws IOException {
         Assert.assertEquals("true", encode(true));
         Assert.assertEquals("false", encode(false));
+    }
+
+    @Test
+    public void testDate() throws IOException {
+        Assert.assertEquals("0", encode(new Date(0)));
+    }
+
+    @Test
+    public void testEnum() throws IOException {
+        Assert.assertEquals("3", encode(DayOfWeek.THURSDAY));
     }
 
     @Test

@@ -14,6 +14,8 @@
 
 package org.httprpc.beans;
 
+import java.math.BigInteger;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,10 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TestBean implements TestInterface {
-    public enum TestEnum {
-        ONE, TWO, THREE
-    }
-
     public static class NestedBean implements TestInterface.NestedInterface {
         private boolean flag = false;
 
@@ -42,14 +40,15 @@ public class TestBean implements TestInterface {
     private int i = 0;
     private long l = 0;
     private double d = 0;
-
     private String string = null;
+
+    private BigInteger bigInteger = null;
+    private DayOfWeek dayOfWeek = null;
+
     private Date date = null;
     private LocalDate localDate = null;
     private LocalTime localTime = null;
     private LocalDateTime localDateTime = null;
-
-    private TestEnum testEnum = null;
 
     private List<?> list = null;
     private List<NestedBean> nestedBeanList = null;
@@ -97,6 +96,30 @@ public class TestBean implements TestInterface {
         this.string = string;
     }
 
+    public BigInteger getBigInteger() {
+        return bigInteger;
+    }
+
+    public void setBigInteger(BigInteger bigInteger) {
+        this.bigInteger = bigInteger;
+    }
+
+    public void setBigInteger(long bigInteger) {
+        setBigInteger(BigInteger.valueOf(bigInteger));
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        setDayOfWeek(DayOfWeek.values()[dayOfWeek]);
+    }
+
     @Override
     public Date getDate() {
         return date;
@@ -131,18 +154,6 @@ public class TestBean implements TestInterface {
 
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
-    }
-
-    public TestEnum getTestEnum() {
-        return testEnum;
-    }
-
-    public void setTestEnum(TestEnum testEnum) {
-        this.testEnum = testEnum;
-    }
-
-    public void setTestEnum(String testEnum) {
-        setTestEnum(TestEnum.valueOf(testEnum));
     }
 
     @Override

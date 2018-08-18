@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,11 +38,12 @@ public class BeanAdapterTest extends AbstractTest {
             entry("long", 2L),
             entry("double", 4.0),
             entry("string", "abc"),
+            entry("bigInteger", BigInteger.valueOf(8192L)),
+            entry("dayOfWeek", DayOfWeek.values()[3]),
             entry("date", new Date(0)),
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
-            entry("testEnum", TestBean.TestEnum.TWO),
             entry("list", listOf(2L, 4.0, mapOf(
                 entry("flag", true)
             ))),

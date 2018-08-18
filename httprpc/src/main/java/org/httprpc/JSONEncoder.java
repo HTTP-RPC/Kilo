@@ -90,15 +90,13 @@ public class JSONEncoder {
 
             writer.append("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
-            writer.append(String.valueOf(value));
+            writer.append(value.toString());
+        } else if (value instanceof Enum<?>) {
+            writeValue(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
             writeValue(((Date)value).getTime(), writer);
-        } else if (value instanceof LocalDate) {
-            writeValue(((LocalDate)value).toString(), writer);
-        } else if (value instanceof LocalTime) {
-            writeValue(((LocalTime)value).toString(), writer);
-        } else if (value instanceof LocalDateTime) {
-            writeValue(((LocalDateTime)value).toString(), writer);
+        } else if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
+            writeValue(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.append("[");
 
