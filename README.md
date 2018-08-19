@@ -737,11 +737,12 @@ The first version automatically deserializes a successful response using `JSONDe
 
 If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 
-For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the simple math service discussed earlier:
 
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
 
+// GET /math/sum?a=2&b=4
 HashMap<String, Integer> arguments = new HashMap<>();
 
 arguments.put("a", 4);
@@ -789,9 +790,7 @@ This code uses the `adapt()` method to create an instance of `MathService`, then
 ```java
 MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
 
-double result = mathService.getSum(4, 2);
-
-System.out.println(result); // 6.0
+System.out.println(mathService.getSum(4, 2)); // 6.0
 ```
 
 ### JavaScript
@@ -800,10 +799,12 @@ System.out.println(result); // 6.0
 ```javascript
 var webServiceProxy = new org.httprpc.WebServiceProxy("GET", new java.net.URL("http://localhost:8080/httprpc-test/math/sum"));
 
+// GET /math/sum?a=2&b=4
 webServiceProxy.arguments = {"a": 4, "b": 2};
 
 print(webServiceProxy.invoke()); // 6
 
+// GET /math/sum?values=1&values=2&values=3
 webServiceProxy.arguments = {"values": Java.asJSONCompatible([1, 2, 3])};
 
 print(webServiceProxy.invoke()); // 6
