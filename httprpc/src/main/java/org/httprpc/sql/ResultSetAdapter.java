@@ -73,6 +73,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public Map<String, Object> next() {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
@@ -82,7 +83,28 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
 
                 try {
                     for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
-                        row.put(resultSetMetaData.getColumnLabel(i + 1), resultSet.getObject(i + 1));
+                        String path = resultSetMetaData.getColumnLabel(i + 1);
+
+                        String[] components = path.split("\\.");
+
+                        Map<String, Object> map = row;
+
+                        for (int j = 0; j < components.length - 1; j++) {
+                            Object value = map.get(components[j]);
+
+                            LinkedHashMap<String, Object> child;
+                            if (value instanceof Map<?, ?>) {
+                                child = (LinkedHashMap<String, Object>)value;
+                            } else {
+                                child = new LinkedHashMap<>();
+
+                                map.put(components[j], child);
+                            }
+
+                            map = child;
+                        }
+
+                        map.put(components[components.length - 1], resultSet.getObject(i + 1));
                     }
                 } catch (SQLException exception) {
                     throw new RuntimeException(exception);
@@ -108,6 +130,10 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
      * An iterable sequence of the given type.
      */
     public <T> Iterable<T> adapt(Class<T> elementType) {
+        if (!elementType.isInterface()) {
+            throw new IllegalArgumentException();
+        }
+
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {

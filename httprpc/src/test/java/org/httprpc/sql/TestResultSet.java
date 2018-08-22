@@ -153,12 +153,12 @@ public class TestResultSet implements ResultSet {
         }
     };
 
-    private String[] labels = {"a", "b", "c", "d", "e"};
+    private String[] labels = {"long", "double", "boolean", "nestedValue", "nestedValue.lower", "nestedValue.upper", "date"};
 
     private Object[][] values = {
-        {2L, 3.0, true, "abc", new Date(0)},
-        {4L, 6.0, false, "def", new Date(0)},
-        {8L, 9.0, false, "ghi", null}
+        {2L, 3.0, true, new Object(), "abc", "ABC", new Date(0)},
+        {4L, 6.0, false, new Object(), "def", "DEF", new Date(0)},
+        {8L, 9.0, false, new Object(), null, null, null}
     };
 
     private int i = -1;

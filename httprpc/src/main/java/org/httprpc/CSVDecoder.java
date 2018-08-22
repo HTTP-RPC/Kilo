@@ -99,6 +99,10 @@ public class CSVDecoder {
          * An iterable sequence of the given type.
          */
         public <T> Iterable<T> adapt(Class<T> elementType) {
+            if (!elementType.isInterface()) {
+                throw new IllegalArgumentException();
+            }
+
             return new Iterable<T>() {
                 @Override
                 public Iterator<T> iterator() {

@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -59,7 +59,7 @@ These classes are explained in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for REST services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON.
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org).
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. 
 
@@ -290,7 +290,7 @@ List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8,
 ```
 
 ## CSVEncoder and CSVDecoder
-Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a CSV document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
+Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
 The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV. For example, the following JSON document contains a list of objects representing the months of the year and their day counts:
 
@@ -362,7 +362,7 @@ try (InputStream inputStream = getClass().getResourceAsStream("months.csv")) {
 ```
 
 ### Typed Iteration
-The `adapt()` method of the `CSVDecoder.Cursor` class can be used to facilitate typed iteration of CSV data. This method produces an `Iterable` sequence of values of a given type representing the rows in the document. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to map values in the cursor. A single proxy instance is used for all rows to minimize heap allocation. 
+The `adapt()` method of the `CSVDecoder.Cursor` class can be used to facilitate typed iteration of CSV data. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the document. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to map values in the cursor. A single proxy instance is used for all rows to minimize heap allocation. 
 
 For example, the following interface might be used to model the month records shown in the previous section:
 
@@ -676,8 +676,29 @@ The service would return something like the following:
 ]
 ```
 
+### Nested Results
+Key paths can be used as column labels to produce nested results. For example, given the following query:
+
+```sql
+SELECT first_name as name.first, last_name as name.last FROM contact
+```
+
+the values of the "first_name" and "last_name" columns would be returned in a nested map structure as shown below:
+
+```json
+[
+  {
+    "name": {
+      "first": "...",
+      "last": "..."
+    }
+  },
+  ...
+]
+```
+
 ### Typed Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
@@ -737,22 +758,33 @@ The first version automatically deserializes a successful response using `JSONDe
 
 If the server returns an error response, a `WebServiceException` will be thrown. The response code can be retrieved via the exception's `getStatus()` method. If the content type of the response is "text/plain", the body of the response will be returned in the exception message.
 
-For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the simple math service discussed earlier:
+For example, the following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
+// GET /math/sum?a=2&b=4
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
 
-// GET /math/sum?a=2&b=4
-HashMap<String, Integer> arguments = new HashMap<>();
+HashMap<String, Object> arguments = new HashMap<>();
 
 arguments.put("a", 4);
 arguments.put("b", 2);
 
 webServiceProxy.setArguments(arguments);
 
-Number result = webServiceProxy.invoke();
+System.out.println(webServiceProxy.invoke()); // 6.0
+```
 
-System.out.println(result); // 6.0
+```java
+// GET /math/sum?values=1&values=2&values=3
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
+
+HashMap<String, Object> arguments = new HashMap<>();
+
+arguments.put("values", Arrays.asList(1, 2, 3));
+
+webServiceProxy.setArguments(arguments);
+
+System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
 ### Typed Access
@@ -771,7 +803,7 @@ In general, service adapters should be compiled with the `-parameters` flag so t
 
 `POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#typed-map-access) based on the method return type.
 
-For example, the following interface might be used to model the addition operations of the math service:
+For example, the following interface might be used to model the operations of the math service:
 
 ```java
 public interface MathService {
@@ -790,7 +822,11 @@ This code uses the `adapt()` method to create an instance of `MathService`, then
 ```java
 MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
 
+// GET /math/sum?a=2&b=4
 System.out.println(mathService.getSum(4, 2)); // 6.0
+
+// GET /math/sum?values=1&values=2&values=3
+System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
 ```
 
 ### JavaScript

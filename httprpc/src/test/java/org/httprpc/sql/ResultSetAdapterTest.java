@@ -29,34 +29,48 @@ import org.junit.Test;
 
 public class ResultSetAdapterTest extends AbstractTest {
     public interface TestRow {
-        public long getA();
-        public double getB();
-        public boolean getC();
-        public String getD();
-        public Date getE();
+        public interface NestedValue {
+            public String getLower();
+            public String getUpper();
+        }
+
+        public long getLong();
+        public double getDouble();
+        public boolean getBoolean();
+        public NestedValue getNestedValue();
+        public Date getDate();
     }
 
     private List<?> expected = listOf(
         mapOf(
-            entry("a", 2L),
-            entry("b", 3.0),
-            entry("c", true),
-            entry("d", "abc"),
-            entry("e", new Date(0))
+            entry("long", 2L),
+            entry("double", 3.0),
+            entry("boolean", true),
+            entry("nestedValue", mapOf(
+                entry("lower", "abc"),
+                entry("upper", "ABC")
+            )),
+            entry("date", new Date(0))
         ),
         mapOf(
-            entry("a", 4L),
-            entry("b", 6.0),
-            entry("c", false),
-            entry("d", "def"),
-            entry("e", new Date(0))
+            entry("long", 4L),
+            entry("double", 6.0),
+            entry("boolean", false),
+            entry("nestedValue", mapOf(
+                entry("lower", "def"),
+                entry("upper", "DEF")
+            )),
+            entry("date", new Date(0))
         ),
         mapOf(
-            entry("a", 8L),
-            entry("b", 9.0),
-            entry("c", false),
-            entry("d", "ghi"),
-            entry("e", null)
+            entry("long", 8L),
+            entry("double", 9.0),
+            entry("boolean", false),
+            entry("nestedValue", mapOf(
+                entry("lower", null),
+                entry("upper", null)
+            )),
+            entry("date", null)
         )
     );
 

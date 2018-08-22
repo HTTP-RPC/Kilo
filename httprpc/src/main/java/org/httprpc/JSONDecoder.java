@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +148,7 @@ public class JSONDecoder {
 
                     c = reader.read();
                 } else if (c == '{') {
-                    value = new HashMap<String, Object>();
+                    value = new LinkedHashMap<String, Object>();
 
                     collections.push(value);
 
