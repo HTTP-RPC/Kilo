@@ -32,6 +32,30 @@ import java.util.Map;
 
 public class BeanAdapterTest extends AbstractTest {
     @Test
+    public void testPrimitiveAdapt() {
+        Assert.assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));
+        Assert.assertEquals(BeanAdapter.adapt("1", Byte.TYPE), Byte.valueOf((byte)1));
+
+        Assert.assertEquals(BeanAdapter.adapt(null, Short.TYPE), Short.valueOf((short)0));
+        Assert.assertEquals(BeanAdapter.adapt("2", Short.TYPE), Short.valueOf((short)2));
+
+        Assert.assertEquals(BeanAdapter.adapt(null, Integer.TYPE), Integer.valueOf(0));
+        Assert.assertEquals(BeanAdapter.adapt("3", Integer.TYPE), Integer.valueOf(3));
+
+        Assert.assertEquals(BeanAdapter.adapt(null, Long.TYPE), Long.valueOf(0));
+        Assert.assertEquals(BeanAdapter.adapt("4", Long.TYPE), Long.valueOf(4));
+
+        Assert.assertEquals(BeanAdapter.adapt(null, Float.TYPE), Float.valueOf(0));
+        Assert.assertEquals(BeanAdapter.adapt("5.0", Float.TYPE), Float.valueOf(5));
+
+        Assert.assertEquals(BeanAdapter.adapt(null, Double.TYPE), Double.valueOf(0));
+        Assert.assertEquals(BeanAdapter.adapt("6.0", Double.TYPE), Double.valueOf(6));
+
+        Assert.assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
+        Assert.assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
+    }
+
+    @Test
     public void testBeanAdapter1() throws IOException {
         Map<String, ?> expected = mapOf(
             entry("i", 1),
