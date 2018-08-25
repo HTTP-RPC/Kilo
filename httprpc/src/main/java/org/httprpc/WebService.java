@@ -164,7 +164,7 @@ public abstract class WebService extends HttpServlet {
                     child = resource.resources.get("?");
 
                     if (child == null) {
-                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        super.service(request, response);
                         return;
                     }
 
@@ -182,7 +182,7 @@ public abstract class WebService extends HttpServlet {
         List<Method> handlerList = resource.handlerMap.get(request.getMethod().toLowerCase());
 
         if (handlerList == null) {
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            super.service(request, response);
             return;
         }
 

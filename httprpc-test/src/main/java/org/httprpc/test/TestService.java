@@ -17,6 +17,7 @@ package org.httprpc.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.URL;
 import java.time.LocalDate;
@@ -31,6 +32,8 @@ import java.util.Map;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.WebService;
 import org.httprpc.JSONDecoder;
@@ -88,6 +91,14 @@ public class TestService extends WebService {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
         return jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+
+        writer.append("Unsupported operation.");
+        writer.flush();
     }
 
     @RequestMethod("POST")
