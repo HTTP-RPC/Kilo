@@ -239,14 +239,31 @@ public List<Map<String, ?>> getContactAddresses() { ... }
 The `getKey()` method returns the value of a path variable associated with the current request:
 
 ```java
-protected String getKeys(int index) { ... }
+protected String getKey(int index) { ... }
 ```
  
-For example, given the following path:
+For example, given the following request:
 
-    /contacts/jsmith/addresses/home
+    GET /contacts/jsmith/addresses/home
 
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
+
+#### Named Variables
+Path variables can optionally be assigned a name by appending a colon and key name to the "?" character:
+
+```java
+@RequestMethod("GET")
+@ResourcePath("contacts/?:contactID/addresses/?:addressType")
+public List<Map<String, ?>> getContactAddresses() { ... }
+```
+
+A named variable can be retrieved via this `getKey()` overload:
+
+```java
+protected String getKey(String name) { ... }
+```
+ 
+For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):

@@ -64,9 +64,22 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("a/?/b/?/c/?/d/?")
-    public List<?> testGet() {
-        return Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3));
+    @ResourcePath("a/?:a/b/?:b/c/?:c/d/?:d")
+    public Map<String, ?> testGet() {
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("list", Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3)));
+
+        HashMap<String, String> map = new HashMap<>();
+
+        map.put("a", getKey("a"));
+        map.put("b", getKey("b"));
+        map.put("c", getKey("c"));
+        map.put("d", getKey("d"));
+
+        result.put("map", map);
+
+        return result;
     }
 
     @RequestMethod("GET")

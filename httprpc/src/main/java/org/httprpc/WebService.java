@@ -51,6 +51,8 @@ public abstract class WebService extends HttpServlet {
         public final HashMap<String, LinkedList<Method>> handlerMap = new HashMap<>();
         public final HashMap<String, Resource> resources = new HashMap<>();
 
+        public String name = null;
+
         @Override
         public String toString() {
             return handlerMap.keySet().toString() + "; " + resources.toString();
@@ -62,7 +64,10 @@ public abstract class WebService extends HttpServlet {
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
-    private ThreadLocal<List<String>> keys = new ThreadLocal<>();
+    private ThreadLocal<ArrayList<String>> keyList = new ThreadLocal<>();
+    private ThreadLocal<HashMap<String, String>> keyMap = new ThreadLocal<>();
+
+    private static final String PATH_VARIABLE = "?";
 
     private static final String UTF_8 = "UTF-8";
 
@@ -97,6 +102,20 @@ public abstract class WebService extends HttpServlet {
                         if (child == null) {
                             child = new Resource();
 
+                            if (component.startsWith(PATH_VARIABLE)) {
+                                int k = PATH_VARIABLE.length();
+
+                                if (component.length() > k) {
+                                    if (component.charAt(k++) != ':') {
+                                        throw new ServletException("Invalid path component.");
+                                    }
+
+                                    child.name = component.substring(k);
+
+                                    component = PATH_VARIABLE;
+                                }
+                            }
+
                             resource.resources.put(component, child);
                         }
 
@@ -124,7 +143,8 @@ public abstract class WebService extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Resource resource = root;
 
-        LinkedList<String> keys = new LinkedList<>();
+        ArrayList<String> keyList = new ArrayList<>();
+        HashMap<String, String> keyMap = new HashMap<>();
 
         String pathInfo = request.getPathInfo();
 
@@ -148,7 +168,11 @@ public abstract class WebService extends HttpServlet {
                         return;
                     }
 
-                    keys.add(component);
+                    keyList.add(component);
+
+                    if (child.name != null) {
+                        keyMap.put(child.name, component);
+                    }
                 }
 
                 resource = child;
@@ -169,7 +193,8 @@ public abstract class WebService extends HttpServlet {
         this.request.set(request);
         this.response.set(response);
 
-        this.keys.set(new ArrayList<>(keys));
+        this.keyList.set(keyList);
+        this.keyMap.set(keyMap);
 
         LinkedList<File> files = new LinkedList<>();
 
@@ -265,7 +290,8 @@ public abstract class WebService extends HttpServlet {
             this.request.set(null);
             this.response.set(null);
 
-            this.keys.set(null);
+            this.keyList.set(null);
+            this.keyMap.set(null);
 
             for (File file : files) {
                 file.delete();
@@ -413,7 +439,20 @@ public abstract class WebService extends HttpServlet {
      * The key value.
      */
     protected String getKey(int index) {
-        return keys.get().get(index);
+        return keyList.get().get(index);
+    }
+
+    /**
+     * Returns the value of a key in the request path.
+     *
+     * @param name
+     * The name of the key to return.
+     *
+     * @return
+     * The key value.
+     */
+    protected String getKey(String name) {
+        return keyMap.get().get(name);
     }
 }
 
