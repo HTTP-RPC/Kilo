@@ -71,10 +71,10 @@ public class CatalogService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("items/?")
+    @ResourcePath("items/?:itemID")
     public Object getItem() {
-        int index = Integer.parseInt(getKey(0));
+        int itemID = Integer.parseInt(getKey("itemID"));
 
-        return (index < items.size()) ? items.get(index - 1) : null;
+        return (itemID > 0 && itemID <= items.size()) ? items.get(itemID - 1) : null;
     }
 }
