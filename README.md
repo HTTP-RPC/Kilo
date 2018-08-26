@@ -61,7 +61,7 @@ These classes are explained in more detail in the following sections.
 
 Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org).
 
-The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found, the servlet's default `service()` method is called.
+The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
 Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
@@ -207,7 +207,7 @@ Methods may also return `void` or `Void` to indicate that they do not produce a 
 If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail [later](#beanadapter).
 
 ### Exceptions
-If an exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
+If any exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
 
 ```java
 @RequestMethod("GET")
@@ -218,12 +218,12 @@ public void generateError() throws Exception {
 ```
 
 ### Request and Repsonse Properties
-`WebService` provides the following methods to allow a service to access the request and response objects associated with the current operation:
+`WebService` provides the following methods to allow a service method to access the request and response objects associated with the current operation:
 
     protected HttpServletRequest getRequest() { ... }
     protected HttpServletResponse getResponse() { ... }
 
-For example, a service might access the request to get the name of the current user, or use the response to return a custom header.
+For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
 
@@ -304,6 +304,8 @@ For example, the following code snippet uses `JSONDecoder` to parse a JSON array
 JSONDecoder jsonDecoder = new JSONDecoder();
 
 List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
+
+System.out.println(fibonacci.get(2)); // 3
 ```
 
 ## CSVEncoder and CSVDecoder
@@ -332,15 +334,12 @@ The `CSVEncoder` class can be used to encode an iterable sequence of map values 
 `JSONDecoder` could be used to parse this document into a list of maps as shown below:
 
 ```java
-List<Map<String, ?>> months;
-try (InputStream inputStream = getClass().getResourceAsStream("months.json")) {
-    JSONDecoder jsonDecoder = new JSONDecoder();
+JSONDecoder jsonDecoder = new JSONDecoder();
 
-    months = jsonDecoder.readValue(inputStream);
-}
+List<Map<String, Object>> months = jsonDecoder.readValue(inputStream);
 ```
 
-`CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (as well as the map keys to which the columns correspond):
+`CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (and the map keys to which the columns correspond):
 
 ```
 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
@@ -348,7 +347,7 @@ CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 csvEncoder.writeValues(months, System.out);
 ```
 
-Keys actually represent "key paths" and can refer to nested values using dot notation (e.g. "name.first"). String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
+Keys actually represent "key paths" and can refer to nested map values using dot notation. String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
 The preceding code snippet would produce output similar to the following:
 
@@ -367,15 +366,15 @@ The `CSVDecoder` class deserializes a CSV document as an iterable sequence of ma
 The following code would perform the reverse conversion (from CSV to JSON):
 
 ```java
-try (InputStream inputStream = getClass().getResourceAsStream("months.csv")) {
-    CSVDecoder csvDecoder = new CSVDecoder();
+// Read from CSV
+CSVDecoder csvDecoder = new CSVDecoder();
 
-    CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
+CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
 
-    JSONEncoder jsonEncoder = new JSONEncoder();
+// Write to JSON
+JSONEncoder jsonEncoder = new JSONEncoder();
 
-    jsonEncoder.writeValue(months, System.out);
-}
+jsonEncoder.writeValue(months, System.out);
 ```
 
 ### Typed Iteration
@@ -393,14 +392,12 @@ public interface Month {
 This code snippet uses `adapt()` to create an iterable sequence of `Month` values from the CSV document: 
 
 ```java
-try (InputStream inputStream = getClass().getResourceAsStream("months.csv")) {
-    CSVDecoder csvDecoder = new CSVDecoder();
+CSVDecoder csvDecoder = new CSVDecoder();
 
-    CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
+CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
 
-    for (Month month : months.adapt(Month.class)) {
-        System.out.println(String.format("%s has %d days", month.getName(), month.getDays()));
-    }
+for (Month month : months.adapt(Month.class)) {
+    System.out.println(String.format("%s has %d days", month.getName(), month.getDays()));
 }
 ```
 
@@ -520,21 +517,23 @@ Although the values are actually stored in the strongly typed properties of the 
 ```
 
 ### Typed Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value.
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
+
+```java
+public static <T> T adapt(Object value, Type type) { ... }
+```
 
 If the value is already an instance of the requested type, it is returned as is. Otherwise:
 
-* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive argument types.
+* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive types.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
 * If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-Otherwise, the target is assumed to be a Bean, and the value is assumed to be a map. If the target type is not an interface, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
+Otherwise, the target is assumed to be a Bean, and the value is assumed to be a map. If the target type is a concrete class, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
 
-If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map.
-
-For example, given the following interface definition:
+If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map. For example, given the following interface definition:
 
 ```java
 public interface TreeNode {
@@ -543,7 +542,7 @@ public interface TreeNode {
 }
 ```
 
-the `adapt()` method can be used to model the result data as a collection of `TreeNode` values:
+the `adapt()` method can be used to model the preceding result data as a collection of `TreeNode` values:
 
 ```java
 TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
@@ -554,7 +553,7 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the adapted map rather than "firstName":
+The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the resulting map instead of "firstName":
 
 ```java
 @Key("first_name")
@@ -563,7 +562,16 @@ public String getFirstName() {
 }
 ```
 
-Similarly, when adapting an existing map using an interface, the following method would return the value of the "first_name" key:
+This code would cause the value to be imported from the "first_name" entry in the map instead of "firstName":
+
+```java
+@Key("first_name")
+public void setFirstName(String firstName) {
+    this.firstName = firstName;
+}
+```
+
+Similarly, when using an interface type to adapt map values, the following method would return the value of the "first_name" key rather than "firstName":
 
 ```java
 @Key("first_name")
@@ -581,7 +589,7 @@ try (ResultSet resultSet = statement.executeQuery()) {
 }
 ```
 
-Note that, instead of producing a new map instance for each iteration, `ResultSetAdapter` returns a single map value for all rows. The contents of this map are updated on each call to the adapter's `next()` method, reducing execution time and keeping memory footprint to a minimum.
+Note that, instead of producing a new map instance for each iteration, `ResultSetAdapter` returns a single map value for all rows. The contents of this map are updated on each call to the adapter's `next()` method, reducing object construction overhead and keeping memory footprint to a minimum.
 
 The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 
@@ -697,7 +705,7 @@ The service would return something like the following:
 Key paths can be used as column labels to produce nested results. For example, given the following query:
 
 ```sql
-SELECT first_name as name.first, last_name as name.last FROM contact
+SELECT first_name as 'name.first', last_name as 'name.last' FROM contact
 ```
 
 the values of the "first_name" and "last_name" columns would be returned in a nested map structure as shown below:
