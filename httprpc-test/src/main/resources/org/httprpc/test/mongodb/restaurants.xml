@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <restaurants>
-  {{#.}}<restaurant>
+  {{#.}}
+  <restaurant>
     <name>{{name:^xml}}</name>
     <address>
         <building>{{address.building:^xml}}</building>
@@ -12,5 +13,6 @@
     <grades>
         {{#grades}}<grade date="{{date:format=shortDate:^xml}}" score="{{score:^xml}}">{{grade:^xml}}</grade>{{/grades}}
     </grades>
-  </restaurant>{{/.}}
+  </restaurant>
+  {{/.}}
 </restaurants>

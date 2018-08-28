@@ -91,11 +91,11 @@ public class PetService extends WebService {
 
                         csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
                     } else {
-                        String name = String.format("%s~%s", getRequest().getServletPath().substring(1), format);
+                        String name = String.format("%s.%s", getRequest().getServletPath().substring(1), format);
 
                         getResponse().setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
 
-                        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(String.format("%s.txt", name)));
+                        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(name));
 
                         templateEncoder.setBaseName(getClass().getName());
                         templateEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream(), getRequest().getLocale());

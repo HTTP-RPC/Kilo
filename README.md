@@ -48,8 +48,8 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `WebServiceProxy` - class for invoking remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.beans`
-    * `BeanAdapter` - class that presents the properties of a Java Bean object as a map and vice versa
-    * `Key` - annotation that associates a custom key with a Bean property
+    * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
+    * `Key` - annotation that associates a custom key with a bean property
 * `org.httprpc.sql`
     * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
     * `Parameters` - class for applying named parameters values to prepared statements 
@@ -411,7 +411,7 @@ March has 31 days
 ```
 
 ## BeanAdapter
-The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by the Bean as entries in the map, allowing custom data types to be serialized as JSON objects or CSV records. 
+The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data types to be serialized as JSON objects or CSV records. 
 
 If a property value is `null` or an instance of one of the following types, it is returned as is:
 
@@ -424,7 +424,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalTime`
 * `java.util.time.LocalDateTime`
 
-If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a Bean and is wrapped in a `BeanAdapter`.
+If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 
@@ -531,7 +531,7 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-Otherwise, the target is assumed to be a Bean, and the value is assumed to be a map. If the target type is a concrete class, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
+Otherwise, the target is assumed to be a bean, and the value is assumed to be a map. If the target type is a concrete class, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
 
 If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map. For example, given the following interface definition:
 
@@ -553,7 +553,7 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom key with a Bean property. For example, the following property would appear as "first_name" in the resulting map instead of "firstName":
+The `Key` annotation can be used to associate a custom key with a bean property. For example, the following property would appear as "first_name" in the resulting map instead of "firstName":
 
 ```java
 @Key("first_name")

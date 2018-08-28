@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that presents the properties of a Java Bean object as a map. Property
+ * Class that presents the properties of a Java bean object as a map. Property
  * values are adapted as described for {@link #adapt(Object)}.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
@@ -149,10 +149,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     private static final String SET_PREFIX = "set";
 
     /**
-     * Constructs a new Bean adapter.
+     * Constructs a new bean adapter.
      *
      * @param bean
-     * The source Bean.
+     * The source bean.
      */
     public BeanAdapter(Object bean) {
         this(bean, new HashMap<>());
@@ -312,7 +312,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * If the value is a {@link List}, it is wrapped in an adapter that will
      * adapt the list's elements. If the value is a {@link Map}, it is wrapped
      * in an adapter that will adapt the map's values. Otherwise, the value is
-     * assumed to be a Bean and is wrapped in a {@link BeanAdapter}.
+     * assumed to be a bean and is wrapped in a {@link BeanAdapter}.
      *
      * @param <T>
      * The target type.
@@ -373,7 +373,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * that will adapt the list's elements. If the target type is a {@link Map},
      * the value is wrapped in an adapter that will adapt the map's values.
      *
-     * Otherwise, the target is assumed to be a Bean, and the value is assumed
+     * Otherwise, the target is assumed to be a bean, and the value is assumed
      * to be a map. If the target type is not an interface, an instance is
      * dynamically created and populated using the entries in the map. Property
      * values are adapted as described above. If a property provides multiple
