@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class BeanAdapterTest extends AbstractTest {
@@ -134,5 +135,38 @@ public class BeanAdapterTest extends AbstractTest {
         Assert.assertEquals(false, result.getNestedBeanMap().get("nestedBean").getFlag());
 
         Assert.assertEquals(true, result.getNestedBean().getFlag());
+    }
+
+    @Test
+    public void testDescribe() {
+        HashMap<Class<?>, String> structures = new HashMap<>();
+
+        BeanAdapter.describe(TestBean.class, structures);
+
+        Assert.assertEquals(structures.get(TestBean.class),
+            "{\n" +
+            "  bigInteger: number,\n" +
+            "  date: date,\n" +
+            "  dayOfWeek: enum,\n" +
+            "  double: double,\n" +
+            "  i: integer,\n" +
+            "  list: [any],\n" +
+            "  localDate: local-date,\n" +
+            "  localDateTime: local-datetime,\n" +
+            "  localTime: local-time,\n" +
+            "  long: long,\n" +
+            "  map: [string: any],\n" +
+            "  nestedBean: NestedBean,\n" +
+            "  nestedBeanList: [NestedBean],\n" +
+            "  nestedBeanMap: [string: NestedBean],\n" +
+            "  string: string\n" +
+            "}"
+        );
+
+        Assert.assertEquals(structures.get(TestBean.NestedBean.class),
+            "{\n" +
+            "  flag: boolean\n" +
+            "}"
+        );
     }
 }

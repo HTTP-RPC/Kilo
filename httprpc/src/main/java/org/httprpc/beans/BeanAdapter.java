@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Class that presents the properties of a Java bean object as a map. Property
@@ -194,6 +195,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static String getKey(Method method, boolean accessor) {
+        if (method.isBridge()) {
+            return null;
+        }
+
         String methodName = method.getName();
 
         String prefix;
@@ -295,11 +300,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value. If the value is <tt>null</tt> or an
-     * instance of one of the following types, it is returned as is:
+     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
+     * the following types, it is returned as is:
      *
      * <ul>
-     * <li>{@link String}</li>
+     * <li>{@link CharSequence}</li>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
      * <li>{@link Enum}</li>
@@ -330,7 +335,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static Object adapt(Object value, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
         if (value == null
-            || value instanceof String
+            || value instanceof CharSequence
             || value instanceof Number
             || value instanceof Boolean
             || value instanceof Enum<?>
@@ -358,7 +363,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * values are automatically converted to <tt>0</tt> or <tt>false</tt> for
      * primitive argument types.</li>
      * <li>If the target type is {@link String}, the value is adapted via
-     * {@link String#toString()}.</li>
+     * {@link Object#toString()}.</li>
      * <li>If the target type is {@link Date}, the value is coerced to a long
      * value and passed to {@link Date#Date(long)}.</li>
      * <li>If the target type is {@link LocalDate}, the value is parsed using
@@ -367,7 +372,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link LocalTime#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDateTime}, the value is parsed using
      * {@link LocalDateTime#parse(CharSequence)}.</li>
-     *</ul>
+     * </ul>
      *
      * If the target type is a {@link List}, the value is wrapped in an adapter
      * that will adapt the list's elements. If the target type is a {@link Map},
@@ -411,11 +416,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 ParameterizedType parameterizedType = (ParameterizedType)type;
 
                 Type rawType = parameterizedType.getRawType();
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
                 if (rawType == List.class) {
-                    return (T)adaptList((List<?>)value, parameterizedType.getActualTypeArguments()[0], mutatorCache);
+                    return (T)adaptList((List<?>)value, actualTypeArguments[0], mutatorCache);
                 } else if (rawType == Map.class) {
-                    return (T)adaptMap((Map<?, ?>)value, parameterizedType.getActualTypeArguments()[1], mutatorCache);
+                    return (T)adaptMap((Map<?, ?>)value, actualTypeArguments[1], mutatorCache);
                 } else {
                     throw new IllegalArgumentException();
                 }
@@ -502,7 +508,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
             } else if (value instanceof Map<?, ?>) {
-                return adapt((Map<?, ?>)value, type, mutatorCache);
+                return adaptBean((Map<?, ?>)value, type, mutatorCache);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -511,7 +517,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object adapt(Map<?, ?> map, Class<?> type, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
+    private static Object adaptBean(Map<?, ?> map, Class<?> type, HashMap<Class<?>, HashMap<String, LinkedList<Method>>> mutatorCache) {
         if (!type.isInterface()) {
             Object object;
             try {
@@ -743,5 +749,152 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 };
             }
         };
+    }
+
+    /**
+     * Describes a type. Types are encoded as follows:
+     *
+     * <ul>
+     * <li>{@link Object}: "any"</li>
+     * <li>{@link Void} or <tt>void</tt>: "void"</li>
+     * <li>{@link Byte} or <tt>byte</tt>: "byte"</li>
+     * <li>{@link Short} or <tt>short</tt>: "short"</li>
+     * <li>{@link Integer} or <tt>int</tt>: "integer"</li>
+     * <li>{@link Long} or <tt>long</tt>: "long"</li>
+     * <li>{@link Float} or <tt>float</tt>: "float"</li>
+     * <li>{@link Double} or <tt>double</tt>: "double"</li>
+     * <li>Any other type that extends {@link Number}: "number"</li>
+     * <li>Any type that implements {@link CharSequence}: "string"</li>
+     * <li>Any {@link Enum} type: "enum"</li>
+     * <li>Any type that extends {@link Date}: "date"</li>
+     * <li>{@link LocalDate}: "local-date"</li>
+     * <li>{@link LocalTime}: "local-time"</li>
+     * <li>{@link LocalDateTime}: "local-datetime"</li>
+     * <li>{@link LocalDateTime}: "local-datetime"</li>
+     * <li>{@link List}: "[<i>element description</i>]"</li>
+     * <li>{@link Map}: "[<i>key description</i>: <i>value description</i>]"</li>
+     * </ul>
+     *
+     * Otherwise, the type is assumed to be a bean and is described as follows:
+     *
+     * <blockquote>
+     * {
+     *   property1: <i>property 1 description</i>,
+     *   property2: <i>property 2 description</i>,
+     *   ...
+     * }
+     * </blockquote>
+     *
+     * @param type
+     * The type to describe.
+     *
+     * @param structures
+     * A map that will be populated with descriptions of all bean types
+     * referenced by this type.
+     *
+     * @return
+     * The type's description.
+     */
+    public static String describe(Type type, Map<Class<?>, String> structures) {
+        if (type instanceof Class<?>) {
+            return describe((Class<?>)type, structures);
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType)type;
+
+            return describe(wildcardType.getUpperBounds()[0], structures);
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType)type;
+
+            Type rawType = parameterizedType.getRawType();
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+            if (rawType == List.class) {
+                return "[" + describe(actualTypeArguments[0], structures) + "]";
+            } else if (rawType == Map.class) {
+                return "[" + describe(actualTypeArguments[0], structures) + ": " + describe(actualTypeArguments[1], structures) + "]";
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static String describe(Class<?> type, Map<Class<?>, String> structures) {
+        if (type == Object.class) {
+            return "any";
+        } else if (type == Void.TYPE || type == Void.class) {
+            return "void";
+        } else if (type == Byte.TYPE || type == Byte.class) {
+            return "byte";
+        } else if (type == Short.TYPE || type == Short.class) {
+            return "short";
+        } else if (type == Integer.TYPE || type == Integer.class) {
+            return "integer";
+        } else if (type == Long.TYPE || type == Long.class) {
+            return "long";
+        } else if (type == Float.TYPE || type == Float.class) {
+            return "float";
+        } else if (type == Double.TYPE || type == Double.class) {
+            return "double";
+        } else if (Number.class.isAssignableFrom(type)) {
+            return "number";
+        } else if (type == Boolean.TYPE || type == Boolean.class) {
+            return "boolean";
+        } else if (CharSequence.class.isAssignableFrom(type)) {
+            return "string";
+        } else if (Enum.class.isAssignableFrom(type)) {
+            return "enum";
+        } else if (Date.class.isAssignableFrom(type)) {
+            return "date";
+        } else if (type == LocalDate.class) {
+            return "local-date";
+        } else if (type == LocalTime.class) {
+            return "local-time";
+        } else if (type == LocalDateTime.class) {
+            return "local-datetime";
+        } else {
+            if (!structures.containsKey(type)) {
+                Method[] methods = type.getMethods();
+
+                TreeMap<String, String> properties = new TreeMap<>();
+
+                for (int i = 0; i < methods.length; i++) {
+                    Method method = methods[i];
+
+                    if (method.getDeclaringClass() == Object.class) {
+                        continue;
+                    }
+
+                    String key = getKey(method, true);
+
+                    if (key != null) {
+                        properties.put(key, describe(method.getGenericReturnType(), structures));
+                    }
+                }
+
+                int j = 0;
+
+                StringBuilder descriptionBuilder = new StringBuilder();
+
+                descriptionBuilder.append("{\n");
+
+                for (Map.Entry<String, String> entry : properties.entrySet()) {
+                    if (j > 0) {
+                        descriptionBuilder.append(",\n");
+                    }
+
+                    descriptionBuilder.append("  " + entry.getKey() + ": " + entry.getValue());
+
+                    j++;
+                }
+
+                descriptionBuilder.append("\n}");
+
+                structures.put(type,  descriptionBuilder.toString());
+            }
+
+            return type.getSimpleName();
+        }
     }
 }

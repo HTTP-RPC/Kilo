@@ -41,6 +41,7 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `RequestMethod` - annotation that associates an HTTP verb with a service method
     * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
     * `ResourcePath` - annotation that associates a resource path with a service method
+    * `Response` - annotation that associates a response description with a service method
     * `JSONEncoder` - class that serializes an object hierarchy to JSON
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
     * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
@@ -415,7 +416,7 @@ The `BeanAdapter` class implements the `Map` interface and exposes any propertie
 
 If a property value is `null` or an instance of one of the following types, it is returned as is:
 
-* `String`
+* `CharSequence`
 * `Number`
 * `Boolean`
 * `Enum`
