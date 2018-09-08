@@ -151,9 +151,9 @@ public class BeanAdapterTest extends AbstractTest {
             "  double: double,\n" +
             "  i: integer,\n" +
             "  list: [any],\n" +
-            "  localDate: local-date,\n" +
-            "  localDateTime: local-datetime,\n" +
-            "  localTime: local-time,\n" +
+            "  localDate: date-local,\n" +
+            "  localDateTime: datetime-local,\n" +
+            "  localTime: time-local,\n" +
             "  long: long,\n" +
             "  map: [string: any],\n" +
             "  nestedBean: NestedBean,\n" +

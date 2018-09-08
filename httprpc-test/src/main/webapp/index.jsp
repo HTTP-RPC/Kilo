@@ -8,13 +8,25 @@
 <body>
 
 <h2>Test</h2>
+<a href="${pageContext.request.contextPath}/math?description">Math (description)</a><br/>
+<br/>
+
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a><br/>
 <a href="${pageContext.request.contextPath}/math/sum?values=1&values=2&values=3">Sum Values</a><br/>
 <a href="${pageContext.request.contextPath}/echo?value=héllo">Echo</a><br/>
+
+<hr/>
+
+<a href="${pageContext.request.contextPath}/catalog?description">Catalog (description)</a><br/>
+<br/>
+
 <a href="${pageContext.request.contextPath}/catalog/items">Items</a><br/>
 <a href="${pageContext.request.contextPath}/catalog/items/1">Item 1</a><br/>
 
 <hr/>
+
+<a href="${pageContext.request.contextPath}/upload?description">Upload (description)</a><br/>
+<br/>
 
 <form action="${pageContext.request.contextPath}/upload" method="post" enctype="multipart/form-data">
 <table>
@@ -42,9 +54,15 @@
 
 <hr>
 
+<a href="${pageContext.request.contextPath}/tree?description">Tree (description)</a><br/>
+<br/>
+
 <a href="${pageContext.request.contextPath}/tree">Tree</a><br/>
 
 <hr>
+
+<a href="${pageContext.request.contextPath}/test?description">Test (description)</a><br/>
+<br/>
 
 <a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
 <a href="${pageContext.request.contextPath}/test/a/123/b/héllo/c/456/d/göodbye">GET (Key List)</a><br/>
@@ -130,12 +148,20 @@
 </form>
 
 <h2>MongoDB</h2>
+
+<a href="${pageContext.request.contextPath}/restaurants?description">Restaurants (description)</a><br/>
+<br/>
+
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462">Restaurants</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=csv">Restaurants (CSV)</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=html">Restaurants (HTML)</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=xml">Restaurants (XML)</a><br/>
 
 <h2>MySQL</h2>
+
+<a href="${pageContext.request.contextPath}/pets?description">Pets (description)</a><br/>
+<br/>
+
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=csv">Pets (CSV)</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=html">Pets (HTML)</a><br/>

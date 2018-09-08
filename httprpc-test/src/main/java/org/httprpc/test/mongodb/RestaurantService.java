@@ -26,6 +26,7 @@ import org.httprpc.WebService;
 import org.httprpc.CSVEncoder;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
+import org.httprpc.Response;
 import org.jtemplate.TemplateEncoder;
 
 import com.mongodb.MongoClient;
@@ -59,6 +60,7 @@ public class RestaurantService extends WebService {
     }
 
     @RequestMethod("GET")
+    @Response("[{string: any}]")
     public void getRestaurants(String zipCode, String format) throws IOException {
         MongoDatabase db = mongoClient.getDatabase("test");
 

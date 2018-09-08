@@ -34,6 +34,7 @@ import org.httprpc.CSVEncoder;
 import org.httprpc.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
+import org.httprpc.Response;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 import org.jtemplate.TemplateEncoder;
@@ -70,6 +71,7 @@ public class PetService extends WebService {
     }
 
     @RequestMethod("GET")
+    @Response("[{name: string, owner: string, species: string, sex: string, birth: date}]")
     public void getPets(String owner, String format) throws SQLException, IOException {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");

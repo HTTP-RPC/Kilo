@@ -32,12 +32,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.httprpc.beans.BeanAdapter;
 
@@ -48,15 +52,18 @@ public abstract class WebService extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     private static class Resource {
-        public final HashMap<String, LinkedList<Method>> handlerMap = new HashMap<>();
-        public final HashMap<String, Resource> resources = new HashMap<>();
+        private static List<String> order = Arrays.asList("get", "post", "put", "patch", "delete");
 
-        public String name = null;
+        public final TreeMap<String, LinkedList<Method>> handlerMap = new TreeMap<>((verb1, verb2) -> {
+            int i1 = order.indexOf(verb1);
+            int i2 = order.indexOf(verb2);
 
-        @Override
-        public String toString() {
-            return handlerMap.keySet().toString() + "; " + resources.toString();
-        }
+            return Integer.compare((i1 == -1) ? order.size() : i1,  (i2 == -1) ? order.size() : i2);
+        });
+
+        public final TreeMap<String, Resource> resources = new TreeMap<>();
+
+        public String key = null;
     }
 
     private Resource root = null;
@@ -110,7 +117,7 @@ public abstract class WebService extends HttpServlet {
                                         throw new ServletException("Invalid path component.");
                                     }
 
-                                    child.name = component.substring(k);
+                                    child.key = component.substring(k);
 
                                     component = PATH_VARIABLE;
                                 }
@@ -141,12 +148,22 @@ public abstract class WebService extends HttpServlet {
     @Override
     @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String verb = request.getMethod().toLowerCase();
+        String pathInfo = request.getPathInfo();
+
+        if (verb.equals("get") && pathInfo == null) {
+            String queryString = request.getQueryString();
+
+            if (queryString != null && queryString.equals("description")) {
+                describeService(request, response);
+                return;
+            }
+        }
+
         Resource resource = root;
 
         ArrayList<String> keyList = new ArrayList<>();
         HashMap<String, String> keyMap = new HashMap<>();
-
-        String pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
             String[] components = pathInfo.split("/");
@@ -170,8 +187,8 @@ public abstract class WebService extends HttpServlet {
 
                     keyList.add(component);
 
-                    if (child.name != null) {
-                        keyMap.put(child.name, component);
+                    if (child.key != null) {
+                        keyMap.put(child.key, component);
                     }
                 }
 
@@ -179,7 +196,7 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        List<Method> handlerList = resource.handlerMap.get(request.getMethod().toLowerCase());
+        List<Method> handlerList = resource.handlerMap.get(verb);
 
         if (handlerList == null) {
             super.service(request, response);
@@ -453,6 +470,125 @@ public abstract class WebService extends HttpServlet {
      */
     protected String getKey(String name) {
         return keyMap.get().get(name);
+    }
+
+    private void describeService(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType(String.format("text/html;charset=%s", UTF_8));
+
+        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+
+        try {
+            XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(response.getWriter());
+
+            xmlStreamWriter.writeStartElement("html");
+            xmlStreamWriter.writeStartElement("body");
+
+            TreeMap<Class<?>, String> structures = new TreeMap<>((type1, type2) -> {
+                return type1.getSimpleName().compareTo(type2.getSimpleName());
+            });
+
+            describeResource(request.getServletPath(), root, structures, xmlStreamWriter);
+
+            for (Map.Entry<Class<?>, String> entry : structures.entrySet()) {
+                Class<?> type = entry.getKey();
+
+                if (type == URL.class) {
+                    continue;
+                }
+
+                String name = type.getSimpleName();
+
+                xmlStreamWriter.writeStartElement("h3");
+                xmlStreamWriter.writeAttribute("id", name);
+                xmlStreamWriter.writeCharacters(name);
+                xmlStreamWriter.writeEndElement();
+
+                xmlStreamWriter.writeStartElement("pre");
+                xmlStreamWriter.writeCharacters(entry.getValue());
+                xmlStreamWriter.writeEndElement();
+            }
+
+            xmlStreamWriter.writeEndElement();
+            xmlStreamWriter.writeEndElement();
+
+            xmlStreamWriter.close();
+        } catch (XMLStreamException exception) {
+            throw new IOException(exception);
+        }
+    }
+
+    private void describeResource(String path, Resource resource, TreeMap<Class<?>, String> structures, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+        if (!resource.handlerMap.isEmpty()) {
+            xmlStreamWriter.writeStartElement("h2");
+            xmlStreamWriter.writeCharacters(path);
+            xmlStreamWriter.writeEndElement();
+
+            for (Map.Entry<String, LinkedList<Method>> entry : resource.handlerMap.entrySet()) {
+                for (Method method : entry.getValue()) {
+                    xmlStreamWriter.writeStartElement("pre");
+
+                    xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase() + " (");
+
+                    Parameter[] parameters = method.getParameters();
+
+                    for (int i = 0; i < parameters.length; i++) {
+                        Parameter parameter = parameters[i];
+
+                        if (i > 0) {
+                            xmlStreamWriter.writeCharacters(", ");
+                        }
+
+                        xmlStreamWriter.writeCharacters(getName(parameter) + ": ");
+
+                        Type type = parameter.getParameterizedType();
+
+                        if (type == URL.class) {
+                            xmlStreamWriter.writeCharacters("file");
+                        } else if (type instanceof ParameterizedType
+                            && ((ParameterizedType)type).getRawType() == List.class
+                            && ((ParameterizedType)type).getActualTypeArguments()[0] == URL.class) {
+                            xmlStreamWriter.writeCharacters("[file]");
+                        } else {
+                            xmlStreamWriter.writeCharacters(BeanAdapter.describe(type, structures));
+                        }
+                    }
+
+                    xmlStreamWriter.writeCharacters(") -> ");
+
+                    Type type = method.getGenericReturnType();
+                    Response response = method.getAnnotation(Response.class);
+
+                    if ((type == Void.class || type == Void.TYPE) && response != null) {
+                        xmlStreamWriter.writeCharacters(response.value());
+                    } else {
+                        String description = BeanAdapter.describe(type, structures);
+
+                        if (structures.containsKey(type)) {
+                            xmlStreamWriter.writeStartElement("a");
+                            xmlStreamWriter.writeAttribute("href", "#" + description);
+                            xmlStreamWriter.writeCharacters(description);
+                            xmlStreamWriter.writeEndElement();
+                        } else {
+                            xmlStreamWriter.writeCharacters(description);
+                        }
+                    }
+
+                    xmlStreamWriter.writeEndElement();
+                }
+            }
+        }
+
+        for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
+            String component = entry.getKey();
+
+            Resource child = entry.getValue();
+
+            if (child.key != null) {
+                component += ":" + child.key;
+            }
+
+            describeResource(path + "/" + component, child, structures, xmlStreamWriter);
+        }
     }
 }
 

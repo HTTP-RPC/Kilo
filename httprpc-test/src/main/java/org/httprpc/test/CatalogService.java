@@ -17,6 +17,7 @@ package org.httprpc.test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +33,7 @@ import org.httprpc.ResourcePath;
 public class CatalogService extends WebService {
     private static final long serialVersionUID = 0;
 
-    private List<?> items = null;
+    private List<? extends Map<String, ?>> items = null;
 
     @Override
     public void init() throws ServletException {
@@ -66,13 +67,13 @@ public class CatalogService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("items")
-    public List<?> getItems() {
+    public List<? extends Map<String, ?>> getItems() {
         return items;
     }
 
     @RequestMethod("GET")
     @ResourcePath("items/?:itemID")
-    public Object getItem() {
+    public Map<String, ?> getItem() {
         int itemID = Integer.parseInt(getKey("itemID"));
 
         return (itemID > 0 && itemID <= items.size()) ? items.get(itemID - 1) : null;

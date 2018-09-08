@@ -767,10 +767,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>Any type that implements {@link CharSequence}: "string"</li>
      * <li>Any {@link Enum} type: "enum"</li>
      * <li>Any type that extends {@link Date}: "date"</li>
-     * <li>{@link LocalDate}: "local-date"</li>
-     * <li>{@link LocalTime}: "local-time"</li>
-     * <li>{@link LocalDateTime}: "local-datetime"</li>
-     * <li>{@link LocalDateTime}: "local-datetime"</li>
+     * <li>{@link LocalDate}: "date-local"</li>
+     * <li>{@link LocalTime}: "time-local"</li>
+     * <li>{@link LocalDateTime}: "datetime-local"</li>
      * <li>{@link List}: "[<i>element description</i>]"</li>
      * <li>{@link Map}: "[<i>key description</i>: <i>value description</i>]"</li>
      * </ul>
@@ -848,13 +847,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (Date.class.isAssignableFrom(type)) {
             return "date";
         } else if (type == LocalDate.class) {
-            return "local-date";
+            return "date-local";
         } else if (type == LocalTime.class) {
-            return "local-time";
+            return "time-local";
         } else if (type == LocalDateTime.class) {
-            return "local-datetime";
+            return "datetime-local";
         } else {
             if (!structures.containsKey(type)) {
+                structures.put(type, null);
+
                 Method[] methods = type.getMethods();
 
                 TreeMap<String, String> properties = new TreeMap<>();
