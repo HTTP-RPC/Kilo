@@ -74,23 +74,27 @@ public class RestaurantService extends WebService {
                 }
             };
 
-            if (format == null) {
+            if (format == null || format.equals("json")) {
+                getResponse().setContentType("application/json");
+
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
                 jsonEncoder.writeValue(cursorAdapter, getResponse().getOutputStream());
             } else if (format.equals("csv")) {
+                getResponse().setContentType("text/csv");
+
                 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "address.building", "address.street", "borough", "cuisine"));
 
                 csvEncoder.writeValues(cursorAdapter, getResponse().getOutputStream());
-            } else {
-                String name = String.format("%s.%s", getRequest().getServletPath().substring(1), format);
+            } else if (format.equals("html")){
+                getResponse().setContentType("text/html;charset=UTF-8");
 
-                getResponse().setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
+                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("restaurants.html"));
 
-                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(name));
-
-                templateEncoder.setBaseName(getClass().getName());
+                templateEncoder.setBaseName(getClass().getPackage().getName() + ".restaurants");
                 templateEncoder.writeValue(cursorAdapter, getResponse().getOutputStream(), getRequest().getLocale());
+            } else {
+                throw new UnsupportedOperationException();
             }
         } finally {
             getResponse().flushBuffer();

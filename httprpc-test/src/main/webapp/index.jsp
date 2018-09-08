@@ -155,7 +155,6 @@
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462">Restaurants</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=csv">Restaurants (CSV)</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=html">Restaurants (HTML)</a><br/>
-<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=xml">Restaurants (XML)</a><br/>
 
 <h2>MySQL</h2>
 
@@ -165,7 +164,6 @@
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=csv">Pets (CSV)</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=html">Pets (HTML)</a><br/>
-<a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=xml">Pets (XML)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/pets/average-age">Average Age</a><br/>
 

@@ -84,23 +84,27 @@ public class PetService extends WebService {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
 
-                    if (format == null) {
+                    if (format == null || format.equals("json")) {
+                        getResponse().setContentType("application/json");
+
                         JSONEncoder jsonEncoder = new JSONEncoder();
 
                         jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
                     } else if (format.equals("csv")) {
+                        getResponse().setContentType("text/csv");
+
                         CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
 
                         csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
-                    } else {
-                        String name = String.format("%s.%s", getRequest().getServletPath().substring(1), format);
+                    } else if (format.equals("html")) {
+                        getResponse().setContentType("text/html;charset=UTF-8");
 
-                        getResponse().setContentType(String.format("%s;charset=UTF-8", getServletContext().getMimeType(name)));
+                        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource(name));
-
-                        templateEncoder.setBaseName(getClass().getName());
+                        templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
                         templateEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream(), getRequest().getLocale());
+                    } else {
+                        throw new UnsupportedOperationException();
                     }
                 }
             }
