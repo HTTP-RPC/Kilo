@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 70KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 66KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -41,7 +41,7 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `RequestMethod` - annotation that associates an HTTP verb with a service method
     * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
     * `ResourcePath` - annotation that associates a resource path with a service method
-    * `Response` - annotation that associates a response description with a service method
+    * `Response` - annotation that associates a custom response description with a service method
     * `JSONEncoder` - class that serializes an object hierarchy to JSON
     * `JSONDecoder` - class that deserializes an object hierarchy from JSON
     * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
@@ -296,7 +296,19 @@ Service methods are grouped by resource path. Method parameters and return value
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
 * Any other type: "{property1: <em>property 1 type</em>, property2: <em>property 2 type</em>, ...}"
 
-Methods that produce a custom response can use the `Response` annotation to describe the result. For example:
+For example, a description of the math service might look like this:
+
+> ## /math/sum
+> 
+> ```
+> GET (a: double, b: double) -> double
+> ```
+> ```
+> GET (values: [double]) -> double
+> ```
+
+#### Custom Response Descriptions
+Methods that return a custom response can use the `Response` annotation to describe the result. For example, this method declaration:
 
 ```
 @RequestMethod("GET")
@@ -306,6 +318,49 @@ public void getMap() {
     ...
 }
 ```
+
+would produce a description similar to the following:
+
+> ## /map
+> 
+> ```
+> GET () -> {text: string, number: integer, flag: boolean}
+> ```
+
+#### Localized Service Descriptionss
+Services can provide localized API documentation by including one or more resource bundles on the classpath. These resource bundles must reside in the same package and have the same base name as the service itself.
+
+For example, the following _MathService.properties_ file could be used to provide localized method descriptions for the `MathService` class:
+
+```
+MathService = Math example service.
+getSum = Calculates the sum of two or more numbers.
+getSum.a = The first number.
+getSum.b = The second number.
+getSum.values = The numbers to add.
+```
+
+The first line describes the service itself. The remaining lines describe the service methods and their parameters. Note that an overloaded method such as `getSum()` can only have a single description, so it should be generic enough to describe all overloads.
+
+A localized description of the math service might look like this:
+
+> Math example service.
+> 
+> ## /math/sum
+> ```
+> GET (a: double, b: double) -> double
+> ```
+> Calculates the sum of two or more numbers.
+> 
+> - **a** The first number.
+> - **b** The second number. 
+> 
+> ```
+> GET (values: [double]) -> double
+> ```
+> Calculates the sum of two or more numbers.
+> 
+> - **values** The numbers to add.
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
