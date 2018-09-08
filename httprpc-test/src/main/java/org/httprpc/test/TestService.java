@@ -157,19 +157,6 @@ public class TestService extends WebService {
         echo();
     }
 
-    @RequestMethod("GET")
-    @ResourcePath("error")
-    public void testError() throws Exception {
-        throw new Exception("Sample error message.");
-    }
-
-    @RequestMethod("GET")
-    public int testTimeout(int value, int delay) throws InterruptedException {
-        Thread.sleep(delay);
-
-        return value;
-    }
-
     private void echo() throws IOException {
         InputStream inputStream = getRequest().getInputStream();
         OutputStream outputStream = getResponse().getOutputStream();
@@ -185,5 +172,18 @@ public class TestService extends WebService {
     @RequestMethod("DELETE")
     public void testDelete(int id) {
         // No-op
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("error")
+    public void testError() throws Exception {
+        throw new Exception("Sample error message.");
+    }
+
+    @RequestMethod("GET")
+    public int testTimeout(int value, int delay) throws InterruptedException {
+        Thread.sleep(delay);
+
+        return value;
     }
 }

@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -487,7 +489,31 @@ public abstract class WebService extends HttpServlet {
                 return type1.getSimpleName().compareTo(type2.getSimpleName());
             });
 
-            describeResource(request.getServletPath(), root, structures, xmlStreamWriter);
+            Class<?> serviceType = getClass();
+
+            ResourceBundle resourceBundle;
+            try {
+                resourceBundle = ResourceBundle.getBundle(serviceType.getCanonicalName(), request.getLocale());
+            } catch (MissingResourceException exception) {
+                resourceBundle = null;
+            }
+
+            if (resourceBundle != null) {
+                String description;
+                try {
+                    description = resourceBundle.getString(serviceType.getSimpleName());
+                } catch (MissingResourceException exception) {
+                    description = null;
+                }
+
+                if (description != null) {
+                    xmlStreamWriter.writeStartElement("p");
+                    xmlStreamWriter.writeCharacters(description);
+                    xmlStreamWriter.writeEndElement();
+                }
+            }
+
+            describeResource(request.getServletPath(), root, structures, xmlStreamWriter, resourceBundle);
 
             for (Map.Entry<Class<?>, String> entry : structures.entrySet()) {
                 Class<?> type = entry.getKey();
@@ -517,7 +543,8 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private void describeResource(String path, Resource resource, TreeMap<Class<?>, String> structures, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+    private void describeResource(String path, Resource resource, TreeMap<Class<?>, String> structures,
+        XMLStreamWriter xmlStreamWriter, ResourceBundle resourceBundle) throws XMLStreamException {
         if (!resource.handlerMap.isEmpty()) {
             xmlStreamWriter.writeStartElement("h2");
             xmlStreamWriter.writeCharacters(path);
@@ -525,11 +552,11 @@ public abstract class WebService extends HttpServlet {
 
             for (Map.Entry<String, LinkedList<Method>> entry : resource.handlerMap.entrySet()) {
                 for (Method method : entry.getValue()) {
+                    Parameter[] parameters = method.getParameters();
+
                     xmlStreamWriter.writeStartElement("pre");
 
                     xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase() + " (");
-
-                    Parameter[] parameters = method.getParameters();
 
                     for (int i = 0; i < parameters.length; i++) {
                         Parameter parameter = parameters[i];
@@ -574,6 +601,56 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     xmlStreamWriter.writeEndElement();
+
+                    if (resourceBundle != null) {
+                        String methodName = method.getName();
+
+                        String methodDescription;
+                        try {
+                            methodDescription = resourceBundle.getString(methodName);
+                        } catch (MissingResourceException exception) {
+                            methodDescription = null;
+                        }
+
+                        if (methodDescription != null) {
+                            xmlStreamWriter.writeStartElement("p");
+                            xmlStreamWriter.writeCharacters(methodDescription);
+
+                            if (parameters.length > 0) {
+                                xmlStreamWriter.writeStartElement("ul");
+
+                                for (int i = 0; i < parameters.length; i++) {
+                                    Parameter parameter = parameters[i];
+
+                                    String parameterName = getName(parameter);
+
+                                    xmlStreamWriter.writeStartElement("li");
+
+                                    xmlStreamWriter.writeStartElement("strong");
+                                    xmlStreamWriter.writeCharacters(parameterName);
+                                    xmlStreamWriter.writeEndElement();
+
+                                    String parameterDescription;
+                                    try {
+                                        parameterDescription = resourceBundle.getString(methodName + "." + parameterName);
+                                    } catch (MissingResourceException exception) {
+                                        parameterDescription = null;
+                                    }
+
+                                    if (parameterDescription != null) {
+                                        xmlStreamWriter.writeEntityRef("nbsp");
+                                        xmlStreamWriter.writeCharacters(parameterDescription);
+                                    }
+
+                                    xmlStreamWriter.writeEndElement();
+                                }
+
+                                xmlStreamWriter.writeEndElement();
+                            }
+
+                            xmlStreamWriter.writeEndElement();
+                        }
+                    }
                 }
             }
         }
@@ -587,7 +664,7 @@ public abstract class WebService extends HttpServlet {
                 component += ":" + child.key;
             }
 
-            describeResource(path + "/" + component, child, structures, xmlStreamWriter);
+            describeResource(path + "/" + component, child, structures, xmlStreamWriter, resourceBundle);
         }
     }
 }
