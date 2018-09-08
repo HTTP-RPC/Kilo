@@ -154,7 +154,7 @@ public abstract class WebService extends HttpServlet {
         if (verb.equals("get") && pathInfo == null) {
             String queryString = request.getQueryString();
 
-            if (queryString != null && queryString.equals("description")) {
+            if (queryString != null && queryString.equals("api")) {
                 describeService(request, response);
                 return;
             }

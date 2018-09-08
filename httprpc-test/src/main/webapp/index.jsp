@@ -8,7 +8,7 @@
 <body>
 
 <h2>Test</h2>
-<a href="${pageContext.request.contextPath}/math?description">Math (description)</a><br/>
+<a href="${pageContext.request.contextPath}/math?api">Math (API)</a><br/>
 <br/>
 
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a><br/>
@@ -17,7 +17,7 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/catalog?description">Catalog (description)</a><br/>
+<a href="${pageContext.request.contextPath}/catalog?api">Catalog (API)</a><br/>
 <br/>
 
 <a href="${pageContext.request.contextPath}/catalog/items">Items</a><br/>
@@ -25,7 +25,7 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/upload?description">Upload (description)</a><br/>
+<a href="${pageContext.request.contextPath}/upload?api">Upload (API)</a><br/>
 <br/>
 
 <form action="${pageContext.request.contextPath}/upload" method="post" enctype="multipart/form-data">
@@ -54,14 +54,14 @@
 
 <hr>
 
-<a href="${pageContext.request.contextPath}/tree?description">Tree (description)</a><br/>
+<a href="${pageContext.request.contextPath}/tree?api">Tree (API)</a><br/>
 <br/>
 
 <a href="${pageContext.request.contextPath}/tree">Tree</a><br/>
 
 <hr>
 
-<a href="${pageContext.request.contextPath}/test?description">Test (description)</a><br/>
+<a href="${pageContext.request.contextPath}/test?api">Test (API)</a><br/>
 <br/>
 
 <a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
@@ -149,7 +149,7 @@
 
 <h2>MongoDB</h2>
 
-<a href="${pageContext.request.contextPath}/restaurants?description">Restaurants (description)</a><br/>
+<a href="${pageContext.request.contextPath}/restaurants?api">Restaurants (API)</a><br/>
 <br/>
 
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462">Restaurants</a><br/>
@@ -159,7 +159,7 @@
 
 <h2>MySQL</h2>
 
-<a href="${pageContext.request.contextPath}/pets?description">Pets (description)</a><br/>
+<a href="${pageContext.request.contextPath}/pets?api">Pets (API)</a><br/>
 <br/>
 
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets</a><br/>

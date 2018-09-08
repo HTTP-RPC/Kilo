@@ -770,19 +770,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link LocalDate}: "date-local"</li>
      * <li>{@link LocalTime}: "time-local"</li>
      * <li>{@link LocalDateTime}: "datetime-local"</li>
-     * <li>{@link List}: "[<i>element description</i>]"</li>
-     * <li>{@link Map}: "[<i>key description</i>: <i>value description</i>]"</li>
+     * <li>{@link List}: "[<i>element type</i>]"</li>
+     * <li>{@link Map}: "[<i>key type</i>: <i>value type</i>]"</li>
+     * <li>Any other type: "{property1: <i>property 1 type</i>, property2: <i>property 2 type</i>, ...}"</li>
      * </ul>
-     *
-     * Otherwise, the type is assumed to be a bean and is described as follows:
-     *
-     * <blockquote>
-     * {
-     *   property1: <i>property 1 description</i>,
-     *   property2: <i>property 2 description</i>,
-     *   ...
-     * }
-     * </blockquote>
      *
      * @param type
      * The type to describe.

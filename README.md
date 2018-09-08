@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 70KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -245,7 +245,9 @@ protected String getKey(int index) { ... }
  
 For example, given the following request:
 
-    GET /contacts/jsmith/addresses/home
+```
+GET /contacts/jsmith/addresses/home
+```
 
 the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
 
@@ -265,6 +267,45 @@ protected String getKey(String name) { ... }
 ```
  
 For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
+
+### Documentation
+API documentation can be viewed by appending "?api" to a service URL; for example:
+
+```
+GET /math?api
+```
+
+Service methods are grouped by resource path. Method parameters and return values are encoded as follows:
+
+* `Object`: "any"
+* `Void` or `void`: "void"
+* `Byte` or `byte`: "byte"
+* `Short` or `short`: "short"
+* `Integer` or `int`: "integer"
+* `Long` or `long`: "long"
+* `Float` or `float`: "float"
+* `Double` or `double`: "double"
+* Any other type that extends `Number`: "number"
+* Any type that implements `CharSequence`: "string"
+* Any `Enum` type: "enum"
+* Any type that extends `java.util.Date`: "date"
+* `java.util.time.LocalDate`: "date-local"
+* `java.util.time.LocalTime`: "time-local"
+* `java.util.time.LocalDateTime`: "datetime-local"
+* `java.util.List`: "[<em>element type</em>]"
+* `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
+* Any other type: "{property1: <em>property 1 type</em>, property2: <em>property 2 type</em>, ...}"
+
+Methods that produce a custom response can use the `Response` annotation to describe the result. For example:
+
+```
+@RequestMethod("GET")
+@ResourcePath("map")
+@Response("{text: string, number: integer, flag: boolean}")
+public void getMap() {
+    ...
+}
+```
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
