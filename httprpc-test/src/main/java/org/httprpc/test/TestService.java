@@ -175,6 +175,13 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
+    @ResourcePath("deprecated")
+    @Deprecated
+    public void testDeprecated() {
+        // No-op
+    }
+
+    @RequestMethod("GET")
     @ResourcePath("error")
     public void testError() throws Exception {
         throw new Exception("Sample error message.");

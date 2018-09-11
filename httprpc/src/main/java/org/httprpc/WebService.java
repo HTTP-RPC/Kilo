@@ -14,8 +14,11 @@
 
 package org.httprpc;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -483,6 +486,21 @@ public abstract class WebService extends HttpServlet {
             XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(response.getWriter());
 
             xmlStreamWriter.writeStartElement("html");
+            xmlStreamWriter.writeStartElement("head");
+            xmlStreamWriter.writeStartElement("style");
+
+            try (InputStream inputStream = WebService.class.getResourceAsStream("api.css")) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    xmlStreamWriter.writeCharacters(line + "\n");
+                }
+            }
+
+            xmlStreamWriter.writeEndElement();
+            xmlStreamWriter.writeEndElement();
+
             xmlStreamWriter.writeStartElement("body");
 
             TreeMap<Class<?>, String> structures = new TreeMap<>((type1, type2) -> {
@@ -556,7 +574,17 @@ public abstract class WebService extends HttpServlet {
 
                     xmlStreamWriter.writeStartElement("pre");
 
-                    xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase() + " (");
+                    String verb = entry.getKey().toUpperCase();
+
+                    if (method.getAnnotation(Deprecated.class) == null) {
+                        xmlStreamWriter.writeCharacters(verb);
+                    } else {
+                        xmlStreamWriter.writeStartElement("del");
+                        xmlStreamWriter.writeCharacters(verb);
+                        xmlStreamWriter.writeEndElement();
+                    }
+
+                    xmlStreamWriter.writeCharacters(" (");
 
                     for (int i = 0; i < parameters.length; i++) {
                         Parameter parameter = parameters[i];

@@ -1,0 +1,23 @@
+body {
+  font-family: sans-serif;
+}
+
+h2 {
+  font-size: large;
+}
+
+h3 {
+  font-size: medium;
+}
+
+p {
+  font-size: small;
+}
+
+ul {
+  font-size: small;
+}
+
+pre {
+  font-size: medium;
+}
