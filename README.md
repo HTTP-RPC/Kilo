@@ -207,6 +207,9 @@ Methods may also return `void` or `Void` to indicate that they do not produce a 
 
 If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail [later](#beanadapter).
 
+#### Custom Result Encodings
+Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom result encoding. See the method documentation for more information.
+
 ### Exceptions
 If any exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
 
@@ -306,6 +309,8 @@ For example, a description of the math service might look like this:
 > ```
 > GET (values: [double]) -> double
 > ```
+
+Note that methods tagged with the `Deprecated` annotation will be flagged as such in the generated output.
 
 #### Custom Response Descriptions
 Methods that return a custom response can use the `Response` annotation to describe the result. For example, this method declaration:

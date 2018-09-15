@@ -300,11 +300,8 @@ public abstract class WebService extends HttpServlet {
 
             if (returnType != Void.TYPE && returnType != Void.class) {
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.setContentType(String.format("application/json;charset=%s", UTF_8));
 
-                JSONEncoder jsonEncoder = new JSONEncoder();
-
-                jsonEncoder.writeValue(BeanAdapter.adapt(result), response.getOutputStream());
+                encodeResult(request, response, result);
             } else {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
@@ -475,6 +472,28 @@ public abstract class WebService extends HttpServlet {
      */
     protected String getKey(String name) {
         return keyMap.get().get(name);
+    }
+
+    /**
+     * Encodes the result of a service method invocation.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @param response
+     * The servlet response.
+     *
+     * @param result
+     * The method result.
+     *
+     * @throws IOException
+     */
+    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
+        response.setContentType(String.format("application/json;charset=%s", UTF_8));
+
+        JSONEncoder jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.writeValue(BeanAdapter.adapt(result), response.getOutputStream());
     }
 
     private void describeService(HttpServletRequest request, HttpServletResponse response) throws IOException {
