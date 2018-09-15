@@ -487,6 +487,7 @@ public abstract class WebService extends HttpServlet {
      * The method result.
      *
      * @throws IOException
+     * If an exception occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format("application/json;charset=%s", UTF_8));
