@@ -475,7 +475,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Encodes the result of a service method invocation.
+     * Encodes the result of a service operation.
      *
      * @param request
      * The servlet request.
