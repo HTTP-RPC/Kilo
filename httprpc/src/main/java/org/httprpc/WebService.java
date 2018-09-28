@@ -49,6 +49,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.JSONEncoder;
 
 /**
  * Abstract base class for REST-based web services.

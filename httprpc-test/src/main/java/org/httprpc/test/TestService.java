@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.WebService;
-import org.httprpc.JSONDecoder;
+import org.httprpc.io.JSONDecoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.RequestParameter;
 import org.httprpc.ResourcePath;

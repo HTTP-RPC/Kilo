@@ -23,8 +23,8 @@ import javax.servlet.annotation.WebServlet;
 
 import org.bson.Document;
 import org.httprpc.WebService;
-import org.httprpc.CSVEncoder;
-import org.httprpc.JSONEncoder;
+import org.httprpc.io.CSVEncoder;
+import org.httprpc.io.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.Response;
 import org.jtemplate.TemplateEncoder;

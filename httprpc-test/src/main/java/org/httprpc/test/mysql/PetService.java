@@ -30,8 +30,8 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import org.httprpc.WebService;
-import org.httprpc.CSVEncoder;
-import org.httprpc.JSONEncoder;
+import org.httprpc.io.CSVEncoder;
+import org.httprpc.io.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.Response;

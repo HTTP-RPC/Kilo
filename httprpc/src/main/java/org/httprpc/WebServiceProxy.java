@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.JSONDecoder;
 
 /**
  * Web service proxy class.

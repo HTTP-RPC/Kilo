@@ -12,13 +12,15 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
+import org.httprpc.AbstractTest;
+import org.httprpc.io.JSONDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 

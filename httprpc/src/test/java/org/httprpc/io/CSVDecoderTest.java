@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -21,7 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.httprpc.AbstractTest;
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.CSVDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 

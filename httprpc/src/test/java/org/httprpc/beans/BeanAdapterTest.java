@@ -15,8 +15,8 @@
 package org.httprpc.beans;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.JSONDecoder;
 import org.httprpc.AbstractTest;
-import org.httprpc.JSONDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 

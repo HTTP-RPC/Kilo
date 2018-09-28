@@ -37,23 +37,24 @@ HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servle
 HTTP-RPC provides the following classes for creating and consuming REST services:
 
 * `org.httprpc`
-    * `WebService` - abstract base class for web services
     * `RequestMethod` - annotation that associates an HTTP verb with a service method
     * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `Response` - annotation that associates a custom response description with a service method
-    * `JSONEncoder` - class that serializes an object hierarchy to JSON
-    * `JSONDecoder` - class that deserializes an object hierarchy from JSON
-    * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
-    * `CSVDecoder` - class that deserializes an iterable sequence of values from CSV
+    * `WebService` - abstract base class for web services
     * `WebServiceProxy` - class for invoking remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
+* `org.httprpc.io`
+    * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
+    * `CSVDecoder` - class that deserializes an iterable sequence of values from CSV
+    * `JSONEncoder` - class that serializes an object hierarchy to JSON
+    * `JSONDecoder` - class that deserializes an object hierarchy from JSON
 * `org.httprpc.beans`
     * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
     * `Key` - annotation that associates a custom key with a bean property
 * `org.httprpc.sql`
-    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
     * `Parameters` - class for applying named parameters values to prepared statements 
+    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
 
 These classes are explained in more detail in the following sections.
 
