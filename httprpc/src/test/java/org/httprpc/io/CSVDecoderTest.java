@@ -22,25 +22,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.httprpc.AbstractTest;
-import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.CSVDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class CSVDecoderTest extends AbstractTest {
-    public interface TestRow {
-        public String getA();
-        public int getB();
-        public double getC();
-        public boolean getD();
-    }
-
     private String text = "\"a\",\"b\",\"c\",\"d\"\r\n"
         + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
         + "\" D\rE\nF\r\n\",2,4.0,false\n";
 
     @Test
-    public void testReadValues1() throws IOException {
+    public void testReadValues() throws IOException {
         List<Map<String, ?>> expected = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
@@ -62,48 +54,12 @@ public class CSVDecoderTest extends AbstractTest {
 
         CSVDecoder csvDecoder = new CSVDecoder();
 
-        CSVDecoder.Cursor cursor = csvDecoder.readValues(reader);
+        Iterable<Map<String, String>> cursor = csvDecoder.readValues(reader);
 
         for (Map<String, String> row : cursor) {
             HashMap<String, Object> map = new HashMap<>();
 
             map.putAll(row);
-
-            actual.add(map);
-        }
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testReadValues2() throws IOException {
-        List<Map<String, ?>> expected = listOf(
-            mapOf(
-                entry("a", "A,B,\"C\" "),
-                entry("b", 1),
-                entry("c", 2.0),
-                entry("d", true)
-            ),
-            mapOf(
-                entry("a", " D\rE\nF\r\n"),
-                entry("b", 2),
-                entry("c", 4.0),
-                entry("d", false)
-            )
-        );
-
-        LinkedList<Map<String, Object>> actual = new LinkedList<>();
-
-        StringReader reader = new StringReader(text);
-
-        CSVDecoder csvDecoder = new CSVDecoder();
-
-        CSVDecoder.Cursor cursor = csvDecoder.readValues(reader);
-
-        for (TestRow row : cursor.adapt(TestRow.class)) {
-            HashMap<String, Object> map = new HashMap<>();
-
-            map.putAll(new BeanAdapter(row));
 
             actual.add(map);
         }

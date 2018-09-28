@@ -472,45 +472,12 @@ The following code would perform the reverse conversion (from CSV to JSON):
 // Read from CSV
 CSVDecoder csvDecoder = new CSVDecoder();
 
-CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
+Iterable<Map<String, String>> months = csvDecoder.readValues(inputStream);
 
 // Write to JSON
 JSONEncoder jsonEncoder = new JSONEncoder();
 
 jsonEncoder.writeValue(months, System.out);
-```
-
-### Typed Iteration
-The `adapt()` method of the `CSVDecoder.Cursor` class can be used to facilitate typed iteration of CSV data. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the document. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to map values in the cursor. A single proxy instance is used for all rows to minimize heap allocation. 
-
-For example, the following interface might be used to model the month records shown in the previous section:
-
-```java
-public interface Month {
-    public String getName();
-    public int getDays();
-}
-```
-
-This code snippet uses `adapt()` to create an iterable sequence of `Month` values from the CSV document: 
-
-```java
-CSVDecoder csvDecoder = new CSVDecoder();
-
-CSVDecoder.Cursor months = csvDecoder.readValues(inputStream);
-
-for (Month month : months.adapt(Month.class)) {
-    System.out.println(String.format("%s has %d days", month.getName(), month.getDays()));
-}
-```
-
-The output of this code is shown below:
-
-```
-January has 31 days
-February has 28 days
-March has 31 days
-...
 ```
 
 ## BeanAdapter

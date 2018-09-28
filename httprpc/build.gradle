@@ -20,7 +20,7 @@ plugins {
 }
 
 group = 'org.httprpc'
-version = '5.9'
+version = '6.0'
 
 repositories {
     mavenCentral()
