@@ -35,7 +35,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 
     /**
-     * Creates a new result set adapter.
+     * Constructs a new result set adapter.
      *
      * @param resultSet
      * The source result set.

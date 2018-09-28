@@ -30,7 +30,7 @@ public class CSVEncoder {
     private List<String> keys;
 
     /**
-     * Creates a new CSV encoder.
+     * Constructs a new CSV encoder.
      *
      * @param keys
      * The column keys.

@@ -118,7 +118,7 @@ public class WebServiceProxy {
     private static final int EOF = -1;
 
     /**
-     * Creates a new web service proxy.
+     * Constructs a new web service proxy.
      *
      * @param method
      * The service method.

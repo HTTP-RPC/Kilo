@@ -34,13 +34,15 @@ public class CSVDecoder {
     private static class Cursor implements Iterable<Map<String, String>> {
         private List<String> keys;
         private Reader reader;
+        private char delimiter;
 
         private ArrayList<String> values = new ArrayList<>();
         private LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
-        private Cursor(List<String> keys, Reader reader) {
+        private Cursor(List<String> keys, Reader reader, char delimiter) {
             this.keys = keys;
             this.reader = reader;
+            this.delimiter = delimiter;
         }
 
         @Override
@@ -52,7 +54,7 @@ public class CSVDecoder {
                 public boolean hasNext() {
                     if (hasNext == null) {
                         try {
-                            readRecord(reader, values);
+                            readRecord(reader, values, delimiter);
                         } catch (IOException exception) {
                             throw new RuntimeException(exception);
                         }
@@ -83,7 +85,26 @@ public class CSVDecoder {
         }
     }
 
+    private char delimiter;
+
     private static final int EOF = -1;
+
+    /**
+     * Constructs a new CSV decoder.
+     */
+    public CSVDecoder() {
+        this(',');
+    }
+
+    /**
+     * Constructs a new CSV decoder.
+     *
+     * @param delimiter
+     * The character to use as a field delimiter.
+     */
+    public CSVDecoder(char delimiter) {
+        this.delimiter = delimiter;
+    }
 
     /**
      * Reads a sequence of values from an input stream.
@@ -116,12 +137,12 @@ public class CSVDecoder {
     public Iterable<Map<String, String>> readValues(Reader reader) throws IOException {
         ArrayList<String> keys = new ArrayList<>();
 
-        readRecord(reader, keys);
+        readRecord(reader, keys, delimiter);
 
-        return new Cursor(keys, reader);
+        return new Cursor(keys, reader, delimiter);
     }
 
-    private static void readRecord(Reader reader, ArrayList<String> fields) throws IOException {
+    private static void readRecord(Reader reader, ArrayList<String> fields, char delimiter) throws IOException {
         fields.clear();
 
         int c = reader.read();
@@ -137,7 +158,7 @@ public class CSVDecoder {
                 c = reader.read();
             }
 
-            while ((quoted || (c != ',' && c != '\r' && c != '\n')) && c != EOF) {
+            while ((quoted || (c != delimiter && c != '\r' && c != '\n')) && c != EOF) {
                 fieldBuilder.append((char)c);
 
                 c = reader.read();
@@ -157,7 +178,7 @@ public class CSVDecoder {
 
             fields.add(fieldBuilder.toString());
 
-            if (c == ',') {
+            if (c == delimiter) {
                 c = reader.read();
             }
         }
