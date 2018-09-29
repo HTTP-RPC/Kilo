@@ -54,7 +54,8 @@ public class FlatFileDecoder {
      * If an exception occurs.
      */
     public Iterable<Map<String, String>> readValues(Reader reader) throws IOException {
-        // TODO Read lines (ignore trailing CR/LF characters if present?)
+        // TODO Read keys and determine field widths
+        // TODO Read lines (ignoring trailing CR/LF characters if present?)
         return null;
     }
 }
