@@ -19,7 +19,6 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
     * [FlatFileEncoder and FlatFileDecoder](flatfileencoder-and-flatfiledecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
-    * [CursorAdapter](#cursoradapter)
     * [WebServiceProxy](#webserviceproxy)
 * [Additional Information](#additional-information)
 
@@ -62,8 +61,6 @@ HTTP-RPC provides the following classes for creating and consuming REST services
 * `org.httprpc.sql`
     * `Parameters` - class for applying named parameters values to prepared statements 
     * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
-* `org.httprpc.util`
-    * `CursorAdapter` - class that presents a custom view of another cursor
 
 These classes are explained in more detail in the following sections.
 
@@ -846,9 +843,6 @@ public double getAverageAge() throws SQLException {
     return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
 }
 ```
-
-## CursorAdapter
-TODO
 
 ## WebServiceProxy
 The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of other REST-based web services. Service proxies are initialized via a constructor that takes the following arguments:
