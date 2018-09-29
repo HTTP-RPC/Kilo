@@ -14,32 +14,26 @@
 
 package org.httprpc.util;
 
-import java.beans.FeatureDescriptor;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import javax.el.ELContext;
-import javax.el.ELResolver;
-import javax.el.ExpressionFactory;
-import javax.el.FunctionMapper;
-import javax.el.ValueExpression;
-import javax.el.VariableMapper;
 
 /**
  * Class that presents a custom view of another cursor.
  */
 public class CursorAdapter implements Iterable<Map<String, Object>> {
-    private Iterable<Map<String, ?>> cursor;
-    private LinkedHashMap<String, ValueExpression> mappings;
+    // Cursor adapter iterator
+    private static class CursorAdapterIterator implements Iterator<Map<String, Object>> {
+        private Iterator<? extends Map<String, ?>> iterator;
+        private Map<String, String> mappings;
 
-    private Map<String, ?> values = null;
-    private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+        private HashMap<String, Object> row = new HashMap<>();
 
-    private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
-        private Iterator<Map<String, ?>> iterator = cursor.iterator();
+        public CursorAdapterIterator(Iterator<? extends Map<String, ?>> iterator, Map<String, String> mappings) {
+            this.iterator = iterator;
+            this.mappings = mappings;
+        }
 
         @Override
         public boolean hasNext() {
@@ -52,79 +46,32 @@ public class CursorAdapter implements Iterable<Map<String, Object>> {
                 throw new NoSuchElementException();
             }
 
+            Map<String, ?> values = iterator.next();
+
             row.clear();
 
-            for (Map.Entry<String, ValueExpression> mapping : mappings.entrySet()) {
-                row.put(mapping.getKey(), mapping.getValue().getValue(context));
+            for (Map.Entry<String, String> mapping : mappings.entrySet()) {
+                // TODO Evaluate the mapping expression against the values
+                row.put(mapping.getKey(), values.get(mapping.getKey()));
             }
 
             return row;
         }
-    };
+    }
 
-    private ELResolver resolver = new ELResolver() {
-        @Override
-        public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
-            return Collections.emptyIterator();
-        }
-
-        @Override
-        public Class<?> getCommonPropertyType(ELContext context, Object base) {
-            return Object.class;
-        }
-
-        @Override
-        public Class<?> getType(ELContext context, Object base, Object property) {
-            return Object.class;
-        }
-
-        @Override
-        public boolean isReadOnly(ELContext context, Object base, Object property) {
-            return true;
-        }
-
-        @Override
-        public Object getValue(ELContext context, Object base, Object property) {
-            Object value = values.get(property);
-
-            context.setPropertyResolved(true);
-
-            return value;
-        }
-
-        @Override
-        public void setValue(ELContext context, Object base, Object property, Object value) {
-            throw new UnsupportedOperationException();
-        }
-    };
-
-    private ELContext context = new ELContext() {
-        @Override
-        public ELResolver getELResolver() {
-            return resolver;
-        }
-
-        @Override
-        public VariableMapper getVariableMapper() {
-            return null;
-        }
-
-        @Override
-        public FunctionMapper getFunctionMapper() {
-            return null;
-        }
-    };
+    private Iterable<? extends Map<String, ?>> cursor;
+    private Map<String, String> mappings;
 
     /**
      * Constructs a cursor adapter.
      *
      * @param cursor
-     * The source cursor.
+     * The cursor to adapt.
      *
      * @param mappings
      * A map of row keys to value expressions.
      */
-    public CursorAdapter(Iterable<Map<String, ?>> cursor, Map<String, String> mappings) {
+    public CursorAdapter(Iterable<? extends Map<String, ?>> cursor, Map<String, String> mappings) {
         if (cursor == null) {
             throw new IllegalArgumentException();
         }
@@ -134,23 +81,11 @@ public class CursorAdapter implements Iterable<Map<String, Object>> {
         }
 
         this.cursor = cursor;
-
-        this.mappings = new LinkedHashMap<>();
-
-        ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
-
-        for (Map.Entry<String, String> entry : mappings.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-
-            ValueExpression expression = expressionFactory.createValueExpression(context, String.format("${%s}", value), Object.class);
-
-            this.mappings.put(key, expression);
-        }
+        this.mappings = mappings;
     }
 
     @Override
     public Iterator<Map<String, Object>> iterator() {
-        return iterator;
+        return new CursorAdapterIterator(cursor.iterator(), mappings);
     }
 }
