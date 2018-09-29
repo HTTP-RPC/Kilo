@@ -34,6 +34,66 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
 
     private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 
+    private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
+        private Boolean hasNext = null;
+
+        @Override
+        public boolean hasNext() {
+            if (hasNext == null) {
+                try {
+                    hasNext = resultSet.next() ? Boolean.TRUE : Boolean.FALSE;
+                } catch (SQLException exception) {
+                    throw new RuntimeException(exception);
+                }
+            }
+
+            return hasNext.booleanValue();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Map<String, Object> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            row.clear();
+
+            try {
+                for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
+                    String path = resultSetMetaData.getColumnLabel(i + 1);
+
+                    String[] components = path.split("\\.");
+
+                    Map<String, Object> map = row;
+
+                    for (int j = 0; j < components.length - 1; j++) {
+                        Object value = map.get(components[j]);
+
+                        LinkedHashMap<String, Object> child;
+                        if (value instanceof Map<?, ?>) {
+                            child = (LinkedHashMap<String, Object>)value;
+                        } else {
+                            child = new LinkedHashMap<>();
+
+                            map.put(components[j], child);
+                        }
+
+                        map = child;
+                    }
+
+                    map.put(components[components.length - 1], resultSet.getObject(i + 1));
+                }
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            hasNext = null;
+
+            return row;
+        }
+    };
+
     /**
      * Constructs a new result set adapter.
      *
@@ -56,65 +116,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
 
     @Override
     public Iterator<Map<String, Object>> iterator() {
-        return new Iterator<Map<String, Object>>() {
-            private Boolean hasNext = null;
-
-            @Override
-            public boolean hasNext() {
-                if (hasNext == null) {
-                    try {
-                        hasNext = resultSet.next() ? Boolean.TRUE : Boolean.FALSE;
-                    } catch (SQLException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                }
-
-                return hasNext.booleanValue();
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Map<String, Object> next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-
-                row.clear();
-
-                try {
-                    for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
-                        String path = resultSetMetaData.getColumnLabel(i + 1);
-
-                        String[] components = path.split("\\.");
-
-                        Map<String, Object> map = row;
-
-                        for (int j = 0; j < components.length - 1; j++) {
-                            Object value = map.get(components[j]);
-
-                            LinkedHashMap<String, Object> child;
-                            if (value instanceof Map<?, ?>) {
-                                child = (LinkedHashMap<String, Object>)value;
-                            } else {
-                                child = new LinkedHashMap<>();
-
-                                map.put(components[j], child);
-                            }
-
-                            map = child;
-                        }
-
-                        map.put(components[components.length - 1], resultSet.getObject(i + 1));
-                    }
-                } catch (SQLException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                hasNext = null;
-
-                return row;
-            }
-        };
+        return iterator;
     }
 
     /**

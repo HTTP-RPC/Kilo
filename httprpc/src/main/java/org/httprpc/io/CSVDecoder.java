@@ -37,7 +37,43 @@ public class CSVDecoder {
         private char delimiter;
 
         private ArrayList<String> values = new ArrayList<>();
-        private LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        private LinkedHashMap<String, String> row = new LinkedHashMap<>();
+
+        private Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {
+            private Boolean hasNext = null;
+
+            @Override
+            public boolean hasNext() {
+                if (hasNext == null) {
+                    try {
+                        readRecord(reader, values, delimiter);
+                    } catch (IOException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    hasNext = !values.isEmpty();
+                }
+
+                return hasNext.booleanValue();
+            }
+
+            @Override
+            public Map<String, String> next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                row.clear();
+
+                for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
+                    row.put(keys.get(i), values.get(i));
+                }
+
+                hasNext = null;
+
+                return row;
+            }
+        };
 
         private Cursor(List<String> keys, Reader reader, char delimiter) {
             this.keys = keys;
@@ -47,41 +83,7 @@ public class CSVDecoder {
 
         @Override
         public Iterator<Map<String, String>> iterator() {
-            return new Iterator<Map<String, String>>() {
-                private Boolean hasNext = null;
-
-                @Override
-                public boolean hasNext() {
-                    if (hasNext == null) {
-                        try {
-                            readRecord(reader, values, delimiter);
-                        } catch (IOException exception) {
-                            throw new RuntimeException(exception);
-                        }
-
-                        hasNext = !values.isEmpty();
-                    }
-
-                    return hasNext.booleanValue();
-                }
-
-                @Override
-                public Map<String, String> next() {
-                    if (!hasNext()) {
-                        throw new NoSuchElementException();
-                    }
-
-                    map.clear();
-
-                    for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
-                        map.put(keys.get(i), values.get(i));
-                    }
-
-                    hasNext = null;
-
-                    return map;
-                }
-            };
+            return iterator;
         }
     }
 
