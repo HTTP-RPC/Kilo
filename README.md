@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 66KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 65KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -42,8 +42,8 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `Response` - annotation that associates a custom response description with a service method
     * `WebService` - abstract base class for web services
-    * `WebServiceProxy` - class for invoking remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
+    * `WebServiceProxy` - class for invoking remote web services
 * `org.httprpc.io`
     * `CSVDecoder` - class that reads an iterable sequence of values from CSV
     * `CSVEncoder` - class that writes an iterable sequence of values to CSV
