@@ -28,7 +28,7 @@ public class CursorAdapterTest extends AbstractTest {
     public void testCursorAdapter() {
         List<Map<String, Object>> values = listOf(
             mapOf(
-                entry("a", "abc"),
+                entry("a", "abcdef"),
                 entry("b", 1.0),
                 entry("c", false),
                 entry("d", listOf(1, 2, 3)),
@@ -44,18 +44,16 @@ public class CursorAdapterTest extends AbstractTest {
                 entry("A", "abc"),
                 entry("B", 5.0),
                 entry("C", true),
-                entry("d", listOf(1, 2, 3)),
-                entry("D", 6),
+                entry("D", 6.0),
                 entry("E", 4.0)
             )
         );
 
         CursorAdapter adapter = new CursorAdapter(values, mapOf(
-            entry("A", "a"),
+            entry("A", "a.substring(0, 3)"),
             entry("B", "b + 4"),
             entry("C", "!c"),
-            entry("d", "d"),
-            entry("D", "sum(d)"),
+            entry("D", "d[0] + d[1] + d[2]"),
             entry("E", "e.g * 2")
         ));
 

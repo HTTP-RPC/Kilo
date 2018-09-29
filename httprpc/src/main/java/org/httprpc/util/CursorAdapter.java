@@ -19,6 +19,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
 /**
  * Class that presents a custom view of another cursor.
  */
@@ -28,11 +34,17 @@ public class CursorAdapter implements Iterable<Map<String, Object>> {
         private Iterator<? extends Map<String, ?>> iterator;
         private Map<String, String> mappings;
 
+        private ScriptEngine engine;
+
         private HashMap<String, Object> row = new HashMap<>();
 
         public CursorAdapterIterator(Iterator<? extends Map<String, ?>> iterator, Map<String, String> mappings) {
             this.iterator = iterator;
             this.mappings = mappings;
+
+            ScriptEngineManager engineManager = new ScriptEngineManager();
+
+            engine = engineManager.getEngineByName("nashorn");
         }
 
         @Override
@@ -41,6 +53,7 @@ public class CursorAdapter implements Iterable<Map<String, Object>> {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Map<String, Object> next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -48,11 +61,26 @@ public class CursorAdapter implements Iterable<Map<String, Object>> {
 
             Map<String, ?> values = iterator.next();
 
+            engine.getContext().setBindings(new SimpleBindings((Map<String, Object>)values) {
+                @Override
+                public Object put(String name, Object value) {
+                    return null;
+                }
+            }, ScriptContext.ENGINE_SCOPE);
+
             row.clear();
 
             for (Map.Entry<String, String> mapping : mappings.entrySet()) {
-                // TODO Evaluate the mapping expression against the values
-                row.put(mapping.getKey(), values.get(mapping.getKey()));
+                String key = mapping.getKey();
+
+                Object value;
+                try {
+                    value = engine.eval(mapping.getValue());
+                } catch (ScriptException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                row.put(key, value);
             }
 
             return row;
