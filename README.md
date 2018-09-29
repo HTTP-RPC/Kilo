@@ -14,9 +14,12 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [HTTP-RPC Classes](#http-rpc-classes)
     * [WebService](#webservice)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
+    * [XMLEncoder and XMLDecoder](#xmlencoder-and-xmldecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
+    * [FlatFileEncoder and FlatFileDecoder](flatfileencoder-and-flatfiledecoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
+    * [CursorAdapter](#cursoradapter)
     * [WebServiceProxy](#webserviceproxy)
 * [Additional Information](#additional-information)
 
@@ -45,16 +48,22 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `WebServiceProxy` - class for invoking remote web services
     * `WebServiceException` - exception thrown when a service operation returns an error
 * `org.httprpc.io`
-    * `CSVEncoder` - class that serializes an iterable sequence of values to CSV
-    * `CSVDecoder` - class that deserializes an iterable sequence of values from CSV
-    * `JSONEncoder` - class that serializes an object hierarchy to JSON
-    * `JSONDecoder` - class that deserializes an object hierarchy from JSON
+    * `CSVDecoder` - class that reads an iterable sequence of values from CSV
+    * `CSVEncoder` - class that writes an iterable sequence of values to CSV
+    * `FlatFileDecoder` - class that reads an iterable sequence of values from a flat file
+    * `FlatFileEncoder` - class that writes an iterable sequence of values to a flat file
+    * `JSONDecoder` - class that reads an object hierarchy from JSON
+    * `JSONEncoder` - class that writes an object hierarchy to JSON
+    * `XMLDecoder` - class that reads an object hierarchy from XML
+    * `XMLEncoder` - class that writes an object hierarchy to XML
 * `org.httprpc.beans`
     * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
     * `Key` - annotation that associates a custom key with a bean property
 * `org.httprpc.sql`
     * `Parameters` - class for applying named parameters values to prepared statements 
     * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
+* `org.httprpc.util`
+    * `CursorAdapter` - class that presents a custom view of another cursor
 
 These classes are explained in more detail in the following sections.
 
@@ -411,6 +420,9 @@ List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8,
 System.out.println(fibonacci.get(2)); // 3
 ```
 
+## XMLEncoder and XMLDecoder
+TODO
+
 ## CSVEncoder and CSVDecoder
 Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
@@ -479,6 +491,9 @@ JSONEncoder jsonEncoder = new JSONEncoder();
 
 jsonEncoder.writeValue(months, System.out);
 ```
+
+## FlatFileEncoder and FlatFileDecoder
+TODO
 
 ## BeanAdapter
 The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data types to be serialized as JSON objects or CSV records. 
@@ -831,6 +846,9 @@ public double getAverageAge() throws SQLException {
     return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
 }
 ```
+
+## CursorAdapter
+TODO
 
 ## WebServiceProxy
 The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of other REST-based web services. Service proxies are initialized via a constructor that takes the following arguments:

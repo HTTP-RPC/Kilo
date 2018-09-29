@@ -19,28 +19,78 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
- * CSV encoder.
+ * Flat file encoder.
  */
-public class CSVEncoder {
-    private List<String> keys;
+public class FlatFileEncoder {
+    /**
+     * Class representing a column in a flat file.
+     */
+    public static class Column {
+        private String key;
+        private String format;
+
+        /**
+         * Constructs a new column.
+         *
+         * @param key
+         * The column key.
+         *
+         * @param format
+         * The column format.
+         */
+        public Column(String key, String format) {
+            if (key == null) {
+                throw new IllegalArgumentException();
+            }
+
+            if (format == null) {
+                throw new IllegalArgumentException();
+            }
+
+            this.key = key;
+            this.format = format;
+        }
+
+        /**
+         * Returns the column key.
+         *
+         * @return
+         * The column key.
+         */
+        public String getKey() {
+            return key;
+        }
+
+        /**
+         * Returns the column format.
+         *
+         * @return
+         * The column format.
+         */
+        public String getFormat() {
+            return format;
+        }
+    }
+
+    private List<Column> columns;
 
     /**
-     * Constructs a new CSV encoder.
+     * Constructs a new flat file encoder.
      *
-     * @param keys
-     * The output column keys.
+     * @param columns
+     * The output columns.
      */
-    public CSVEncoder(List<String> keys) {
-        if (keys == null) {
+    public FlatFileEncoder(List<Column> columns) {
+        if (columns == null) {
             throw new IllegalArgumentException();
         }
 
-        this.keys = keys;
+        this.columns = columns;
     }
 
     /**
@@ -77,8 +127,8 @@ public class CSVEncoder {
     public void writeValues(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         int i = 0;
 
-        for (String key : keys) {
-            if (key == null) {
+        for (Column column : columns) {
+            if (column == null) {
                 continue;
             }
 
@@ -86,18 +136,16 @@ public class CSVEncoder {
                 writer.append(',');
             }
 
-            writeValue(key, writer);
+            writeValue(column, column.getKey(), writer);
 
             i++;
         }
 
-        writer.append("\r\n");
-
         for (Map<String, ?> map : values) {
             i = 0;
 
-            for (String key : keys) {
-                if (key == null) {
+            for (Column column : columns) {
+                if (column == null) {
                     continue;
                 }
 
@@ -105,51 +153,26 @@ public class CSVEncoder {
                     writer.append(',');
                 }
 
-                Object value = valueAt(map, key);
+                Object value = map.get(column.getKey());
 
                 if (value != null) {
-                    writeValue(value, writer);
+                    writeValue(column, value, writer);
                 }
 
                 i++;
             }
-
-            writer.append("\r\n");
         }
     }
 
-    private void writeValue(Object value, Writer writer) throws IOException {
+    private void writeValue(Column column, Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
-            writer.write('"');
-            writer.write(value.toString().replace("\"", "\"\""));
-            writer.write('"');
+            // TODO
         } else if (value instanceof Enum<?>) {
-            writeValue(((Enum<?>)value).ordinal(), writer);
+            // TODO
         } else if (value instanceof Date) {
-            writeValue(((Date)value).getTime(), writer);
+            // TODO
         } else {
-            writer.append(value.toString());
+            // TODO
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <V> V valueAt(Map<String, ?> root, String path) {
-        Object value = root;
-
-        String[] components = path.split("\\.");
-
-        for (int i = 0; i < components.length; i++) {
-            String component = components[i];
-
-            if (value instanceof Map<?, ?>) {
-                value = ((Map<?, ?>)value).get(component);
-            } else {
-                value = null;
-
-                break;
-            }
-        }
-
-        return (V)value;
     }
 }
