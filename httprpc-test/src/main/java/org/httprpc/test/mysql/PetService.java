@@ -73,39 +73,39 @@ public class PetService extends WebService {
     @RequestMethod("GET")
     @Response("[{name: string, owner: string, species: string, sex: string, birth: date}]")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        try (Connection connection = DriverManager.getConnection(DB_URL)) {
-            Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
+        Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
-            parameters.put("owner", owner);
+        parameters.put("owner", owner);
 
-            try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-                parameters.apply(statement);
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
 
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+            parameters.apply(statement);
 
-                    if (format == null || format.equals("json")) {
-                        getResponse().setContentType("application/json");
+            try (ResultSet resultSet = statement.executeQuery()) {
+                ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
 
-                        JSONEncoder jsonEncoder = new JSONEncoder();
+                if (format == null || format.equals("json")) {
+                    getResponse().setContentType("application/json");
 
-                        jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
-                    } else if (format.equals("csv")) {
-                        getResponse().setContentType("text/csv");
+                    JSONEncoder jsonEncoder = new JSONEncoder();
 
-                        CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
+                    jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
+                } else if (format.equals("csv")) {
+                    getResponse().setContentType("text/csv");
 
-                        csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
-                    } else if (format.equals("html")) {
-                        getResponse().setContentType("text/html;charset=UTF-8");
+                    CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
 
-                        TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+                    csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
+                } else if (format.equals("html")) {
+                    getResponse().setContentType("text/html;charset=UTF-8");
 
-                        templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
-                        templateEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream(), getRequest().getLocale());
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
+                    TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+
+                    templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
+                    templateEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream(), getRequest().getLocale());
+                } else {
+                    throw new UnsupportedOperationException();
                 }
             }
         } finally {

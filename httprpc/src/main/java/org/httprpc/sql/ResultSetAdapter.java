@@ -14,11 +14,14 @@
 
 package org.httprpc.sql;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -31,6 +34,8 @@ import org.httprpc.beans.BeanAdapter;
 public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
+
+    private LinkedHashMap<String, String> queries = new LinkedHashMap<>();
 
     private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 
@@ -88,6 +93,32 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 throw new RuntimeException(exception);
             }
 
+            for (Map.Entry<String, String> entry : queries.entrySet()) {
+                Parameters parameters = Parameters.parse(entry.getValue());
+
+                parameters.putAll(row);
+
+                LinkedList<Map<String, Object>> results = new LinkedList<>();
+
+                try {
+                    Connection connection = resultSet.getStatement().getConnection();
+
+                    try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+                        parameters.apply(statement);
+
+                        try (ResultSet resultSet = statement.executeQuery()) {
+                            for (Map<String, Object> result : new ResultSetAdapter(resultSet)) {
+                                results.add(result);
+                            }
+                        }
+                    }
+                } catch (SQLException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                row.put(entry.getKey(), results);
+            }
+
             hasNext = null;
 
             return row;
@@ -112,6 +143,27 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    /**
+     * Attaches a nested query to the result set.
+     *
+     * @param key
+     * The key to associate with the query results.
+     *
+     * @param query
+     * The nested query.
+     */
+    public void attach(String key, String query) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (query == null) {
+            throw new IllegalArgumentException();
+        }
+
+        queries.put(key, query);
     }
 
     @Override

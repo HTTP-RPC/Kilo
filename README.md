@@ -792,6 +792,8 @@ the values of the "first_name" and "last_name" columns would be returned in a ne
 ]
 ```
 
+TODO Nested queries
+
 ### Typed Iteration
 The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
 
