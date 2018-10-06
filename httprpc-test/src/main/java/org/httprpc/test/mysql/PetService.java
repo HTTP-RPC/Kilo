@@ -71,7 +71,13 @@ public class PetService extends WebService {
     }
 
     @RequestMethod("GET")
-    @Response("[{name: string, owner: string, species: string, sex: string, birth: date}]")
+    @Response("[{\n"
+        + "  name: string,\n"
+        + "  owner: string,\n"
+        + "  species: string,\n"
+        + "  sex: string,\n"
+        + "  birth: date\n"
+        + "}]")
     public void getPets(String owner, String format) throws SQLException, IOException {
         Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 

@@ -20,6 +20,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -53,7 +54,11 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @Response("[{employeeNumber: integer, firstName: string, lastName: string}]")
+    @Response("[{\n"
+        + "  employeeNumber: integer,\n"
+        + "  firstName: string,\n"
+        + "  lastName: string\n"
+        + "}]")
     public void getEmployees(String name) throws SQLException, IOException {
         Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
             + "first_name AS firstName, "
@@ -89,10 +94,18 @@ public class EmployeeService extends WebService {
         + "  employeeNumber: integer,\n"
         + "  firstName: string,\n"
         + "  lastName: string,\n"
-        + "  salaries: [{salary: integer, fromDate: date, toDate: date}],\n"
-        + "  titles: [{title: string, fromDate: date, toDate: date}]\n"
-    + "}")
-    public void getEmployee() throws SQLException, IOException {
+        + "  titles: [{\n"
+        + "    title: string,\n"
+        + "    fromDate: date,\n"
+        + "    toDate: date\n"
+        + "  }],\n"
+        + "  salaries: [{\n"
+        + "    salary: integer,\n"
+        + "    fromDate: date,\n"
+        + "    toDate: date\n"
+        + "  }]\n"
+        + "}")
+    public void getEmployee(List<String> details) throws SQLException, IOException {
         String employeeNumber = getKey("employeeNumber");
 
         Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
@@ -110,21 +123,33 @@ public class EmployeeService extends WebService {
             try (ResultSet resultSet = statement.executeQuery()) {
                 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
 
-                resultSetAdapter.attach("salaries", "SELECT salary, "
-                    + "from_date AS fromDate, "
-                    + "to_date as toDate "
-                    + "FROM salaries where emp_no = :employeeNumber");
+                for (String detail : details) {
+                    switch (detail) {
+                        case "titles": {
+                            resultSetAdapter.attach("titles", "SELECT title, "
+                                + "from_date AS fromDate, "
+                                + "to_date as toDate "
+                                + "FROM titles WHERE emp_no = :employeeNumber");
 
-                resultSetAdapter.attach("titles", "SELECT title, "
-                    + "from_date AS fromDate, "
-                    + "to_date as toDate "
-                    + "FROM titles where emp_no = :employeeNumber");
+                            break;
+                        }
+
+                        case "salaries": {
+                            resultSetAdapter.attach("salaries", "SELECT salary, "
+                                + "from_date AS fromDate, "
+                                + "to_date as toDate "
+                                + "FROM salaries WHERE emp_no = :employeeNumber");
+
+                            break;
+                        }
+                    }
+                }
 
                 getResponse().setContentType("application/json");
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
+                jsonEncoder.writeValue(resultSetAdapter.next(), getResponse().getOutputStream());
             }
         } finally {
             getResponse().flushBuffer();

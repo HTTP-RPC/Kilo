@@ -35,7 +35,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
 
-    private LinkedHashMap<String, String> queries = new LinkedHashMap<>();
+    private LinkedHashMap<String, String> subqueries = new LinkedHashMap<>();
 
     private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 
@@ -93,7 +93,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 throw new RuntimeException(exception);
             }
 
-            for (Map.Entry<String, String> entry : queries.entrySet()) {
+            for (Map.Entry<String, String> entry : subqueries.entrySet()) {
                 Parameters parameters = Parameters.parse(entry.getValue());
 
                 parameters.putAll(row);
@@ -146,24 +146,34 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     }
 
     /**
-     * Attaches a nested query to the result set.
+     * Attaches a subquery to the result set.
      *
      * @param key
-     * The key to associate with the query results.
+     * The key to associate with the subquery results.
      *
-     * @param query
-     * The nested query.
+     * @param subquery
+     * The subquery to attach.
      */
-    public void attach(String key, String query) {
+    public void attach(String key, String subquery) {
         if (key == null) {
             throw new IllegalArgumentException();
         }
 
-        if (query == null) {
+        if (subquery == null) {
             throw new IllegalArgumentException();
         }
 
-        queries.put(key, query);
+        subqueries.put(key, subquery);
+    }
+
+    /**
+     * Returns the next result.
+     *
+     * @return
+     * The next result, or <tt>null</tt> if there are no more results.
+     */
+    public Map<String, Object> next() {
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     @Override

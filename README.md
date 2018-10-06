@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 65KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 66KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -13,6 +13,12 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
     * [WebService](#webservice)
+        * [Method Arguments](#method-arguments)
+        * [Return Values](#return-values)
+        * [Exceptions](#exceptions)
+        * [Request and Repsonse Properties](#request-and-repsonse-properties)
+        * [Path Variables](#path-variables)
+        * [Documentation](#documentation)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
     * [BeanAdapter](#beanadapter)
@@ -702,7 +708,7 @@ Once applied, the statement can be executed:
 return new ResultSetAdapter(statement.executeQuery());    
 ```
 
-A complete example that uses both classes is shown below. It is based on the "pet" table from the MySQL sample database:
+A complete example that uses both classes is shown below. It is based on the "pet" table from the MySQL "menagerie" sample database:
 
 ```sql
 CREATE TABLE pet (
@@ -792,7 +798,99 @@ the values of the "first_name" and "last_name" columns would be returned in a ne
 ]
 ```
 
-TODO Nested queries
+### Nested Queries
+`ResultSetAdapter` can also be used to return the results of nested queries. The `attach()` method assigns a subquery to a key in the result map:
+
+```java
+public void attach(String key, String subquery) { ... }
+```
+
+Each attached query is executed once per row in the result set. The resulting rows are returned in a list that is associated with the corresponding key. 
+
+Internally, subqueries are executed as prepared statements using the `Parameters` class. All values in the base row are supplied as parameter values to each subquery. 
+
+An example based on the MySQL "employees" sample database is shown below. The base query retreives the employee's number, first name, and last name from the "employees" table. Subqueries to return the employee's salary and title history are optionally attached based on the values provided in the `details` parameter:
+
+```java
+@RequestMethod("GET")
+@ResourcePath("?:employeeNumber")
+public void getEmployee(List<String> details) throws SQLException, IOException {
+    String employeeNumber = getKey("employeeNumber");
+
+    Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
+        + "first_name AS firstName, "
+        + "last_name AS lastName "
+        + "FROM employees WHERE emp_no = :employeeNumber");
+
+    parameters.put("employeeNumber", employeeNumber);
+
+    try (Connection connection = DriverManager.getConnection(DB_URL);
+        PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+
+        parameters.apply(statement);
+
+        try (ResultSet resultSet = statement.executeQuery()) {
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+
+            for (String detail : details) {
+                switch (detail) {
+                    case "titles": {
+                        resultSetAdapter.attach("titles", "SELECT title, "
+                            + "from_date AS fromDate, "
+                            + "to_date as toDate "
+                            + "FROM titles WHERE emp_no = :employeeNumber");
+
+                        break;
+                    }
+
+                    case "salaries": {
+                        resultSetAdapter.attach("salaries", "SELECT salary, "
+                            + "from_date AS fromDate, "
+                            + "to_date as toDate "
+                            + "FROM salaries WHERE emp_no = :employeeNumber");
+
+                        break;
+                    }
+                }
+            }
+
+            getResponse().setContentType("application/json");
+
+            JSONEncoder jsonEncoder = new JSONEncoder();
+
+            jsonEncoder.writeValue(resultSetAdapter.next(), getResponse().getOutputStream());
+        }
+    } finally {
+        getResponse().flushBuffer();
+    }
+}
+```
+
+A sample response including both titles and salaries is shown below:
+
+```json
+{
+  "employeeNumber": 10004,
+  "firstName": "Chirstian",
+  "lastName": "Koblick",
+  "titles": [
+    {
+      "title": "Senior Engineer",
+      "fromDate": 817794000000,
+      "toDate": 253370782800000
+    },
+    ...
+  ],
+  "salaries": [
+    {
+      "salary": 74057,
+      "fromDate": 1006837200000,
+      "toDate": 253370782800000
+    },
+    ...
+  ]
+}
+```
 
 ### Typed Iteration
 The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
