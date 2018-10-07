@@ -15,7 +15,6 @@
 package org.httprpc;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,8 +24,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,6 +70,39 @@ public abstract class WebService extends HttpServlet {
         public final TreeMap<String, Resource> resources = new TreeMap<>();
 
         public String key = null;
+    }
+
+    private static class PartURLConnection extends URLConnection {
+        private Part part;
+
+        public PartURLConnection(URL url, Part part) {
+            super(url);
+
+            this.part = part;
+        }
+
+        @Override
+        public void connect() {
+            // No-op
+        }
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return part.getInputStream();
+        }
+    }
+
+    private static class PartURLStreamHandler extends URLStreamHandler {
+        private Part part;
+
+        public PartURLStreamHandler(Part part) {
+            this.part = part;
+        }
+
+        @Override
+        protected URLConnection openConnection(URL url) {
+            return new PartURLConnection(url, part);
+        }
     }
 
     private Resource root = null;
@@ -213,98 +246,75 @@ public abstract class WebService extends HttpServlet {
             request.setCharacterEncoding(UTF_8);
         }
 
+        Map<String, List<?>> parameterMap = new HashMap<>();
+
+        Enumeration<String> parameterNames = request.getParameterNames();
+
+        while (parameterNames.hasMoreElements()) {
+            String name = parameterNames.nextElement();
+
+            parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
+        }
+
+        String contentType = request.getContentType();
+
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            for (Part part : request.getParts()) {
+                String submittedFileName = part.getSubmittedFileName();
+
+                if (submittedFileName == null || submittedFileName.length() == 0) {
+                    continue;
+                }
+
+                String name = part.getName();
+
+                ArrayList<URL> values = (ArrayList<URL>)parameterMap.get(name);
+
+                if (values == null) {
+                    values = new ArrayList<>();
+
+                    parameterMap.put(name, values);
+                }
+
+                values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
+            }
+        }
+
+        Method method = getMethod(handlerList, parameterMap);
+
+        if (method == null) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
         this.request.set(request);
         this.response.set(response);
 
         this.keyList.set(keyList);
         this.keyMap.set(keyMap);
 
-        LinkedList<File> files = new LinkedList<>();
-
+        Object result;
         try {
-            Map<String, List<?>> parameterMap = new HashMap<>();
-
-            Enumeration<String> parameterNames = request.getParameterNames();
-
-            while (parameterNames.hasMoreElements()) {
-                String name = parameterNames.nextElement();
-
-                parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
-            }
-
-            String contentType = request.getContentType();
-
-            if (contentType != null && contentType.startsWith("multipart/form-data")) {
-                for (Part part : request.getParts()) {
-                    String submittedFileName = part.getSubmittedFileName();
-
-                    if (submittedFileName == null || submittedFileName.length() == 0) {
-                        continue;
-                    }
-
-                    String name = part.getName();
-
-                    ArrayList<File> values = (ArrayList<File>)parameterMap.get(name);
-
-                    if (values == null) {
-                        values = new ArrayList<>();
-
-                        parameterMap.put(name, values);
-                    }
-
-                    File file = File.createTempFile(part.getName(), "_" + submittedFileName);
-
-                    files.add(file);
-                    values.add(file);
-
-                    part.write(file.getAbsolutePath());
-                }
-            }
-
-            Method method = getMethod(handlerList, parameterMap);
-
-            if (method == null) {
-                response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-                return;
-            }
-
-            Object result;
-            try {
-                result = method.invoke(this, getArguments(method, parameterMap));
-            } catch (InvocationTargetException | IllegalAccessException exception) {
-                if (response.isCommitted()) {
-                    throw new ServletException(exception);
-                } else {
-                    Throwable cause = exception.getCause();
-
-                    if (cause != null) {
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        response.setContentType(String.format("text/plain;charset=%s", UTF_8));
-
-                        PrintWriter writer = response.getWriter();
-
-                        writer.append(cause.getMessage());
-                        writer.flush();
-
-                        return;
-                    } else {
-                        throw new ServletException(exception);
-                    }
-                }
-            }
-
+            result = method.invoke(this, getArguments(method, parameterMap));
+        } catch (InvocationTargetException | IllegalAccessException exception) {
             if (response.isCommitted()) {
-                return;
-            }
-
-            Class<?> returnType = method.getReturnType();
-
-            if (returnType != Void.TYPE && returnType != Void.class) {
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                encodeResult(request, response, result);
+                throw new ServletException(exception);
             } else {
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                Throwable cause = exception.getCause();
+
+                if (cause != null) {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+
+                    PrintWriter writer = response.getWriter();
+
+                    writer.append(cause.getMessage());
+                    writer.flush();
+
+                    return;
+                } else {
+                    throw new ServletException(exception);
+                }
             }
         } finally {
             this.request.set(null);
@@ -312,10 +322,20 @@ public abstract class WebService extends HttpServlet {
 
             this.keyList.set(null);
             this.keyMap.set(null);
+        }
 
-            for (File file : files) {
-                file.delete();
-            }
+        if (response.isCommitted()) {
+            return;
+        }
+
+        Class<?> returnType = method.getReturnType();
+
+        if (returnType != Void.TYPE && returnType != Void.class) {
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            encodeResult(request, response, result);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 
@@ -378,7 +398,7 @@ public abstract class WebService extends HttpServlet {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(getArgument(value, (Class<?>)elementType));
+                        list.add(BeanAdapter.adapt(value, (Class<?>)elementType));
                     }
                 } else {
                     list = Collections.emptyList();
@@ -393,7 +413,7 @@ public abstract class WebService extends HttpServlet {
                     value = null;
                 }
 
-                argument = getArgument(value, type);
+                argument = BeanAdapter.adapt(value, type);
             }
 
             arguments[i] = argument;
@@ -406,27 +426,6 @@ public abstract class WebService extends HttpServlet {
         RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
 
         return (requestParameter == null) ? parameter.getName() : requestParameter.value();
-    }
-
-    private static Object getArgument(Object value, Class<?> type) {
-        Object argument;
-        if (type == URL.class) {
-            if (value == null) {
-                argument = null;
-            } else if (value instanceof File) {
-                try {
-                    argument = ((File)value).toURI().toURL();
-                } catch (MalformedURLException exception) {
-                    throw new RuntimeException(exception);
-                }
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } else {
-            argument = BeanAdapter.adapt(value, type);
-        }
-
-        return argument;
     }
 
     /**
