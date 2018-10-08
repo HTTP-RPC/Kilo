@@ -85,7 +85,6 @@ public class PetService extends WebService {
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-
             parameters.apply(statement);
 
             try (ResultSet resultSet = statement.executeQuery()) {
