@@ -44,10 +44,7 @@ public class JSONEncoder {
      * If an exception occurs.
      */
     public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        Writer writer = new OutputStreamWriter(outputStream, Charset.forName("UTF-8"));
-        writeValue(value, writer);
-
-        writer.flush();
+        writeValue(value, new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
     }
 
     /**
@@ -63,6 +60,14 @@ public class JSONEncoder {
      * If an exception occurs.
      */
     public void writeValue(Object value, Writer writer) throws IOException {
+        writer = new BufferedWriter(writer);
+
+        encodeValue(value, writer);
+
+        writer.flush();
+    }
+
+    private void encodeValue(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
             CharSequence text = (CharSequence)value;
 
@@ -92,11 +97,11 @@ public class JSONEncoder {
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.append(value.toString());
         } else if (value instanceof Enum<?>) {
-            writeValue(((Enum<?>)value).ordinal(), writer);
+            encodeValue(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
-            writeValue(((Date)value).getTime(), writer);
+            encodeValue(((Date)value).getTime(), writer);
         } else if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
-            writeValue(value.toString(), writer);
+            encodeValue(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.append("[");
 
@@ -113,7 +118,7 @@ public class JSONEncoder {
 
                 indent(writer);
 
-                writeValue(element, writer);
+                encodeValue(element, writer);
 
                 i++;
             }
@@ -147,11 +152,11 @@ public class JSONEncoder {
 
                 indent(writer);
 
-                writeValue(key.toString(), writer);
+                encodeValue(key.toString(), writer);
 
                 writer.append(": ");
 
-                writeValue(entry.getValue(), writer);
+                encodeValue(entry.getValue(), writer);
 
                 i++;
             }

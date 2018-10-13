@@ -40,7 +40,7 @@ import org.httprpc.sql.ResultSetAdapter;
 public class EmployeeService extends WebService {
     private static final long serialVersionUID = 0;
 
-    private static final String DB_URL = "jdbc:mysql://db.local:3306/employees?user=root&password=password";
+    private static final String DB_URL = "jdbc:mysql://db.local:3306/employees?user=root&password=password&useSSL=false";
 
     @Override
     public void init() throws ServletException {

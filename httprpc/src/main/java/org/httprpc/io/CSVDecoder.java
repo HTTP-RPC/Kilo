@@ -46,7 +46,7 @@ public class CSVDecoder {
             public boolean hasNext() {
                 if (hasNext == null) {
                     try {
-                        readRecord(reader, values, delimiter);
+                        decodeValues(reader, values, delimiter);
                     } catch (IOException exception) {
                         throw new RuntimeException(exception);
                     }
@@ -137,14 +137,16 @@ public class CSVDecoder {
      * If an exception occurs.
      */
     public Iterable<Map<String, String>> readValues(Reader reader) throws IOException {
+        reader = new BufferedReader(reader);
+
         ArrayList<String> keys = new ArrayList<>();
 
-        readRecord(reader, keys, delimiter);
+        decodeValues(reader, keys, delimiter);
 
         return new Cursor(keys, reader, delimiter);
     }
 
-    private static void readRecord(Reader reader, ArrayList<String> fields, char delimiter) throws IOException {
+    private static void decodeValues(Reader reader, ArrayList<String> fields, char delimiter) throws IOException {
         fields.clear();
 
         int c = reader.read();

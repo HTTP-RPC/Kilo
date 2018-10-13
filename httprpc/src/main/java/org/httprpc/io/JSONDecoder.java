@@ -73,6 +73,8 @@ public class JSONDecoder {
      */
     @SuppressWarnings("unchecked")
     public <T> T readValue(Reader reader) throws IOException {
+        reader = new BufferedReader(reader);
+
         c = reader.read();
 
         Object value = null;
@@ -105,7 +107,11 @@ public class JSONDecoder {
 
                 // If the current collection is a map, read the key
                 if (collection instanceof Map<?, ?>) {
-                    key = readString(reader);
+                    if (c != '"') {
+                        throw new IOException("Invalid key.");
+                    }
+
+                    key = decodeString(reader);
 
                     skipWhitespace(reader);
 
@@ -120,23 +126,23 @@ public class JSONDecoder {
 
                 // Read the value
                 if (c == '"') {
-                    value = readString(reader);
+                    value = decodeString(reader);
                 } else if (c == '+' || c == '-' || Character.isDigit(c)) {
-                    value = readNumber(reader);
+                    value = decodeNumber(reader);
                 } else if (c == 't') {
-                    if (!readKeyword(reader, TRUE_KEYWORD)) {
+                    if (!decodeKeyword(reader, TRUE_KEYWORD)) {
                         throw new IOException();
                     }
 
                     value = Boolean.TRUE;
                 } else if (c == 'f') {
-                    if (!readKeyword(reader, FALSE_KEYWORD)) {
+                    if (!decodeKeyword(reader, FALSE_KEYWORD)) {
                         throw new IOException();
                     }
 
                     value = Boolean.FALSE;
                 } else if (c == 'n') {
-                    if (!readKeyword(reader, NULL_KEYWORD)) {
+                    if (!decodeKeyword(reader, NULL_KEYWORD)) {
                         throw new IOException();
                     }
 
@@ -187,7 +193,7 @@ public class JSONDecoder {
         }
     }
 
-    private String readString(Reader reader) throws IOException {
+    private String decodeString(Reader reader) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         // Move to the next character after the opening quotes
@@ -246,7 +252,7 @@ public class JSONDecoder {
         return stringBuilder.toString();
     }
 
-    private Number readNumber(Reader reader) throws IOException {
+    private Number decodeNumber(Reader reader) throws IOException {
         boolean decimal = false;
 
         StringBuilder numberBuilder = new StringBuilder();
@@ -268,7 +274,7 @@ public class JSONDecoder {
         return number;
     }
 
-    private boolean readKeyword(Reader reader, String keyword) throws IOException {
+    private boolean decodeKeyword(Reader reader, String keyword) throws IOException {
         int n = keyword.length();
         int i = 0;
 

@@ -56,10 +56,7 @@ public class CSVEncoder {
      * If an exception occurs.
      */
     public void writeValues(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
-        Writer writer = new OutputStreamWriter(outputStream, Charset.forName("ISO-8859-1"));
-        writeValues(values, writer);
-
-        writer.flush();
+        writeValues(values, new OutputStreamWriter(outputStream, Charset.forName("ISO-8859-1")));
     }
 
     /**
@@ -75,6 +72,8 @@ public class CSVEncoder {
      * If an exception occurs.
      */
     public void writeValues(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
+        writer = new BufferedWriter(writer);
+
         int i = 0;
 
         for (String key : keys) {
@@ -86,7 +85,7 @@ public class CSVEncoder {
                 writer.append(',');
             }
 
-            writeValue(key, writer);
+            encodeValue(key, writer);
 
             i++;
         }
@@ -108,7 +107,7 @@ public class CSVEncoder {
                 Object value = valueAt(map, key);
 
                 if (value != null) {
-                    writeValue(value, writer);
+                    encodeValue(value, writer);
                 }
 
                 i++;
@@ -116,17 +115,19 @@ public class CSVEncoder {
 
             writer.append("\r\n");
         }
+
+        writer.flush();
     }
 
-    private void writeValue(Object value, Writer writer) throws IOException {
+    private void encodeValue(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
             writer.write('"');
             writer.write(value.toString().replace("\"", "\"\""));
             writer.write('"');
         } else if (value instanceof Enum<?>) {
-            writeValue(((Enum<?>)value).ordinal(), writer);
+            encodeValue(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
-            writeValue(((Date)value).getTime(), writer);
+            encodeValue(((Date)value).getTime(), writer);
         } else {
             writer.append(value.toString());
         }

@@ -57,7 +57,7 @@ public class PetService extends WebService {
         public Date getBirth();
     }
 
-    private static final String DB_URL = "jdbc:mysql://db.local:3306/menagerie?user=root&password=password";
+    private static final String DB_URL = "jdbc:mysql://db.local:3306/menagerie?user=root&password=password&useSSL=false";
 
     @Override
     public void init() throws ServletException {

@@ -89,7 +89,7 @@ public class JSONDecoderTest extends AbstractTest {
 
     @Test(expected=IOException.class)
     public void testMissingArrayClosingBracket() throws IOException {
-        decode("[1 2 3");
+        decode("[1 2 3  ");
     }
 
     @Test(expected=IOException.class)
@@ -104,7 +104,7 @@ public class JSONDecoderTest extends AbstractTest {
 
     @Test(expected=IOException.class)
     public void testMissingObjectClosingBracket() throws IOException {
-        decode("{a:1, b:2, c:3");
+        decode("{a:1, b:2, c:3  ");
     }
 
     @Test(expected=IOException.class)
