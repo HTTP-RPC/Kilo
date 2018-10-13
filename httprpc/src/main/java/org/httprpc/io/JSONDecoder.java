@@ -75,29 +75,15 @@ public class JSONDecoder {
     public <T> T readValue(Reader reader) throws IOException {
         reader = new BufferedReader(reader);
 
-        c = reader.read();
-
         Object value = null;
+
+        c = reader.read();
 
         skipWhitespace(reader);
 
         while (c != EOF) {
-            String key = null;
-
-            if (c == ']') {
+            if (c == ']' || c == '}') {
                 value = collections.pop();
-
-                if (!(value instanceof List<?>)) {
-                    throw new IOException("Unexpected closing bracket.");
-                }
-
-                c = reader.read();
-            } else if (c == '}') {
-                value = collections.pop();
-
-                if (!(value instanceof Map<?, ?>)) {
-                    throw new IOException("Unexpected closing brace.");
-                }
 
                 c = reader.read();
             } else if (c == ',') {
@@ -106,6 +92,7 @@ public class JSONDecoder {
                 Object collection = collections.peek();
 
                 // If the current collection is a map, read the key
+                String key;
                 if (collection instanceof Map<?, ?>) {
                     if (c != '"') {
                         throw new IOException("Invalid key.");
@@ -122,6 +109,8 @@ public class JSONDecoder {
                     c = reader.read();
 
                     skipWhitespace(reader);
+                } else {
+                    key = null;
                 }
 
                 // Read the value
@@ -169,14 +158,6 @@ public class JSONDecoder {
                         ((Map<String, Object>)collection).put(key, value);
                     } else {
                         ((List<Object>)collection).add(value);
-                    }
-
-                    if (!(value instanceof List<?> || value instanceof Map<?, ?>)) {
-                        skipWhitespace(reader);
-
-                        if (c != ']' && c != '}' && c != ',') {
-                            throw new IOException("Undelimited or unterminated collection.");
-                        }
                     }
                 }
             }

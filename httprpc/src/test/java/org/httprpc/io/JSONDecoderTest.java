@@ -77,39 +77,39 @@ public class JSONDecoderTest extends AbstractTest {
         Assert.assertEquals(expected, map);
     }
 
-    @Test(expected=IOException.class)
-    public void testInvalidCharacters() throws IOException {
-        decode("xyz");
-    }
-
-    @Test(expected=IOException.class)
+    @Test
     public void testMissingArrayCommas() throws IOException {
         decode("[1 2 3]");
     }
 
-    @Test(expected=IOException.class)
-    public void testMissingArrayClosingBracket() throws IOException {
-        decode("[1 2 3  ");
-    }
-
-    @Test(expected=IOException.class)
+    @Test
     public void testWrongArrayClosingBracket() throws IOException {
         decode("[1 2 3}");
     }
 
-    @Test(expected=IOException.class)
+    @Test
+    public void testMissingArrayClosingBracket() throws IOException {
+        decode("[1 2 3  ");
+    }
+
+    @Test
     public void testMissingObjectCommas() throws IOException {
-        decode("{a:1 b:2 c:3}");
+        decode("{\"a\":1 \"b\":2 \"c\":3}");
     }
 
-    @Test(expected=IOException.class)
-    public void testMissingObjectClosingBracket() throws IOException {
-        decode("{a:1, b:2, c:3  ");
-    }
-
-    @Test(expected=IOException.class)
+    @Test
     public void testWrongObjectClosingBracket() throws IOException {
-        decode("{a:1, b:2, c:3]");
+        decode("{\"a\":1, \"b\":2, \"c\":3]");
+    }
+
+    @Test
+    public void testMissingObjectClosingBracket() throws IOException {
+        decode("{\"a\":1, \"b\":2, \"c\":3  ");
+    }
+
+    @Test(expected=IOException.class)
+    public void testInvalidCharacters() throws IOException {
+        decode("xyz");
     }
 
     private static <T> T decode(String text) throws IOException {
