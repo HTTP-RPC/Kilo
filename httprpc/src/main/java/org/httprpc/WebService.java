@@ -60,7 +60,7 @@ public abstract class WebService extends HttpServlet {
     private static class Resource {
         private static List<String> order = Arrays.asList("get", "post", "put", "patch", "delete");
 
-        public final TreeMap<String, LinkedList<Method>> handlerMap = new TreeMap<>((verb1, verb2) -> {
+        public final TreeMap<String, LinkedList<Handler>> handlerMap = new TreeMap<>((verb1, verb2) -> {
             int i1 = order.indexOf(verb1);
             int i2 = order.indexOf(verb2);
 
@@ -68,8 +68,16 @@ public abstract class WebService extends HttpServlet {
         });
 
         public final TreeMap<String, Resource> resources = new TreeMap<>();
+    }
 
-        public String key = null;
+    private static class Handler {
+        public final Method method;
+
+        public final ArrayList<String> keys = new ArrayList<>();
+
+        public Handler(Method method) {
+            this.method = method;
+        }
     }
 
     private static class PartURLConnection extends URLConnection {
@@ -129,6 +137,8 @@ public abstract class WebService extends HttpServlet {
             RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
 
             if (requestMethod != null) {
+                Handler handler = new Handler(method);
+
                 Resource resource = root;
 
                 ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
@@ -143,8 +153,6 @@ public abstract class WebService extends HttpServlet {
                             continue;
                         }
 
-                        String key = null;
-
                         if (component.startsWith(PATH_VARIABLE)) {
                             int k = PATH_VARIABLE.length();
 
@@ -153,7 +161,7 @@ public abstract class WebService extends HttpServlet {
                                     throw new ServletException("Invalid path component.");
                                 }
 
-                                key = component.substring(k);
+                                handler.keys.add(component.substring(k));
 
                                 component = PATH_VARIABLE;
                             }
@@ -164,8 +172,6 @@ public abstract class WebService extends HttpServlet {
                         if (child == null) {
                             child = new Resource();
 
-                            child.key = key;
-
                             resource.resources.put(component, child);
                         }
 
@@ -175,7 +181,7 @@ public abstract class WebService extends HttpServlet {
 
                 String verb = requestMethod.value().toLowerCase();
 
-                LinkedList<Method> handlerList = resource.handlerMap.get(verb);
+                LinkedList<Handler> handlerList = resource.handlerMap.get(verb);
 
                 if (handlerList == null) {
                     handlerList = new LinkedList<>();
@@ -183,7 +189,7 @@ public abstract class WebService extends HttpServlet {
                     resource.handlerMap.put(verb, handlerList);
                 }
 
-                handlerList.add(method);
+                handlerList.add(handler);
             }
         }
     }
@@ -206,7 +212,6 @@ public abstract class WebService extends HttpServlet {
         Resource resource = root;
 
         ArrayList<String> keyList = new ArrayList<>();
-        HashMap<String, String> keyMap = new HashMap<>();
 
         if (pathInfo != null) {
             String[] components = pathInfo.split("/");
@@ -229,17 +234,13 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     keyList.add(component);
-
-                    if (child.key != null) {
-                        keyMap.put(child.key, component);
-                    }
                 }
 
                 resource = child;
             }
         }
 
-        List<Method> handlerList = resource.handlerMap.get(verb);
+        List<Handler> handlerList = resource.handlerMap.get(verb);
 
         if (handlerList == null) {
             super.service(request, response);
@@ -284,11 +285,17 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        Method method = getMethod(handlerList, parameterMap);
+        Handler handler = getHandler(handlerList, parameterMap);
 
-        if (method == null) {
+        if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
+        }
+
+        HashMap<String, String> keyMap = new HashMap<>();
+
+        for (int i = 0, n = keyList.size(); i < n; i++) {
+            keyMap.put(handler.keys.get(i), keyList.get(i));
         }
 
         this.request.set(request);
@@ -299,7 +306,7 @@ public abstract class WebService extends HttpServlet {
 
         Object result;
         try {
-            result = method.invoke(this, getArguments(method, parameterMap));
+            result = handler.method.invoke(this, getArguments(handler.method, parameterMap));
         } catch (InvocationTargetException | IllegalAccessException exception) {
             if (response.isCommitted()) {
                 throw new ServletException(exception);
@@ -332,7 +339,7 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        Class<?> returnType = method.getReturnType();
+        Class<?> returnType = handler.method.getReturnType();
 
         if (returnType != Void.TYPE && returnType != Void.class) {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -343,15 +350,15 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static Method getMethod(List<Method> handlerList, Map<String, List<?>> parameterMap) {
-        Method method = null;
+    private static Handler getHandler(List<Handler> handlerList, Map<String, List<?>> parameterMap) {
+        Handler handler = null;
 
         int n = parameterMap.size();
 
         int i = Integer.MAX_VALUE;
 
-        for (Method handler : handlerList) {
-            Parameter[] parameters = handler.getParameters();
+        for (Handler option : handlerList) {
+            Parameter[] parameters = option.method.getParameters();
 
             if (parameters.length >= n) {
                 int j = 0;
@@ -365,14 +372,14 @@ public abstract class WebService extends HttpServlet {
                 }
 
                 if (parameters.length - j == n && j < i) {
-                    method = handler;
+                    handler = option;
 
                     i = j;
                 }
             }
         }
 
-        return method;
+        return handler;
     }
 
     private static Object[] getArguments(Method method, Map<String, List<?>> parameterMap) throws IOException {
@@ -592,15 +599,15 @@ public abstract class WebService extends HttpServlet {
             xmlStreamWriter.writeCharacters(path);
             xmlStreamWriter.writeEndElement();
 
-            for (Map.Entry<String, LinkedList<Method>> entry : resource.handlerMap.entrySet()) {
-                for (Method method : entry.getValue()) {
-                    Parameter[] parameters = method.getParameters();
+            for (Map.Entry<String, LinkedList<Handler>> entry : resource.handlerMap.entrySet()) {
+                for (Handler handler : entry.getValue()) {
+                    Parameter[] parameters = handler.method.getParameters();
 
                     xmlStreamWriter.writeStartElement("pre");
 
                     String verb = entry.getKey().toUpperCase();
 
-                    if (method.getAnnotation(Deprecated.class) == null) {
+                    if (handler.method.getAnnotation(Deprecated.class) == null) {
                         xmlStreamWriter.writeCharacters(verb);
                     } else {
                         xmlStreamWriter.writeStartElement("del");
@@ -634,8 +641,8 @@ public abstract class WebService extends HttpServlet {
 
                     xmlStreamWriter.writeCharacters(") -> ");
 
-                    Type type = method.getGenericReturnType();
-                    Response response = method.getAnnotation(Response.class);
+                    Type type = handler.method.getGenericReturnType();
+                    Response response = handler.method.getAnnotation(Response.class);
 
                     if ((type == Void.class || type == Void.TYPE) && response != null) {
                         xmlStreamWriter.writeCharacters(response.value());
@@ -655,7 +662,7 @@ public abstract class WebService extends HttpServlet {
                     xmlStreamWriter.writeEndElement();
 
                     if (resourceBundle != null) {
-                        String methodName = method.getName();
+                        String methodName = handler.method.getName();
 
                         String methodDescription;
                         try {
@@ -709,12 +716,7 @@ public abstract class WebService extends HttpServlet {
 
         for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
             String component = entry.getKey();
-
             Resource child = entry.getValue();
-
-            if (child.key != null) {
-                component += ":" + child.key;
-            }
 
             describeResource(path + "/" + component, child, structures, xmlStreamWriter, resourceBundle);
         }
