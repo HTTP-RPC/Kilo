@@ -156,15 +156,20 @@ public abstract class WebService extends HttpServlet {
                         if (component.startsWith(PATH_VARIABLE)) {
                             int k = PATH_VARIABLE.length();
 
+                            String key;
                             if (component.length() > k) {
                                 if (component.charAt(k++) != ':') {
                                     throw new ServletException("Invalid path component.");
                                 }
 
-                                handler.keys.add(component.substring(k));
+                                key = component.substring(k);
 
                                 component = PATH_VARIABLE;
+                            } else {
+                                key = null;
                             }
+
+                            handler.keys.add(key);
                         }
 
                         Resource child = resource.resources.get(component);
@@ -295,7 +300,11 @@ public abstract class WebService extends HttpServlet {
         HashMap<String, String> keyMap = new HashMap<>();
 
         for (int i = 0, n = keyList.size(); i < n; i++) {
-            keyMap.put(handler.keys.get(i), keyList.get(i));
+            String key = handler.keys.get(i);
+
+            if (key != null) {
+                keyMap.put(key, keyList.get(i));
+            }
         }
 
         this.request.set(request);

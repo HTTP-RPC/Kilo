@@ -67,7 +67,7 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("a/?:a/b/?:b/c/?:c/d/?:d")
+    @ResourcePath("a/?:a/b/?:b/c/?:c/d/?")
     public Map<String, ?> testGet() {
         HashMap<String, Object> result = new HashMap<>();
 
