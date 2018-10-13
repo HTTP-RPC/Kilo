@@ -88,7 +88,7 @@ public class CSVDecoder {
             decodeValues(reader, keys, delimiter);
         }
 
-        public void decodeValues(Reader reader, ArrayList<String> values, char delimiter) throws IOException {
+        private void decodeValues(Reader reader, ArrayList<String> values, char delimiter) throws IOException {
             int c = reader.read();
 
             while (c != '\r' && c != '\n' && c != EOF) {
