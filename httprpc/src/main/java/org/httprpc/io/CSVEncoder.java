@@ -28,6 +28,7 @@ import java.util.Map;
  */
 public class CSVEncoder {
     private List<String> keys;
+    private char delimiter;
 
     /**
      * Constructs a new CSV encoder.
@@ -36,11 +37,25 @@ public class CSVEncoder {
      * The output column keys.
      */
     public CSVEncoder(List<String> keys) {
+        this(keys, ',');
+    }
+
+    /**
+     * Constructs a new CSV encoder.
+     *
+     * @param keys
+     * The output column keys.
+     *
+     * @param delimiter
+     * The character to use as a field delimiter.
+     */
+    public CSVEncoder(List<String> keys, char delimiter) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }
 
         this.keys = keys;
+        this.delimiter = delimiter;
     }
 
     /**
@@ -82,7 +97,7 @@ public class CSVEncoder {
             }
 
             if (i > 0) {
-                writer.append(',');
+                writer.append(delimiter);
             }
 
             encodeValue(key, writer);
@@ -101,7 +116,7 @@ public class CSVEncoder {
                 }
 
                 if (i > 0) {
-                    writer.append(',');
+                    writer.append(delimiter);
                 }
 
                 Object value = valueAt(map, key);
