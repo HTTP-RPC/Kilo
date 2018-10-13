@@ -33,6 +33,8 @@ public class JSONDecoder {
 
     private LinkedList<Object> collections = new LinkedList<>();
 
+    private StringBuilder valueBuilder = new StringBuilder();
+
     private static final String TRUE_KEYWORD = "true";
     private static final String FALSE_KEYWORD = "false";
     private static final String NULL_KEYWORD = "null";
@@ -175,7 +177,7 @@ public class JSONDecoder {
     }
 
     private String decodeString(Reader reader) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
+        valueBuilder.setLength(0);
 
         // Move to the next character after the opening quotes
         c = reader.read();
@@ -199,18 +201,19 @@ public class JSONDecoder {
                 } else if (c == 't') {
                     c = '\t';
                 } else if (c == 'u') {
-                    StringBuilder unicodeValueBuilder = new StringBuilder();
+                    StringBuilder characterBuilder = new StringBuilder();
 
-                    while (c != EOF && unicodeValueBuilder.length() < 4) {
+                    while (c != EOF && characterBuilder.length() < 4) {
                         c = reader.read();
-                        unicodeValueBuilder.append((char)c);
+
+                        characterBuilder.append((char)c);
                     }
 
                     if (c == EOF) {
                         throw new IOException("Invalid Unicode escape sequence.");
                     }
 
-                    String unicodeValue = unicodeValueBuilder.toString();
+                    String unicodeValue = characterBuilder.toString();
 
                     c = (char)Integer.parseInt(unicodeValue, 16);
                 } else if (c != '"' && c != '\\' && c != '/') {
@@ -218,7 +221,7 @@ public class JSONDecoder {
                 }
             }
 
-            stringBuilder.append((char)c);
+            valueBuilder.append((char)c);
 
             c = reader.read();
         }
@@ -230,16 +233,16 @@ public class JSONDecoder {
         // Move to the next character after the closing quotes
         c = reader.read();
 
-        return stringBuilder.toString();
+        return valueBuilder.toString();
     }
 
     private Number decodeNumber(Reader reader) throws IOException {
-        StringBuilder numberBuilder = new StringBuilder();
+        valueBuilder.setLength(0);
 
         boolean decimal = false;
 
         while (c != EOF && (Character.isDigit(c) || c == '.' || c == 'e' || c == 'E' || c == '-')) {
-            numberBuilder.append((char)c);
+            valueBuilder.append((char)c);
 
             decimal |= (c == '.');
 
@@ -248,9 +251,9 @@ public class JSONDecoder {
 
         Number number;
         if (decimal) {
-            number = Double.valueOf(numberBuilder.toString());
+            number = Double.valueOf(valueBuilder.toString());
         } else {
-            number = Long.valueOf(numberBuilder.toString());
+            number = Long.valueOf(valueBuilder.toString());
         }
 
         return number;
