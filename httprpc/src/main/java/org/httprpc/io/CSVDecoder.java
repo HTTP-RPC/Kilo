@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -32,9 +31,12 @@ import java.util.NoSuchElementException;
 public class CSVDecoder {
     // Cursor
     private static class Cursor implements Iterable<Map<String, String>> {
-        private List<String> keys;
         private Reader reader;
         private char delimiter;
+
+        private StringBuilder valueBuilder = new StringBuilder();
+
+        private ArrayList<String> keys = new ArrayList<>();
 
         private ArrayList<String> values = new ArrayList<>();
         private LinkedHashMap<String, String> row = new LinkedHashMap<>();
@@ -46,6 +48,8 @@ public class CSVDecoder {
             public boolean hasNext() {
                 if (hasNext == null) {
                     try {
+                        values.clear();
+
                         decodeValues(reader, values, delimiter);
                     } catch (IOException exception) {
                         throw new RuntimeException(exception);
@@ -75,10 +79,61 @@ public class CSVDecoder {
             }
         };
 
-        private Cursor(List<String> keys, Reader reader, char delimiter) {
-            this.keys = keys;
+        private static final int EOF = -1;
+
+        public Cursor(Reader reader, char delimiter) throws IOException {
             this.reader = reader;
             this.delimiter = delimiter;
+
+            decodeValues(reader, keys, delimiter);
+        }
+
+        public void decodeValues(Reader reader, ArrayList<String> values, char delimiter) throws IOException {
+            int c = reader.read();
+
+            while (c != '\r' && c != '\n' && c != EOF) {
+                valueBuilder.setLength(0);
+
+                boolean quoted = false;
+
+                if (c == '"') {
+                    quoted = true;
+
+                    c = reader.read();
+                }
+
+                while ((quoted || (c != delimiter && c != '\r' && c != '\n')) && c != EOF) {
+                    valueBuilder.append((char)c);
+
+                    c = reader.read();
+
+                    if (c == '"') {
+                        c = reader.read();
+
+                        if (c != '"') {
+                            quoted = false;
+                        }
+                    }
+                }
+
+                if (quoted) {
+                    throw new IOException("Unterminated quoted value.");
+                }
+
+                values.add(valueBuilder.toString());
+
+                if (c == delimiter) {
+                    c = reader.read();
+                }
+            }
+
+            if (c == '\r') {
+                c = reader.read();
+
+                if (c != '\n') {
+                    throw new IOException("Improperly terminated record.");
+                }
+            }
         }
 
         @Override
@@ -88,8 +143,6 @@ public class CSVDecoder {
     }
 
     private char delimiter;
-
-    private static final int EOF = -1;
 
     /**
      * Constructs a new CSV decoder.
@@ -131,68 +184,12 @@ public class CSVDecoder {
      * The character stream to read from.
      *
      * @return
-     * A cursor over the values in the input stream.
+     * A cursor over the values in the character stream.
      *
      * @throws IOException
      * If an exception occurs.
      */
     public Iterable<Map<String, String>> readValues(Reader reader) throws IOException {
-        reader = new BufferedReader(reader);
-
-        ArrayList<String> keys = new ArrayList<>();
-
-        decodeValues(reader, keys, delimiter);
-
-        return new Cursor(keys, reader, delimiter);
-    }
-
-    private static void decodeValues(Reader reader, ArrayList<String> fields, char delimiter) throws IOException {
-        fields.clear();
-
-        int c = reader.read();
-
-        while (c != '\r' && c != '\n' && c != EOF) {
-            StringBuilder fieldBuilder = new StringBuilder();
-
-            boolean quoted = false;
-
-            if (c == '"') {
-                quoted = true;
-
-                c = reader.read();
-            }
-
-            while ((quoted || (c != delimiter && c != '\r' && c != '\n')) && c != EOF) {
-                fieldBuilder.append((char)c);
-
-                c = reader.read();
-
-                if (c == '"') {
-                    c = reader.read();
-
-                    if (c != '"') {
-                        quoted = false;
-                    }
-                }
-            }
-
-            if (quoted) {
-                throw new IOException("Unterminated quoted value.");
-            }
-
-            fields.add(fieldBuilder.toString());
-
-            if (c == delimiter) {
-                c = reader.read();
-            }
-        }
-
-        if (c == '\r') {
-            c = reader.read();
-
-            if (c != '\n') {
-                throw new IOException("Improperly terminated record.");
-            }
-        }
+        return new Cursor(new BufferedReader(reader), delimiter);
     }
 }
