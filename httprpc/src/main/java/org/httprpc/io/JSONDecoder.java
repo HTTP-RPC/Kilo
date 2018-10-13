@@ -234,12 +234,13 @@ public class JSONDecoder {
     }
 
     private Number decodeNumber(Reader reader) throws IOException {
-        boolean decimal = false;
-
         StringBuilder numberBuilder = new StringBuilder();
+
+        boolean decimal = false;
 
         while (c != EOF && (Character.isDigit(c) || c == '.' || c == 'e' || c == 'E' || c == '-')) {
             numberBuilder.append((char)c);
+
             decimal |= (c == '.');
 
             c = reader.read();
@@ -265,6 +266,7 @@ public class JSONDecoder {
             }
 
             c = reader.read();
+
             i++;
         }
 
