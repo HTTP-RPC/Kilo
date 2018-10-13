@@ -96,8 +96,6 @@ public class RestaurantService extends WebService {
             } else {
                 throw new UnsupportedOperationException();
             }
-        } finally {
-            getResponse().flushBuffer();
         }
     }
 }

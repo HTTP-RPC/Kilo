@@ -24,7 +24,7 @@ repositories {
 dependencies {
     compile project(':httprpc')
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-    providedCompile 'javax.servlet:jsp-api:2.0'
+    providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
     implementation 'org.jtemplate:jtemplate:2.2+'
     implementation 'org.mongodb:mongo-java-driver:3.0+'
     implementation 'mysql:mysql-connector-java:5.1+'

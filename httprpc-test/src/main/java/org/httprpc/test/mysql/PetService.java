@@ -113,8 +113,6 @@ public class PetService extends WebService {
                     throw new UnsupportedOperationException();
                 }
             }
-        } finally {
-            getResponse().flushBuffer();
         }
     }
 

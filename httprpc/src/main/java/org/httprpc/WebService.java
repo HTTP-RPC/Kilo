@@ -143,24 +143,28 @@ public abstract class WebService extends HttpServlet {
                             continue;
                         }
 
+                        String key = null;
+
+                        if (component.startsWith(PATH_VARIABLE)) {
+                            int k = PATH_VARIABLE.length();
+
+                            if (component.length() > k) {
+                                if (component.charAt(k++) != ':') {
+                                    throw new ServletException("Invalid path component.");
+                                }
+
+                                key = component.substring(k);
+
+                                component = PATH_VARIABLE;
+                            }
+                        }
+
                         Resource child = resource.resources.get(component);
 
                         if (child == null) {
                             child = new Resource();
 
-                            if (component.startsWith(PATH_VARIABLE)) {
-                                int k = PATH_VARIABLE.length();
-
-                                if (component.length() > k) {
-                                    if (component.charAt(k++) != ':') {
-                                        throw new ServletException("Invalid path component.");
-                                    }
-
-                                    child.key = component.substring(k);
-
-                                    component = PATH_VARIABLE;
-                                }
-                            }
+                            child.key = key;
 
                             resource.resources.put(component, child);
                         }

@@ -20,6 +20,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -55,12 +56,12 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @Response("[{\n"
-        + "  employeeNumber: integer,\n"
+        + "  id: integer,\n"
         + "  firstName: string,\n"
         + "  lastName: string\n"
         + "}]")
-    public void getEmployees(String name) throws SQLException, IOException {
-        Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
+    public void listEmployees(String name) throws SQLException, IOException {
+        Parameters parameters = Parameters.parse("SELECT emp_no AS id, "
             + "first_name AS firstName, "
             + "last_name AS lastName "
             + "FROM employees "
@@ -69,7 +70,7 @@ public class EmployeeService extends WebService {
 
         parameters.put("name", (name == null) ? "%" : name.replace('*', '%'));
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement);
 
@@ -82,17 +83,46 @@ public class EmployeeService extends WebService {
 
                 jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
             }
-        } finally {
-            getResponse().flushBuffer();
         }
     }
 
+    @RequestMethod("POST")
+    public int addEmployee(String firstName,
+        String lastName,
+        String gender,
+        Date birthDate,
+        Date hireDate) throws SQLException {
+        Parameters parameters = Parameters.parse("INSERT INTO employees "
+            + "(first_name, last_name, gender, birth_date, hire_date) VALUES "
+            + "(:firstName, :lastName, :gender, :birthDate, :hireDate)");
+
+        parameters.put("firstName", firstName);
+        parameters.put("lastName", lastName);
+        parameters.put("gender", gender);
+        parameters.put("birthDate", birthDate);
+        parameters.put("hireDate", hireDate);
+
+        int id;
+        try (Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+            parameters.apply(statement);
+            statement.execute();
+
+            id = statement.getGeneratedKeys().getInt(1);
+        }
+
+        return id;
+    }
+
     @RequestMethod("GET")
-    @ResourcePath("?:employeeNumber")
+    @ResourcePath("?:id")
     @Response("{\n"
-        + "  employeeNumber: integer,\n"
+        + "  id: integer,\n"
         + "  firstName: string,\n"
         + "  lastName: string,\n"
+        + "  gender: string,\n"
+        + "  birthDate: string,\n"
+        + "  hireDate: string,\n"
         + "  titles: [{\n"
         + "    title: string,\n"
         + "    fromDate: date,\n"
@@ -105,16 +135,19 @@ public class EmployeeService extends WebService {
         + "  }]\n"
         + "}")
     public void getEmployee(List<String> details) throws SQLException, IOException {
-        String employeeNumber = getKey("employeeNumber");
+        String id = getKey("id");
 
-        Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
+        Parameters parameters = Parameters.parse("SELECT emp_no AS id, "
             + "first_name AS firstName, "
-            + "last_name AS lastName "
-            + "FROM employees WHERE emp_no = :employeeNumber");
+            + "last_name AS lastName, "
+            + "gender, "
+            + "birth_date AS birthDate, "
+            + "hire_date AS hireDate "
+            + "FROM employees WHERE emp_no = :id");
 
-        parameters.put("employeeNumber", employeeNumber);
+        parameters.put("id", id);
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement);
 
@@ -126,8 +159,8 @@ public class EmployeeService extends WebService {
                         case "titles": {
                             resultSetAdapter.attach("titles", "SELECT title, "
                                 + "from_date AS fromDate, "
-                                + "to_date as toDate "
-                                + "FROM titles WHERE emp_no = :employeeNumber");
+                                + "to_date AS toDate "
+                                + "FROM titles WHERE emp_no = :id");
 
                             break;
                         }
@@ -135,8 +168,8 @@ public class EmployeeService extends WebService {
                         case "salaries": {
                             resultSetAdapter.attach("salaries", "SELECT salary, "
                                 + "from_date AS fromDate, "
-                                + "to_date as toDate "
-                                + "FROM salaries WHERE emp_no = :employeeNumber");
+                                + "to_date AS toDate "
+                                + "FROM salaries WHERE emp_no = :id");
 
                             break;
                         }
@@ -149,8 +182,57 @@ public class EmployeeService extends WebService {
 
                 jsonEncoder.writeValue(resultSetAdapter.next(), getResponse().getOutputStream());
             }
-        } finally {
-            getResponse().flushBuffer();
         }
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("?:id")
+    public void updateEmployee(String firstName,
+        String lastName,
+        String gender,
+        Date birthDate,
+        Date hireDate) throws SQLException {
+        String id = getKey("id");
+
+        Parameters parameters = Parameters.parse("UPDATE employees "
+            + "SET first_name = COALESCE(:firstName, first_name), "
+            + "SET last_name = COALESCE(:lastName, last_name), "
+            + "SET gender = COALESCE(:gender, gender), "
+            + "SET birth_date = COALESCE(:birthDate, birth_date), "
+            + "SET hire_date = COALESCE(:hireDate, hire_date), "
+            + "WHERE emp_no = :id");
+
+        parameters.put("id", id);
+        parameters.put("firstName", firstName);
+        parameters.put("lastName", lastName);
+        parameters.put("gender", gender);
+        parameters.put("birthDate", birthDate);
+        parameters.put("hireDate", hireDate);
+
+        try (Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+            parameters.apply(statement);
+            statement.execute();
+        }
+    }
+
+    @RequestMethod("DELETE")
+    @ResourcePath("?:id")
+    public void deleteEmployee() throws SQLException {
+        String id = getKey("id");
+
+        Parameters parameters = Parameters.parse("DELETE FROM employees WHERE emp_no = :id");
+
+        parameters.put("id", id);
+
+        try (Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+            parameters.apply(statement);
+            statement.execute();
+        }
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
     }
 }

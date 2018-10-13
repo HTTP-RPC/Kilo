@@ -173,8 +173,8 @@
 <a href="${pageContext.request.contextPath}/employees">Employees</a><br/>
 <a href="${pageContext.request.contextPath}/employees?name=bal*">Employees ("bal*")</a><br/>
 <br/>
-<a href="${pageContext.request.contextPath}/employees/10004">Employee 10004</a><br/>
-<a href="${pageContext.request.contextPath}/employees/10004?details=titles&details=salaries">Employee 10004 (details)</a><br/>
+<a href="${pageContext.request.contextPath}/employees/10001">Employee 10001</a><br/>
+<a href="${pageContext.request.contextPath}/employees/10001?details=titles&details=salaries">Employee 10001 (details)</a><br/>
 
 </body>
 </html>
