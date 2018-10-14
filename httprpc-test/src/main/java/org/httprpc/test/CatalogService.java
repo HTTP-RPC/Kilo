@@ -15,9 +15,7 @@
 package org.httprpc.test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,55 +25,103 @@ import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 
 /**
- * Service that simulates a product catalog using path variables.
+ * Service that simulates a product catalog.
  */
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 public class CatalogService extends WebService {
     private static final long serialVersionUID = 0;
 
-    private List<? extends Map<String, ?>> items = null;
+    /**
+     * Simulates an item in the product catalog.
+     */
+    public static class Item {
+        private String description;
+        private double price;
+
+        private Item(String description, double price) {
+            this.description = description;
+            this.price = price;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
+        }
+    }
+
+    private ArrayList<Item> items = new ArrayList<>();
 
     @Override
     public void init() throws ServletException {
         super.init();
 
-        ArrayList<HashMap<String, Object>> items = new ArrayList<>();
-
-        HashMap<String, Object> item1 = new HashMap<>();
-
-        item1.put("description", "Hat");
-        item1.put("price", 15.00);
-
-        items.add(item1);
-
-        HashMap<String, Object> item2 = new HashMap<>();
-
-        item2.put("description", "Mittens");
-        item2.put("price", 12.00);
-
-        items.add(item2);
-
-        HashMap<String, Object> item3 = new HashMap<>();
-
-        item3.put("description", "Scarf");
-        item3.put("price", 9.00);
-
-        items.add(item3);
-
-        this.items = items;
+        items.add(new Item("Hat", 15.00));
+        items.add(new Item("Mittens", 12.00));
+        items.add(new Item("Scarf", 9.00));
     }
 
     @RequestMethod("GET")
     @ResourcePath("items")
-    public List<? extends Map<String, ?>> getItems() {
+    public List<Item> getItems() {
         return items;
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("items")
+    public int addItem(String description, double price) {
+        items.add(new Item(description, price));
+
+        return items.size() - 1;
     }
 
     @RequestMethod("GET")
     @ResourcePath("items/?:itemID")
-    public Map<String, ?> getItem() {
+    public Item getItem() {
         int itemID = Integer.parseInt(getKey("itemID"));
 
-        return (itemID > 0 && itemID <= items.size()) ? items.get(itemID - 1) : null;
+        Item item;
+        if (itemID > 0 && itemID <= items.size()) {
+            item = items.get(itemID - 1);
+        } else {
+            item = null;
+        }
+
+        return item;
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("items/?:itemID")
+    public void updateItem(String description, double price) {
+        int itemID = Integer.parseInt(getKey("itemID"));
+
+        if (itemID > 0 && itemID <= items.size()) {
+            Item item = items.get(itemID);
+
+            item.setDescription(description);
+            item.setPrice(price);
+        } else {
+            throw new IllegalArgumentException("Item not found.");
+        }
+    }
+
+    @RequestMethod("DELETE")
+    @ResourcePath("items/?:itemID")
+    public void deleteItem() {
+        int itemID = Integer.parseInt(getKey("itemID"));
+
+        if (itemID > 0 && itemID <= items.size()) {
+            items.remove(itemID);
+        }
     }
 }

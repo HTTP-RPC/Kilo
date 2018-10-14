@@ -583,7 +583,6 @@ public abstract class WebService extends HttpServlet {
                 String name = type.getSimpleName();
 
                 xmlStreamWriter.writeStartElement("h3");
-                xmlStreamWriter.writeAttribute("id", name);
                 xmlStreamWriter.writeCharacters(name);
                 xmlStreamWriter.writeEndElement();
 
@@ -656,16 +655,7 @@ public abstract class WebService extends HttpServlet {
                     if ((type == Void.class || type == Void.TYPE) && response != null) {
                         xmlStreamWriter.writeCharacters(response.value());
                     } else {
-                        String description = BeanAdapter.describe(type, structures);
-
-                        if (structures.containsKey(type)) {
-                            xmlStreamWriter.writeStartElement("a");
-                            xmlStreamWriter.writeAttribute("href", "#" + description);
-                            xmlStreamWriter.writeCharacters(description);
-                            xmlStreamWriter.writeEndElement();
-                        } else {
-                            xmlStreamWriter.writeCharacters(description);
-                        }
+                        xmlStreamWriter.writeCharacters(BeanAdapter.describe(type, structures));
                     }
 
                     xmlStreamWriter.writeEndElement();
@@ -724,10 +714,7 @@ public abstract class WebService extends HttpServlet {
         }
 
         for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
-            String component = entry.getKey();
-            Resource child = entry.getValue();
-
-            describeResource(path + "/" + component, child, structures, xmlStreamWriter, resourceBundle);
+            describeResource(path + "/" + entry.getKey(), entry.getValue(), structures, xmlStreamWriter, resourceBundle);
         }
     }
 }
