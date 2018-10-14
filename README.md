@@ -391,8 +391,6 @@ public void getMap() throws IOException {
 
     try {
         jsonEncoder.writeValue(map, getResponse().getOutputStream());
-    } finally {
-        getResponse().flushBuffer();
     }
 }
 ```
@@ -740,8 +738,6 @@ public void getPets(String owner) throws SQLException, IOException {
                 jsonEncoder.writeValue(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
             }
         }
-    } finally {
-        getResponse().flushBuffer();
     }
 }
 ```
@@ -860,8 +856,6 @@ public void getEmployee(List<String> details) throws SQLException, IOException {
 
             jsonEncoder.writeValue(resultSetAdapter.next(), getResponse().getOutputStream());
         }
-    } finally {
-        getResponse().flushBuffer();
     }
 }
 ```
@@ -1056,3 +1050,5 @@ print(fibonacci[2]); // 3
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test).
+
+For an iOS implementation of `WebServiceProxy`, see the [Kilo](https://github.com/gk-brown/Kilo) project.
