@@ -82,7 +82,7 @@ public class CatalogService extends WebService {
     public int addItem(String description, double price) {
         items.add(new Item(description, price));
 
-        return items.size() - 1;
+        return items.size();
     }
 
     @RequestMethod("GET")
@@ -106,22 +106,12 @@ public class CatalogService extends WebService {
         int itemID = Integer.parseInt(getKey("itemID"));
 
         if (itemID > 0 && itemID <= items.size()) {
-            Item item = items.get(itemID);
+            Item item = items.get(itemID - 1);
 
             item.setDescription(description);
             item.setPrice(price);
         } else {
             throw new IllegalArgumentException("Item not found.");
-        }
-    }
-
-    @RequestMethod("DELETE")
-    @ResourcePath("items/?:itemID")
-    public void deleteItem() {
-        int itemID = Integer.parseInt(getKey("itemID"));
-
-        if (itemID > 0 && itemID <= items.size()) {
-            items.remove(itemID);
         }
     }
 }
