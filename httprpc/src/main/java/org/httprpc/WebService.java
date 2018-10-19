@@ -512,9 +512,20 @@ public abstract class WebService extends HttpServlet {
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format("application/json;charset=%s", UTF_8));
 
-        JSONEncoder jsonEncoder = new JSONEncoder();
+        JSONEncoder jsonEncoder = new JSONEncoder(isCompact());
 
         jsonEncoder.writeValue(BeanAdapter.adapt(result), response.getOutputStream());
+    }
+
+    /**
+     * Enables or disables compact output.
+     *
+     * @return
+     * <tt>true</tt> if the encoded output should be compact; <tt>false</tt>,
+     * otherwise.
+     */
+    protected boolean isCompact() {
+        return false;
     }
 
     private void describeService(HttpServletRequest request, HttpServletResponse response) throws IOException {

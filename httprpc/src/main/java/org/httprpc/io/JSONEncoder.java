@@ -29,7 +29,27 @@ import java.util.Map;
  * JSON encoder.
  */
 public class JSONEncoder {
+    private boolean compact;
+
     private int depth = 0;
+
+    /**
+     * Constructs a new JSON encoder.
+     */
+    public JSONEncoder() {
+        this(false);
+    }
+
+    /**
+     * Constructs a new JSON encoder.
+     *
+     * @param compact
+     * <tt>true</tt> if the encoded output should be compact; <tt>false</tt>,
+     * otherwise.
+     */
+    public JSONEncoder(boolean compact) {
+        this.compact = compact;
+    }
 
     /**
      * Writes a value to an output stream.
@@ -114,9 +134,11 @@ public class JSONEncoder {
                     writer.append(",");
                 }
 
-                writer.append("\n");
+                if (!compact) {
+                    writer.append("\n");
 
-                indent(writer);
+                    indent(writer);
+                }
 
                 encodeValue(element, writer);
 
@@ -125,9 +147,11 @@ public class JSONEncoder {
 
             depth--;
 
-            writer.append("\n");
+            if (!compact) {
+                writer.append("\n");
 
-            indent(writer);
+                indent(writer);
+            }
 
             writer.append("]");
         } else if (value instanceof Map<?, ?>) {
@@ -142,15 +166,17 @@ public class JSONEncoder {
                     writer.append(",");
                 }
 
-                writer.append("\n");
-
                 Object key = entry.getKey();
 
                 if (key == null) {
                     continue;
                 }
 
-                indent(writer);
+                if (!compact) {
+                    writer.append("\n");
+
+                    indent(writer);
+                }
 
                 encodeValue(key.toString(), writer);
 
@@ -163,9 +189,11 @@ public class JSONEncoder {
 
             depth--;
 
-            writer.append("\n");
+            if (!compact) {
+                writer.append("\n");
 
-            indent(writer);
+                indent(writer);
+            }
 
             writer.append("}");
         } else {
