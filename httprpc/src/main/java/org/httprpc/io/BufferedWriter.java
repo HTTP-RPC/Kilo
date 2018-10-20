@@ -45,9 +45,28 @@ class BufferedWriter extends Writer {
 
     @Override
     public void write(String str) throws IOException {
-        for (int i = 0, n = str.length(); i < n; i++) {
-            write(str.charAt(i));
+        int n = str.length();
+        int j = 0;
+
+        while (j < n) {
+            int c = Math.min(n - j, buffer.length - i);
+            int k = j + c;
+
+            str.getChars(j, k, buffer, i);
+
+            j = k;
+
+            i += c;
+
+            if (i == buffer.length) {
+                flush();
+            }
         }
+    }
+
+    @Override
+    public void write(String str, int off, int len) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

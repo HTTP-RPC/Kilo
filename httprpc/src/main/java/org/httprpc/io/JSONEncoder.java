@@ -91,31 +91,31 @@ public class JSONEncoder {
         if (value instanceof CharSequence) {
             CharSequence text = (CharSequence)value;
 
-            writer.append("\"");
+            writer.write("\"");
 
             for (int i = 0, n = text.length(); i < n; i++) {
                 char c = text.charAt(i);
 
                 if (c == '"' || c == '\\') {
-                    writer.append("\\" + c);
+                    writer.write("\\" + c);
                 } else if (c == '\b') {
-                    writer.append("\\b");
+                    writer.write("\\b");
                 } else if (c == '\f') {
-                    writer.append("\\f");
+                    writer.write("\\f");
                 } else if (c == '\n') {
-                    writer.append("\\n");
+                    writer.write("\\n");
                 } else if (c == '\r') {
-                    writer.append("\\r");
+                    writer.write("\\r");
                 } else if (c == '\t') {
-                    writer.append("\\t");
+                    writer.write("\\t");
                 } else {
-                    writer.append(c);
+                    writer.write(c);
                 }
             }
 
-            writer.append("\"");
+            writer.write("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
-            writer.append(value.toString());
+            writer.write(value.toString());
         } else if (value instanceof Enum<?>) {
             encodeValue(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
@@ -123,7 +123,7 @@ public class JSONEncoder {
         } else if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
             encodeValue(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
-            writer.append("[");
+            writer.write("[");
 
             depth++;
 
@@ -131,11 +131,11 @@ public class JSONEncoder {
 
             for (Object element : (Iterable<?>)value) {
                 if (i > 0) {
-                    writer.append(",");
+                    writer.write(",");
                 }
 
                 if (!compact) {
-                    writer.append("\n");
+                    writer.write("\n");
 
                     indent(writer);
                 }
@@ -148,14 +148,14 @@ public class JSONEncoder {
             depth--;
 
             if (!compact) {
-                writer.append("\n");
+                writer.write("\n");
 
                 indent(writer);
             }
 
-            writer.append("]");
+            writer.write("]");
         } else if (value instanceof Map<?, ?>) {
-            writer.append("{");
+            writer.write("{");
 
             depth++;
 
@@ -169,18 +169,18 @@ public class JSONEncoder {
                 }
 
                 if (i > 0) {
-                    writer.append(",");
+                    writer.write(",");
                 }
 
                 if (!compact) {
-                    writer.append("\n");
+                    writer.write("\n");
 
                     indent(writer);
                 }
 
                 encodeValue(key.toString(), writer);
 
-                writer.append(": ");
+                writer.write(": ");
 
                 encodeValue(entry.getValue(), writer);
 
@@ -190,12 +190,12 @@ public class JSONEncoder {
             depth--;
 
             if (!compact) {
-                writer.append("\n");
+                writer.write("\n");
 
                 indent(writer);
             }
 
-            writer.append("}");
+            writer.write("}");
         } else {
             writer.append(null);
         }
@@ -203,7 +203,7 @@ public class JSONEncoder {
 
     private void indent(Writer writer) throws IOException {
         for (int i = 0; i < depth; i++) {
-            writer.append("  ");
+            writer.write("  ");
         }
     }
 }

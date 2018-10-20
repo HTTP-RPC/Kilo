@@ -97,7 +97,7 @@ public class CSVEncoder {
             }
 
             if (i > 0) {
-                writer.append(delimiter);
+                writer.write(delimiter);
             }
 
             encodeValue(key, writer);
@@ -105,7 +105,7 @@ public class CSVEncoder {
             i++;
         }
 
-        writer.append("\r\n");
+        writer.write("\r\n");
 
         for (Map<String, ?> map : values) {
             i = 0;
@@ -116,7 +116,7 @@ public class CSVEncoder {
                 }
 
                 if (i > 0) {
-                    writer.append(delimiter);
+                    writer.write(delimiter);
                 }
 
                 Object value = valueAt(map, key);
@@ -128,7 +128,7 @@ public class CSVEncoder {
                 i++;
             }
 
-            writer.append("\r\n");
+            writer.write("\r\n");
         }
 
         writer.flush();
@@ -144,7 +144,7 @@ public class CSVEncoder {
         } else if (value instanceof Date) {
             encodeValue(((Date)value).getTime(), writer);
         } else {
-            writer.append(value.toString());
+            writer.write(value.toString());
         }
     }
 
