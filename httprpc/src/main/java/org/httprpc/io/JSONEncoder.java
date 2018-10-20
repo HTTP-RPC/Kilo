@@ -162,14 +162,14 @@ public class JSONEncoder {
             int i = 0;
 
             for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-                if (i > 0) {
-                    writer.append(",");
-                }
-
                 Object key = entry.getKey();
 
                 if (key == null) {
                     continue;
+                }
+
+                if (i > 0) {
+                    writer.append(",");
                 }
 
                 if (!compact) {
