@@ -116,10 +116,27 @@ public class JSONEncoderTest extends AbstractTest {
         Assert.assertEquals(expected, encode(map));
     }
 
+    @Test
+    public void testCompact() throws IOException {
+        String expected = "{\"a\":1,\"b\":2,\"c\":3}";
+
+        Map<String, ?> map = mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        Assert.assertEquals(expected, encode(map, true));
+    }
+
     private static String encode(Object value) throws IOException {
+        return encode(value, false);
+    }
+
+    private static String encode(Object value, boolean compact) throws IOException {
         StringWriter writer = new StringWriter();
 
-        JSONEncoder jsonEncoder = new JSONEncoder();
+        JSONEncoder jsonEncoder = new JSONEncoder(compact);
 
         jsonEncoder.writeValue(value, writer);
 

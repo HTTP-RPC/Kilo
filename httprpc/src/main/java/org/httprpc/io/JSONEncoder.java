@@ -180,7 +180,11 @@ public class JSONEncoder {
 
                 encodeValue(key.toString(), writer);
 
-                writer.write(": ");
+                writer.write(":");
+
+                if (!compact) {
+                    writer.write(" ");
+                }
 
                 encodeValue(entry.getValue(), writer);
 
