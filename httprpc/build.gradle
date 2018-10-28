@@ -20,7 +20,7 @@ plugins {
 }
 
 group = 'org.httprpc'
-version = '5.9.5'
+version = '5.9.6'
 
 repositories {
     mavenCentral()
@@ -70,7 +70,7 @@ publishing {
             artifact javadocJar
             pom {
                 name = project.name
-                description = 'Lightweight REST services for Java'
+                description = 'Lightweight REST for Java'
                 url = 'http://httprpc.org'
                 licenses {
                     license {
