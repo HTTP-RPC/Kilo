@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 
 import org.httprpc.beans.BeanAdapter;
 
@@ -93,7 +90,6 @@ public class WebServiceProxyTest extends AbstractTest {
 
     public static void main(String[] args) throws Exception {
         testGet();
-        testGetScript();
         testGetFibonnaci();
         testURLEncodedPost();
         testMultipartPost();
@@ -104,7 +100,6 @@ public class WebServiceProxyTest extends AbstractTest {
         testTimeout();
         testMath();
         testMathService();
-        testMathScript();
         testTree();
     }
 
@@ -122,22 +117,6 @@ public class WebServiceProxyTest extends AbstractTest {
             && result.get("localDate").equals(localDate.toString())
             && result.get("localTime").equals(localTime.toString())
             && result.get("localDateTime").equals(localDateTime.toString()));
-    }
-
-    public static void testGetScript() throws Exception {
-        ScriptEngineManager engineManager = new ScriptEngineManager();
-        ScriptEngine engine = engineManager.getEngineByName("nashorn");
-
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test"));
-
-        engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE).put("webServiceProxy", webServiceProxy);
-
-        Map<?, ?> result = (Map<?, ?>)engine.eval("webServiceProxy.arguments = {'string': 'héllo+gøodbye', 'strings': Java.asJSONCompatible(['a', 'b', 'c']), 'number': 123, 'flag': true}; webServiceProxy.invoke();");
-
-        validate("GET (script)", result.get("string").equals("héllo+gøodbye")
-            && result.get("strings").equals(listOf("a", "b", "c"))
-            && result.get("number").equals(123L)
-            && result.get("flag").equals(true));
     }
 
     public static void testGetFibonnaci() throws Exception {
@@ -328,23 +307,6 @@ public class WebServiceProxyTest extends AbstractTest {
 
         validate("Math (service)", mathService.getSum(4, 2) == 6.0
             && mathService.getSum(listOf(1.0, 2.0, 3.0)) == 6.0);
-    }
-
-    private static void testMathScript() throws Exception {
-        ScriptEngineManager engineManager = new ScriptEngineManager();
-        ScriptEngine engine = engineManager.getEngineByName("nashorn");
-
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
-
-        engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE).put("webServiceProxy", webServiceProxy);
-
-        Number result1 = (Number)engine.eval("webServiceProxy.arguments = {'a': 4, 'b': 2}; webServiceProxy.invoke();");
-
-        validate("Math (script 1)", result1.doubleValue() == 6.0);
-
-        Number result2 = (Number)engine.eval("webServiceProxy.arguments = {'values': Java.asJSONCompatible([1, 2, 3])}; webServiceProxy.invoke();");
-
-        validate("Math (script 2)", result2.doubleValue() == 6.0);
     }
 
     public static void testTree() throws Exception {

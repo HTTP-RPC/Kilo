@@ -96,15 +96,13 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
             for (Map.Entry<String, String> entry : subqueries.entrySet()) {
                 Parameters parameters = Parameters.parse(entry.getValue());
 
-                parameters.putAll(row);
-
                 LinkedList<Map<String, Object>> results = new LinkedList<>();
 
                 try {
                     Connection connection = resultSet.getStatement().getConnection();
 
                     try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-                        parameters.apply(statement);
+                        parameters.apply(statement, row);
 
                         try (ResultSet resultSet = statement.executeQuery()) {
                             for (Map<String, Object> result : new ResultSetAdapter(resultSet)) {

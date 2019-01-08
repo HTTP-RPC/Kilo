@@ -20,6 +20,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -67,11 +68,13 @@ public class EmployeeService extends WebService {
             + "WHERE first_name LIKE :name "
             + "OR last_name LIKE :name");
 
-        parameters.put("name", (name == null) ? "%" : name.replace('*', '%'));
+        HashMap<String, Object> arguments = new HashMap<>();
+
+        arguments.put("name", (name == null) ? "%" : name.replace('*', '%'));
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement);
+            parameters.apply(statement, arguments);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
@@ -110,11 +113,13 @@ public class EmployeeService extends WebService {
             + "last_name AS lastName "
             + "FROM employees WHERE emp_no = :employeeNumber");
 
-        parameters.put("employeeNumber", employeeNumber);
+        HashMap<String, Object> arguments = new HashMap<>();
+
+        arguments.put("employeeNumber", employeeNumber);
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement);
+            parameters.apply(statement, arguments);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);

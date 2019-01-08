@@ -19,19 +19,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Class for simplifying execution of prepared statements.
  */
-public class Parameters extends AbstractMap<String, Object> {
+public class Parameters {
     private String sql;
     private LinkedList<String> keys;
-
-    private HashMap<String, Object> values = new HashMap<>();
 
     private static final int EOF = -1;
 
@@ -51,52 +47,22 @@ public class Parameters extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns a parameter value.
-     *
-     * @param key
-     * The parameter name.
-     *
-     * @return
-     * The parameter value, or <tt>null</tt> if the parameter has not been set.
-     */
-    @Override
-    public Object get(Object key) {
-        return values.get(key);
-    }
-
-    /**
-     * Sets a parameter value.
-     *
-     * @param key
-     * The parameter name.
-     *
-     * @param value
-     * The parameter value.
-     */
-    @Override
-    public Object put(String key, Object value) {
-        return values.put(key, value);
-    }
-
-    @Override
-    public Set<Entry<String, Object>> entrySet() {
-        return values.entrySet();
-    }
-
-    /**
      * Applies the provided argument values to a prepared statement.
      *
      * @param statement
      * The prepared statement.
      *
+     * @param arguments
+     * The argument values.
+     *
      * @throws SQLException
      * If an exception occurs while applying the argument values.
      */
-    public void apply(PreparedStatement statement) throws SQLException {
+    public void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
         int i = 1;
 
         for (String key : keys) {
-            statement.setObject(i++, values.get(key));
+            statement.setObject(i++, arguments.get(key));
         }
     }
 

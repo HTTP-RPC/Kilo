@@ -691,13 +691,15 @@ This value is used to create the actual prepared statement:
 PreparedStatement statement = connection.prepareStatement(parameters.getSQL());
 ```
 
-Parameter values are set via the `put()` method, and applied to the statement via the `apply()` method:
+Arguments values are specified via the `apply()` method:
 
 ```java
-parameters.put("a", "hello");
-parameters.put("b", 3);
+HashMap<String, Object> arguments = new HashMap<>();
 
-parameters.apply(statement);
+arguments("a", "hello");
+arguments("b", 3);
+
+parameters.apply(statement, arguments);
 ```
 
 Once applied, the statement can be executed:
@@ -727,10 +729,12 @@ public void getPets(String owner) throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(DB_URL)) {
         Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
-        parameters.put("owner", owner);
+        HashMap<String, Object> arguments = new HashMap<>();
+
+        arguments.put("owner", owner);
 
         try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement);
+            parameters.apply(statement, arguments);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 JSONEncoder jsonEncoder = new JSONEncoder();
@@ -1016,36 +1020,6 @@ System.out.println(mathService.getSum(4, 2)); // 6.0
 
 // GET /math/sum?values=1&values=2&values=3
 System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
-```
-
-### JavaScript
-`WebServiceProxy` can also be used from JavaScript, via the Nashorn scripting engine. For example:
-
-```javascript
-var webServiceProxy = new org.httprpc.WebServiceProxy("GET", new java.net.URL("http://localhost:8080/httprpc-test/math/sum"));
-
-// GET /math/sum?a=2&b=4
-webServiceProxy.arguments = {"a": 4, "b": 2};
-
-print(webServiceProxy.invoke()); // 6
-
-// GET /math/sum?values=1&values=2&values=3
-webServiceProxy.arguments = {"values": Java.asJSONCompatible([1, 2, 3])};
-
-print(webServiceProxy.invoke()); // 6
-```
-
-Note that, because Nashorn automatically translates Java `List` and `Map` values to JavaScript array and object instances respectively, transformation or adaptation of service responses is not generally necessary.
-
-For example, the following script would print the third value in the Fibonacci sequence:
-
-```javascript
-var webServiceProxy = new org.httprpc.WebServiceProxy("GET", new java.net.URL("http://localhost:8080/httprpc-test/test/fibonacci"));
-
-// [1, 2, 3, 5, 8, 13]
-var fibonacci = webServiceProxy.invoke();
-
-print(fibonacci[2]); // 3
 ```
 
 # Additional Information
