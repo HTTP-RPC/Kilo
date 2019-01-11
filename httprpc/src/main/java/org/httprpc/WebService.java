@@ -52,7 +52,7 @@ import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONEncoder;
 
 /**
- * Abstract base class for REST-based web services.
+ * Abstract base class for web services.
  */
 public abstract class WebService extends HttpServlet {
     private static final long serialVersionUID = 0;

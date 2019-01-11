@@ -65,7 +65,7 @@ HTTP-RPC provides the following classes for creating and consuming REST services
 These classes are explained in more detail in the following sections.
 
 ## WebService
-`WebService` is an abstract base class for REST services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
+`WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
 Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org).
 
