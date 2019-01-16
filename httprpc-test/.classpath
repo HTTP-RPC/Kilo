@@ -20,12 +20,6 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.2/92db4e885fbe5e08df53bab47e8cc9b34d8d7681/jtemplate-2.2-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.jtemplate/jtemplate/2.2/69b3c9ed1f8a792f84b717412a79a7310a6f218e/jtemplate-2.2.jar">
-		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
 	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/3.0.4/8496e137420c22756c97f58a55e8816867de5aff/mongo-java-driver-3.0.4-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/3.0.4/f9caed188f03990204f3381d01d44f70fc93acec/mongo-java-driver-3.0.4.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>

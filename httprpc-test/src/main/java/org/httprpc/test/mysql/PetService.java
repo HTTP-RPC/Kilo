@@ -38,7 +38,6 @@ import org.httprpc.ResourcePath;
 import org.httprpc.Response;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
-import org.jtemplate.TemplateEncoder;
 
 /**
  * Pet service.
@@ -105,13 +104,6 @@ public class PetService extends WebService {
                     CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
 
                     csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
-                } else if (format.equals("html")) {
-                    getResponse().setContentType("text/html;charset=UTF-8");
-
-                    TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
-
-                    templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
-                    templateEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream(), getRequest().getLocale());
                 } else {
                     throw new UnsupportedOperationException();
                 }

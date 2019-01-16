@@ -27,7 +27,6 @@ import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.Response;
-import org.jtemplate.TemplateEncoder;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
@@ -86,13 +85,6 @@ public class RestaurantService extends WebService {
                 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "address.building", "address.street", "borough", "cuisine"));
 
                 csvEncoder.writeValues(cursorAdapter, getResponse().getOutputStream());
-            } else if (format.equals("html")){
-                getResponse().setContentType("text/html;charset=UTF-8");
-
-                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("restaurants.html"));
-
-                templateEncoder.setBaseName(getClass().getPackage().getName() + ".restaurants");
-                templateEncoder.writeValue(cursorAdapter, getResponse().getOutputStream(), getRequest().getLocale());
             } else {
                 throw new UnsupportedOperationException();
             }
