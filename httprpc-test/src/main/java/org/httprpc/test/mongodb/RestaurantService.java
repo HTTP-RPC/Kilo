@@ -78,13 +78,13 @@ public class RestaurantService extends WebService {
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.writeValue(cursorAdapter, getResponse().getOutputStream());
+                jsonEncoder.write(cursorAdapter, getResponse().getOutputStream());
             } else if (format.equals("csv")) {
                 getResponse().setContentType("text/csv");
 
                 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "address.building", "address.street", "borough", "cuisine"));
 
-                csvEncoder.writeValues(cursorAdapter, getResponse().getOutputStream());
+                csvEncoder.write(cursorAdapter, getResponse().getOutputStream());
             } else {
                 throw new UnsupportedOperationException();
             }

@@ -83,7 +83,7 @@ public class EmployeeService extends WebService {
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
+                jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
             }
         }
     }
@@ -150,7 +150,7 @@ public class EmployeeService extends WebService {
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.writeValue(resultSetAdapter.next(), getResponse().getOutputStream());
+                jsonEncoder.write(resultSetAdapter.next(), getResponse().getOutputStream());
             }
         }
     }

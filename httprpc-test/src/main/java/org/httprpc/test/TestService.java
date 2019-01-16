@@ -90,7 +90,7 @@ public class TestService extends WebService {
     public List<?> testGetFibonacci() throws IOException {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
-        return jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
+        return jsonDecoder.read(new StringReader("[1, 2, 3, 5, 8, 13]"));
     }
 
     @Override

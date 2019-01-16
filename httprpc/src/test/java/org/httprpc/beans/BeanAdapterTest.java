@@ -96,7 +96,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         Map<String, ?> map;
         try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
-            map = jsonDecoder.readValue(inputStream);
+            map = jsonDecoder.read(inputStream);
         }
 
         BeanAdapter adapter = new BeanAdapter(BeanAdapter.adapt(map, TestBean.class));
@@ -110,7 +110,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         Map<String, ?> map;
         try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
-            map = jsonDecoder.readValue(inputStream);
+            map = jsonDecoder.read(inputStream);
         }
 
         TestInterface result = BeanAdapter.adapt(map, TestInterface.class);

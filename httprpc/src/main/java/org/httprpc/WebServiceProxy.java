@@ -311,7 +311,7 @@ public class WebServiceProxy {
                 if (contentType != null && contentType.startsWith("application/json")) {
                     JSONDecoder jsonDecoder = new JSONDecoder();
 
-                    result = jsonDecoder.readValue(inputStream);
+                    result = jsonDecoder.read(inputStream);
                 } else {
                     result = null;
                 }

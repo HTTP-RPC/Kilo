@@ -514,7 +514,7 @@ public abstract class WebService extends HttpServlet {
 
         JSONEncoder jsonEncoder = new JSONEncoder(isCompact());
 
-        jsonEncoder.writeValue(BeanAdapter.adapt(result), response.getOutputStream());
+        jsonEncoder.write(BeanAdapter.adapt(result), response.getOutputStream());
     }
 
     /**

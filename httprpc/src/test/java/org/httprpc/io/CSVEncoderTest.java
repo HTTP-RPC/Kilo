@@ -56,7 +56,7 @@ public class CSVEncoderTest extends AbstractTest {
 
         CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("a", "b", "c", "d.e", "f", "g"));
 
-        csvEncoder.writeValues(values, writer);
+        csvEncoder.write(values, writer);
 
         Assert.assertEquals(expected, writer.toString());
     }

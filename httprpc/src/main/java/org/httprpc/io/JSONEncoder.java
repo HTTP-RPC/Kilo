@@ -63,8 +63,8 @@ public class JSONEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        writeValue(value, new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
+    public void write(Object value, OutputStream outputStream) throws IOException {
+        write(value, new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
     }
 
     /**
@@ -79,15 +79,15 @@ public class JSONEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValue(Object value, Writer writer) throws IOException {
+    public void write(Object value, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
 
-        encodeValue(value, writer);
+        encode(value, writer);
 
         writer.flush();
     }
 
-    private void encodeValue(Object value, Writer writer) throws IOException {
+    private void encode(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
             CharSequence text = (CharSequence)value;
 
@@ -117,11 +117,11 @@ public class JSONEncoder {
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.write(value.toString());
         } else if (value instanceof Enum<?>) {
-            encodeValue(((Enum<?>)value).ordinal(), writer);
+            encode(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
-            encodeValue(((Date)value).getTime(), writer);
+            encode(((Date)value).getTime(), writer);
         } else if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
-            encodeValue(value.toString(), writer);
+            encode(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.write("[");
 
@@ -140,7 +140,7 @@ public class JSONEncoder {
                     indent(writer);
                 }
 
-                encodeValue(element, writer);
+                encode(element, writer);
 
                 i++;
             }
@@ -178,7 +178,7 @@ public class JSONEncoder {
                     indent(writer);
                 }
 
-                encodeValue(key.toString(), writer);
+                encode(key.toString(), writer);
 
                 writer.write(":");
 
@@ -186,7 +186,7 @@ public class JSONEncoder {
                     writer.write(" ");
                 }
 
-                encodeValue(entry.getValue(), writer);
+                encode(entry.getValue(), writer);
 
                 i++;
             }

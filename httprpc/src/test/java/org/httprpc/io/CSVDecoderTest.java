@@ -54,7 +54,7 @@ public class CSVDecoderTest extends AbstractTest {
 
         CSVDecoder csvDecoder = new CSVDecoder();
 
-        Iterable<Map<String, String>> cursor = csvDecoder.readValues(reader);
+        Iterable<Map<String, String>> cursor = csvDecoder.read(reader);
 
         for (Map<String, String> row : cursor) {
             HashMap<String, Object> map = new HashMap<>();

@@ -138,7 +138,7 @@ public class JSONEncoderTest extends AbstractTest {
 
         JSONEncoder jsonEncoder = new JSONEncoder(compact);
 
-        jsonEncoder.writeValue(value, writer);
+        jsonEncoder.write(value, writer);
 
         return writer.toString();
     }

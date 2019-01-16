@@ -173,8 +173,8 @@ public class CSVDecoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public Iterable<Map<String, String>> readValues(InputStream inputStream) throws IOException {
-        return readValues(new InputStreamReader(inputStream, Charset.forName("ISO-8859-1")));
+    public Iterable<Map<String, String>> read(InputStream inputStream) throws IOException {
+        return read(new InputStreamReader(inputStream, Charset.forName("ISO-8859-1")));
     }
 
     /**
@@ -189,7 +189,7 @@ public class CSVDecoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public Iterable<Map<String, String>> readValues(Reader reader) throws IOException {
+    public Iterable<Map<String, String>> read(Reader reader) throws IOException {
         return new Cursor(new BufferedReader(reader), delimiter);
     }
 }

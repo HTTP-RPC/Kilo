@@ -115,6 +115,6 @@ public class JSONDecoderTest extends AbstractTest {
     private static <T> T decode(String text) throws IOException {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
-        return jsonDecoder.readValue(new StringReader(text));
+        return jsonDecoder.read(new StringReader(text));
     }
 }

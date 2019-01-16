@@ -70,8 +70,8 @@ public class CSVEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValues(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
-        writeValues(values, new OutputStreamWriter(outputStream, Charset.forName("ISO-8859-1")));
+    public void write(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
+        write(values, new OutputStreamWriter(outputStream, Charset.forName("ISO-8859-1")));
     }
 
     /**
@@ -86,7 +86,7 @@ public class CSVEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValues(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
+    public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
 
         int i = 0;
@@ -100,7 +100,7 @@ public class CSVEncoder {
                 writer.write(delimiter);
             }
 
-            encodeValue(key, writer);
+            encode(key, writer);
 
             i++;
         }
@@ -122,7 +122,7 @@ public class CSVEncoder {
                 Object value = valueAt(map, key);
 
                 if (value != null) {
-                    encodeValue(value, writer);
+                    encode(value, writer);
                 }
 
                 i++;
@@ -134,15 +134,15 @@ public class CSVEncoder {
         writer.flush();
     }
 
-    private void encodeValue(Object value, Writer writer) throws IOException {
+    private void encode(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
             writer.write('"');
             writer.write(value.toString().replace("\"", "\"\""));
             writer.write('"');
         } else if (value instanceof Enum<?>) {
-            encodeValue(((Enum<?>)value).ordinal(), writer);
+            encode(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
-            encodeValue(((Date)value).getTime(), writer);
+            encode(((Date)value).getTime(), writer);
         } else {
             writer.write(value.toString());
         }

@@ -97,13 +97,13 @@ public class PetService extends WebService {
 
                     JSONEncoder jsonEncoder = new JSONEncoder();
 
-                    jsonEncoder.writeValue(resultSetAdapter, getResponse().getOutputStream());
+                    jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else if (format.equals("csv")) {
                     getResponse().setContentType("text/csv");
 
                     CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
 
-                    csvEncoder.writeValues(resultSetAdapter, getResponse().getOutputStream());
+                    csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else {
                     throw new UnsupportedOperationException();
                 }

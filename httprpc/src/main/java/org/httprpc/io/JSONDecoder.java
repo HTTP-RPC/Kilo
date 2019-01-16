@@ -55,8 +55,8 @@ public class JSONDecoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public <T> T readValue(InputStream inputStream) throws IOException {
-        return readValue(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+    public <T> T read(InputStream inputStream) throws IOException {
+        return read(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
     }
 
     /**
@@ -74,7 +74,7 @@ public class JSONDecoder {
      * If an exception occurs.
      */
     @SuppressWarnings("unchecked")
-    public <T> T readValue(Reader reader) throws IOException {
+    public <T> T read(Reader reader) throws IOException {
         reader = new BufferedReader(reader);
 
         Object value = null;
