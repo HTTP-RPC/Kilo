@@ -390,7 +390,7 @@ public void getMap() throws IOException {
     JSONEncoder jsonEncoder = new JSONEncoder();
 
     try {
-        jsonEncoder.writeValue(map, getResponse().getOutputStream());
+        jsonEncoder.write(map, getResponse().getOutputStream());
     }
 }
 ```
@@ -410,7 +410,7 @@ For example, the following code snippet uses `JSONDecoder` to parse a JSON array
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
 
-List<Number> fibonacci = jsonDecoder.readValue(new StringReader("[1, 2, 3, 5, 8, 13]"));
+List<Number> fibonacci = jsonDecoder.read(new StringReader("[1, 2, 3, 5, 8, 13]"));
 
 System.out.println(fibonacci.get(2)); // 3
 ```
@@ -443,7 +443,7 @@ The `CSVEncoder` class can be used to encode an iterable sequence of map values 
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
 
-List<Map<String, Object>> months = jsonDecoder.readValue(inputStream);
+List<Map<String, Object>> months = jsonDecoder.read(inputStream);
 ```
 
 `CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (and the map keys to which the columns correspond):
@@ -451,7 +451,7 @@ List<Map<String, Object>> months = jsonDecoder.readValue(inputStream);
 ```
 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 
-csvEncoder.writeValues(months, System.out);
+csvEncoder.write(months, System.out);
 ```
 
 Keys actually represent "key paths" and can refer to nested map values using dot notation. String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
@@ -476,12 +476,12 @@ The following code would perform the reverse conversion (from CSV to JSON):
 // Read from CSV
 CSVDecoder csvDecoder = new CSVDecoder();
 
-Iterable<Map<String, String>> months = csvDecoder.readValues(inputStream);
+Iterable<Map<String, String>> months = csvDecoder.read(inputStream);
 
 // Write to JSON
 JSONEncoder jsonEncoder = new JSONEncoder();
 
-jsonEncoder.writeValue(months, System.out);
+jsonEncoder.write(months, System.out);
 ```
 
 ## BeanAdapter
@@ -659,7 +659,7 @@ The `ResultSetAdapter` class implements the `Iterable` interface and makes each 
 JSONEncoder jsonEncoder = new JSONEncoder();
 
 try (ResultSet resultSet = statement.executeQuery()) {
-    jsonEncoder.writeValue(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
+    jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
 }
 ```
 
@@ -739,7 +739,7 @@ public void getPets(String owner) throws SQLException, IOException {
             try (ResultSet resultSet = statement.executeQuery()) {
                 JSONEncoder jsonEncoder = new JSONEncoder();
                 
-                jsonEncoder.writeValue(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
+                jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
             }
         }
     }
@@ -858,7 +858,7 @@ public void getEmployee(List<String> details) throws SQLException, IOException {
 
             JSONEncoder jsonEncoder = new JSONEncoder();
 
-            jsonEncoder.writeValue(resultSetAdapter.next(), getResponse().getOutputStream());
+            jsonEncoder.write(resultSetAdapter.next(), getResponse().getOutputStream());
         }
     }
 }
