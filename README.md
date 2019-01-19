@@ -18,7 +18,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
         * [Exceptions](#exceptions)
         * [Request and Repsonse Properties](#request-and-repsonse-properties)
         * [Path Variables](#path-variables)
-        * [Documentation](#documentation)
+        * [API Documentation](#api-documentation)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
     * [BeanAdapter](#beanadapter)
@@ -27,7 +27,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
-The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven or Gradle:
+The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
 
 ```xml
 <dependency>
@@ -59,8 +59,8 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
     * `Key` - annotation that associates a custom key with a bean property
 * `org.httprpc.sql`
-    * `Parameters` - class for applying named parameters values to prepared statements 
-    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
+    * `Parameters` - class for applying named parameter values to prepared statements 
+    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or strongly-typed row values
 
 These classes are discussed in more detail in the following sections.
 
@@ -69,7 +69,7 @@ These classes are discussed in more detail in the following sections.
 
 Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org).
 
-The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default servlet handler (e.g. `doGet()`) is called.
+The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
 Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
@@ -140,34 +140,40 @@ Missing or `null` values are automatically converted to `0` or `false` for primi
 public class FileUploadService extends WebService {
     @RequestMethod("POST")
     public void upload(URL file) throws IOException {
-        ...
+        try (InputStream inputStream = file.openStream()) {
+            ...
+        }
     }
 
     @RequestMethod("POST")
     public void upload(List<URL> files) throws IOException {
-        ...
+        for (URL file : files) {
+            try (InputStream inputStream = file.openStream()) {
+                ...
+            }
+        }
     }
 }
+```
+
+The methods could be invoked using this HTML form:
+
+```html
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file"/><br/>
+    <input type="file" name="files" multiple/><br/>
+    <input type="submit"/><br/>
+</form>
 ```
 
 #### Custom Parameter Names
-In general, service classes should be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example, the following service might allow a caller to look up the name of the city associated with a particular zip code:
+In general, service classes should be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example:
 
 ```java
-@WebServlet(urlPatterns={"/lookup/*"})
-public class LookupService extends WebService {
-    @RequestMethod("GET")
-    @ResourcePath("city")
-    public String getCity(@RequestParameter("zip_code") String zipCode) { 
-        ...
-    }
+@RequestMethod("GET")
+public double getTemperature(@RequestParameter("zip_code") String zipCode) { 
+    ... 
 }
-```
-
-This request would invoke the `getCity()` method, passing "02101" as the `zipCode` argument:
-
-```
-GET /lookup/city?zip_code=02101
 ```
 
 ### Return Values
@@ -184,38 +190,12 @@ Return values are converted to their JSON equivalents as follows:
 * `Iterable`: array
 * `java.util.Map`: object
 
-For example, this method returns a `Map` instance containing three values:
-
-```java
-@RequestMethod("GET")
-@ResourcePath("map")
-public Map<String, ?> getMap() {
-    HashMap<String, Object> map = new HashMap<>();
-
-    map.put("text", "Lorem ipsum");
-    map.put("number", 123);
-    map.put("flag", true);
-    
-    return map;
-}
-```
-
-The service would produce the following JSON in response:
-
-```json
-{
-    "text": "Lorem ipsum",
-    "number": 123,
-    "flag": true
-}
-```
-
 Methods may also return `void` or `Void` to indicate that they do not produce a value. 
 
 If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail [later](#beanadapter).
 
 #### Custom Result Encodings
-Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom result encoding. See the method documentation for more information.
+Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom encoding. See the method documentation for more information.
 
 ### Exceptions
 If any exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
@@ -229,7 +209,7 @@ public void generateError() throws Exception {
 ```
 
 ### Request and Repsonse Properties
-`WebService` provides the following methods to allow a service method to access thread-local request and response objects associated with the current invocation:
+`WebService` provides the following methods to allow a service method to access the request and response objects associated with the current invocation:
 
     protected HttpServletRequest getRequest() { ... }
     protected HttpServletResponse getResponse() { ... }
@@ -278,14 +258,14 @@ protected String getKey(String name) { ... }
  
 For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
 
-### Documentation
+### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:
 
 ```
 GET /math?api
 ```
 
-Service methods are grouped by resource path. Method parameters and return values are encoded as follows:
+Methods are grouped by resource path. Parameters and return values are encoded as follows:
 
 * `Object`: "any"
 * `Void` or `void`: "void"
@@ -317,21 +297,21 @@ For example, a description of the math service might look like this:
 > GET (values: [double]) -> double
 > ```
 
-Note that methods tagged with the `Deprecated` annotation will be flagged as such in the generated output.
+If a method is tagged with the `Deprecated` annotation, it will be identified as such in the generated output.
 
 #### Custom Response Descriptions
-Methods that return a custom response can use the `Response` annotation to describe the result. For example, this method declaration:
+Methods that return a custom response can use the `Response` annotation to describe the result. For example, given this method declaration:
 
 ```
 @RequestMethod("GET")
 @ResourcePath("map")
 @Response("{text: string, number: integer, flag: boolean}")
-public void getMap() {
+public Map<String, ?> getMap() {
     ...
 }
 ```
 
-would produce a description similar to the following:
+the service would produce a description similar to the following:
 
 > ## /map
 > 
@@ -375,22 +355,24 @@ A localized description of the math service might look like this:
 > - **values** The numbers to add.
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following method would produce the same result as the map example shown earlier (albeit more verbosely):
+The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following two methods are functionally equivalent:
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("map")
-public void getMap() throws IOException {
-    HashMap<String, Object> map = new HashMap<>();
+public List<String> getList() {
+    return Arrays.asList("one", "two", "three");
+}
+```
 
-    map.put("text", "Lorem ipsum");
-    map.put("number", 123);
-    map.put("flag", true);
+```java
+@RequestMethod("GET")
+public void getList() {
+    List<String> list = return Arrays.asList("one", "two", "three");
 
     JSONEncoder jsonEncoder = new JSONEncoder();
 
     try {
-        jsonEncoder.write(map, getResponse().getOutputStream());
+        jsonEncoder.write(list, getResponse().getOutputStream());
     }
 }
 ```
@@ -419,23 +401,23 @@ System.out.println(fibonacci.get(2)); // 3
 Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
 ### CSVEncoder
-The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV. For example, the following JSON document contains a list of objects representing the months of the year and their day counts:
+The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV. For example, the following JSON document contains a list of objects representing the months of the year and their respective day counts:
 
 ```json
 [
-    {
-        "name": "January",
-        "days": 31
-    },
-    {
-        "name": "February",
-        "days": 28
-    },
-    {
-        "name": "March",
-        "days": 31
-    },
-    ...
+  {
+    "name": "January",
+    "days": 31
+  },
+  {
+    "name": "February",
+    "days": 28
+  },
+  {
+    "name": "March",
+    "days": 31
+  },
+  ...
 ]
 ```
 
@@ -447,7 +429,7 @@ JSONDecoder jsonDecoder = new JSONDecoder();
 List<Map<String, Object>> months = jsonDecoder.read(inputStream);
 ```
 
-`CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (and the map keys to which the columns correspond):
+`CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (as well as the map keys to which the columns correspond):
 
 ```
 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
@@ -465,7 +447,7 @@ This code snippet would produce output similar to the following:
 ...
 ```
 
-Keys actually represent "key paths" and can refer to nested map values using dot notation (e.g. "name.first"). This can be useful for encoding hierarchical data structures such as complex Java beans or MongoDB documents to CSV.
+Keys actually represent "key paths" and can refer to nested map values using dot notation (e.g. "name.first"). This can be useful for encoding hierarchical data structures (such as complex Java beans or MongoDB documents) as CSV.
 
 String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
@@ -487,7 +469,7 @@ jsonEncoder.write(months, System.out);
 ```
 
 ## BeanAdapter
-The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data types to be serialized as JSON objects or CSV records. 
+The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data structures to be serialized as JSON objects or CSV records. 
 
 If a property value is `null` or an instance of one of the following types, it is returned as is:
 
@@ -500,7 +482,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalTime`
 * `java.util.time.LocalDateTime`
 
-If a property returns an instance of `List` or `Map`, the value will be wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
+If a property returns an instance of `List` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 
@@ -555,6 +537,7 @@ public TreeNode getTree() {
 `WebService` automatically wraps the return value in a `BeanAdapter` so it can be serialized to JSON. However, the method could also be written (slightly more verbosely) as follows:
 
 ```java
+@RequestMethod("GET")
 public Map<String, ?> getTree() {
     TreeNode root = new TreeNode("Seasons");
 
@@ -593,7 +576,7 @@ Although the values are actually stored in the strongly typed properties of the 
 ```
 
 ### Typed Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the content returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently transform this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the data returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently map this loosely typed data structure to a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
 
 ```java
 public static <T> T adapt(Object value, Type type) { ... }
@@ -609,7 +592,7 @@ If the value is already an instance of the requested type, it is returned as is.
 
 Otherwise, the target is assumed to be a bean, and the value is assumed to be a map. If the target type is a concrete class, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
 
-If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map. For example, given the following interface definition:
+If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map. For example, given the following declaration:
 
 ```java
 public interface TreeNode {
@@ -647,7 +630,7 @@ public void setFirstName(String firstName) {
 }
 ```
 
-Similarly, when using an interface type to adapt map values, the following method would return the value of the "first_name" key rather than "firstName":
+The annotation can also be used with adapted interface types:
 
 ```java
 @Key("first_name")
@@ -665,7 +648,7 @@ try (ResultSet resultSet = statement.executeQuery()) {
 }
 ```
 
-The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
+The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading ":" character. For example:
 
 ```sql
 SELECT * FROM some_table 
@@ -752,7 +735,7 @@ For example, given this request:
 GET /pets?owner=Gwen
 ```
 
-The service would return something like the following:
+The service would return something like this:
 
 ```json
 [
@@ -891,7 +874,7 @@ A sample response including both titles and salaries is shown below:
 ```
 
 ### Typed Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set.
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. 
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
@@ -931,14 +914,14 @@ public double getAverageAge() throws SQLException {
 ```
 
 ## WebServiceProxy
-The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of other REST-based web services. Service proxies are initialized via a constructor that takes the following arguments:
+The `WebServiceProxy` class enables an HTTP-RPC service to act as a consumer of other REST-based web services. Instances are initialized via a constructor that takes the following arguments:
 
 * `method` - the HTTP method to execute
 * `url` - an instance of `java.net.URL` representing the target of the operation
 
-Request headers and arguments are specified via the `getHeaders()` and `getArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
 
-The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part form data encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. Iterables of URL values operate similarly to `<input type="file" multiple>` tags.
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
 
 Service operations are invoked via one of the following methods:
 
