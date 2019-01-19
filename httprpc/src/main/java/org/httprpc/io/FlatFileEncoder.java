@@ -31,11 +31,8 @@ public class FlatFileEncoder {
     /**
      * Class representing a field.
      */
-    public static class Field {
-        private String key;
+    public static class Field extends FlatFileDecoder.Field {
         private String format;
-
-        // TODO Field needs length; format is optional
 
         /**
          * Constructs a new field.
@@ -43,30 +40,33 @@ public class FlatFileEncoder {
          * @param key
          * The field key.
          *
+         * @param length
+         * The field length.
+         */
+        public Field(String key, int length) {
+            this(key, length, "%s");
+        }
+
+        /**
+         * Constructs a new field.
+         *
+         * @param key
+         * The field key.
+         *
+         * @param length
+         * The field length.
+         *
          * @param format
          * The field format.
          */
-        public Field(String key, String format) {
-            if (key == null) {
-                throw new IllegalArgumentException();
-            }
+        public Field(String key, int length, String format) {
+            super(key, length);
 
             if (format == null) {
                 throw new IllegalArgumentException();
             }
 
-            this.key = key;
             this.format = format;
-        }
-
-        /**
-         * Returns the field key.
-         *
-         * @return
-         * The field key.
-         */
-        public String getKey() {
-            return key;
         }
 
         /**
@@ -154,9 +154,13 @@ public class FlatFileEncoder {
 
                 Object value = BeanAdapter.valueAt(map, field.getKey());
 
-                // TODO Throw exception if value contains linefeed characters
+                String text = (value == null) ? "" : String.format(field.getFormat(), value);
 
-                writer.append(String.format(field.getFormat(), (value == null) ? "" : value));
+                int length = text.length();
+
+                for (int i = 0, n = field.getLength(); i < n; i++) {
+                    writer.append(i < length ? text.charAt(i) : ' ');
+                }
             }
 
             writer.write(terminator);

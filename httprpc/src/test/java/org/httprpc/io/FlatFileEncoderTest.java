@@ -26,8 +26,8 @@ import org.junit.Test;
 public class FlatFileEncoderTest extends AbstractTest {
     @Test
     public void testWrite() throws IOException {
-        String expected = "     AB C 000012.35\r\n" +
-            "  DEFGH IJ000024.57\r\n";
+        String expected = " AB C     1    2.35   \r\n" +
+            "  DEFGH IJ2    4.57   \r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -45,9 +45,9 @@ public class FlatFileEncoderTest extends AbstractTest {
         StringWriter writer = new StringWriter();
 
         FlatFileEncoder flatFileEncoder = new FlatFileEncoder(listOf(
-            new FlatFileEncoder.Field("a", "%10.10s"),
-            new FlatFileEncoder.Field("b", "%05d"),
-            new FlatFileEncoder.Field("c", "%04.2f")
+            new FlatFileEncoder.Field("a", 10),
+            new FlatFileEncoder.Field("b", 5, "%d"),
+            new FlatFileEncoder.Field("c", 7, "%.2f")
         ));
 
         flatFileEncoder.write(values, writer);
