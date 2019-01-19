@@ -32,7 +32,7 @@ public class CSVDecoderTest extends AbstractTest {
         + "\" D\rE\nF\r\n\",2,4.0,false\n";
 
     @Test
-    public void testReadValues() throws IOException {
+    public void testRead() throws IOException {
         List<Map<String, ?>> expected = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),

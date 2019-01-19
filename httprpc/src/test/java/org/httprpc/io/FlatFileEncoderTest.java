@@ -14,6 +14,45 @@
 
 package org.httprpc.io;
 
-public class FlatFileEncoderTest {
-    // TODO
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+
+import org.httprpc.AbstractTest;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
+public class FlatFileEncoderTest extends AbstractTest {
+    @Test
+    @Ignore // TODO
+    public void testWrite() throws IOException {
+        String expected = ""; // TODO
+
+        List<Map<String, ?>> values = listOf(
+            mapOf(
+                entry("a", " AB C "),
+                entry("b", 1),
+                entry("c", 2.0)
+            ),
+            mapOf(
+                entry("a", "  DEFGH IJKL "),
+                entry("b", 2),
+                entry("c", 4.0)
+            )
+        );
+
+        StringWriter writer = new StringWriter();
+
+        FlatFileEncoder flatFileEncoder = new FlatFileEncoder(listOf(
+            new FlatFileEncoder.Field("a", "%10s"),
+            new FlatFileEncoder.Field("b", "%05d"),
+            new FlatFileEncoder.Field("c", "%04.2f")
+        ));
+
+        flatFileEncoder.write(values, writer);
+
+        Assert.assertEquals(expected, writer.toString());
+    }
 }

@@ -35,6 +35,8 @@ public class FlatFileEncoder {
         private String key;
         private String format;
 
+        // TODO Field needs length; format is optional
+
         /**
          * Constructs a new field.
          *
@@ -110,6 +112,7 @@ public class FlatFileEncoder {
         }
 
         this.fields = fields;
+        this.terminator = terminator;
     }
 
     /**
@@ -149,7 +152,9 @@ public class FlatFileEncoder {
                     continue;
                 }
 
-                String value = BeanAdapter.valueAt(map, field.getKey());
+                Object value = BeanAdapter.valueAt(map, field.getKey());
+
+                // TODO Throw exception if value contains linefeed characters
 
                 writer.append(String.format(field.getFormat(), (value == null) ? "" : value));
             }
