@@ -138,6 +138,19 @@ public class BeanAdapterTest extends AbstractTest {
     }
 
     @Test
+    public void testValueAt() {
+        Map<String, ?> map = mapOf(
+            entry("a", mapOf(
+                entry("b", mapOf(
+                    entry("c", 123)
+                ))
+            ))
+        );
+
+        Assert.assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
+    }
+
+    @Test
     public void testDescribe() {
         HashMap<Class<?>, String> structures = new HashMap<>();
 

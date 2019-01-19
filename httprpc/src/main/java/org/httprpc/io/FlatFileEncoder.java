@@ -19,45 +19,97 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.httprpc.beans.BeanAdapter;
 
 /**
- * CSV encoder.
+ * Flat file encoder.
  */
-public class CSVEncoder {
-    private List<String> keys;
-    private char delimiter;
+public class FlatFileEncoder {
+    /**
+     * Class representing a field.
+     */
+    public static class Field {
+        private String key;
+        private String format;
+
+        /**
+         * Constructs a new field.
+         *
+         * @param key
+         * The field key.
+         *
+         * @param format
+         * The field format.
+         */
+        public Field(String key, String format) {
+            if (key == null) {
+                throw new IllegalArgumentException();
+            }
+
+            if (format == null) {
+                throw new IllegalArgumentException();
+            }
+
+            this.key = key;
+            this.format = format;
+        }
+
+        /**
+         * Returns the field key.
+         *
+         * @return
+         * The field key.
+         */
+        public String getKey() {
+            return key;
+        }
+
+        /**
+         * Returns the field format.
+         *
+         * @return
+         * The field format.
+         */
+        public String getFormat() {
+            return format;
+        }
+    }
+
+    private List<Field> fields;
+    private String terminator;
 
     /**
-     * Constructs a new CSV encoder.
+     * Constructs a new flat file encoder.
      *
-     * @param keys
-     * The output column keys.
+     * @param fields
+     * The output fields.
      */
-    public CSVEncoder(List<String> keys) {
-        this(keys, ',');
+    public FlatFileEncoder(List<Field> fields) {
+        this(fields, "\r\n");
     }
 
     /**
-     * Constructs a new CSV encoder.
+     * Constructs a new flat file encoder.
      *
-     * @param keys
-     * The output column keys.
+     * @param fields
+     * The output fields.
      *
-     * @param delimiter
-     * The character to use as a field delimiter.
+     * @param terminator
+     * The line terminator.
      */
-    public CSVEncoder(List<String> keys, char delimiter) {
-        if (keys == null) {
+    public FlatFileEncoder(List<Field> fields, String terminator) {
+        if (fields == null) {
             throw new IllegalArgumentException();
         }
 
-        this.keys = keys;
-        this.delimiter = delimiter;
+        if (terminator == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.fields = fields;
     }
 
     /**
@@ -91,62 +143,20 @@ public class CSVEncoder {
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
 
-        int i = 0;
-
-        for (String key : keys) {
-            if (key == null) {
-                continue;
-            }
-
-            if (i > 0) {
-                writer.write(delimiter);
-            }
-
-            encode(key, writer);
-
-            i++;
-        }
-
-        writer.write("\r\n");
-
         for (Map<String, ?> map : values) {
-            i = 0;
-
-            for (String key : keys) {
-                if (key == null) {
+            for (Field field : fields) {
+                if (field == null) {
                     continue;
                 }
 
-                if (i > 0) {
-                    writer.write(delimiter);
-                }
+                String value = BeanAdapter.valueAt(map, field.getKey());
 
-                Object value = BeanAdapter.valueAt(map, key);
-
-                if (value != null) {
-                    encode(value, writer);
-                }
-
-                i++;
+                writer.append(String.format(field.getFormat(), (value == null) ? "" : value));
             }
 
-            writer.write("\r\n");
+            writer.write(terminator);
         }
 
         writer.flush();
-    }
-
-    private void encode(Object value, Writer writer) throws IOException {
-        if (value instanceof CharSequence) {
-            writer.write('"');
-            writer.write(value.toString().replace("\"", "\"\""));
-            writer.write('"');
-        } else if (value instanceof Enum<?>) {
-            encode(((Enum<?>)value).ordinal(), writer);
-        } else if (value instanceof Date) {
-            encode(((Date)value).getTime(), writer);
-        } else {
-            writer.write(value.toString());
-        }
     }
 }
