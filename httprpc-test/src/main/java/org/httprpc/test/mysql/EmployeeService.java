@@ -129,7 +129,7 @@ public class EmployeeService extends WebService {
                         case "titles": {
                             resultSetAdapter.attach("titles", "SELECT title, "
                                 + "from_date AS fromDate, "
-                                + "to_date as toDate "
+                                + "to_date AS toDate "
                                 + "FROM titles WHERE emp_no = :employeeNumber");
 
                             break;
@@ -138,7 +138,7 @@ public class EmployeeService extends WebService {
                         case "salaries": {
                             resultSetAdapter.attach("salaries", "SELECT salary, "
                                 + "from_date AS fromDate, "
-                                + "to_date as toDate "
+                                + "to_date AS toDate "
                                 + "FROM salaries WHERE emp_no = :employeeNumber");
 
                             break;

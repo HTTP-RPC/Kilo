@@ -100,7 +100,7 @@ public class JSONDecoder {
                         throw new IOException("Invalid key.");
                     }
 
-                    key = decodeString(reader);
+                    key = readString(reader);
 
                     skipWhitespace(reader);
 
@@ -117,23 +117,23 @@ public class JSONDecoder {
 
                 // Read the value
                 if (c == '"') {
-                    value = decodeString(reader);
+                    value = readString(reader);
                 } else if (c == '+' || c == '-' || Character.isDigit(c)) {
-                    value = decodeNumber(reader);
+                    value = readNumber(reader);
                 } else if (c == 't') {
-                    if (!decodeKeyword(reader, TRUE_KEYWORD)) {
+                    if (!readKeyword(reader, TRUE_KEYWORD)) {
                         throw new IOException();
                     }
 
                     value = Boolean.TRUE;
                 } else if (c == 'f') {
-                    if (!decodeKeyword(reader, FALSE_KEYWORD)) {
+                    if (!readKeyword(reader, FALSE_KEYWORD)) {
                         throw new IOException();
                     }
 
                     value = Boolean.FALSE;
                 } else if (c == 'n') {
-                    if (!decodeKeyword(reader, NULL_KEYWORD)) {
+                    if (!readKeyword(reader, NULL_KEYWORD)) {
                         throw new IOException();
                     }
 
@@ -176,7 +176,7 @@ public class JSONDecoder {
         }
     }
 
-    private String decodeString(Reader reader) throws IOException {
+    private String readString(Reader reader) throws IOException {
         valueBuilder.setLength(0);
 
         // Move to the next character after the opening quotes
@@ -236,7 +236,7 @@ public class JSONDecoder {
         return valueBuilder.toString();
     }
 
-    private Number decodeNumber(Reader reader) throws IOException {
+    private Number readNumber(Reader reader) throws IOException {
         valueBuilder.setLength(0);
 
         boolean decimal = false;
@@ -259,7 +259,7 @@ public class JSONDecoder {
         return number;
     }
 
-    private boolean decodeKeyword(Reader reader, String keyword) throws IOException {
+    private boolean readKeyword(Reader reader, String keyword) throws IOException {
         int n = keyword.length();
         int i = 0;
 

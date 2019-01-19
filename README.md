@@ -27,7 +27,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
-The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
+The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven or Gradle:
 
 ```xml
 <dependency>
@@ -62,14 +62,14 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `Parameters` - class for applying named parameters values to prepared statements 
     * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or typed row values
 
-These classes are explained in more detail in the following sections.
+These classes are discussed in more detail in the following sections.
 
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
 Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org).
 
-The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
+The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default servlet handler (e.g. `doGet()`) is called.
 
 Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
@@ -200,7 +200,7 @@ public Map<String, ?> getMap() {
 }
 ```
 
-The service would produce the following in response:
+The service would produce the following JSON in response:
 
 ```json
 {
@@ -229,14 +229,14 @@ public void generateError() throws Exception {
 ```
 
 ### Request and Repsonse Properties
-`WebService` provides the following methods to allow a service method to access the request and response objects associated with the current operation:
+`WebService` provides the following methods to allow a service method to access thread-local request and response objects associated with the current invocation:
 
     protected HttpServletRequest getRequest() { ... }
     protected HttpServletResponse getResponse() { ... }
 
 For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
 
-The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
+The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
 
 ### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
@@ -339,7 +339,7 @@ would produce a description similar to the following:
 > GET () -> {text: string, number: integer, flag: boolean}
 > ```
 
-#### Localized Service Descriptionss
+#### Localized Service Descriptions
 Services can provide localized API documentation by including one or more resource bundles on the classpath. These resource bundles must reside in the same package and have the same base name as the service itself.
 
 For example, the following _MathService.properties_ file could be used to provide localized method descriptions for the `MathService` class:
@@ -418,6 +418,7 @@ System.out.println(fibonacci.get(2)); // 3
 ## CSVEncoder and CSVDecoder
 Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
+### CSVEncoder
 The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV. For example, the following JSON document contains a list of objects representing the months of the year and their day counts:
 
 ```json
@@ -454,9 +455,7 @@ CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 csvEncoder.write(months, System.out);
 ```
 
-Keys actually represent "key paths" and can refer to nested map values using dot notation. String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
-
-The preceding code snippet would produce output similar to the following:
+This code snippet would produce output similar to the following:
 
 ```csv
 "name","days"
@@ -466,9 +465,12 @@ The preceding code snippet would produce output similar to the following:
 ...
 ```
 
-Due to its compact and tabular nature, CSV is ideally suited to serializing the results of relational database queries. HTTP-RPC's `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to either JSON or CSV. `ResultSetAdapter` is discussed in more detail [later](#resultsetadapter-and-parameters).
+Keys actually represent "key paths" and can refer to nested map values using dot notation (e.g. "name.first"). This can be useful for encoding hierarchical data structures such as complex Java beans or MongoDB documents to CSV.
 
-The `CSVDecoder` class deserializes a CSV document as an iterable sequence of maps. Rather than reading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a cursor over the records in the document. This allows a consumer to read records essentially as they are being produced, reducing memory consumption and improving throughput. 
+String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
+
+### CSVDecoder
+The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a "cursor" over the records in the document. This allows a consumer to process records as they are read, reducing memory consumption and improving throughput.
 
 The following code would perform the reverse conversion (from CSV to JSON):
 
@@ -663,8 +665,6 @@ try (ResultSet resultSet = statement.executeQuery()) {
 }
 ```
 
-Note that, instead of producing a new map instance for each iteration, `ResultSetAdapter` returns a single map value for all rows. The contents of this map are updated on each call to the adapter's `next()` method, reducing object construction overhead and keeping memory footprint to a minimum.
-
 The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading `:` character. For example:
 
 ```sql
@@ -837,7 +837,7 @@ public void getEmployee(List<String> details) throws SQLException, IOException {
                     case "titles": {
                         resultSetAdapter.attach("titles", "SELECT title, "
                             + "from_date AS fromDate, "
-                            + "to_date as toDate "
+                            + "to_date AS toDate "
                             + "FROM titles WHERE emp_no = :employeeNumber");
 
                         break;
@@ -846,7 +846,7 @@ public void getEmployee(List<String> details) throws SQLException, IOException {
                     case "salaries": {
                         resultSetAdapter.attach("salaries", "SELECT salary, "
                             + "from_date AS fromDate, "
-                            + "to_date as toDate "
+                            + "to_date AS toDate "
                             + "FROM salaries WHERE emp_no = :employeeNumber");
 
                         break;
@@ -891,7 +891,7 @@ A sample response including both titles and salaries is shown below:
 ```
 
 ### Typed Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set. A single proxy instance is used for all rows to minimize heap allocation. 
+The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. The returned adapter uses dynamic proxy invocation to map properties declared by the interface to column labels in the result set.
 
 For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
 
@@ -1024,5 +1024,3 @@ System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the the [examples](https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test).
-
-For an iOS implementation of `WebServiceProxy`, see the [Kilo](https://github.com/gk-brown/Kilo) project.

@@ -37,8 +37,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
 
     private LinkedHashMap<String, String> subqueries = new LinkedHashMap<>();
 
-    private LinkedHashMap<String, Object> row = new LinkedHashMap<>();
-
     private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
         private Boolean hasNext = null;
 
@@ -62,7 +60,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 throw new NoSuchElementException();
             }
 
-            row.clear();
+            LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 
             try {
                 for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
@@ -202,8 +200,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 return new Iterator<T>() {
                     private Iterator<Map<String, Object>> iterator = ResultSetAdapter.this.iterator();
 
-                    private T proxy = BeanAdapter.adapt(row, elementType);
-
                     @Override
                     public boolean hasNext() {
                         return iterator.hasNext();
@@ -211,9 +207,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
 
                     @Override
                     public T next() {
-                        iterator.next();
-
-                        return proxy;
+                        return BeanAdapter.adapt(iterator.next(), elementType);
                     }
                 };
             }

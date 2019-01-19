@@ -39,7 +39,6 @@ public class CSVDecoder {
         private ArrayList<String> keys = new ArrayList<>();
 
         private ArrayList<String> values = new ArrayList<>();
-        private LinkedHashMap<String, String> row = new LinkedHashMap<>();
 
         private Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {
             private Boolean hasNext = null;
@@ -50,7 +49,7 @@ public class CSVDecoder {
                     try {
                         values.clear();
 
-                        decodeValues(reader, values, delimiter);
+                        readValues(reader, values, delimiter);
                     } catch (IOException exception) {
                         throw new RuntimeException(exception);
                     }
@@ -67,7 +66,7 @@ public class CSVDecoder {
                     throw new NoSuchElementException();
                 }
 
-                row.clear();
+                LinkedHashMap<String, String> row = new LinkedHashMap<>();
 
                 for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
                     row.put(keys.get(i), values.get(i));
@@ -85,10 +84,10 @@ public class CSVDecoder {
             this.reader = reader;
             this.delimiter = delimiter;
 
-            decodeValues(reader, keys, delimiter);
+            readValues(reader, keys, delimiter);
         }
 
-        private void decodeValues(Reader reader, ArrayList<String> values, char delimiter) throws IOException {
+        private void readValues(Reader reader, ArrayList<String> values, char delimiter) throws IOException {
             int c = reader.read();
 
             while (c != '\r' && c != '\n' && c != EOF) {
