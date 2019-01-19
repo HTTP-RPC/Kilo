@@ -14,6 +14,47 @@
 
 package org.httprpc.io;
 
-public class FlatFileDecoderTest {
-    // TODO
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import org.httprpc.AbstractTest;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class FlatFileDecoderTest extends AbstractTest {
+    @Test
+    public void testRead() throws IOException {
+        String text = " AB C     1    2.35   \r\n" +
+            "  DEFGH IJ2    4.57   \r\n";
+
+        List<Map<String, ?>> expected = listOf(
+            mapOf(
+                entry("a", "AB C"),
+                entry("b", "1"),
+                entry("c", "2.35")
+            ),
+            mapOf(
+                entry("a", "DEFGH IJ"),
+                entry("b", "2"),
+                entry("c", "4.57")
+            )
+        );
+
+        StringReader reader = new StringReader(text);
+
+        FlatFileDecoder flatFileDecoder = new FlatFileDecoder(listOf(
+            new FlatFileDecoder.Field("a", 10),
+            new FlatFileDecoder.Field("b", 5),
+            new FlatFileDecoder.Field("c", 7)
+        ));
+
+        Iterable<Map<String, String>> cursor = flatFileDecoder.read(reader);
+        List<Map<String, String>> actual = StreamSupport.stream(cursor.spliterator(), false).collect(Collectors.toList());
+
+        Assert.assertEquals(expected, actual);
+    }
 }

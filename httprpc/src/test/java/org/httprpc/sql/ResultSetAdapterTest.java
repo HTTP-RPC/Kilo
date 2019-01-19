@@ -16,13 +16,12 @@ package org.httprpc.sql;
 
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
-import org.httprpc.beans.BeanAdapter;
 import org.httprpc.sql.ResultSetAdapter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,18 +75,11 @@ public class ResultSetAdapterTest extends AbstractTest {
 
     @Test
     public void testResultSetAdapter1() throws SQLException {
-        LinkedList<Map<String, Object>> actual = new LinkedList<>();
-
+        List<Map<String, Object>> actual;
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
 
-            for (Map<String, Object> row : adapter) {
-                HashMap<String, Object> map = new HashMap<>();
-
-                map.putAll(row);
-
-                actual.add(map);
-            }
+            actual = StreamSupport.stream(adapter.spliterator(), false).collect(Collectors.toList());
         }
 
         Assert.assertEquals(expected, actual);
@@ -95,18 +87,11 @@ public class ResultSetAdapterTest extends AbstractTest {
 
     @Test
     public void testResultSetAdapter2() throws SQLException {
-        LinkedList<Map<String, Object>> actual = new LinkedList<>();
-
+        List<Map<String, Object>> actual;
         try (TestResultSet resultSet = new TestResultSet()) {
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
+            ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
 
-            for (TestRow row : resultSetAdapter.adapt(TestRow.class)) {
-                HashMap<String, Object> map = new HashMap<>();
-
-                map.putAll(new BeanAdapter(row));
-
-                actual.add(map);
-            }
+            actual = StreamSupport.stream(adapter.spliterator(), false).collect(Collectors.toList());
         }
 
         Assert.assertEquals(expected, actual);

@@ -16,10 +16,10 @@ package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
 import org.httprpc.io.CSVDecoder;
@@ -48,21 +48,12 @@ public class CSVDecoderTest extends AbstractTest {
             )
         );
 
-        LinkedList<Map<String, Object>> actual = new LinkedList<>();
-
         StringReader reader = new StringReader(text);
 
         CSVDecoder csvDecoder = new CSVDecoder();
 
         Iterable<Map<String, String>> cursor = csvDecoder.read(reader);
-
-        for (Map<String, String> row : cursor) {
-            HashMap<String, Object> map = new HashMap<>();
-
-            map.putAll(row);
-
-            actual.add(map);
-        }
+        List<Map<String, String>> actual = StreamSupport.stream(cursor.spliterator(), false).collect(Collectors.toList());
 
         Assert.assertEquals(expected, actual);
     }
