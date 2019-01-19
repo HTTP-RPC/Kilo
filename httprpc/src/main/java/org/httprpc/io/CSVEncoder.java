@@ -139,7 +139,19 @@ public class CSVEncoder {
     private void encode(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
             writer.write('"');
-            writer.write(value.toString().replace("\"", "\"\""));
+
+            String text = value.toString();
+
+            for (int i = 0, n = text.length(); i < n; i++) {
+                char c = text.charAt(i);
+
+                if (c == '"') {
+                    writer.append("\"\"");
+                } else {
+                    writer.append(c);
+                }
+            }
+
             writer.write('"');
         } else if (value instanceof Enum<?>) {
             encode(((Enum<?>)value).ordinal(), writer);

@@ -33,12 +33,12 @@ public class FlatFileDecoderTest extends AbstractTest {
 
         List<Map<String, ?>> expected = listOf(
             mapOf(
-                entry("a", "AB C"),
+                entry("a", " AB C"),
                 entry("b", "1"),
                 entry("c", "2.35")
             ),
             mapOf(
-                entry("a", "DEFGH IJ"),
+                entry("a", "  DEFGH IJ"),
                 entry("b", "2"),
                 entry("c", "4.57")
             )

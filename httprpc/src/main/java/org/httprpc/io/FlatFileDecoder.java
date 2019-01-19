@@ -150,7 +150,18 @@ public class FlatFileDecoder {
                     valueBuilder.append((char)c);
                 }
 
-                values.add(valueBuilder.toString().trim());
+                String value = valueBuilder.toString();
+
+                for (int i = value.length() - 1; i >= 0; i--) {
+                    char c = value.charAt(i);
+
+                    if (c != ' ') {
+                        value = value.substring(0, i + 1);
+                        break;
+                    }
+                }
+
+                values.add(value);
             }
 
             int c = reader.read();
