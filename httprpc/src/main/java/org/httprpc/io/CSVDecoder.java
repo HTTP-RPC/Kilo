@@ -37,7 +37,6 @@ public class CSVDecoder {
         private StringBuilder valueBuilder = new StringBuilder();
 
         private ArrayList<String> keys = new ArrayList<>();
-
         private ArrayList<String> values = new ArrayList<>();
 
         private Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {

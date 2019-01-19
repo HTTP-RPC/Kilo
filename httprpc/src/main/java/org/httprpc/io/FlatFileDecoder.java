@@ -19,9 +19,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Flat file decoder.
@@ -79,14 +82,91 @@ public class FlatFileDecoder {
 
     // Cursor
     private static class Cursor implements Iterable<Map<String, String>> {
+        private Reader reader;
+        private List<Field> fields;
+
+        private ArrayList<String> values;
+
+        private StringBuilder valueBuilder = new StringBuilder();
+
+        private Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {
+            private Boolean hasNext = null;
+
+            @Override
+            public boolean hasNext() {
+                if (hasNext == null) {
+                    try {
+                        values.clear();
+
+                        readValues(reader, values);
+                    } catch (IOException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    hasNext = !values.isEmpty();
+                }
+
+                return hasNext.booleanValue();
+            }
+
+            @Override
+            public Map<String, String> next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                LinkedHashMap<String, String> row = new LinkedHashMap<>();
+
+                for (int i = 0, n = Math.min(fields.size(), values.size()); i < n; i++) {
+                    row.put(fields.get(i).getKey(), values.get(i));
+                }
+
+                hasNext = null;
+
+                return row;
+            }
+        };
+
+        private static final int EOF = -1;
+
         public Cursor(Reader reader, List<Field> fields) throws IOException {
-            // TODO
+            this.reader = reader;
+            this.fields = fields;
+
+            values = new ArrayList<>(fields.size());
+        }
+
+        private void readValues(Reader reader, ArrayList<String> values) throws IOException {
+            for (Field field : fields) {
+                valueBuilder.setLength(0);
+
+                for (int i = 0, n = field.getLength(); i < n; i++) {
+                    int c = reader.read();
+
+                    if (c == EOF) {
+                        return;
+                    }
+
+                    valueBuilder.append((char)c);
+                }
+
+                values.add(valueBuilder.toString().trim());
+            }
+
+            int c = reader.read();
+
+            if (c == '\r') {
+                c = reader.read();
+
+                if (c != '\n') {
+                    throw new IOException("Improperly terminated record.");
+                }
+            }
         }
 
         @Override
         public Iterator<Map<String, String>> iterator() {
-            // TODO
-            return null;
+            return iterator;
         }
     }
 
