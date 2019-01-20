@@ -27,12 +27,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class CSVDecoderTest extends AbstractTest {
-    private String text = "\"a\",\"b\",\"c\",\"d\"\r\n"
-        + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
-        + "\" D\rE\nF\r\n\",2,4.0,false\n";
-
     @Test
     public void testRead() throws IOException {
+        String text = "\"a\",\"b\",\"c\",\"d\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
+            + "\" D\rÉ\nF\r\n\",2,4.0,false\n";
+
         List<Map<String, ?>> expected = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
@@ -41,7 +41,7 @@ public class CSVDecoderTest extends AbstractTest {
                 entry("d", "true")
             ),
             mapOf(
-                entry("a", " D\rE\nF\r\n"),
+                entry("a", " D\rÉ\nF\r\n"),
                 entry("b", "2"),
                 entry("c", "4.0"),
                 entry("d", "false")
