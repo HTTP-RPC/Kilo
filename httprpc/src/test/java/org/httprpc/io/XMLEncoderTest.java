@@ -16,21 +16,37 @@ package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.DayOfWeek;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.httprpc.AbstractTest;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class XMLEncoderTest extends AbstractTest {
     @Test
-    @Ignore // TODO
     public void testWrite() throws IOException {
         String expected = ""; // TODO
 
-        List<Map<String, ?>> values = listOf(); // TODO
+        List<Map<String, ?>> values = listOf(
+            mapOf(
+                entry("a", "ABC"),
+                entry("b", 1),
+                entry("c", 2.345),
+                entry("d", mapOf(
+                    entry("e", true)
+                )),
+                entry("f", new Date(0)),
+                entry("g", DayOfWeek.THURSDAY)
+            ),
+            mapOf(
+                entry("a", "DÉF"),
+                entry("b", 2),
+                entry("c", 4.5678)
+            )
+        );
 
         StringWriter writer = new StringWriter();
 
