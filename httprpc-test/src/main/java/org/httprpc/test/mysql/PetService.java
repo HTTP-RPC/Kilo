@@ -33,6 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
+import org.httprpc.io.XMLEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.Response;
@@ -104,6 +105,12 @@ public class PetService extends WebService {
                     CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
 
                     csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+                } else if (format.equals("xml")) {
+                    getResponse().setContentType("text/xml");
+
+                    XMLEncoder xmlEncoder = new XMLEncoder();
+
+                    xmlEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else {
                     throw new UnsupportedOperationException();
                 }

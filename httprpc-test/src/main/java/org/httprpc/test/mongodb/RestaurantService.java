@@ -25,6 +25,7 @@ import org.bson.Document;
 import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
+import org.httprpc.io.XMLEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.Response;
 
@@ -85,6 +86,12 @@ public class RestaurantService extends WebService {
                 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "address.building", "address.street", "borough", "cuisine"));
 
                 csvEncoder.write(cursorAdapter, getResponse().getOutputStream());
+            } else if (format.equals("xml")) {
+                getResponse().setContentType("text/xml");
+
+                XMLEncoder xmlEncoder = new XMLEncoder();
+
+                xmlEncoder.write(cursorAdapter, getResponse().getOutputStream());
             } else {
                 throw new UnsupportedOperationException();
             }

@@ -29,13 +29,13 @@ public class XMLEncoderTest extends AbstractTest {
     @Test
     public void testWrite() throws IOException {
         String expected = "<?xml version=\"1.0\" ?>"
-            + "<test>"
+            + "<root>"
             + "<item a=\"ABC\" b=\"1\" c=\"2.345\" f=\"0\" g=\"3\">"
             + "<d><item e=\"true\"></item><item e=\"false\"></item></d>"
             + "<e><f g=\"XYZ\"></f></e>"
             + "</item>"
             + "<item a=\"DÉF\" b=\"2\" c=\"4.5678\"></item>"
-            + "</test>";
+            + "</root>";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -63,7 +63,7 @@ public class XMLEncoderTest extends AbstractTest {
 
         StringWriter writer = new StringWriter();
 
-        XMLEncoder xmlEncoder = new XMLEncoder("test");
+        XMLEncoder xmlEncoder = new XMLEncoder();
 
         xmlEncoder.write(values, writer);
 

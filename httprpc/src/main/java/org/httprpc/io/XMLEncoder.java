@@ -31,22 +31,6 @@ import javax.xml.stream.XMLStreamWriter;
  * XML encoder.
  */
 public class XMLEncoder {
-    private String rootElementName;
-
-    /**
-     * Constructs a new XML encoder.
-     *
-     * @param rootElementName
-     * The root element name.
-     */
-    public XMLEncoder(String rootElementName) {
-        if (rootElementName == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.rootElementName = rootElementName;
-    }
-
     /**
      * Writes a sequence of values to an output stream.
      *
@@ -82,9 +66,9 @@ public class XMLEncoder {
             XMLStreamWriter streamWriter = outputFactory.createXMLStreamWriter(writer);
 
             streamWriter.writeStartDocument();
-            streamWriter.writeStartElement(rootElementName);
+            streamWriter.writeStartElement("root");
 
-            writeSequence(values, streamWriter);
+            writeValues(values, streamWriter);
 
             streamWriter.writeEndElement();
             streamWriter.writeEndDocument();
@@ -95,7 +79,7 @@ public class XMLEncoder {
         writer.flush();
     }
 
-    private void writeSequence(Iterable<? extends Map<String, ?>> values, XMLStreamWriter streamWriter) throws XMLStreamException {
+    private void writeValues(Iterable<? extends Map<String, ?>> values, XMLStreamWriter streamWriter) throws XMLStreamException {
         for (Map<String, ?> map : values) {
             streamWriter.writeStartElement("item");
 
@@ -135,7 +119,7 @@ public class XMLEncoder {
         for (Map.Entry<String, Iterable<?>> entry : sequences.entrySet()) {
             streamWriter.writeStartElement(entry.getKey());
 
-            writeSequence((Iterable<? extends Map<String, ?>>)entry.getValue(), streamWriter);
+            writeValues((Iterable<? extends Map<String, ?>>)entry.getValue(), streamWriter);
 
             streamWriter.writeEndElement();
         }
