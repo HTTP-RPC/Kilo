@@ -75,8 +75,6 @@ public class XMLEncoder {
      * If an exception occurs.
      */
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
-        writer = new BufferedWriter(writer);
-
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
         try {

@@ -29,7 +29,7 @@ public class FlatFileEncoderTest extends AbstractTest {
     @Test
     public void testWrite() throws IOException {
         String expected = " AB C     1    2.35   103\r\n" +
-            "  DEFGH IJ2    4.57      \r\n";
+            "  DÉFGH IJ2    4.57      \r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -43,7 +43,7 @@ public class FlatFileEncoderTest extends AbstractTest {
                 entry("g", DayOfWeek.THURSDAY)
             ),
             mapOf(
-                entry("a", "  DEFGH IJKL "),
+                entry("a", "  DÉFGH IJKL "),
                 entry("b", 2),
                 entry("c", 4.5678)
             )

@@ -28,7 +28,11 @@ import org.junit.Test;
 public class XMLEncoderTest extends AbstractTest {
     @Test
     public void testWrite() throws IOException {
-        String expected = ""; // TODO
+        String expected = "<?xml version=\"1.0\" ?>"
+            + "<test>"
+            + "<item a=\"ABC\" b=\"1\" c=\"2.345\" d=\"{e=true}\" f=\"0\" g=\"3\"></item>"
+            + "<item a=\"DÉF\" b=\"2\" c=\"4.5678\"></item>"
+            + "</test>";
 
         List<Map<String, ?>> values = listOf(
             mapOf(

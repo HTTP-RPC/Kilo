@@ -55,8 +55,6 @@ public class XMLDecoder {
      * If an exception occurs.
      */
     public List<Map<String, ?>> read(Reader reader) throws IOException {
-        reader = new BufferedReader(reader);
-
         // TODO Parse input stream contents
 
         return null;
