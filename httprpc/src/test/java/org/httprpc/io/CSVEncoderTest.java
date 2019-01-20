@@ -31,7 +31,7 @@ public class CSVEncoderTest extends AbstractTest {
     public void testWrite() throws IOException {
         String expected = "\"a\",\"b\",\"c\",\"d.e\",\"f\",\"g\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,0,3\r\n"
-            + "\" D\r\nE\r\nF\r\n\",2,4.0,,,\r\n";
+            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -45,7 +45,7 @@ public class CSVEncoderTest extends AbstractTest {
                 entry("g", DayOfWeek.THURSDAY)
             ),
             mapOf(
-                entry("a", " D\r\nE\r\nF\r\n"),
+                entry("a", " D\r\nÉ\r\nF\r\n"),
                 entry("b", 2),
                 entry("c", 4.0)
             )
