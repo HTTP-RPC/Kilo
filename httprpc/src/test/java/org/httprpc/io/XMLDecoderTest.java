@@ -23,10 +23,12 @@ import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class XMLDecoderTest extends AbstractTest {
     @Test
+    @Ignore // TODO
     public void testRead() throws IOException {
         String text = ""; // TODO
 

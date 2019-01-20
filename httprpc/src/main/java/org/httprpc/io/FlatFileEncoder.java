@@ -152,20 +152,28 @@ public class FlatFileEncoder {
                     continue;
                 }
 
-                Object value = BeanAdapter.valueAt(map, field.getKey());
-
-                String text = (value == null) ? "" : String.format(field.getFormat(), value);
-
-                int length = text.length();
-
-                for (int i = 0, n = field.getLength(); i < n; i++) {
-                    writer.append(i < length ? text.charAt(i) : ' ');
-                }
+                encode(BeanAdapter.valueAt(map, field.getKey()), field, writer);
             }
 
             writer.write(terminator);
         }
 
         writer.flush();
+    }
+
+    private void encode(Object value, Field field, Writer writer) throws IOException {
+        if (value instanceof Boolean) {
+            encode((boolean)value ? 1 : 0, field, writer);
+        } else if (value instanceof Enum<?>) {
+            encode(((Enum<?>)value).ordinal(), field, writer);
+        } else {
+            String text = (value == null) ? "" : String.format(field.getFormat(), value);
+
+            int length = text.length();
+
+            for (int i = 0, n = field.getLength(); i < n; i++) {
+                writer.append(i < length ? text.charAt(i) : ' ');
+            }
+        }
     }
 }

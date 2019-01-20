@@ -21,10 +21,30 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 /**
  * XML encoder.
  */
 public class XMLEncoder {
+    private String rootElementName;
+
+    /**
+     * Constructs a new XML encoder.
+     *
+     * @param rootElementName
+     * The root element name.
+     */
+    public XMLEncoder(String rootElementName) {
+        if (rootElementName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.rootElementName = rootElementName;
+    }
+
     /**
      * Writes a sequence of values to an output stream.
      *
@@ -56,7 +76,47 @@ public class XMLEncoder {
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
 
-        // TODO
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+
+        try {
+            XMLStreamWriter streamWriter = outputFactory.createXMLStreamWriter(writer);
+
+            streamWriter.writeStartDocument();
+
+            streamWriter.writeStartElement(rootElementName);
+
+            for (Map<String, ?> map : values) {
+                streamWriter.writeStartElement("item");
+
+                for (Map.Entry<String, ?> entry : map.entrySet()) {
+                    String key = entry.getKey();
+
+                    if (key == null) {
+                        continue;
+                    }
+
+                    Object value = entry.getValue();
+
+                    if (value == null) {
+                        continue;
+                    }
+
+                    // TODO Prepend ancestor keypath
+
+                    // TODO Handle dates and enums
+
+                    streamWriter.writeAttribute(key, value.toString());
+                }
+
+                streamWriter.writeEndElement();
+            }
+
+            streamWriter.writeEndElement();
+
+            streamWriter.writeEndDocument();
+        } catch (XMLStreamException exception) {
+            throw new IOException(exception);
+        }
 
         writer.flush();
     }

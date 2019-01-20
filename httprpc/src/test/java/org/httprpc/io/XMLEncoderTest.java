@@ -21,10 +21,12 @@ import java.util.Map;
 
 import org.httprpc.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class XMLEncoderTest extends AbstractTest {
     @Test
+    @Ignore // TODO
     public void testWrite() throws IOException {
         String expected = ""; // TODO
 
@@ -32,7 +34,7 @@ public class XMLEncoderTest extends AbstractTest {
 
         StringWriter writer = new StringWriter();
 
-        XMLEncoder xmlEncoder = new XMLEncoder();
+        XMLEncoder xmlEncoder = new XMLEncoder("test");
 
         xmlEncoder.write(values, writer);
 
