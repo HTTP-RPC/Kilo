@@ -121,11 +121,7 @@ public class CSVEncoder {
                     writer.write(delimiter);
                 }
 
-                Object value = BeanAdapter.valueAt(map, key);
-
-                if (value != null) {
-                    encode(value, writer);
-                }
+                encode(BeanAdapter.valueAt(map, key), writer);
 
                 i++;
             }
@@ -158,7 +154,7 @@ public class CSVEncoder {
         } else if (value instanceof Date) {
             encode(((Date)value).getTime(), writer);
         } else {
-            writer.write(value.toString());
+            writer.write((value == null) ? "" : value.toString());
         }
     }
 }
