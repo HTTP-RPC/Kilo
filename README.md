@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 70KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing and interacting with RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 70KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -21,6 +21,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
         * [API Documentation](#api-documentation)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
+    * [XMLEncoder](#xmlencoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
     * [WebServiceProxy](#webserviceproxy)
@@ -55,6 +56,7 @@ HTTP-RPC provides the following classes for creating and consuming REST services
     * `CSVEncoder` - class that writes an iterable sequence of values to CSV
     * `JSONDecoder` - class that reads an object hierarchy from JSON
     * `JSONEncoder` - class that writes an object hierarchy to JSON
+    * `XMLEncoder` - class that writes an object hierarchy to XML
 * `org.httprpc.beans`
     * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
     * `Key` - annotation that associates a custom key with a bean property
@@ -468,8 +470,101 @@ JSONEncoder jsonEncoder = new JSONEncoder();
 jsonEncoder.write(months, System.out);
 ```
 
+## XMLEncoder
+The `XMLEncoder` class can be used to serialize an object hierarchy as XML (for example, to prepare it for further transformation via [XSLT](https://www.w3.org/TR/xslt/all/)). 
+
+The root object provided to the encoder is an iterable sequence of map values. For example:
+
+```java
+List<Map<String, ?>> values = ...;
+
+XMLEncoder xmlEncoder = new XMLEncoder();
+
+xmlEncoder.write(values, writer);
+```
+
+The values are serialized as shown below:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+    <item/>
+    <item/>
+    <item/>
+    ...
+</root>
+```
+
+Map values are generally encoded as XML attributes. For example, given this map:
+
+```json
+{
+  "a": 1, 
+  "b": 2, 
+  "c": 3
+}
+```
+
+the resulting XML would be as follows:
+
+```xml
+<item a="1" b="2" c="3"/>
+```
+
+However, nested maps are encoded as sub-elements. For example, given this map:
+
+```json
+{
+  "d": { 
+    "e": 4,
+    "f": 5
+  }
+}
+```
+
+the XML output would be as follows: 
+
+```xml
+<item>
+    <d e="4" f="5"/>
+</item>
+```
+
+Nested sequences are also supported. For example, given this JSON:
+
+```json
+{
+  "g": [
+    {
+      "h": 6
+    },
+    {
+      "h": 7
+    },
+    {
+      "h": 8
+    }
+  ]
+}
+```
+
+the output would be as follows:
+
+```xml
+<item>
+    <g>
+        <item h="6"/>
+        <item h="7"/>
+        <item h="8"/>
+    </g>
+</item>
+```
+
+Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. Unsupported (i.e. non-map) sequence elements are ignored.
+
 ## BeanAdapter
-The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data structures to be serialized as JSON objects or CSV records. 
+The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data structures to be easily serialized to JSON, CSV, or XML. 
 
 If a property value is `null` or an instance of one of the following types, it is returned as is:
 
@@ -638,7 +733,7 @@ public String getFirstName();
 ```
 
 ## ResultSetAdapter and Parameters
-The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON or CSV. For example:
+The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON, CSV, or XML. For example:
 
 ```java
 JSONEncoder jsonEncoder = new JSONEncoder();
