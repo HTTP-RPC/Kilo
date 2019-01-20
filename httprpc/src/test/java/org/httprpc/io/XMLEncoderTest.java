@@ -31,8 +31,8 @@ public class XMLEncoderTest extends AbstractTest {
         String expected = "<?xml version=\"1.0\" ?>"
             + "<root>"
             + "<item a=\"ABC\" b=\"1\" c=\"2.345\" f=\"0\" g=\"3\">"
-            + "<d><item e=\"true\"></item><item e=\"false\"></item></d>"
-            + "<e><f g=\"XYZ\"></f></e>"
+            + "<d><e f=\"XYZ\"></e></d>"
+            + "<e><item f=\"true\"></item><item f=\"false\"></item></e>"
             + "</item>"
             + "<item a=\"DÉF\" b=\"2\" c=\"4.5678\"></item>"
             + "</root>";
@@ -42,14 +42,14 @@ public class XMLEncoderTest extends AbstractTest {
                 entry("a", "ABC"),
                 entry("b", 1),
                 entry("c", 2.345),
-                entry("d", listOf(
-                    mapOf(entry("e", true)),
-                    mapOf(entry("e", false))
-                )),
-                entry("e", mapOf(
-                    entry("f", mapOf(
-                        entry("g", "XYZ")
+                entry("d", mapOf(
+                    entry("e", mapOf(
+                        entry("f", "XYZ")
                     ))
+                )),
+                entry("e", listOf(
+                    mapOf(entry("f", true)),
+                    mapOf(entry("f", false))
                 )),
                 entry("f", new Date(0)),
                 entry("g", DayOfWeek.THURSDAY)

@@ -20,7 +20,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -79,23 +79,25 @@ public class XMLEncoder {
         writer.flush();
     }
 
-    private void writeValues(Iterable<? extends Map<String, ?>> values, XMLStreamWriter streamWriter) throws XMLStreamException {
-        for (Map<String, ?> map : values) {
-            streamWriter.writeStartElement("item");
+    private void writeValues(Iterable<?> values, XMLStreamWriter streamWriter) throws XMLStreamException {
+        for (Object value : values) {
+            if (value instanceof Map<?, ?>) {
+                streamWriter.writeStartElement("item");
 
-            writeMap(map, streamWriter);
+                writeMap((Map<?, ?>)value, streamWriter);
 
-            streamWriter.writeEndElement();
+                streamWriter.writeEndElement();
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void writeMap(Map<String, ?> map, XMLStreamWriter streamWriter) throws XMLStreamException {
-        LinkedHashMap<String, Iterable<?>> sequences = new LinkedHashMap<>();
-        LinkedHashMap<String, Map<?, ?>> maps = new LinkedHashMap<>();
+    private void writeMap(Map<?, ?> map, XMLStreamWriter streamWriter) throws XMLStreamException {
+        HashMap<Object, Map<?, ?>> maps = new HashMap<>();
+        HashMap<Object, Iterable<?>> sequences = new HashMap<>();
 
-        for (Map.Entry<String, ?> entry : map.entrySet()) {
-            String key = entry.getKey();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            Object key = entry.getKey();
 
             if (key == null) {
                 continue;
@@ -107,27 +109,27 @@ public class XMLEncoder {
                 continue;
             }
 
-            if (value instanceof Iterable<?>) {
-                sequences.put(key, (Iterable<? extends Map<String, ?>>)value);
-            } else if (value instanceof Map<?, ?>) {
+            if (value instanceof Map<?, ?>) {
                 maps.put(key, (Map<?, ?>)value);
+            } else if (value instanceof Iterable<?>) {
+                sequences.put(key, (Iterable<? extends Map<String, ?>>)value);
             } else {
-                encode(key, value, streamWriter);
+                encode(key.toString(), value, streamWriter);
             }
         }
 
-        for (Map.Entry<String, Iterable<?>> entry : sequences.entrySet()) {
-            streamWriter.writeStartElement(entry.getKey());
+        for (Map.Entry<Object, Map<?, ?>> entry : maps.entrySet()) {
+            streamWriter.writeStartElement(entry.getKey().toString());
 
-            writeValues((Iterable<? extends Map<String, ?>>)entry.getValue(), streamWriter);
+            writeMap(entry.getValue(), streamWriter);
 
             streamWriter.writeEndElement();
         }
 
-        for (Map.Entry<String, Map<?, ?>> entry : maps.entrySet()) {
-            streamWriter.writeStartElement(entry.getKey());
+        for (Map.Entry<Object, Iterable<?>> entry : sequences.entrySet()) {
+            streamWriter.writeStartElement(entry.getKey().toString());
 
-            writeMap((Map<String, ?>)entry.getValue(), streamWriter);
+            writeValues(entry.getValue(), streamWriter);
 
             streamWriter.writeEndElement();
         }
