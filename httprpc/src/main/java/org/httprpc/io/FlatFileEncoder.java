@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -166,6 +167,8 @@ public class FlatFileEncoder {
             encode((boolean)value ? 1 : 0, field, writer);
         } else if (value instanceof Enum<?>) {
             encode(((Enum<?>)value).ordinal(), field, writer);
+        } else if (value instanceof Date) {
+            encode(((Date)value).getTime(), field, writer);
         } else {
             String text = (value == null) ? "" : String.format(field.getFormat(), value);
 

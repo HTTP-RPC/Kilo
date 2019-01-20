@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -103,9 +104,7 @@ public class XMLEncoder {
 
                     // TODO Prepend ancestor keypath
 
-                    // TODO Handle dates and enums
-
-                    streamWriter.writeAttribute(key, value.toString());
+                    encode(key, value, streamWriter);
                 }
 
                 streamWriter.writeEndElement();
@@ -119,5 +118,15 @@ public class XMLEncoder {
         }
 
         writer.flush();
+    }
+
+    private void encode(String key, Object value, XMLStreamWriter streamWriter) throws XMLStreamException {
+        if (value instanceof Enum<?>) {
+            encode(key, ((Enum<?>)value).ordinal(), streamWriter);
+        } else if (value instanceof Date) {
+            encode(key, ((Date)value).getTime(), streamWriter);
+        } else {
+            streamWriter.writeAttribute(key, value.toString());
+        }
     }
 }

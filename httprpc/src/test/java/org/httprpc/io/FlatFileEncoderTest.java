@@ -17,6 +17,7 @@ package org.httprpc.io;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.DayOfWeek;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,8 @@ import org.junit.Test;
 public class FlatFileEncoderTest extends AbstractTest {
     @Test
     public void testWrite() throws IOException {
-        String expected = " AB C     1    2.35   13\r\n" +
-            "  DEFGH IJ2    4.57     \r\n";
+        String expected = " AB C     1    2.35   103\r\n" +
+            "  DEFGH IJ2    4.57      \r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -38,7 +39,8 @@ public class FlatFileEncoderTest extends AbstractTest {
                 entry("d", mapOf(
                     entry("e", true)
                 )),
-                entry("f", DayOfWeek.THURSDAY)
+                entry("f", new Date(0)),
+                entry("g", DayOfWeek.THURSDAY)
             ),
             mapOf(
                 entry("a", "  DEFGH IJKL "),
@@ -54,7 +56,8 @@ public class FlatFileEncoderTest extends AbstractTest {
             new FlatFileEncoder.Field("b", 5, "%d"),
             new FlatFileEncoder.Field("c", 7, "%.2f"),
             new FlatFileEncoder.Field("d.e", 1, "%d"),
-            new FlatFileEncoder.Field("f", 1, "%d")
+            new FlatFileEncoder.Field("f", 1, "%d"),
+            new FlatFileEncoder.Field("g", 1, "%d")
         ));
 
         flatFileEncoder.write(values, writer);
