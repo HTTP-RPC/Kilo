@@ -32,6 +32,7 @@ public class XMLEncoderTest extends AbstractTest {
             + "<test>"
             + "<item a=\"ABC\" b=\"1\" c=\"2.345\" f=\"0\" g=\"3\">"
             + "<d><item e=\"true\"></item><item e=\"false\"></item></d>"
+            + "<e><f g=\"XYZ\"></f></e>"
             + "</item>"
             + "<item a=\"DÉF\" b=\"2\" c=\"4.5678\"></item>"
             + "</test>";

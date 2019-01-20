@@ -84,7 +84,7 @@ public class XMLEncoder {
             streamWriter.writeStartDocument();
             streamWriter.writeStartElement(rootElementName);
 
-            writeValues(values, streamWriter);
+            writeSequence(values, streamWriter);
 
             streamWriter.writeEndElement();
             streamWriter.writeEndDocument();
@@ -95,42 +95,55 @@ public class XMLEncoder {
         writer.flush();
     }
 
-    @SuppressWarnings("unchecked")
-    private void writeValues(Iterable<? extends Map<String, ?>> values, XMLStreamWriter streamWriter) throws XMLStreamException {
+    private void writeSequence(Iterable<? extends Map<String, ?>> values, XMLStreamWriter streamWriter) throws XMLStreamException {
         for (Map<String, ?> map : values) {
             streamWriter.writeStartElement("item");
 
-            LinkedHashMap<String, Iterable<?>> collections = new LinkedHashMap<>();
+            writeMap(map, streamWriter);
 
-            for (Map.Entry<String, ?> entry : map.entrySet()) {
-                String key = entry.getKey();
+            streamWriter.writeEndElement();
+        }
+    }
 
-                if (key == null) {
-                    continue;
-                }
+    @SuppressWarnings("unchecked")
+    private void writeMap(Map<String, ?> map, XMLStreamWriter streamWriter) throws XMLStreamException {
+        LinkedHashMap<String, Iterable<?>> sequences = new LinkedHashMap<>();
+        LinkedHashMap<String, Map<?, ?>> maps = new LinkedHashMap<>();
 
-                Object value = entry.getValue();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            String key = entry.getKey();
 
-                if (value == null) {
-                    continue;
-                }
-
-                if (value instanceof Iterable<?>) {
-                    collections.put(key, (Iterable<? extends Map<String, ?>>)value);
-                } else if (value instanceof Map<?, ?>) {
-                    // TODO
-                } else {
-                    encode(key, value, streamWriter);
-                }
+            if (key == null) {
+                continue;
             }
 
-            for (Map.Entry<String, Iterable<?>> entry : collections.entrySet()) {
-                streamWriter.writeStartElement(entry.getKey());
+            Object value = entry.getValue();
 
-                writeValues((Iterable<? extends Map<String, ?>>)entry.getValue(), streamWriter);
-
-                streamWriter.writeEndElement();
+            if (value == null) {
+                continue;
             }
+
+            if (value instanceof Iterable<?>) {
+                sequences.put(key, (Iterable<? extends Map<String, ?>>)value);
+            } else if (value instanceof Map<?, ?>) {
+                maps.put(key, (Map<?, ?>)value);
+            } else {
+                encode(key, value, streamWriter);
+            }
+        }
+
+        for (Map.Entry<String, Iterable<?>> entry : sequences.entrySet()) {
+            streamWriter.writeStartElement(entry.getKey());
+
+            writeSequence((Iterable<? extends Map<String, ?>>)entry.getValue(), streamWriter);
+
+            streamWriter.writeEndElement();
+        }
+
+        for (Map.Entry<String, Map<?, ?>> entry : maps.entrySet()) {
+            streamWriter.writeStartElement(entry.getKey());
+
+            writeMap((Map<String, ?>)entry.getValue(), streamWriter);
 
             streamWriter.writeEndElement();
         }
