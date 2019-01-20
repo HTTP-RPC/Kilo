@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -81,41 +82,58 @@ public class XMLEncoder {
             XMLStreamWriter streamWriter = outputFactory.createXMLStreamWriter(writer);
 
             streamWriter.writeStartDocument();
-
             streamWriter.writeStartElement(rootElementName);
 
-            for (Map<String, ?> map : values) {
-                streamWriter.writeStartElement("item");
-
-                for (Map.Entry<String, ?> entry : map.entrySet()) {
-                    String key = entry.getKey();
-
-                    if (key == null) {
-                        continue;
-                    }
-
-                    Object value = entry.getValue();
-
-                    if (value == null) {
-                        continue;
-                    }
-
-                    // TODO Prepend ancestor keypath
-
-                    encode(key, value, streamWriter);
-                }
-
-                streamWriter.writeEndElement();
-            }
+            writeValues(values, streamWriter);
 
             streamWriter.writeEndElement();
-
             streamWriter.writeEndDocument();
         } catch (XMLStreamException exception) {
             throw new IOException(exception);
         }
 
         writer.flush();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void writeValues(Iterable<? extends Map<String, ?>> values, XMLStreamWriter streamWriter) throws XMLStreamException {
+        for (Map<String, ?> map : values) {
+            streamWriter.writeStartElement("item");
+
+            LinkedHashMap<String, Iterable<?>> collections = new LinkedHashMap<>();
+
+            for (Map.Entry<String, ?> entry : map.entrySet()) {
+                String key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                Object value = entry.getValue();
+
+                if (value == null) {
+                    continue;
+                }
+
+                if (value instanceof Iterable<?>) {
+                    collections.put(key, (Iterable<? extends Map<String, ?>>)value);
+                } else if (value instanceof Map<?, ?>) {
+                    // TODO
+                } else {
+                    encode(key, value, streamWriter);
+                }
+            }
+
+            for (Map.Entry<String, Iterable<?>> entry : collections.entrySet()) {
+                streamWriter.writeStartElement(entry.getKey());
+
+                writeValues((Iterable<? extends Map<String, ?>>)entry.getValue(), streamWriter);
+
+                streamWriter.writeEndElement();
+            }
+
+            streamWriter.writeEndElement();
+        }
     }
 
     private void encode(String key, Object value, XMLStreamWriter streamWriter) throws XMLStreamException {
