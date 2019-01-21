@@ -14,12 +14,21 @@
 
 package org.httprpc.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.httprpc.AbstractTest;
 import org.junit.Assert;
@@ -66,6 +75,61 @@ public class XMLEncoderTest extends AbstractTest {
         XMLEncoder xmlEncoder = new XMLEncoder();
 
         xmlEncoder.write(values, writer);
+
+        Assert.assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    public void testTransform() throws IOException {
+        String expected = "1,2,3\r\n"
+            + "4,5,6\r\n"
+            + "7,8,9\r\n";
+
+        List<Map<String, ?>> values = listOf(
+            mapOf(
+                entry("a", "1"),
+                entry("b", "2"),
+                entry("c", "3")
+            ),
+            mapOf(
+                entry("a", "4"),
+                entry("b", "5"),
+                entry("c", "6")
+            ),
+            mapOf(
+                entry("a", "7"),
+                entry("b", "8"),
+                entry("c", "9")
+            )
+        );
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        XMLEncoder xmlEncoder = new XMLEncoder();
+
+        xmlEncoder.write(values, outputStream);
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+        Transformer transformer;
+        try {
+            StreamSource source = new StreamSource(getClass().getResourceAsStream("test.xslt"));
+
+            transformer = transformerFactory.newTransformer(source);
+        } catch (TransformerConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        StringWriter writer = new StringWriter();
+
+        try {
+            StreamSource source = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
+            StreamResult result = new StreamResult(writer);
+
+            transformer.transform(source, result);
+        } catch (TransformerException exception) {
+            throw new IOException(exception);
+        }
 
         Assert.assertEquals(expected, writer.toString());
     }
