@@ -483,7 +483,7 @@ XMLEncoder xmlEncoder = new XMLEncoder();
 xmlEncoder.write(values, writer);
 ```
 
-The values are serialized as shown below:
+Sequences are serialized as shown below. Each `<item>` element corresponds to a map value produced by the sequence's iterator:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -512,7 +512,7 @@ the resulting XML would be as follows:
 <item a="1" b="2" c="3"/>
 ```
 
-However, nested maps are encoded as sub-elements. For example, given this map:
+Nested maps are encoded as sub-elements. For example, given this map:
 
 ```json
 {
@@ -531,7 +531,7 @@ the XML output would be as follows:
 </item>
 ```
 
-Nested sequences are also supported. For example, given this JSON:
+Nested sequences are also supported. For example, this JSON:
 
 ```json
 {
@@ -549,7 +549,7 @@ Nested sequences are also supported. For example, given this JSON:
 }
 ```
 
-the output would be as follows:
+would produce the following output:
 
 ```xml
 <item>
