@@ -65,7 +65,7 @@ public class PetService extends WebService {
         super.init();
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException exception) {
             throw new ServletException(exception);
         }
