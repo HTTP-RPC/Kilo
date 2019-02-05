@@ -18,6 +18,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
         * [Exceptions](#exceptions)
         * [Request and Repsonse Properties](#request-and-repsonse-properties)
         * [Path Variables](#path-variables)
+        * [Authorization](#authorization)
         * [API Documentation](#api-documentation)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
@@ -259,6 +260,15 @@ protected String getKey(String name) { ... }
 ```
  
 For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
+
+### Authorization
+Service requests can be authorized by overriding the following method:
+
+```java
+protected boolean isAuthorized(HttpServletRequest request, Method method) { ... }
+```
+
+The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
 
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:

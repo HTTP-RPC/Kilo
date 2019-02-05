@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -182,6 +183,12 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
+    @ResourcePath("unauthorized")
+    public void testUnauthorized() throws Exception {
+        // No-op
+    }
+
+    @RequestMethod("GET")
     @ResourcePath("error")
     public void testError() throws Exception {
         throw new Exception("Sample error message.");
@@ -192,5 +199,12 @@ public class TestService extends WebService {
         Thread.sleep(delay);
 
         return value;
+    }
+
+    @Override
+    protected boolean isAuthorized(HttpServletRequest request, Method method) {
+        String pathInfo = request.getPathInfo();
+
+        return (pathInfo == null || !pathInfo.endsWith("unauthorized"));
     }
 }

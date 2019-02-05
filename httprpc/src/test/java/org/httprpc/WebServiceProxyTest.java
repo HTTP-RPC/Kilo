@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -96,6 +97,7 @@ public class WebServiceProxyTest extends AbstractTest {
         testCustomPost();
         testPut();
         testDelete();
+        testUnauthorized();
         testError();
         testTimeout();
         testMath();
@@ -249,8 +251,23 @@ public class WebServiceProxyTest extends AbstractTest {
         validate("DELETE", true);
     }
 
+    public static void testUnauthorized() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test/unauthorized"));
+
+        int status;
+        try {
+            webServiceProxy.invoke();
+
+            status = HttpURLConnection.HTTP_OK;
+        } catch (WebServiceException exception) {
+            status = exception.getStatus();
+        }
+
+        validate("Unauthorized", status == HttpURLConnection.HTTP_FORBIDDEN);
+    }
+
     public static void testError() throws Exception {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc/test/error"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test/error"));
 
         boolean error;
         try {
