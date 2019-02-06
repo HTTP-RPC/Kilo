@@ -25,4 +25,11 @@ public class ParametersTest {
 
         Assert.assertEquals("select * from xyz where foo = ? and bar = ?", parameters.getSQL());
     }
+
+    @Test
+    public void testColon() {
+        Parameters parameters = Parameters.parse("select * from xyz where foo = 'a:b:c'");
+
+        Assert.assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
+    }
 }

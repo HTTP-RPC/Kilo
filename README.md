@@ -759,7 +759,14 @@ The `Parameters` class is used to simplify execution of prepared statements. It 
 SELECT * FROM some_table 
 WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
 ```
- 
+
+Colons within single quotes are ignored. For example, this query would search for the literal string "x:y:z":
+
+```sql
+SELECT * FROM some_table 
+WHERE column_a = 'x:y:z'
+```
+
 The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
 
 ```java

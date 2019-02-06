@@ -111,10 +111,12 @@ public class Parameters {
 
         StringBuilder sqlBuilder = new StringBuilder();
 
+        boolean quoted = false;
+
         int c = sqlReader.read();
 
         while (c != EOF) {
-            if (c == ':') {
+            if (c == ':' && !quoted) {
                 c = sqlReader.read();
 
                 StringBuilder keyBuilder = new StringBuilder();
@@ -129,6 +131,10 @@ public class Parameters {
 
                 sqlBuilder.append("?");
             } else {
+                if (c == '\'') {
+                    quoted = !quoted;
+                }
+
                 sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
