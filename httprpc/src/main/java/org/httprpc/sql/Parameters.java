@@ -126,7 +126,7 @@ public class Parameters {
                 } else {
                     StringBuilder keyBuilder = new StringBuilder();
 
-                    while (c != EOF && !Character.isWhitespace(c)) {
+                    while (c != EOF && Character.isJavaIdentifierPart(c)) {
                         keyBuilder.append((char)c);
 
                         c = sqlReader.read();

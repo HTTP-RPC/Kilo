@@ -21,9 +21,9 @@ import org.junit.Test;
 public class ParametersTest {
     @Test
     public void testParameters() {
-        Parameters parameters = Parameters.parse("select * from xyz where foo = :foo and bar = :bar");
+        Parameters parameters = Parameters.parse("insert into xyz (foo, bar) values :foo, :bar");
 
-        Assert.assertEquals("select * from xyz where foo = ? and bar = ?", parameters.getSQL());
+        Assert.assertEquals("insert into xyz (foo, bar) values ?, ?", parameters.getSQL());
     }
 
     @Test
