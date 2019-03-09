@@ -119,17 +119,23 @@ public class Parameters {
             if (c == ':' && !quoted) {
                 c = sqlReader.read();
 
-                StringBuilder keyBuilder = new StringBuilder();
-
-                while (c != EOF && Character.isJavaIdentifierPart(c)) {
-                    keyBuilder.append((char)c);
+                if (c == ':') {
+                    sqlBuilder.append("::");
 
                     c = sqlReader.read();
+                } else {
+                    StringBuilder keyBuilder = new StringBuilder();
+
+                    while (c != EOF && !Character.isWhitespace(c)) {
+                        keyBuilder.append((char)c);
+
+                        c = sqlReader.read();
+                    }
+
+                    keys.add(keyBuilder.toString());
+
+                    sqlBuilder.append("?");
                 }
-
-                keys.add(keyBuilder.toString());
-
-                sqlBuilder.append("?");
             } else {
                 if (c == '\'') {
                     quoted = !quoted;

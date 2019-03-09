@@ -32,4 +32,11 @@ public class ParametersTest {
 
         Assert.assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
     }
+
+    @Test
+    public void testDoubleColon() {
+        Parameters parameters = Parameters.parse("select 'ab:c'::varchar(16) as abc");
+
+        Assert.assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
+    }
 }
