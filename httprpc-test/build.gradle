@@ -25,8 +25,8 @@ dependencies {
     compile project(':httprpc')
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
-    implementation 'org.mongodb:mongo-java-driver:3.0+'
-    implementation 'mysql:mysql-connector-java:8.0+'
+    implementation 'org.mongodb:mongo-java-driver:3.0.4'
+    implementation 'mysql:mysql-connector-java:8.0.15'
 }
 
 compileJava {
