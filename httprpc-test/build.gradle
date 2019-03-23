@@ -17,6 +17,9 @@ plugins {
     id 'eclipse'
 }
 
+group = 'org.httprpc'
+version = '1.0'
+
 repositories {
     mavenCentral()
 }

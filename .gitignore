@@ -1,3 +1,4 @@
 .gradle
 gradle.properties
+**/out
 **/.DS_Store
