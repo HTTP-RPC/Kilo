@@ -20,7 +20,7 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/3.0.4/8496e137420c22756c97f58a55e8816867de5aff/mongo-java-driver-3.0.4-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/3.0.4/f9caed188f03990204f3381d01d44f70fc93acec/mongo-java-driver-3.0.4.jar">
+	<classpathentry sourcepath="/Users/greg/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/3.6.3/de08a16276a9445999584a6b85757c9a2877a79c/mongo-java-driver-3.6.3-sources.jar" kind="lib" path="/Users/greg/.gradle/caches/modules-2/files-2.1/org.mongodb/mongo-java-driver/3.6.3/237cbf74df3441c172e80ca676dc967166625ff9/mongo-java-driver-3.6.3.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>

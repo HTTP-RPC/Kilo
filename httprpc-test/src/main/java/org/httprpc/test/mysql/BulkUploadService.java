@@ -37,7 +37,7 @@ import org.httprpc.sql.Parameters;
 public class BulkUploadService extends WebService {
     private static final long serialVersionUID = 0;
 
-    private static final String DB_URL = "jdbc:mysql://db.local:3306/test?user=root&password=password&serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true";
+    private static final String DB_URL = "jdbc:mysql://vm.local:3306/test?user=root&password=password&serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true";
 
     private static final String INSERT_SQL = "INSERT INTO bulk_upload_test ("
         + "text1, text2, number1, number2, number3) VALUES ("

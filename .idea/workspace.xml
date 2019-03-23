@@ -2,8 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1091c7d3-8f44-4e4c-ae0e-0f2b95d5e164" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/.classpath" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/.classpath" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/httprpc-test/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mongodb/RestaurantService.java" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mongodb/RestaurantService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mysql/BulkUploadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mysql/BulkUploadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mysql/EmployeeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mysql/EmployeeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mysql/PetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/src/main/java/org/httprpc/test/mysql/PetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc-test/src/main/sql/bulk_upload_test.sql" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc-test/src/main/sql/bulk_upload_test.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httprpc/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" afterPath="$PROJECT_DIR$/httprpc/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -108,6 +115,33 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
+              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
+            </path>
+            <path>
+              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
+              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
+              <item name="org.httprpc.httprpc" type="616d4139:PackageViewModuleNode" />
+            </path>
+            <path>
+              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
+              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
+              <item name="org.httprpc.httprpc" type="616d4139:PackageViewModuleNode" />
+              <item name="org.httprpc" type="1f31426a:PackageElementNode" />
+            </path>
+            <path>
+              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
+              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
+              <item name="org.httprpc.httprpc-test" type="616d4139:PackageViewModuleNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -145,33 +179,6 @@
               <item name="HTTP-RPC" type="b2602c69:ProjectViewProjectNode" />
               <item name="HTTP-RPC" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="httprpc-test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
-              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
-            </path>
-            <path>
-              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
-              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
-              <item name="org.httprpc.httprpc" type="616d4139:PackageViewModuleNode" />
-            </path>
-            <path>
-              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
-              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
-              <item name="org.httprpc.httprpc" type="616d4139:PackageViewModuleNode" />
-              <item name="org.httprpc" type="1f31426a:PackageElementNode" />
-            </path>
-            <path>
-              <item name="HTTP-RPC" type="58d84e3e:PackageViewProjectNode" />
-              <item name="org.httprpc" type="eaaa3913:PackageViewModuleGroupNode" />
-              <item name="org.httprpc.httprpc-test" type="616d4139:PackageViewModuleNode" />
             </path>
           </expand>
           <select />
@@ -222,7 +229,7 @@
   <component name="ToolWindowManager">
     <frame x="4" y="23" width="1428" height="830" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49864498" visible="true" weight="0.25541127" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49864498" visible="true" weight="0.25901875" />
       <window_info id="Structure" order="1" sideWeight="0.501355" side_tool="true" weight="0.24458875" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" sideWeight="0.501355" side_tool="true" weight="0.24458875" />
@@ -235,7 +242,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3292683" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Build" order="9" weight="0.3116531" />
+      <window_info anchor="bottom" id="Build" order="9" visible="true" weight="0.3116531" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.3292683" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -345,7 +352,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>httprpc</last-edited>
+          <last-edited>httprpc-test|httprpc</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

@@ -47,7 +47,7 @@ public class RestaurantService extends WebService {
     public void init() throws ServletException {
         super.init();
 
-        mongoClient = new MongoClient("db.local");
+        mongoClient = new MongoClient("vm.local");
     }
 
     @Override
