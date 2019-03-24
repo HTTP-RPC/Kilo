@@ -26,6 +26,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
     * [WebServiceProxy](#webserviceproxy)
+* [Kotlin Support](#kotlin-support)
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
@@ -1115,6 +1116,69 @@ System.out.println(mathService.getSum(4, 2)); // 6.0
 
 // GET /math/sum?values=1&values=2&values=3
 System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
+```
+
+# Kotlin Support
+In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following service provides some basic information about the host system:
+
+```kotlin
+@WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
+class SystemInfoService : WebService() {
+    @RequestMethod("GET")
+    fun getSystemInfo(): SystemInfo {
+        val localHost = InetAddress.getLocalHost()
+        val runtime = Runtime.getRuntime()
+
+        return SystemInfo(
+            localHost.hostName,
+            localHost.hostAddress,
+            runtime.availableProcessors(),
+            runtime.freeMemory(),
+            runtime.totalMemory()
+        )
+    }
+}
+
+class SystemInfo(
+    val hostName: String,
+    val hostAddress: String,
+    val availableProcessors: Int,
+    val freeMemory: Long,
+    val totalMemory: Long
+) {
+}
+```
+
+The API documentation for this service might look something like the following:
+
+> ## /system-info
+> 
+> ```
+> GET () -> SystemInfo
+> ```
+>
+> ## SystemInfo
+>
+> ```
+> {
+>   hostAddress: string,
+>   hostName: string,
+>   availableProcessors: integer,
+>   freeMemory: long,
+>   totalMemory: long
+> }
+> ```
+
+Data returned by the service might look like this:
+
+```json
+{
+  "hostName": "vm.local",
+  "hostAddress": "192.168.1.12",
+  "availableProcessors": 4,
+  "freeMemory": 222234120,
+  "totalMemory": 257949696
+}
 ```
 
 # Additional Information
