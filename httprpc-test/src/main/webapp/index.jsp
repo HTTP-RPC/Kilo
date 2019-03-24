@@ -104,6 +104,12 @@
 
 <hr/>
 
+<a href="${pageContext.request.contextPath}/kotlin?api">Kotlin (API)</a><br/>
+<br/>
+<a href="${pageContext.request.contextPath}/kotlin">Kotlin</a><br/>
+
+<hr/>
+
 <form action="${pageContext.request.contextPath}/test" method="post" enctype="application/x-www-form-urlencoded">
 <table>
 <tr>
