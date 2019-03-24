@@ -104,9 +104,9 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/kotlin?api">Kotlin (API)</a><br/>
+<a href="${pageContext.request.contextPath}/system-info?api">System Info (API)</a><br/>
 <br/>
-<a href="${pageContext.request.contextPath}/kotlin">Kotlin</a><br/>
+<a href="${pageContext.request.contextPath}/system-info">System Info</a><br/>
 
 <hr/>
 

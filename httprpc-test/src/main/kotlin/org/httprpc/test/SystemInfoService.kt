@@ -16,15 +16,34 @@ package org.httprpc.test
 
 import org.httprpc.RequestMethod
 import org.httprpc.WebService
+import java.net.InetAddress
 import javax.servlet.annotation.WebServlet
 
 /**
- * Kotlin example service.
+ * System info service.
  */
-@WebServlet(urlPatterns = ["/kotlin/*"], loadOnStartup = 1)
-class KotlinService : WebService() {
+@WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
+class SystemInfoService : WebService() {
     @RequestMethod("GET")
-    fun sayHello(): String {
-        return "Hello from Kotlin"
+    fun getSystemInfo(): SystemInfo {
+        val localHost = InetAddress.getLocalHost()
+        val runtime = Runtime.getRuntime()
+
+        return SystemInfo(
+            localHost.hostName,
+            localHost.hostAddress,
+            runtime.availableProcessors(),
+            runtime.freeMemory(),
+            runtime.totalMemory()
+        )
     }
+}
+
+class SystemInfo(
+    val hostName: String,
+    val hostAddress: String,
+    val availableProcessors: Int,
+    val freeMemory: Long,
+    val totalMemory: Long
+) {
 }
