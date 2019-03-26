@@ -12,15 +12,13 @@
  * limitations under the License.
  */
 
-package org.httprpc.test;
+package org.httprpc;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.httprpc.AbstractTest;
-import org.httprpc.WebServiceProxy;
 import org.httprpc.io.CSVEncoder;
 
 public class BulkUploadTest extends AbstractTest {
@@ -64,7 +62,7 @@ public class BulkUploadTest extends AbstractTest {
     }
 
     private static void testUpload() throws IOException {
-        testUpload("http://localhost:8080/httprpc-test/bulk-upload/upload", "Upload", 5000);
+        testUpload("http://localhost:8080/httprpc-test/bulk-upload/upload", "Upload", 500);
         testUpload("http://localhost:8080/httprpc-test/bulk-upload/upload-batch", "Upload Batch", 500000);
     }
 

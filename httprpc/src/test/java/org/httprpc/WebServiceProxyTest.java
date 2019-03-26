@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.test;
+package org.httprpc;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -31,10 +31,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.httprpc.*;
 import org.httprpc.beans.BeanAdapter;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class WebServiceProxyTest extends AbstractTest {
     public interface TestService {
@@ -84,22 +81,37 @@ public class WebServiceProxyTest extends AbstractTest {
         public List<TreeNode> getChildren();
     }
 
-    private Date date = new Date();
+    private static Date date = new Date();
 
-    private LocalDate localDate = LocalDate.now();
-    private LocalTime localTime = LocalTime.now();
-    private LocalDateTime localDateTime = LocalDateTime.now();
+    private static LocalDate localDate = LocalDate.now();
+    private static LocalTime localTime = LocalTime.now();
+    private static LocalDateTime localDateTime = LocalDateTime.now();
 
     private static final int EOF = -1;
 
-    @Test
-    public void testGet() throws Exception {
+    public static void main(String[] args) throws Exception {
+        testGet();
+        testGetFibonnaci();
+        testURLEncodedPost();
+        testMultipartPost();
+        testCustomPost();
+        testPut();
+        testDelete();
+        testUnauthorized();
+        testError();
+        testTimeout();
+        testMath();
+        testMathService();
+        testTree();
+    }
+
+    public static void testGet() throws Exception {
         TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/test"), TestService.class);
 
         Map<String, ?> result = testService.testGet("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
             date, localDate, localTime, localDateTime);
 
-        Assert.assertTrue("GET", result.get("string").equals("héllo+gøodbye")
+        validate("GET", result.get("string").equals("héllo+gøodbye")
             && result.get("strings").equals(listOf("a", "b", "c"))
             && result.get("number").equals(123L)
             && result.get("flag").equals(true)
@@ -109,17 +121,15 @@ public class WebServiceProxyTest extends AbstractTest {
             && result.get("localDateTime").equals(localDateTime.toString()));
     }
 
-    @Test
-    public void testGetFibonnaci() throws Exception {
+    public static void testGetFibonnaci() throws Exception {
         TestService testService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/test/"), TestService.class);
 
         List<Integer> fibonacci = testService.testGetFibonacci();
 
-        Assert.assertTrue("GET (Fibonacci)", fibonacci.equals(listOf(1, 2, 3, 5, 8, 13)));
+        validate("GET (Fibonacci)", fibonacci.equals(listOf(1, 2, 3, 5, 8, 13)));
     }
 
-    @Test
-    public void testURLEncodedPost() throws Exception {
+    public static void testURLEncodedPost() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-test/test"));
 
         webServiceProxy.setArguments(mapOf(
@@ -135,7 +145,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
         Map<String, ?> result = webServiceProxy.invoke();
 
-        Assert.assertTrue("POST (URL-encoded)", result.get("string").equals("héllo+gøodbye")
+        validate("POST (URL-encoded)", result.get("string").equals("héllo+gøodbye")
             && result.get("strings").equals(listOf("a", "b", "c"))
             && result.get("number").equals(123L)
             && result.get("flag").equals(true)
@@ -146,8 +156,7 @@ public class WebServiceProxyTest extends AbstractTest {
             && result.get("attachmentInfo").equals(listOf()));
     }
 
-    @Test
-    public void testMultipartPost() throws Exception {
+    public static void testMultipartPost() throws Exception {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
@@ -157,7 +166,7 @@ public class WebServiceProxyTest extends AbstractTest {
             date, localDate, localTime, localDateTime,
             listOf(textTestURL, imageTestURL));
 
-        Assert.assertTrue("POST (multipart)", response.getString().equals("héllo+gøodbye")
+        validate("POST (multipart)", response.getString().equals("héllo+gøodbye")
             && response.getStrings().equals(listOf("a", "b", "c"))
             && response.getNumber() == 123
             && response.getFlag() == true
@@ -171,8 +180,7 @@ public class WebServiceProxyTest extends AbstractTest {
             && response.getAttachmentInfo().get(1).getChecksum() == 1038036);
     }
 
-    @Test
-    public void testCustomPost() throws Exception {
+    public static void testCustomPost() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL("http://localhost:8080/httprpc-test/test"));
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
@@ -194,11 +202,10 @@ public class WebServiceProxyTest extends AbstractTest {
             return ImageIO.read(inputStream);
         });
 
-        Assert.assertTrue("POST (custom)", image != null);
+        validate("POST (custom)", image != null);
     }
 
-    @Test
-    public void testPut() throws Exception {
+    public static void testPut() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL("http://localhost:8080/httprpc-test/test"));
 
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
@@ -229,11 +236,10 @@ public class WebServiceProxyTest extends AbstractTest {
             return textBuilder.toString();
         });
 
-        Assert.assertTrue("PUT", text != null);
+        validate("PUT", text != null);
     }
 
-    @Test
-    public void testDelete() throws Exception {
+    public static void testDelete() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL("http://localhost:8080/httprpc-test/test"));
 
         webServiceProxy.setArguments(mapOf(
@@ -242,11 +248,10 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.invoke();
 
-        Assert.assertTrue("DELETE", true);
+        validate("DELETE", true);
     }
 
-    @Test
-    public void testUnauthorized() throws Exception {
+    public static void testUnauthorized() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test/unauthorized"));
 
         int status;
@@ -258,11 +263,10 @@ public class WebServiceProxyTest extends AbstractTest {
             status = exception.getStatus();
         }
 
-        Assert.assertTrue("Unauthorized", status == HttpURLConnection.HTTP_FORBIDDEN);
+        validate("Unauthorized", status == HttpURLConnection.HTTP_FORBIDDEN);
     }
 
-    @Test
-    public void testError() throws Exception {
+    public static void testError() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test/error"));
 
         boolean error;
@@ -274,11 +278,10 @@ public class WebServiceProxyTest extends AbstractTest {
             error = true;
         }
 
-        Assert.assertTrue("Error", error);
+        validate("Error", error);
     }
 
-    @Test
-    public void testTimeout() throws Exception {
+    public static void testTimeout() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/test"));
 
         webServiceProxy.setConnectTimeout(3000);
@@ -298,11 +301,10 @@ public class WebServiceProxyTest extends AbstractTest {
             timeout = true;
         }
 
-        Assert.assertTrue("Timeout", timeout);
+        validate("Timeout", timeout);
     }
 
-    @Test
-    public void testMath() throws Exception {
+    public static void testMath() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/math/sum"));
 
         HashMap<String, Integer> arguments = new HashMap<>();
@@ -314,25 +316,27 @@ public class WebServiceProxyTest extends AbstractTest {
 
         Number result = webServiceProxy.invoke();
 
-        Assert.assertTrue("Math", result.doubleValue() == 6.0);
+        validate("Math", result.doubleValue() == 6.0);
     }
 
-    @Test
-    public void testMathService() throws Exception {
+    public static void testMathService() throws Exception {
         MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
 
-        Assert.assertTrue("Math (service)", mathService.getSum(4, 2) == 6.0
+        validate("Math (service)", mathService.getSum(4, 2) == 6.0
             && mathService.getSum(listOf(1.0, 2.0, 3.0)) == 6.0);
     }
 
-    @Test
-    public void testTree() throws Exception {
+    public static void testTree() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-test/tree"));
 
         TreeNode root = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
 
-        Assert.assertTrue("Tree", root.getName().equals("Seasons")
+        validate("Tree", root.getName().equals("Seasons")
             && root.getChildren().get(0).getName().equals("Winter")
             && root.getChildren().get(0).getChildren().get(0).getName().equals("January"));
+    }
+
+    private static void validate(String test, boolean condition) {
+        System.out.println(test + ": " + (condition ? "OK" : "FAIL"));
     }
 }
