@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc;
+package org.httprpc.test;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.httprpc.*;
 import org.httprpc.beans.BeanAdapter;
 
 public class WebServiceProxyTest extends AbstractTest {
@@ -54,7 +55,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
         @RequestMethod("GET")
         public Map<String, Object> testGet(@RequestParameter("string") String text, List<String> strings, int number, boolean flag,
-            Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) throws IOException;
+                                           Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) throws IOException;
 
         @RequestMethod("GET")
         @ResourcePath("fibonacci")
