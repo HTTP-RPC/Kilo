@@ -26,11 +26,12 @@ repositories {
 
 dependencies {
     compile project(':httprpc')
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
     implementation 'org.mongodb:mongo-java-driver:3.6.3'
     implementation 'mysql:mysql-connector-java:8.0.15'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testCompile 'junit:junit:4.12'
 }
 
 compileJava {
