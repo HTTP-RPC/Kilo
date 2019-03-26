@@ -62,7 +62,7 @@ public class BulkUploadTest extends AbstractTest {
     }
 
     private static void testUpload() throws IOException {
-        testUpload("http://localhost:8080/httprpc-test/bulk-upload/upload", "Upload", 500);
+        testUpload("http://localhost:8080/httprpc-test/bulk-upload/upload", "Upload", 5000);
         testUpload("http://localhost:8080/httprpc-test/bulk-upload/upload-batch", "Upload Batch", 500000);
     }
 
