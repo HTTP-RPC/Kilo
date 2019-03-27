@@ -25,10 +25,11 @@ repositories {
 }
 
 dependencies {
-    compile project(':httprpc')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-    providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
+    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
+    compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
+
+    implementation project(':httprpc')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.mongodb:mongo-java-driver:3.6.3'
     implementation 'mysql:mysql-connector-java:8.0.15'
 }
@@ -38,11 +39,13 @@ compileJava {
         '-parameters'
     ] 
 }
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
     }
 }
+
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
