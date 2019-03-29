@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.time.LocalDate;
@@ -27,9 +26,11 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.httprpc.WebService;
-import org.httprpc.io.JSONDecoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.RequestParameter;
 import org.httprpc.ResourcePath;
@@ -88,10 +88,48 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
-    public List<?> testGetFibonacci() throws IOException {
-        JSONDecoder jsonDecoder = new JSONDecoder();
+    public Iterable<?> testGetFibonacci(int count) {
+        return new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+                    private int i = 0;
 
-        return jsonDecoder.read(new StringReader("[1, 2, 3, 5, 8, 13]"));
+                    private int a = 0;
+                    private int b = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i < count;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
+
+                        int next;
+                        if (i == 0) {
+                            next = a;
+                        } else {
+                            if (i > 1) {
+                                int c = a + b;
+
+                                a = b;
+                                b = c;
+                            }
+
+                            next = b;
+                        }
+
+                        i++;
+
+                        return next;
+                    }
+                };
+            }
+        };
     }
 
     @Override

@@ -8,12 +8,6 @@
 <body>
 
 <h2>Test</h2>
-<a href="${pageContext.request.contextPath}/greeting?api">Greeting (API)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/greeting">Greeting</a><br/>
-
-<hr/>
-
 <a href="${pageContext.request.contextPath}/math?api">Math (API)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a><br/>
@@ -106,7 +100,7 @@
 <br/>
 <a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
 <a href="${pageContext.request.contextPath}/test/a/123/b/héllo/c/456/d/göodbye">GET (Keys)</a><br/>
-<a href="${pageContext.request.contextPath}/test/fibonacci">GET (Fibonacci)</a><br/>
+<a href="${pageContext.request.contextPath}/test/fibonacci?count=8">GET (Fibonacci)</a><br/>
 
 <hr/>
 
