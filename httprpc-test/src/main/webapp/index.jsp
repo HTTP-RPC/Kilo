@@ -8,6 +8,12 @@
 <body>
 
 <h2>Test</h2>
+<a href="${pageContext.request.contextPath}/greeting?api">Greeting (API)</a><br/>
+<br/>
+<a href="${pageContext.request.contextPath}/greeting">Greeting</a><br/>
+
+<hr/>
+
 <a href="${pageContext.request.contextPath}/math?api">Math (API)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a><br/>
