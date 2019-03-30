@@ -188,6 +188,7 @@ Return values are converted to their JSON equivalents as follows:
 * `java.util.time.LocalDate`: "yyyy-mm-dd"
 * `java.util.time.LocalTime`: "hh:mm"
 * `java.util.time.LocalDateTime`: "yyyy-mm-ddThh:mm"
+* `java.net.URL`: string (external form)
 * `Iterable`: array
 * `java.util.Map`: object
 
