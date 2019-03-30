@@ -19,6 +19,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +31,7 @@ import java.util.Map;
 
 public class BeanAdapterTest extends AbstractTest {
     @Test
-    public void testBeanAdapter() {
+    public void testBeanAdapter() throws MalformedURLException {
         Map<String, ?> expected = mapOf(
             entry("i", 1),
             entry("long", 2L),
@@ -41,6 +43,7 @@ public class BeanAdapterTest extends AbstractTest {
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
+            entry("URL", new URL("http://localhost:8080")),
             entry("list", listOf(2L, 4.0, mapOf(
                 entry("flag", true)
             ))),
@@ -88,6 +91,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         Assert.assertEquals(structures.get(TestBean.class),
             "{\n" +
+            "  URL: url,\n" +
             "  bigInteger: number,\n" +
             "  date: date,\n" +
             "  dayOfWeek: enum,\n" +

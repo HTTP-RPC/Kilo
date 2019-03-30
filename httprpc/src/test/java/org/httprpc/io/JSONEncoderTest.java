@@ -16,6 +16,7 @@ package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URL;
 import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,11 @@ public class JSONEncoderTest extends AbstractTest {
     @Test
     public void testDate() throws IOException {
         Assert.assertEquals("0", encode(new Date(0)));
+    }
+
+    @Test
+    public void testURL() throws IOException {
+        Assert.assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
     }
 
     @Test

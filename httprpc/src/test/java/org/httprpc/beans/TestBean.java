@@ -17,6 +17,8 @@ package org.httprpc.beans;
 import static org.httprpc.AbstractTest.*;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,6 +79,10 @@ public class TestBean {
 
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.parse("2018-06-28T10:45");
+    }
+
+    public URL getURL() throws MalformedURLException {
+        return new URL("http://localhost:8080");
     }
 
     public List<?> getList() {

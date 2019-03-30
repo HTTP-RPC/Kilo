@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -121,6 +122,8 @@ public class JSONEncoder {
         } else if (value instanceof Date) {
             encode(((Date)value).getTime(), writer);
         } else if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
+            encode(value.toString(), writer);
+        } else if (value instanceof URL) {
             encode(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.write("[");

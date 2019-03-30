@@ -285,16 +285,17 @@ Methods are grouped by resource path. Parameters and return values are encoded a
 * `Long` or `long`: "long"
 * `Float` or `float`: "float"
 * `Double` or `double`: "double"
-* Any other type that extends `Number`: "number"
-* Any type that implements `CharSequence`: "string"
-* Any `Enum` type: "enum"
-* Any type that extends `java.util.Date`: "date"
+* Any other `Number`: "number"
+* `CharSequence`: "string"
+* `Enum`: "enum"
+* `java.util.Date`: "date"
 * `java.util.time.LocalDate`: "date-local"
 * `java.util.time.LocalTime`: "time-local"
 * `java.util.time.LocalDateTime`: "datetime-local"
+* `java.net.URL`: "file" for parameters, "url" for return values
 * `java.lang.Iterable`, `java.util.Collection`, or `java.util.List`: "[<em>element type</em>]"
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
-* Any other type: "{property1: <em>property 1 type</em>, property2: <em>property 2 type</em>, ...}"
+* Any other type: "{property1: <em>property1 type</em>, property2: <em>property2 type</em>, ...}"
 
 For example, a description of the math service might look like this:
 
@@ -584,6 +585,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalDate`
 * `java.util.time.LocalTime`
 * `java.util.time.LocalDateTime`
+* `java.net.URL`
 
 If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
 

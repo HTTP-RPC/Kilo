@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -307,6 +308,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link LocalDate}</li>
      * <li>{@link LocalTime}</li>
      * <li>{@link LocalDateTime}</li>
+     * <li>{@link URL}</li>
      * </ul>
      *
      * If the value is an instance of {@link Iterable}, it is wrapped in an
@@ -338,7 +340,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Date
             || value instanceof LocalDate
             || value instanceof LocalTime
-            || value instanceof LocalDateTime) {
+            || value instanceof LocalDateTime
+            || value instanceof URL) {
             return value;
         } else if (value instanceof Iterable<?>) {
             return new IterableAdapter((Iterable<?>)value, accessorCache);
@@ -397,13 +400,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Long} or <tt>long</tt>: "long"</li>
      * <li>{@link Float} or <tt>float</tt>: "float"</li>
      * <li>{@link Double} or <tt>double</tt>: "double"</li>
-     * <li>Any other type that extends {@link Number}: "number"</li>
-     * <li>Any type that implements {@link CharSequence}: "string"</li>
-     * <li>Any {@link Enum} type: "enum"</li>
-     * <li>Any type that extends {@link Date}: "date"</li>
+     * <li>Any other {@link Number}: "number"</li>
+     * <li>{@link CharSequence}: "string"</li>
+     * <li>{@link Enum}: "enum"</li>
+     * <li>{@link Date}: "date"</li>
      * <li>{@link LocalDate}: "date-local"</li>
      * <li>{@link LocalTime}: "time-local"</li>
      * <li>{@link LocalDateTime}: "datetime-local"</li>
+     * <li>{@link URL}: "url"</li>
      * <li>{@link Iterable}, {@link Collection}, or {@link List}: "[<i>element type</i>]"</li>
      * <li>{@link Map}: "[<i>key type</i>: <i>value type</i>]"</li>
      * <li>Any other type: "{property1: <i>property 1 type</i>, property2: <i>property 2 type</i>, ...}"</li>
@@ -477,6 +481,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return "time-local";
         } else if (type == LocalDateTime.class) {
             return "datetime-local";
+        } else if (type == URL.class) {
+            return "url";
         } else {
             if (!structures.containsKey(type)) {
                 structures.put(type, null);

@@ -677,10 +677,6 @@ public abstract class WebService extends HttpServlet {
             for (Map.Entry<Class<?>, String> entry : structures.entrySet()) {
                 Class<?> type = entry.getKey();
 
-                if (type == URL.class) {
-                    continue;
-                }
-
                 String name = type.getSimpleName();
 
                 xmlStreamWriter.writeStartElement("h3");
