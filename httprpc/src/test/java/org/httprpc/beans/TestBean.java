@@ -14,6 +14,8 @@
 
 package org.httprpc.beans;
 
+import static org.httprpc.AbstractTest.*;
+
 import java.math.BigInteger;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -23,202 +25,82 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class TestBean implements TestInterface {
-    public static class NestedBean implements TestInterface.NestedInterface {
-        private boolean flag = false;
+public class TestBean {
+    public static class NestedBean {
+        private boolean flag;
 
-        @Override
+        public NestedBean(boolean flag) {
+            this.flag = flag;
+        }
+
         public boolean getFlag() {
             return flag;
         }
-
-        public void setFlag(boolean flag) {
-            this.flag = flag;
-        }
     }
 
-    private int i = 0;
-    private long l = 0;
-    private double d = 0;
-    private String string = null;
-
-    private BigInteger bigInteger = null;
-    private DayOfWeek dayOfWeek = null;
-
-    private Date date = null;
-    private LocalDate localDate = null;
-    private LocalTime localTime = null;
-    private LocalDateTime localDateTime = null;
-
-    private List<?> list = null;
-    private List<NestedBean> nestedBeanList = null;
-
-    private Map<String, ?> map = null;
-    private Map<String, NestedBean> nestedBeanMap = null;
-
-    private NestedBean nestedBean = null;
-
     @Key("i")
-    @Override
     public int getInt() {
-        return i;
+        return 1;
     }
 
-    @Key("i")
-    public void setInt(int i) {
-        this.i = i;
-    }
-
-    @Override
     public long getLong() {
-        return l;
+        return 2L;
     }
 
-    public void setLong(long l) {
-        this.l = l;
-    }
-
-    @Override
     public double getDouble() {
-        return d;
+        return 4.0;
     }
 
-    public void setDouble(double d) {
-        this.d = d;
-    }
-
-    @Override
     public String getString() {
-        return string;
-    }
-
-    public void setString(String string) {
-        this.string = string;
+        return "abc";
     }
 
     public BigInteger getBigInteger() {
-        return bigInteger;
-    }
-
-    public void setBigInteger(BigInteger bigInteger) {
-        this.bigInteger = bigInteger;
-    }
-
-    public void setBigInteger(long bigInteger) {
-        setBigInteger(BigInteger.valueOf(bigInteger));
+        return BigInteger.valueOf(8192L);
     }
 
     public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
+        return DayOfWeek.values()[3];
     }
 
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
-    public void setDayOfWeek(int dayOfWeek) {
-        setDayOfWeek(DayOfWeek.values()[dayOfWeek]);
-    }
-
-    @Override
     public Date getDate() {
-        return date;
+        return new Date(0);
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    @Override
     public LocalDate getLocalDate() {
-        return localDate;
+        return LocalDate.parse("2018-06-28");
     }
 
-    public void setLocalDate(LocalDate localDate) {
-        this.localDate = localDate;
-    }
-
-    @Override
     public LocalTime getLocalTime() {
-        return localTime;
+        return LocalTime.parse("10:45");
     }
 
-    public void setLocalTime(LocalTime localTime) {
-        this.localTime = localTime;
-    }
-
-    @Override
     public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+        return LocalDateTime.parse("2018-06-28T10:45");
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
-    }
-
-    @Override
     public List<?> getList() {
-        return list;
+        return listOf(2L, 4.0, mapOf(entry("flag", true)));
     }
 
-    public void setList(List<?> list) {
-        this.list = list;
-    }
-
-    @Override
     public List<NestedBean> getNestedBeanList() {
-        return nestedBeanList;
+        return listOf(new NestedBean(false));
     }
 
-    public void setNestedBeanList(List<NestedBean> nestedBeanList) {
-        this.nestedBeanList = nestedBeanList;
-    }
-
-    @Override
     public Map<String, ?> getMap() {
-        return map;
+        return mapOf(
+            entry("long", 2L),
+            entry("double", 4.0),
+            entry("nestedBean", mapOf(
+                entry("flag", true)
+            )));
     }
 
-    public void setMap(Map<String, ?> map) {
-        this.map = map;
-    }
-
-    @Override
     public Map<String, NestedBean> getNestedBeanMap() {
-        return nestedBeanMap;
+        return mapOf(entry("nestedBean", new NestedBean(false)));
     }
 
-    public void setNestedBeanMap(Map<String, NestedBean> nestedBeanMap) {
-        this.nestedBeanMap = nestedBeanMap;
-    }
-
-    @Override
     public NestedBean getNestedBean() {
-        return nestedBean;
-    }
-
-    public void setNestedBean(NestedBean nestedBean) {
-        this.nestedBean = nestedBean;
-    }
-
-    @Override
-    public void foo() {
-    }
-
-    @Override
-    public void bar(int i) {
-    }
-
-    @Override
-    public int getX(int y) {
-        return y;
-    }
-
-    @Override
-    public void setX() {
-    }
-
-    @Override
-    public void setX(int y, int z) {
+        return new NestedBean(true);
     }
 }

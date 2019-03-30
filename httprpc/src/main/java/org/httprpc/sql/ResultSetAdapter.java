@@ -176,41 +176,4 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     public Iterator<Map<String, Object>> iterator() {
         return iterator;
     }
-
-    /**
-     * Adapts the result set adapter for typed access.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param elementType
-     * The element type.
-     *
-     * @return
-     * An iterable sequence of the given type.
-     */
-    public <T> Iterable<T> adapt(Class<T> elementType) {
-        if (!elementType.isInterface()) {
-            throw new IllegalArgumentException();
-        }
-
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new Iterator<T>() {
-                    private Iterator<Map<String, Object>> iterator = ResultSetAdapter.this.iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
-
-                    @Override
-                    public T next() {
-                        return BeanAdapter.adapt(iterator.next(), elementType);
-                    }
-                };
-            }
-        };
-    }
 }

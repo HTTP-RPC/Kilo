@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,14 +90,14 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
     public Iterable<?> testGetFibonacci(int count) {
-        return new Iterable<Integer>() {
+        return new Iterable<BigInteger>() {
             @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+            public Iterator<BigInteger> iterator() {
+                return new Iterator<BigInteger>() {
                     private int i = 0;
 
-                    private int a = 0;
-                    private int b = 1;
+                    private BigInteger a = BigInteger.valueOf(0);
+                    private BigInteger b = BigInteger.valueOf(1);
 
                     @Override
                     public boolean hasNext() {
@@ -104,17 +105,17 @@ public class TestService extends WebService {
                     }
 
                     @Override
-                    public Integer next() {
+                    public BigInteger next() {
                         if (!hasNext()) {
                             throw new NoSuchElementException();
                         }
 
-                        int next;
+                        BigInteger next;
                         if (i == 0) {
                             next = a;
                         } else {
                             if (i > 1) {
-                                int c = a + b;
+                                BigInteger c = a.add(b);
 
                                 a = b;
                                 b = c;

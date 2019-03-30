@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 60KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 50KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -292,7 +292,7 @@ Methods are grouped by resource path. Parameters and return values are encoded a
 * `java.util.time.LocalDate`: "date-local"
 * `java.util.time.LocalTime`: "time-local"
 * `java.util.time.LocalDateTime`: "datetime-local"
-* `java.util.List`: "[<em>element type</em>]"
+* `java.lang.Iterable`, `java.util.Collection`, or `java.util.List`: "[<em>element type</em>]"
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
 * Any other type: "{property1: <em>property 1 type</em>, property2: <em>property 2 type</em>, ...}"
 
@@ -585,7 +585,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalTime`
 * `java.util.time.LocalDateTime`
 
-If a property returns an instance of `List` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
+If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 
@@ -676,42 +676,6 @@ Although the values are actually stored in the strongly typed properties of the 
     ...
   ]
 }
-```
-
-### Typed Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON data. For example, `JSONDecoder` would parse the data returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently map this loosely typed data structure to a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
-
-```java
-public static <T> T adapt(Object value, Type type) { ... }
-```
-
-If the value is already an instance of the requested type, it is returned as is. Otherwise:
-
-* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive types.
-* If the target type is a `String`, the value is adapted via its `toString()` method.
-* If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
-* If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is parsed using the appropriate `parse()` method.
-* If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
-
-Otherwise, the target is assumed to be a bean, and the value is assumed to be a map. If the target type is a concrete class, an instance of the type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied.
-
-If the target type is an interface, the return value is an implementation of the interface that maps accessor methods to entries in the map. For example, given the following declaration:
-
-```java
-public interface TreeNode {
-    public String getName();
-    public List<TreeNode> getChildren();
-}
-```
-
-the `adapt()` method can be used to model the preceding result data as a collection of `TreeNode` values:
-
-```java
-TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
-
-root.getName(); // "Seasons"
-root.getChildren().get(0).getName(); // "Winter"
-root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 ### Custom Property Keys
@@ -980,46 +944,6 @@ A sample response including both titles and salaries is shown below:
     },
     ...
   ]
-}
-```
-
-### Typed Iteration
-The `adapt()` method of the `ResultSetAdapter` class can be used to facilitate typed iteration of query results. This method produces an `Iterable` sequence of values of a given interface type representing the rows in the result set. 
-
-For example, the following interface might be used to model the results of the "pet" query shown in the previous section:
-
-```java
-public interface Pet {
-    public String getName();
-    public String getOwner();
-    public String getSpecies();
-    public String getSex();
-    public Date getBirth();
-}
-```
-
-This service method uses `adapt()` to create an iterable sequence of `Pet` values. It wraps the adapter's iterator in a stream, and then uses the stream to calculate the average age of all pets in the database. The `getBirth()` method declared by the `Pet` interface is used to retrieve each pet's age in epoch time. The average value is converted to years at the end of the method:
-
-```java
-@RequestMethod("GET")
-@ResourcePath("average-age")
-public double getAverageAge() throws SQLException {
-    Date now = new Date();
-
-    double averageAge;
-    try (Connection connection = DriverManager.getConnection(DB_URL);
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {        
-        ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
-
-        Iterable<Pet> pets = resultSetAdapter.adapt(Pet.class);
-
-        Stream<Pet> stream = StreamSupport.stream(pets.spliterator(), false);
-
-        averageAge = stream.mapToLong(pet -> now.getTime() - pet.getBirth().getTime()).average().getAsDouble();
-    }
-
-    return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
 }
 ```
 

@@ -22,24 +22,10 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
-import org.httprpc.sql.ResultSetAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ResultSetAdapterTest extends AbstractTest {
-    public interface TestRow {
-        public interface NestedValue {
-            public String getLower();
-            public String getUpper();
-        }
-
-        public long getLong();
-        public double getDouble();
-        public boolean getBoolean();
-        public NestedValue getNestedValue();
-        public Date getDate();
-    }
-
     private List<?> expected = listOf(
         mapOf(
             entry("long", 2L),
@@ -74,19 +60,7 @@ public class ResultSetAdapterTest extends AbstractTest {
     );
 
     @Test
-    public void testResultSetAdapter1() throws SQLException {
-        List<Map<String, Object>> actual;
-        try (TestResultSet resultSet = new TestResultSet()) {
-            ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
-
-            actual = StreamSupport.stream(adapter.spliterator(), false).collect(Collectors.toList());
-        }
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testResultSetAdapter2() throws SQLException {
+    public void testResultSetAdapter() throws SQLException {
         List<Map<String, Object>> actual;
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);

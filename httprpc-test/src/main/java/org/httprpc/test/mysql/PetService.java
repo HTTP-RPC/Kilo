@@ -24,6 +24,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -121,19 +122,17 @@ public class PetService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
-        Date now = new Date();
-
         double averageAge;
         try (Connection connection = DriverManager.getConnection(DB_URL);
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
             ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
 
-            Iterable<Pet> pets = resultSetAdapter.adapt(Pet.class);
+            Date now = new Date();
 
-            Stream<Pet> stream = StreamSupport.stream(pets.spliterator(), false);
+            Stream<Map<String, Object>> stream = StreamSupport.stream(resultSetAdapter.spliterator(), false);
 
-            averageAge = stream.mapToLong(pet -> now.getTime() - pet.getBirth().getTime()).average().getAsDouble();
+            averageAge = stream.mapToLong(row -> now.getTime() - ((Date)row.get("birth")).getTime()).average().getAsDouble();
         }
 
         return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
