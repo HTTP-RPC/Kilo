@@ -167,7 +167,7 @@ The methods could be invoked using this HTML form:
 </form>
 ```
 
-#### Custom Parameter Names
+#### Parameter Names
 In general, service classes should be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example:
 
 ```java
@@ -399,14 +399,14 @@ The `JSONDecoder` class deserializes a JSON document into a Java object hierarch
 * array: `java.util.List`
 * object: `java.util.Map`
 
-For example, the following code snippet uses `JSONDecoder` to parse a JSON array containing the first 6 values of the Fibonacci sequence:
+For example, the following code snippet uses `JSONDecoder` to parse a JSON array containing the first 8 values of the Fibonacci sequence:
 
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
 
-List<Number> fibonacci = jsonDecoder.read(new StringReader("[1, 2, 3, 5, 8, 13]"));
+List<Number> fibonacci = jsonDecoder.read(new StringReader("[0, 1, 1, 2, 3, 5, 8, 13]"));
 
-System.out.println(fibonacci.get(2)); // 3
+System.out.println(fibonacci.get(4)); // 3
 ```
 
 ## CSVEncoder and CSVDecoder
@@ -449,7 +449,7 @@ CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 csvEncoder.write(months, System.out);
 ```
 
-This code snippet would produce output similar to the following:
+This code would produce output similar to the following:
 
 ```csv
 "name","days"
@@ -459,7 +459,7 @@ This code snippet would produce output similar to the following:
 ...
 ```
 
-Keys actually represent "key paths" and can refer to nested map values using dot notation (e.g. "name.first"). This can be useful for encoding hierarchical data structures (such as complex Java beans or MongoDB documents) as CSV.
+Column names actually represent "key paths" and can refer to nested map values using dot notation (e.g. "name.first"). This can be useful for encoding hierarchical data structures (such as complex Java beans or MongoDB documents) as CSV.
 
 String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
@@ -691,22 +691,6 @@ public String getFirstName() {
 }
 ```
 
-This code would cause the value to be imported from the "first_name" entry in the map instead of "firstName":
-
-```java
-@Key("first_name")
-public void setFirstName(String firstName) {
-    this.firstName = firstName;
-}
-```
-
-The annotation can also be used with adapted interface types:
-
-```java
-@Key("first_name")
-public String getFirstName();
-```
-
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON, CSV, or XML. For example:
 
@@ -731,6 +715,8 @@ Colons within single quotes are ignored. For example, this query would search fo
 SELECT * FROM some_table 
 WHERE column_a = 'x:y:z'
 ```
+
+Occurrences of two successive colons ("::") are also ignored.
 
 The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
 
@@ -956,6 +942,14 @@ In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin]
 ```kotlin
 @WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
 class SystemInfoService : WebService() {
+    class SystemInfo(
+        val hostName: String,
+        val hostAddress: String,
+        val availableProcessors: Int,
+        val freeMemory: Long,
+        val totalMemory: Long
+    )
+
     @RequestMethod("GET")
     fun getSystemInfo(): SystemInfo {
         val localHost = InetAddress.getLocalHost()
@@ -969,15 +963,6 @@ class SystemInfoService : WebService() {
             runtime.totalMemory()
         )
     }
-}
-
-class SystemInfo(
-    val hostName: String,
-    val hostAddress: String,
-    val availableProcessors: Int,
-    val freeMemory: Long,
-    val totalMemory: Long
-) {
 }
 ```
 

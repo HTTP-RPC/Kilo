@@ -24,6 +24,14 @@ import javax.servlet.annotation.WebServlet
  */
 @WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
 class SystemInfoService : WebService() {
+    class SystemInfo(
+        val hostName: String,
+        val hostAddress: String,
+        val availableProcessors: Int,
+        val freeMemory: Long,
+        val totalMemory: Long
+    )
+
     @RequestMethod("GET")
     fun getSystemInfo(): SystemInfo {
         val localHost = InetAddress.getLocalHost()
@@ -37,13 +45,4 @@ class SystemInfoService : WebService() {
             runtime.totalMemory()
         )
     }
-}
-
-class SystemInfo(
-    val hostName: String,
-    val hostAddress: String,
-    val availableProcessors: Int,
-    val freeMemory: Long,
-    val totalMemory: Long
-) {
 }
