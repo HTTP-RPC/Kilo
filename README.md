@@ -57,11 +57,12 @@ The HTTP-RPC framework includes the following classes:
     * `JSONEncoder` - class that writes an object hierarchy to JSON
     * `XMLEncoder` - class that writes an object hierarchy to XML
 * `org.httprpc.beans`
-    * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
+    * `BeanAdapter` - class that presents the properties of a Java bean object as a map
+    * `Ignore` - annotation indicating that a bean property should be ignored
     * `Key` - annotation that associates a custom key with a bean property
 * `org.httprpc.sql`
     * `Parameters` - class for applying named parameter values to prepared statements 
-    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps or strongly-typed row values
+    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps
 
 These classes are discussed in more detail in the following sections.
 
@@ -588,7 +589,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalDateTime`
 * `java.net.URL`
 
-If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
+If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`. Any property tagged with the `Ignore` annotation will be excluded from the map.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 

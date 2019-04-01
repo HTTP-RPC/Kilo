@@ -222,6 +222,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return null;
         }
 
+        if (method.getAnnotation(Ignore.class) != null) {
+            return null;
+        }
+
         Key key = method.getAnnotation(Key.class);
 
         if (key == null) {
@@ -483,6 +487,40 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return "datetime-local";
         } else if (type == URL.class) {
             return "url";
+        } else if (Iterable.class.isAssignableFrom(type)) {
+            return describe(new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[] {Object.class};
+                }
+
+                @Override
+                public Type getRawType() {
+                    return Iterable.class;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            }, structures);
+        } else if (Map.class.isAssignableFrom(type)) {
+            return describe(new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[] {Object.class, Object.class};
+                }
+
+                @Override
+                public Type getRawType() {
+                    return Map.class;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            }, structures);
         } else {
             if (!structures.containsKey(type)) {
                 structures.put(type, null);

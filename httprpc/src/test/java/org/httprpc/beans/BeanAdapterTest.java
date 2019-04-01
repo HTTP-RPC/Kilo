@@ -44,9 +44,13 @@ public class BeanAdapterTest extends AbstractTest {
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
             entry("URL", new URL("http://localhost:8080")),
+            entry("nestedBean", mapOf(
+                entry("flag", true)
+            )),
             entry("list", listOf(2L, 4.0, mapOf(
                 entry("flag", true)
             ))),
+            entry("testArrayList", listOf()),
             entry("nestedBeanList", listOf(mapOf(
                 entry("flag", false)
             ))),
@@ -57,17 +61,18 @@ public class BeanAdapterTest extends AbstractTest {
                     entry("flag", true)
                 )))
             ),
+            entry("testHashMap", mapOf()),
             entry("nestedBeanMap", mapOf(
                 entry("nestedBean", mapOf(
                     entry("flag", false)
                 )))
-            ),
-            entry("nestedBean", mapOf(
-                entry("flag", true)
-            ))
+            )
         );
 
-        Assert.assertEquals(expected, new BeanAdapter(new TestBean()));
+        Map<String, Object> actual = new BeanAdapter(new TestBean());
+
+        Assert.assertEquals(expected, actual);
+        Assert.assertNull(actual.get("ignored"));
     }
 
     @Test
@@ -89,7 +94,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         BeanAdapter.describe(TestBean.class, structures);
 
-        Assert.assertEquals(structures.get(TestBean.class),
+        Assert.assertEquals(
             "{\n" +
             "  URL: url,\n" +
             "  bigInteger: number,\n" +
@@ -106,14 +111,18 @@ public class BeanAdapterTest extends AbstractTest {
             "  nestedBean: NestedBean,\n" +
             "  nestedBeanList: [NestedBean],\n" +
             "  nestedBeanMap: [string: NestedBean],\n" +
-            "  string: string\n" +
-            "}"
+            "  string: string,\n" +
+            "  testArrayList: [any],\n" +
+            "  testHashMap: [any: any]\n" +
+            "}",
+            structures.get(TestBean.class)
         );
 
-        Assert.assertEquals(structures.get(TestBean.NestedBean.class),
+        Assert.assertEquals(
             "{\n" +
             "  flag: boolean\n" +
-            "}"
+            "}",
+            structures.get(TestBean.NestedBean.class)
         );
     }
 }

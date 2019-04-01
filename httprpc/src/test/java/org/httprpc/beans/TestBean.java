@@ -23,7 +23,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +40,12 @@ public class TestBean {
         public boolean getFlag() {
             return flag;
         }
+    }
+
+    public static class TestArrayList extends ArrayList<Object> {
+    }
+
+    public static class TestHashMap extends HashMap<String, Object> {
     }
 
     @Key("i")
@@ -85,8 +93,16 @@ public class TestBean {
         return new URL("http://localhost:8080");
     }
 
+    public NestedBean getNestedBean() {
+        return new NestedBean(true);
+    }
+
     public List<?> getList() {
         return listOf(2L, 4.0, mapOf(entry("flag", true)));
+    }
+
+    public TestArrayList getTestArrayList() {
+        return new TestArrayList();
     }
 
     public List<NestedBean> getNestedBeanList() {
@@ -102,11 +118,16 @@ public class TestBean {
             )));
     }
 
+    public TestHashMap getTestHashMap() {
+        return new TestHashMap();
+    }
+
     public Map<String, NestedBean> getNestedBeanMap() {
         return mapOf(entry("nestedBean", new NestedBean(false)));
     }
 
-    public NestedBean getNestedBean() {
-        return new NestedBean(true);
+    @Ignore
+    public int getIgnored() {
+        return -1;
     }
 }
