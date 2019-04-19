@@ -62,7 +62,7 @@ public abstract class WebService extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     private static class Resource {
-        private static List<String> order = Arrays.asList("get", "post", "put", "patch", "delete");
+        private static List<String> order = Arrays.asList("get", "post", "put", "delete");
 
         public final TreeMap<String, LinkedList<Handler>> handlerMap = new TreeMap<>((verb1, verb2) -> {
             int i1 = order.indexOf(verb1);
@@ -359,12 +359,14 @@ public abstract class WebService extends HttpServlet {
 
         Class<?> returnType = handler.method.getReturnType();
 
-        if (returnType != Void.TYPE && returnType != Void.class) {
+        if (returnType == Void.TYPE || returnType == Void.class) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } else if (result == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else {
             response.setStatus(HttpServletResponse.SC_OK);
 
             encodeResult(request, response, result);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 

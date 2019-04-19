@@ -14,11 +14,11 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
 * [HTTP-RPC Classes](#http-rpc-classes)
     * [WebService](#webservice)
         * [Method Arguments](#method-arguments)
-        * [Return Values](#return-values)
-        * [Exceptions](#exceptions)
-        * [Request and Repsonse Properties](#request-and-repsonse-properties)
         * [Path Variables](#path-variables)
+        * [Return Values](#return-values)
+        * [Request and Repsonse Properties](#request-and-repsonse-properties)
         * [Authorization](#authorization)
+        * [Exceptions](#exceptions)
         * [API Documentation](#api-documentation)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
@@ -98,7 +98,7 @@ public class MathService extends WebService {
 }
 ```
 
-The following request would cause the first method to be invoked:
+The following HTTP request would cause the first method to be invoked:
 
 ```
 GET /math/sum?a=2&b=4
@@ -168,6 +168,8 @@ The methods could be invoked using this HTML form:
 </form>
 ```
 
+If no method is found that matches the provided arguments, an HTTP 405 response is returned.
+
 #### Parameter Names
 In general, service classes should be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example:
 
@@ -177,49 +179,6 @@ public double getTemperature(@RequestParameter("zip_code") String zipCode) {
     ... 
 }
 ```
-
-### Return Values
-Return values are converted to their JSON equivalents as follows:
-
-* `CharSequence`: string
-* `Number`: number
-* `Boolean`: true/false
-* `Enum`: ordinal value
-* `java.util.Date`: long value representing epoch time in milliseconds
-* `java.util.time.LocalDate`: "yyyy-mm-dd"
-* `java.util.time.LocalTime`: "hh:mm"
-* `java.util.time.LocalDateTime`: "yyyy-mm-ddThh:mm"
-* `java.net.URL`: string (external form)
-* `Iterable`: array
-* `java.util.Map`: object
-
-Methods may also return `void` or `Void` to indicate that they do not produce a value. 
-
-If the return value is not an instance of any of the aforementioned types, it is automatically wrapped in an instance of `BeanAdapter` and serialized as a `Map`. `BeanAdapter` is discussed in more detail [later](#beanadapter).
-
-#### Custom Result Encodings
-Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom encoding. See the method documentation for more information.
-
-### Exceptions
-If any exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
-
-```java
-@RequestMethod("GET")
-@ResourcePath("error")
-public void generateError() throws Exception {
-    throw new Exception("This is an error message.");
-}
-```
-
-### Request and Repsonse Properties
-`WebService` provides the following methods to allow a service method to access the request and response objects associated with the current invocation:
-
-    protected HttpServletRequest getRequest() { ... }
-    protected HttpServletResponse getResponse() { ... }
-
-For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
-
-The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
 
 ### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
@@ -261,6 +220,36 @@ protected String getKey(String name) { ... }
  
 For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
 
+### Return Values
+Return values are converted to their JSON equivalents as follows:
+
+* `CharSequence`: string
+* `Number`: number
+* `Boolean`: true/false
+* `Enum`: ordinal value
+* `java.util.Date`: long value representing epoch time in milliseconds
+* `java.util.time.LocalDate`: "yyyy-mm-dd"
+* `java.util.time.LocalTime`: "hh:mm"
+* `java.util.time.LocalDateTime`: "yyyy-mm-ddThh:mm"
+* `java.net.URL`: string (external form)
+* `Iterable`: array
+* `java.util.Map` or Java bean: object
+
+If a method returns `void` or `Void`, an HTTP 204 response will be returned to the caller. If a method returns `null`, an HTTP 404 response will be returned.
+
+#### Custom Result Encodings
+Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom encoding. See the method documentation for more information.
+
+### Request and Repsonse Properties
+`WebService` provides the following methods to allow a service method to access the request and response objects associated with the current invocation:
+
+    protected HttpServletRequest getRequest() { ... }
+    protected HttpServletResponse getResponse() { ... }
+
+For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
+
+The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
+
 ### Authorization
 Service requests can be authorized by overriding the following method:
 
@@ -269,6 +258,17 @@ protected boolean isAuthorized(HttpServletRequest request, Method method) { ... 
 ```
 
 The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
+
+### Exceptions
+If any exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
+
+```java
+@RequestMethod("GET")
+@ResourcePath("error")
+public void generateError() throws Exception {
+    throw new Exception("This is an error message.");
+}
+```
 
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:

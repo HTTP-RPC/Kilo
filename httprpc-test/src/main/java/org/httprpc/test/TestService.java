@@ -191,12 +191,7 @@ public class TestService extends WebService {
     public void testPut(int id) throws IOException {
         echo();
     }
-
-    @RequestMethod("PATCH")
-    public void testPatch(int id) throws IOException {
-        echo();
-    }
-
+    
     private void echo() throws IOException {
         InputStream inputStream = getRequest().getInputStream();
         OutputStream outputStream = getResponse().getOutputStream();
