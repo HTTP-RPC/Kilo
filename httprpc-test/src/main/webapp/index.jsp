@@ -104,12 +104,6 @@
 
 <hr/>
 
-<a href="${pageContext.request.contextPath}/system-info?api">System Info (API)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/system-info">System Info</a><br/>
-
-<hr/>
-
 <form action="${pageContext.request.contextPath}/test" method="post" enctype="application/x-www-form-urlencoded">
 <table>
 <tr>
@@ -186,6 +180,12 @@
 </tr>
 </table>
 </form>
+
+<hr/>
+
+<a href="${pageContext.request.contextPath}/system-info?api">System Info (API)</a><br/>
+<br/>
+<a href="${pageContext.request.contextPath}/system-info">System Info</a><br/>
 
 <h2>MongoDB</h2>
 
