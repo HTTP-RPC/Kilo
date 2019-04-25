@@ -48,12 +48,12 @@ class BufferedReader extends Reader {
     }
 
     @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
+    public int read(char[] cbuf, int off, int len) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         throw new UnsupportedOperationException();
     }
 }

@@ -56,7 +56,7 @@ public class CSVDecoder {
                     hasNext = !values.isEmpty();
                 }
 
-                return hasNext.booleanValue();
+                return hasNext;
             }
 
             @Override

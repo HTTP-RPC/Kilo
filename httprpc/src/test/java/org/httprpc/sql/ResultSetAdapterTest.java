@@ -60,7 +60,7 @@ public class ResultSetAdapterTest extends AbstractTest {
     );
 
     @Test
-    public void testResultSetAdapter() throws SQLException {
+    public void testResultSetAdapter() {
         List<Map<String, Object>> actual;
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);

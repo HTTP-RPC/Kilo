@@ -218,7 +218,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("unauthorized")
-    public void testUnauthorized() throws Exception {
+    public void testUnauthorized() {
         // No-op
     }
 

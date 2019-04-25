@@ -25,8 +25,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.httprpc.beans.BeanAdapter;
-
 /**
  * Class that presents the contents of a result set as an iterable sequence
  * of maps.
@@ -50,7 +48,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 }
             }
 
-            return hasNext.booleanValue();
+            return hasNext;
         }
 
         @Override

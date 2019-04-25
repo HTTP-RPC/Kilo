@@ -39,7 +39,7 @@ class BufferedWriter extends Writer {
     }
 
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
+    public void write(char[] cbuf, int off, int len) {
         throw new UnsupportedOperationException();
     }
 
@@ -65,7 +65,7 @@ class BufferedWriter extends Writer {
     }
 
     @Override
-    public void write(String str, int off, int len) throws IOException {
+    public void write(String str, int off, int len) {
         throw new UnsupportedOperationException();
     }
 
@@ -78,7 +78,7 @@ class BufferedWriter extends Writer {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         throw new UnsupportedOperationException();
     }
 }

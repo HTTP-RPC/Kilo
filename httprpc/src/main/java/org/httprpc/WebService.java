@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -402,7 +403,7 @@ public abstract class WebService extends HttpServlet {
         return handler;
     }
 
-    private static Object[] getArguments(Method method, Map<String, List<?>> parameterMap) throws IOException {
+    private static Object[] getArguments(Method method, Map<String, List<?>> parameterMap) {
         Parameter[] parameters = method.getParameters();
 
         Object[] arguments = new Object[parameters.length];
@@ -494,7 +495,7 @@ public abstract class WebService extends HttpServlet {
             }
         } else if (type == Boolean.TYPE) {
             if (value == null) {
-                return (type == Boolean.TYPE) ? Boolean.valueOf(false) : null;
+                return Boolean.FALSE;
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
@@ -646,9 +647,7 @@ public abstract class WebService extends HttpServlet {
 
             xmlStreamWriter.writeStartElement("body");
 
-            TreeMap<Class<?>, String> structures = new TreeMap<>((type1, type2) -> {
-                return type1.getSimpleName().compareTo(type2.getSimpleName());
-            });
+            TreeMap<Class<?>, String> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
             Class<?> serviceType = getClass();
 
