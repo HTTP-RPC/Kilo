@@ -15,8 +15,8 @@
 package org.httprpc.beans;
 
 import org.httprpc.AbstractTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -71,8 +71,8 @@ public class BeanAdapterTest extends AbstractTest {
 
         Map<String, Object> actual = new BeanAdapter(new TestBean());
 
-        Assert.assertEquals(expected, actual);
-        Assert.assertNull(actual.get("ignored"));
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertNull(actual.get("ignored"));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BeanAdapterTest extends AbstractTest {
             ))
         );
 
-        Assert.assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
+        Assertions.assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class BeanAdapterTest extends AbstractTest {
 
         BeanAdapter.describe(TestBean.class, structures);
 
-        Assert.assertEquals(
+        Assertions.assertEquals(
             "{\n" +
             "  URL: url,\n" +
             "  bigInteger: number,\n" +
@@ -118,7 +118,7 @@ public class BeanAdapterTest extends AbstractTest {
             structures.get(TestBean.class)
         );
 
-        Assert.assertEquals(
+        Assertions.assertEquals(
             "{\n" +
             "  flag: boolean\n" +
             "}",

@@ -22,9 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.httprpc.AbstractTest;
-import org.httprpc.io.CSVEncoder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CSVEncoderTest extends AbstractTest {
     @Test
@@ -57,6 +56,6 @@ public class CSVEncoderTest extends AbstractTest {
 
         csvEncoder.write(values, writer);
 
-        Assert.assertEquals(expected, writer.toString());
+        Assertions.assertEquals(expected, writer.toString());
     }
 }

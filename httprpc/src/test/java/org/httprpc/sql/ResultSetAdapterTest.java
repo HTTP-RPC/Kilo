@@ -15,15 +15,14 @@
 package org.httprpc.sql;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ResultSetAdapterTest extends AbstractTest {
     private List<?> expected = listOf(
@@ -68,6 +67,6 @@ public class ResultSetAdapterTest extends AbstractTest {
             actual = StreamSupport.stream(adapter.spliterator(), false).collect(Collectors.toList());
         }
 
-        Assert.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 }

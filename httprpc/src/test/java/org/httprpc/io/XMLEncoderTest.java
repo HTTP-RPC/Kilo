@@ -31,8 +31,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.httprpc.AbstractTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class XMLEncoderTest extends AbstractTest {
     @Test
@@ -76,7 +76,7 @@ public class XMLEncoderTest extends AbstractTest {
 
         xmlEncoder.write(values, writer);
 
-        Assert.assertEquals(expected, writer.toString());
+        Assertions.assertEquals(expected, writer.toString());
     }
 
     @Test
@@ -131,6 +131,6 @@ public class XMLEncoderTest extends AbstractTest {
             throw new IOException(exception);
         }
 
-        Assert.assertEquals(expected, writer.toString());
+        Assertions.assertEquals(expected, writer.toString());
     }
 }

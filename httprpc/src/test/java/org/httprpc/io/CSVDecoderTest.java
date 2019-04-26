@@ -22,9 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
-import org.httprpc.io.CSVDecoder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CSVDecoderTest extends AbstractTest {
     @Test
@@ -55,6 +54,6 @@ public class CSVDecoderTest extends AbstractTest {
         Iterable<Map<String, String>> cursor = csvDecoder.read(reader);
         List<Map<String, String>> actual = StreamSupport.stream(cursor.spliterator(), false).collect(Collectors.toList());
 
-        Assert.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 }

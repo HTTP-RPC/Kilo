@@ -14,29 +14,28 @@
 
 package org.httprpc.sql;
 
-import org.httprpc.sql.Parameters;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ParametersTest {
     @Test
     public void testParameters() {
         Parameters parameters = Parameters.parse("insert into xyz (foo, bar) values :foo, :bar");
 
-        Assert.assertEquals("insert into xyz (foo, bar) values ?, ?", parameters.getSQL());
+        Assertions.assertEquals("insert into xyz (foo, bar) values ?, ?", parameters.getSQL());
     }
 
     @Test
     public void testColon() {
         Parameters parameters = Parameters.parse("select * from xyz where foo = 'a:b:c'");
 
-        Assert.assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
+        Assertions.assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
     }
 
     @Test
     public void testDoubleColon() {
         Parameters parameters = Parameters.parse("select 'ab:c'::varchar(16) as abc");
 
-        Assert.assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
+        Assertions.assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
     }
 }
