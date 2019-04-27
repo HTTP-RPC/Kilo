@@ -16,7 +16,6 @@ package org.httprpc.test.mongodb;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,12 +66,7 @@ public class RestaurantService extends WebService {
         FindIterable<Document> iterable = db.getCollection("restaurants").find(new Document("address.zipcode", zipCode));
 
         try (MongoCursor<Document> cursor = iterable.iterator()) {
-            Iterable<Document> cursorAdapter = new Iterable<Document>() {
-                @Override
-                public Iterator<Document> iterator() {
-                    return cursor;
-                }
-            };
+            Iterable<Document> cursorAdapter = () -> cursor;
 
             if (format == null || format.equals("json")) {
                 getResponse().setContentType("application/json");

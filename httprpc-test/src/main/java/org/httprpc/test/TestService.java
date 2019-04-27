@@ -89,46 +89,41 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
-    public Iterable<?> testGetFibonacci(int count) {
-        return new Iterable<BigInteger>() {
+    public Iterable<BigInteger> testGetFibonacci(int count) {
+        return () -> new Iterator<BigInteger>() {
+            private int i = 0;
+
+            private BigInteger a = BigInteger.valueOf(0);
+            private BigInteger b = BigInteger.valueOf(1);
+
             @Override
-            public Iterator<BigInteger> iterator() {
-                return new Iterator<BigInteger>() {
-                    private int i = 0;
+            public boolean hasNext() {
+                return i < count;
+            }
 
-                    private BigInteger a = BigInteger.valueOf(0);
-                    private BigInteger b = BigInteger.valueOf(1);
+            @Override
+            public BigInteger next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
 
-                    @Override
-                    public boolean hasNext() {
-                        return i < count;
+                BigInteger next;
+                if (i == 0) {
+                    next = a;
+                } else {
+                    if (i > 1) {
+                        BigInteger c = a.add(b);
+
+                        a = b;
+                        b = c;
                     }
 
-                    @Override
-                    public BigInteger next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
+                    next = b;
+                }
 
-                        BigInteger next;
-                        if (i == 0) {
-                            next = a;
-                        } else {
-                            if (i > 1) {
-                                BigInteger c = a.add(b);
+                i++;
 
-                                a = b;
-                                b = c;
-                            }
-
-                            next = b;
-                        }
-
-                        i++;
-
-                        return next;
-                    }
-                };
+                return next;
             }
         };
     }
