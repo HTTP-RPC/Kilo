@@ -111,12 +111,55 @@ public class Parameters {
 
         StringBuilder sqlBuilder = new StringBuilder();
 
+        boolean singleLineComment = false;
+        boolean multiLineComment = false;
+
         boolean quoted = false;
 
         int c = sqlReader.read();
 
         while (c != EOF) {
-            if (c == ':' && !quoted) {
+            if (c == '-') {
+                sqlBuilder.append((char) c);
+
+                c = sqlReader.read();
+
+                singleLineComment = (c == '-') && !multiLineComment;
+
+                sqlBuilder.append((char) c);
+
+                c = sqlReader.read();
+            } else if (c == '\r' || c == '\n') {
+                sqlBuilder.append((char) c);
+
+                singleLineComment = false;
+
+                c = sqlReader.read();
+            } else if (c == '/') {
+                sqlBuilder.append((char)c);
+
+                c = sqlReader.read();
+
+                multiLineComment = (c == '*');
+
+                sqlBuilder.append((char)c);
+
+                c = sqlReader.read();
+            } else if (c == '*') {
+                sqlBuilder.append((char) c);
+
+                c = sqlReader.read();
+
+                multiLineComment = (c == '/');
+
+                sqlBuilder.append((char) c);
+
+                c = sqlReader.read();
+            } else if (singleLineComment || multiLineComment) {
+                sqlBuilder.append((char)c);
+
+                c = sqlReader.read();
+            } else if (c == ':' && !quoted) {
                 c = sqlReader.read();
 
                 if (c == ':') {

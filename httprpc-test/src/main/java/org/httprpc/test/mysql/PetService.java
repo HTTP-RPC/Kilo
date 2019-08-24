@@ -16,7 +16,6 @@ package org.httprpc.test.mysql;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,8 +27,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.sql.DataSource;
 
 import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
@@ -48,6 +51,8 @@ import org.httprpc.sql.ResultSetAdapter;
 public class PetService extends WebService {
     private static final long serialVersionUID = 0;
 
+    private DataSource dataSource = null;
+
     /**
      * Pet interface.
      */
@@ -59,15 +64,16 @@ public class PetService extends WebService {
         public Date getBirth();
     }
 
-    private static final String DB_URL = "jdbc:mysql://vm.local:3306/menagerie?user=root&password=password&serverTimezone=UTC&useSSL=false";
-
     @Override
     public void init() throws ServletException {
         super.init();
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException exception) {
+            Context initialCtx = new InitialContext();
+            Context environmentContext = (Context) initialCtx.lookup("java:comp/env");
+
+            dataSource = (DataSource) environmentContext.lookup("jdbc/MenagerieDB");
+        } catch (NamingException exception) {
             throw new ServletException(exception);
         }
     }
@@ -87,7 +93,7 @@ public class PetService extends WebService {
 
         arguments.put("owner", owner);
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement, arguments);
 
@@ -123,7 +129,7 @@ public class PetService extends WebService {
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
         double averageAge;
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
             ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);

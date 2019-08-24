@@ -16,15 +16,18 @@ package org.httprpc.test.mysql;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.sql.DataSource;
 
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
@@ -41,15 +44,18 @@ import org.httprpc.sql.ResultSetAdapter;
 public class EmployeeService extends WebService {
     private static final long serialVersionUID = 0;
 
-    private static final String DB_URL = "jdbc:mysql://vm.local:3306/employees?user=root&password=password&serverTimezone=UTC&useSSL=false";
+    private DataSource dataSource = null;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException exception) {
+            Context initialCtx = new InitialContext();
+            Context environmentContext = (Context) initialCtx.lookup("java:comp/env");
+
+            dataSource = (DataSource) environmentContext.lookup("jdbc/EmployeesDB");
+        } catch (NamingException exception) {
             throw new ServletException(exception);
         }
     }
@@ -72,7 +78,7 @@ public class EmployeeService extends WebService {
 
         arguments.put("name", (name == null) ? "%" : name.replace('*', '%'));
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement, arguments);
 
@@ -117,7 +123,7 @@ public class EmployeeService extends WebService {
 
         arguments.put("employeeNumber", employeeNumber);
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement, arguments);
 

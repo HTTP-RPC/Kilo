@@ -38,4 +38,28 @@ public class ParametersTest {
 
         Assertions.assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
     }
+
+    @Test
+    public void testSingleLineComment() {
+        Parameters parameters = Parameters.parse("-- this is a comment: hello\r\nselect * from xyz where foo = :foo");
+
+        Assertions.assertEquals("-- this is a comment: hello\r\nselect * from xyz where foo = ?",
+            parameters.getSQL());
+    }
+
+    @Test
+    public void testMultiLineComment() {
+        Parameters parameters = Parameters.parse("/* this is a comment: hello\r\nand so is this: goodbye */ select * from xyz where foo = :foo");
+
+        Assertions.assertEquals("/* this is a comment: hello\r\nand so is this: goodbye */ select * from xyz where foo = ?",
+            parameters.getSQL());
+    }
+
+    @Test
+    public void testSingleAndMultiLineComment() {
+        Parameters parameters = Parameters.parse("/* this is a comment: hello -- and so is this: goodbye */ select * from xyz where foo = :foo");
+
+        Assertions.assertEquals("/* this is a comment: hello -- and so is this: goodbye */ select * from xyz where foo = ?",
+            parameters.getSQL());
+    }
 }

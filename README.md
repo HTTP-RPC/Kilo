@@ -850,6 +850,7 @@ the values of the "first_name" and "last_name" columns would be returned in a ne
 
 ```java
 public void attach(String key, String subquery) { ... }
+public void attach(String key, Parameters subquery) { ... }
 ```
 
 Each attached query is executed once per row in the result set. The resulting rows are returned in a list that is associated with the corresponding key. 
