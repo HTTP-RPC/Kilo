@@ -145,12 +145,12 @@ public class Parameters {
                 sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
-            } else if (c == '*') {
+            } else if (c == '*' && multiLineComment) {
                 sqlBuilder.append((char) c);
 
                 c = sqlReader.read();
 
-                multiLineComment = (c == '/');
+                multiLineComment = (c != '/');
 
                 sqlBuilder.append((char) c);
 
