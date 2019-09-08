@@ -302,11 +302,6 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        if (!isAuthorized(request, handler.method)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
         HashMap<String, String> keyMap = new HashMap<>();
 
         for (int i = 0, n = keyList.size(); i < n; i++) {
@@ -333,13 +328,28 @@ public abstract class WebService extends HttpServlet {
                 Throwable cause = exception.getCause();
 
                 if (cause != null) {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+                    int status;
+                    if (cause instanceof IllegalArgumentException) {
+                        status = HttpServletResponse.SC_FORBIDDEN;
+                    } else if (cause instanceof IllegalStateException) {
+                        status = HttpServletResponse.SC_CONFLICT;
+                    } else {
+                        status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                    }
 
-                    PrintWriter writer = response.getWriter();
+                    response.setStatus(status);
 
-                    writer.append(cause.getMessage());
-                    writer.flush();
+                    String message = cause.getMessage();
+
+                    if (message != null) {
+                        response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+
+                        PrintWriter writer = response.getWriter();
+
+                        writer.append(message);
+
+                        writer.flush();
+                    }
 
                     return;
                 } else {
@@ -568,23 +578,6 @@ public abstract class WebService extends HttpServlet {
      */
     protected String getKey(String name) {
         return keyMap.get().get(name);
-    }
-
-    /**
-     * Determines if the current request is authorized.
-     *
-     * @param request
-     * The servlet request.
-     *
-     * @param method
-     * The method to be invoked.
-     *
-     * @return
-     * <tt>true</tt> if the method should be invoked; <tt>false</tt>,
-     * otherwise.
-     */
-    protected boolean isAuthorized(HttpServletRequest request, Method method) {
-        return true;
     }
 
     /**

@@ -250,25 +250,8 @@ For example, a service might use the request to get the name of the current user
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
 
-### Authorization
-Service requests can be authorized by overriding the following method:
-
-```java
-protected boolean isAuthorized(HttpServletRequest request, Method method) { ... }
-```
-
-The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
-
 ### Exceptions
-If any exception is thrown by a service method, an HTTP 500 response will be returned. If the response has not yet been committed, the exception message will be returned as plain text in the response body. This allows a service to provide the caller with insight into the cause of the failure. For example:
-
-```java
-@RequestMethod("GET")
-@ResourcePath("error")
-public void generateError() throws Exception {
-    throw new Exception("This is an error message.");
-}
-```
+If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
 
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:

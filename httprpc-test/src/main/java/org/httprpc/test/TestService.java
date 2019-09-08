@@ -214,7 +214,7 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("unauthorized")
     public void testUnauthorized() {
-        // No-op
+        throw new IllegalArgumentException();
     }
 
     @RequestMethod("GET")
@@ -228,12 +228,5 @@ public class TestService extends WebService {
         Thread.sleep(delay);
 
         return value;
-    }
-
-    @Override
-    protected boolean isAuthorized(HttpServletRequest request, Method method) {
-        String pathInfo = request.getPathInfo();
-
-        return (pathInfo == null || !pathInfo.endsWith("unauthorized"));
     }
 }
