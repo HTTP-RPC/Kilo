@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class XMLEncoder {
      * If an exception occurs.
      */
     public void write(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
-        write(values, new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
+        write(values, new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
     }
 
     /**

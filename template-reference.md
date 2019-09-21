@@ -13,8 +13,6 @@ Each of these marker types is discussed in more detail below.
 ## Variable Markers
 Variable markers inject a value from the data dictionary into the output. For example:
 
-TODO Example
-
 ```html
 <p>Count: {{count}}</p>
 <p>Sum: {{sum}}</p>
@@ -104,8 +102,6 @@ Content between the markers is repeated once for each element in the list. The e
 
 For example, a data dictionary that contains information about homes for sale might look like this:
 
-TODO Example
-
 ```json
 {
   "properties": [
@@ -126,37 +122,27 @@ TODO Example
 }
 ```
 
-A template to present these results in an HTML table is shown below.
-
-TODO Example
+A template to present these results in an HTML table is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
 
 ```html
 <table>
+<!-- {{#properties}} -->
 <tr>
-    <td>Street Address</td> 
-    <td>List Price</td> 
-    <td># Bedrooms</td> 
-    <td># Bathrooms</em></td> 
-</tr>
-{{#properties}}<tr>
     <td>{{streetAddress:^html}}</td> 
     <td>{{listPrice:format=currency:^html}}</td> 
     <td>{{numberOfBedrooms}}</td> 
     <td>{{numberOfBathrooms}}</td>
-</tr>{{/properties}}
+</tr>
+<!-- {{/properties}} -->
 </table>
 ```
 
-A dot character (".") can be used to represent the current element in a sequence; for example, when rendering scalar values:
-
-TODO Example
-
-A dot can also be used to represent the sequence itself; for example, when a sequence is the root object:
+A dot character (".") can be used to represent the current element in a sequence. This can be useful when rendering scalar values. A dot can also be used to represent the sequence itself; for example, when a sequence is the root object:
 
 ```
 {{#.}}
     ...
-{{/}}
+{{/.}}
 ```
 
 ### Separators

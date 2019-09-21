@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
+import org.httprpc.io.TemplateEncoder;
 import org.httprpc.io.XMLEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
@@ -118,6 +119,13 @@ public class PetService extends WebService {
                     XMLEncoder xmlEncoder = new XMLEncoder();
 
                     xmlEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+                } else if (format.equals("html")) {
+                    getResponse().setContentType("text/html");
+
+                    TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+
+                    templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
+                    templateEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else {
                     throw new UnsupportedOperationException();
                 }

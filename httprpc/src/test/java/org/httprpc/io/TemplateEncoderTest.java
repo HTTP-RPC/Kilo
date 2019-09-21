@@ -34,9 +34,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TemplateEncoderTest extends AbstractTest {
-    static class CaseModifier implements TemplateEncoder.Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale) {
+    static {
+        TemplateEncoder.getModifiers().put("case", (value, argument, locale) -> {
             String result = value.toString();
 
             if (argument != null) {
@@ -50,11 +49,7 @@ public class TemplateEncoderTest extends AbstractTest {
             }
 
             return result;
-        }
-    }
-
-    static {
-        TemplateEncoder.getModifiers().put("case", new CaseModifier());
+        });
     }
 
     @Test
@@ -63,7 +58,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(null, writer);
+            encoder.write(null, writer);
             result = writer.toString();
         }
 
@@ -84,7 +79,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(dictionary, writer);
+            encoder.write(dictionary, writer);
             result = writer.toString();
         }
 
@@ -100,7 +95,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(mapOf(entry("list", Collections.emptyList())), writer);
+            encoder.write(mapOf(entry("list", Collections.emptyList())), writer);
             result = writer.toString();
         }
 
@@ -120,7 +115,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(mapOf(entry("list", list)), writer);
+            encoder.write(mapOf(entry("list", list)), writer);
             result = writer.toString();
         }
 
@@ -148,7 +143,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(mapOf(entry("list", list)), writer);
+            encoder.write(mapOf(entry("list", list)), writer);
             result = writer.toString();
         }
 
@@ -179,7 +174,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(dictionary, writer);
+            encoder.write(dictionary, writer);
             result = writer.toString();
         }
 
@@ -194,7 +189,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(value, writer);
+            encoder.write(value, writer);
             result = writer.toString();
         }
 
@@ -207,7 +202,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(Collections.emptyList(), writer);
+            encoder.write(Collections.emptyList(), writer);
             result = writer.toString();
         }
 
@@ -222,7 +217,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(value, writer);
+            encoder.write(value, writer);
             result = writer.toString();
         }
 
@@ -237,7 +232,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(value, writer);
+            encoder.write(value, writer);
             result = writer.toString();
         }
 
@@ -250,7 +245,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(Collections.emptyMap(), writer);
+            encoder.write(Collections.emptyMap(), writer);
             result = writer.toString();
         }
 
@@ -263,7 +258,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(4.5, writer);
+            encoder.write(4.5, writer);
             result = writer.toString();
         }
 
@@ -281,7 +276,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(mapOf(
+            encoder.write(mapOf(
                 entry("date", date),
                 entry("dateInMilliseconds", date.getTime()),
                 entry("localDate", localDate),
@@ -310,7 +305,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("abc:def&xyz", writer);
+            encoder.write("abc:def&xyz", writer);
             result = writer.toString();
         }
 
@@ -323,7 +318,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("a<b>c&d\"e", writer);
+            encoder.write("a<b>c&d\"e", writer);
             result = writer.toString();
         }
 
@@ -336,7 +331,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("hello", writer);
+            encoder.write("hello", writer);
             result = writer.toString();
         }
 
@@ -349,7 +344,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(listOf("a", "b", "c"), writer);
+            encoder.write(listOf("a", "b", "c"), writer);
             result = writer.toString();
         }
 
@@ -374,7 +369,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(list, writer);
+            encoder.write(list, writer);
             result = writer.toString();
         }
 
@@ -389,7 +384,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue(list, writer);
+            encoder.write(list, writer);
             result = writer.toString();
         }
 
@@ -404,7 +399,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("hello", writer);
+            encoder.write("hello", writer);
             result = writer.toString();
         }
 
@@ -418,7 +413,7 @@ public class TemplateEncoderTest extends AbstractTest {
         encoder.setBaseName(getClass().getPackage().getName() + ".resource2");
 
         try (StringWriter writer = new StringWriter()) {
-            Assertions.assertThrows(MissingResourceException.class, () -> encoder.writeValue("hello", writer));
+            Assertions.assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
         }
     }
 
@@ -429,7 +424,7 @@ public class TemplateEncoderTest extends AbstractTest {
         encoder.setBaseName(getClass().getPackage().getName() + ".resource3");
 
         try (StringWriter writer = new StringWriter()) {
-            Assertions.assertThrows(MissingResourceException.class, () -> encoder.writeValue("hello", writer));
+            Assertions.assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
         }
     }
 
@@ -441,7 +436,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("B", writer);
+            encoder.write("B", writer);
             result = writer.toString();
         }
 
@@ -454,7 +449,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("B", writer);
+            encoder.write("B", writer);
             result = writer.toString();
         }
 
@@ -467,7 +462,7 @@ public class TemplateEncoderTest extends AbstractTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.writeValue("abcdefg", writer);
+            encoder.write("abcdefg", writer);
             result = writer.toString();
         }
 

@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -65,7 +65,7 @@ public class JSONEncoder {
      * If an exception occurs.
      */
     public void write(Object value, OutputStream outputStream) throws IOException {
-        write(value, new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
+        write(value, new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
     }
 
     /**

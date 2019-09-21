@@ -626,32 +626,19 @@ this code would produce the following output:
 a = hello, b = 123, c = true
 ```
 
-## TemplateEncoder.Modifier
+## Custom Modifiers
 Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
 
 ```java
 public Object apply(Object value, String argument, Locale locale);
 ```
  
-The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the template's locale.
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
-TODO Example
-
-For example, the following class implements a modifier that converts values to uppercase:
+For example, the following code creates a modifier that converts values to uppercase:
 
 ```java
-public class UppercaseModifier implements TemplateEncoder.Modifier {
-    @Override
-    public Object apply(Object value, String argument, Locale locale) {
-        return value.toString().toUpperCase(locale);
-    }
-}
-```
-
-Custom modifiers are registered by adding them to the modifier map returned by `TemplateEncoder#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document. For example:
-
-```java
-TemplateEncoder.getModifiers().put("uppercase", new UppercaseModifier());
+TemplateEncoder.getModifiers().put("uppercase", (value, argument, locale) -> value.toString().toUpperCase(locale));
 ```
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.

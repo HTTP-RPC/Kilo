@@ -24,6 +24,7 @@ import org.bson.Document;
 import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
+import org.httprpc.io.TemplateEncoder;
 import org.httprpc.io.XMLEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.Response;
@@ -86,6 +87,13 @@ public class RestaurantService extends WebService {
                 XMLEncoder xmlEncoder = new XMLEncoder();
 
                 xmlEncoder.write(cursorAdapter, getResponse().getOutputStream());
+            } else if (format.equals("html")) {
+                getResponse().setContentType("text/html");
+
+                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("restaurants.html"));
+
+                templateEncoder.setBaseName(getClass().getPackage().getName() + ".restaurants");
+                templateEncoder.write(cursorAdapter, getResponse().getOutputStream());
             } else {
                 throw new UnsupportedOperationException();
             }

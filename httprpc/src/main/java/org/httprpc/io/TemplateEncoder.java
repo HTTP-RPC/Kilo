@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -354,7 +355,7 @@ public class TemplateEncoder {
      * The URL of the template.
      */
     public TemplateEncoder(URL url) {
-        this(url, Charset.forName("UTF-8"));
+        this(url, StandardCharsets.UTF_8);
     }
 
     /**
@@ -443,8 +444,8 @@ public class TemplateEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValue(Object value, OutputStream outputStream) throws IOException {
-        writeValue(value, outputStream, Locale.getDefault());
+    public void write(Object value, OutputStream outputStream) throws IOException {
+        write(value, outputStream, Locale.getDefault());
     }
 
     /**
@@ -462,9 +463,10 @@ public class TemplateEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValue(Object value, OutputStream outputStream, Locale locale) throws IOException {
+    public void write(Object value, OutputStream outputStream, Locale locale) throws IOException {
         Writer writer = new OutputStreamWriter(outputStream, getCharset());
-        writeValue(value, writer, locale);
+
+        write(value, writer, locale);
 
         writer.flush();
     }
@@ -481,8 +483,8 @@ public class TemplateEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValue(Object value, Writer writer) throws IOException {
-        writeValue(value, writer, Locale.getDefault());
+    public void write(Object value, Writer writer) throws IOException {
+        write(value, writer, Locale.getDefault());
     }
 
     /**
@@ -500,12 +502,16 @@ public class TemplateEncoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public void writeValue(Object value, Writer writer, Locale locale) throws IOException {
+    public void write(Object value, Writer writer, Locale locale) throws IOException {
         if (value != null) {
             try (InputStream inputStream = url.openStream()) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
+                writer = new BufferedWriter(writer);
+
                 writeRoot(value, writer, locale, reader);
+
+                writer.flush();
             }
         }
     }

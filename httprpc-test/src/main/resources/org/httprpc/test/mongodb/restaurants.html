@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Restaurants</title>
+</head>
+<body>
+
+<!-- {{#.}} -->
+<div>
+    <span>{{@name}}: {{name}}</span><br/>
+    <span>{{@address}}: {{address.building}} {{address.street}}, {{address.zipcode}}</span><br/>
+
+    <div>
+        <!-- {{#grades}} -->
+        <span>{{date:format=shortDate}}: {{grade}} ({{score}})</span><br/>
+        <!-- {{/grades}} -->
+    </div>
+</div>
+
+<hr/>
+<!-- {{/.}} -->
+
+</body>
+</html>
