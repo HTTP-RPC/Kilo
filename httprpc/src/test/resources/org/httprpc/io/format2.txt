@@ -1,0 +1,8 @@
+{{date:format=shortDate}},
+{{dateInMilliseconds:format=shortDate}},
+{{localDate:format=shortDate}},
+{{localDateAsString:format=shortDate}},
+{{localTime:format=shortTime}},
+{{localTimeAsString:format=shortTime}},
+{{localDateTime:format=shortDateTime}},
+{{localDateTimeAsString:format=shortDateTime}}

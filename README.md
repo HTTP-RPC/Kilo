@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 50KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 65KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -23,6 +23,7 @@ Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_b
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
     * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
     * [XMLEncoder](#xmlencoder)
+    * [TemplateEncoder](#templateencoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
 * [Kotlin Support](#kotlin-support)
@@ -51,11 +52,12 @@ The HTTP-RPC framework includes the following classes:
     * `Response` - annotation that associates a custom response description with a service method
     * `WebService` - abstract base class for web services
 * `org.httprpc.io`
-    * `CSVDecoder` - class that reads an iterable sequence of values from CSV
-    * `CSVEncoder` - class that writes an iterable sequence of values to CSV
-    * `JSONDecoder` - class that reads an object hierarchy from JSON
-    * `JSONEncoder` - class that writes an object hierarchy to JSON
-    * `XMLEncoder` - class that writes an object hierarchy to XML
+    * `CSVDecoder` - class that decodes an iterable sequence of values from CSV
+    * `CSVEncoder` - class that encodes an iterable sequence of values to CSV
+    * `JSONDecoder` - class that decodes an object hierarchy from JSON
+    * `JSONEncoder` - class that encodes an object hierarchy to JSON
+    * `TemplateEncoder` - class that encodes an object hierarchy using a template document
+    * `XMLEncoder` - class that encodes an object hierarchy to XML
 * `org.httprpc.beans`
     * `BeanAdapter` - class that presents the properties of a Java bean object as a map
     * `Ignore` - annotation indicating that a bean property should be ignored
@@ -556,6 +558,103 @@ would produce the following output:
 ```
 
 Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. Unsupported (i.e. non-map) sequence elements are ignored.
+
+## TemplateEncoder
+The `TemplateEncoder` class is responsible for merging a [template document](template-reference.md) with a data dictionary. It provides the following constructors:
+
+```java
+public TemplateEncoder(URL url) { ... }
+public TemplateEncoder(URL url, Charset charset) { ... }
+```
+
+The first argument specifies the URL of the template document (generally as a resource on the application's classpath). The second argument represents the character encoding used by the template document. The default value is UTF-8.
+
+The following methods can be used to get and set the optional base name of the resource bundle that will be used to resolve resource references. If unspecified, any resource references will resolve to `null`:
+
+```java
+public String getBaseName() { ... }
+public void setBaseName(String baseName) { ... }
+```
+
+Values can be added to the template context using the following method, which returns a map representing the context entries:
+
+```java
+public Map<String, Object> getContext() { ... }
+```
+ 
+Templates are applied using one of the following methods:
+
+```java
+public void writeValue(Object value, OutputStream outputStream) { ... }
+public void writeValue(Object value, OutputStream outputStream, Locale locale) { ... }
+public void writeValue(Object value, Writer writer) { ... }
+public void writeValue(Object value, Writer writer, Locale locale) { ... }
+```
+
+The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third argument represents the locale for which the template will be applied. If unspecified, the default locale is used.
+
+For example, the following code snippet applies a template named _map.txt_ to the contents of a data dictionary whose values are specified by a hash map:
+
+```java
+HashMap<String, Object> map = new HashMap<>();
+    
+map.put("a", "hello");
+map.put("b", 123);
+map.put("c", true);
+
+TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("map.txt"), "text/plain");
+
+String result;
+try (StringWriter writer = new StringWriter()) {
+    encoder.writeValue(map, writer);
+    
+    result = writer.toString();
+}
+    
+System.out.println(result);
+```
+
+If _map.txt_ is defined as follows:
+
+```
+a = {{a}}, b = {{b}}, c = {{c}}
+```
+
+this code would produce the following output:
+
+```
+a = hello, b = 123, c = true
+```
+
+## TemplateEncoder.Modifier
+Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
+
+```java
+public Object apply(Object value, String argument, Locale locale);
+```
+ 
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the template's locale.
+
+TODO Example
+
+For example, the following class implements a modifier that converts values to uppercase:
+
+```java
+public class UppercaseModifier implements TemplateEncoder.Modifier {
+    @Override
+    public Object apply(Object value, String argument, Locale locale) {
+        return value.toString().toUpperCase(locale);
+    }
+}
+```
+
+Custom modifiers are registered by adding them to the modifier map returned by `TemplateEncoder#getModifiers()`. The map key represents the name that is used to apply a modifier in a template document. For example:
+
+```java
+TemplateEncoder.getModifiers().put("uppercase", new UppercaseModifier());
+```
+
+Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
 
 ## BeanAdapter
 The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data structures to be easily serialized to JSON, CSV, or XML. 
