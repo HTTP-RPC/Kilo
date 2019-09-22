@@ -23,9 +23,9 @@ Variable names represent keys into the data dictionary. When the template is pro
 
 Nested values can be referred to using path notation; e.g. "name.first". Missing (i.e. `null`) values are replaced with the empty string in the generated output. 
 
-Variable names beginning with "@" represent resource references, and are replaced with the corresponding values from the provided resource bundle when the template is processed. 
+Variable names beginning with "@" represent resource references, and are replaced with the corresponding values from the resource bundle when the template is processed. 
 
-Variable names beginning with "$" represent context references, and are replaced with the corresponding values from the provided context dictionary when the template is processed. 
+Variable names beginning with "$" represent context references, and are replaced with the corresponding values from the template context when the template is processed. 
 
 ### Modifiers
 Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.
@@ -39,7 +39,7 @@ Modifiers are specified as shown below. They are invoked in order from left to r
 All templates support the following set of standard modifiers:
 
 * `format` - applies a [format string](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax)
-* `^html`, `^xml` - applies markup encoding to a value
+* `^html` - applies HTML encoding to a value
 * `^url` - applies URL encoding to a value
 
 For example, the following marker applies a format string to a value and then URL-encodes the result:
@@ -122,7 +122,7 @@ For example, a data dictionary that contains information about homes for sale mi
 }
 ```
 
-A template to present these results in an HTML table is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
+A template to transform these results into HTML is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
 
 ```html
 <table>
@@ -137,7 +137,9 @@ A template to present these results in an HTML table is shown below. The section
 </table>
 ```
 
-A dot character (".") can be used to represent the current element in a sequence. This can be useful when rendering scalar values. A dot can also be used to represent the sequence itself; for example, when a sequence is the root object:
+A dot character (".") can be used to represent the current element in a sequence. This can be useful when rendering scalar values. 
+
+A dot can also be used to represent the sequence itself; for example, when a sequence is the root object:
 
 ```
 {{#.}}
@@ -174,7 +176,9 @@ Hello, World!
 Includes inherit their context from the parent document, so they can refer to elements in the parent's data dictionary. This allows includes to be parameterized. Self-referencing includes can also be used to facilitate recursion.
 
 ## Comments
-Comment markers provide informational text about a template's content. They are not included in the final output. For example, when the following template is processed, only the content between the `<p>` tags will be included:
+Comment markers provide informational text about a template's content. They are not included in the final output. 
+
+For example, when the following template is processed, only the content between the `<p>` tags will be included:
 
 ```
 {{! Some placeholder text }}

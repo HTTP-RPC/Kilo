@@ -6,9 +6,6 @@ HTTP-RPC is an open-source framework for implementing RESTful and REST-like web 
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
-# Feedback
-Feedback is welcome and encouraged. Please feel free to [contact me](mailto:gk_brown@icloud.com?subject=HTTP-RPC) with any questions, comments, or suggestions. Also, if you like using HTTP-RPC, please consider [starring](https://github.com/gk-brown/HTTP-RPC/stargazers) it!
-
 # Contents
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
@@ -560,7 +557,7 @@ would produce the following output:
 Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. Unsupported (i.e. non-map) sequence elements are ignored.
 
 ## TemplateEncoder
-The `TemplateEncoder` class is responsible for merging a [template document](template-reference.md) with a data dictionary. It provides the following constructors:
+The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). It provides the following constructors:
 
 ```java
 public TemplateEncoder(URL url) { ... }
@@ -585,10 +582,10 @@ public Map<String, Object> getContext() { ... }
 Templates are applied using one of the following methods:
 
 ```java
-public void writeValue(Object value, OutputStream outputStream) { ... }
-public void writeValue(Object value, OutputStream outputStream, Locale locale) { ... }
-public void writeValue(Object value, Writer writer) { ... }
-public void writeValue(Object value, Writer writer, Locale locale) { ... }
+public void write(Object value, OutputStream outputStream) { ... }
+public void write(Object value, OutputStream outputStream, Locale locale) { ... }
+public void write(Object value, Writer writer) { ... }
+public void write(Object value, Writer writer, Locale locale) { ... }
 ```
 
 The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third argument represents the locale for which the template will be applied. If unspecified, the default locale is used.
@@ -606,7 +603,7 @@ TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("map.txt"),
 
 String result;
 try (StringWriter writer = new StringWriter()) {
-    encoder.writeValue(map, writer);
+    encoder.write(map, writer);
     
     result = writer.toString();
 }
@@ -633,7 +630,7 @@ Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, 
 public Object apply(Object value, String argument, Locale locale);
 ```
  
-The first argument to this method represents the value to be modified, and the second is the optional argument value following the `=` character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
+The first argument to this method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
 For example, the following code creates a modifier that converts values to uppercase:
 
