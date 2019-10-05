@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 65KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 76KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -23,6 +23,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
     * [TemplateEncoder](#templateencoder)
     * [BeanAdapter](#beanadapter)
     * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
+    * [WebServiceProxy](#webserviceproxy)
 * [Kotlin Support](#kotlin-support)
 * [Additional Information](#additional-information)
 
@@ -47,6 +48,8 @@ The HTTP-RPC framework includes the following classes:
     * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
     * `ResourcePath` - annotation that associates a resource path with a service method
     * `Response` - annotation that associates a custom response description with a service method
+    * `WebServiceException` - exception thrown when a service operation returns an error
+    * `WebServiceProxy` - web service invocation proxy
     * `WebService` - abstract base class for web services
 * `org.httprpc.io`
     * `CSVDecoder` - class that decodes an iterable sequence of values from CSV
@@ -1064,6 +1067,52 @@ Data returned by the service might look like this:
   "freeMemory": 222234120,
   "totalMemory": 257949696
 }
+```
+
+# WebServiceProxy
+The `WebServiceProxy` class is used to issue API requests to a server. This class provides a single constructor that accepts the following arguments:
+
+* `method` - the HTTP method to execute
+* `url` - the URL of the requested resource
+
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
+
+Service operations are invoked via one of the following methods:
+
+```java
+public <T> T invoke() throws IOException { ... }
+
+public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
+```
+
+The first version automatically deserializes a successful server response using `JSONDecoder`. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
+
+```java
+public interface ResponseHandler<T> {
+    public T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+}
+```
+
+If a service returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the body of the response will be provided in the exception message.
+
+### Example
+The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+
+```java
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+
+HashMap<String, Object> arguments = new HashMap<>();
+
+arguments.put("a", 4);
+arguments.put("b", 2);
+
+webServiceProxy.setArguments(arguments);
+
+Number result = webServiceProxy.invoke();
+
+System.out.println(result); // 6.0
 ```
 
 # Additional Information
