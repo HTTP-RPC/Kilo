@@ -751,24 +751,6 @@ Although the values are actually stored in the strongly typed properties of the 
 }
 ```
 
-### Typed Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON and CSV data. For example, `JSONDecoder` would parse the data returned by the previous example into a collection of list and map values. The `adapt()` method of the `BeanAdapter` class can be used to convert this loosely typed data structure into a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
-
-```java
-public static <T> T adapt(Object value, Type type) { ... }
-```
-
-If the value is already an instance of the requested type, it is returned as is. Otherwise:
-
-* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive types.
-* If the target type is a `String`, the value is adapted via its `toString()` method.
-* If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
-* If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
-* If the target type is `java.net.URL`, the value is converted to a string and passed to the string-based `URL` constructor.
-* If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
-
-Otherwise, the target is assumed to be a bean, and the value is assumed to be a map. An instance of the given type is dynamically created and populated using the entries in the map. Property values are adapted as described above. If a property provides multiple setters, the first applicable setter will be applied. 
-
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom key with a bean property. For example, the following property would appear as "first_name" in the resulting map instead of "firstName":
 

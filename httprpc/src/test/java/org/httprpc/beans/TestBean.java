@@ -14,7 +14,10 @@
 
 package org.httprpc.beans;
 
+import static org.httprpc.AbstractTest.*;
+
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -30,12 +33,12 @@ public class TestBean {
     public static class NestedBean {
         private boolean flag;
 
-        public boolean getFlag() {
-            return flag;
+        public NestedBean(boolean flag) {
+            this.flag = flag;
         }
 
-        public void setFlag(boolean flag) {
-            this.flag = flag;
+        public boolean getFlag() {
+            return flag;
         }
     }
 
@@ -45,141 +48,57 @@ public class TestBean {
     public static class TestHashMap extends HashMap<String, Object> {
     }
 
-    private int i = 0;
-    private long l = 0;
-    private double d = 0;
-    private String string = null;
-
-    private BigInteger bigInteger = null;
-    private DayOfWeek dayOfWeek = null;
-
-    private Date date = null;
-    private LocalDate localDate = null;
-    private LocalTime localTime = null;
-    private LocalDateTime localDateTime = null;
-
-    private URL url = null;
-
-    private NestedBean nestedBean = null;
-
-    private List<?> list = null;
-    private List<NestedBean> nestedBeanList = null;
-
-    private Map<String, ?> map = null;
-    private Map<String, NestedBean> nestedBeanMap = null;
-
     @Key("i")
     public int getInt() {
-        return i;
-    }
-
-    @Key("i")
-    public void setInt(int i) {
-        this.i = i;
+        return 1;
     }
 
     public long getLong() {
-        return l;
-    }
-
-    public void setLong(long l) {
-        this.l = l;
+        return 2L;
     }
 
     public double getDouble() {
-        return d;
-    }
-
-    public void setDouble(double d) {
-        this.d = d;
+        return 4.0;
     }
 
     public String getString() {
-        return string;
-    }
-
-    public void setString(String string) {
-        this.string = string;
+        return "abc";
     }
 
     public BigInteger getBigInteger() {
-        return bigInteger;
-    }
-
-    public void setBigInteger(BigInteger bigInteger) {
-        this.bigInteger = bigInteger;
-    }
-
-    public void setBigInteger(long bigInteger) {
-        setBigInteger(BigInteger.valueOf(bigInteger));
+        return BigInteger.valueOf(8192L);
     }
 
     public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
-    public void setDayOfWeek(int dayOfWeek) {
-        setDayOfWeek(DayOfWeek.values()[dayOfWeek]);
+        return DayOfWeek.values()[3];
     }
 
     public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
+        return new Date(0);
     }
 
     public LocalDate getLocalDate() {
-        return localDate;
-    }
-
-    public void setLocalDate(LocalDate localDate) {
-        this.localDate = localDate;
+        return LocalDate.parse("2018-06-28");
     }
 
     public LocalTime getLocalTime() {
-        return localTime;
-    }
-
-    public void setLocalTime(LocalTime localTime) {
-        this.localTime = localTime;
+        return LocalTime.parse("10:45");
     }
 
     public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+        return LocalDateTime.parse("2018-06-28T10:45");
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
-    }
-
-    public URL getURL() {
-        return url;
-    }
-
-    public void setURL(URL url) {
-        this.url = url;
+    public URL getURL() throws MalformedURLException {
+        return new URL("http://localhost:8080");
     }
 
     public NestedBean getNestedBean() {
-        return nestedBean;
-    }
-
-    public void setNestedBean(NestedBean nestedBean) {
-        this.nestedBean = nestedBean;
+        return new NestedBean(true);
     }
 
     public List<?> getList() {
-        return list;
-    }
-
-    public void setList(List<?> list) {
-        this.list = list;
+        return listOf(2L, 4.0, mapOf(entry("flag", true)));
     }
 
     public TestArrayList getTestArrayList() {
@@ -187,19 +106,16 @@ public class TestBean {
     }
 
     public List<NestedBean> getNestedBeanList() {
-        return nestedBeanList;
-    }
-
-    public void setNestedBeanList(List<NestedBean> nestedBeanList) {
-        this.nestedBeanList = nestedBeanList;
+        return listOf(new NestedBean(false));
     }
 
     public Map<String, ?> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, ?> map) {
-        this.map = map;
+        return mapOf(
+            entry("long", 2L),
+            entry("double", 4.0),
+            entry("nestedBean", mapOf(
+                entry("flag", true)
+            )));
     }
 
     public TestHashMap getTestHashMap() {
@@ -207,24 +123,11 @@ public class TestBean {
     }
 
     public Map<String, NestedBean> getNestedBeanMap() {
-        return nestedBeanMap;
-    }
-
-    public void setNestedBeanMap(Map<String, NestedBean> nestedBeanMap) {
-        this.nestedBeanMap = nestedBeanMap;
+        return mapOf(entry("nestedBean", new NestedBean(false)));
     }
 
     @Ignore
-    public int getFoo() {
+    public int getIgnored() {
         return -1;
-    }
-
-    public int getBar() {
-        return 100;
-    }
-
-    @Ignore
-    public void setBar(int bar) {
-        throw new UnsupportedOperationException();
     }
 }
