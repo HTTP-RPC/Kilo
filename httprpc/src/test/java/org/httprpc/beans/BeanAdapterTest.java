@@ -66,13 +66,16 @@ public class BeanAdapterTest extends AbstractTest {
                 entry("nestedBean", mapOf(
                     entry("flag", false)
                 )))
-            )
+            ),
+            entry("bar", 100)
         );
 
-        Map<String, Object> actual = new BeanAdapter(new TestBean());
+        TestBean testBean = BeanAdapter.adapt(expected, TestBean.class);
+
+        Map<String, Object> actual = new BeanAdapter(testBean);
 
         Assertions.assertEquals(expected, actual);
-        Assertions.assertNull(actual.get("ignored"));
+        Assertions.assertNull(actual.get("foo"));
     }
 
     @Test
@@ -97,6 +100,7 @@ public class BeanAdapterTest extends AbstractTest {
         Assertions.assertEquals(
             "{\n" +
             "  URL: url,\n" +
+            "  bar: integer,\n" +
             "  bigInteger: number,\n" +
             "  date: date,\n" +
             "  dayOfWeek: enum,\n" +
