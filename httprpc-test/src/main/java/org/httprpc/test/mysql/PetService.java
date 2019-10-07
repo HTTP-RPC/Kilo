@@ -82,7 +82,6 @@ public class PetService extends WebService {
     @RequestMethod("GET")
     @Response("[{\n"
         + "  name: string,\n"
-        + "  owner: string,\n"
         + "  species: string,\n"
         + "  sex: string,\n"
         + "  birth: date\n"
