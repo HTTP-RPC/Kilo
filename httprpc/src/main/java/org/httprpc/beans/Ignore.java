@@ -20,8 +20,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation indicating that a bean property should be ignored during
- * serialization.
+ * Annotation indicating that a property should be ignored by
+ * {@link BeanAdapter}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

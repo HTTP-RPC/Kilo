@@ -15,9 +15,12 @@
 package org.httprpc.beans;
 
 import org.httprpc.AbstractTest;
+import org.httprpc.io.JSONDecoder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,7 +34,31 @@ import java.util.Map;
 
 public class BeanAdapterTest extends AbstractTest {
     @Test
-    public void testBeanAdapter() throws MalformedURLException {
+    public void testPrimitiveAdapt() {
+        Assertions.assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));
+        Assertions.assertEquals(BeanAdapter.adapt("1", Byte.TYPE), Byte.valueOf((byte)1));
+
+        Assertions.assertEquals(BeanAdapter.adapt(null, Short.TYPE), Short.valueOf((short)0));
+        Assertions.assertEquals(BeanAdapter.adapt("2", Short.TYPE), Short.valueOf((short)2));
+
+        Assertions.assertEquals(BeanAdapter.adapt(null, Integer.TYPE), Integer.valueOf(0));
+        Assertions.assertEquals(BeanAdapter.adapt("3", Integer.TYPE), Integer.valueOf(3));
+
+        Assertions.assertEquals(BeanAdapter.adapt(null, Long.TYPE), Long.valueOf(0));
+        Assertions.assertEquals(BeanAdapter.adapt("4", Long.TYPE), Long.valueOf(4));
+
+        Assertions.assertEquals(BeanAdapter.adapt(null, Float.TYPE), Float.valueOf(0));
+        Assertions.assertEquals(BeanAdapter.adapt("5.0", Float.TYPE), Float.valueOf(5));
+
+        Assertions.assertEquals(BeanAdapter.adapt(null, Double.TYPE), Double.valueOf(0));
+        Assertions.assertEquals(BeanAdapter.adapt("6.0", Double.TYPE), Double.valueOf(6));
+
+        Assertions.assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
+        Assertions.assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
+    }
+
+    @Test
+    public void testBeanAdapter1() throws MalformedURLException {
         Map<String, ?> expected = mapOf(
             entry("i", 1),
             entry("long", 2L),
@@ -73,6 +100,43 @@ public class BeanAdapterTest extends AbstractTest {
 
         Assertions.assertEquals(expected, actual);
         Assertions.assertNull(actual.get("ignored"));
+    }
+
+    @Test
+    public void testBeanAdapter2() throws IOException {
+        JSONDecoder jsonDecoder = new JSONDecoder();
+
+        Map<String, ?> map;
+        try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
+            map = jsonDecoder.read(inputStream);
+        }
+
+        TestInterface result = BeanAdapter.adapt(map, TestInterface.class);
+
+        Assertions.assertNotNull(result);
+
+        Assertions.assertEquals(1, result.getInt());
+        Assertions.assertEquals(2L, result.getLong());
+        Assertions.assertEquals(4.0, result.getDouble(), 0.0);
+        Assertions.assertEquals("abc", result.getString());
+        Assertions.assertEquals(new Date(0), result.getDate());
+        Assertions.assertEquals(LocalDate.parse("2018-06-28"), result.getLocalDate());
+        Assertions.assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
+        Assertions.assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
+
+        Assertions.assertEquals(new URL("http://localhost:8080"), result.getURL());
+
+        Assertions.assertTrue(result.getNestedBean().getFlag());
+
+        Assertions.assertEquals(2L, ((Number)result.getList().get(0)).longValue());
+        Assertions.assertEquals(4.0, ((Number)result.getList().get(1)).doubleValue(), 0.0);
+        Assertions.assertEquals(true, ((Map<?, ?>)result.getList().get(2)).get("flag"));
+        Assertions.assertFalse(result.getNestedBeanList().get(0).getFlag());
+
+        Assertions.assertEquals(2L, ((Number)result.getMap().get("long")).longValue());
+        Assertions.assertEquals(4.0, ((Number)result.getMap().get("double")).doubleValue(), 0.0);
+        Assertions.assertEquals(true, ((Map<?, ?>)result.getMap().get("nestedBean")).get("flag"));
+        Assertions.assertFalse(result.getNestedBeanMap().get("nestedBean").getFlag());
     }
 
     @Test

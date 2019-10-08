@@ -658,7 +658,7 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalDateTime`
 * `java.net.URL`
 
-If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`. Any property tagged with the `Ignore` annotation will be excluded from the map.
+If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
 
 For example, the following class might be used to represent a node in a hierarchical object graph:
 
@@ -760,6 +760,36 @@ public String getFirstName() {
     return firstName;
 }
 ```
+
+### Excluded Values
+Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
+
+```java
+@Ignore
+public int getIgnored() {
+    return -1;
+}
+```
+
+A call to `get()` for the key "ignored" would produce `null`.
+
+### Typed Access
+`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON or CSV data. For example, `JSONDecoder` would parse the data returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently map this loosely typed data structure to a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
+
+```java
+public static <T> T adapt(Object value, Type type) { ... }
+```
+
+If the value is already an instance of the requested type, it is returned as is. Otherwise:
+
+* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive types.
+* If the target type is a `String`, the value is adapted via its `toString()` method.
+* If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
+* If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
+* If the target type is `java.net.URL`, the value is first converted to a string and then to a URL.
+* If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
+
+Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is an implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
 
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON, CSV, or XML. For example:

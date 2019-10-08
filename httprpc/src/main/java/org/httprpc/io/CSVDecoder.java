@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -172,7 +172,7 @@ public class CSVDecoder {
      * If an exception occurs.
      */
     public Iterable<Map<String, String>> read(InputStream inputStream) throws IOException {
-        return read(new InputStreamReader(inputStream, Charset.forName("ISO-8859-1")));
+        return read(new InputStreamReader(inputStream, StandardCharsets.ISO_8859_1));
     }
 
     /**

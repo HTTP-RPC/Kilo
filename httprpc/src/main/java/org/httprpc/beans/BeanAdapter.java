@@ -17,8 +17,10 @@ package org.httprpc.beans;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -353,6 +355,322 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else {
             return new BeanAdapter(value, accessorCache);
         }
+    }
+
+    /**
+     * Adapts a value for typed access. If the value is already an instance of
+     * the given type, it is returned as is. Otherwise:
+     *
+     * <ul>
+     * <li>If the target type is a number or boolean, the value is parsed or
+     * coerced using the appropriate conversion method. Missing or <tt>null</tt>
+     * values are automatically converted to <tt>0</tt> or <tt>false</tt> for
+     * primitive argument types.</li>
+     * <li>If the target type is {@link String}, the value is adapted via
+     * {@link Object#toString()}.</li>
+     * <li>If the target type is {@link Date}, the value is coerced to a long
+     * value and passed to {@link Date#Date(long)}.</li>
+     * <li>If the target type is {@link LocalDate}, the value's string
+     * representation is parsed using {@link LocalDate#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link LocalTime}, the value's string
+     * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link LocalDateTime}, the value's string
+     * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link URL}, the value's string representation
+     * is adapted via {@link URL#URL(String)}.
+     * </ul>
+     *
+     * If the target type is a {@link List}, the value is wrapped in an adapter
+     * that will adapt the list's elements. If the target type is a {@link Map},
+     * the value is wrapped in an adapter that will adapt the map's values.
+     *
+     * Otherwise, the target is assumed to be a bean interface, and the value is
+     * assumed to be a map. The return value is an implementation of the given
+     * interface that maps accessor methods to entries in the map. Property values
+     * are adapted as described above.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param value
+     * The value to adapt.
+     *
+     * @param type
+     * The target type.
+     *
+     * @return
+     * An instance of the given type that adapts the given value.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T adapt(Object value, Type type) {
+        if (type instanceof Class<?>) {
+            return (T)adapt(value, (Class<?>)type);
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType)type;
+
+            return (T)adapt(value, wildcardType.getUpperBounds()[0]);
+        } else if (type instanceof ParameterizedType) {
+            if (value != null) {
+                ParameterizedType parameterizedType = (ParameterizedType)type;
+
+                Type rawType = parameterizedType.getRawType();
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+                if (rawType == List.class) {
+                    return (T)adaptList((List<?>)value, actualTypeArguments[0]);
+                } else if (rawType == Map.class) {
+                    return (T)adaptMap((Map<?, ?>)value, actualTypeArguments[1]);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            } else {
+                return null;
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static Object adapt(Object value, Class<?> type) {
+        if (type.isInstance(value)) {
+            return value;
+        } else if (type == Byte.TYPE || type == Byte.class) {
+            if (value == null) {
+                return (type == Byte.TYPE) ? Byte.valueOf((byte)0) : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).byteValue();
+            } else {
+                return Byte.parseByte(value.toString());
+            }
+        } else if (type == Short.TYPE || type == Short.class) {
+            if (value == null) {
+                return (type == Short.TYPE) ? Short.valueOf((short)0) : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).shortValue();
+            } else {
+                return Short.parseShort(value.toString());
+            }
+        } else if (type == Integer.TYPE || type == Integer.class) {
+            if (value == null) {
+                return (type == Integer.TYPE) ? Integer.valueOf(0) : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).intValue();
+            } else {
+                return Integer.parseInt(value.toString());
+            }
+        } else if (type == Long.TYPE || type == Long.class) {
+            if (value == null) {
+                return (type == Long.TYPE) ? Long.valueOf(0) : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).longValue();
+            } else {
+                return Long.parseLong(value.toString());
+            }
+        } else if (type == Float.TYPE || type == Float.class) {
+            if (value == null) {
+                return (type == Float.TYPE) ? Float.valueOf(0) : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).floatValue();
+            } else {
+                return Float.parseFloat(value.toString());
+            }
+        } else if (type == Double.TYPE || type == Double.class) {
+            if (value == null) {
+                return (type == Double.TYPE) ? Double.valueOf(0) : null;
+            } else if (value instanceof Number) {
+                return ((Number)value).doubleValue();
+            } else {
+                return Double.parseDouble(value.toString());
+            }
+        } else if (type == Boolean.TYPE) {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Boolean) {
+                return value;
+            } else {
+                return Boolean.parseBoolean(value.toString());
+            }
+        } else if (value != null) {
+            if (type == String.class) {
+                return value.toString();
+            } else if (type == Date.class) {
+                if (value instanceof Number) {
+                    return new Date(((Number)value).longValue());
+                } else {
+                    return new Date(Long.parseLong(value.toString()));
+                }
+            } else if (type == LocalDate.class) {
+                return LocalDate.parse(value.toString());
+            } else if (type == LocalTime.class) {
+                return LocalTime.parse(value.toString());
+            } else if (type == LocalDateTime.class) {
+                return LocalDateTime.parse(value.toString());
+            } else if (type == URL.class) {
+                try {
+                    return new URL(value.toString());
+                } catch (MalformedURLException exception) {
+                    throw new IllegalArgumentException(exception);
+                }
+            } else if (value instanceof Map<?, ?>) {
+                return adaptBean((Map<?, ?>)value, type);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private static Object adaptBean(Map<?, ?> map, Class<?> type) {
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("Type is not an interface.");
+        }
+
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+            new Class[] {type}, (proxy, method, arguments) -> {
+                String key = getKey(method);
+
+                if (key == null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                return adapt(map.get(key), method.getGenericReturnType());
+            }));
+    }
+
+    /**
+     * Adapts a list instance for typed access.
+     *
+     * @param <E>
+     * The target element type.
+     *
+     * @param list
+     * The list to adapt.
+     *
+     * @param elementType
+     * The target element type.
+     *
+     * @return
+     * An list implementation that will adapt the list's elements as documented for
+     * {@link #adapt(Object, Type)}.
+     */
+    public static <E> List<E> adaptList(List<?> list, Type elementType) {
+        if (list == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new AbstractList<E>() {
+            @Override
+            public E get(int index) {
+                return adapt(list.get(index), elementType);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+
+            @Override
+            public Iterator<E> iterator() {
+                return new Iterator<E>() {
+                    private Iterator<?> iterator = list.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public E next() {
+                        return adapt(iterator.next(), elementType);
+                    }
+                };
+            }
+        };
+    }
+
+    /**
+     * Adapts a map instance for typed access.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The target value type.
+     *
+     * @param map
+     * The map to adapt.
+     *
+     * @param valueType
+     * The target value type.
+     *
+     * @return
+     * An map implementation that will adapt the map's values as documented for
+     * {@link #adapt(Object, Type)}.
+     */
+    public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType) {
+        if (map == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (valueType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new AbstractMap<K, V>() {
+            @Override
+            public V get(Object key) {
+                return adapt(map.get(key), valueType);
+            }
+
+            @Override
+            public Set<Entry<K, V>> entrySet() {
+                return new AbstractSet<Entry<K, V>>() {
+                    @Override
+                    public int size() {
+                        return map.size();
+                    }
+
+                    @Override
+                    public Iterator<Entry<K, V>> iterator() {
+                        return new Iterator<Entry<K, V>>() {
+                            private Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
+
+                            @Override
+                            public boolean hasNext() {
+                                return iterator.hasNext();
+                            }
+
+                            @Override
+                            public Entry<K, V> next() {
+                                return new Entry<K, V>() {
+                                    private Entry<K, ?> entry = iterator.next();
+
+                                    @Override
+                                    public K getKey() {
+                                        return entry.getKey();
+                                    }
+
+                                    @Override
+                                    public V getValue() {
+                                        return adapt(entry.getValue(), valueType);
+                                    }
+
+                                    @Override
+                                    public V setValue(V value) {
+                                        throw new UnsupportedOperationException();
+                                    }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        };
     }
 
     /**

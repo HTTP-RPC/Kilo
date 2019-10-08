@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public class JSONDecoder {
      * If an exception occurs.
      */
     public <T> T read(InputStream inputStream) throws IOException {
-        return read(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+        return read(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 
     /**

@@ -29,14 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TestBean {
-    public static class NestedBean {
+public class TestBean implements TestInterface {
+    public static class NestedBean implements NestedInterface {
         private boolean flag;
 
         public NestedBean(boolean flag) {
             this.flag = flag;
         }
 
+        @Override
         public boolean getFlag() {
             return flag;
         }
@@ -48,19 +49,23 @@ public class TestBean {
     public static class TestHashMap extends HashMap<String, Object> {
     }
 
+    @Override
     @Key("i")
     public int getInt() {
         return 1;
     }
 
+    @Override
     public long getLong() {
         return 2L;
     }
 
+    @Override
     public double getDouble() {
         return 4.0;
     }
 
+    @Override
     public String getString() {
         return "abc";
     }
@@ -73,30 +78,41 @@ public class TestBean {
         return DayOfWeek.values()[3];
     }
 
+    @Override
     public Date getDate() {
         return new Date(0);
     }
 
+    @Override
     public LocalDate getLocalDate() {
         return LocalDate.parse("2018-06-28");
     }
 
+    @Override
     public LocalTime getLocalTime() {
         return LocalTime.parse("10:45");
     }
 
+    @Override
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.parse("2018-06-28T10:45");
     }
 
-    public URL getURL() throws MalformedURLException {
-        return new URL("http://localhost:8080");
+    @Override
+    public URL getURL() {
+        try {
+            return new URL("http://localhost:8080");
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
+    @Override
     public NestedBean getNestedBean() {
         return new NestedBean(true);
     }
 
+    @Override
     public List<?> getList() {
         return listOf(2L, 4.0, mapOf(entry("flag", true)));
     }
@@ -105,10 +121,12 @@ public class TestBean {
         return new TestArrayList();
     }
 
+    @Override
     public List<NestedBean> getNestedBeanList() {
         return listOf(new NestedBean(false));
     }
 
+    @Override
     public Map<String, ?> getMap() {
         return mapOf(
             entry("long", 2L),
@@ -122,6 +140,7 @@ public class TestBean {
         return new TestHashMap();
     }
 
+    @Override
     public Map<String, NestedBean> getNestedBeanMap() {
         return mapOf(entry("nestedBean", new NestedBean(false)));
     }
