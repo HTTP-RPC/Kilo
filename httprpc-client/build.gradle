@@ -22,15 +22,27 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
+sourceSets {
+  main {
+    java {
+        java {
+            srcDirs = ['../httprpc/src/main/java']
+        }
 
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.4.2")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
-}
-
-test {
-    useJUnitPlatform()
+        resources {
+            srcDirs = ['../httprpc/src/main/resources']
+        }
+        
+        exclude 'org/httprpc/WebService.java'
+        exclude 'org/httprpc/RequestMethod.java'
+        exclude 'org/httprpc/RequestParameter.java'
+        exclude 'org/httprpc/ResourcePath.java'
+        exclude 'org/httprpc/Response.java'
+        exclude 'org/httprpc/io/TemplateEncoder.java'
+        exclude 'org/httprpc/io/XMLEncoder.java'
+        exclude 'org/httprpc/sql/**'
+    }
+  }
 }
 
 jar {
@@ -66,7 +78,7 @@ publishing {
 
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'httprpc'
+            artifactId = 'httprpc-client'
             from components.java
             artifact sourcesJar
             artifact javadocJar

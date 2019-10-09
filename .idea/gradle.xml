@@ -14,6 +14,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/httprpc" />
+            <option value="$PROJECT_DIR$/httprpc-client" />
             <option value="$PROJECT_DIR$/httprpc-test" />
           </set>
         </option>

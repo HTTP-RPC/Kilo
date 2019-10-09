@@ -1,5 +1,5 @@
 rootProject.name = 'HTTP-RPC'
 
-include  'httprpc', 'httprpc-test'
+include  'httprpc', 'httprpc-client', 'httprpc-server', 'httprpc-test'
 
 enableFeaturePreview('STABLE_PUBLISHING')
