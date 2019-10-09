@@ -124,8 +124,6 @@ public class BeanAdapterTest extends AbstractTest {
         Assertions.assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
         Assertions.assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
 
-        Assertions.assertEquals(new URL("http://localhost:8080"), result.getURL());
-
         Assertions.assertTrue(result.getNestedBean().getFlag());
 
         Assertions.assertEquals(2L, ((Number)result.getList().get(0)).longValue());

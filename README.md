@@ -59,7 +59,7 @@ The HTTP-RPC framework includes the following classes:
     * `TemplateEncoder` - class that encodes an object hierarchy using a template document
     * `XMLEncoder` - class that encodes an object hierarchy to XML
 * `org.httprpc.beans`
-    * `BeanAdapter` - class that presents the properties of a Java bean object as a map
+    * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
     * `Ignore` - annotation indicating that a bean property should be ignored
     * `Key` - annotation that associates a custom key with a bean property
 * `org.httprpc.sql`
@@ -786,7 +786,6 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
 * If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
-* If the target type is `java.net.URL`, the value is first converted to a string and then to a URL.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
 Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is an implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.

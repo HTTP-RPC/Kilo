@@ -36,7 +36,6 @@ public interface TestInterface {
     public LocalDate getLocalDate();
     public LocalTime getLocalTime();
     public LocalDateTime getLocalDateTime();
-    public URL getURL();
     public NestedInterface getNestedBean();
     public List<?> getList();
     public List<? extends NestedInterface> getNestedBeanList();

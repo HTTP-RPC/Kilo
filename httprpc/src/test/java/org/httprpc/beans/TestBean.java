@@ -98,7 +98,6 @@ public class TestBean implements TestInterface {
         return LocalDateTime.parse("2018-06-28T10:45");
     }
 
-    @Override
     public URL getURL() {
         try {
             return new URL("http://localhost:8080");

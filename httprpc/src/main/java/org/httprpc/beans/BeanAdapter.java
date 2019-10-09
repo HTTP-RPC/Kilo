@@ -376,8 +376,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDateTime}, the value's string
      * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link URL}, the value's string representation
-     * is adapted via {@link URL#URL(String)}.
      * </ul>
      *
      * If the target type is a {@link List}, the value is wrapped in an adapter
@@ -505,12 +503,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
-            } else if (type == URL.class) {
-                try {
-                    return new URL(value.toString());
-                } catch (MalformedURLException exception) {
-                    throw new IllegalArgumentException(exception);
-                }
             } else if (value instanceof Map<?, ?>) {
                 return adaptBean((Map<?, ?>)value, type);
             } else {
@@ -526,16 +518,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException("Type is not an interface.");
         }
 
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
-            new Class[] {type}, (proxy, method, arguments) -> {
-                String key = getKey(method);
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, (proxy, method, arguments) -> {
+            String key = getKey(method);
 
-                if (key == null) {
-                    throw new UnsupportedOperationException();
-                }
+            if (key == null) {
+                throw new UnsupportedOperationException();
+            }
 
-                return adapt(map.get(key), method.getGenericReturnType());
-            }));
+            return adapt(map.get(key), method.getGenericReturnType());
+        }));
     }
 
     /**
