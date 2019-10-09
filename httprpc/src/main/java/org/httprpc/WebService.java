@@ -27,14 +27,10 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -440,7 +436,7 @@ public abstract class WebService extends HttpServlet {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(getArgument(value, (Class<?>)elementType));
+                        list.add(BeanAdapter.adapt(value, elementType));
                     }
                 } else {
                     list = Collections.emptyList();
@@ -455,77 +451,13 @@ public abstract class WebService extends HttpServlet {
                     value = null;
                 }
 
-                argument = getArgument(value, type);
+                argument = BeanAdapter.adapt(value, type);
             }
 
             arguments[i] = argument;
         }
 
         return arguments;
-    }
-
-    private static Object getArgument(Object value, Class<?> type) {
-        if (type.isInstance(value)) {
-            return value;
-        } else if (type == Byte.TYPE || type == Byte.class) {
-            if (value == null) {
-                return (type == Byte.TYPE) ? Byte.valueOf((byte)0) : null;
-            } else {
-                return Byte.parseByte(value.toString());
-            }
-        } else if (type == Short.TYPE || type == Short.class) {
-            if (value == null) {
-                return (type == Short.TYPE) ? Short.valueOf((short)0) : null;
-            } else {
-                return Short.parseShort(value.toString());
-            }
-        } else if (type == Integer.TYPE || type == Integer.class) {
-            if (value == null) {
-                return (type == Integer.TYPE) ? Integer.valueOf(0) : null;
-            } else {
-                return Integer.parseInt(value.toString());
-            }
-        } else if (type == Long.TYPE || type == Long.class) {
-            if (value == null) {
-                return (type == Long.TYPE) ? Long.valueOf(0) : null;
-            } else {
-                return Long.parseLong(value.toString());
-            }
-        } else if (type == Float.TYPE || type == Float.class) {
-            if (value == null) {
-                return (type == Float.TYPE) ? Float.valueOf(0) : null;
-            } else {
-                return Float.parseFloat(value.toString());
-            }
-        } else if (type == Double.TYPE || type == Double.class) {
-            if (value == null) {
-                return (type == Double.TYPE) ? Double.valueOf(0) : null;
-            } else {
-                return Double.parseDouble(value.toString());
-            }
-        } else if (type == Boolean.TYPE) {
-            if (value == null) {
-                return Boolean.FALSE;
-            } else {
-                return Boolean.parseBoolean(value.toString());
-            }
-        } else if (value != null) {
-            if (type == String.class) {
-                return value.toString();
-            } else if (type == Date.class) {
-                return new Date(Long.parseLong(value.toString()));
-            } else if (type == LocalDate.class) {
-                return LocalDate.parse(value.toString());
-            } else if (type == LocalTime.class) {
-                return LocalTime.parse(value.toString());
-            } else if (type == LocalDateTime.class) {
-                return LocalDateTime.parse(value.toString());
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } else {
-            return null;
-        }
     }
 
     private static String getName(Parameter parameter) {
