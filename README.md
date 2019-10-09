@@ -789,6 +789,25 @@ If the value is already an instance of the requested type, it is returned as is.
 
 Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is an implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
 
+For example, given the following declaration:
+
+```java
+public interface TreeNode {
+    public String getName();
+    public List<TreeNode> getChildren();
+}
+```
+
+the `adapt()` method can be used to model the preceding result data as a collection of `TreeNode` values:
+
+```java
+TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
+
+root.getName(); // "Seasons"
+root.getChildren().get(0).getName(); // "Winter"
+root.getChildren().get(0).getChildren().get(0).getName(); // "January"
+```
+
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON, CSV, or XML. For example:
 
