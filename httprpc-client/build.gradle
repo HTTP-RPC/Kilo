@@ -27,20 +27,22 @@ sourceSets {
     java {
         java {
             srcDirs = ['../httprpc/src/main/java']
+
+            exclude 'org/httprpc/WebService.java'
+            exclude 'org/httprpc/RequestMethod.java'
+            exclude 'org/httprpc/RequestParameter.java'
+            exclude 'org/httprpc/ResourcePath.java'
+            exclude 'org/httprpc/Response.java'
+            exclude 'org/httprpc/io/TemplateEncoder.java'
+            exclude 'org/httprpc/io/XMLEncoder.java'
+            exclude 'org/httprpc/sql/**'
         }
 
         resources {
             srcDirs = ['../httprpc/src/main/resources']
+            
+            exclude 'org/httprpc/api.css'
         }
-        
-        exclude 'org/httprpc/WebService.java'
-        exclude 'org/httprpc/RequestMethod.java'
-        exclude 'org/httprpc/RequestParameter.java'
-        exclude 'org/httprpc/ResourcePath.java'
-        exclude 'org/httprpc/Response.java'
-        exclude 'org/httprpc/io/TemplateEncoder.java'
-        exclude 'org/httprpc/io/XMLEncoder.java'
-        exclude 'org/httprpc/sql/**'
     }
   }
 }
