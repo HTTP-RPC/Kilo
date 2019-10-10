@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -111,7 +112,7 @@ public class EmployeeService extends WebService {
         + "    toDate: date\n"
         + "  }]\n"
         + "}")
-    public void getEmployee(List<String> details) throws SQLException, IOException {
+    public Map<String, ?> getEmployee(List<String> details) throws SQLException {
         String employeeNumber = getKey("employeeNumber");
 
         Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
@@ -123,6 +124,7 @@ public class EmployeeService extends WebService {
 
         arguments.put("employeeNumber", employeeNumber);
 
+        Map<String, ?> employee;
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
             parameters.apply(statement, arguments);
@@ -152,12 +154,11 @@ public class EmployeeService extends WebService {
                     }
                 }
 
-                getResponse().setContentType("application/json");
 
-                JSONEncoder jsonEncoder = new JSONEncoder();
-
-                jsonEncoder.write(resultSetAdapter.next(), getResponse().getOutputStream());
+                employee = resultSetAdapter.next();
             }
         }
+
+        return employee;
     }
 }

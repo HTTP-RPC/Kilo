@@ -47,7 +47,7 @@ import java.util.Set;
 /**
  * Template encoder.
  */
-public class TemplateEncoder {
+public class TemplateEncoder extends Encoder<Object> {
     /**
      * Interface representing a modifier.
      */
@@ -368,11 +368,9 @@ public class TemplateEncoder {
      * The character encoding used by the template.
      */
     public TemplateEncoder(URL url, Charset charset) {
-        if (url == null) {
-            throw new IllegalArgumentException();
-        }
+        super(charset);
 
-        if (charset == null) {
+        if (url == null) {
             throw new IllegalArgumentException();
         }
 
@@ -388,16 +386,6 @@ public class TemplateEncoder {
      */
     public URL getURL() {
         return url;
-    }
-
-    /**
-     * Returns the character encoding used by the encoder.
-     *
-     * @return
-     * The character encoding used by the encoder.
-     */
-    public Charset getCharset() {
-        return charset;
     }
 
     /**
@@ -432,18 +420,7 @@ public class TemplateEncoder {
         return context;
     }
 
-    /**
-     * Writes a value to an output stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
     public void write(Object value, OutputStream outputStream) throws IOException {
         write(value, outputStream, Locale.getDefault());
     }
@@ -471,18 +448,7 @@ public class TemplateEncoder {
         writer.flush();
     }
 
-    /**
-     * Writes a value to a character stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
     public void write(Object value, Writer writer) throws IOException {
         write(value, writer, Locale.getDefault());
     }

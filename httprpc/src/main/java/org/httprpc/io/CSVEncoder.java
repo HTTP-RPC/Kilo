@@ -15,8 +15,6 @@
 package org.httprpc.io;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -28,7 +26,7 @@ import org.httprpc.beans.BeanAdapter;
 /**
  * CSV encoder.
  */
-public class CSVEncoder {
+public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;
     private char delimiter;
 
@@ -52,6 +50,8 @@ public class CSVEncoder {
      * The character to use as a field delimiter.
      */
     public CSVEncoder(List<String> keys, char delimiter) {
+        super(StandardCharsets.ISO_8859_1);
+
         if (keys == null) {
             throw new IllegalArgumentException();
         }
@@ -60,34 +60,7 @@ public class CSVEncoder {
         this.delimiter = delimiter;
     }
 
-    /**
-     * Writes a sequence of values to an output stream.
-     *
-     * @param values
-     * The values to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void write(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
-        write(values, new OutputStreamWriter(outputStream, StandardCharsets.ISO_8859_1));
-    }
-
-    /**
-     * Writes a sequence of values to a character stream.
-     *
-     * @param values
-     * The values to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
 

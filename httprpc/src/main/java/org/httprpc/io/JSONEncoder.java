@@ -15,8 +15,6 @@
 package org.httprpc.io;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +27,7 @@ import java.util.Map;
 /**
  * JSON encoder.
  */
-public class JSONEncoder {
+public class JSONEncoder extends Encoder<Object> {
     private boolean compact;
 
     private int depth = 0;
@@ -49,37 +47,12 @@ public class JSONEncoder {
      * otherwise.
      */
     public JSONEncoder(boolean compact) {
+        super(StandardCharsets.UTF_8);
+
         this.compact = compact;
     }
 
-    /**
-     * Writes a value to an output stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void write(Object value, OutputStream outputStream) throws IOException {
-        write(value, new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Writes a value to a character stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
     public void write(Object value, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
 

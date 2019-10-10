@@ -14,6 +14,7 @@
 
 package org.httprpc;
 
+import org.httprpc.beans.BeanAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,23 @@ import java.util.List;
 import java.util.Map;
 
 public class WebServiceProxyTest extends AbstractTest {
+    public interface Response {
+        public interface AttachmentInfo {
+            public int getBytes();
+            public int getChecksum();
+        }
+
+        public String getString();
+        public List<String> getStrings();
+        public int getNumber();
+        public boolean getFlag();
+        public Date getDate();
+        public LocalDate getLocalDate();
+        public LocalTime getLocalTime();
+        public LocalDateTime getLocalDateTime();
+        public List<AttachmentInfo> getAttachmentInfo();
+    }
+
     private Date date = new Date();
 
     private LocalDate localDate = LocalDate.now();
@@ -153,28 +171,22 @@ public class WebServiceProxyTest extends AbstractTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
-        Map<String, ?> result = webServiceProxy.invoke();
+        Response response = BeanAdapter.adapt(webServiceProxy.invoke(), Response.class);
 
-        Assertions.assertEquals(mapOf(
-            entry("string", "héllo+gøodbye"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123L),
-            entry("flag", true),
-            entry("date", date.getTime()),
-            entry("localDate", localDate.toString()),
-            entry("localTime", localTime.toString()),
-            entry("localDateTime", localDateTime.toString()),
-            entry("attachmentInfo", listOf(
-                mapOf(
-                    entry("bytes", 26L),
-                    entry("checksum", 2412L)
-                ),
-                mapOf(
-                    entry("bytes", 10392L),
-                    entry("checksum", 1038036L)
-                )
-            ))
-        ), result);
+        Assertions.assertNotNull(response);
+
+        Assertions.assertTrue(response.getString().equals("héllo+gøodbye")
+            && response.getStrings().equals(listOf("a", "b", "c"))
+            && response.getNumber() == 123
+            && response.getFlag()
+            && response.getDate().equals(date)
+            && response.getLocalDate().equals(localDate)
+            && response.getLocalTime().equals(localTime)
+            && response.getLocalDateTime().equals(localDateTime)
+            && response.getAttachmentInfo().get(0).getBytes() == 26
+            && response.getAttachmentInfo().get(0).getChecksum() == 2412
+            && response.getAttachmentInfo().get(1).getBytes() == 10392
+            && response.getAttachmentInfo().get(1).getChecksum() == 1038036);
     }
 
     @Test

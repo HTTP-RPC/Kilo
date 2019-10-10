@@ -15,8 +15,6 @@
 package org.httprpc.io;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ import java.util.Map;
 /**
  * JSON decoder.
  */
-public class JSONDecoder {
+public class JSONDecoder extends Decoder {
     private int c = EOF;
 
     private LinkedList<Object> collections = new LinkedList<>();
@@ -42,37 +40,13 @@ public class JSONDecoder {
     private static final int EOF = -1;
 
     /**
-     * Reads a value from an input stream.
-     *
-     * @param <T>
-     * The type of the value to return.
-     *
-     * @param inputStream
-     * The input stream to read from.
-     *
-     * @return The decoded value.
-     *
-     * @throws IOException
-     * If an exception occurs.
+     * Constructs a new JSON decoder.
      */
-    public <T> T read(InputStream inputStream) throws IOException {
-        return read(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+    public JSONDecoder() {
+        super(StandardCharsets.UTF_8);
     }
 
-    /**
-     * Reads a value from a character stream.
-     *
-     * @param <T>
-     * The type of the value to return.
-     *
-     * @param reader
-     * The character stream to read from.
-     *
-     * @return The decoded value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T read(Reader reader) throws IOException {
         reader = new BufferedReader(reader);

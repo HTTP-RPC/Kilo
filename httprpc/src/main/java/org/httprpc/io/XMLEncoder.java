@@ -15,8 +15,6 @@
 package org.httprpc.io;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -30,35 +28,15 @@ import javax.xml.stream.XMLStreamWriter;
 /**
  * XML encoder.
  */
-public class XMLEncoder {
+public class XMLEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     /**
-     * Writes a sequence of values to an output stream.
-     *
-     * @param values
-     * The values to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
+     * Constructs a new XML encoder.
      */
-    public void write(Iterable<? extends Map<String, ?>> values, OutputStream outputStream) throws IOException {
-        write(values, new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+    public XMLEncoder() {
+        super(StandardCharsets.UTF_8);
     }
 
-    /**
-     * Writes a sequence of values to a character stream.
-     *
-     * @param values
-     * The values to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 

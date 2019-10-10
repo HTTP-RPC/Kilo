@@ -35,6 +35,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.sql.DataSource;
 
 import org.httprpc.WebService;
+import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
@@ -54,14 +55,7 @@ public class PetService extends WebService {
 
     private DataSource dataSource = null;
 
-    /**
-     * Pet interface.
-     */
     public interface Pet {
-        public String getName();
-        public String getOwner();
-        public String getSpecies();
-        public String getSex();
         public Date getBirth();
     }
 
@@ -143,9 +137,11 @@ public class PetService extends WebService {
 
             Date now = new Date();
 
-            Stream<Map<String, Object>> stream = StreamSupport.stream(resultSetAdapter.spliterator(), false);
+            Stream<Map<String, Object>> results = StreamSupport.stream(resultSetAdapter.spliterator(), false);
 
-            averageAge = stream.mapToLong(row -> now.getTime() - ((Date)row.get("birth")).getTime()).average().getAsDouble();
+            Stream<Pet> pets = results.map(result -> BeanAdapter.adapt(result, Pet.class));
+
+            averageAge = pets.mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
         }
 
         return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);

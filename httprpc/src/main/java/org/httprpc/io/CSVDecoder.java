@@ -16,7 +16,6 @@ package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import java.util.NoSuchElementException;
 /**
  * CSV decoder.
  */
-public class CSVDecoder {
+public class CSVDecoder extends Decoder {
     // Cursor
     private static class Cursor implements Iterable<Map<String, String>> {
         private Reader reader;
@@ -156,37 +155,19 @@ public class CSVDecoder {
      * The character to use as a field delimiter.
      */
     public CSVDecoder(char delimiter) {
+        super(StandardCharsets.ISO_8859_1);
+
         this.delimiter = delimiter;
     }
 
-    /**
-     * Reads a sequence of values from an input stream.
-     *
-     * @param inputStream
-     * The input stream to read from.
-     *
-     * @return
-     * A cursor over the values in the input stream.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
+    @SuppressWarnings("unchecked")
     public Iterable<Map<String, String>> read(InputStream inputStream) throws IOException {
-        return read(new InputStreamReader(inputStream, StandardCharsets.ISO_8859_1));
+        return super.read(inputStream);
     }
 
-    /**
-     * Reads a sequence of values from a character stream.
-     *
-     * @param reader
-     * The character stream to read from.
-     *
-     * @return
-     * A cursor over the values in the character stream.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
+    @Override
+    @SuppressWarnings("unchecked")
     public Iterable<Map<String, String>> read(Reader reader) throws IOException {
         return new Cursor(new BufferedReader(reader), delimiter);
     }
