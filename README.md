@@ -244,12 +244,14 @@ Although return values are encoded as JSON by default, subclasses can override t
 ### Request and Repsonse Properties
 `WebService` provides the following methods to allow a service method to access the request and response objects associated with the current invocation:
 
-    protected HttpServletRequest getRequest() { ... }
-    protected HttpServletResponse getResponse() { ... }
+```java
+protected HttpServletRequest getRequest() { ... }
+protected HttpServletResponse getResponse() { ... }
+```
 
 For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
 
-The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data or other response formats such as XML.
+The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
 
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
@@ -299,7 +301,7 @@ If a method is tagged with the `Deprecated` annotation, it will be identified as
 #### Custom Response Descriptions
 Methods that return a custom response can use the `Response` annotation to describe the result. For example, given this method declaration:
 
-```
+```java
 @RequestMethod("GET")
 @ResourcePath("map")
 @Response("{text: string, number: integer, flag: boolean}")
@@ -428,7 +430,7 @@ List<Map<String, Object>> months = jsonDecoder.read(inputStream);
 
 `CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (as well as the map keys to which the columns correspond):
 
-```
+```java
 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
 
 csvEncoder.write(months, System.out);
@@ -625,7 +627,7 @@ this code would produce the following output:
 a = hello, b = 123, c = true
 ```
 
-## Custom Modifiers
+### Custom Modifiers
 Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
 
 ```java
@@ -789,7 +791,7 @@ If the value is already an instance of the requested type, it is returned as is.
 
 Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is an implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
 
-For example, given the following declaration:
+For example, given the following interface:
 
 ```java
 public interface TreeNode {
@@ -809,7 +811,7 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 ## ResultSetAdapter and Parameters
-The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized to JSON, CSV, or XML. For example:
+The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized as JSON, CSV, or XML, or to any other format via a template. For example:
 
 ```java
 JSONEncoder jsonEncoder = new JSONEncoder();
@@ -1130,7 +1132,6 @@ Service operations are invoked via one of the following methods:
 
 ```java
 public <T> T invoke() throws IOException { ... }
-
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
