@@ -84,6 +84,8 @@ public class EmployeeService extends WebService {
             parameters.apply(statement, arguments);
 
             try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.setFetchSize(2048);
+
                 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
 
                 getResponse().setContentType("application/json");
