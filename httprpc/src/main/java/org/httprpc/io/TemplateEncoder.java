@@ -289,8 +289,8 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // HTML escape modifier
-    private static class HTMLEscapeModifier implements Modifier {
+    // Markup escape modifier
+    private static class MarkupEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale) {
             StringBuilder resultBuilder = new StringBuilder();
@@ -339,8 +339,13 @@ public class TemplateEncoder extends Encoder<Object> {
 
     static {
         modifiers.put("format", new FormatModifier());
-        modifiers.put("^html", new HTMLEscapeModifier());
+
         modifiers.put("^url", new URLEscapeModifier());
+
+        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
+
+        modifiers.put("^html", markupEscapeModifier);
+        modifiers.put("^xml", markupEscapeModifier);
     }
 
     private static final int EOF = -1;

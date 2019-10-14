@@ -298,6 +298,11 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
+        if (!isAuthorized(request, handler.method)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         HashMap<String, String> keyMap = new HashMap<>();
 
         for (int i = 0, n = keyList.size(); i < n; i++) {
@@ -510,6 +515,23 @@ public abstract class WebService extends HttpServlet {
      */
     protected String getKey(String name) {
         return keyMap.get().get(name);
+    }
+
+    /**
+     * Determines if the current request is authorized.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @param method
+     * The method to be invoked.
+     *
+     * @return
+     * <tt>true</tt> if the method should be invoked; <tt>false</tt>,
+     * otherwise.
+     */
+    protected boolean isAuthorized(HttpServletRequest request, Method method) {
+        return true;
     }
 
     /**

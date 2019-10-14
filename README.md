@@ -14,6 +14,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
         * [Path Variables](#path-variables)
         * [Return Values](#return-values)
         * [Request and Repsonse Properties](#request-and-repsonse-properties)
+        * [Authorization](#authorization)
         * [Exceptions](#exceptions)
         * [API Documentation](#api-documentation)
     * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
@@ -252,6 +253,15 @@ protected HttpServletResponse getResponse() { ... }
 For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
+
+### Authorization
+Service requests can be authorized by overriding the following method:
+
+```java
+protected boolean isAuthorized(HttpServletRequest request, Method method) { ... }
+```
+
+The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
 
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.LocalDate;
@@ -213,7 +214,7 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("unauthorized")
     public void testUnauthorized() {
-        throw new IllegalArgumentException();
+        // No-op
     }
 
     @RequestMethod("GET")
@@ -227,5 +228,12 @@ public class TestService extends WebService {
         Thread.sleep(delay);
 
         return value;
+    }
+
+    @Override
+    protected boolean isAuthorized(HttpServletRequest request, Method method) {
+        String pathInfo = request.getPathInfo();
+
+        return (pathInfo == null || !pathInfo.endsWith("unauthorized"));
     }
 }
