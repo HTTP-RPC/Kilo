@@ -160,7 +160,7 @@ public abstract class WebService extends HttpServlet {
                             String key;
                             if (component.length() > k) {
                                 if (component.charAt(k++) != ':') {
-                                    throw new ServletException("Invalid path component.");
+                                    throw new ServletException("Invalid path variable.");
                                 }
 
                                 key = component.substring(k);
