@@ -66,9 +66,9 @@ public class CatalogService extends WebService {
     public void init() throws ServletException {
         super.init();
 
-        items.add(new Item("Hat", 15.00));
-        items.add(new Item("Mittens", 12.00));
-        items.add(new Item("Scarf", 9.00));
+        addItem("Hat", 15.00);
+        addItem("Mittens", 12.00);
+        addItem("Scarf", 9.00);
     }
 
     @RequestMethod("GET")
