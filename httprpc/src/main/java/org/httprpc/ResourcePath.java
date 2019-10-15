@@ -29,5 +29,5 @@ public @interface ResourcePath {
      * @return
      * The resource path associated with the method.
      */
-    public String value();
+    String value();
 }

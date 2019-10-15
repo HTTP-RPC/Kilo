@@ -22,22 +22,22 @@ import java.util.List;
 import java.util.Map;
 
 public interface TestInterface {
-    public interface NestedInterface {
-        public boolean getFlag();
+    interface NestedInterface {
+        boolean getFlag();
     }
 
     @Key("i")
-    public int getInt();
-    public long getLong();
-    public double getDouble();
-    public String getString();
-    public Date getDate();
-    public LocalDate getLocalDate();
-    public LocalTime getLocalTime();
-    public LocalDateTime getLocalDateTime();
-    public NestedInterface getNestedBean();
-    public List<?> getList();
-    public List<? extends NestedInterface> getNestedBeanList();
-    public Map<String, ?> getMap();
-    public Map<String, ? extends NestedInterface> getNestedBeanMap();
+    int getInt();
+    long getLong();
+    double getDouble();
+    String getString();
+    Date getDate();
+    LocalDate getLocalDate();
+    LocalTime getLocalTime();
+    LocalDateTime getLocalDateTime();
+    NestedInterface getNestedBean();
+    List<?> getList();
+    List<? extends NestedInterface> getNestedBeanList();
+    Map<String, ?> getMap();
+    Map<String, ? extends NestedInterface> getNestedBeanMap();
 }

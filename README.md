@@ -641,7 +641,7 @@ a = hello, b = 123, c = true
 Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
 
 ```java
-public Object apply(Object value, String argument, Locale locale);
+Object apply(Object value, String argument, Locale locale);
 ```
  
 The first argument to this method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
@@ -805,8 +805,8 @@ For example, given the following interface:
 
 ```java
 public interface TreeNode {
-    public String getName();
-    public List<TreeNode> getChildren();
+    String getName();
+    List<TreeNode> getChildren();
 }
 ```
 
@@ -1149,7 +1149,7 @@ The first version automatically deserializes a successful server response using 
 
 ```java
 public interface ResponseHandler<T> {
-    public T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+    T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
 }
 ```
 

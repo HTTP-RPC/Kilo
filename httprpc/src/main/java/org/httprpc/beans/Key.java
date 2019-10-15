@@ -29,5 +29,5 @@ public @interface Key {
      * @return
      * The map key associated with the accessor method.
      */
-    public String value();
+    String value();
 }

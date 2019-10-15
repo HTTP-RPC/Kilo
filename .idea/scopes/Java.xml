@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Java" pattern="file:*.java&amp;&amp;!lib:*..*" />
+</component>

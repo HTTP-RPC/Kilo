@@ -32,10 +32,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.mongodb:mongo-java-driver:3.6.3'
 
-    testImplementation project(':httprpc')
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
 
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
 compileJava {
@@ -54,4 +53,8 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+test {
+    useJUnitPlatform()
 }

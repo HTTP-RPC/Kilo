@@ -29,26 +29,30 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WebServiceProxyTest extends AbstractTest {
+public class WebServiceProxyTest {
     public interface Response {
-        public interface AttachmentInfo {
-            public int getBytes();
-            public int getChecksum();
+        interface AttachmentInfo {
+            int getBytes();
+            int getChecksum();
         }
 
-        public String getString();
-        public List<String> getStrings();
-        public int getNumber();
-        public boolean getFlag();
-        public Date getDate();
-        public LocalDate getLocalDate();
-        public LocalTime getLocalTime();
-        public LocalDateTime getLocalDateTime();
-        public List<AttachmentInfo> getAttachmentInfo();
+        String getString();
+        List<String> getStrings();
+        int getNumber();
+        boolean getFlag();
+        Date getDate();
+        LocalDate getLocalDate();
+        LocalTime getLocalTime();
+        LocalDateTime getLocalDateTime();
+        List<AttachmentInfo> getAttachmentInfo();
     }
 
     private Date date = new Date();
@@ -315,5 +319,25 @@ public class WebServiceProxyTest extends AbstractTest {
         }
 
         Assertions.assertTrue(timeout);
+    }
+
+    @SafeVarargs
+    private static <E> List<E> listOf(E... elements) {
+        return Collections.unmodifiableList(Arrays.asList(elements));
+    }
+
+    @SafeVarargs
+    private static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
+        HashMap<K, V> map = new HashMap<>();
+
+        for (Map.Entry<K, V> entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return Collections.unmodifiableMap(map);
+    }
+
+    private static <K, V> Map.Entry<K, V> entry(K key, V value) {
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 }

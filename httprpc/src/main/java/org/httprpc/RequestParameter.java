@@ -29,5 +29,5 @@ public @interface RequestParameter {
      * @return
      * The request parameter associated with the method argument.
      */
-    public String value();
+    String value();
 }

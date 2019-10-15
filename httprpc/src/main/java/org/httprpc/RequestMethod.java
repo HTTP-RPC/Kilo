@@ -29,5 +29,5 @@ public @interface RequestMethod {
      * @return
      * The HTTP verb associated with the method.
      */
-    public String value();
+    String value();
 }

@@ -33,5 +33,5 @@ public @interface Response {
      * @return
      * The response description associated with the method.
      */
-    public String value();
+    String value();
 }

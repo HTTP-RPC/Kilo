@@ -56,7 +56,7 @@ public class WebServiceProxy {
          * @return
          * The content type produced by the handler.
          */
-        public default String getContentType() {
+        default String getContentType() {
             return "application/octet-stream";
         }
 
@@ -69,7 +69,7 @@ public class WebServiceProxy {
          * @throws IOException
          * If an exception occurs.
          */
-        public void encodeRequest(OutputStream outputStream) throws IOException;
+        void encodeRequest(OutputStream outputStream) throws IOException;
     }
 
     /**
@@ -94,7 +94,7 @@ public class WebServiceProxy {
          * @return
          * The decoded value.
          */
-        public T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+        T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
     }
 
     private String method;

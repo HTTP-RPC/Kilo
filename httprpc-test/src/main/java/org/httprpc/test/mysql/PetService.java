@@ -56,7 +56,7 @@ public class PetService extends WebService {
     private DataSource dataSource = null;
 
     public interface Pet {
-        public Date getBirth();
+        Date getBirth();
     }
 
     @Override

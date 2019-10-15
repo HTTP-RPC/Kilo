@@ -67,7 +67,7 @@ public class TemplateEncoder extends Encoder<Object> {
          * @return
          * The modified value.
          */
-        public Object apply(Object value, String argument, Locale locale);
+        Object apply(Object value, String argument, Locale locale);
     }
 
     // Format modifier
