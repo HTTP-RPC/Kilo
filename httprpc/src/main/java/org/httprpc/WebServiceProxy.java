@@ -304,16 +304,9 @@ public class WebServiceProxy {
      */
     public <T> T invoke() throws IOException {
         return invoke((inputStream, contentType, headers) -> {
-            T result;
-            if (contentType != null && contentType.startsWith("application/json")) {
-                JSONDecoder jsonDecoder = new JSONDecoder();
+            JSONDecoder jsonDecoder = new JSONDecoder();
 
-                result = jsonDecoder.read(inputStream);
-            } else {
-                result = null;
-            }
-
-            return result;
+            return jsonDecoder.read(inputStream);
         });
     }
 
