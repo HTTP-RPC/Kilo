@@ -24,7 +24,7 @@ sourceSets {
             }
 
             resources {
-                srcDirs = ['../httprpc-client/src/main/java', '../httprpc-server/src/main/java']
+                srcDirs = ['../httprpc-client/src/main/resources', '../httprpc-server/src/main/resources']
             }
         }
     }
