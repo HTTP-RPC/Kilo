@@ -42,60 +42,62 @@ subprojects {
         }
     }
 
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allJava
-        classifier = 'sources'
-    }
+    if (!project.name.endsWith("test")) {
+        task sourcesJar(type: Jar) {
+            from sourceSets.main.allJava
+            classifier = 'sources'
+        }
 
-    task javadocJar(type: Jar) {
-        from javadoc
-        classifier = 'javadoc'
-    }
+        task javadocJar(type: Jar) {
+            from javadoc
+            classifier = 'javadoc'
+        }
 
-    publishing {
-        repositories {
-            maven {
-                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        publishing {
+            repositories {
+                maven {
+                    url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
-                credentials {
-                    username nexusUsername
-                    password nexusPassword
+                    credentials {
+                        username nexusUsername
+                        password nexusPassword
+                    }
+                }
+            }
+
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId = project.name
+                    from components.java
+                    artifact sourcesJar
+                    artifact javadocJar
+                    pom {
+                        name = project.name
+                        description = 'Lightweight REST for Java'
+                        url = 'http://httprpc.org'
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                name = 'Greg Brown'
+                                email = 'gk_brown@icloud.com'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:git://github.com/gk-brown/HTTP-RPC.git'
+                            url = 'https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc'
+                        }
+                    }
                 }
             }
         }
 
-        publications {
-            mavenJava(MavenPublication) {
-                artifactId = project.name
-                from components.java
-                artifact sourcesJar
-                artifact javadocJar
-                pom {
-                    name = project.name
-                    description = 'Lightweight REST for Java'
-                    url = 'http://httprpc.org'
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    developers {
-                        developer {
-                            name = 'Greg Brown'
-                            email = 'gk_brown@icloud.com'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git:git://github.com/gk-brown/HTTP-RPC.git'
-                        url = 'https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc'
-                    }
-                }
-            }
+        signing {
+            sign publishing.publications.mavenJava
         }
-    }
-
-    signing {
-        sign publishing.publications.mavenJava
     }
 }
