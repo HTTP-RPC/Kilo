@@ -14,31 +14,6 @@
 
 dependencies {
     compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
-    
-    implementation project(':httprpc-client')
-}
 
-sourceSets {
-  main {
-    java {
-        java {
-            srcDirs = ['../httprpc/src/main/java']
-
-            include 'org/httprpc/WebService.java'
-            include 'org/httprpc/RequestMethod.java'
-            include 'org/httprpc/RequestParameter.java'
-            include 'org/httprpc/ResourcePath.java'
-            include 'org/httprpc/Response.java'
-            include 'org/httprpc/io/TemplateEncoder.java'
-            include 'org/httprpc/io/XMLEncoder.java'
-            include 'org/httprpc/sql/**'
-        }
-
-        resources {
-            srcDirs = ['../httprpc/src/main/resources']
-            
-            include 'org/httprpc/api.css'
-        }
-    }
-  }
+    api project(':httprpc-client')
 }
