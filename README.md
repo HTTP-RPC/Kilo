@@ -28,15 +28,12 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
-The HTTP-RPC JAR file can be downloaded [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via Maven:
+The entire HTTP-RPC framework can be downloaded as a single JAR file [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [Maven Central](http://repo1.maven.org/maven2/org/httprpc/httprpc/). 
 
-```xml
-<dependency>
-    <groupId>org.httprpc</groupId>
-    <artifactId>httprpc</artifactId>
-    <version>...</version>
-</dependency>
-```
+Alternatively, dependencies can be specified individually:
+
+* [org.httprpc:httprpc-client](http://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV and bean types
+* [org.httprpc:httprpc-server](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services and working with XML, templates, and relational databases
 
 HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servlet specification 3.1 or later.
 
