@@ -28,7 +28,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
-The entire HTTP-RPC framework can be downloaded as a single JAR file [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [Maven Central](http://repo1.maven.org/maven2/org/httprpc/httprpc/). 
+The complete HTTP-RPC framework can be downloaded as a single JAR file [here](https://github.com/gk-brown/HTTP-RPC/releases). It is also available via [Maven Central](http://repo1.maven.org/maven2/org/httprpc/httprpc/). 
 
 Alternatively, dependencies can be specified individually:
 
