@@ -42,6 +42,12 @@ compileKotlin {
     }
 }
 
+compileTestJava {
+    options.compilerArgs = [
+        '-parameters'
+    ]
+}
+
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

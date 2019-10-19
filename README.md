@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 85KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 85KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -1168,6 +1168,48 @@ webServiceProxy.setArguments(arguments);
 Number result = webServiceProxy.invoke();
 
 System.out.println(result); // 6.0
+```
+
+### Typed Access
+The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services:
+
+```java
+public static <T> T adapt(URL baseURL, Class<T> type) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { ... }
+```
+
+Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
+
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself.
+
+In general, service adapters should be compiled with the `-parameters` flag so their method parameter names are available at runtime. However, the `RequestParameter` annotation can be used to associate a custom parameter name with a request argument. 
+
+`POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#beanadapter) based on the method return type.
+
+For example, the following interface might be used to model the operations of the math service:
+
+```java
+public interface MathService {
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(double a, double b) throws IOException;
+
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(List<Double> values) throws IOException;
+}
+```
+
+This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
+
+```java
+MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
+
+// GET /math/sum?a=2&b=4
+System.out.println(mathService.getSum(4, 2)); // 6.0
+
+// GET /math/sum?values=1&values=2&values=3
+System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
 ```
 
 # Additional Information

@@ -38,21 +38,47 @@ import java.util.List;
 import java.util.Map;
 
 public class WebServiceProxyTest {
-    public interface Response {
-        interface AttachmentInfo {
-            int getBytes();
-            int getChecksum();
+    public interface TestService {
+        interface Response {
+            interface AttachmentInfo {
+                int getBytes();
+                int getChecksum();
+            }
+
+            String getString();
+            List<String> getStrings();
+            int getNumber();
+            boolean getFlag();
+            Date getDate();
+            LocalDate getLocalDate();
+            LocalTime getLocalTime();
+            LocalDateTime getLocalDateTime();
+            List<AttachmentInfo> getAttachmentInfo();
         }
 
-        String getString();
-        List<String> getStrings();
-        int getNumber();
-        boolean getFlag();
-        Date getDate();
-        LocalDate getLocalDate();
-        LocalTime getLocalTime();
-        LocalDateTime getLocalDateTime();
-        List<AttachmentInfo> getAttachmentInfo();
+        @RequestMethod("GET")
+        @ResourcePath("fibonacci")
+        List<Integer> testGetFibonacci(int count) throws IOException;
+
+        @RequestMethod("POST")
+        Response testMultipartPost(String string, List<String> strings, int number, boolean flag,
+            Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+            List<URL> attachments) throws IOException;
+    }
+
+    public interface MathService {
+        @RequestMethod("GET")
+        @ResourcePath("sum")
+        double getSum(double a, double b) throws IOException;
+
+        @RequestMethod("GET")
+        @ResourcePath("sum")
+        double getSum(List<Double> values) throws IOException;
+    }
+
+    public interface TreeNode {
+        String getName();
+        List<TreeNode> getChildren();
     }
 
     private Date date = new Date();
@@ -113,15 +139,11 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetFibonacci() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
-        webServiceProxy.setArguments(mapOf(
-            entry("count", 8)
-        ));
+        List<Integer> result  = testService.testGetFibonacci(8);
 
-        List<Number> result = webServiceProxy.invoke();
-
-        Assertions.assertEquals(result, listOf(0L, 1L, 1L, 2L, 3L, 5L, 8L, 13L));
+        Assertions.assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
     }
 
     @Test
@@ -159,23 +181,11 @@ public class WebServiceProxyTest {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
-        webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
-
-        webServiceProxy.setArguments(mapOf(
-            entry("string", "héllo+gøodbye"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
-            entry("flag", true),
-            entry("date", date),
-            entry("localDate", localDate),
-            entry("localTime", localTime),
-            entry("localDateTime", localDateTime),
-            entry("attachments", listOf(textTestURL, imageTestURL))
-        ));
-
-        Response response = BeanAdapter.adapt(webServiceProxy.invoke(), Response.class);
+        TestService.Response response = testService.testMultipartPost("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
+            date, localDate, localTime, localDateTime,
+            listOf(textTestURL, imageTestURL));
 
         Assertions.assertNotNull(response);
 
@@ -319,6 +329,51 @@ public class WebServiceProxyTest {
         }
 
         Assertions.assertTrue(timeout);
+    }
+
+    @Test
+    public void testMath() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
+
+        HashMap<String, Integer> arguments = new HashMap<>();
+
+        arguments.put("a", 4);
+        arguments.put("b", 2);
+
+        webServiceProxy.setArguments(arguments);
+
+        Number result = webServiceProxy.invoke();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(6.0, result.doubleValue());
+    }
+
+    @Test
+    public void testMathService() throws Exception {
+        MathService mathService = WebServiceProxy.adapt(new URL(serverURL, "math/"), MathService.class);
+
+        Assertions.assertEquals(6.0, mathService.getSum(4, 2));
+        Assertions.assertEquals(6.0, mathService.getSum(listOf(1.0, 2.0, 3.0)));
+    }
+
+    @Test
+    public void testTree() throws Exception {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "tree/"));
+
+        TreeNode seasons = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
+
+        Assertions.assertNotNull(seasons);
+        Assertions.assertEquals("Seasons", seasons.getName());
+
+        TreeNode winter = seasons.getChildren().get(0);
+
+        Assertions.assertNotNull(winter);
+        Assertions.assertEquals("Winter", winter.getName());
+
+        TreeNode january = winter.getChildren().get(0);
+
+        Assertions.assertNotNull(january);
+        Assertions.assertEquals("January", january.getName());
     }
 
     @SafeVarargs

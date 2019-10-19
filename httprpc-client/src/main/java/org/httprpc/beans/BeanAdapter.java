@@ -400,6 +400,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <T> T adapt(Object value, Type type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
         if (type instanceof Class<?>) {
             return (T)adapt(value, (Class<?>)type);
         } else if (type instanceof WildcardType) {
@@ -513,10 +517,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object adaptBean(Map<?, ?> map, Class<?> type) {
-        if (!type.isInterface()) {
-            throw new IllegalArgumentException("Type is not an interface.");
-        }
-
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, (proxy, method, arguments) -> {
             String key = getKey(method);
 

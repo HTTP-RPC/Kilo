@@ -14,6 +14,7 @@
 
 package org.httprpc;
 
+import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONDecoder;
 
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -580,5 +583,98 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
+    }
+
+    /**
+     * Creates a type-safe web service proxy adapter.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param baseURL
+     * The base URL of the web service.
+     *
+     * @param type
+     * The type of the adapter.
+     *
+     * @return
+     * An instance of the given type that adapts the target service.
+     */
+    public static <T> T adapt(URL baseURL, Class<T> type) {
+        return adapt(baseURL, type, Collections.emptyMap());
+    }
+
+    /**
+     * Creates a type-safe web service proxy adapter.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param baseURL
+     * The base URL of the web service.
+     *
+     * @param type
+     * The type of the adapter.
+     *
+     * @param headers
+     * A map of header values that will be submitted with service requests.
+     *
+     * @return
+     * An instance of the given type that adapts the target service.
+     */
+    public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) {
+        if (baseURL == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (headers == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type},  (proxy, method, arguments) -> {
+            RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
+
+            if (requestMethod == null) {
+                throw new UnsupportedOperationException();
+            }
+
+            ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
+
+            URL url;
+            if (resourcePath != null) {
+                url = new URL(baseURL, resourcePath.value());
+            } else {
+                url = baseURL;
+            }
+
+            WebServiceProxy webServiceProxy = new WebServiceProxy(requestMethod.value(), url);
+
+            if (webServiceProxy.getMethod().equalsIgnoreCase("POST")) {
+                webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+            }
+
+            webServiceProxy.setHeaders(headers);
+
+            Parameter[] parameters = method.getParameters();
+
+            HashMap<String, Object> argumentMap = new HashMap<>();
+
+            for (int i = 0; i < parameters.length; i++) {
+                Parameter parameter = parameters[i];
+                RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
+
+                String name = (requestParameter == null) ? parameter.getName() : requestParameter.value();
+
+                argumentMap.put(name, arguments[i]);
+            }
+
+            webServiceProxy.setArguments(argumentMap);
+
+            return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
+        }));
     }
 }
