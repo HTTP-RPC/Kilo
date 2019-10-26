@@ -51,6 +51,8 @@ The HTTP-RPC framework includes the following classes:
 * `org.httprpc.io`
     * `CSVDecoder` - class that decodes an iterable sequence of values from CSV
     * `CSVEncoder` - class that encodes an iterable sequence of values to CSV
+    * `Decoder` - abstract base class for decoders
+    * `Encoder` - abstract base class for encoders
     * `JSONDecoder` - class that decodes an object hierarchy from JSON
     * `JSONEncoder` - class that encodes an object hierarchy to JSON
     * `TemplateEncoder` - class that encodes an object hierarchy using a template document
