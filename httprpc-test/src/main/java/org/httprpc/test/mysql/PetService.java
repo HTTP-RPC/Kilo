@@ -23,9 +23,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -137,9 +135,7 @@ public class PetService extends WebService {
 
             Date now = new Date();
 
-            Stream<Map<String, Object>> results = StreamSupport.stream(resultSetAdapter.spliterator(), false);
-
-            Stream<Pet> pets = results.map(result -> BeanAdapter.adapt(result, Pet.class));
+            Stream<Pet> pets = resultSetAdapter.stream().map(result -> BeanAdapter.adapt(result, Pet.class));
 
             averageAge = pets.mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
         }

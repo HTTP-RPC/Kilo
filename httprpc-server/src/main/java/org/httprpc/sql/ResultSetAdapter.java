@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Class that presents the contents of a result set as an iterable sequence
@@ -186,5 +188,15 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     @Override
     public Iterator<Map<String, Object>> iterator() {
         return iterator;
+    }
+
+    /**
+     * Returns a stream over the results.
+     *
+     * @return
+     * A stream over the results.
+     */
+    public Stream<Map<String, Object>> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 }

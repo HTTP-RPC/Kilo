@@ -23,13 +23,17 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * CSV decoder.
  */
 public class CSVDecoder extends Decoder {
-    // Cursor
-    private static class Cursor implements Iterable<Map<String, String>> {
+    /**
+     * CSV cursor.
+     */
+    public static class Cursor implements Iterable<Map<String, String>> {
         private Reader reader;
         private char delimiter;
 
@@ -78,7 +82,7 @@ public class CSVDecoder extends Decoder {
 
         private static final int EOF = -1;
 
-        public Cursor(Reader reader, char delimiter) throws IOException {
+        private Cursor(Reader reader, char delimiter) throws IOException {
             this.reader = reader;
             this.delimiter = delimiter;
 
@@ -137,6 +141,16 @@ public class CSVDecoder extends Decoder {
         public Iterator<Map<String, String>> iterator() {
             return iterator;
         }
+
+        /**
+         * Returns a stream over the results.
+         *
+         * @return
+         * A stream over the results.
+         */
+        public Stream<Map<String, String>> stream() {
+            return StreamSupport.stream(spliterator(), false);
+        }
     }
 
     private char delimiter;
@@ -162,13 +176,13 @@ public class CSVDecoder extends Decoder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Iterable<Map<String, String>> read(InputStream inputStream) throws IOException {
+    public Cursor read(InputStream inputStream) throws IOException {
         return super.read(inputStream);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Iterable<Map<String, String>> read(Reader reader) throws IOException {
+    public Cursor read(Reader reader) throws IOException {
         return new Cursor(new BufferedReader(reader), delimiter);
     }
 }

@@ -18,7 +18,6 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
@@ -64,7 +63,7 @@ public class ResultSetAdapterTest extends AbstractTest {
         try (TestResultSet resultSet = new TestResultSet()) {
             ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
 
-            actual = StreamSupport.stream(adapter.spliterator(), false).collect(Collectors.toList());
+            actual = adapter.stream().collect(Collectors.toList());
         }
 
         Assertions.assertEquals(expected, actual);

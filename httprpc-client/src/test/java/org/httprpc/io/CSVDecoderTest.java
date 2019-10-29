@@ -19,7 +19,6 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
@@ -51,8 +50,7 @@ public class CSVDecoderTest extends AbstractTest {
 
         CSVDecoder csvDecoder = new CSVDecoder();
 
-        Iterable<Map<String, String>> cursor = csvDecoder.read(reader);
-        List<Map<String, String>> actual = StreamSupport.stream(cursor.spliterator(), false).collect(Collectors.toList());
+        List<Map<String, String>> actual = csvDecoder.read(reader).stream().collect(Collectors.toList());
 
         Assertions.assertEquals(expected, actual);
     }
