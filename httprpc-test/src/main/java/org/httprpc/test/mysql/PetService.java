@@ -118,7 +118,7 @@ public class PetService extends WebService {
                     templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
                     templateEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else {
-                    throw new UnsupportedOperationException();
+                    throw new IllegalArgumentException();
                 }
             }
         }

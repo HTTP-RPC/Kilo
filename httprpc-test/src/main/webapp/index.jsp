@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title>HTTP-RPC Server</title>
+<title>HTTP-RPC Test</title>
 </head>
 
 <body>

@@ -95,7 +95,7 @@ public class RestaurantService extends WebService {
                 templateEncoder.setBaseName(getClass().getPackage().getName() + ".restaurants");
                 templateEncoder.write(cursorAdapter, getResponse().getOutputStream());
             } else {
-                throw new UnsupportedOperationException();
+                throw new IllegalArgumentException();
             }
         }
     }
