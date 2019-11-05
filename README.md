@@ -1068,7 +1068,7 @@ A sample response including both titles and salaries is shown below:
 ```
 
 ## StreamAdapter
-The `StreamAdapter` class presents the contents of a stream as an iterable sequence. This can be useful for serializing the result of a stream operation without first collecting the results:
+The `StreamAdapter` class presents the contents of a stream as an iterable sequence. This can be used to serialize the result of a stream operation without needing to first collect the results, which may be expensive if the stream is large:
 
 ```java
   List<Integer> values = Arrays.asList(1, 2, 3);
