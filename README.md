@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 85KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 86KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -41,29 +41,31 @@ HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servle
 The HTTP-RPC framework includes the following classes:
 
 * `org.httprpc`
-    * `RequestMethod` - annotation that associates an HTTP verb with a service method
-    * `RequestParameter` - annotation that associates a custom request parameter name with a method argument
-    * `ResourcePath` - annotation that associates a resource path with a service method
-    * `Response` - annotation that associates a custom response description with a service method
-    * `WebServiceException` - exception thrown when a service operation returns an error
+    * `RequestMethod` - associates an HTTP verb with a service method
+    * `RequestParameter` - associates a custom request parameter name with a method argument
+    * `ResourcePath` - associates a resource path with a service method
+    * `Response` - associates a custom response description with a service method
+    * `WebServiceException` - thrown when a service operation returns an error
     * `WebServiceProxy` - web service invocation proxy
     * `WebService` - abstract base class for web services
 * `org.httprpc.io`
-    * `CSVDecoder` - class that decodes an iterable sequence of values from CSV
-    * `CSVEncoder` - class that encodes an iterable sequence of values to CSV
+    * `CSVDecoder` - decodes an iterable sequence of values from CSV
+    * `CSVEncoder` - encodes an iterable sequence of values to CSV
     * `Decoder` - abstract base class for decoders
     * `Encoder` - abstract base class for encoders
-    * `JSONDecoder` - class that decodes an object hierarchy from JSON
-    * `JSONEncoder` - class that encodes an object hierarchy to JSON
-    * `TemplateEncoder` - class that encodes an object hierarchy using a template document
-    * `XMLEncoder` - class that encodes an object hierarchy to XML
+    * `JSONDecoder` - decodes an object hierarchy from JSON
+    * `JSONEncoder` - an object hierarchy to JSON
+    * `TemplateEncoder` - encodes an object hierarchy using a template document
+    * `XMLEncoder` - encodes an object hierarchy to XML
 * `org.httprpc.beans`
-    * `BeanAdapter` - class that presents the properties of a Java bean object as a map and vice versa
-    * `Ignore` - annotation indicating that a bean property should be ignored
-    * `Key` - annotation that associates a custom key with a bean property
+    * `BeanAdapter` - presents the properties of a Java bean object as a map and vice versa
+    * `Ignore` - indicates that a bean property should be ignored
+    * `Key` - associates a custom key with a bean property
 * `org.httprpc.sql`
-    * `Parameters` - class for applying named parameter values to prepared statements 
-    * `ResultSetAdapter` - class that presents the contents of a JDBC result set as an iterable sequence of maps
+    * `Parameters` - applies named parameter values to prepared statements 
+    * `ResultSetAdapter` - presents the contents of a JDBC result set as an iterable sequence of maps
+* `org.httprpc.util`
+    * `StreamAdapter` - presents the contents of a stream as an iterable sequence.
 
 These classes are discussed in more detail in the following sections.
 
@@ -1063,6 +1065,17 @@ A sample response including both titles and salaries is shown below:
     ...
   ]
 }
+```
+
+## StreamAdapter
+The `StreamAdapter` class presents the contents of a stream as an iterable sequence. This can be useful for serializing the result of a stream operation without first collecting the results:
+
+```java
+  List<Integer> values = Arrays.asList(1, 2, 3);
+
+  JSONEncoder jsonEncoder = new JSONEncoder(true);
+
+  jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), writer);
 ```
 
 # Kotlin Support
