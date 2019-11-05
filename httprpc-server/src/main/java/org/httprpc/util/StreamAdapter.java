@@ -29,18 +29,6 @@ public class StreamAdapter<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            private Iterator<T> iterator = stream.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                return iterator.next();
-            }
-        };
+        return stream.iterator();
     }
 }
