@@ -679,21 +679,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The value at the given path, or <tt>null</tt> if the value does not exist.
      */
     @SuppressWarnings("unchecked")
-    public static <V> V valueAt(Map<String, ?> root, String path) {
+    public static <V> V valueAt(Object root, String path) {
         Object value = root;
 
         String[] components = path.split("\\.");
 
         for (int i = 0; i < components.length; i++) {
-            String component = components[i];
-
-            if (value instanceof Map<?, ?>) {
-                value = ((Map<?, ?>)value).get(component);
-            } else {
-                value = null;
-
+            if (value == null) {
                 break;
             }
+
+            String component = components[i];
+            
+            if (!(value instanceof Map<?, ?>)) {
+                value = new BeanAdapter(value);
+            }
+
+            value = ((Map<?, ?>)value).get(component);
         }
 
         return (V)value;
