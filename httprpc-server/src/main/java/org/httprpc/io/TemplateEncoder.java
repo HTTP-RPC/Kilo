@@ -14,6 +14,8 @@
 
 package org.httprpc.io;
 
+import org.httprpc.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Template encoder.
@@ -62,222 +65,267 @@ public class TemplateEncoder extends Encoder<Object> {
          * The modifier argument, or <tt>null</tt> if no argument was provided.
          *
          * @param locale
-         * The locale in which the modifier is being applied.
+         * The locale for which the modifier is being applied.
+         *
+         * @param timeZone
+         * The time zone for which the modifier is being applied.
          *
          * @return
          * The modified value.
          */
-        Object apply(Object value, String argument, Locale locale);
+        Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
     }
 
     // Format modifier
     private static class FormatModifier implements Modifier {
+        static final String CURRENCY = "currency";
+        static final String PERCENT = "percent";
+
+        static final String SHORT_DATE = "shortDate";
+        static final String MEDIUM_DATE = "mediumDate";
+        static final String LONG_DATE = "longDate";
+        static final String FULL_DATE = "fullDate";
+
+        static final String SHORT_TIME = "shortTime";
+        static final String MEDIUM_TIME = "mediumTime";
+        static final String LONG_TIME = "longTime";
+        static final String FULL_TIME = "fullTime";
+
+        static final String SHORT_DATE_TIME = "shortDateTime";
+        static final String MEDIUM_DATE_TIME = "mediumDateTime";
+        static final String LONG_DATE_TIME = "longDateTime";
+        static final String FULL_DATE_TIME = "fullDateTime";
+
         @Override
-        public Object apply(Object value, String argument, Locale locale) {
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            if (argument == null) {
+                return value;
+            }
+
             Object result;
-            if (argument != null) {
-                switch (argument) {
-                    case "currency": {
-                        result = NumberFormat.getCurrencyInstance(locale).format(value);
+            switch (argument) {
+                case CURRENCY: {
+                    result = NumberFormat.getCurrencyInstance(locale).format(value);
 
-                        break;
-                    }
-
-                    case "percent": {
-                        result = NumberFormat.getPercentInstance(locale).format(value);
-
-                        break;
-                    }
-
-                    case "shortDate":
-                    case "mediumDate":
-                    case "longDate":
-                    case "fullDate": {
-                        if (value instanceof String) {
-                            value = LocalDate.parse((String)value);
-                        }
-
-                        switch (argument) {
-                            case "shortDate": {
-                                if (value instanceof LocalDate) {
-                                    result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateInstance(DateFormat.SHORT, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "mediumDate": {
-                                if (value instanceof LocalDate) {
-                                    result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "longDate": {
-                                if (value instanceof LocalDate) {
-                                    result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateInstance(DateFormat.LONG, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "fullDate": {
-                                if (value instanceof LocalDate) {
-                                    result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateInstance(DateFormat.FULL, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            default: {
-                                throw new RuntimeException();
-                            }
-                        }
-
-                        break;
-                    }
-
-                    case "shortTime":
-                    case "mediumTime":
-                    case "longTime":
-                    case "fullTime": {
-                        if (value instanceof String) {
-                            value = LocalTime.parse((String)value);
-                        }
-
-                        switch (argument) {
-                            case "shortTime": {
-                                if (value instanceof LocalTime) {
-                                    result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "mediumTime": {
-                                if (value instanceof LocalTime) {
-                                    result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "longTime": {
-                                if (value instanceof LocalTime) {
-                                    result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getTimeInstance(DateFormat.LONG, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "fullTime": {
-                                if (value instanceof LocalTime) {
-                                    result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getTimeInstance(DateFormat.FULL, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            default: {
-                                throw new RuntimeException();
-                            }
-                        }
-
-                        break;
-                    }
-
-                    case "shortDateTime":
-                    case "mediumDateTime":
-                    case "longDateTime":
-                    case "fullDateTime": {
-                        if (value instanceof String) {
-                            value = LocalDateTime.parse((String)value);
-                        }
-
-                        switch (argument) {
-                            case "shortDateTime": {
-                                if (value instanceof LocalDateTime) {
-                                    result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "mediumDateTime": {
-                                if (value instanceof LocalDateTime) {
-                                    result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "longDateTime": {
-                                if (value instanceof LocalDateTime) {
-                                    result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            case "fullDateTime": {
-                                if (value instanceof LocalDateTime) {
-                                    result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(locale));
-                                } else {
-                                    result = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale).format(value);
-                                }
-
-                                break;
-                            }
-
-                            default: {
-                                throw new RuntimeException();
-                            }
-                        }
-
-                        break;
-                    }
-
-                    default: {
-                        result = String.format(locale, argument, value);
-
-                        break;
-                    }
+                    break;
                 }
-            } else {
-                result = value;
+
+                case PERCENT: {
+                    result = NumberFormat.getPercentInstance(locale).format(value);
+
+                    break;
+                }
+
+                case SHORT_DATE:
+                case MEDIUM_DATE:
+                case LONG_DATE:
+                case FULL_DATE: {
+                    if (value instanceof String) {
+                        value = LocalDate.parse((String)value);
+                    }
+
+                    switch (argument) {
+                        case SHORT_DATE: {
+                            if (value instanceof LocalDate) {
+                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale));
+                            } else {
+                                result = getDateInstance(DateFormat.SHORT, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case MEDIUM_DATE: {
+                            if (value instanceof LocalDate) {
+                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
+                            } else {
+                                result = getDateInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case LONG_DATE: {
+                            if (value instanceof LocalDate) {
+                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale));
+                            } else {
+                                result = getDateInstance(DateFormat.LONG, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case FULL_DATE: {
+                            if (value instanceof LocalDate) {
+                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale));
+                            } else {
+                                result = getDateInstance(DateFormat.FULL, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        default: {
+                            throw new UnsupportedOperationException();
+                        }
+                    }
+
+                    break;
+                }
+
+                case SHORT_TIME:
+                case MEDIUM_TIME:
+                case LONG_TIME:
+                case FULL_TIME: {
+                    if (value instanceof String) {
+                        value = LocalTime.parse((String)value);
+                    }
+
+                    switch (argument) {
+                        case SHORT_TIME: {
+                            if (value instanceof LocalTime) {
+                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale));
+                            } else {
+                                result = getTimeInstance(DateFormat.SHORT, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case MEDIUM_TIME: {
+                            if (value instanceof LocalTime) {
+                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale));
+                            } else {
+                                result = getTimeInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case LONG_TIME: {
+                            if (value instanceof LocalTime) {
+                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withLocale(locale));
+                            } else {
+                                result = getTimeInstance(DateFormat.LONG, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case FULL_TIME: {
+                            if (value instanceof LocalTime) {
+                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL).withLocale(locale));
+                            } else {
+                                result = getTimeInstance(DateFormat.FULL, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        default: {
+                            throw new UnsupportedOperationException();
+                        }
+                    }
+
+                    break;
+                }
+
+                case SHORT_DATE_TIME:
+                case MEDIUM_DATE_TIME:
+                case LONG_DATE_TIME:
+                case FULL_DATE_TIME: {
+                    if (value instanceof String) {
+                        value = LocalDateTime.parse((String)value);
+                    }
+
+                    switch (argument) {
+                        case SHORT_DATE_TIME: {
+                            if (value instanceof LocalDateTime) {
+                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale));
+                            } else {
+                                result = getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case MEDIUM_DATE_TIME: {
+                            if (value instanceof LocalDateTime) {
+                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale));
+                            } else {
+                                result = getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case LONG_DATE_TIME: {
+                            if (value instanceof LocalDateTime) {
+                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(locale));
+                            } else {
+                                result = getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        case FULL_DATE_TIME: {
+                            if (value instanceof LocalDateTime) {
+                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(locale));
+                            } else {
+                                result = getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale, timeZone).format(value);
+                            }
+
+                            break;
+                        }
+
+                        default: {
+                            throw new UnsupportedOperationException();
+                        }
+                    }
+
+                    break;
+                }
+
+                default: {
+                    result = String.format(locale, argument, value);
+
+                    break;
+                }
             }
 
             return result;
+        }
+
+        static DateFormat getDateInstance(int style, Locale locale, TimeZone timeZone) {
+            DateFormat dateFormat = DateFormat.getDateInstance(style, locale);
+
+            dateFormat.setTimeZone(timeZone);
+
+            return dateFormat;
+        }
+
+        static DateFormat getTimeInstance(int style, Locale locale, TimeZone timeZone) {
+            DateFormat dateFormat = DateFormat.getTimeInstance(style, locale);
+
+            dateFormat.setTimeZone(timeZone);
+
+            return dateFormat;
+        }
+
+        static DateFormat getDateTimeInstance(int dateStyle, int timeStyle, Locale locale, TimeZone timeZone) {
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(dateStyle, timeStyle, locale);
+
+            dateFormat.setTimeZone(timeZone);
+
+            return dateFormat;
         }
     }
 
     // URL escape modifier
     private static class URLEscapeModifier implements Modifier {
         @Override
-        public Object apply(Object value, String argument, Locale locale) {
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             String result;
             try {
                 result = URLEncoder.encode(value.toString(), "UTF-8");
@@ -292,7 +340,7 @@ public class TemplateEncoder extends Encoder<Object> {
     // Markup escape modifier
     private static class MarkupEscapeModifier implements Modifier {
         @Override
-        public Object apply(Object value, String argument, Locale locale) {
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             StringBuilder resultBuilder = new StringBuilder();
 
             String string = value.toString();
@@ -330,7 +378,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private Charset charset;
 
     private String baseName = null;
-    private HashMap<String, Object> context = new HashMap<>();
+    private Map<String, ?> context = Collections.emptyMap();
 
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
@@ -421,8 +469,22 @@ public class TemplateEncoder extends Encoder<Object> {
      * @return
      * The template context.
      */
-    public Map<String, Object> getContext() {
+    public Map<String, ?> getContext() {
         return context;
+    }
+
+    /**
+     * Sets the template context.
+     *
+     * @param context
+     * The template context.
+     */
+    public void setContext(Map<String, ?> context) {
+        if (context == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.context = context;
     }
 
     @Override
@@ -446,9 +508,35 @@ public class TemplateEncoder extends Encoder<Object> {
      * If an exception occurs.
      */
     public void write(Object value, OutputStream outputStream, Locale locale) throws IOException {
+        write(value, outputStream, locale, TimeZone.getDefault());
+    }
+
+    /**
+     * Writes a value to an output stream.
+     *
+     * @param value
+     * The value to encode.
+     *
+     * @param outputStream
+     * The output stream to write to.
+     *
+     * @param locale
+     * The locale to use when writing the value.
+     *
+     * @param timeZone
+     * The time zone to use when writing the value.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void write(Object value, OutputStream outputStream, Locale locale, TimeZone timeZone) throws IOException {
+        if (outputStream == null) {
+            throw new IllegalArgumentException();
+        }
+
         Writer writer = new OutputStreamWriter(outputStream, getCharset());
 
-        write(value, writer, locale);
+        write(value, writer, locale, timeZone);
 
         writer.flush();
     }
@@ -474,23 +562,58 @@ public class TemplateEncoder extends Encoder<Object> {
      * If an exception occurs.
      */
     public void write(Object value, Writer writer, Locale locale) throws IOException {
+        write(value, writer, locale, TimeZone.getDefault());
+    }
+
+    /**
+     * Writes a value to a character stream.
+     *
+     * @param value
+     * The value to encode.
+     *
+     * @param writer
+     * The character stream to write to.
+     *
+     * @param locale
+     * The locale to use when writing the value.
+     *
+     * @param timeZone
+     * The time zone to use when writing the value.
+     *
+     * @throws IOException
+     * If an exception occurs.
+     */
+    public void write(Object value, Writer writer, Locale locale, TimeZone timeZone) throws IOException {
+        if (writer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (locale == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (timeZone == null) {
+            throw new IllegalArgumentException();
+        }
+
         if (value != null) {
             try (InputStream inputStream = url.openStream()) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
                 writer = new BufferedWriter(writer);
 
-                writeRoot(value, writer, locale, reader);
+                writeRoot(value, writer, locale, timeZone, reader);
 
                 writer.flush();
             }
         }
     }
 
-    private void writeRoot(Object root, Writer writer, Locale locale, Reader reader) throws IOException {
-        Map<?, ?> dictionary;
+    @SuppressWarnings("unchecked")
+    private void writeRoot(Object root, Writer writer, Locale locale, TimeZone timeZone, Reader reader) throws IOException {
+        Map<String, ?> dictionary;
         if (root instanceof Map<?, ?>) {
-            dictionary = (Map<?, ?>)root;
+            dictionary = (Map<String, ?>)root;
         } else {
             dictionary = Collections.singletonMap(".", root);
         }
@@ -591,7 +714,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                         writer.append(separator);
                                     }
 
-                                    writeRoot(element, writer, locale, reader);
+                                    writeRoot(element, writer, locale, timeZone, reader);
 
                                     if (iterator.hasNext()) {
                                         reader.reset();
@@ -612,7 +735,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     }
                                 };
 
-                                writeRoot(Collections.emptyMap(), new NullWriter(), locale, reader);
+                                writeRoot(Collections.emptyMap(), new NullWriter(), locale, timeZone, reader);
                             }
 
                             includes = history.pop();
@@ -634,14 +757,14 @@ public class TemplateEncoder extends Encoder<Object> {
                                 try (InputStream inputStream = url.openStream()) {
                                     include = new PagedReader(new InputStreamReader(inputStream));
 
-                                    writeRoot(dictionary, writer, locale, include);
+                                    writeRoot(dictionary, writer, locale, timeZone, include);
 
                                     includes.put(marker, include);
                                 }
                             } else {
                                 include.reset();
 
-                                writeRoot(dictionary, writer, locale, include);
+                                writeRoot(dictionary, writer, locale, timeZone, include);
                             }
 
                             break;
@@ -658,7 +781,9 @@ public class TemplateEncoder extends Encoder<Object> {
                             String key = components[0];
 
                             Object value;
-                            if (key.startsWith(RESOURCE_PREFIX)) {
+                            if (key.equals(".")) {
+                                value = dictionary.get(key);
+                            } else if (key.startsWith(RESOURCE_PREFIX)) {
                                 if (baseName != null) {
                                     ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
 
@@ -667,25 +792,9 @@ public class TemplateEncoder extends Encoder<Object> {
                                     value = null;
                                 }
                             } else if (key.startsWith(CONTEXT_PREFIX)) {
-                                value = context.get(key.substring(CONTEXT_PREFIX.length()));
-                            } else if (key.equals(".")) {
-                                value = dictionary.get(key);
+                                value = BeanAdapter.valueAt(context, key.substring(CONTEXT_PREFIX.length()));
                             } else {
-                                value = dictionary;
-
-                                String[] path = key.split("\\.");
-
-                                for (int i = 0; i < path.length; i++) {
-                                    if (!(value instanceof Map<?, ?>)) {
-                                        throw new IOException("Invalid path.");
-                                    }
-
-                                    value = ((Map<?, ?>)value).get(path[i]);
-
-                                    if (value == null) {
-                                        break;
-                                    }
-                                }
+                                value = BeanAdapter.valueAt(dictionary, key);
                             }
 
                             if (value != null) {
@@ -707,7 +816,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                         Modifier modifier = modifiers.get(name);
 
                                         if (modifier != null) {
-                                            value = modifier.apply(value, argument, locale);
+                                            value = modifier.apply(value, argument, locale, timeZone);
                                         }
                                     }
                                 }

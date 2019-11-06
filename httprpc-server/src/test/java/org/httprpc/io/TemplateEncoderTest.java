@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 public class TemplateEncoderTest extends AbstractTest {
     static {
-        TemplateEncoder.getModifiers().put("case", (value, argument, locale) -> {
+        TemplateEncoder.getModifiers().put("case", (value, argument, locale, timeZone) -> {
             String result = value.toString();
 
             if (argument != null) {
@@ -431,7 +431,7 @@ public class TemplateEncoderTest extends AbstractTest {
     public void testContextProperty() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("context.txt"));
 
-        encoder.getContext().put("a", "A");
+        encoder.setContext(Collections.singletonMap("a", "A"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {

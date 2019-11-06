@@ -588,10 +588,10 @@ public String getBaseName() { ... }
 public void setBaseName(String baseName) { ... }
 ```
 
-Values can be added to the template context using the following method, which returns a map representing the context entries:
+Values can be added to the template context using the following method, which accepts a map of context entries:
 
 ```java
-public Map<String, Object> getContext() { ... }
+public void setContext(Map<String, ?>) { ... }
 ```
  
 Templates are applied using one of the following methods:
@@ -599,11 +599,13 @@ Templates are applied using one of the following methods:
 ```java
 public void write(Object value, OutputStream outputStream) { ... }
 public void write(Object value, OutputStream outputStream, Locale locale) { ... }
+public void write(Object value, OutputStream outputStream, Locale locale, TimeZone timeZone) { ... }
 public void write(Object value, Writer writer) { ... }
 public void write(Object value, Writer writer, Locale locale) { ... }
+public void write(Object value, Writer writer, Locale locale, TimeZone timeZone) { ... }
 ```
 
-The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third argument represents the locale for which the template will be applied. If unspecified, the default locale is used.
+The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
 
 For example, the following code snippet applies a template named _map.txt_ to the contents of a data dictionary whose values are specified by a hash map:
 
@@ -642,7 +644,7 @@ a = hello, b = 123, c = true
 Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
 
 ```java
-Object apply(Object value, String argument, Locale locale);
+Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
 ```
  
 The first argument to this method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
@@ -650,7 +652,7 @@ The first argument to this method represents the value to be modified, and the s
 For example, the following code creates a modifier that converts values to uppercase:
 
 ```java
-TemplateEncoder.getModifiers().put("uppercase", (value, argument, locale) -> value.toString().toUpperCase(locale));
+TemplateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 ```
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
