@@ -312,7 +312,33 @@ public class TemplateEncoderTest extends AbstractTest {
     }
 
     @Test
-    public void testHTMLEscapeModifier() throws IOException {
+    public void testJSONEscapeModifier() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("json.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write("\"\\\b\f\n\r\t", writer);
+            result = writer.toString();
+        }
+
+        Assertions.assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", result);
+    }
+
+    @Test
+    public void testCSVEscapeModifier() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write("a\"b\"c", writer);
+            result = writer.toString();
+        }
+
+        Assertions.assertEquals("a\"\"b\"\"c", result);
+    }
+
+    @Test
+    public void testMarkupEscapeModifier() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("html.txt"));
 
         String result;

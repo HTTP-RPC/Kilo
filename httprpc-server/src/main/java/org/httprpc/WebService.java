@@ -693,15 +693,7 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     xmlStreamWriter.writeCharacters(") -> ");
-
-                    Type type = handler.method.getGenericReturnType();
-                    Response response = handler.method.getAnnotation(Response.class);
-
-                    if ((type == Void.class || type == Void.TYPE) && response != null) {
-                        xmlStreamWriter.writeCharacters(response.value());
-                    } else {
-                        xmlStreamWriter.writeCharacters(BeanAdapter.describe(type, structures));
-                    }
+                    xmlStreamWriter.writeCharacters(BeanAdapter.describe(handler.method.getGenericReturnType(), structures));
 
                     xmlStreamWriter.writeEndElement();
 

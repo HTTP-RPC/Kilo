@@ -27,7 +27,6 @@ import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
 import org.httprpc.io.XMLEncoder;
 import org.httprpc.RequestMethod;
-import org.httprpc.Response;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
@@ -60,7 +59,6 @@ public class RestaurantService extends WebService {
     }
 
     @RequestMethod("GET")
-    @Response("[{string: any}]")
     public void getRestaurants(String zipCode, String format) throws IOException {
         MongoDatabase db = mongoClient.getDatabase("test");
 

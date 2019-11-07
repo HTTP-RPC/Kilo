@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 86KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 88KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -44,7 +44,6 @@ The HTTP-RPC framework includes the following classes:
     * `RequestMethod` - associates an HTTP verb with a service method
     * `RequestParameter` - associates a custom request parameter name with a method argument
     * `ResourcePath` - associates a resource path with a service method
-    * `Response` - associates a custom response description with a service method
     * `WebServiceException` - thrown when a service operation returns an error
     * `WebServiceProxy` - web service invocation proxy
     * `WebService` - abstract base class for web services
@@ -308,26 +307,6 @@ For example, a description of the math service might look like this:
 > ```
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the generated output.
-
-#### Custom Response Descriptions
-Methods that return a custom response can use the `Response` annotation to describe the result. For example, given this method declaration:
-
-```java
-@RequestMethod("GET")
-@ResourcePath("map")
-@Response("{text: string, number: integer, flag: boolean}")
-public Map<String, ?> getMap() {
-    ...
-}
-```
-
-the service would produce a description similar to the following:
-
-> ## /map
-> 
-> ```
-> GET () -> {text: string, number: integer, flag: boolean}
-> ```
 
 #### Localized Service Descriptions
 Services can provide localized API documentation by including one or more resource bundles on the classpath. These resource bundles must reside in the same package and have the same base name as the service itself.

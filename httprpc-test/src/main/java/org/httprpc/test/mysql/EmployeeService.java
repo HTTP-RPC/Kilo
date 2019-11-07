@@ -32,7 +32,6 @@ import javax.sql.DataSource;
 
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-import org.httprpc.Response;
 import org.httprpc.WebService;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.sql.Parameters;
@@ -62,11 +61,6 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @Response("[{\n"
-        + "  employeeNumber: integer,\n"
-        + "  firstName: string,\n"
-        + "  lastName: string\n"
-        + "}]")
     public void getEmployees(String name) throws SQLException, IOException {
         Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
             + "first_name AS firstName, "
@@ -99,21 +93,6 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("?:employeeNumber")
-    @Response("{\n"
-        + "  employeeNumber: integer,\n"
-        + "  firstName: string,\n"
-        + "  lastName: string,\n"
-        + "  titles: [{\n"
-        + "    title: string,\n"
-        + "    fromDate: date,\n"
-        + "    toDate: date\n"
-        + "  }],\n"
-        + "  salaries: [{\n"
-        + "    salary: integer,\n"
-        + "    fromDate: date,\n"
-        + "    toDate: date\n"
-        + "  }]\n"
-        + "}")
     public Map<String, ?> getEmployee(List<String> details) throws SQLException {
         String employeeNumber = getKey("employeeNumber");
 

@@ -337,6 +337,60 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
+    // JSON escape modifier
+    private static class JSONEscapeModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            String string = value.toString();
+
+            for (int i = 0, n = string.length(); i < n; i++) {
+                char c = string.charAt(i);
+
+                if (c == '"' || c == '\\') {
+                    resultBuilder.append("\\" + c);
+                } else if (c == '\b') {
+                    resultBuilder.append("\\b");
+                } else if (c == '\f') {
+                    resultBuilder.append("\\f");
+                } else if (c == '\n') {
+                    resultBuilder.append("\\n");
+                } else if (c == '\r') {
+                    resultBuilder.append("\\r");
+                } else if (c == '\t') {
+                    resultBuilder.append("\\t");
+                } else {
+                    resultBuilder.append(c);
+                }
+            }
+
+            return resultBuilder.toString();
+        }
+    }
+
+    // CSV escape modifier
+    private static class CSVEscapeModifier implements TemplateEncoder.Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            String string = value.toString();
+
+            for (int i = 0, n = string.length(); i < n; i++) {
+                char c = string.charAt(i);
+
+                if (c == '"') {
+                    resultBuilder.append(c);
+                }
+
+                resultBuilder.append(c);
+            }
+
+            return resultBuilder.toString();
+        }
+    }
+
     // Markup escape modifier
     private static class MarkupEscapeModifier implements Modifier {
         @Override
@@ -389,6 +443,9 @@ public class TemplateEncoder extends Encoder<Object> {
         modifiers.put("format", new FormatModifier());
 
         modifiers.put("^url", new URLEscapeModifier());
+
+        modifiers.put("^json", new JSONEscapeModifier());
+        modifiers.put("^csv", new CSVEscapeModifier());
 
         MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
 

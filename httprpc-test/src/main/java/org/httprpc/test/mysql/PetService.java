@@ -40,7 +40,6 @@ import org.httprpc.io.TemplateEncoder;
 import org.httprpc.io.XMLEncoder;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-import org.httprpc.Response;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
 
@@ -72,12 +71,6 @@ public class PetService extends WebService {
     }
 
     @RequestMethod("GET")
-    @Response("[{\n"
-        + "  name: string,\n"
-        + "  species: string,\n"
-        + "  sex: string,\n"
-        + "  birth: date\n"
-        + "}]")
     public void getPets(String owner, String format) throws SQLException, IOException {
         Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
