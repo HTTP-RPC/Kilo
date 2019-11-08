@@ -102,18 +102,13 @@ public class TemplateEncoder extends Encoder<Object> {
                 return value;
             }
 
-            Object result;
             switch (argument) {
                 case CURRENCY: {
-                    result = NumberFormat.getCurrencyInstance(locale).format(value);
-
-                    break;
+                    return NumberFormat.getCurrencyInstance(locale).format(value);
                 }
 
                 case PERCENT: {
-                    result = NumberFormat.getPercentInstance(locale).format(value);
-
-                    break;
+                    return NumberFormat.getPercentInstance(locale).format(value);
                 }
 
                 case SHORT_DATE:
@@ -127,50 +122,40 @@ public class TemplateEncoder extends Encoder<Object> {
                     switch (argument) {
                         case SHORT_DATE: {
                             if (value instanceof LocalDate) {
-                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale));
+                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale));
                             } else {
-                                result = getDateInstance(DateFormat.SHORT, locale, timeZone).format(value);
+                                return getDateInstance(DateFormat.SHORT, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case MEDIUM_DATE: {
                             if (value instanceof LocalDate) {
-                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
+                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
                             } else {
-                                result = getDateInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
+                                return getDateInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case LONG_DATE: {
                             if (value instanceof LocalDate) {
-                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale));
+                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale));
                             } else {
-                                result = getDateInstance(DateFormat.LONG, locale, timeZone).format(value);
+                                return getDateInstance(DateFormat.LONG, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case FULL_DATE: {
                             if (value instanceof LocalDate) {
-                                result = ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale));
+                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale));
                             } else {
-                                result = getDateInstance(DateFormat.FULL, locale, timeZone).format(value);
+                                return getDateInstance(DateFormat.FULL, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         default: {
                             throw new UnsupportedOperationException();
                         }
                     }
-
-                    break;
                 }
 
                 case SHORT_TIME:
@@ -184,50 +169,40 @@ public class TemplateEncoder extends Encoder<Object> {
                     switch (argument) {
                         case SHORT_TIME: {
                             if (value instanceof LocalTime) {
-                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale));
+                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale));
                             } else {
-                                result = getTimeInstance(DateFormat.SHORT, locale, timeZone).format(value);
+                                return getTimeInstance(DateFormat.SHORT, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case MEDIUM_TIME: {
                             if (value instanceof LocalTime) {
-                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale));
+                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale));
                             } else {
-                                result = getTimeInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
+                                return getTimeInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case LONG_TIME: {
                             if (value instanceof LocalTime) {
-                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withLocale(locale));
+                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withLocale(locale));
                             } else {
-                                result = getTimeInstance(DateFormat.LONG, locale, timeZone).format(value);
+                                return getTimeInstance(DateFormat.LONG, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case FULL_TIME: {
                             if (value instanceof LocalTime) {
-                                result = ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL).withLocale(locale));
+                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL).withLocale(locale));
                             } else {
-                                result = getTimeInstance(DateFormat.FULL, locale, timeZone).format(value);
+                                return getTimeInstance(DateFormat.FULL, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         default: {
                             throw new UnsupportedOperationException();
                         }
                     }
-
-                    break;
                 }
 
                 case SHORT_DATE_TIME:
@@ -241,60 +216,46 @@ public class TemplateEncoder extends Encoder<Object> {
                     switch (argument) {
                         case SHORT_DATE_TIME: {
                             if (value instanceof LocalDateTime) {
-                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale));
+                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale));
                             } else {
-                                result = getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale, timeZone).format(value);
+                                return getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case MEDIUM_DATE_TIME: {
                             if (value instanceof LocalDateTime) {
-                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale));
+                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale));
                             } else {
-                                result = getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale, timeZone).format(value);
+                                return getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case LONG_DATE_TIME: {
                             if (value instanceof LocalDateTime) {
-                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(locale));
+                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(locale));
                             } else {
-                                result = getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale, timeZone).format(value);
+                                return getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         case FULL_DATE_TIME: {
                             if (value instanceof LocalDateTime) {
-                                result = ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(locale));
+                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(locale));
                             } else {
-                                result = getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale, timeZone).format(value);
+                                return getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale, timeZone).format(value);
                             }
-
-                            break;
                         }
 
                         default: {
                             throw new UnsupportedOperationException();
                         }
                     }
-
-                    break;
                 }
 
                 default: {
-                    result = String.format(locale, argument, value);
-
-                    break;
+                    return String.format(locale, argument, value);
                 }
             }
-
-            return result;
         }
 
         static DateFormat getDateInstance(int style, Locale locale, TimeZone timeZone) {
@@ -326,14 +287,11 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class URLEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            String result;
             try {
-                result = URLEncoder.encode(value.toString(), "UTF-8");
+                return URLEncoder.encode(value.toString(), "UTF-8");
             } catch (UnsupportedEncodingException exception) {
                 throw new RuntimeException(exception);
             }
-
-            return result;
         }
     }
 
@@ -341,31 +299,35 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class JSONEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            StringBuilder resultBuilder = new StringBuilder();
+            if (value instanceof CharSequence) {
+                CharSequence string = (CharSequence)value;
 
-            String string = value.toString();
+                StringBuilder resultBuilder = new StringBuilder();
 
-            for (int i = 0, n = string.length(); i < n; i++) {
-                char c = string.charAt(i);
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    char c = string.charAt(i);
 
-                if (c == '"' || c == '\\') {
-                    resultBuilder.append("\\" + c);
-                } else if (c == '\b') {
-                    resultBuilder.append("\\b");
-                } else if (c == '\f') {
-                    resultBuilder.append("\\f");
-                } else if (c == '\n') {
-                    resultBuilder.append("\\n");
-                } else if (c == '\r') {
-                    resultBuilder.append("\\r");
-                } else if (c == '\t') {
-                    resultBuilder.append("\\t");
-                } else {
-                    resultBuilder.append(c);
+                    if (c == '"' || c == '\\') {
+                        resultBuilder.append("\\" + c);
+                    } else if (c == '\b') {
+                        resultBuilder.append("\\b");
+                    } else if (c == '\f') {
+                        resultBuilder.append("\\f");
+                    } else if (c == '\n') {
+                        resultBuilder.append("\\n");
+                    } else if (c == '\r') {
+                        resultBuilder.append("\\r");
+                    } else if (c == '\t') {
+                        resultBuilder.append("\\t");
+                    } else {
+                        resultBuilder.append(c);
+                    }
                 }
-            }
 
-            return resultBuilder.toString();
+                return resultBuilder.toString();
+            } else {
+                return value;
+            }
         }
     }
 
@@ -373,21 +335,29 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class CSVEscapeModifier implements TemplateEncoder.Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            StringBuilder resultBuilder = new StringBuilder();
+            if (value instanceof CharSequence) {
+                CharSequence string = (CharSequence)value;
 
-            String string = value.toString();
+                StringBuilder resultBuilder = new StringBuilder();
 
-            for (int i = 0, n = string.length(); i < n; i++) {
-                char c = string.charAt(i);
+                resultBuilder.append('"');
 
-                if (c == '"') {
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    char c = string.charAt(i);
+
+                    if (c == '"') {
+                        resultBuilder.append(c);
+                    }
+
                     resultBuilder.append(c);
                 }
 
-                resultBuilder.append(c);
-            }
+                resultBuilder.append('"');
 
-            return resultBuilder.toString();
+                return resultBuilder.toString();
+            } else {
+                return value;
+            }
         }
     }
 
@@ -395,27 +365,31 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class MarkupEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            StringBuilder resultBuilder = new StringBuilder();
+            if (value instanceof CharSequence) {
+                CharSequence string = (CharSequence)value;
 
-            String string = value.toString();
+                StringBuilder resultBuilder = new StringBuilder();
 
-            for (int i = 0, n = string.length(); i < n; i++) {
-                char c = string.charAt(i);
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    char c = string.charAt(i);
 
-                if (c == '<') {
-                    resultBuilder.append("&lt;");
-                } else if (c == '>') {
-                    resultBuilder.append("&gt;");
-                } else if (c == '&') {
-                    resultBuilder.append("&amp;");
-                } else if (c == '"') {
-                    resultBuilder.append("&quot;");
-                } else {
-                    resultBuilder.append(c);
+                    if (c == '<') {
+                        resultBuilder.append("&lt;");
+                    } else if (c == '>') {
+                        resultBuilder.append("&gt;");
+                    } else if (c == '&') {
+                        resultBuilder.append("&amp;");
+                    } else if (c == '"') {
+                        resultBuilder.append("&quot;");
+                    } else {
+                        resultBuilder.append(c);
+                    }
                 }
-            }
 
-            return resultBuilder.toString();
+                return resultBuilder.toString();
+            } else {
+                return value;
+            }
         }
     }
 
@@ -430,6 +404,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private URL url;
     private Charset charset;
+    private Modifier defaultEscapeModifier;
 
     private String baseName = null;
     private Map<String, ?> context = Collections.emptyMap();
@@ -439,24 +414,25 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private static HashMap<String, Modifier> modifiers = new HashMap<>();
 
-    static {
-        modifiers.put("format", new FormatModifier());
-
-        modifiers.put("^url", new URLEscapeModifier());
-
-        modifiers.put("^json", new JSONEscapeModifier());
-        modifiers.put("^csv", new CSVEscapeModifier());
-
-        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
-
-        modifiers.put("^html", markupEscapeModifier);
-        modifiers.put("^xml", markupEscapeModifier);
-    }
-
     private static final int EOF = -1;
 
     private static final String RESOURCE_PREFIX = "@";
     private static final String CONTEXT_PREFIX = "$";
+
+    private static final String ESCAPE_MODIFIER_FORMAT = "^%s";
+
+    static {
+        modifiers.put("format", new FormatModifier());
+
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "url"), new URLEscapeModifier());
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "json"), new JSONEscapeModifier());
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "csv"), new CSVEscapeModifier());
+
+        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
+
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "xml"), markupEscapeModifier);
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "html"), markupEscapeModifier);
+    }
 
     /**
      * Constructs a new template encoder.
@@ -486,6 +462,16 @@ public class TemplateEncoder extends Encoder<Object> {
 
         this.url = url;
         this.charset = charset;
+
+        String path = url.getPath();
+
+        int i = path.lastIndexOf('.');
+
+        if (i != -1) {
+            String extension = path.substring(i + 1);
+
+            defaultEscapeModifier = modifiers.get(String.format(ESCAPE_MODIFIER_FORMAT, extension));
+        }
     }
 
     /**
@@ -876,6 +862,10 @@ public class TemplateEncoder extends Encoder<Object> {
                                             value = modifier.apply(value, argument, locale, timeZone);
                                         }
                                     }
+                                }
+
+                                if (defaultEscapeModifier != null) {
+                                    value = defaultEscapeModifier.apply(value, null, locale, timeZone);
                                 }
 
                                 writer.append(value.toString());

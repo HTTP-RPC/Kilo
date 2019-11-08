@@ -558,7 +558,9 @@ public TemplateEncoder(URL url) { ... }
 public TemplateEncoder(URL url, Charset charset) { ... }
 ```
 
-The first argument specifies the URL of the template document (generally as a resource on the application's classpath). The second argument represents the character encoding used by the template document. The default value is UTF-8.
+The first argument specifies the URL of the template document (generally as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default.
+
+The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
 
 The following methods can be used to get and set the optional base name of the resource bundle that will be used to resolve resource references. If unspecified, any resource references will resolve to `null`:
 

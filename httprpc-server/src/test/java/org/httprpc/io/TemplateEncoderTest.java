@@ -325,7 +325,20 @@ public class TemplateEncoderTest extends AbstractTest {
     }
 
     @Test
-    public void testCSVEscapeModifier() throws IOException {
+    public void testCSVEscapeModifierNumber() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(10, writer);
+            result = writer.toString();
+        }
+
+        Assertions.assertEquals("10", result);
+    }
+
+    @Test
+    public void testCSVEscapeModifierString() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
 
         String result;
@@ -334,7 +347,7 @@ public class TemplateEncoderTest extends AbstractTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("a\"\"b\"\"c", result);
+        Assertions.assertEquals("\"a\"\"b\"\"c\"", result);
     }
 
     @Test
