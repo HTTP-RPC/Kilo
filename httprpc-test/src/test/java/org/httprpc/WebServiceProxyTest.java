@@ -29,13 +29,12 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.httprpc.util.Collections.*;
 
 public class WebServiceProxyTest {
     public interface TestService {
@@ -335,12 +334,10 @@ public class WebServiceProxyTest {
     public void testMath() throws Exception {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
 
-        HashMap<String, Integer> arguments = new HashMap<>();
-
-        arguments.put("a", 4);
-        arguments.put("b", 2);
-
-        webServiceProxy.setArguments(arguments);
+        webServiceProxy.setArguments(mapOf(
+            entry("a", 4),
+            entry("b", 2)
+        ));
 
         Number result = webServiceProxy.invoke();
 
@@ -374,25 +371,5 @@ public class WebServiceProxyTest {
 
         Assertions.assertNotNull(january);
         Assertions.assertEquals("January", january.getName());
-    }
-
-    @SafeVarargs
-    private static <E> List<E> listOf(E... elements) {
-        return Collections.unmodifiableList(Arrays.asList(elements));
-    }
-
-    @SafeVarargs
-    private static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
-        HashMap<K, V> map = new HashMap<>();
-
-        for (Map.Entry<K, V> entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
-        }
-
-        return Collections.unmodifiableMap(map);
-    }
-
-    private static <K, V> Map.Entry<K, V> entry(K key, V value) {
-        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 }

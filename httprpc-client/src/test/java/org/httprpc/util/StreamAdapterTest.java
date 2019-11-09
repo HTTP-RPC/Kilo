@@ -14,7 +14,6 @@
 
 package org.httprpc.util;
 
-import org.httprpc.AbstractTest;
 import org.httprpc.io.JSONEncoder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
-public class StreamAdapterTest extends AbstractTest {
+public class StreamAdapterTest {
     @Test
     public void testStreamAdapter() throws IOException {
         String expected = "[2,4,6]";

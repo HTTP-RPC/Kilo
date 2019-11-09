@@ -14,8 +14,6 @@
 
 package org.httprpc.beans;
 
-import static org.httprpc.AbstractTest.*;
-
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,6 +26,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.httprpc.util.Collections.*;
 
 public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {

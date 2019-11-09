@@ -22,11 +22,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class JSONEncoderTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class JSONEncoderTest {
     @Test
     public void testString() throws IOException {
         Assertions.assertEquals("\"abcdéfg\"", encode("abcdéfg"));

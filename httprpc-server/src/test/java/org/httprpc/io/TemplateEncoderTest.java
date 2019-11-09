@@ -28,11 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TemplateEncoderTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class TemplateEncoderTest {
     static {
         TemplateEncoder.getModifiers().put("case", (value, argument, locale, timeZone) -> {
             String result = value.toString();
@@ -470,7 +471,7 @@ public class TemplateEncoderTest extends AbstractTest {
     public void testContextProperty() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("context.txt"));
 
-        encoder.setContext(Collections.singletonMap("a", "A"));
+        encoder.setContext(mapOf(entry("a", "A")));
 
         String result;
         try (StringWriter writer = new StringWriter()) {

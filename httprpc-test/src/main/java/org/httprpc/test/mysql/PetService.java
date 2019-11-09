@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.stream.Stream;
 
 import javax.naming.Context;
@@ -42,6 +41,8 @@ import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
+
+import static org.httprpc.util.Collections.*;
 
 /**
  * Pet service.
@@ -74,13 +75,11 @@ public class PetService extends WebService {
     public void getPets(String owner, String format) throws SQLException, IOException {
         Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
-        HashMap<String, Object> arguments = new HashMap<>();
-
-        arguments.put("owner", owner);
-
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement, arguments);
+            parameters.apply(statement, mapOf(
+                entry("owner", owner)
+            ));
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);

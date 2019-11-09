@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +35,8 @@ import org.httprpc.WebService;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
+
+import static org.httprpc.util.Collections.*;
 
 /**
  * Employee service.
@@ -69,13 +70,11 @@ public class EmployeeService extends WebService {
             + "WHERE first_name LIKE :name "
             + "OR last_name LIKE :name");
 
-        HashMap<String, Object> arguments = new HashMap<>();
-
-        arguments.put("name", (name == null) ? "%" : name.replace('*', '%'));
-
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement, arguments);
+            parameters.apply(statement, mapOf(
+                entry("name", (name == null) ? "%" : name.replace('*', '%'))
+            ));
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 resultSet.setFetchSize(2048);
@@ -101,14 +100,12 @@ public class EmployeeService extends WebService {
             + "last_name AS lastName "
             + "FROM employees WHERE emp_no = :employeeNumber");
 
-        HashMap<String, Object> arguments = new HashMap<>();
-
-        arguments.put("employeeNumber", employeeNumber);
-
         Map<String, ?> employee;
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement, arguments);
+            parameters.apply(statement, mapOf(
+                entry("employeeNumber", employeeNumber))
+            );
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);

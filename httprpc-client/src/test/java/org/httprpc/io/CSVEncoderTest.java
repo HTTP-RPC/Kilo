@@ -21,11 +21,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CSVEncoderTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
         String expected = "\"a\",\"b\",\"c\",\"d.e\",\"f\",\"g\"\r\n"

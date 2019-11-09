@@ -30,11 +30,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class XMLEncoderTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class XMLEncoderTest {
     @Test
     public void testWrite() throws IOException {
         String expected = "<?xml version=\"1.0\" ?>"

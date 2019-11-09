@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](http://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is about 88KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -32,8 +32,8 @@ The complete HTTP-RPC framework can be downloaded as a single JAR file [here](ht
 
 Alternatively, dependencies can be specified individually:
 
-* [org.httprpc:httprpc-client](http://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV and bean types
-* [org.httprpc:httprpc-server](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services and working with XML, templates, and relational databases
+* [org.httprpc:httprpc-client](http://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV and relational databases
+* [org.httprpc:httprpc-server](http://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services and working with XML and template documents
 
 HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servlet specification 3.1 or later.
 
@@ -65,6 +65,7 @@ The HTTP-RPC framework includes the following classes:
     * `ResultSetAdapter` - presents the contents of a JDBC result set as an iterable sequence of maps
 * `org.httprpc.util`
     * `StreamAdapter` - presents the contents of a stream as an iterable sequence.
+    * `Collections` - provides utility methods for working with collections
 
 These classes are discussed in more detail in the following sections.
 
@@ -850,15 +851,13 @@ This value is used to create the actual prepared statement:
 PreparedStatement statement = connection.prepareStatement(parameters.getSQL());
 ```
 
-Arguments values are specified via the `apply()` method:
+Arguments values are specified via the `apply()` method (`mapOf()` is a static utility method provided by the `org.httprpc.util.Collections` class):
 
 ```java
-HashMap<String, Object> arguments = new HashMap<>();
-
-arguments("a", "hello");
-arguments("b", 3);
-
-parameters.apply(statement, arguments);
+parameters.apply(statement, mapOf(
+  entry("a", "hello"),
+  entry("b", 3)
+));
 ```
 
 Once applied, the statement can be executed:
@@ -885,21 +884,18 @@ The following service method queries this table to retrieve a list of all pets b
 ```java
 @RequestMethod("GET")
 public void getPets(String owner) throws SQLException, IOException {
-    try (Connection connection = DriverManager.getConnection(DB_URL)) {
-        Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
+    Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
-        HashMap<String, Object> arguments = new HashMap<>();
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
+        parameters.apply(statement, mapOf(
+            entry("owner", owner)
+        ));
 
-        arguments.put("owner", owner);
-
-        try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement, arguments);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                JSONEncoder jsonEncoder = new JSONEncoder();
-                
-                jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
-            }
+        try (ResultSet resultSet = statement.executeQuery()) {
+            JSONEncoder jsonEncoder = new JSONEncoder();
+            
+            jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
         }
     }
 }
@@ -1061,6 +1057,15 @@ The `StreamAdapter` class presents the contents of a stream as an iterable seque
   jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), writer);
 ```
 
+## Collections
+The `Collections` class provides a set of static utility methods for working with list and map collections:
+
+```java
+TODO
+```
+
+These methods are provided primarily as a convenience for applications using Java 8. Applications targeting Java 9 and higher can use the standard JDK `List.of` and `Map.of` methods.
+
 # Kotlin Support
 In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following service provides some basic information about the host system:
 
@@ -1156,12 +1161,10 @@ The following code snippet demonstrates how `WebServiceProxy` might be used to a
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
 
-HashMap<String, Object> arguments = new HashMap<>();
-
-arguments.put("a", 4);
-arguments.put("b", 2);
-
-webServiceProxy.setArguments(arguments);
+webServiceProxy.setArguments(mapOf(
+    entry("a", 4),
+    entry("b", 2)
+));
 
 Number result = webServiceProxy.invoke();
 

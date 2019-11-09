@@ -20,11 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CSVDecoderTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
         String text = "\"a\",\"b\",\"c\",\"d\"\r\n"

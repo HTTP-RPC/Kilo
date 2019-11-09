@@ -19,11 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ResultSetAdapterTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class ResultSetAdapterTest {
     private List<?> expected = listOf(
         mapOf(
             entry("long", 2L),

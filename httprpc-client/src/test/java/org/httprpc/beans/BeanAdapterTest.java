@@ -14,7 +14,6 @@
 
 package org.httprpc.beans;
 
-import org.httprpc.AbstractTest;
 import org.httprpc.io.JSONDecoder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BeanAdapterTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class BeanAdapterTest {
     @Test
     public void testPrimitiveAdapt() {
         Assertions.assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));

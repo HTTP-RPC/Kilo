@@ -19,11 +19,12 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
-import org.httprpc.AbstractTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class JSONDecoderTest extends AbstractTest {
+import static org.httprpc.util.Collections.*;
+
+public class JSONDecoderTest {
     @Test
     public void testString() throws IOException {
         Assertions.assertEquals("abcdéfg", decode("\"abcdéfg\""));

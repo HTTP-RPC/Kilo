@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +42,8 @@ import org.httprpc.RequestMethod;
 import org.httprpc.RequestParameter;
 import org.httprpc.ResourcePath;
 
+import static org.httprpc.util.Collections.*;
+
 /**
  * Test service.
  */
@@ -54,37 +55,30 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     public Map<String, ?> testGet(@RequestParameter("string") String text, List<String> strings, int number, boolean flag,
         Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
-        HashMap<String, Object> result = new HashMap<>();
-
-        result.put("string", text);
-        result.put("strings", strings);
-        result.put("number", number);
-        result.put("flag", flag);
-        result.put("date", date);
-        result.put("localDate", localDate);
-        result.put("localTime", localTime);
-        result.put("localDateTime", localDateTime);
-
-        return result;
+        return mapOf(
+            entry("string", text),
+            entry("strings", strings),
+            entry("number", number),
+            entry("flag", flag),
+            entry("date", date),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime)
+        );
     }
 
     @RequestMethod("GET")
     @ResourcePath("a/?:a/b/?/c/?:c/d/?")
     public Map<String, ?> testGet() {
-        HashMap<String, Object> result = new HashMap<>();
-
-        result.put("list", Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3)));
-
-        HashMap<String, String> map = new HashMap<>();
-
-        map.put("a", getKey("a"));
-        map.put("b", getKey("b"));
-        map.put("c", getKey("c"));
-        map.put("d", getKey("d"));
-
-        result.put("map", map);
-
-        return result;
+        return mapOf(
+            entry("list", Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3))),
+            entry("map", mapOf(
+                entry("a", getKey("a")),
+                entry("b", getKey("b")),
+                entry("c", getKey("c")),
+                entry("d", getKey("d"))
+            ))
+        );
     }
 
     @RequestMethod("GET")
@@ -154,27 +148,23 @@ public class TestService extends WebService {
                 }
             }
 
-            HashMap<String, Long> map = new HashMap<>();
-
-            map.put("bytes", bytes);
-            map.put("checksum", checksum);
-
-            attachmentInfo.add(map);
+            attachmentInfo.add(mapOf(
+                entry("bytes", bytes),
+                entry("checksum", checksum)
+            ));
         }
 
-        HashMap<String, Object> result = new HashMap<>();
-
-        result.put("string", string);
-        result.put("strings", strings);
-        result.put("number", number);
-        result.put("flag", flag);
-        result.put("date", date);
-        result.put("localDate", localDate);
-        result.put("localTime", localTime);
-        result.put("localDateTime", localDateTime);
-        result.put("attachmentInfo", attachmentInfo);
-
-        return result;
+        return mapOf(
+            entry("string", string),
+            entry("strings", strings),
+            entry("number", number),
+            entry("flag", flag),
+            entry("date", date),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime),
+            entry("attachmentInfo", attachmentInfo)
+        );
     }
 
     @RequestMethod("POST")
