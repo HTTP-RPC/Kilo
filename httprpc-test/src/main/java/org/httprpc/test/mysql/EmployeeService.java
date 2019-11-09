@@ -132,7 +132,6 @@ public class EmployeeService extends WebService {
                     }
                 }
 
-
                 employee = resultSetAdapter.next();
             }
         }

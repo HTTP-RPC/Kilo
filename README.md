@@ -970,7 +970,7 @@ An example based on the MySQL "employees" sample database is shown below. The ba
 ```java
 @RequestMethod("GET")
 @ResourcePath("?:employeeNumber")
-public void getEmployee(List<String> details) throws SQLException, IOException {
+public Map<String, ?> getEmployee(List<String> details) throws SQLException {
     String employeeNumber = getKey("employeeNumber");
 
     Parameters parameters = Parameters.parse("SELECT emp_no AS employeeNumber, "
@@ -978,12 +978,12 @@ public void getEmployee(List<String> details) throws SQLException, IOException {
         + "last_name AS lastName "
         + "FROM employees WHERE emp_no = :employeeNumber");
 
-    parameters.put("employeeNumber", employeeNumber);
-
-    try (Connection connection = DriverManager.getConnection(DB_URL);
+    Map<String, ?> employee;
+    try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-
-        parameters.apply(statement);
+        parameters.apply(statement, mapOf(
+            entry("employeeNumber", employeeNumber))
+        );
 
         try (ResultSet resultSet = statement.executeQuery()) {
             ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
@@ -1010,13 +1010,11 @@ public void getEmployee(List<String> details) throws SQLException, IOException {
                 }
             }
 
-            getResponse().setContentType("application/json");
-
-            JSONEncoder jsonEncoder = new JSONEncoder();
-
-            jsonEncoder.write(resultSetAdapter.next(), getResponse().getOutputStream());
+            employee = resultSetAdapter.next();
         }
     }
+
+    return employee;
 }
 ```
 
@@ -1058,13 +1056,15 @@ The `StreamAdapter` class presents the contents of a stream as an iterable seque
 ```
 
 ## Collections
-The `Collections` class provides a set of static utility methods for working with list and map collections:
+The `Collections` class provides a set of static utility methods for instantiating immutable list and map values:
 
 ```java
-TODO
+public static <E> List<E> listOf(E... elements) { ... }
+public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
+public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
-These methods are provided primarily as a convenience for applications using Java 8. Applications targeting Java 9 and higher can use the standard JDK `List.of` and `Map.of` methods.
+These methods are provided primarily as a convenience for applications using Java 8. Applications targeting Java 9 and higher can use the standard `List.of()` and `Map.of()` methods provided by the JDK.
 
 # Kotlin Support
 In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following service provides some basic information about the host system:
