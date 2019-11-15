@@ -175,6 +175,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         Class<?> type = bean.getClass();
 
+        if (Proxy.class.isAssignableFrom(type)) {
+            Class<?>[] interfaces = type.getInterfaces();
+
+            if (interfaces.length == 0) {
+                throw new IllegalArgumentException();
+            }
+
+            type = interfaces[0];
+        }
+
         accessors = accessorCache.get(type);
 
         if (accessors == null) {

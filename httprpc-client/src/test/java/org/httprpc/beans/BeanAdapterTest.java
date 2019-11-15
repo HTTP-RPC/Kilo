@@ -188,4 +188,13 @@ public class BeanAdapterTest {
             structures.get(TestBean.NestedBean.class)
         );
     }
+
+    @Test
+    public void testInterfaceKey() {
+        TestInterface testInterface = BeanAdapter.adapt(mapOf(entry("i", 10)), TestInterface.class);
+
+        Map<String, ?> map = new BeanAdapter(testInterface);
+
+        Assertions.assertEquals(10, map.get("i"));
+    }
 }
