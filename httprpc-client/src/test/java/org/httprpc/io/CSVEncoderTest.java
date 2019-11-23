@@ -14,6 +14,8 @@
 
 package org.httprpc.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.DayOfWeek;
@@ -21,10 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CSVEncoderTest {
     @Test
@@ -57,6 +59,6 @@ public class CSVEncoderTest {
 
         csvEncoder.write(values, writer);
 
-        Assertions.assertEquals(expected, writer.toString());
+        assertEquals(expected, writer.toString());
     }
 }

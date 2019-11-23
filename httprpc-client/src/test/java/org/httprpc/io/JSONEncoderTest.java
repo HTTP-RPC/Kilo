@@ -14,6 +14,8 @@
 
 package org.httprpc.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
@@ -22,46 +24,46 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JSONEncoderTest {
     @Test
     public void testString() throws IOException {
-        Assertions.assertEquals("\"abcdéfg\"", encode("abcdéfg"));
-        Assertions.assertEquals("\"\\b\\f\\r\\n\\t\"", encode("\b\f\r\n\t"));
+        assertEquals("\"abcdéfg\"", encode("abcdéfg"));
+        assertEquals("\"\\b\\f\\r\\n\\t\"", encode("\b\f\r\n\t"));
     }
 
     @Test
     public void testNumber() throws IOException {
-        Assertions.assertEquals("42", encode(42L));
-        Assertions.assertEquals("42.5", encode(42.5));
+        assertEquals("42", encode(42L));
+        assertEquals("42.5", encode(42.5));
 
-        Assertions.assertEquals("-789", encode(-789));
-        Assertions.assertEquals("-789.1", encode(-789.10));
+        assertEquals("-789", encode(-789));
+        assertEquals("-789.1", encode(-789.10));
     }
 
     @Test
     public void testBoolean() throws IOException {
-        Assertions.assertEquals("true", encode(true));
-        Assertions.assertEquals("false", encode(false));
+        assertEquals("true", encode(true));
+        assertEquals("false", encode(false));
     }
 
     @Test
     public void testDate() throws IOException {
-        Assertions.assertEquals("0", encode(new Date(0)));
+        assertEquals("0", encode(new Date(0)));
     }
 
     @Test
     public void testURL() throws IOException {
-        Assertions.assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
+        assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
     }
 
     @Test
     public void testEnum() throws IOException {
-        Assertions.assertEquals("3", encode(DayOfWeek.THURSDAY));
+        assertEquals("3", encode(DayOfWeek.THURSDAY));
     }
 
     @Test
@@ -90,7 +92,7 @@ public class JSONEncoderTest {
             mapOf(entry("x", 1L), entry("y", 2.0), entry("z", 3.0))
         );
 
-        Assertions.assertEquals(expected, encode(list));
+        assertEquals(expected, encode(list));
     }
 
     @Test
@@ -119,7 +121,7 @@ public class JSONEncoderTest {
             entry("e", mapOf(entry("x", 1L), entry("y", 2.0), entry("z", 3.0)))
         );
 
-        Assertions.assertEquals(expected, encode(map));
+        assertEquals(expected, encode(map));
     }
 
     @Test
@@ -132,7 +134,7 @@ public class JSONEncoderTest {
             entry("c", 3)
         );
 
-        Assertions.assertEquals(expected, encode(map, true));
+        assertEquals(expected, encode(map, true));
     }
 
     private static String encode(Object value) throws IOException {

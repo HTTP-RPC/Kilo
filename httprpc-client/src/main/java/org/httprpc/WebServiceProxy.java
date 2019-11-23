@@ -29,13 +29,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 /**
  * Web service proxy class.
@@ -105,8 +107,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
 
-    private Map<String, ?> headers = Collections.emptyMap();
-    private Map<String, ?> arguments = Collections.emptyMap();
+    private Map<String, ?> headers = emptyMap();
+    private Map<String, ?> arguments = emptyMap();
 
     private RequestHandler requestHandler = null;
 
@@ -571,7 +573,7 @@ public class WebServiceProxy {
         if (argument instanceof Iterable<?>) {
             values = (Iterable<?>)getParameterValue(argument);
         } else {
-            values = Collections.singletonList(getParameterValue(argument));
+            values = singletonList(getParameterValue(argument));
         }
 
         return values;
@@ -601,7 +603,7 @@ public class WebServiceProxy {
      * An instance of the given type that adapts the target service.
      */
     public static <T> T adapt(URL baseURL, Class<T> type) {
-        return adapt(baseURL, type, Collections.emptyMap());
+        return adapt(baseURL, type, emptyMap());
     }
 
     /**

@@ -14,14 +14,14 @@
 
 package org.httprpc.io;
 
+import org.httprpc.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.httprpc.beans.BeanAdapter;
 
 /**
  * CSV encoder.

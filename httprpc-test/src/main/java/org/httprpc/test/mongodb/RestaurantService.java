@@ -14,24 +14,22 @@
 
 package org.httprpc.test.mongodb;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-
+import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.httprpc.RequestMethod;
 import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
 import org.httprpc.io.XMLEncoder;
-import org.httprpc.RequestMethod;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Restaurant service.

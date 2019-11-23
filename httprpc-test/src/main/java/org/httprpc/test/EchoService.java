@@ -14,14 +14,13 @@
 
 package org.httprpc.test;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.httprpc.RequestMethod;
+import org.httprpc.WebService;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
-
-import org.httprpc.WebService;
-import org.httprpc.RequestMethod;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Service that echoes a string value by writing a custom response.

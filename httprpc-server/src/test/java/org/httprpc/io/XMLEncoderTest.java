@@ -14,6 +14,14 @@
 
 package org.httprpc.io;
 
+import org.junit.jupiter.api.Test;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,17 +31,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class XMLEncoderTest {
     @Test
@@ -77,7 +78,7 @@ public class XMLEncoderTest {
 
         xmlEncoder.write(values, writer);
 
-        Assertions.assertEquals(expected, writer.toString());
+        assertEquals(expected, writer.toString());
     }
 
     @Test
@@ -132,6 +133,6 @@ public class XMLEncoderTest {
             throw new IOException(exception);
         }
 
-        Assertions.assertEquals(expected, writer.toString());
+        assertEquals(expected, writer.toString());
     }
 }

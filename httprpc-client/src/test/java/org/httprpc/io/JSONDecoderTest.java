@@ -14,37 +14,40 @@
 
 package org.httprpc.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JSONDecoderTest {
     @Test
     public void testString() throws IOException {
-        Assertions.assertEquals("abcdéfg", decode("\"abcdéfg\""));
-        Assertions.assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
-        Assertions.assertEquals("é", decode("\"\\u00E9\""));
+        assertEquals("abcdéfg", decode("\"abcdéfg\""));
+        assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
+        assertEquals("é", decode("\"\\u00E9\""));
     }
 
     @Test
     public void testNumber() throws IOException {
-        Assertions.assertEquals(42L, (long)decode("42"));
-        Assertions.assertEquals(42.5, decode("42.5"), 0);
+        assertEquals(42L, (long)decode("42"));
+        assertEquals(42.5, decode("42.5"), 0);
 
-        Assertions.assertEquals(-789L, (long)decode("-789"));
-        Assertions.assertEquals(-789.10, decode("-789.10"), 0);
+        assertEquals(-789L, (long)decode("-789"));
+        assertEquals(-789.10, decode("-789.10"), 0);
     }
 
     @Test
     public void testBoolean() throws IOException {
-        Assertions.assertEquals(true, decode("true"));
-        Assertions.assertEquals(false, decode("false"));
+        assertEquals(true, decode("true"));
+        assertEquals(false, decode("false"));
     }
 
     @Test
@@ -59,7 +62,7 @@ public class JSONDecoderTest {
 
         List<?> list = decode("[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]");
 
-        Assertions.assertEquals(expected, list);
+        assertEquals(expected, list);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class JSONDecoderTest {
 
         Map<String, ?> map = decode("{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}");
 
-        Assertions.assertEquals(expected, map);
+        assertEquals(expected, map);
     }
 
     @Test
@@ -109,7 +112,7 @@ public class JSONDecoderTest {
 
     @Test
     public void testInvalidCharacters() {
-        Assertions.assertThrows(IOException.class, () -> decode("xyz"));
+        assertThrows(IOException.class, () -> decode("xyz"));
     }
 
     private static <T> T decode(String text) throws IOException {

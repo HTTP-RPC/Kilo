@@ -15,7 +15,6 @@
 package org.httprpc.beans;
 
 import org.httprpc.io.JSONDecoder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -31,31 +30,38 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BeanAdapterTest {
     @Test
     public void testPrimitiveAdapt() {
-        Assertions.assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));
-        Assertions.assertEquals(BeanAdapter.adapt("1", Byte.TYPE), Byte.valueOf((byte)1));
+        assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));
+        assertEquals(BeanAdapter.adapt("1", Byte.TYPE), Byte.valueOf((byte)1));
 
-        Assertions.assertEquals(BeanAdapter.adapt(null, Short.TYPE), Short.valueOf((short)0));
-        Assertions.assertEquals(BeanAdapter.adapt("2", Short.TYPE), Short.valueOf((short)2));
+        assertEquals(BeanAdapter.adapt(null, Short.TYPE), Short.valueOf((short)0));
+        assertEquals(BeanAdapter.adapt("2", Short.TYPE), Short.valueOf((short)2));
 
-        Assertions.assertEquals(BeanAdapter.adapt(null, Integer.TYPE), Integer.valueOf(0));
-        Assertions.assertEquals(BeanAdapter.adapt("3", Integer.TYPE), Integer.valueOf(3));
+        assertEquals(BeanAdapter.adapt(null, Integer.TYPE), Integer.valueOf(0));
+        assertEquals(BeanAdapter.adapt("3", Integer.TYPE), Integer.valueOf(3));
 
-        Assertions.assertEquals(BeanAdapter.adapt(null, Long.TYPE), Long.valueOf(0));
-        Assertions.assertEquals(BeanAdapter.adapt("4", Long.TYPE), Long.valueOf(4));
+        assertEquals(BeanAdapter.adapt(null, Long.TYPE), Long.valueOf(0));
+        assertEquals(BeanAdapter.adapt("4", Long.TYPE), Long.valueOf(4));
 
-        Assertions.assertEquals(BeanAdapter.adapt(null, Float.TYPE), Float.valueOf(0));
-        Assertions.assertEquals(BeanAdapter.adapt("5.0", Float.TYPE), Float.valueOf(5));
+        assertEquals(BeanAdapter.adapt(null, Float.TYPE), Float.valueOf(0));
+        assertEquals(BeanAdapter.adapt("5.0", Float.TYPE), Float.valueOf(5));
 
-        Assertions.assertEquals(BeanAdapter.adapt(null, Double.TYPE), Double.valueOf(0));
-        Assertions.assertEquals(BeanAdapter.adapt("6.0", Double.TYPE), Double.valueOf(6));
+        assertEquals(BeanAdapter.adapt(null, Double.TYPE), Double.valueOf(0));
+        assertEquals(BeanAdapter.adapt("6.0", Double.TYPE), Double.valueOf(6));
 
-        Assertions.assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
-        Assertions.assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
+        assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
     }
 
     @Test
@@ -99,8 +105,8 @@ public class BeanAdapterTest {
 
         Map<String, Object> actual = new BeanAdapter(new TestBean());
 
-        Assertions.assertEquals(expected, actual);
-        Assertions.assertNull(actual.get("ignored"));
+        assertEquals(expected, actual);
+        assertNull(actual.get("ignored"));
     }
 
     @Test
@@ -114,28 +120,28 @@ public class BeanAdapterTest {
 
         TestInterface result = BeanAdapter.adapt(map, TestInterface.class);
 
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
 
-        Assertions.assertEquals(1, result.getInt());
-        Assertions.assertEquals(2L, result.getLong());
-        Assertions.assertEquals(4.0, result.getDouble(), 0.0);
-        Assertions.assertEquals("abc", result.getString());
-        Assertions.assertEquals(new Date(0), result.getDate());
-        Assertions.assertEquals(LocalDate.parse("2018-06-28"), result.getLocalDate());
-        Assertions.assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
-        Assertions.assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
+        assertEquals(1, result.getInt());
+        assertEquals(2L, result.getLong());
+        assertEquals(4.0, result.getDouble(), 0.0);
+        assertEquals("abc", result.getString());
+        assertEquals(new Date(0), result.getDate());
+        assertEquals(LocalDate.parse("2018-06-28"), result.getLocalDate());
+        assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
+        assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
 
-        Assertions.assertTrue(result.getNestedBean().getFlag());
+        assertTrue(result.getNestedBean().getFlag());
 
-        Assertions.assertEquals(2L, ((Number)result.getList().get(0)).longValue());
-        Assertions.assertEquals(4.0, ((Number)result.getList().get(1)).doubleValue(), 0.0);
-        Assertions.assertEquals(true, ((Map<?, ?>)result.getList().get(2)).get("flag"));
-        Assertions.assertFalse(result.getNestedBeanList().get(0).getFlag());
+        assertEquals(2L, ((Number)result.getList().get(0)).longValue());
+        assertEquals(4.0, ((Number)result.getList().get(1)).doubleValue(), 0.0);
+        assertEquals(true, ((Map<?, ?>)result.getList().get(2)).get("flag"));
+        assertFalse(result.getNestedBeanList().get(0).getFlag());
 
-        Assertions.assertEquals(2L, ((Number)result.getMap().get("long")).longValue());
-        Assertions.assertEquals(4.0, ((Number)result.getMap().get("double")).doubleValue(), 0.0);
-        Assertions.assertEquals(true, ((Map<?, ?>)result.getMap().get("nestedBean")).get("flag"));
-        Assertions.assertFalse(result.getNestedBeanMap().get("nestedBean").getFlag());
+        assertEquals(2L, ((Number)result.getMap().get("long")).longValue());
+        assertEquals(4.0, ((Number)result.getMap().get("double")).doubleValue(), 0.0);
+        assertEquals(true, ((Map<?, ?>)result.getMap().get("nestedBean")).get("flag"));
+        assertFalse(result.getNestedBeanMap().get("nestedBean").getFlag());
     }
 
     @Test
@@ -148,7 +154,7 @@ public class BeanAdapterTest {
             ))
         );
 
-        Assertions.assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
+        assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
     }
 
     @Test
@@ -157,7 +163,7 @@ public class BeanAdapterTest {
 
         BeanAdapter.describe(TestBean.class, structures);
 
-        Assertions.assertEquals(
+        assertEquals(
             "{\n" +
             "  URL: url,\n" +
             "  bigInteger: number,\n" +
@@ -181,7 +187,7 @@ public class BeanAdapterTest {
             structures.get(TestBean.class)
         );
 
-        Assertions.assertEquals(
+        assertEquals(
             "{\n" +
             "  flag: boolean\n" +
             "}",
@@ -195,6 +201,6 @@ public class BeanAdapterTest {
 
         Map<String, ?> map = new BeanAdapter(testInterface);
 
-        Assertions.assertEquals(10, map.get("i"));
+        assertEquals(10, map.get("i"));
     }
 }

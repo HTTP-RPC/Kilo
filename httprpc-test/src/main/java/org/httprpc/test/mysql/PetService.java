@@ -14,6 +14,23 @@
 
 package org.httprpc.test.mysql;
 
+import org.httprpc.RequestMethod;
+import org.httprpc.ResourcePath;
+import org.httprpc.WebService;
+import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.CSVEncoder;
+import org.httprpc.io.JSONEncoder;
+import org.httprpc.io.TemplateEncoder;
+import org.httprpc.io.XMLEncoder;
+import org.httprpc.sql.Parameters;
+import org.httprpc.sql.ResultSetAdapter;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,25 +41,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Stream;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.sql.DataSource;
-
-import org.httprpc.WebService;
-import org.httprpc.beans.BeanAdapter;
-import org.httprpc.io.CSVEncoder;
-import org.httprpc.io.JSONEncoder;
-import org.httprpc.io.TemplateEncoder;
-import org.httprpc.io.XMLEncoder;
-import org.httprpc.RequestMethod;
-import org.httprpc.ResourcePath;
-import org.httprpc.sql.Parameters;
-import org.httprpc.sql.ResultSetAdapter;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.mapOf;
 
 /**
  * Pet service.

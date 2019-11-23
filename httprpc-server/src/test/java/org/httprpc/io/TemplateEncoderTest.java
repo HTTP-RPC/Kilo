@@ -14,6 +14,8 @@
 
 package org.httprpc.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -22,16 +24,18 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.httprpc.util.Collections.*;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TemplateEncoderTest {
     static {
@@ -62,7 +66,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("", result);
+        assertEquals("", result);
     }
 
     @Test
@@ -83,7 +87,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals(String.format("{a=%s,b=%s,c.d=%s,e=,f.g=}",
+        assertEquals(String.format("{a=%s,b=%s,c.d=%s,e=,f.g=}",
             dictionary.get("a"),
             dictionary.get("b"),
             ((Map<?, ?>)dictionary.get("c")).get("d")), result);
@@ -95,11 +99,11 @@ public class TemplateEncoderTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("list", Collections.emptyList())), writer);
+            encoder.write(mapOf(entry("list", emptyList())), writer);
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[]", result);
+        assertEquals("[]", result);
     }
 
     @Test
@@ -119,7 +123,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals(String.format("[{a=%s,b=%s,c=%s}]",
+        assertEquals(String.format("[{a=%s,b=%s,c=%s}]",
             dictionary.get("a"),
             dictionary.get("b"),
             dictionary.get("c")), result);
@@ -147,7 +151,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]",
+        assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]",
             dictionary1.get("a"),
             dictionary1.get("b"),
             dictionary1.get("c"),
@@ -178,7 +182,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", result);
+        assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", result);
     }
 
     @Test
@@ -193,7 +197,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[[[hello]]]", result);
+        assertEquals("[[[hello]]]", result);
     }
 
     @Test
@@ -202,11 +206,11 @@ public class TemplateEncoderTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.write(Collections.emptyList(), writer);
+            encoder.write(emptyList(), writer);
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[]", result);
+        assertEquals("[]", result);
     }
 
     @Test
@@ -221,7 +225,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[(hello)(42)(false)]", result);
+        assertEquals("[(hello)(42)(false)]", result);
     }
 
     @Test
@@ -236,7 +240,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("a,b,c", result);
+        assertEquals("a,b,c", result);
     }
 
     @Test
@@ -245,11 +249,11 @@ public class TemplateEncoderTest {
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.write(Collections.emptyMap(), writer);
+            encoder.write(emptyMap(), writer);
             result = writer.toString();
         }
 
-        Assertions.assertEquals("><", result);
+        assertEquals("><", result);
     }
 
     @Test
@@ -262,7 +266,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("4.50", result);
+        assertEquals("4.50", result);
     }
 
     @Test
@@ -289,7 +293,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
+        assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
             + DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
             + localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + ",\n"
             + localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + ",\n"
@@ -309,7 +313,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("abc%3Adef%26xyz", result);
+        assertEquals("abc%3Adef%26xyz", result);
     }
 
     @Test
@@ -322,7 +326,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", result);
+        assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", result);
     }
 
     @Test
@@ -335,7 +339,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("10", result);
+        assertEquals("10", result);
     }
 
     @Test
@@ -348,7 +352,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("\"a\"\"b\"\"c\"", result);
+        assertEquals("\"a\"\"b\"\"c\"", result);
     }
 
     @Test
@@ -361,7 +365,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("a&lt;b&gt;c&amp;d&quot;e", result);
+        assertEquals("a&lt;b&gt;c&amp;d&quot;e", result);
     }
 
     @Test
@@ -374,7 +378,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("(hello)", result);
+        assertEquals("(hello)", result);
     }
 
     @Test
@@ -387,7 +391,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[(a)(b)(c)]", result);
+        assertEquals("[(a)(b)(c)]", result);
     }
 
     @Test
@@ -412,14 +416,14 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[[[][]][[][][]][[]]]", result);
+        assertEquals("[[[][]][[][][]][[]]]", result);
     }
 
     @Test
     public void testEmptyRecursion() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("recursion.txt"));
 
-        List<?> list = Collections.EMPTY_LIST;
+        List<?> list = emptyList();
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -427,7 +431,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("[]", result);
+        assertEquals("[]", result);
     }
 
     @Test
@@ -442,7 +446,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("value:hello", result);
+        assertEquals("value:hello", result);
     }
 
     @Test
@@ -452,7 +456,7 @@ public class TemplateEncoderTest {
         encoder.setBaseName(getClass().getPackage().getName() + ".resource2");
 
         try (StringWriter writer = new StringWriter()) {
-            Assertions.assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
+            assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
         }
     }
 
@@ -463,7 +467,7 @@ public class TemplateEncoderTest {
         encoder.setBaseName(getClass().getPackage().getName() + ".resource3");
 
         try (StringWriter writer = new StringWriter()) {
-            Assertions.assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
+            assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
         }
     }
 
@@ -479,7 +483,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("A/B", result);
+        assertEquals("A/B", result);
     }
 
     @Test
@@ -492,7 +496,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("/B", result);
+        assertEquals("/B", result);
     }
 
     @Test
@@ -505,6 +509,6 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        Assertions.assertEquals("ABCDEFG", result);
+        assertEquals("ABCDEFG", result);
     }
 }

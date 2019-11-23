@@ -14,15 +14,14 @@
 
 package org.httprpc.test;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.httprpc.RequestMethod;
+import org.httprpc.ResourcePath;
+import org.httprpc.WebService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-
-import org.httprpc.WebService;
-import org.httprpc.RequestMethod;
-import org.httprpc.ResourcePath;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Service that simulates a product catalog.

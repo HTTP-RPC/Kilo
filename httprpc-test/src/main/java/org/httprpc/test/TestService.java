@@ -14,6 +14,15 @@
 
 package org.httprpc.test;
 
+import org.httprpc.RequestMethod;
+import org.httprpc.RequestParameter;
+import org.httprpc.ResourcePath;
+import org.httprpc.WebService;
+
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,17 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.httprpc.WebService;
-import org.httprpc.RequestMethod;
-import org.httprpc.RequestParameter;
-import org.httprpc.ResourcePath;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.mapOf;
 
 /**
  * Test service.

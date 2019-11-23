@@ -14,12 +14,11 @@
 
 package org.httprpc.test;
 
-import java.util.Arrays;
+import org.httprpc.RequestMethod;
+import org.httprpc.WebService;
 
 import javax.servlet.annotation.WebServlet;
-
-import org.httprpc.WebService;
-import org.httprpc.RequestMethod;
+import java.util.Arrays;
 
 /**
  * Tree service.

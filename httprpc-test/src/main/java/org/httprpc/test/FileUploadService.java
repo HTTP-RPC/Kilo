@@ -14,16 +14,15 @@
 
 package org.httprpc.test;
 
+import org.httprpc.RequestMethod;
+import org.httprpc.WebService;
+
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
-
-import org.httprpc.WebService;
-import org.httprpc.RequestMethod;
 
 /**
  * File upload example service.

@@ -37,7 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,6 +45,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 
 /**
  * Template encoder.
@@ -407,7 +410,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private Modifier defaultEscapeModifier;
 
     private String baseName = null;
-    private Map<String, ?> context = Collections.emptyMap();
+    private Map<String, ?> context = emptyMap();
 
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
@@ -658,7 +661,7 @@ public class TemplateEncoder extends Encoder<Object> {
         if (root instanceof Map<?, ?>) {
             dictionary = (Map<String, ?>)root;
         } else {
-            dictionary = Collections.singletonMap(".", root);
+            dictionary = singletonMap(".", root);
         }
 
         int c = reader.read();
@@ -732,7 +735,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             Object value = dictionary.get(marker);
 
                             if (value == null) {
-                                value = Collections.emptyList();
+                                value = emptyList();
                             }
 
                             if (!(value instanceof Iterable<?>)) {
@@ -778,7 +781,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     }
                                 };
 
-                                writeRoot(Collections.emptyMap(), new NullWriter(), locale, timeZone, reader);
+                                writeRoot(emptyMap(), new NullWriter(), locale, timeZone, reader);
                             }
 
                             includes = history.pop();

@@ -15,7 +15,6 @@
 package org.httprpc;
 
 import org.httprpc.beans.BeanAdapter;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -30,11 +29,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebServiceProxyTest {
     public interface TestService {
@@ -124,7 +127,7 @@ public class WebServiceProxyTest {
 
         Map<String, ?> result = webServiceProxy.invoke();
 
-        Assertions.assertEquals(mapOf(
+        assertEquals(mapOf(
             entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
@@ -142,7 +145,7 @@ public class WebServiceProxyTest {
 
         List<Integer> result  = testService.testGetFibonacci(8);
 
-        Assertions.assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
+        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
     }
 
     @Test
@@ -162,7 +165,7 @@ public class WebServiceProxyTest {
 
         Map<String, ?> result = webServiceProxy.invoke();
 
-        Assertions.assertEquals(mapOf(
+        assertEquals(mapOf(
             entry("string", "héllo+gøodbye"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
@@ -186,9 +189,9 @@ public class WebServiceProxyTest {
             date, localDate, localTime, localDateTime,
             listOf(textTestURL, imageTestURL));
 
-        Assertions.assertNotNull(response);
+        assertNotNull(response);
 
-        Assertions.assertTrue(response.getString().equals("héllo+gøodbye")
+        assertTrue(response.getString().equals("héllo+gøodbye")
             && response.getStrings().equals(listOf("a", "b", "c"))
             && response.getNumber() == 123
             && response.getFlag()
@@ -223,7 +226,7 @@ public class WebServiceProxyTest {
 
         BufferedImage image = webServiceProxy.invoke((inputStream, contentType, headers) -> ImageIO.read(inputStream));
 
-        Assertions.assertNotNull(image);
+        assertNotNull(image);
     }
 
     @Test
@@ -258,7 +261,7 @@ public class WebServiceProxyTest {
             return textBuilder.toString();
         });
 
-        Assertions.assertNotNull(text);
+        assertNotNull(text);
     }
 
     @Test
@@ -271,7 +274,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.invoke();
 
-        Assertions.assertTrue(true);
+        assertTrue(true);
     }
 
     @Test
@@ -287,7 +290,7 @@ public class WebServiceProxyTest {
             statusCode = exception.getStatusCode();
         }
 
-        Assertions.assertEquals(HttpURLConnection.HTTP_FORBIDDEN, statusCode);
+        assertEquals(HttpURLConnection.HTTP_FORBIDDEN, statusCode);
     }
 
     @Test
@@ -303,7 +306,7 @@ public class WebServiceProxyTest {
             error = true;
         }
 
-        Assertions.assertTrue(error);
+        assertTrue(error);
     }
 
     @Test
@@ -327,7 +330,7 @@ public class WebServiceProxyTest {
             timeout = (exception instanceof SocketTimeoutException);
         }
 
-        Assertions.assertTrue(timeout);
+        assertTrue(timeout);
     }
 
     @Test
@@ -341,16 +344,16 @@ public class WebServiceProxyTest {
 
         Number result = webServiceProxy.invoke();
 
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(6.0, result.doubleValue());
+        assertNotNull(result);
+        assertEquals(6.0, result.doubleValue());
     }
 
     @Test
     public void testMathService() throws Exception {
         MathService mathService = WebServiceProxy.adapt(new URL(serverURL, "math/"), MathService.class);
 
-        Assertions.assertEquals(6.0, mathService.getSum(4, 2));
-        Assertions.assertEquals(6.0, mathService.getSum(listOf(1.0, 2.0, 3.0)));
+        assertEquals(6.0, mathService.getSum(4, 2));
+        assertEquals(6.0, mathService.getSum(listOf(1.0, 2.0, 3.0)));
     }
 
     @Test
@@ -359,17 +362,17 @@ public class WebServiceProxyTest {
 
         TreeNode seasons = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
 
-        Assertions.assertNotNull(seasons);
-        Assertions.assertEquals("Seasons", seasons.getName());
+        assertNotNull(seasons);
+        assertEquals("Seasons", seasons.getName());
 
         TreeNode winter = seasons.getChildren().get(0);
 
-        Assertions.assertNotNull(winter);
-        Assertions.assertEquals("Winter", winter.getName());
+        assertNotNull(winter);
+        assertEquals("Winter", winter.getName());
 
         TreeNode january = winter.getChildren().get(0);
 
-        Assertions.assertNotNull(january);
-        Assertions.assertEquals("January", january.getName());
+        assertNotNull(january);
+        assertEquals("January", january.getName());
     }
 }

@@ -14,16 +14,18 @@
 
 package org.httprpc.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.httprpc.util.Collections.*;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CSVDecoderTest {
     @Test
@@ -53,6 +55,6 @@ public class CSVDecoderTest {
 
         List<Map<String, String>> actual = csvDecoder.read(reader).stream().collect(Collectors.toList());
 
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

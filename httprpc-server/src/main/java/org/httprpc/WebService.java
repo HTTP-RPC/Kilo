@@ -14,6 +14,17 @@
 
 package org.httprpc;
 
+import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.JSONEncoder;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +40,6 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,17 +50,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.httprpc.beans.BeanAdapter;
-import org.httprpc.io.JSONEncoder;
+import static java.util.Collections.emptyList;
 
 /**
  * Abstract base class for web services.
@@ -444,7 +444,7 @@ public abstract class WebService extends HttpServlet {
                         list.add(BeanAdapter.adapt(value, elementType));
                     }
                 } else {
-                    list = Collections.emptyList();
+                    list = emptyList();
                 }
 
                 argument = list;

@@ -14,36 +14,37 @@
 
 package org.httprpc.sql;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ParametersTest {
     @Test
     public void testParameters() {
         Parameters parameters = Parameters.parse("insert into xyz (foo, bar) values :foo, :bar");
 
-        Assertions.assertEquals("insert into xyz (foo, bar) values ?, ?", parameters.getSQL());
+        assertEquals("insert into xyz (foo, bar) values ?, ?", parameters.getSQL());
     }
 
     @Test
     public void testColon() {
         Parameters parameters = Parameters.parse("select * from xyz where foo = 'a:b:c'");
 
-        Assertions.assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
+        assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
     }
 
     @Test
     public void testDoubleColon() {
         Parameters parameters = Parameters.parse("select 'ab:c'::varchar(16) as abc");
 
-        Assertions.assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
+        assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
     }
 
     @Test
     public void testSingleLineComment() {
         Parameters parameters = Parameters.parse("-- this is a comment: hello\r\nselect * from xyz where foo = :foo");
 
-        Assertions.assertEquals("-- this is a comment: hello\r\nselect * from xyz where foo = ?",
+        assertEquals("-- this is a comment: hello\r\nselect * from xyz where foo = ?",
             parameters.getSQL());
     }
 
@@ -51,7 +52,7 @@ public class ParametersTest {
     public void testMultiLineComment() {
         Parameters parameters = Parameters.parse("/* this is a comment: hello\r\nand so is this: goodbye */ select * from xyz where foo = :foo");
 
-        Assertions.assertEquals("/* this is a comment: hello\r\nand so is this: goodbye */ select * from xyz where foo = ?",
+        assertEquals("/* this is a comment: hello\r\nand so is this: goodbye */ select * from xyz where foo = ?",
             parameters.getSQL());
     }
 
@@ -59,7 +60,7 @@ public class ParametersTest {
     public void testSingleAndMultiLineComment() {
         Parameters parameters = Parameters.parse("/* this is a comment: hello -- and so is this: goodbye */ select * from xyz where foo = :foo");
 
-        Assertions.assertEquals("/* this is a comment: hello -- and so is this: goodbye */ select * from xyz where foo = ?",
+        assertEquals("/* this is a comment: hello -- and so is this: goodbye */ select * from xyz where foo = ?",
             parameters.getSQL());
     }
 }

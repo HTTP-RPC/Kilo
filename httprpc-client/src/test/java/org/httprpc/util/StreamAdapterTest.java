@@ -15,13 +15,14 @@
 package org.httprpc.util;
 
 import org.httprpc.io.JSONEncoder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StreamAdapterTest {
     @Test
@@ -36,6 +37,6 @@ public class StreamAdapterTest {
 
         jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), writer);
 
-        Assertions.assertEquals(expected, writer.toString());
+        assertEquals(expected, writer.toString());
     }
 }
