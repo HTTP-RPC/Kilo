@@ -38,24 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TemplateEncoderTest {
-    static {
-        TemplateEncoder.getModifiers().put("case", (value, argument, locale, timeZone) -> {
-            String result = value.toString();
-
-            if (argument != null) {
-                if (argument.equals("upper")) {
-                    result = result.toUpperCase(locale);
-                } else if (argument.equals("lower")) {
-                    result = result.toLowerCase(locale);
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            }
-
-            return result;
-        });
-    }
-
     @Test
     public void testNull() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
@@ -502,6 +484,22 @@ public class TemplateEncoderTest {
     @Test
     public void testUppercaseModifier() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("upper.txt"));
+
+        encoder.getModifiers().put("case", (value, argument, locale, timeZone) -> {
+            String result = value.toString();
+
+            if (argument != null) {
+                if (argument.equals("upper")) {
+                    result = result.toUpperCase(locale);
+                } else if (argument.equals("lower")) {
+                    result = result.toLowerCase(locale);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+
+            return result;
+        });
 
         String result;
         try (StringWriter writer = new StringWriter()) {

@@ -631,10 +631,10 @@ Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
  
 The first argument to this method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
-For example, the following code creates a modifier that converts values to uppercase:
+Custom modifiers are added to a template encoder instance via the `getModifiers()` method. For example, the following code creates a modifier that converts values to uppercase:
 
 ```java
-TemplateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
+templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 ```
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.

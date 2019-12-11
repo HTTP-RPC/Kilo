@@ -415,7 +415,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
 
-    private static HashMap<String, Modifier> modifiers = new HashMap<>();
+    private HashMap<String, Modifier> modifiers = new HashMap<>();
 
     private static final int EOF = -1;
 
@@ -423,19 +423,6 @@ public class TemplateEncoder extends Encoder<Object> {
     private static final String CONTEXT_PREFIX = "$";
 
     private static final String ESCAPE_MODIFIER_FORMAT = "^%s";
-
-    static {
-        modifiers.put("format", new FormatModifier());
-
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "url"), new URLEscapeModifier());
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "json"), new JSONEscapeModifier());
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "csv"), new CSVEscapeModifier());
-
-        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
-
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "xml"), markupEscapeModifier);
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "html"), markupEscapeModifier);
-    }
 
     /**
      * Constructs a new template encoder.
@@ -466,6 +453,17 @@ public class TemplateEncoder extends Encoder<Object> {
         this.url = url;
         this.charset = charset;
 
+        modifiers.put("format", new FormatModifier());
+
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "url"), new URLEscapeModifier());
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "json"), new JSONEscapeModifier());
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "csv"), new CSVEscapeModifier());
+
+        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
+
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "xml"), markupEscapeModifier);
+        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "html"), markupEscapeModifier);
+
         String path = url.getPath();
 
         int i = path.lastIndexOf('.');
@@ -478,13 +476,13 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     /**
-     * Returns the URL of the template.
+     * Returns the modifier map.
      *
      * @return
-     * The URL of the template.
+     * The modifier map.
      */
-    public URL getURL() {
-        return url;
+    public Map<String, Modifier> getModifiers() {
+        return modifiers;
     }
 
     /**
@@ -891,16 +889,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
             c = reader.read();
         }
-    }
-
-    /**
-     * Returns the modifier map.
-     *
-     * @return
-     * The modifier map.
-     */
-    public static Map<String, Modifier> getModifiers() {
-        return modifiers;
     }
 }
 
