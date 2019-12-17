@@ -407,6 +407,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private URL url;
     private Charset charset;
+    private HashMap<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
     private String baseName = null;
@@ -415,7 +416,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private Map<String, Reader> includes = new HashMap<>();
     private LinkedList<Map<String, Reader>> history = new LinkedList<>();
 
-    private HashMap<String, Modifier> modifiers = new HashMap<>();
+    private static HashMap<String, Modifier> defaultModifiers = new HashMap<>();
 
     private static final int EOF = -1;
 
@@ -423,6 +424,19 @@ public class TemplateEncoder extends Encoder<Object> {
     private static final String CONTEXT_PREFIX = "$";
 
     private static final String ESCAPE_MODIFIER_FORMAT = "^%s";
+
+    static {
+        defaultModifiers.put("format", new FormatModifier());
+
+        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "url"), new URLEscapeModifier());
+        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "json"), new JSONEscapeModifier());
+        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "csv"), new CSVEscapeModifier());
+
+        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
+
+        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "xml"), markupEscapeModifier);
+        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "html"), markupEscapeModifier);
+    }
 
     /**
      * Constructs a new template encoder.
@@ -453,16 +467,7 @@ public class TemplateEncoder extends Encoder<Object> {
         this.url = url;
         this.charset = charset;
 
-        modifiers.put("format", new FormatModifier());
-
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "url"), new URLEscapeModifier());
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "json"), new JSONEscapeModifier());
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "csv"), new CSVEscapeModifier());
-
-        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
-
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "xml"), markupEscapeModifier);
-        modifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "html"), markupEscapeModifier);
+        modifiers = new HashMap<>(defaultModifiers);
 
         String path = url.getPath();
 
@@ -889,6 +894,16 @@ public class TemplateEncoder extends Encoder<Object> {
 
             c = reader.read();
         }
+    }
+
+    /**
+     * Returns the default modifier map.
+     *
+     * @return
+     * The default modifier map.
+     */
+    public static Map<String, Modifier> getDefaultModifiers() {
+        return defaultModifiers;
     }
 }
 
