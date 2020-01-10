@@ -495,7 +495,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         } else if (type == Boolean.TYPE || type == Boolean.class) {
             if (value == null) {
-                return (type == Boolean.TYPE) ? false : null;
+                return (type == Boolean.TYPE) ? Boolean.FALSE : null;
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
