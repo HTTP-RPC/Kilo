@@ -493,11 +493,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else {
                 return Double.parseDouble(value.toString());
             }
-        } else if (type == Boolean.TYPE) {
+        } else if (type == Boolean.TYPE || type == Boolean.class) {
             if (value == null) {
-                return false;
-            } else if (value instanceof Boolean) {
-                return value;
+                return (type == Boolean.TYPE) ? false : null;
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
