@@ -115,7 +115,7 @@ public class WebServiceProxyTest {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
-            entry("string", "héllo+gøodbye"),
+            entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
@@ -128,7 +128,7 @@ public class WebServiceProxyTest {
         Map<String, ?> result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
-            entry("string", "héllo+gøodbye"),
+            entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
             entry("flag", true),
@@ -153,7 +153,7 @@ public class WebServiceProxyTest {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         webServiceProxy.setArguments(mapOf(
-            entry("string", "héllo+gøodbye"),
+            entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
@@ -166,7 +166,7 @@ public class WebServiceProxyTest {
         Map<String, ?> result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
-            entry("string", "héllo+gøodbye"),
+            entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
             entry("flag", true),
@@ -185,13 +185,13 @@ public class WebServiceProxyTest {
 
         TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
-        TestService.Response response = testService.testMultipartPost("héllo+gøodbye", listOf("a", "b", "c"), 123, true,
+        TestService.Response response = testService.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, true,
             date, localDate, localTime, localDateTime,
             listOf(textTestURL, imageTestURL));
 
         assertNotNull(response);
 
-        assertTrue(response.getString().equals("héllo+gøodbye")
+        assertTrue(response.getString().equals("héllo&gøod+bye?")
             && response.getStrings().equals(listOf("a", "b", "c"))
             && response.getNumber() == 123
             && response.getFlag()
