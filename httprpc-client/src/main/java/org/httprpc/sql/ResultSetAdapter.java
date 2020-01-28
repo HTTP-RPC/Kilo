@@ -35,6 +35,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
 
+    // TODO Remove this when attach() method is dropped
     private LinkedHashMap<String, Parameters> subqueries = new LinkedHashMap<>();
 
     private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
@@ -149,7 +150,10 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
      *
      * @param subquery
      * The subquery to attach.
+     *
+     * @deprecated Use {@link Stream} operations instead.
      */
+    @Deprecated
     public void attach(String key, String subquery) {
         attach(key, Parameters.parse(subquery));
     }
@@ -162,7 +166,10 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
      *
      * @param subquery
      * The subquery to attach.
+     *
+     * @deprecated Use {@link Stream} operations instead.
      */
+    @Deprecated
     public void attach(String key, Parameters subquery) {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -180,7 +187,10 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
      *
      * @return
      * The next result, or <tt>null</tt> if there are no more results.
+     *
+     * @deprecated Use {@link Stream} operations instead.
      */
+    @Deprecated
     public Map<String, Object> next() {
         return iterator.hasNext() ? iterator.next() : null;
     }

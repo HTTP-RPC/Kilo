@@ -653,7 +653,11 @@ public abstract class WebService extends HttpServlet {
             xmlStreamWriter.writeEndElement();
 
             for (Map.Entry<String, LinkedList<Handler>> entry : resource.handlerMap.entrySet()) {
-                for (Handler handler : entry.getValue()) {
+                List<Handler> handlers = entry.getValue();
+
+                handlers.sort(Comparator.comparing(handler -> handler.method.getName()));
+
+                for (Handler handler : handlers) {
                     Parameter[] parameters = handler.method.getParameters();
 
                     xmlStreamWriter.writeStartElement("pre");

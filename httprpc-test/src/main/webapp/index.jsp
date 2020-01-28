@@ -207,15 +207,5 @@
 <br/>
 <a href="${pageContext.request.contextPath}/pets/average-age">Average Age</a><br/>
 
-<hr/>
-
-<a href="${pageContext.request.contextPath}/employees?api">Employees (API)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/employees">Employees</a><br/>
-<a href="${pageContext.request.contextPath}/employees?name=bal*">Employees ("bal*")</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/employees/10001">Employee 10001</a><br/>
-<a href="${pageContext.request.contextPath}/employees/10001?details=titles&details=salaries">Employee 10001 (details)</a><br/>
-
 </body>
 </html>
