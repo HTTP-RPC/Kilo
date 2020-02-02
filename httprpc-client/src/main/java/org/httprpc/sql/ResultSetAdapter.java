@@ -14,14 +14,11 @@
 
 package org.httprpc.sql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -34,9 +31,6 @@ import java.util.stream.StreamSupport;
 public class ResultSetAdapter implements Iterable<Map<String, Object>> {
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
-
-    // TODO Remove this when attach() method is dropped
-    private LinkedHashMap<String, Parameters> subqueries = new LinkedHashMap<>();
 
     private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
         private Boolean hasNext = null;
@@ -92,30 +86,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
                 throw new RuntimeException(exception);
             }
 
-            for (Map.Entry<String, Parameters> entry : subqueries.entrySet()) {
-                LinkedList<Map<String, Object>> results = new LinkedList<>();
-
-                try {
-                    Connection connection = resultSet.getStatement().getConnection();
-
-                    Parameters parameters = entry.getValue();
-
-                    try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-                        parameters.apply(statement, row);
-
-                        try (ResultSet resultSet = statement.executeQuery()) {
-                            for (Map<String, Object> result : new ResultSetAdapter(resultSet)) {
-                                results.add(result);
-                            }
-                        }
-                    }
-                } catch (SQLException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                row.put(entry.getKey(), results);
-            }
-
             hasNext = null;
 
             return row;
@@ -140,59 +110,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
-    }
-
-    /**
-     * Attaches a subquery to the result set.
-     *
-     * @param key
-     * The key to associate with the subquery results.
-     *
-     * @param subquery
-     * The subquery to attach.
-     *
-     * @deprecated Use {@link Stream} operations instead.
-     */
-    @Deprecated
-    public void attach(String key, String subquery) {
-        attach(key, Parameters.parse(subquery));
-    }
-
-    /**
-     * Attaches a subquery to the result set.
-     *
-     * @param key
-     * The key to associate with the subquery results.
-     *
-     * @param subquery
-     * The subquery to attach.
-     *
-     * @deprecated Use {@link Stream} operations instead.
-     */
-    @Deprecated
-    public void attach(String key, Parameters subquery) {
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (subquery == null) {
-            throw new IllegalArgumentException();
-        }
-
-        subqueries.put(key, subquery);
-    }
-
-    /**
-     * Returns the next result.
-     *
-     * @return
-     * The next result, or <tt>null</tt> if there are no more results.
-     *
-     * @deprecated Use {@link Stream} operations instead.
-     */
-    @Deprecated
-    public Map<String, Object> next() {
-        return iterator.hasNext() ? iterator.next() : null;
     }
 
     @Override
