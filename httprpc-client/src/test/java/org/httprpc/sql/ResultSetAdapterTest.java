@@ -17,6 +17,7 @@ package org.httprpc.sql;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,11 +62,9 @@ public class ResultSetAdapterTest {
     );
 
     @Test
-    public void testResultSetAdapter() {
+    public void testResultSetAdapter() throws SQLException {
         List<Map<String, Object>> actual;
-        try (TestResultSet resultSet = new TestResultSet()) {
-            ResultSetAdapter adapter = new ResultSetAdapter(resultSet);
-
+        try (ResultSetAdapter adapter = new ResultSetAdapter(new TestResultSet())) {
             actual = adapter.stream().collect(Collectors.toList());
         }
 

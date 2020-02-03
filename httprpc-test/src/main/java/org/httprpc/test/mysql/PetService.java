@@ -34,7 +34,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -81,9 +80,7 @@ public class PetService extends WebService {
                 entry("owner", owner)
             ));
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
-
+            try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
                 if (format == null || format.equals("json")) {
                     getResponse().setContentType("application/json");
 
@@ -122,9 +119,7 @@ public class PetService extends WebService {
         double averageAge;
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT birth FROM pet")) {
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(resultSet);
-
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery("SELECT birth FROM pet"))) {
             Date now = new Date();
 
             Stream<Pet> pets = resultSetAdapter.stream().map(result -> BeanAdapter.adapt(result, Pet.class));

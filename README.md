@@ -809,10 +809,10 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized as JSON, CSV, or XML, or to any other format via a template. For example:
 
 ```java
-JSONEncoder jsonEncoder = new JSONEncoder();
-
-try (ResultSet resultSet = statement.executeQuery()) {
-    jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
+try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
+    JSONEncoder jsonEncoder = new JSONEncoder();
+    
+    jsonEncoder.write(, getResponse().getOutputStream());
 }
 ```
 
@@ -863,7 +863,7 @@ parameters.apply(statement, mapOf(
 Once applied, the statement can be executed:
 
 ```java
-return new ResultSetAdapter(statement.executeQuery());    
+ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery());    
 ```
 
 A complete example that uses both classes is shown below. It is based on the "pet" table from the MySQL "menagerie" sample database:
@@ -883,7 +883,7 @@ The following service method queries this table to retrieve a list of all pets b
 
 ```java
 @RequestMethod("GET")
-public void getPets(String owner) throws SQLException, IOException {
+public void getPets(String owner, String format) throws SQLException, IOException {
     Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
 
     try (Connection connection = dataSource.getConnection();
@@ -892,7 +892,7 @@ public void getPets(String owner) throws SQLException, IOException {
             entry("owner", owner)
         ));
 
-        try (ResultSet resultSet = statement.executeQuery()) {
+        try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
             JSONEncoder jsonEncoder = new JSONEncoder();
             
             jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());

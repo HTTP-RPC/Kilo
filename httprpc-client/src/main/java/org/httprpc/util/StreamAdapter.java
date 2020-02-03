@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * Class that presents the contents of a stream as an iterable sequence.
  */
-public class StreamAdapter<T> implements Iterable<T> {
+public class StreamAdapter<T> implements Iterable<T>, AutoCloseable {
     private Stream<T> stream;
 
     public StreamAdapter(Stream<T> stream) {
@@ -30,5 +30,10 @@ public class StreamAdapter<T> implements Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return stream.iterator();
+    }
+
+    @Override
+    public void close() {
+        stream.close();
     }
 }

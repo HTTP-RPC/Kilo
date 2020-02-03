@@ -26,11 +26,10 @@ import java.util.stream.StreamSupport;
 
 /**
  * Class that presents the contents of a result set as an iterable sequence
- * of maps.
+ * of maps. Map instances are mutable, and column order is preserved.
  */
-public class ResultSetAdapter implements Iterable<Map<String, Object>> {
+public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
-    private ResultSetMetaData resultSetMetaData;
 
     private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
         private Boolean hasNext = null;
@@ -58,6 +57,8 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
             LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 
             try {
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+
                 for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
                     String path = resultSetMetaData.getColumnLabel(i + 1);
 
@@ -104,12 +105,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
         }
 
         this.resultSet = resultSet;
-
-        try {
-            resultSetMetaData = resultSet.getMetaData();
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
     }
 
     @Override
@@ -117,8 +112,14 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>> {
         return iterator;
     }
 
+    @Override
+    public void close() throws SQLException {
+        resultSet.close();
+    }
+
     /**
-     * Returns a stream over the results.
+     * Returns a stream over the results. Closing the returned stream does not
+     * close the underlying result set.
      *
      * @return
      * A stream over the results.
