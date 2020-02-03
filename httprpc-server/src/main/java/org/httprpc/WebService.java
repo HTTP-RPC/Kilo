@@ -18,6 +18,7 @@ import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONEncoder;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyList;
 
@@ -122,9 +124,29 @@ public abstract class WebService extends HttpServlet {
     private ThreadLocal<ArrayList<String>> keyList = new ThreadLocal<>();
     private ThreadLocal<HashMap<String, String>> keyMap = new ThreadLocal<>();
 
+    private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
+
     private static final String PATH_VARIABLE = "?";
 
     private static final String UTF_8 = "UTF-8";
+
+    /**
+     * Returns a service instance.
+     *
+     * @param type
+     * The service type.
+     *
+     * @param <T>
+     * The service type.
+     *
+     * @return
+     * The service instance, or <tt>null</tt> if no service of the given type
+     * exists.
+     */
+    @SuppressWarnings("unchecked")
+    protected static <T extends WebService> T getService(Class<T> type) {
+        return (T)services.get(type);
+    }
 
     @Override
     public void init() throws ServletException {
@@ -197,6 +219,12 @@ public abstract class WebService extends HttpServlet {
 
                 handlerList.add(handler);
             }
+        }
+
+        Class<? extends WebService> type = getClass();
+
+        if (getClass().getAnnotation(WebServlet.class) != null) {
+            services.put(type, this);
         }
     }
 
