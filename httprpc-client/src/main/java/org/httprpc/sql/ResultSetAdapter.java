@@ -133,6 +133,16 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         resultSet.setFetchSize(fetchSize);
     }
 
+    /**
+     * Returns the next result.
+     *
+     * @return
+     * The next result, or <tt>null</tt> if there are no more results.
+     */
+    public Map<String, Object> next() {
+        return iterator.hasNext() ? iterator.next() : null;
+    }
+
     @Override
     public Iterator<Map<String, Object>> iterator() {
         return iterator;
