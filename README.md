@@ -267,6 +267,11 @@ The first argument contains the current request, and the second the service meth
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
 
+### Inter-Service Communication
+A service implementation can obtain a reference to another service instance via the `getService()` method of the `WebService` class. This can be useful when the behavior of one service relies on logic provided by a different service. The target service must be annotated with `javax.servlet.annotation.WebServlet`.
+
+Methods on the target service are executed in the same thread that handled the initial request. However, the servlet request and response values from the source service are not propagated to the target. Any required values from the request must be passed as arguments to the target method; similarly, any information destined for the response must be returned by the method.
+
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:
 
@@ -806,13 +811,15 @@ root.getChildren().get(0).getChildren().get(0).getName(); // "January"
 ```
 
 ## ResultSetAdapter and Parameters
-The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized as JSON, CSV, or XML, or to any other format via a template. For example:
+The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized as JSON, CSV, or XML, or to any other format via a template. `ResultSetAdapter` also implements `AutoCloseable` and ensures that the underlying result set is closed when the adapter itself is closed. 
+
+For example:
 
 ```java
 try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
     JSONEncoder jsonEncoder = new JSONEncoder();
     
-    jsonEncoder.write(, getResponse().getOutputStream());
+    jsonEncoder.write(resultSetAdapter, outputStream);
 }
 ```
 
@@ -895,7 +902,7 @@ public void getPets(String owner, String format) throws SQLException, IOExceptio
         try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
             JSONEncoder jsonEncoder = new JSONEncoder();
             
-            jsonEncoder.write(new ResultSetAdapter(resultSet), getResponse().getOutputStream());
+            jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
         }
     }
 }
