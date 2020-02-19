@@ -310,7 +310,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value. If the value is <tt>null</tt> or an instance of one of
+     * Adapts a value. If the value is <code>null</code> or an instance of one of
      * the following types, it is returned as is:
      *
      * <ul>
@@ -372,8 +372,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <ul>
      * <li>If the target type is a number or boolean, the value is parsed or
-     * coerced using the appropriate conversion method. Missing or <tt>null</tt>
-     * values are automatically converted to <tt>0</tt> or <tt>false</tt> for
+     * coerced using the appropriate conversion method. Missing or <code>null</code>
+     * values are automatically converted to <code>0</code> or <code>false</code> for
      * primitive argument types.</li>
      * <li>If the target type is {@link String}, the value is adapted via
      * {@link Object#toString()}.</li>
@@ -684,7 +684,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The path to the value.
      *
      * @return
-     * The value at the given path, or <tt>null</tt> if the value does not exist.
+     * The value at the given path, or <code>null</code> if the value does not exist.
      */
     @SuppressWarnings("unchecked")
     public static <V> V valueAt(Object root, String path) {
@@ -714,13 +714,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <ul>
      * <li>{@link Object}: "any"</li>
-     * <li>{@link Void} or <tt>void</tt>: "void"</li>
-     * <li>{@link Byte} or <tt>byte</tt>: "byte"</li>
-     * <li>{@link Short} or <tt>short</tt>: "short"</li>
-     * <li>{@link Integer} or <tt>int</tt>: "integer"</li>
-     * <li>{@link Long} or <tt>long</tt>: "long"</li>
-     * <li>{@link Float} or <tt>float</tt>: "float"</li>
-     * <li>{@link Double} or <tt>double</tt>: "double"</li>
+     * <li>{@link Void} or <code>void</code>: "void"</li>
+     * <li>{@link Byte} or <code>byte</code>: "byte"</li>
+     * <li>{@link Short} or <code>short</code>: "short"</li>
+     * <li>{@link Integer} or <code>int</code>: "integer"</li>
+     * <li>{@link Long} or <code>long</code>: "long"</li>
+     * <li>{@link Float} or <code>float</code>: "float"</li>
+     * <li>{@link Double} or <code>double</code>: "double"</li>
      * <li>Any other {@link Number}: "number"</li>
      * <li>{@link CharSequence}: "string"</li>
      * <li>{@link Enum}: "enum"</li>

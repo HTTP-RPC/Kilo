@@ -137,7 +137,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      * Returns the next result.
      *
      * @return
-     * The next result, or <tt>null</tt> if there are no more results.
+     * The next result, or <code>null</code> if there are no more results.
      */
     public Map<String, Object> next() {
         return iterator.hasNext() ? iterator.next() : null;

@@ -43,7 +43,7 @@ public class JSONEncoder extends Encoder<Object> {
      * Constructs a new JSON encoder.
      *
      * @param compact
-     * <tt>true</tt> if the encoded output should be compact; <tt>false</tt>,
+     * <code>true</code> if the encoded output should be compact; <code>false</code>,
      * otherwise.
      */
     public JSONEncoder(boolean compact) {

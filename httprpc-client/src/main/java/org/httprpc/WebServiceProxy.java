@@ -88,7 +88,7 @@ public class WebServiceProxy {
          * The input stream to read from.
          *
          * @param contentType
-         * The content type, or <tt>null</tt> if the content type is not known.
+         * The content type, or <code>null</code> if the content type is not known.
          *
          * @param headers
          * The response headers.
@@ -239,7 +239,7 @@ public class WebServiceProxy {
      * Returns the request handler.
      *
      * @return
-     * The request handler, or <tt>null</tt> if no request handler has been set.
+     * The request handler, or <code>null</code> if no request handler has been set.
      */
     public RequestHandler getRequestHandler() {
         return requestHandler;
@@ -249,7 +249,7 @@ public class WebServiceProxy {
      * Sets the request handler.
      *
      * @param requestHandler
-     * The request handler, or <tt>null</tt> for no request handler.
+     * The request handler, or <code>null</code> for no request handler.
      */
     public void setRequestHandler(RequestHandler requestHandler) {
         this.requestHandler = requestHandler;
@@ -322,7 +322,7 @@ public class WebServiceProxy {
      * The result type.
      *
      * @param responseHandler
-     * The response handler, or <tt>null</tt> for no response handler.
+     * The response handler, or <code>null</code> for no response handler.
      *
      * @return
      * The result of the operation.

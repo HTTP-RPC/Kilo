@@ -140,7 +140,7 @@ public abstract class WebService extends HttpServlet {
      * The service type.
      *
      * @return
-     * The service instance, or <tt>null</tt> if no service of the given type
+     * The service instance, or <code>null</code> if no service of the given type
      * exists.
      */
     @SuppressWarnings("unchecked")
@@ -555,7 +555,7 @@ public abstract class WebService extends HttpServlet {
      * The method to be invoked.
      *
      * @return
-     * <tt>true</tt> if the method should be invoked; <tt>false</tt>,
+     * <code>true</code> if the method should be invoked; <code>false</code>,
      * otherwise.
      */
     protected boolean isAuthorized(HttpServletRequest request, Method method) {
@@ -589,7 +589,7 @@ public abstract class WebService extends HttpServlet {
      * Enables or disables compact output.
      *
      * @return
-     * <tt>true</tt> if the encoded output should be compact; <tt>false</tt>,
+     * <code>true</code> if the encoded output should be compact; <code>false</code>,
      * otherwise.
      */
     protected boolean isCompact() {

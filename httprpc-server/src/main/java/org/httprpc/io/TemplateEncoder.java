@@ -65,7 +65,7 @@ public class TemplateEncoder extends Encoder<Object> {
          * The value to which the modifier is being be applied.
          *
          * @param argument
-         * The modifier argument, or <tt>null</tt> if no argument was provided.
+         * The modifier argument, or <code>null</code> if no argument was provided.
          *
          * @param locale
          * The locale for which the modifier is being applied.
@@ -494,7 +494,7 @@ public class TemplateEncoder extends Encoder<Object> {
      * Returns the base name of the template's resource bundle.
      *
      * @return
-     * The base name of the template's resource bundle, or <tt>null</tt> if no
+     * The base name of the template's resource bundle, or <code>null</code> if no
      * base name has been set.
      */
     public String getBaseName() {
@@ -505,7 +505,7 @@ public class TemplateEncoder extends Encoder<Object> {
      * Sets the base name of the template's resource bundle.
      *
      * @param baseName
-     * The base name of the template's resource bundle, or <tt>null</tt> for no
+     * The base name of the template's resource bundle, or <code>null</code> for no
      * base name.
      */
     public void setBaseName(String baseName) {
