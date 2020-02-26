@@ -24,7 +24,6 @@ import org.httprpc.WebService;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
-import org.httprpc.io.XMLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -77,12 +76,6 @@ public class RestaurantService extends WebService {
                 CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "address.building", "address.street", "borough", "cuisine"));
 
                 csvEncoder.write(cursorAdapter, getResponse().getOutputStream());
-            } else if (format.equals("xml")) {
-                getResponse().setContentType("text/xml");
-
-                XMLEncoder xmlEncoder = new XMLEncoder();
-
-                xmlEncoder.write(cursorAdapter, getResponse().getOutputStream());
             } else if (format.equals("html")) {
                 getResponse().setContentType("text/html");
 

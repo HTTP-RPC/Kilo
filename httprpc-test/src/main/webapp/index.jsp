@@ -193,7 +193,6 @@
 <br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462">Restaurants (JSON)</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=csv">Restaurants (CSV)</a><br/>
-<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=xml">Restaurants (XML)</a><br/>
 <a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=html">Restaurants (HTML)</a><br/>
 
 <h2>MySQL</h2>
@@ -202,7 +201,6 @@
 <br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets (JSON)</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=csv">Pets (CSV)</a><br/>
-<a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=xml">Pets (XML)</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=html">Pets (HTML)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/pets/average-age">Average Age</a><br/>
