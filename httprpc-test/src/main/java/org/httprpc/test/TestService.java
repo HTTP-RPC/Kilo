@@ -15,7 +15,6 @@
 package org.httprpc.test;
 
 import org.httprpc.RequestMethod;
-import org.httprpc.RequestParameter;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
 
@@ -53,10 +52,10 @@ public class TestService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(@RequestParameter("string") String text, List<String> strings, int number, boolean flag,
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
         Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
         return mapOf(
-            entry("string", text),
+            entry("string", string),
             entry("strings", strings),
             entry("number", number),
             entry("flag", flag),

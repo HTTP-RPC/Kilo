@@ -424,7 +424,7 @@ public abstract class WebService extends HttpServlet {
                 int j = 0;
 
                 for (int k = 0; k < parameters.length; k++) {
-                    String name = getName(parameters[k]);
+                    String name = parameters[k].getName();
 
                     if (!(parameterMap.containsKey(name))) {
                         j++;
@@ -450,11 +450,9 @@ public abstract class WebService extends HttpServlet {
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
 
-            String name = getName(parameter);
+            List<?> values = parameterMap.get(parameter.getName());
 
             Class<?> type = parameter.getType();
-
-            List<?> values = parameterMap.get(name);
 
             Object argument;
             if (type == List.class) {
@@ -491,12 +489,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         return arguments;
-    }
-
-    private static String getName(Parameter parameter) {
-        RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
-
-        return (requestParameter == null) ? parameter.getName() : requestParameter.value();
     }
 
     /**
@@ -709,7 +701,7 @@ public abstract class WebService extends HttpServlet {
                             xmlStreamWriter.writeCharacters(", ");
                         }
 
-                        xmlStreamWriter.writeCharacters(getName(parameter) + ": ");
+                        xmlStreamWriter.writeCharacters(parameter.getName() + ": ");
 
                         Type type = parameter.getParameterizedType();
 
@@ -749,7 +741,7 @@ public abstract class WebService extends HttpServlet {
                                 for (int i = 0; i < parameters.length; i++) {
                                     Parameter parameter = parameters[i];
 
-                                    String parameterName = getName(parameter);
+                                    String parameterName = parameter.getName();
 
                                     xmlStreamWriter.writeStartElement("li");
 

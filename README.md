@@ -42,7 +42,6 @@ The HTTP-RPC framework includes the following classes:
 
 * `org.httprpc`
     * `RequestMethod` - associates an HTTP verb with a service method
-    * `RequestParameter` - associates a custom request parameter name with a method argument
     * `ResourcePath` - associates a resource path with a service method
     * `WebServiceException` - thrown when a service operation returns an error
     * `WebServiceProxy` - web service invocation proxy
@@ -72,7 +71,7 @@ These classes are discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org).
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org). Service classes must be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
@@ -172,16 +171,6 @@ The methods could be invoked using this HTML form:
 ```
 
 If no method is found that matches the provided arguments, an HTTP 405 response is returned.
-
-#### Parameter Names
-In general, service classes should be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. However, the `RequestParameter` annotation can be used to customize the name of the parameter associated with a particular argument. For example:
-
-```java
-@RequestMethod("GET")
-public double getTemperature(@RequestParameter("zip_code") String zipCode) { 
-    ... 
-}
-```
 
 ### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
@@ -1097,9 +1086,9 @@ public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { 
 
 Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
 
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself.
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. 
 
-In general, service adapters should be compiled with the `-parameters` flag so their method parameter names are available at runtime. However, the `RequestParameter` annotation can be used to associate a custom parameter name with a request argument. 
+Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 `POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#beanadapter) based on the method return type.
 
