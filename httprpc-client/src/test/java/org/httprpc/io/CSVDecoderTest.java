@@ -30,9 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        String text = "\"a\",\"b\",\"c\",\"d\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true\r\n"
-            + "\" D\rÉ\nF\r\n\",2,4.0,false\n";
+        String text = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
+            + "\" D\rÉ\nF\r\n\",2,4.0,false\r\n"
+            + ",3,6.0\n";
 
         List<Map<String, ?>> expected = listOf(
             mapOf(
@@ -46,6 +47,10 @@ public class CSVDecoderTest {
                 entry("b", "2"),
                 entry("c", "4.0"),
                 entry("d", "false")
+            ),
+            mapOf(
+                entry("b", "3"),
+                entry("c", "6.0")
             )
         );
 
