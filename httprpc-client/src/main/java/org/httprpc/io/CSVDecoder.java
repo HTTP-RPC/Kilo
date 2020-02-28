@@ -71,11 +71,19 @@ public class CSVDecoder extends Decoder {
                 LinkedHashMap<String, String> row = new LinkedHashMap<>();
 
                 for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
+                    String key = keys.get(i);
+
+                    if (key.isEmpty()) {
+                        continue;
+                    }
+
                     String value = values.get(i);
 
-                    if (!value.isEmpty()) {
-                        row.put(keys.get(i), value);
+                    if (value.isEmpty()) {
+                        continue;
                     }
+
+                    row.put(key, value);
                 }
 
                 hasNext = null;
