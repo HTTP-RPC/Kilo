@@ -474,7 +474,7 @@ public class WebServiceProxy {
             } else {
                 String responseMessage = connection.getResponseMessage();
 
-                message = (responseMessage == null) ? String.valueOf(responseCode) : responseMessage;
+                message = (responseMessage == null || responseMessage.isEmpty()) ? String.valueOf(responseCode) : responseMessage;
             }
 
             throw new WebServiceException(message, responseCode);
