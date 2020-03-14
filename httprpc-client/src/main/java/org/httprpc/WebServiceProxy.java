@@ -472,7 +472,9 @@ public class WebServiceProxy {
 
                 message = messageBuilder.toString();
             } else {
-                message = connection.getResponseMessage();
+                String responseMessage = connection.getResponseMessage();
+
+                message = (responseMessage == null) ? String.valueOf(responseCode) : responseMessage;
             }
 
             throw new WebServiceException(message, responseCode);
