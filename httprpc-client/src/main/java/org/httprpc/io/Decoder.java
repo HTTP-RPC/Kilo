@@ -41,6 +41,16 @@ public abstract class Decoder {
     }
 
     /**
+     * Returns the character set to use when decoding an input stream.
+     *
+     * @return
+     * The input stream's character set.
+     */
+    public Charset getCharset() {
+        return charset;
+    }
+
+    /**
      * Reads a value from an input stream.
      *
      * @param <T>

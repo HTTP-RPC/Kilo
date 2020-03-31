@@ -33,7 +33,7 @@ public abstract class Encoder<T> {
      * Constructs a new encoder.
      *
      * @param charset
-     * The character encoding to use when encoding an output stream.
+     * The character set to use when encoding an output stream.
      */
     protected Encoder(Charset charset) {
         if (charset == null) {
@@ -44,10 +44,10 @@ public abstract class Encoder<T> {
     }
 
     /**
-     * Returns the character encoding used by the encoder.
+     * Returns the character set to use when encoding an output stream.
      *
      * @return
-     * The character encoding.
+     * The output stream's character set.
      */
     public Charset getCharset() {
         return charset;
