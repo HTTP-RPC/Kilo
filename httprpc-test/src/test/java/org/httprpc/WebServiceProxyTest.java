@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebServiceProxyTest {
-    public interface TestService {
+    public interface TestService extends Map<String, Object> {
         interface Response {
             interface AttachmentInfo {
                 int getBytes();
@@ -57,6 +57,10 @@ public class WebServiceProxyTest {
             LocalDateTime getLocalDateTime();
             List<AttachmentInfo> getAttachmentInfo();
         }
+
+        @RequestMethod("GET")
+        @ResourcePath("a/?:a/b/?:b/c/?:c/d/?:d")
+        Map<String, ?> testGetKeys() throws IOException;
 
         @RequestMethod("GET")
         @ResourcePath("fibonacci")
@@ -136,6 +140,28 @@ public class WebServiceProxyTest {
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
             entry("localDateTime", localDateTime.toString())
+        ), result);
+    }
+
+    @Test
+    public void testGetKeys() throws IOException {
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
+
+        testService.put("a", 123);
+        testService.put("b", "héllo");
+        testService.put("c", 456);
+        testService.put("d", "göodbye");
+
+        Map<String, ?> result  = testService.testGetKeys();
+
+        assertEquals(mapOf(
+            entry("list", listOf("123", "héllo", "456", "göodbye")),
+            entry("map", mapOf(
+                entry("a", "123"),
+                entry("b", null),
+                entry("c", "456"),
+                entry("d", null)
+            ))
         ), result);
     }
 

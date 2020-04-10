@@ -68,7 +68,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("a/?:a/b/?/c/?:c/d/?")
-    public Map<String, ?> testGet() {
+    public Map<String, ?> testGetKeys() {
         return mapOf(
             entry("list", Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3))),
             entry("map", mapOf(

@@ -639,43 +639,82 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
+        HashMap<Object, Object> keys;
+        if (Map.class.isAssignableFrom(type)) {
+            keys = new HashMap<>();
+        } else {
+            keys = null;
+        }
+
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type},  (proxy, method, arguments) -> {
-            RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
-
-            if (requestMethod == null) {
-                throw new UnsupportedOperationException();
-            }
-
-            ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
-
-            URL url;
-            if (resourcePath != null) {
-                url = new URL(baseURL, resourcePath.value());
+            if (method.getDeclaringClass() == Map.class) {
+                return method.invoke(keys, arguments);
             } else {
-                url = baseURL;
+                RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
+
+                if (requestMethod == null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
+
+                URL url;
+                if (resourcePath != null) {
+                    String[] components = resourcePath.value().split("/");
+
+                    for (int i = 0; i < components.length; i++) {
+                        String component = components[i];
+
+                        if (component.length() == 0) {
+                            continue;
+                        }
+
+                        if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
+                            int k = ResourcePath.PATH_VARIABLE_PREFIX.length();
+
+                            if (component.length() == k || component.charAt(k++) != ':') {
+                                throw new IllegalStateException("Invalid path variable.");
+                            }
+
+                            Object value = getParameterValue(keys.get(component.substring(k)));
+
+                            if (value != null) {
+                                components[i] = URLEncoder.encode(value.toString(), UTF_8);
+                            }
+                        }
+                    }
+
+                    url = new URL(baseURL, String.join("/", components));
+                } else {
+                    url = baseURL;
+                }
+
+                if (keys != null) {
+                    keys.clear();
+                }
+
+                WebServiceProxy webServiceProxy = new WebServiceProxy(requestMethod.value(), url);
+
+                if (webServiceProxy.getMethod().equalsIgnoreCase("POST")) {
+                    webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+                }
+
+                webServiceProxy.setHeaders(headers);
+
+                Parameter[] parameters = method.getParameters();
+
+                HashMap<String, Object> argumentMap = new HashMap<>();
+
+                for (int i = 0; i < parameters.length; i++) {
+                    Parameter parameter = parameters[i];
+
+                    argumentMap.put(parameter.getName(), arguments[i]);
+                }
+
+                webServiceProxy.setArguments(argumentMap);
+
+                return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
             }
-
-            WebServiceProxy webServiceProxy = new WebServiceProxy(requestMethod.value(), url);
-
-            if (webServiceProxy.getMethod().equalsIgnoreCase("POST")) {
-                webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
-            }
-
-            webServiceProxy.setHeaders(headers);
-
-            Parameter[] parameters = method.getParameters();
-
-            HashMap<String, Object> argumentMap = new HashMap<>();
-
-            for (int i = 0; i < parameters.length; i++) {
-                Parameter parameter = parameters[i];
-
-                argumentMap.put(parameter.getName(), arguments[i]);
-            }
-
-            webServiceProxy.setArguments(argumentMap);
-
-            return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
         }));
     }
 }

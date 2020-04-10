@@ -126,8 +126,6 @@ public abstract class WebService extends HttpServlet {
 
     private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
 
-    private static final String PATH_VARIABLE = "?";
-
     private static final String UTF_8 = "UTF-8";
 
     /**
@@ -176,8 +174,8 @@ public abstract class WebService extends HttpServlet {
                             continue;
                         }
 
-                        if (component.startsWith(PATH_VARIABLE)) {
-                            int k = PATH_VARIABLE.length();
+                        if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
+                            int k = ResourcePath.PATH_VARIABLE_PREFIX.length();
 
                             String key;
                             if (component.length() > k) {
@@ -187,7 +185,7 @@ public abstract class WebService extends HttpServlet {
 
                                 key = component.substring(k);
 
-                                component = PATH_VARIABLE;
+                                component = ResourcePath.PATH_VARIABLE_PREFIX;
                             } else {
                                 key = null;
                             }

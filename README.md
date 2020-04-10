@@ -991,7 +991,7 @@ public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { 
 
 Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
 
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. 
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. Named path variables can be supplied by extending the `Map` interface in the service type.
 
 Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
