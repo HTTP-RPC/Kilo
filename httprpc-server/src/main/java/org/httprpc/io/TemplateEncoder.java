@@ -28,16 +28,14 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -175,91 +173,32 @@ public class TemplateEncoder extends Encoder<Object> {
             }
         }
 
-        static DateFormat getDateInstance(int style, Locale locale, TimeZone timeZone) {
-            DateFormat dateFormat = DateFormat.getDateInstance(style, locale);
-
-            dateFormat.setTimeZone(timeZone);
-
-            return dateFormat;
-        }
-
-        static DateFormat getTimeInstance(int style, Locale locale, TimeZone timeZone) {
-            DateFormat dateFormat = DateFormat.getTimeInstance(style, locale);
-
-            dateFormat.setTimeZone(timeZone);
-
-            return dateFormat;
-        }
-
-        static DateFormat getDateTimeInstance(int dateStyle, int timeStyle, Locale locale, TimeZone timeZone) {
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(dateStyle, timeStyle, locale);
-
-            dateFormat.setTimeZone(timeZone);
-
-            return dateFormat;
-        }
-
         static String format(Object value, FormatStyle formatStyle, DateTimeType dateTimeType, Locale locale, TimeZone timeZone) {
-            if (value instanceof TemporalAccessor) {
-                TemporalAccessor temporalAccessor = (TemporalAccessor)value;
+            if (value instanceof Long) {
+                value = new Date((long)value);
+            }
 
-                switch (dateTimeType) {
-                    case DATE: {
-                        return DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
-                    }
+            if (value instanceof Date) {
+                value = ((Date)value).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            }
 
-                    case TIME: {
-                        return DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
-                    }
+            TemporalAccessor temporalAccessor = (TemporalAccessor)value;
 
-                    case DATE_TIME: {
-                        return DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
-                    }
-
-                    default: {
-                        throw new UnsupportedOperationException();
-                    }
-                }
-            } else {
-                int style;
-                switch (formatStyle) {
-                    case FULL:
-                        style = DateFormat.FULL;
-                        break;
-
-                    case LONG:
-                        style = DateFormat.LONG;
-                        break;
-
-                    case MEDIUM:
-                        style = DateFormat.MEDIUM;
-                        break;
-
-                    case SHORT:
-                        style = DateFormat.SHORT;
-                        break;
-
-                    default: {
-                        throw new UnsupportedOperationException();
-                    }
+            switch (dateTimeType) {
+                case DATE: {
+                    return DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
                 }
 
-                switch (dateTimeType) {
-                    case DATE: {
-                        return getDateInstance(style, locale, timeZone).format(value);
-                    }
+                case TIME: {
+                    return DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                }
 
-                    case TIME: {
-                        return getTimeInstance(style, locale, timeZone).format(value);
-                    }
+                case DATE_TIME: {
+                    return DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                }
 
-                    case DATE_TIME: {
-                        return getDateTimeInstance(style, style, locale, timeZone).format(value);
-                    }
-
-                    default: {
-                        throw new UnsupportedOperationException();
-                    }
+                default: {
+                    throw new UnsupportedOperationException();
                 }
             }
         }
