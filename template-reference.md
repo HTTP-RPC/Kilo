@@ -56,9 +56,9 @@ Applications may also define their own custom modifiers.
 #### Locale-Specific Formatting
 In addition to `printf()`-style formatting, the `format` modifier also supports the following arguments for locale-specific formatting of numbers and dates:
 
-  * `currency` - applies currency format
-  * `percent` - applies percentage format
-  * `shortDate` - applies short date format
+  * `currency` - applies a currency format
+  * `percent` - applies a percentage format
+  * `shortDate` - applies a short date format
   * `mediumDate` - applies a medium date format
   * `longDate` - applies a long date format
   * `fullDate` - applies a full date format
@@ -77,26 +77,11 @@ For example, this marker transforms a date value into a localized medium-length 
 {{date:format=mediumDate}}
 ```
 
-Date values may be represented by one of the following:
-
-* an instance of `java.util.Date` 
-* a `long` value representing epoch time in milliseconds
-* an instance of `java.util.time.LocalDate`
-* a string of the format `yyy-mm-dd`
-
-Time values may be represented by one of the following:
-
-* an instance of `java.util.Date`
-* a `long` value representing epoch time in milliseconds
-* an instance of `java.util.time.LocalTime`
-* a string of the format `hh:mm[:ss]`
-
 Date/time values may be represented by one of the following:
 
-* an instance of `java.util.Date`
-* a `long` value representing epoch time
-* an instance of `java.util.time.LocalDateTime`
-* a string of the format `yyy-mm-ddThh:mm[:ss]`
+* a `long` value representing epoch time in milliseconds
+* an instance of `java.util.Date` 
+* an instance of `java.util.time.TemporalAccessor`
 
 ## Section Markers
 Section markers define a repeating section of content. The marker name must refer to an iterable value in the data dictionary (for example, an instance of `java.util.List`). 

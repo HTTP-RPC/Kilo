@@ -266,11 +266,8 @@ public class TemplateEncoderTest {
                 entry("date", date),
                 entry("dateInMilliseconds", date.getTime()),
                 entry("localDate", localDate),
-                entry("localDateAsString", localDate.toString()),
                 entry("localTime", localTime),
-                entry("localTimeAsString", localTime.toString()),
-                entry("localDateTime", localDateTime),
-                entry("localDateTimeAsString", localDateTime.toString())
+                entry("localDateTime", localDateTime)
             ), writer);
             result = writer.toString();
         }
@@ -278,10 +275,7 @@ public class TemplateEncoderTest {
         assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
             + DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
             + localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + ",\n"
-            + localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + ",\n"
             + localTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)) + ",\n"
-            + localTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)) + ",\n"
-            + localDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)) + ",\n"
             + localDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)), result);
     }
 

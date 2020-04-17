@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +100,12 @@ public class TemplateEncoder extends Encoder<Object> {
         static final String LONG_DATE_TIME = "longDateTime";
         static final String FULL_DATE_TIME = "fullDateTime";
 
+        enum DateTimeType {
+            DATE,
+            TIME,
+            DATE_TIME
+        }
+
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             if (argument == null) {
@@ -114,145 +121,52 @@ public class TemplateEncoder extends Encoder<Object> {
                     return NumberFormat.getPercentInstance(locale).format(value);
                 }
 
-                case SHORT_DATE:
-                case MEDIUM_DATE:
-                case LONG_DATE:
+                case SHORT_DATE: {
+                    return format(value, FormatStyle.SHORT, DateTimeType.DATE, locale, timeZone);
+                }
+
+                case MEDIUM_DATE: {
+                    return format(value, FormatStyle.MEDIUM, DateTimeType.DATE, locale, timeZone);
+                }
+
+                case LONG_DATE: {
+                    return format(value, FormatStyle.LONG, DateTimeType.DATE, locale, timeZone);
+                }
+
                 case FULL_DATE: {
-                    if (value instanceof String) {
-                        value = LocalDate.parse((String)value);
-                    }
-
-                    switch (argument) {
-                        case SHORT_DATE: {
-                            if (value instanceof LocalDate) {
-                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale));
-                            } else {
-                                return getDateInstance(DateFormat.SHORT, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case MEDIUM_DATE: {
-                            if (value instanceof LocalDate) {
-                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
-                            } else {
-                                return getDateInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case LONG_DATE: {
-                            if (value instanceof LocalDate) {
-                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale));
-                            } else {
-                                return getDateInstance(DateFormat.LONG, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case FULL_DATE: {
-                            if (value instanceof LocalDate) {
-                                return ((LocalDate)value).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale));
-                            } else {
-                                return getDateInstance(DateFormat.FULL, locale, timeZone).format(value);
-                            }
-                        }
-
-                        default: {
-                            throw new UnsupportedOperationException();
-                        }
-                    }
+                    return format(value, FormatStyle.FULL, DateTimeType.DATE, locale, timeZone);
                 }
 
-                case SHORT_TIME:
-                case MEDIUM_TIME:
-                case LONG_TIME:
+                case SHORT_TIME: {
+                    return format(value, FormatStyle.SHORT, DateTimeType.TIME, locale, timeZone);
+                }
+
+                case MEDIUM_TIME: {
+                    return format(value, FormatStyle.MEDIUM, DateTimeType.TIME, locale, timeZone);
+                }
+
+                case LONG_TIME: {
+                    return format(value, FormatStyle.LONG, DateTimeType.TIME, locale, timeZone);
+                }
+
                 case FULL_TIME: {
-                    if (value instanceof String) {
-                        value = LocalTime.parse((String)value);
-                    }
-
-                    switch (argument) {
-                        case SHORT_TIME: {
-                            if (value instanceof LocalTime) {
-                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale));
-                            } else {
-                                return getTimeInstance(DateFormat.SHORT, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case MEDIUM_TIME: {
-                            if (value instanceof LocalTime) {
-                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale));
-                            } else {
-                                return getTimeInstance(DateFormat.MEDIUM, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case LONG_TIME: {
-                            if (value instanceof LocalTime) {
-                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).withLocale(locale));
-                            } else {
-                                return getTimeInstance(DateFormat.LONG, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case FULL_TIME: {
-                            if (value instanceof LocalTime) {
-                                return ((LocalTime)value).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.FULL).withLocale(locale));
-                            } else {
-                                return getTimeInstance(DateFormat.FULL, locale, timeZone).format(value);
-                            }
-                        }
-
-                        default: {
-                            throw new UnsupportedOperationException();
-                        }
-                    }
+                    return format(value, FormatStyle.FULL, DateTimeType.TIME, locale, timeZone);
                 }
 
-                case SHORT_DATE_TIME:
-                case MEDIUM_DATE_TIME:
-                case LONG_DATE_TIME:
+                case SHORT_DATE_TIME: {
+                    return format(value, FormatStyle.SHORT, DateTimeType.DATE_TIME, locale, timeZone);
+                }
+
+                case MEDIUM_DATE_TIME: {
+                    return format(value, FormatStyle.MEDIUM, DateTimeType.DATE_TIME, locale, timeZone);
+                }
+
+                case LONG_DATE_TIME: {
+                    return format(value, FormatStyle.LONG, DateTimeType.DATE_TIME, locale, timeZone);
+                }
+
                 case FULL_DATE_TIME: {
-                    if (value instanceof String) {
-                        value = LocalDateTime.parse((String)value);
-                    }
-
-                    switch (argument) {
-                        case SHORT_DATE_TIME: {
-                            if (value instanceof LocalDateTime) {
-                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale));
-                            } else {
-                                return getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case MEDIUM_DATE_TIME: {
-                            if (value instanceof LocalDateTime) {
-                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale));
-                            } else {
-                                return getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case LONG_DATE_TIME: {
-                            if (value instanceof LocalDateTime) {
-                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(locale));
-                            } else {
-                                return getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale, timeZone).format(value);
-                            }
-                        }
-
-                        case FULL_DATE_TIME: {
-                            if (value instanceof LocalDateTime) {
-                                return ((LocalDateTime)value).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(locale));
-                            } else {
-                                return getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale, timeZone).format(value);
-                            }
-                        }
-
-                        default: {
-                            throw new UnsupportedOperationException();
-                        }
-                    }
+                    return format(value, FormatStyle.FULL, DateTimeType.DATE_TIME, locale, timeZone);
                 }
 
                 default: {
@@ -283,6 +197,71 @@ public class TemplateEncoder extends Encoder<Object> {
             dateFormat.setTimeZone(timeZone);
 
             return dateFormat;
+        }
+
+        static String format(Object value, FormatStyle formatStyle, DateTimeType dateTimeType, Locale locale, TimeZone timeZone) {
+            if (value instanceof TemporalAccessor) {
+                TemporalAccessor temporalAccessor = (TemporalAccessor)value;
+
+                switch (dateTimeType) {
+                    case DATE: {
+                        return DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
+                    }
+
+                    case TIME: {
+                        return DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                    }
+
+                    case DATE_TIME: {
+                        return DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                    }
+
+                    default: {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            } else {
+                int style;
+                switch (formatStyle) {
+                    case FULL:
+                        style = DateFormat.FULL;
+                        break;
+
+                    case LONG:
+                        style = DateFormat.LONG;
+                        break;
+
+                    case MEDIUM:
+                        style = DateFormat.MEDIUM;
+                        break;
+
+                    case SHORT:
+                        style = DateFormat.SHORT;
+                        break;
+
+                    default: {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+
+                switch (dateTimeType) {
+                    case DATE: {
+                        return getDateInstance(style, locale, timeZone).format(value);
+                    }
+
+                    case TIME: {
+                        return getTimeInstance(style, locale, timeZone).format(value);
+                    }
+
+                    case DATE_TIME: {
+                        return getDateTimeInstance(style, style, locale, timeZone).format(value);
+                    }
+
+                    default: {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            }
         }
     }
 
