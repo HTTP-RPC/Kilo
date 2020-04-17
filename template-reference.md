@@ -71,7 +71,7 @@ In addition to `printf()`-style formatting, the `format` modifier also supports 
   * `longDateTime` - applies a long date/time format
   * `fullDateTime` - applies a full date/time format
 
-For example, this marker transforms a date value into a localized medium-length date string:
+For example, this marker transforms a date value into a medium-length, localized date string:
 
 ```
 {{date:format=mediumDate}}

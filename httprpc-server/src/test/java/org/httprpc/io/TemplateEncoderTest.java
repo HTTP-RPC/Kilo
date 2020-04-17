@@ -18,10 +18,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Date;
@@ -263,8 +264,8 @@ public class TemplateEncoderTest {
         String result;
         try (StringWriter writer = new StringWriter()) {
             encoder.write(mapOf(
+                entry("timestamp", date.getTime()),
                 entry("date", date),
-                entry("dateInMilliseconds", date.getTime()),
                 entry("localDate", localDate),
                 entry("localTime", localTime),
                 entry("localDateTime", localDateTime)
@@ -272,11 +273,13 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        assertEquals(DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
-            + DateFormat.getDateInstance(DateFormat.SHORT).format(date) + ",\n"
-            + localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + ",\n"
-            + localTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)) + ",\n"
-            + localDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)), result);
+        ZonedDateTime now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+
+        assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(localDate) + ",\n"
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(localTime) + ",\n"
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime), result);
     }
 
     @Test

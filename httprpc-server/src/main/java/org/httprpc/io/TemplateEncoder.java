@@ -29,7 +29,6 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
@@ -120,51 +119,51 @@ public class TemplateEncoder extends Encoder<Object> {
                 }
 
                 case SHORT_DATE: {
-                    return format(value, FormatStyle.SHORT, DateTimeType.DATE, locale, timeZone);
+                    return format(value, DateTimeType.DATE, FormatStyle.SHORT, locale, timeZone);
                 }
 
                 case MEDIUM_DATE: {
-                    return format(value, FormatStyle.MEDIUM, DateTimeType.DATE, locale, timeZone);
+                    return format(value, DateTimeType.DATE, FormatStyle.MEDIUM, locale, timeZone);
                 }
 
                 case LONG_DATE: {
-                    return format(value, FormatStyle.LONG, DateTimeType.DATE, locale, timeZone);
+                    return format(value, DateTimeType.DATE, FormatStyle.LONG, locale, timeZone);
                 }
 
                 case FULL_DATE: {
-                    return format(value, FormatStyle.FULL, DateTimeType.DATE, locale, timeZone);
+                    return format(value, DateTimeType.DATE, FormatStyle.FULL, locale, timeZone);
                 }
 
                 case SHORT_TIME: {
-                    return format(value, FormatStyle.SHORT, DateTimeType.TIME, locale, timeZone);
+                    return format(value, DateTimeType.TIME, FormatStyle.SHORT, locale, timeZone);
                 }
 
                 case MEDIUM_TIME: {
-                    return format(value, FormatStyle.MEDIUM, DateTimeType.TIME, locale, timeZone);
+                    return format(value, DateTimeType.TIME, FormatStyle.MEDIUM, locale, timeZone);
                 }
 
                 case LONG_TIME: {
-                    return format(value, FormatStyle.LONG, DateTimeType.TIME, locale, timeZone);
+                    return format(value, DateTimeType.TIME, FormatStyle.LONG, locale, timeZone);
                 }
 
                 case FULL_TIME: {
-                    return format(value, FormatStyle.FULL, DateTimeType.TIME, locale, timeZone);
+                    return format(value, DateTimeType.TIME, FormatStyle.FULL, locale, timeZone);
                 }
 
                 case SHORT_DATE_TIME: {
-                    return format(value, FormatStyle.SHORT, DateTimeType.DATE_TIME, locale, timeZone);
+                    return format(value, DateTimeType.DATE_TIME, FormatStyle.SHORT, locale, timeZone);
                 }
 
                 case MEDIUM_DATE_TIME: {
-                    return format(value, FormatStyle.MEDIUM, DateTimeType.DATE_TIME, locale, timeZone);
+                    return format(value, DateTimeType.DATE_TIME, FormatStyle.MEDIUM, locale, timeZone);
                 }
 
                 case LONG_DATE_TIME: {
-                    return format(value, FormatStyle.LONG, DateTimeType.DATE_TIME, locale, timeZone);
+                    return format(value, DateTimeType.DATE_TIME, FormatStyle.LONG, locale, timeZone);
                 }
 
                 case FULL_DATE_TIME: {
-                    return format(value, FormatStyle.FULL, DateTimeType.DATE_TIME, locale, timeZone);
+                    return format(value, DateTimeType.DATE_TIME, FormatStyle.FULL, locale, timeZone);
                 }
 
                 default: {
@@ -173,13 +172,13 @@ public class TemplateEncoder extends Encoder<Object> {
             }
         }
 
-        static String format(Object value, FormatStyle formatStyle, DateTimeType dateTimeType, Locale locale, TimeZone timeZone) {
+        static String format(Object value, DateTimeType dateTimeType, FormatStyle formatStyle, Locale locale, TimeZone timeZone) {
             if (value instanceof Long) {
                 value = new Date((long)value);
             }
 
             if (value instanceof Date) {
-                value = ((Date)value).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                value = ((Date)value).toInstant().atZone(timeZone.toZoneId()).toLocalDateTime();
             }
 
             TemporalAccessor temporalAccessor = (TemporalAccessor)value;

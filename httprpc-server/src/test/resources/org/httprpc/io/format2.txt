@@ -1,5 +1,5 @@
+{{timestamp:format=shortDate}},
 {{date:format=shortDate}},
-{{dateInMilliseconds:format=shortDate}},
 {{localDate:format=shortDate}},
 {{localTime:format=shortTime}},
 {{localDateTime:format=shortDateTime}}
