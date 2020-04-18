@@ -29,6 +29,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
@@ -85,16 +86,19 @@ public class TemplateEncoder extends Encoder<Object> {
         static final String MEDIUM_DATE = "mediumDate";
         static final String LONG_DATE = "longDate";
         static final String FULL_DATE = "fullDate";
+        static final String ISO_DATE = "isoDate";
 
         static final String SHORT_TIME = "shortTime";
         static final String MEDIUM_TIME = "mediumTime";
         static final String LONG_TIME = "longTime";
         static final String FULL_TIME = "fullTime";
+        static final String ISO_TIME = "isoTime";
 
         static final String SHORT_DATE_TIME = "shortDateTime";
         static final String MEDIUM_DATE_TIME = "mediumDateTime";
         static final String LONG_DATE_TIME = "longDateTime";
         static final String FULL_DATE_TIME = "fullDateTime";
+        static final String ISO_DATE_TIME = "isoDateTime";
 
         enum DateTimeType {
             DATE,
@@ -133,6 +137,10 @@ public class TemplateEncoder extends Encoder<Object> {
                     return format(value, DateTimeType.DATE, FormatStyle.FULL, locale, timeZone);
                 }
 
+                case ISO_DATE: {
+                    return format(value, DateTimeType.DATE, null, null, timeZone);
+                }
+
                 case SHORT_TIME: {
                     return format(value, DateTimeType.TIME, FormatStyle.SHORT, locale, timeZone);
                 }
@@ -147,6 +155,10 @@ public class TemplateEncoder extends Encoder<Object> {
 
                 case FULL_TIME: {
                     return format(value, DateTimeType.TIME, FormatStyle.FULL, locale, timeZone);
+                }
+
+                case ISO_TIME: {
+                    return format(value, DateTimeType.TIME, null, null, timeZone);
                 }
 
                 case SHORT_DATE_TIME: {
@@ -165,6 +177,10 @@ public class TemplateEncoder extends Encoder<Object> {
                     return format(value, DateTimeType.DATE_TIME, FormatStyle.FULL, locale, timeZone);
                 }
 
+                case ISO_DATE_TIME: {
+                    return format(value, DateTimeType.DATE_TIME, null, null, timeZone);
+                }
+
                 default: {
                     return String.format(locale, argument, value);
                 }
@@ -177,22 +193,34 @@ public class TemplateEncoder extends Encoder<Object> {
             }
 
             if (value instanceof Date) {
-                value = ((Date)value).toInstant().atZone(timeZone.toZoneId()).toLocalDateTime();
+                value = ZonedDateTime.ofInstant(((Date)value).toInstant(), timeZone.toZoneId());
             }
 
             TemporalAccessor temporalAccessor = (TemporalAccessor)value;
 
             switch (dateTimeType) {
                 case DATE: {
-                    return DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
+                    if (formatStyle != null) {
+                        return DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
+                    } else {
+                        return DateTimeFormatter.ISO_OFFSET_DATE.format(ZonedDateTime.from(temporalAccessor));
+                    }
                 }
 
                 case TIME: {
-                    return DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                    if (formatStyle != null) {
+                        return DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                    } else {
+                        return DateTimeFormatter.ISO_OFFSET_TIME.format(ZonedDateTime.from(temporalAccessor));
+                    }
                 }
 
                 case DATE_TIME: {
-                    return DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                    if (formatStyle != null) {
+                        return DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                    } else {
+                        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.from(temporalAccessor));
+                    }
                 }
 
                 default: {

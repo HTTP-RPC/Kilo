@@ -62,14 +62,17 @@ In addition to `printf()`-style formatting, the `format` modifier also supports 
   * `mediumDate` - applies a medium date format
   * `longDate` - applies a long date format
   * `fullDate` - applies a full date format
+  * `isoDate` - applies an ISO date format
   * `shortTime` - applies a short time format
   * `mediumTime` - applies a medium time format
   * `longTime` - applies a long time format
   * `fullTime` - applies a full time format
+  * `isoTime` - applies an ISO time format
   * `shortDateTime` - applies a short date/time format
   * `mediumDateTime` - applies a medium date/time format
   * `longDateTime` - applies a long date/time format
   * `fullDateTime` - applies a full date/time format
+  * `isoDateTime` - applies an ISO date/time format
 
 For example, this marker transforms a date value into a medium-length, localized date string:
 

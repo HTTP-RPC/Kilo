@@ -276,7 +276,9 @@ public class TemplateEncoderTest {
         ZonedDateTime now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
         assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
             + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
             + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(localDate) + ",\n"
             + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(localTime) + ",\n"
             + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime), result);

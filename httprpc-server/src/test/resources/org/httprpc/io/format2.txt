@@ -1,5 +1,7 @@
 {{timestamp:format=shortDate}},
+{{timestamp:format=isoDateTime}},
 {{date:format=shortDate}},
+{{date:format=isoDateTime}},
 {{localDate:format=shortDate}},
 {{localTime:format=shortTime}},
 {{localDateTime:format=shortDateTime}}
