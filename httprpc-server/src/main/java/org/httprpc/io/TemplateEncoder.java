@@ -188,8 +188,8 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         static String format(Object value, DateTimeType dateTimeType, FormatStyle formatStyle, Locale locale, TimeZone timeZone) {
-            if (value instanceof Long) {
-                value = new Date((long)value);
+            if (value instanceof Number) {
+                value = new Date(((Number)value).longValue());
             }
 
             if (value instanceof Date) {

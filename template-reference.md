@@ -82,7 +82,7 @@ For example, this marker transforms a date value into a medium-length, localized
 
 Date/time values may be represented by one of the following:
 
-* a `long` value representing epoch time in milliseconds
+* a numeric value representing epoch time in milliseconds
 * an instance of `java.util.Date` 
 * an instance of `java.util.time.TemporalAccessor`
 
