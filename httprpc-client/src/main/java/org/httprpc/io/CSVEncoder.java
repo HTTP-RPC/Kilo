@@ -27,36 +27,90 @@ import java.util.Map;
  * CSV encoder.
  */
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
-    private List<String> keys;
+    /**
+     * Class representing a column.
+     */
+    public static final class Column {
+        private String key;
+        private String label;
+
+        /**
+         * Constructs a new column.
+         *
+         * @param key
+         * The column key.
+         */
+        public Column(String key) {
+            this(key, key);
+        }
+
+        /**
+         * Constructs a new column.
+         *
+         * @param key
+         * The column key.
+         *
+         * @param label
+         * The column label.
+         */
+        public Column(String key, String label) {
+            this.key = key;
+            this.label = label;
+        }
+
+        /**
+         * Returns the column key.
+         *
+         * @return
+         * The column key.
+         */
+        public String getKey() {
+            return key;
+        }
+
+        /**
+         * Returns the column label.
+         *
+         * @return
+         * The column label.
+         */
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    private List<Column> columns;
     private char delimiter;
+
+    private static final char DEFAULT_DELIMITER = ',';
 
     /**
      * Constructs a new CSV encoder.
      *
-     * @param keys
-     * The output column keys.
+     * @param columns
+     * The output columns.
      */
-    public CSVEncoder(List<String> keys) {
-        this(keys, ',');
+    public CSVEncoder(List<Column> columns) {
+        this(columns, DEFAULT_DELIMITER);
     }
 
     /**
      * Constructs a new CSV encoder.
      *
-     * @param keys
-     * The output column keys.
+     * @param columns
+     * The output columns.
      *
      * @param delimiter
      * The character to use as a field delimiter.
      */
-    public CSVEncoder(List<String> keys, char delimiter) {
+    public CSVEncoder(List<Column> columns, char delimiter) {
         super(StandardCharsets.ISO_8859_1);
 
-        if (keys == null) {
+        if (columns == null) {
             throw new IllegalArgumentException();
         }
 
-        this.keys = keys;
+        this.columns = columns;
         this.delimiter = delimiter;
     }
 
@@ -66,8 +120,8 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         int i = 0;
 
-        for (String key : keys) {
-            if (key == null) {
+        for (Column column : columns) {
+            if (column == null) {
                 continue;
             }
 
@@ -75,7 +129,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                 writer.write(delimiter);
             }
 
-            encode(key, writer);
+            encode(column.getLabel(), writer);
 
             i++;
         }
@@ -85,8 +139,8 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         for (Map<String, ?> map : values) {
             i = 0;
 
-            for (String key : keys) {
-                if (key == null) {
+            for (Column column : columns) {
+                if (column == null) {
                     continue;
                 }
 
@@ -94,7 +148,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                     writer.write(delimiter);
                 }
 
-                encode(BeanAdapter.valueAt(map, key), writer);
+                encode(BeanAdapter.valueAt(map, column.getKey()), writer);
 
                 i++;
             }
