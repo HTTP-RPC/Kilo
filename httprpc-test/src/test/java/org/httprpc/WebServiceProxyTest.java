@@ -237,7 +237,7 @@ public class WebServiceProxyTest {
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        webServiceProxy.setRequestHandler(outputStream -> {
+        webServiceProxy.setRequestHandler((outputStream) -> {
             try (InputStream inputStream = imageTestURL.openStream()) {
                 int b;
                 while ((b = inputStream.read()) != EOF) {
@@ -261,7 +261,7 @@ public class WebServiceProxyTest {
 
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
 
-        webServiceProxy.setRequestHandler(outputStream -> {
+        webServiceProxy.setRequestHandler((outputStream) -> {
             try (InputStream inputStream = textTestURL.openStream()) {
                 int b;
                 while ((b = inputStream.read()) != EOF) {

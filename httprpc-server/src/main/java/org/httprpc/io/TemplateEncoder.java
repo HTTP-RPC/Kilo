@@ -279,7 +279,7 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     // CSV escape modifier
-    private static class CSVEscapeModifier implements Modifier {
+    private static class CSVEscapeModifier implements TemplateEncoder.Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             if (value instanceof CharSequence) {

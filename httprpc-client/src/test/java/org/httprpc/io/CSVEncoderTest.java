@@ -22,7 +22,6 @@ import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -32,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        String expected = "\"1\",\"2\",\"3\",\"d.e\",\"f\",\"g\"\r\n"
+        String expected = "\"a\",\"b\",\"c\",\"d.e\",\"f\",\"g\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,0,3\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
@@ -56,16 +55,7 @@ public class CSVEncoderTest {
 
         StringWriter writer = new StringWriter();
 
-        List<CSVEncoder.Column> columns = listOf(
-            new CSVEncoder.Column("a", "1"),
-            new CSVEncoder.Column("b", "2"),
-            new CSVEncoder.Column("c", "3"),
-            new CSVEncoder.Column("d.e"),
-            new CSVEncoder.Column("f"),
-            new CSVEncoder.Column("g")
-        );
-
-        CSVEncoder csvEncoder = new CSVEncoder(columns);
+        CSVEncoder csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d.e", "f", "g"));
 
         csvEncoder.write(values, writer);
 
