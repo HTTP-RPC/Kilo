@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc/)
 
 # Introduction
-HTTP-RPC is an open-source framework for implementing RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is distributed as a single JAR file that is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -31,7 +31,7 @@ Classes provided by the HTTP-RPC framework include:
 * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a template document
 * [BeanAdapter](#beanadapter) - presents the properties of a Java bean object as a map and vice versa
-* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - presents the contents of a JDBC result set as an iterable sequence of map values and applies named parameter values to prepared statements, respectively
+* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - presents the contents of a JDBC result set as an iterable sequence of map values/applies named parameter values to prepared statements
 * [StreamAdapter](#streamadapter) - presents the contents of a stream as an iterable sequence
 * [Collections](#collections) - provides utility methods for working with collections
 
