@@ -9,20 +9,6 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Contents
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
-    * [WebService](#webservice)
-        * [Method Arguments](#method-arguments)
-        * [Path Variables](#path-variables)
-        * [Return Values](#return-values)
-        * [Request and Repsonse Properties](#request-and-repsonse-properties)
-        * [Authorization](#authorization)
-        * [Exceptions](#exceptions)
-        * [API Documentation](#api-documentation)
-    * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
-    * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
-    * [TemplateEncoder](#templateencoder)
-    * [BeanAdapter](#beanadapter)
-    * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters)
-    * [WebServiceProxy](#webserviceproxy)
 * [Kotlin Support](#kotlin-support)
 * [Additional Information](#additional-information)
 
@@ -37,34 +23,19 @@ Alternatively, dependencies can be specified individually:
 HTTP-RPC requires Java 8 or later and a servlet container supporting Java Servlet specification 3.1 or later.
 
 # HTTP-RPC Classes
-The HTTP-RPC framework includes the following classes:
+Classes provided by the HTTP-RPC framework include:
 
-* `org.httprpc`
-    * `RequestMethod` - associates an HTTP verb with a service method
-    * `ResourcePath` - associates a resource path with a service method
-    * `WebServiceException` - thrown when a service operation returns an error
-    * `WebServiceProxy` - web service invocation proxy
-    * `WebService` - abstract base class for web services
-* `org.httprpc.io`
-    * `CSVDecoder` - decodes an iterable sequence of values from CSV
-    * `CSVEncoder` - encodes an iterable sequence of values to CSV
-    * `Decoder` - abstract base class for decoders
-    * `Encoder` - abstract base class for encoders
-    * `JSONDecoder` - decodes an object hierarchy from JSON
-    * `JSONEncoder` - an object hierarchy to JSON
-    * `TemplateEncoder` - encodes an object hierarchy using a template document
-* `org.httprpc.beans`
-    * `BeanAdapter` - presents the properties of a Java bean object as a map and vice versa
-    * `Ignore` - indicates that a bean property should be ignored
-    * `Key` - associates a custom key with a bean property
-* `org.httprpc.sql`
-    * `Parameters` - applies named parameter values to prepared statements 
-    * `ResultSetAdapter` - presents the contents of a JDBC result set as an iterable sequence of maps
-* `org.httprpc.util`
-    * `StreamAdapter` - presents the contents of a stream as an iterable sequence.
-    * `Collections` - provides utility methods for working with collections
+* [WebService](#webservice) - abstract base class for web services
+* [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
+* [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
+* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
+* [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a template document
+* [BeanAdapter](#beanadapter) - presents the properties of a Java bean object as a map and vice versa
+* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - presents the contents of a JDBC result set as an iterable sequence of map values and applies named parameter values to prepared statements, respectively
+* [StreamAdapter](#streamadapter) - presents the contents of a stream as an iterable sequence
+* [Collections](#collections) - provides utility methods for working with collections
 
-These classes are discussed in more detail in the following sections.
+Each is discussed in more detail in the following sections.
 
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
@@ -336,6 +307,91 @@ A localized description of the math service might look like this:
 > 
 > - **values** The numbers to add.
 
+## WebServiceProxy
+The `WebServiceProxy` class is used to issue API requests to a server. This class provides a single constructor that accepts the following arguments:
+
+* `method` - the HTTP method to execute
+* `url` - the URL of the requested resource
+
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
+
+Service operations are invoked via one of the following methods:
+
+```java
+public <T> T invoke() throws IOException { ... }
+public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
+```
+
+The first version automatically deserializes a successful server response using `JSONDecoder`. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
+
+```java
+public interface ResponseHandler<T> {
+    T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+}
+```
+
+If a service returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the body of the response will be provided in the exception message.
+
+### Example
+The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+
+```java
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+
+webServiceProxy.setArguments(mapOf(
+    entry("a", 4),
+    entry("b", 2)
+));
+
+Number result = webServiceProxy.invoke();
+
+System.out.println(result); // 6.0
+```
+
+### Typed Access
+The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services:
+
+```java
+public static <T> T adapt(URL baseURL, Class<T> type) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { ... }
+```
+
+Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
+
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. Named path variables can be supplied by extending the `Map` interface in the service type.
+
+Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+
+`POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#beanadapter) based on the method return type.
+
+For example, the following interface might be used to model the operations of the math service:
+
+```java
+public interface MathService {
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(double a, double b) throws IOException;
+
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(List<Double> values) throws IOException;
+}
+```
+
+This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
+
+```java
+MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
+
+// GET /math/sum?a=2&b=4
+System.out.println(mathService.getSum(4, 2)); // 6.0
+
+// GET /math/sum?values=1&values=2&values=3
+System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
+```
+
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following two methods are functionally equivalent:
 
@@ -361,7 +417,7 @@ public void getList() {
 
 Values are converted to their JSON equivalents as described earlier. Unsupported types are serialized as `null`.
 
-The `JSONDecoder` class deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
+The `JSONDecoder` class (used internally by `WebServiceProxy`) deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
 * string: `String`
 * number: `Number`
@@ -656,7 +712,7 @@ public String getFirstName() {
 }
 ```
 
-### Excluded Values
+### Excluding Values
 Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
 
 ```java
@@ -936,91 +992,6 @@ Data returned by the service might look like this:
   "freeMemory": 222234120,
   "totalMemory": 257949696
 }
-```
-
-# WebServiceProxy
-The `WebServiceProxy` class is used to issue API requests to a server. This class provides a single constructor that accepts the following arguments:
-
-* `method` - the HTTP method to execute
-* `url` - the URL of the requested resource
-
-Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if the request body is provided via a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
-
-The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
-
-Service operations are invoked via one of the following methods:
-
-```java
-public <T> T invoke() throws IOException { ... }
-public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
-```
-
-The first version automatically deserializes a successful server response using `JSONDecoder`. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
-
-```java
-public interface ResponseHandler<T> {
-    T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
-}
-```
-
-If a service returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the body of the response will be provided in the exception message.
-
-### Example
-The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
-
-```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
-
-webServiceProxy.setArguments(mapOf(
-    entry("a", 4),
-    entry("b", 2)
-));
-
-Number result = webServiceProxy.invoke();
-
-System.out.println(result); // 6.0
-```
-
-### Typed Access
-The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services:
-
-```java
-public static <T> T adapt(URL baseURL, Class<T> type) { ... }
-public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { ... }
-```
-
-Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
-
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. Named path variables can be supplied by extending the `Map` interface in the service type.
-
-Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
-
-`POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#beanadapter) based on the method return type.
-
-For example, the following interface might be used to model the operations of the math service:
-
-```java
-public interface MathService {
-    @RequestMethod("GET")
-    @ResourcePath("sum")
-    double getSum(double a, double b) throws IOException;
-
-    @RequestMethod("GET")
-    @ResourcePath("sum")
-    double getSum(List<Double> values) throws IOException;
-}
-```
-
-This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
-
-```java
-MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
-
-// GET /math/sum?a=2&b=4
-System.out.println(mathService.getSum(4, 2)); // 6.0
-
-// GET /math/sum?values=1&values=2&values=3
-System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
 ```
 
 # Additional Information
