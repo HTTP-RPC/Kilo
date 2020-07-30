@@ -16,6 +16,7 @@ package org.httprpc;
 
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONDecoder;
+import org.httprpc.io.JSONEncoder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +49,8 @@ public class WebServiceProxy {
      */
     public enum Encoding {
         APPLICATION_X_WWW_FORM_URLENCODED,
-        MULTIPART_FORM_DATA
+        MULTIPART_FORM_DATA,
+        JSON
     }
 
     /**
@@ -351,6 +353,11 @@ public class WebServiceProxy {
                             break;
                         }
 
+                        case JSON: {
+                            contentType = "application/json";
+                            break;
+                        }
+
                         default: {
                             throw new UnsupportedOperationException();
                         }
@@ -369,6 +376,11 @@ public class WebServiceProxy {
 
                         case MULTIPART_FORM_DATA: {
                             encodeMultipartFormDataRequest(outputStream);
+                            break;
+                        }
+
+                        case JSON: {
+                            encodeApplicationJSONEncodedRequest(outputStream);
                             break;
                         }
 
@@ -570,6 +582,14 @@ public class WebServiceProxy {
         writer.flush();
     }
 
+    private void encodeApplicationJSONEncodedRequest(OutputStream outputStream) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+
+        new JSONEncoder().write(arguments, writer);
+
+        writer.flush();
+    }
+
     private static Iterable<?> getParameterValues(Object argument) {
         Iterable<?> values;
         if (argument instanceof Iterable<?>) {
@@ -697,6 +717,15 @@ public class WebServiceProxy {
 
                 if (webServiceProxy.getMethod().equalsIgnoreCase("POST")) {
                     webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+
+                    RequestEncoding encoding = method.getAnnotation(RequestEncoding.class);
+                    if (encoding != null) {
+                        if (encoding.value() != Encoding.APPLICATION_X_WWW_FORM_URLENCODED) {
+                            webServiceProxy.setEncoding(encoding.value());
+                        } else {
+                            throw new UnsupportedOperationException("Encoding: " + Encoding.APPLICATION_X_WWW_FORM_URLENCODED + " can not be used for POST requests");
+                        }
+                    }
                 }
 
                 webServiceProxy.setHeaders(headers);
