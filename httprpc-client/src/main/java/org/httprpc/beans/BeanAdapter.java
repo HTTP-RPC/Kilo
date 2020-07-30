@@ -419,7 +419,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)type;
 
-            return (T)adapt(value, wildcardType.getUpperBounds()[0]);
+            return adapt(value, wildcardType.getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
             if (value != null) {
                 ParameterizedType parameterizedType = (ParameterizedType)type;

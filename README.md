@@ -223,7 +223,7 @@ protected boolean isAuthorized(HttpServletRequest request, Method method) { ... 
 The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
 
 ### Exceptions
-If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
+If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException` or `UnsupportedOperationException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
 
 ### Inter-Service Communication
 A service implementation can obtain a reference to another service instance via the `getService()` method of the `WebService` class. This can be useful when the behavior of one service relies on logic provided by a different service. The target service must be annotated with `javax.servlet.annotation.WebServlet`.

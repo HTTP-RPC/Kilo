@@ -356,7 +356,7 @@ public abstract class WebService extends HttpServlet {
 
                 if (cause != null) {
                     int status;
-                    if (cause instanceof IllegalArgumentException) {
+                    if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
                         status = HttpServletResponse.SC_FORBIDDEN;
                     } else if (cause instanceof IllegalStateException) {
                         status = HttpServletResponse.SC_CONFLICT;
