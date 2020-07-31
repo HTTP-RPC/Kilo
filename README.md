@@ -356,9 +356,10 @@ The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate t
 ```java
 public static <T> T adapt(URL baseURL, Class<T> type) { ... }
 public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, BiFunction<String, URL, WebServiceProxy> factory) { ... }
 ```
 
-Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version also accepts a map of HTTP header values that will be submitted with every service request.
+All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a map of HTTP header values that will be submitted with every service request. The third accepts a callback that is used to produce web service proxy instances.
 
 The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. Named path variables can be supplied by extending the `Map` interface in the service type.
 

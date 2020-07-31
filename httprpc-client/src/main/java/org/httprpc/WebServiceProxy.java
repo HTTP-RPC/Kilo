@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
@@ -627,6 +628,38 @@ public class WebServiceProxy {
      * An instance of the given type that adapts the target service.
      */
     public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) {
+        return adapt(baseURL, type, (method, url) -> {
+            WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
+
+            if (method.equalsIgnoreCase("POST")) {
+                webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+            }
+
+            webServiceProxy.setHeaders(headers);
+
+            return webServiceProxy;
+        });
+    }
+
+    /**
+     * Creates a type-safe web service proxy adapter.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param baseURL
+     * The base URL of the web service.
+     *
+     * @param type
+     * The type of the adapter.
+     *
+     * @param factory
+     * A callback for producing web service proxy instances.
+     *
+     * @return
+     * An instance of the given type that adapts the target service.
+     */
+    public static <T> T adapt(URL baseURL, Class<T> type, BiFunction<String, URL, WebServiceProxy> factory) {
         if (baseURL == null) {
             throw new IllegalArgumentException();
         }
@@ -635,7 +668,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        if (headers == null) {
+        if (factory == null) {
             throw new IllegalArgumentException();
         }
 
@@ -693,13 +726,7 @@ public class WebServiceProxy {
                     keys.clear();
                 }
 
-                WebServiceProxy webServiceProxy = new WebServiceProxy(requestMethod.value(), url);
-
-                if (webServiceProxy.getMethod().equalsIgnoreCase("POST")) {
-                    webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
-                }
-
-                webServiceProxy.setHeaders(headers);
+                WebServiceProxy webServiceProxy = factory.apply(requestMethod.value(), url);
 
                 Parameter[] parameters = method.getParameters();
 
