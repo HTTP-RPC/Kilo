@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -23,16 +24,11 @@ import javax.servlet.annotation.WebServlet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Service that simulates a product catalog.
- */
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
+@Description("Simulates a product catalog.")
 public class CatalogService extends WebService {
     private static final long serialVersionUID = 0;
 
-    /**
-     * Simulates an item in the product catalog.
-     */
     public static class Item {
         private String description;
         private double price;
@@ -46,7 +42,7 @@ public class CatalogService extends WebService {
             return description;
         }
 
-        public void setDescription(String description) {
+        private void setDescription(String description) {
             this.description = description;
         }
 
@@ -54,7 +50,7 @@ public class CatalogService extends WebService {
             return price;
         }
 
-        public void setPrice(double price) {
+        private void setPrice(double price) {
             this.price = price;
         }
     }
@@ -72,12 +68,14 @@ public class CatalogService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("items")
+    @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() {
         return items;
     }
 
     @RequestMethod("POST")
     @ResourcePath("items")
+    @Description("Adds a new item to the catalog.")
     public int addItem(String description, double price) {
         items.add(new Item(description, price));
 
@@ -86,6 +84,7 @@ public class CatalogService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("items/?:itemID")
+    @Description("Returns a single item.")
     public Item getItem() {
         int itemID = Integer.parseInt(getKey("itemID"));
 
@@ -101,6 +100,7 @@ public class CatalogService extends WebService {
 
     @RequestMethod("POST")
     @ResourcePath("items/?:itemID")
+    @Description("Updates an item.")
     public void updateItem(String description, double price) {
         int itemID = Integer.parseInt(getKey("itemID"));
 

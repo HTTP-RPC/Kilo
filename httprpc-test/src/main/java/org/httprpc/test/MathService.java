@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -21,21 +22,21 @@ import org.httprpc.WebService;
 import javax.servlet.annotation.WebServlet;
 import java.util.List;
 
-/**
- * Math example service.
- */
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
+@Description("Math example service.")
 public class MathService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
     @ResourcePath("sum")
+    @Description("Calculates the sum of two numbers.")
     public double getSum(double a, double b) {
         return a + b;
     }
 
     @RequestMethod("GET")
     @ResourcePath("sum")
+    @Description("Calculates the sum of a list of numbers.")
     public double getSum(List<Double> values) {
         double total = 0;
 

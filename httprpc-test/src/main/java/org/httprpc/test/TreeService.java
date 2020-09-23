@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.WebService;
 
@@ -24,10 +25,12 @@ import java.util.Arrays;
  * Tree service.
  */
 @WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
+@Description("Tree service.")
 public class TreeService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("GET")
+    @Description("Returns an example tree structure.")
     public TreeNode getTree() {
         TreeNode root = new TreeNode("Seasons");
 

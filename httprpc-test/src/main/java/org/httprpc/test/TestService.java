@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -43,9 +44,6 @@ import java.util.NoSuchElementException;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;
 
-/**
- * Test service.
- */
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
 public class TestService extends WebService {

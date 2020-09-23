@@ -270,42 +270,27 @@ For example, a description of the math service might look like this:
 > GET (values: [double]) -> double
 > ```
 
-If a method is tagged with the `Deprecated` annotation, it will be identified as such in the generated output.
+Implementations can provide additional details about service types and operations using the `Description` annotation. For example:
 
-#### Localized Service Descriptions
-Services can provide localized API documentation by including one or more resource bundles on the classpath. These resource bundles must reside in the same package and have the same base name as the service itself.
+```java
+@Description("Math example service.")
+public class MathService extends WebService {
+    private static final long serialVersionUID = 0;
 
-For example, the following _MathService.properties_ file could be used to provide localized method descriptions for the `MathService` class:
-
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    @Description("Calculates the sum of two numbers.")
+    public double getSum(double a, double b) {
+        return a + b;
+    }
+    
+    ...
+}
 ```
-MathService = Math example service.
-getSum = Calculates the sum of two or more numbers.
-getSum.a = The first number.
-getSum.b = The second number.
-getSum.values = The numbers to add.
-```
 
-The first line describes the service itself. The remaining lines describe the service methods and their parameters. Note that an overloaded method such as `getSum()` can only have a single description, so it should be generic enough to describe all overloads.
+The provided values will appear immediately prior to their associated elements in the generated output.
 
-A localized description of the math service might look like this:
-
-> Math example service.
-> 
-> ## /math/sum
-> ```
-> GET (a: double, b: double) -> double
-> ```
-> Calculates the sum of two or more numbers.
-> 
-> - **a** The first number.
-> - **b** The second number. 
-> 
-> ```
-> GET (values: [double]) -> double
-> ```
-> Calculates the sum of two or more numbers.
-> 
-> - **values** The numbers to add.
+Finally, if a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. This class provides a single constructor that accepts the following arguments:

@@ -14,15 +14,14 @@
 
 package org.httprpc.test
 
+import org.httprpc.Description
 import org.httprpc.RequestMethod
 import org.httprpc.WebService
 import java.net.InetAddress
 import javax.servlet.annotation.WebServlet
 
-/**
- * System info service.
- */
 @WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
+@Description("System info service.")
 class SystemInfoService : WebService() {
     class SystemInfo(
         val hostName: String,
@@ -33,6 +32,7 @@ class SystemInfoService : WebService() {
     )
 
     @RequestMethod("GET")
+    @Description("Returns system info.")
     fun getSystemInfo(): SystemInfo {
         val localHost = InetAddress.getLocalHost()
         val runtime = Runtime.getRuntime()

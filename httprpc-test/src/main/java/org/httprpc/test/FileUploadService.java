@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.WebService;
 
@@ -29,10 +30,12 @@ import java.util.List;
  */
 @WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
 @MultipartConfig
+@Description("File upload example service.")
 public class FileUploadService extends WebService {
     private static final long serialVersionUID = 0;
 
     @RequestMethod("POST")
+    @Description("Uploads a single file.")
     public long upload(URL file) throws IOException {
         long bytes = 0;
 
@@ -48,6 +51,7 @@ public class FileUploadService extends WebService {
     }
 
     @RequestMethod("POST")
+    @Description("Uploads a list of files.")
     public long upload(List<URL> files) throws IOException {
         long bytes = 0;
 
