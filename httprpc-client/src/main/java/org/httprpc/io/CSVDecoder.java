@@ -29,6 +29,7 @@ import java.util.stream.StreamSupport;
 /**
  * CSV decoder.
  */
+@SuppressWarnings("unchecked")
 public class CSVDecoder extends Decoder {
     /**
      * CSV cursor.
@@ -187,13 +188,11 @@ public class CSVDecoder extends Decoder {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Cursor read(InputStream inputStream) throws IOException {
         return super.read(inputStream);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Cursor read(Reader reader) throws IOException {
         return new Cursor(new BufferedReader(reader), delimiter);
     }

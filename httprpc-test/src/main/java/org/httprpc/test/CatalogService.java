@@ -76,7 +76,10 @@ public class CatalogService extends WebService {
     @RequestMethod("POST")
     @ResourcePath("items")
     @Description("Adds a new item to the catalog.")
-    public int addItem(String description, double price) {
+    public int addItem(
+        @Description("The item's description.") String description,
+        @Description("The item's price.") double price
+    ) {
         items.add(new Item(description, price));
 
         return items.size();
@@ -101,7 +104,10 @@ public class CatalogService extends WebService {
     @RequestMethod("POST")
     @ResourcePath("items/?:itemID")
     @Description("Updates an item.")
-    public void updateItem(String description, double price) {
+    public void updateItem(
+        @Description("The item's description.") String description,
+        @Description("The item's price.") double price
+    ) {
         int itemID = Integer.parseInt(getKey("itemID"));
 
         if (itemID > 0 && itemID <= items.size()) {

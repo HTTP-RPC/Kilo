@@ -30,7 +30,9 @@ public class EchoService extends WebService {
 
     @RequestMethod("GET")
     @Description("Echoes a string value to the servlet response stream.")
-    public void echo(String value) throws IOException {
+    public void echo(
+        @Description("The value to echo.") String value
+    ) throws IOException {
         HttpServletResponse response = getResponse();
 
         response.setContentType("text/plain");

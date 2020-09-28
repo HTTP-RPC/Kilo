@@ -30,14 +30,19 @@ public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
     @Description("Calculates the sum of two numbers.")
-    public double getSum(double a, double b) {
+    public double getSum(
+        @Description("The first number.") double a,
+        @Description("The second number.") double b
+    ) {
         return a + b;
     }
 
     @RequestMethod("GET")
     @ResourcePath("sum")
     @Description("Calculates the sum of a list of numbers.")
-    public double getSum(List<Double> values) {
+    public double getSum(
+        @Description("The numbers to add.") List<Double> values
+    ) {
         double total = 0;
 
         for (double value : values) {

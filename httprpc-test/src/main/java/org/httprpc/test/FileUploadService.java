@@ -36,7 +36,9 @@ public class FileUploadService extends WebService {
 
     @RequestMethod("POST")
     @Description("Uploads a single file.")
-    public long upload(URL file) throws IOException {
+    public long upload(
+        @Description("The file to upload.") URL file
+    ) throws IOException {
         long bytes = 0;
 
         if (file != null) {
@@ -52,7 +54,9 @@ public class FileUploadService extends WebService {
 
     @RequestMethod("POST")
     @Description("Uploads a list of files.")
-    public long upload(List<URL> files) throws IOException {
+    public long upload(
+        @Description("The files to upload.") List<URL> files
+    ) throws IOException {
         long bytes = 0;
 
         for (URL file : files) {

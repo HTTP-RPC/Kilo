@@ -237,7 +237,7 @@ API documentation can be viewed by appending "?api" to a service URL; for exampl
 GET /math?api
 ```
 
-Methods are grouped by resource path. Parameters and return values are encoded as follows:
+Methods are grouped by resource path. Parameter and return types are encoded as follows:
 
 * `Object`: "any"
 * `Void` or `void`: "void"
@@ -259,20 +259,10 @@ Methods are grouped by resource path. Parameters and return values are encoded a
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
 * Any other type: "{property1: <em>property1 type</em>, property2: <em>property2 type</em>, ...}"
 
-For example, a description of the math service might look like this:
-
-> ## /math/sum
-> 
-> ```
-> GET (a: double, b: double) -> double
-> ```
-> ```
-> GET (values: [double]) -> double
-> ```
-
-Implementations can provide additional details about service types and operations using the `Description` annotation. For example:
+Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
+@WebServlet(urlPatterns={"/math/*"})
 @Description("Math example service.")
 public class MathService extends WebService {
     private static final long serialVersionUID = 0;
@@ -280,7 +270,10 @@ public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
     @Description("Calculates the sum of two numbers.")
-    public double getSum(double a, double b) {
+    public double getSum(
+        @Description("The first number.") double a, 
+        @Description("The second number.") double b
+    ) {
         return a + b;
     }
     
@@ -288,9 +281,7 @@ public class MathService extends WebService {
 }
 ```
 
-The provided values will appear immediately prior to their associated elements in the generated output.
-
-Finally, if a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
+If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. This class provides a single constructor that accepts the following arguments:
@@ -923,6 +914,7 @@ In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin]
 
 ```kotlin
 @WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
+@Description("System info service.")
 class SystemInfoService : WebService() {
     class SystemInfo(
         val hostName: String,
@@ -933,6 +925,7 @@ class SystemInfoService : WebService() {
     )
 
     @RequestMethod("GET")
+    @Description("Returns system info.")
     fun getSystemInfo(): SystemInfo {
         val localHost = InetAddress.getLocalHost()
         val runtime = Runtime.getRuntime()
@@ -948,27 +941,7 @@ class SystemInfoService : WebService() {
 }
 ```
 
-The API documentation for this service might look something like the following:
-
-> ## /system-info
-> 
-> ```
-> GET () -> SystemInfo
-> ```
->
-> ## SystemInfo
->
-> ```
-> {
->   hostAddress: string,
->   hostName: string,
->   availableProcessors: integer,
->   freeMemory: long,
->   totalMemory: long
-> }
-> ```
-
-Data returned by the service might look like this:
+A response produced by the service might look like this:
 
 ```json
 {

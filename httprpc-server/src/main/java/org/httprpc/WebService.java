@@ -658,6 +658,24 @@ public abstract class WebService extends HttpServlet {
                 handlers.sort(Comparator.comparing(handler -> handler.method.getName()));
 
                 for (Handler handler : handlers) {
+                    xmlStreamWriter.writeStartElement("pre");
+
+                    Deprecated deprecated = handler.method.getAnnotation(Deprecated.class);
+
+                    if (deprecated != null) {
+                        xmlStreamWriter.writeStartElement("del");
+                    }
+
+                    xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase());
+                    xmlStreamWriter.writeCharacters(" -> ");
+                    xmlStreamWriter.writeCharacters(BeanAdapter.describe(handler.method.getGenericReturnType(), structures));
+
+                    if (deprecated != null) {
+                        xmlStreamWriter.writeEndElement();
+                    }
+
+                    xmlStreamWriter.writeEndElement();
+
                     Description methodDescription = handler.method.getAnnotation(Description.class);
 
                     if (methodDescription != null) {
@@ -668,28 +686,16 @@ public abstract class WebService extends HttpServlet {
 
                     Parameter[] parameters = handler.method.getParameters();
 
-                    xmlStreamWriter.writeStartElement("pre");
-
-                    String verb = entry.getKey().toUpperCase();
-
-                    if (handler.method.getAnnotation(Deprecated.class) == null) {
-                        xmlStreamWriter.writeCharacters(verb);
-                    } else {
-                        xmlStreamWriter.writeStartElement("del");
-                        xmlStreamWriter.writeCharacters(verb);
-                        xmlStreamWriter.writeEndElement();
-                    }
-
-                    xmlStreamWriter.writeCharacters(" (");
+                    xmlStreamWriter.writeStartElement("ul");
 
                     for (int i = 0; i < parameters.length; i++) {
                         Parameter parameter = parameters[i];
 
-                        if (i > 0) {
-                            xmlStreamWriter.writeCharacters(", ");
-                        }
+                        xmlStreamWriter.writeStartElement("li");
 
-                        xmlStreamWriter.writeCharacters(parameter.getName() + ": ");
+                        xmlStreamWriter.writeStartElement("code");
+                        xmlStreamWriter.writeCharacters(parameter.getName());
+                        xmlStreamWriter.writeCharacters(": ");
 
                         Type type = parameter.getParameterizedType();
 
@@ -702,10 +708,18 @@ public abstract class WebService extends HttpServlet {
                         } else {
                             xmlStreamWriter.writeCharacters(BeanAdapter.describe(type, structures));
                         }
-                    }
 
-                    xmlStreamWriter.writeCharacters(") -> ");
-                    xmlStreamWriter.writeCharacters(BeanAdapter.describe(handler.method.getGenericReturnType(), structures));
+                        xmlStreamWriter.writeEndElement();
+
+                        Description parameterDescription = parameter.getAnnotation(Description.class);
+
+                        if (parameterDescription != null) {
+                            xmlStreamWriter.writeCharacters(" - ");
+                            xmlStreamWriter.writeCharacters(parameterDescription.value());
+                        }
+
+                        xmlStreamWriter.writeEndElement();
+                    }
 
                     xmlStreamWriter.writeEndElement();
                 }
