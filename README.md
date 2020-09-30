@@ -13,7 +13,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
-HTTP-RPC is distributed via [Maven Central](https://repo1.maven.org/maven2/org/httprpc/httprpc/): 
+HTTP-RPC is distributed via Maven Central: 
 
 * [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV and relational databases
 * [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services and working with template documents
