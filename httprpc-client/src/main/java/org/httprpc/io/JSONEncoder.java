@@ -43,8 +43,8 @@ public class JSONEncoder extends Encoder<Object> {
      * Constructs a new JSON encoder.
      *
      * @param compact
-     * <code>true</code> if the encoded output should be compact; <code>false</code>,
-     * otherwise.
+     * <code>true</code> if the encoded output should be compact;
+     * <code>false</code>, otherwise.
      */
     public JSONEncoder(boolean compact) {
         super(StandardCharsets.UTF_8);

@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -15,8 +15,8 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Getting HTTP-RPC
 HTTP-RPC is distributed via Maven Central: 
 
-* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV and relational databases
-* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services and working with template documents
+* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV, template documents, and relational databases
+* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services
 
 **NOTE** The `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-server` should be used for new development. 
 

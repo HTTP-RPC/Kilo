@@ -227,6 +227,48 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testMapSection1() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section6.txt"));
+
+        Map<String, ?> value = mapOf(
+            entry("entries", mapOf(
+                entry("one", mapOf(entry("value", 1))),
+                entry("two", mapOf(entry("value", 2))),
+                entry("three", mapOf(entry("value", 3)))
+            ))
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(value, writer);
+            result = writer.toString();
+        }
+
+        assertEquals("one:1,two:2,three:3", result);
+    }
+
+    @Test
+    public void testMapSection2() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section7.txt"));
+
+        Map<String, ?> value = mapOf(
+            entry("entries", mapOf(
+                entry("a", "A"),
+                entry("b", "B"),
+                entry("c", "C")
+            ))
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(value, writer);
+            result = writer.toString();
+        }
+
+        assertEquals("a:A,b:B,c:C", result);
+    }
+
+    @Test
     public void testComment() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("comment.txt"));
 

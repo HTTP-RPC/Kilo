@@ -34,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +45,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
@@ -347,6 +347,53 @@ public class TemplateEncoder extends Encoder<Object> {
         INCLUDE,
         COMMENT,
         VARIABLE
+    }
+
+    // Map iterator
+    private static class MapIterator implements Iterator<Map<?, ?>> {
+        private Iterator<? extends Map.Entry<?, ?>> iterator;
+
+        public MapIterator(Map<?, ?> map) {
+            iterator = map.entrySet().iterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public Map<?, ?> next() {
+            return new AbstractMap<Object, Object>() {
+                private Entry<?, ?> entry = iterator.next();
+
+                @Override
+                public Object get(Object key) {
+                    if (key == null) {
+                        throw new IllegalArgumentException();
+                    }
+
+                    if (key.equals("~")) {
+                        return entry.getKey();
+                    } else {
+                        Object value = entry.getValue();
+
+                        if (value instanceof Map<?, ?>) {
+                            return ((Map<?, ?>)value).get(key);
+                        } else if (key.equals(".")) {
+                            return value;
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+
+                @Override
+                public Set<Entry<Object, Object>> entrySet() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
     }
 
     private URL url;
@@ -681,15 +728,16 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             Object value = dictionary.get(marker);
 
+                            Iterator<?> iterator;
                             if (value == null) {
-                                value = emptyList();
-                            }
-
-                            if (!(value instanceof Iterable<?>)) {
+                                iterator = Collections.emptyIterator();
+                            } else if (value instanceof Iterable<?>) {
+                                iterator  = ((Iterable<?>)value).iterator();
+                            } else if (value instanceof Map<?, ?>) {
+                                iterator = new MapIterator((Map<?, ?>)value);
+                            } else {
                                 throw new IOException("Invalid section element.");
                             }
-
-                            Iterator<?> iterator = ((Iterable<?>)value).iterator();
 
                             if (iterator.hasNext()) {
                                 includes = new HashMap<>();

@@ -202,8 +202,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 String key = getKey(method);
 
                 if (key != null) {
-                    method.setAccessible(true);
-
                     accessors.put(key, method);
                 }
             }

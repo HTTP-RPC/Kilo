@@ -87,9 +87,9 @@ Date/time values may be represented by one of the following:
 * an instance of `java.util.time.TemporalAccessor`
 
 ## Section Markers
-Section markers define a repeating section of content. The marker name must refer to an iterable value in the data dictionary (for example, an instance of `java.util.List`). 
+Section markers define a repeating section of content. The marker name must refer to a traversable sequence of elements in the data dictionary (specifically, an instance of either `java.lang.Iterable` or `java.util.Map`). Missing or empty sequences are ignored.
 
-Content between the markers is repeated once for each element in the list. The elements provide the data dictionaries for each successive iteration through the section. If the iterable value is missing (i.e. `null`) or empty, the section's content is excluded from the output.
+Content between the markers is repeated once for each element in the sequence. The element provides the data dictionary for each successive iteration through the section. 
 
 For example, a data dictionary that contains information about homes for sale might look like this:
 
@@ -113,7 +113,7 @@ For example, a data dictionary that contains information about homes for sale mi
 }
 ```
 
-A template to transform these results into HTML is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
+A template to transform these results into HTML is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed. The HTML encoding modifier is applied to the string values to ensure that the generated output is properly escaped:
 
 ```html
 <table>
@@ -128,16 +128,6 @@ A template to transform these results into HTML is shown below. The section mark
 </table>
 ```
 
-A dot character (".") can be used to represent the current element in a sequence. This can be useful when rendering scalar values. 
-
-A dot can also be used to represent the sequence itself; for example, when a sequence is the root object:
-
-```
-{{#.}}
-    ...
-{{/.}}
-```
-
 ### Separators
 Section markers may specify an optional separator string that will be automatically injected between the section's elements. The separator text is enclosed in square brackets immediately following the section name. 
 
@@ -148,6 +138,27 @@ For example, the elements of the "addresses" section specified below will be sep
 ...
 {{/addresses}}
 ```
+
+### Key and Value References
+When traversing the contents of a `Map` instance, the "~" variable can be used to refer to the key associated with the current element. Additionally, when a sequence element is not an instance of `Map` (for example, a `Number`, `String`, or `Iterable`), the "." variable can be used to refer to the value of the element itself.
+
+For example, the following data dictionary associates number names with numeric values:
+
+```json
+{
+  "numbers": { 
+    "one": 1,
+    "two": 2,
+    "three": 3
+  }
+}
+```
+
+This simple template could be used to generate a comma-separated list of name/value pairs from the data dictionary:
+
+```
+{{#numbers[,]}}{{~}}:{{.}}{{/numbers}}
+``` 
 
 ## Includes
 Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers. 

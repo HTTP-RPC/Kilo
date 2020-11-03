@@ -22,11 +22,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * JSON decoder.
  */
 public class JSONDecoder extends Decoder {
+    private boolean sorted;
+
     private int c = EOF;
 
     private LinkedList<Object> collections = new LinkedList<>();
@@ -43,7 +46,20 @@ public class JSONDecoder extends Decoder {
      * Constructs a new JSON decoder.
      */
     public JSONDecoder() {
+        this(false);
+    }
+
+    /**
+     * Constructs a new JSON decoder.
+     *
+     * @param sorted
+     * <code>true</code> if the decoded output should be sorted by key;
+     * <code>false</code>, otherwise.
+     */
+    public JSONDecoder(boolean sorted) {
         super(StandardCharsets.UTF_8);
+
+        this.sorted = sorted;
     }
 
     @Override
@@ -119,7 +135,11 @@ public class JSONDecoder extends Decoder {
 
                     c = reader.read();
                 } else if (c == '{') {
-                    value = new LinkedHashMap<String, Object>();
+                    if (sorted) {
+                        value = new TreeMap<>();
+                    } else {
+                        value = new LinkedHashMap<>();
+                    }
 
                     collections.push(value);
 
