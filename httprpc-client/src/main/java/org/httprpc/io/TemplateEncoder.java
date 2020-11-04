@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -342,7 +341,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
     // Marker type enumeration
     private enum MarkerType {
-        SECTION_START,
+        REPEATING_SECTION_START,
+        CONDITIONAL_SECTION_START,
         SECTION_END,
         INCLUDE,
         COMMENT,
@@ -403,9 +403,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private String baseName = null;
     private Map<String, ?> context = emptyMap();
-
-    private Map<String, Reader> includes = new HashMap<>();
-    private LinkedList<Map<String, Reader>> history = new LinkedList<>();
 
     private static HashMap<String, Modifier> defaultModifiers = new HashMap<>();
 
@@ -668,8 +665,10 @@ public class TemplateEncoder extends Encoder<Object> {
                     c = reader.read();
 
                     MarkerType markerType;
-                    if (c == '#') {
-                        markerType = MarkerType.SECTION_START;
+                    if (c == '?') {
+                        markerType = MarkerType.CONDITIONAL_SECTION_START;
+                    } else if (c == '#') {
+                        markerType = MarkerType.REPEATING_SECTION_START;
                     } else if (c == '/') {
                         markerType = MarkerType.SECTION_END;
                     } else if (c == '>') {
@@ -709,7 +708,7 @@ public class TemplateEncoder extends Encoder<Object> {
                     }
 
                     switch (markerType) {
-                        case SECTION_START: {
+                        case REPEATING_SECTION_START: {
                             String separator = null;
 
                             int n = marker.length();
@@ -724,9 +723,12 @@ public class TemplateEncoder extends Encoder<Object> {
                                 }
                             }
 
-                            history.push(includes);
-
-                            Object value = dictionary.get(marker);
+                            Object value;
+                            if (marker.equals(".")) {
+                                value = dictionary.get(marker);
+                            } else {
+                                value = BeanAdapter.valueAt(dictionary, marker);
+                            }
 
                             Iterator<?> iterator;
                             if (value == null) {
@@ -740,8 +742,6 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             if (iterator.hasNext()) {
-                                includes = new HashMap<>();
-
                                 int i = 0;
 
                                 while (iterator.hasNext()) {
@@ -764,22 +764,25 @@ public class TemplateEncoder extends Encoder<Object> {
                                     i++;
                                 }
                             } else {
-                                includes = new AbstractMap<String, Reader>() {
-                                    @Override
-                                    public Reader get(Object key) {
-                                        return new EmptyReader();
-                                    }
-
-                                    @Override
-                                    public Set<Entry<String, Reader>> entrySet() {
-                                        throw new UnsupportedOperationException();
-                                    }
-                                };
-
-                                writeRoot(emptyMap(), new NullWriter(), locale, timeZone, reader);
+                                writeRoot(null, new NullWriter(), locale, timeZone, reader);
                             }
 
-                            includes = history.pop();
+                            break;
+                        }
+
+                        case CONDITIONAL_SECTION_START: {
+                            Object value;
+                            if (marker.equals(".")) {
+                                value = dictionary.get(marker);
+                            } else {
+                                value = BeanAdapter.valueAt(dictionary, marker);
+                            }
+
+                            if (value != null) {
+                                writeRoot(value, writer, locale, timeZone, reader);
+                            } else {
+                                writeRoot(null, new NullWriter(), locale, timeZone, reader);
+                            }
 
                             break;
                         }
@@ -790,22 +793,12 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
 
                         case INCLUDE: {
-                            Reader include = includes.get(marker);
-
-                            if (include == null) {
+                            if (root != null) {
                                 URL url = new URL(this.url, marker);
 
                                 try (InputStream inputStream = url.openStream()) {
-                                    include = new PagedReader(new InputStreamReader(inputStream));
-
-                                    writeRoot(dictionary, writer, locale, timeZone, include);
-
-                                    includes.put(marker, include);
+                                    writeRoot(dictionary, writer, locale, timeZone, new PagedReader(new InputStreamReader(inputStream)));
                                 }
-                            } else {
-                                include.reset();
-
-                                writeRoot(dictionary, writer, locale, timeZone, include);
                             }
 
                             break;

@@ -4,13 +4,14 @@ Templates are documents that describe an output format such as HTML. They allow 
 Template documents include "markers" that are replaced with values provided by the data dictionary when the template is processed:
 
 * {{_variable_}} - injects a variable from the data dictionary into the output
-* {{#_section_}}...{{/_section_}} - defines a repeating section of content
+* {{#_section_}}...{{/_section_}} - defines a repeating section
+* {{?_section_}}...{{/_section_}} - defines a conditional section
 * {{>_include_}} - imports content from another template
-* {{!_comment_}} - provides informational text about a template's content
+* {{!_comment_}} - provides non-rendered informational content
 
 Each of these marker types is discussed in more detail below.
 
-## Variable Markers
+## Variables
 Variable markers inject a value from the data dictionary into the output. For example:
 
 ```html
@@ -19,13 +20,11 @@ Variable markers inject a value from the data dictionary into the output. For ex
 <p>Average: {{average}}</p> 
 ```
 
-Variable names represent keys into the data dictionary. When the template is processed, the markers are replaced with the corresponding values from the dictionary.
+Variable names represent keys into the data dictionary. When the template is processed, the markers are replaced with the corresponding values from the dictionary. If a variable value is not defined (i.e. is missing or `null`), it is excluded from the generated output.
 
-Nested values can be referred to using path notation; e.g. "name.first". Missing (i.e. `null`) values are replaced with the empty string in the generated output. 
+Nested values can be referred to using path notation; e.g. "name.first". Variable names beginning with "@" represent resource references and are obtained from the resource bundle when the template is processed. Variable names beginning with "$" represent context references and are obtained from the template context.
 
-Variable names beginning with "@" represent resource references, and are replaced with the corresponding values from the resource bundle when the template is processed. 
-
-Variable names beginning with "$" represent context references, and are replaced with the corresponding values from the template context when the template is processed. 
+The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.  
 
 ### Modifiers
 Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.
@@ -86,10 +85,8 @@ Date/time values may be represented by one of the following:
 * an instance of `java.util.Date` 
 * an instance of `java.util.time.TemporalAccessor`
 
-## Section Markers
-Section markers define a repeating section of content. The marker name must refer to a traversable sequence of elements in the data dictionary (specifically, an instance of either `java.lang.Iterable` or `java.util.Map`). Missing or empty sequences are ignored.
-
-Content between the markers is repeated once for each element in the sequence. The element provides the data dictionary for each successive iteration through the section. 
+## Repeating Sections
+Repeating section markers define a section of content that is repeated once for every element in a sequence of values. The marker name must refer to an instance of either `java.lang.Iterable` or `java.util.Map` in the data dictionary. The elements of the sequence provide the data dictionaries for successive iterations through the section. Missing or empty sequences are ignored.
 
 For example, a data dictionary that contains information about homes for sale might look like this:
 
@@ -97,30 +94,30 @@ For example, a data dictionary that contains information about homes for sale mi
 {
   "properties": [
     {
-      "streetAddress": "17 Cardinal St.",
-      "listPrice": 849000,
+      "streetAddress": "27 Crescent St.",
+      "listPrice": 925000,
       "numberOfBedrooms": 4,
       "numberOfBathrooms": 3
     },
     {
-      "streetAddress": "72 Wedgemere Ave.",
-      "listPrice": 1650000,
-      "numberOfBedrooms": 5,
-      "numberOfBathrooms": 3
+      "streetAddress": "390 North Elm St.",
+      "listPrice": 7650000,
+      "numberOfBedrooms": 3,
+      "numberOfBathrooms": 1.5
     },
     ...        
   ]
 }
 ```
 
-A template to transform these results into HTML is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed. The HTML encoding modifier is applied to the string values to ensure that the generated output is properly escaped:
+A template to transform these results into HTML is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
 
 ```html
 <table>
 <!-- {{#properties}} -->
 <tr>
-    <td>{{streetAddress:^html}}</td> 
-    <td>{{listPrice:format=currency:^html}}</td> 
+    <td>{{streetAddress}}</td> 
+    <td>{{listPrice:format=currency}}</td> 
     <td>{{numberOfBedrooms}}</td> 
     <td>{{numberOfBathrooms}}</td>
 </tr>
@@ -131,18 +128,20 @@ A template to transform these results into HTML is shown below. The section mark
 ### Separators
 Section markers may specify an optional separator string that will be automatically injected between the section's elements. The separator text is enclosed in square brackets immediately following the section name. 
 
-For example, the elements of the "addresses" section specified below will be separated by a comma in the generated output:
+For example, the elements of the "names" section specified below will be separated by a comma in the generated output:
 
 ```
-{{#addresses[,]}}
+{{#names[,]}}
 ...
-{{/addresses}}
+{{/names}}
 ```
 
 ### Key and Value References
-When traversing the contents of a `Map` instance, the "~" variable can be used to refer to the key associated with the current element. Additionally, when a sequence element is not an instance of `Map` (for example, a `Number`, `String`, or `Iterable`), the "." variable can be used to refer to the value of the element itself.
+In most cases, variable names are used to refer to properties of the `Map` instance representing the current data dictionary. However, when traversing the contents of a `Map` sequence, the reserved "~" variable can be used to refer to the key associated with the current element. 
 
-For example, the following data dictionary associates number names with numeric values:
+Additionally, when traversing any type of sequence (`Iterable` or `Map`), if the current element is not a `Map` (for example, a `Number`, `String`, or `Iterable`), the "." variable can be used to refer to the value of the element itself.
+
+For example, the following data dictionary associates a set of number names with their corresponding numeric values:
 
 ```json
 {
@@ -154,11 +153,31 @@ For example, the following data dictionary associates number names with numeric 
 }
 ```
 
-This simple template could be used to generate a comma-separated list of name/value pairs from the data dictionary:
+This template could be used to generate a comma-separated list of name/value pairs from the data dictionary:
 
 ```
 {{#numbers[,]}}{{~}}:{{.}}{{/numbers}}
 ``` 
+
+## Conditional Sections
+Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. If the value does not exist or is `null`, the section is excluded from the output.
+
+For example, given the following data dictionary:
+
+```json
+{
+  "name": {
+    "first": "John",
+    "last": "Smith"
+  }
+}
+```
+
+the content of "name" section in the following template would be included in the generated output, but the content of the "age" section would not:
+
+```
+{{?name}}{{last}}, {{first}}{{/name}}{{?age}}, age {{.}}{{/age}}
+```
 
 ## Includes
 Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers. 

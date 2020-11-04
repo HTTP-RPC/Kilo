@@ -269,6 +269,24 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testConditionalSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section8.txt"));
+
+        Map<String, ?> value = mapOf(
+            entry("a", "A"),
+            entry("b", "B")
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(value, writer);
+            result = writer.toString();
+        }
+
+        assertEquals("12", result);
+    }
+
+    @Test
     public void testComment() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("comment.txt"));
 
