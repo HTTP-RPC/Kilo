@@ -341,8 +341,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
     // Marker type enumeration
     private enum MarkerType {
-        REPEATING_SECTION_START,
         CONDITIONAL_SECTION_START,
+        REPEATING_SECTION_START,
+        INVERTED_SECTION_START,
         SECTION_END,
         INCLUDE,
         COMMENT,
@@ -669,6 +670,8 @@ public class TemplateEncoder extends Encoder<Object> {
                         markerType = MarkerType.CONDITIONAL_SECTION_START;
                     } else if (c == '#') {
                         markerType = MarkerType.REPEATING_SECTION_START;
+                    } else if (c == '^') {
+                        markerType = MarkerType.INVERTED_SECTION_START;
                     } else if (c == '/') {
                         markerType = MarkerType.SECTION_END;
                     } else if (c == '>') {
@@ -708,6 +711,18 @@ public class TemplateEncoder extends Encoder<Object> {
                     }
 
                     switch (markerType) {
+                        case CONDITIONAL_SECTION_START: {
+                            Object value = getMarkerValue(dictionary, marker);
+
+                            if (value != null) {
+                                writeRoot(value, writer, locale, timeZone, reader);
+                            } else {
+                                writeRoot(null, new NullWriter(), locale, timeZone, reader);
+                            }
+
+                            break;
+                        }
+
                         case REPEATING_SECTION_START: {
                             String separator = null;
 
@@ -723,12 +738,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                 }
                             }
 
-                            Object value;
-                            if (marker.equals(".")) {
-                                value = dictionary.get(marker);
-                            } else {
-                                value = BeanAdapter.valueAt(dictionary, marker);
-                            }
+                            Object value = getMarkerValue(dictionary, marker);
 
                             Iterator<?> iterator;
                             if (value == null) {
@@ -770,21 +780,11 @@ public class TemplateEncoder extends Encoder<Object> {
                             break;
                         }
 
-                        case CONDITIONAL_SECTION_START: {
-                            Object value;
-                            if (marker.equals(".")) {
-                                value = dictionary.get(marker);
-                            } else {
-                                value = BeanAdapter.valueAt(dictionary, marker);
-                            }
+                        case INVERTED_SECTION_START: {
+                            Object value = getMarkerValue(dictionary, marker);
 
-                            if (value != null) {
-                                writeRoot(value, writer, locale, timeZone, reader);
-                            } else {
-                                writeRoot(null, new NullWriter(), locale, timeZone, reader);
-                            }
-
-                            break;
+                            // TODO If value is not defined or is an empty sequence, render section; otherwise, ignore
+                            writeRoot(null, new NullWriter(), locale, timeZone, reader);
                         }
 
                         case SECTION_END: {
@@ -815,9 +815,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             String key = components[0];
 
                             Object value;
-                            if (key.equals(".")) {
-                                value = dictionary.get(key);
-                            } else if (key.startsWith(RESOURCE_PREFIX)) {
+                            if (key.startsWith(RESOURCE_PREFIX)) {
                                 if (baseName != null) {
                                     ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
 
@@ -828,7 +826,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             } else if (key.startsWith(CONTEXT_PREFIX)) {
                                 value = BeanAdapter.valueAt(context, key.substring(CONTEXT_PREFIX.length()));
                             } else {
-                                value = BeanAdapter.valueAt(dictionary, key);
+                                value = getMarkerValue(dictionary, key);
                             }
 
                             if (value != null) {
@@ -878,6 +876,14 @@ public class TemplateEncoder extends Encoder<Object> {
             }
 
             c = reader.read();
+        }
+    }
+
+    private static Object getMarkerValue(Map<String, ?> dictionary, String name) {
+        if (name.equals(".")) {
+            return dictionary.get(name);
+        } else {
+            return BeanAdapter.valueAt(dictionary, name);
         }
     }
 

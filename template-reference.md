@@ -4,8 +4,9 @@ Templates are documents that describe an output format such as HTML. They allow 
 Template documents include "markers" that are replaced with values provided by the data dictionary when the template is processed:
 
 * {{_variable_}} - injects a variable from the data dictionary into the output
-* {{#_section_}}...{{/_section_}} - defines a repeating section
 * {{?_section_}}...{{/_section_}} - defines a conditional section
+* {{#_section_}}...{{/_section_}} - defines a repeating section
+* {{^section_}}...{{/_section_}} - defines an inverted section
 * {{>_include_}} - imports content from another template
 * {{!_comment_}} - provides non-rendered informational content
 
@@ -85,6 +86,32 @@ Date/time values may be represented by one of the following:
 * an instance of `java.util.Date` 
 * an instance of `java.util.time.TemporalAccessor`
 
+## Conditional Sections
+Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. If the value does not exist or is `null`, the section is excluded from the output.
+
+For example, given the following data dictionary:
+
+```json
+{
+  "name": {
+    "first": "John",
+    "last": "Smith"
+  }
+}
+```
+
+the content of "name" section in this template would be included in the generated output, but the content of the "age" section would not. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
+
+```
+<!-- {{?name}} -->
+<p>Name: {{last}}, {{first}}</p>
+<!-- {{/name}} -->
+
+<!-- {{?age}} -->
+<p>Age: {{.}}
+<!-- {{/age}} -->
+```
+
 ## Repeating Sections
 Repeating section markers define a section of content that is repeated once for every element in a sequence of values. The marker name must refer to an instance of either `java.lang.Iterable` or `java.util.Map` in the data dictionary. The elements of the sequence provide the data dictionaries for successive iterations through the section. Missing or empty sequences are ignored.
 
@@ -110,7 +137,7 @@ For example, a data dictionary that contains information about homes for sale mi
 }
 ```
 
-A template to transform these results into HTML is shown below. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
+A template to transform these results into HTML is shown below:
 
 ```html
 <table>
@@ -159,25 +186,10 @@ This template could be used to generate a comma-separated list of name/value pai
 {{#numbers[,]}}{{~}}:{{.}}{{/numbers}}
 ``` 
 
-## Conditional Sections
-Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. If the value does not exist or is `null`, the section is excluded from the output.
+## Inverted Sections
+Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary or refers to an empty sequence.
 
-For example, given the following data dictionary:
-
-```json
-{
-  "name": {
-    "first": "John",
-    "last": "Smith"
-  }
-}
-```
-
-the content of "name" section in the following template would be included in the generated output, but the content of the "age" section would not:
-
-```
-{{?name}}{{last}}, {{first}}{{/name}}{{?age}}, age {{.}}{{/age}}
-```
+TODO
 
 ## Includes
 Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers. 
