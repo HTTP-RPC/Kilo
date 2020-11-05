@@ -783,8 +783,13 @@ public class TemplateEncoder extends Encoder<Object> {
                         case INVERTED_SECTION_START: {
                             Object value = getMarkerValue(dictionary, marker);
 
-                            // TODO If value is not defined or is an empty sequence, render section; otherwise, ignore
-                            writeRoot(null, new NullWriter(), locale, timeZone, reader);
+                            if (value == null
+                                || (value instanceof Iterable<?> && !((Iterable<?>)value).iterator().hasNext())
+                                || (value instanceof Map<?, ?> && ((Map<?, ?>)value).isEmpty())) {
+                                writeRoot(value, writer, locale, timeZone, reader);
+                            } else {
+                                writeRoot(null, new NullWriter(), locale, timeZone, reader);
+                            }
                         }
 
                         case SECTION_END: {

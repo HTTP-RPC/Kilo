@@ -6,14 +6,14 @@ Template documents include "markers" that are replaced with values provided by t
 * {{_variable_}} - injects a variable from the data dictionary into the output
 * {{?_section_}}...{{/_section_}} - defines a conditional section
 * {{#_section_}}...{{/_section_}} - defines a repeating section
-* {{^section_}}...{{/_section_}} - defines an inverted section
+* {{^_section_}}...{{/_section_}} - defines an inverted section
 * {{>_include_}} - imports content from another template
 * {{!_comment_}} - provides non-rendered informational content
 
 Each of these marker types is discussed in more detail below.
 
 ## Variables
-Variable markers inject a value from the data dictionary into the output. For example:
+Variable markers inject a named value from the data dictionary into the output. For example:
 
 ```html
 <p>Count: {{count}}</p>
@@ -100,7 +100,7 @@ For example, given the following data dictionary:
 }
 ```
 
-the content of "name" section in this template would be included in the generated output, but the content of the "age" section would not. The section markers are enclosed in HTML comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
+the content of the "name" section in this template would be included in the generated output, but the content of the "age" section would not. The section markers are enclosed in comments so they will be ignored by syntax-aware text editors, and will simply resolve to empty comment blocks when the template is processed:
 
 ```
 <!-- {{?name}} -->
@@ -166,7 +166,7 @@ For example, the elements of the "names" section specified below will be separat
 ### Key and Value References
 In most cases, variable names are used to refer to properties of the `Map` instance representing the current data dictionary. However, when traversing the contents of a `Map` sequence, the reserved "~" variable can be used to refer to the key associated with the current element. 
 
-Additionally, when traversing any type of sequence (`Iterable` or `Map`), if the current element is not a `Map` (for example, a `Number`, `String`, or `Iterable`), the "." variable can be used to refer to the value of the element itself.
+Additionally, when traversing any type of sequence (`Iterable` or `Map`), if the current element is not a `Map` (for example, a `Number`, `String`, or `Iterable`), the reserved "." variable can be used to refer to the value of the element itself.
 
 For example, the following data dictionary associates a set of number names with their corresponding numeric values:
 
@@ -189,7 +189,20 @@ This template could be used to generate a comma-separated list of name/value pai
 ## Inverted Sections
 Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary or refers to an empty sequence.
 
-TODO
+For example, given the following data dictionary:
+
+```json
+{
+  "addresses": [
+  ]
+}
+```
+
+this template would produce the text "no addresses": 
+
+```
+{{^addresses}}no addresses{{/addresses}}
+``` 
 
 ## Includes
 Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers. 

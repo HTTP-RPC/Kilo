@@ -53,7 +53,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testDictionary() throws IOException {
+    public void testMap() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
 
         Map<String, ?> dictionary = mapOf(
@@ -77,8 +77,26 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testEmptySection() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section1.txt"));
+    public void testConditionalSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+
+        Map<String, ?> value = mapOf(
+            entry("a", "A"),
+            entry("b", "B")
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(value, writer);
+            result = writer.toString();
+        }
+
+        assertEquals("12", result);
+    }
+
+    @Test
+    public void testEmptyRepeatingSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -90,8 +108,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testSingleElementSection() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section1.txt"));
+    public void testSingleElementRepeatingSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
         Map<String, ?> dictionary = mapOf(
             entry("a", "hello"),
@@ -113,8 +131,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testMultiElementSection() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section1.txt"));
+    public void testMultiElementRepeatingSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
         Map<String, ?> dictionary1 = mapOf(
             entry("a", "hello"),
@@ -144,8 +162,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testNestedSection1() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section2.txt"));
+    public void testNestedRepeatingSection1() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating2.txt"));
 
         Map<String, ?> dictionary = mapOf(
             entry("abc", "ABC"),
@@ -169,8 +187,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testNestedSection2() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section3.txt"));
+    public void testNestedRepeatingSection2() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating3.txt"));
 
         List<?> value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
@@ -184,8 +202,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testNestedEmptySection() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section3.txt"));
+    public void testNestedEmptyRepeatingSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating3.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
@@ -197,8 +215,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testPrimitiveSection() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section4.txt"));
+    public void testPrimitiveRepeatingSection() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating4.txt"));
 
         List<?> value = listOf("hello", 42, false);
 
@@ -212,8 +230,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testSectionSeparator() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section5.txt"));
+    public void testRepeatingSectionSeparator() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating5.txt"));
 
         List<?> value = listOf("a", "b", "c");
 
@@ -227,8 +245,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testMapSection1() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section6.txt"));
+    public void testMapRepeatingSection1() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating6.txt"));
 
         Map<String, ?> value = mapOf(
             entry("entries", mapOf(
@@ -248,8 +266,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testMapSection2() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section7.txt"));
+    public void testMapRepeatingSection2() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating8.txt"));
 
         Map<String, ?> value = mapOf(
             entry("entries", mapOf(
@@ -269,21 +287,55 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testConditionalSection() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("section8.txt"));
-
-        Map<String, ?> value = mapOf(
-            entry("a", "A"),
-            entry("b", "B")
-        );
+    public void testInvertedSection1() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
         String result;
         try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
+            encoder.write(mapOf(), writer);
             result = writer.toString();
         }
 
-        assertEquals("12", result);
+        assertEquals("not found", result);
+    }
+
+    @Test
+    public void testInvertedSection2() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(mapOf(entry("a", emptyList())), writer);
+            result = writer.toString();
+        }
+
+        assertEquals("not found", result);
+    }
+
+    @Test
+    public void testInvertedSection3() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(mapOf(entry("a", emptyMap())), writer);
+            result = writer.toString();
+        }
+
+        assertEquals("not found", result);
+    }
+
+    @Test
+    public void testInvertedSection4() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(mapOf(entry("a", "A")), writer);
+            result = writer.toString();
+        }
+
+        assertEquals("", result);
     }
 
     @Test
