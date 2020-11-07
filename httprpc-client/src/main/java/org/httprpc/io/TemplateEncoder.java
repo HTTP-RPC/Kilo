@@ -402,19 +402,17 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private static final int EOF = -1;
 
-    private static final String ESCAPE_MODIFIER_FORMAT = "^%s";
-
     static {
         defaultModifiers.put("format", new FormatModifier());
 
-        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "url"), new URLEscapeModifier());
-        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "json"), new JSONEscapeModifier());
-        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "csv"), new CSVEscapeModifier());
+        defaultModifiers.put("url", new URLEscapeModifier());
+        defaultModifiers.put("json", new JSONEscapeModifier());
+        defaultModifiers.put("csv", new CSVEscapeModifier());
 
         MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
 
-        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "xml"), markupEscapeModifier);
-        defaultModifiers.put(String.format(ESCAPE_MODIFIER_FORMAT, "html"), markupEscapeModifier);
+        defaultModifiers.put("xml", markupEscapeModifier);
+        defaultModifiers.put("html", markupEscapeModifier);
     }
 
     /**
@@ -453,9 +451,7 @@ public class TemplateEncoder extends Encoder<Object> {
         int i = path.lastIndexOf('.');
 
         if (i != -1) {
-            String extension = path.substring(i + 1);
-
-            defaultEscapeModifier = modifiers.get(String.format(ESCAPE_MODIFIER_FORMAT, extension));
+            defaultEscapeModifier = modifiers.get(path.substring(i + 1));
         }
     }
 

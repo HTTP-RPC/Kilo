@@ -37,16 +37,16 @@ Modifiers are specified as shown below. They are invoked in order from left to r
 All templates support the following set of standard modifiers:
 
 * `format` - applies a [format string](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax)
-* `^url` - applies URL encoding to a value
-* `^json` - applies JSON encoding to a value
-* `^csv` - applies CSV encoding to a value
-* `^xml` - applies XML encoding to a value
-* `^html` - applies HTML encoding to a value
+* `url` - applies URL encoding to a value
+* `json` - applies JSON encoding to a value
+* `csv` - applies CSV encoding to a value
+* `xml` - applies XML encoding to a value
+* `html` - applies HTML encoding to a value
 
 For example, the following marker applies a format string to a value and then URL-encodes the result:
 
 ```
-{{value:format=0x%04x:^url}}
+{{value:format=0x%04x:url}}
 ```
 
 Applications may also define their own custom modifiers.
