@@ -36,12 +36,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -668,7 +674,7 @@ public abstract class WebService extends HttpServlet {
 
                     xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase());
                     xmlStreamWriter.writeCharacters(" -> ");
-                    xmlStreamWriter.writeCharacters(BeanAdapter.describe(handler.method.getGenericReturnType(), structures));
+                    xmlStreamWriter.writeCharacters(describe(handler.method.getGenericReturnType(), structures));
 
                     if (deprecated != null) {
                         xmlStreamWriter.writeEndElement();
@@ -706,7 +712,7 @@ public abstract class WebService extends HttpServlet {
                             && ((ParameterizedType)type).getActualTypeArguments()[0] == URL.class) {
                             xmlStreamWriter.writeCharacters("[file]");
                         } else {
-                            xmlStreamWriter.writeCharacters(BeanAdapter.describe(type, structures));
+                            xmlStreamWriter.writeCharacters(describe(type, structures));
                         }
 
                         xmlStreamWriter.writeEndElement();
@@ -728,6 +734,131 @@ public abstract class WebService extends HttpServlet {
 
         for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
             describeResource(path + "/" + entry.getKey(), entry.getValue(), structures, xmlStreamWriter);
+        }
+    }
+
+    private static String describe(Type type, Map<Class<?>, String> structures) {
+        if (type instanceof Class<?>) {
+            return describe((Class<?>)type, structures);
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType)type;
+
+            return describe(wildcardType.getUpperBounds()[0], structures);
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType)type;
+
+            Type rawType = parameterizedType.getRawType();
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+            if (rawType == Iterable.class || rawType == Collection.class || rawType == List.class) {
+                return "[" + describe(actualTypeArguments[0], structures) + "]";
+            } else if (rawType == Map.class) {
+                return "[" + describe(actualTypeArguments[0], structures) + ": " + describe(actualTypeArguments[1], structures) + "]";
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static String describe(Class<?> type, Map<Class<?>, String> structures) {
+        if (type == Object.class) {
+            return "any";
+        } else if (type == Void.TYPE || type == Void.class) {
+            return "void";
+        } else if (type == Byte.TYPE || type == Byte.class) {
+            return "byte";
+        } else if (type == Short.TYPE || type == Short.class) {
+            return "short";
+        } else if (type == Integer.TYPE || type == Integer.class) {
+            return "integer";
+        } else if (type == Long.TYPE || type == Long.class) {
+            return "long";
+        } else if (type == Float.TYPE || type == Float.class) {
+            return "float";
+        } else if (type == Double.TYPE || type == Double.class) {
+            return "double";
+        } else if (Number.class.isAssignableFrom(type)) {
+            return "number";
+        } else if (type == Boolean.TYPE || type == Boolean.class) {
+            return "boolean";
+        } else if (CharSequence.class.isAssignableFrom(type)) {
+            return "string";
+        } else if (Enum.class.isAssignableFrom(type)) {
+            return "enum";
+        } else if (Date.class.isAssignableFrom(type)) {
+            return "date";
+        } else if (type == LocalDate.class) {
+            return "date-local";
+        } else if (type == LocalTime.class) {
+            return "time-local";
+        } else if (type == LocalDateTime.class) {
+            return "datetime-local";
+        } else if (type == URL.class) {
+            return "url";
+        } else if (Iterable.class.isAssignableFrom(type)) {
+            return describe(new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[] {Object.class};
+                }
+
+                @Override
+                public Type getRawType() {
+                    return Iterable.class;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            }, structures);
+        } else if (Map.class.isAssignableFrom(type)) {
+            return describe(new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[] {Object.class, Object.class};
+                }
+
+                @Override
+                public Type getRawType() {
+                    return Map.class;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            }, structures);
+        } else {
+            if (!structures.containsKey(type)) {
+                structures.put(type, null);
+                
+                Map<String, Type> properties = BeanAdapter.getProperties(type);
+
+                StringBuilder structureBuilder = new StringBuilder();
+
+                structureBuilder.append("{\n");
+
+                int i = 0;
+
+                for (Map.Entry<String, Type> entry : properties.entrySet()) {
+                    if (i > 0) {
+                        structureBuilder.append(",\n");
+                    }
+
+                    structureBuilder.append("  " + entry.getKey() + ": " + describe(entry.getValue(), structures));
+
+                    i++;
+                }
+
+                structureBuilder.append("\n}");
+
+                structures.put(type, structureBuilder.toString());
+            }
+
+            return type.getSimpleName();
         }
     }
 }

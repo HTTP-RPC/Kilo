@@ -19,6 +19,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.httprpc.util.Collections.entry;
@@ -145,6 +149,63 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testInterfaceKey() {
+        TestInterface testInterface = BeanAdapter.adapt(mapOf(entry("i", 10)), TestInterface.class);
+
+        Map<String, ?> map = new BeanAdapter(testInterface);
+
+        assertEquals(10, map.get("i"));
+    }
+
+    @Test
+    public void testGetProperties() {
+        Map<String, Type> properties = BeanAdapter.getProperties(TestBean.class);
+
+        assertEquals(Integer.TYPE, properties.get("i"));
+        assertEquals(Long.TYPE, properties.get("long"));
+        assertEquals(Double.TYPE, properties.get("double"));
+        assertEquals(String.class, properties.get("string"));
+        assertEquals(BigInteger.class, properties.get("bigInteger"));
+        assertEquals(DayOfWeek.class, properties.get("dayOfWeek"));
+        assertEquals(Date.class, properties.get("date"));
+        assertEquals(LocalDate.class, properties.get("localDate"));
+        assertEquals(LocalTime.class, properties.get("localTime"));
+        assertEquals(LocalDateTime.class, properties.get("localDateTime"));
+        assertEquals(URL.class, properties.get("URL"));
+        assertEquals(TestBean.NestedBean.class, properties.get("nestedBean"));
+
+        assertTrue(properties.get("list") instanceof ParameterizedType);
+
+        Type[] listTypeArguments = ((ParameterizedType)properties.get("list")).getActualTypeArguments();
+
+        assertEquals(1, listTypeArguments.length);
+        assertTrue(listTypeArguments[0] instanceof WildcardType);
+
+        assertEquals(TestBean.TestArrayList.class, properties.get("testArrayList"));
+
+        Type[] nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
+
+        assertEquals(1, nestedBeanListTypeArguments.length);
+        assertEquals(TestBean.NestedBean.class, nestedBeanListTypeArguments[0]);
+
+        assertTrue(properties.get("map") instanceof ParameterizedType);
+
+        Type[] mapTypeArguments = ((ParameterizedType)properties.get("map")).getActualTypeArguments();
+
+        assertEquals(2, mapTypeArguments.length);
+        assertEquals(String.class, mapTypeArguments[0]);
+        assertTrue(mapTypeArguments[1] instanceof WildcardType);
+
+        assertEquals(TestBean.TestHashMap.class, properties.get("testHashMap"));
+
+        Type[] nestedBeanMapTypeArguments = ((ParameterizedType)properties.get("nestedBeanMap")).getActualTypeArguments();
+
+        assertEquals(2, nestedBeanMapTypeArguments.length);
+        assertEquals(String.class, nestedBeanMapTypeArguments[0]);
+        assertEquals(TestBean.NestedBean.class, nestedBeanMapTypeArguments[1]);
+    }
+
+    @Test
     public void testValueAt() {
         Map<String, ?> map = mapOf(
             entry("a", mapOf(
@@ -155,52 +216,5 @@ public class BeanAdapterTest {
         );
 
         assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
-    }
-
-    @Test
-    public void testDescribe() {
-        HashMap<Class<?>, String> structures = new HashMap<>();
-
-        BeanAdapter.describe(TestBean.class, structures);
-
-        assertEquals(
-            "{\n" +
-            "  URL: url,\n" +
-            "  bigInteger: number,\n" +
-            "  date: date,\n" +
-            "  dayOfWeek: enum,\n" +
-            "  double: double,\n" +
-            "  i: integer,\n" +
-            "  list: [any],\n" +
-            "  localDate: date-local,\n" +
-            "  localDateTime: datetime-local,\n" +
-            "  localTime: time-local,\n" +
-            "  long: long,\n" +
-            "  map: [string: any],\n" +
-            "  nestedBean: NestedBean,\n" +
-            "  nestedBeanList: [NestedBean],\n" +
-            "  nestedBeanMap: [string: NestedBean],\n" +
-            "  string: string,\n" +
-            "  testArrayList: [any],\n" +
-            "  testHashMap: [any: any]\n" +
-            "}",
-            structures.get(TestBean.class)
-        );
-
-        assertEquals(
-            "{\n" +
-            "  flag: boolean\n" +
-            "}",
-            structures.get(TestBean.NestedBean.class)
-        );
-    }
-
-    @Test
-    public void testInterfaceKey() {
-        TestInterface testInterface = BeanAdapter.adapt(mapOf(entry("i", 10)), TestInterface.class);
-
-        Map<String, ?> map = new BeanAdapter(testInterface);
-
-        assertEquals(10, map.get("i"));
     }
 }

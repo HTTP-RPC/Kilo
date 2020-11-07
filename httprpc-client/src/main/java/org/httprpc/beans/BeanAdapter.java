@@ -27,7 +27,6 @@ import java.time.LocalTime;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -670,6 +669,37 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
+     * Returns the properties of a given type.
+     *
+     * @param type
+     * The bean type.
+     *
+     * @return
+     * A map containing the properties of the given type.
+     */
+    public static Map<String, Type> getProperties(Class<?> type) {
+        Method[] methods = type.getMethods();
+
+        TreeMap<String, Type> properties = new TreeMap<>();
+
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+
+            if (method.getDeclaringClass() == Object.class) {
+                continue;
+            }
+
+            String key = getKey(method);
+
+            if (key != null) {
+                properties.put(key, method.getGenericReturnType());
+            }
+        }
+
+        return properties;
+    }
+
+    /**
      * Returns the value at a given key path.
      *
      * @param <V>
@@ -705,181 +735,5 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         return (V)value;
-    }
-
-    /**
-     * Describes a type. Types are encoded as follows:
-     *
-     * <ul>
-     * <li>{@link Object}: "any"</li>
-     * <li>{@link Void} or <code>void</code>: "void"</li>
-     * <li>{@link Byte} or <code>byte</code>: "byte"</li>
-     * <li>{@link Short} or <code>short</code>: "short"</li>
-     * <li>{@link Integer} or <code>int</code>: "integer"</li>
-     * <li>{@link Long} or <code>long</code>: "long"</li>
-     * <li>{@link Float} or <code>float</code>: "float"</li>
-     * <li>{@link Double} or <code>double</code>: "double"</li>
-     * <li>Any other {@link Number}: "number"</li>
-     * <li>{@link CharSequence}: "string"</li>
-     * <li>{@link Enum}: "enum"</li>
-     * <li>{@link Date}: "date"</li>
-     * <li>{@link LocalDate}: "date-local"</li>
-     * <li>{@link LocalTime}: "time-local"</li>
-     * <li>{@link LocalDateTime}: "datetime-local"</li>
-     * <li>{@link URL}: "url"</li>
-     * <li>{@link Iterable}, {@link Collection}, or {@link List}: "[<i>element type</i>]"</li>
-     * <li>{@link Map}: "[<i>key type</i>: <i>value type</i>]"</li>
-     * <li>Any other type: "{property1: <i>property 1 type</i>, property2: <i>property 2 type</i>, ...}"</li>
-     * </ul>
-     *
-     * @param type
-     * The type to describe.
-     *
-     * @param structures
-     * A map that will be populated with descriptions of all bean types
-     * referenced by this type.
-     *
-     * @return
-     * The type's description.
-     */
-    public static String describe(Type type, Map<Class<?>, String> structures) {
-        if (type instanceof Class<?>) {
-            return describe((Class<?>)type, structures);
-        } else if (type instanceof WildcardType) {
-            WildcardType wildcardType = (WildcardType)type;
-
-            return describe(wildcardType.getUpperBounds()[0], structures);
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType)type;
-
-            Type rawType = parameterizedType.getRawType();
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-            if (rawType == Iterable.class || rawType == Collection.class || rawType == List.class) {
-                return "[" + describe(actualTypeArguments[0], structures) + "]";
-            } else if (rawType == Map.class) {
-                return "[" + describe(actualTypeArguments[0], structures) + ": " + describe(actualTypeArguments[1], structures) + "]";
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private static String describe(Class<?> type, Map<Class<?>, String> structures) {
-        if (type == Object.class) {
-            return "any";
-        } else if (type == Void.TYPE || type == Void.class) {
-            return "void";
-        } else if (type == Byte.TYPE || type == Byte.class) {
-            return "byte";
-        } else if (type == Short.TYPE || type == Short.class) {
-            return "short";
-        } else if (type == Integer.TYPE || type == Integer.class) {
-            return "integer";
-        } else if (type == Long.TYPE || type == Long.class) {
-            return "long";
-        } else if (type == Float.TYPE || type == Float.class) {
-            return "float";
-        } else if (type == Double.TYPE || type == Double.class) {
-            return "double";
-        } else if (Number.class.isAssignableFrom(type)) {
-            return "number";
-        } else if (type == Boolean.TYPE || type == Boolean.class) {
-            return "boolean";
-        } else if (CharSequence.class.isAssignableFrom(type)) {
-            return "string";
-        } else if (Enum.class.isAssignableFrom(type)) {
-            return "enum";
-        } else if (Date.class.isAssignableFrom(type)) {
-            return "date";
-        } else if (type == LocalDate.class) {
-            return "date-local";
-        } else if (type == LocalTime.class) {
-            return "time-local";
-        } else if (type == LocalDateTime.class) {
-            return "datetime-local";
-        } else if (type == URL.class) {
-            return "url";
-        } else if (Iterable.class.isAssignableFrom(type)) {
-            return describe(new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] {Object.class};
-                }
-
-                @Override
-                public Type getRawType() {
-                    return Iterable.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            }, structures);
-        } else if (Map.class.isAssignableFrom(type)) {
-            return describe(new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] {Object.class, Object.class};
-                }
-
-                @Override
-                public Type getRawType() {
-                    return Map.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            }, structures);
-        } else {
-            if (!structures.containsKey(type)) {
-                structures.put(type, null);
-
-                Method[] methods = type.getMethods();
-
-                TreeMap<String, String> properties = new TreeMap<>();
-
-                for (int i = 0; i < methods.length; i++) {
-                    Method method = methods[i];
-
-                    if (method.getDeclaringClass() == Object.class) {
-                        continue;
-                    }
-
-                    String key = getKey(method);
-
-                    if (key != null) {
-                        properties.put(key, describe(method.getGenericReturnType(), structures));
-                    }
-                }
-
-                int j = 0;
-
-                StringBuilder descriptionBuilder = new StringBuilder();
-
-                descriptionBuilder.append("{\n");
-
-                for (Map.Entry<String, String> entry : properties.entrySet()) {
-                    if (j > 0) {
-                        descriptionBuilder.append(",\n");
-                    }
-
-                    descriptionBuilder.append("  " + entry.getKey() + ": " + entry.getValue());
-
-                    j++;
-                }
-
-                descriptionBuilder.append("\n}");
-
-                structures.put(type,  descriptionBuilder.toString());
-            }
-
-            return type.getSimpleName();
-        }
     }
 }
