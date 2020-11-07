@@ -25,8 +25,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Class that presents the contents of a result set as an iterable sequence
- * of maps. Map instances are mutable, and column order is preserved.
+ * {@link Iterable} adapter for JDBC result sets.
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;

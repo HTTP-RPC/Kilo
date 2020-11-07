@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 /**
- * Class that presents the contents of a stream as an iterable sequence.
+ * {@link Iterable} adapter for streams.
  */
 public class StreamAdapter<T> implements Iterable<T>, AutoCloseable {
     private Stream<T> stream;

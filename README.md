@@ -15,7 +15,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Getting HTTP-RPC
 HTTP-RPC is distributed via Maven Central: 
 
-* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with JSON/CSV, template documents, and relational databases
+* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with common file formats, template documents, and relational databases
 * [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services
 
 **NOTE** The `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-server` should be used for new development. 
@@ -28,12 +28,13 @@ Classes provided by the HTTP-RPC framework include:
 * [WebService](#webservice) - abstract base class for web services
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
+* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of map values to/from CSV
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a template document
-* [BeanAdapter](#beanadapter) - presents the properties of a Java bean object as a map and vice versa
-* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - presents the contents of a JDBC result set as an iterable sequence of map values/applies named parameter values to prepared statements
-* [StreamAdapter](#streamadapter) - presents the contents of a stream as an iterable sequence
-* [Collections](#collections) - provides utility methods for working with collections
+* [BeanAdapter](#beanadapter) - map adapter for Java bean types
+* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
+* [ElementAdapter] - map adapter for XML elements
+* [StreamAdapter](#streamadapter) - iterable adapter for streams
+* [Collections](#collections) - utility methods for working with collections
 
 Each is discussed in more detail in the following sections.
 
@@ -886,6 +887,9 @@ the values of the "first_name" and "last_name" columns would be returned in a ne
   ...
 ]
 ```
+
+## ElementAdapter
+TODO
 
 ## StreamAdapter
 The `StreamAdapter` class presents the contents of a stream as an iterable sequence. This can be used to serialize the result of a stream operation without needing to first collect the results, which may be expensive if the stream is large:

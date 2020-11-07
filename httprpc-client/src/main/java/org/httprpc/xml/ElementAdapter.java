@@ -19,10 +19,11 @@ import org.w3c.dom.NodeList;
 
 import java.util.AbstractList;
 import java.util.AbstractMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Class that presents the contents of an XML element as a map.
+ * {@link Map} adapter for XML elements.
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {

@@ -36,8 +36,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Class that presents the properties of a Java bean object as a map. Property
- * values are adapted as described for {@link #adapt(Object)}.
+ * {@link Map} adapter for Java bean types.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     // Iterable adapter
