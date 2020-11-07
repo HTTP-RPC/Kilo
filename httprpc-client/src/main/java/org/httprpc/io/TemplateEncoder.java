@@ -38,11 +38,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
 /**
@@ -400,15 +398,9 @@ public class TemplateEncoder extends Encoder<Object> {
     private HashMap<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
-    private String baseName = null;
-    private Map<String, ?> context = emptyMap();
-
     private static HashMap<String, Modifier> defaultModifiers = new HashMap<>();
 
     private static final int EOF = -1;
-
-    private static final String RESOURCE_PREFIX = "@";
-    private static final String CONTEXT_PREFIX = "$";
 
     private static final String ESCAPE_MODIFIER_FORMAT = "^%s";
 
@@ -475,52 +467,6 @@ public class TemplateEncoder extends Encoder<Object> {
      */
     public Map<String, Modifier> getModifiers() {
         return modifiers;
-    }
-
-    /**
-     * Returns the base name of the template's resource bundle.
-     *
-     * @return
-     * The base name of the template's resource bundle, or <code>null</code> if no
-     * base name has been set.
-     */
-    public String getBaseName() {
-        return baseName;
-    }
-
-    /**
-     * Sets the base name of the template's resource bundle.
-     *
-     * @param baseName
-     * The base name of the template's resource bundle, or <code>null</code> for no
-     * base name.
-     */
-    public void setBaseName(String baseName) {
-        this.baseName = baseName;
-    }
-
-    /**
-     * Returns the template context.
-     *
-     * @return
-     * The template context.
-     */
-    public Map<String, ?> getContext() {
-        return context;
-    }
-
-    /**
-     * Sets the template context.
-     *
-     * @param context
-     * The template context.
-     */
-    public void setContext(Map<String, ?> context) {
-        if (context == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.context = context;
     }
 
     @Override
@@ -815,22 +761,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         case VARIABLE: {
                             String[] components = marker.split(":");
 
-                            String key = components[0];
-
-                            Object value;
-                            if (key.startsWith(RESOURCE_PREFIX)) {
-                                if (baseName != null) {
-                                    ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
-
-                                    value = resourceBundle.getString(key.substring(RESOURCE_PREFIX.length()));
-                                } else {
-                                    value = null;
-                                }
-                            } else if (key.startsWith(CONTEXT_PREFIX)) {
-                                value = context.get(key.substring(CONTEXT_PREFIX.length()));
-                            } else {
-                                value = getMarkerValue(dictionary, key);
-                            }
+                            Object value = getMarkerValue(dictionary, components[0]);
 
                             if (value != null) {
                                 if (components.length > 1) {
@@ -888,7 +819,7 @@ public class TemplateEncoder extends Encoder<Object> {
         } else {
             Object value = dictionary;
 
-            String[] components = name.split("\\.");
+            String[] components = name.split("/");
 
             for (int i = 0; i < components.length; i++) {
                 if (!(value instanceof Map<?, ?>)) {

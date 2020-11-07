@@ -23,9 +23,7 @@ Variable markers inject a named value from the data dictionary into the output. 
 
 Variable names represent keys into the data dictionary. When the template is processed, the markers are replaced with the corresponding values from the dictionary. If a variable value is not defined (i.e. is missing or `null`), it is excluded from the generated output.
 
-Nested values can be referred to using path notation; e.g. "name.first". Variable names beginning with "@" represent resource references and are obtained from the resource bundle when the template is processed. Variable names beginning with "$" represent context references and are obtained from the template context.
-
-The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.  
+Nested values can be referred to by path; e.g. "name/first". The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.  
 
 ### Modifiers
 Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.

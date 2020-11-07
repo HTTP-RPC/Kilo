@@ -97,7 +97,6 @@ public class PetService extends WebService {
 
                     TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                    templateEncoder.setBaseName(getClass().getPackage().getName() + ".pets");
                     templateEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else {
                     throw new IllegalArgumentException();

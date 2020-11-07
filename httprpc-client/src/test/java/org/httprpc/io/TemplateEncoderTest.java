@@ -28,7 +28,6 @@ import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -36,7 +35,6 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TemplateEncoderTest {
     @Test
@@ -70,7 +68,7 @@ public class TemplateEncoderTest {
             result = writer.toString();
         }
 
-        assertEquals(String.format("{a=%s,b=%s,c.d=%s,e=,f.g=}",
+        assertEquals(String.format("{a=%s,b=%s,c/d=%s,e=,f/g=}",
             dictionary.get("a"),
             dictionary.get("b"),
             ((Map<?, ?>)dictionary.get("c")).get("d")), result);
@@ -525,71 +523,6 @@ public class TemplateEncoderTest {
         }
 
         assertEquals("[]", result);
-    }
-
-    @Test
-    public void testResource() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("resource1.txt"));
-
-        encoder.setBaseName(getClass().getPackage().getName() + ".resource1");
-
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("hello", writer);
-            result = writer.toString();
-        }
-
-        assertEquals("value:hello", result);
-    }
-
-    @Test
-    public void testMissingResourceKey() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("resource2.txt"));
-
-        encoder.setBaseName(getClass().getPackage().getName() + ".resource2");
-
-        try (StringWriter writer = new StringWriter()) {
-            assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
-        }
-    }
-
-    @Test
-    public void testMissingResourceBundle() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("resource3.txt"));
-
-        encoder.setBaseName(getClass().getPackage().getName() + ".resource3");
-
-        try (StringWriter writer = new StringWriter()) {
-            assertThrows(MissingResourceException.class, () -> encoder.write("hello", writer));
-        }
-    }
-
-    @Test
-    public void testContextProperty() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("context.txt"));
-
-        encoder.setContext(mapOf(entry("a", "A")));
-
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("B", writer);
-            result = writer.toString();
-        }
-
-        assertEquals("A/B", result);
-    }
-
-    @Test
-    public void testMissingContextProperty() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("context.txt"));
-
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("B", writer);
-            result = writer.toString();
-        }
-
-        assertEquals("/B", result);
     }
 
     @Test
