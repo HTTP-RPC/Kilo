@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -783,72 +783,6 @@ Once applied, the statement can be executed:
 
 ```java
 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery());    
-```
-
-A complete example that uses both classes is shown below. It is based on the "pet" table from the MySQL "menagerie" sample database:
-
-```sql
-CREATE TABLE pet (
-    name VARCHAR(20),
-    owner VARCHAR(20),
-    species VARCHAR(20), 
-    sex CHAR(1), 
-    birth DATE, 
-    death DATE
-);
-```
-
-The following service method queries this table to retrieve a list of all pets belonging to a given owner:
-
-```java
-@RequestMethod("GET")
-public void getPets(String owner, String format) throws SQLException, IOException {
-    Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
-
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-        parameters.apply(statement, mapOf(
-            entry("owner", owner)
-        ));
-
-        try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
-            JSONEncoder jsonEncoder = new JSONEncoder();
-            
-            jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
-        }
-    }
-}
-```
-
-For example, given this request:
-
-```
-GET /pets?owner=Gwen
-```
-
-The service would return something like this:
-
-```json
-[
-  {
-    "name": "Claws",
-    "species": "cat",
-    "sex": "m",
-    "birth": 763880400000
-  },
-  {
-    "name": "Chirpy",
-    "species": "bird",
-    "sex": "f",
-    "birth": 905486400000
-  },
-  {
-    "name": "Whistler",
-    "species": "bird",
-    "sex": null,
-    "birth": 881643600000
-  }
-]
 ```
 
 ## ElementAdapter

@@ -186,6 +186,8 @@
 <br/>
 <a href="${pageContext.request.contextPath}/system-info">System Info</a><br/>
 
+<hr/>
+
 <a href="${pageContext.request.contextPath}/pets?api">Pets (API)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets (JSON)</a><br/>

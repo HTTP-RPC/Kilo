@@ -92,6 +92,7 @@
       <option name="REPORT_ANNOTATION_NOT_PROPAGATED_TO_OVERRIDERS" value="true" />
       <option name="REPORT_NULLS_PASSED_TO_NON_ANNOTATED_METHOD" value="true" />
     </inspection_tool>
+    <inspection_tool class="OptionalGetWithoutIsPresent" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RawUseOfParameterizedType" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="SecondUnsafeCall" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SingletonConstructor" enabled="false" level="ERROR" enabled_by_default="false" />

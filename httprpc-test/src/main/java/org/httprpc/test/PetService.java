@@ -23,6 +23,7 @@ import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
+import org.httprpc.util.ResourceBundleAdapter;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -37,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import static org.httprpc.util.Collections.entry;
@@ -97,7 +99,10 @@ public class PetService extends WebService {
 
                     TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                    templateEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+                    templateEncoder.write(mapOf(
+                        entry("resources", new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets"))),
+                        entry("pets", resultSetAdapter)
+                    ), getResponse().getOutputStream());
                 } else {
                     throw new IllegalArgumentException();
                 }
