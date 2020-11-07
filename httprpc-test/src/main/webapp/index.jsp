@@ -7,7 +7,6 @@
 
 <body>
 
-<h2>Test</h2>
 <a href="${pageContext.request.contextPath}/math?api">Math (API)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/math/sum?a=2&b=4">Sum</a><br/>
@@ -186,16 +185,6 @@
 <a href="${pageContext.request.contextPath}/system-info?api">System Info (API)</a><br/>
 <br/>
 <a href="${pageContext.request.contextPath}/system-info">System Info</a><br/>
-
-<h2>MongoDB</h2>
-
-<a href="${pageContext.request.contextPath}/restaurants?api">Restaurants (API)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462">Restaurants (JSON)</a><br/>
-<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=csv">Restaurants (CSV)</a><br/>
-<a href="${pageContext.request.contextPath}/restaurants?zipCode=10462&format=html">Restaurants (HTML)</a><br/>
-
-<h2>MySQL</h2>
 
 <a href="${pageContext.request.contextPath}/pets?api">Pets (API)</a><br/>
 <br/>

@@ -33,30 +33,18 @@ public class ResultSetAdapterTest {
             entry("long", 2L),
             entry("double", 3.0),
             entry("boolean", true),
-            entry("nestedValue", mapOf(
-                entry("lower", "abc"),
-                entry("upper", "ABC")
-            )),
             entry("date", new Date(0))
         ),
         mapOf(
             entry("long", 4L),
             entry("double", 6.0),
             entry("boolean", false),
-            entry("nestedValue", mapOf(
-                entry("lower", "def"),
-                entry("upper", "DEF")
-            )),
             entry("date", new Date(0))
         ),
         mapOf(
             entry("long", 8L),
             entry("double", 9.0),
             entry("boolean", false),
-            entry("nestedValue", mapOf(
-                entry("lower", null),
-                entry("upper", null)
-            )),
             entry("date", null)
         )
     );

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.test.mysql;
+package org.httprpc.test;
 
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;

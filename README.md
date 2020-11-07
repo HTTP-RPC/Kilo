@@ -33,6 +33,7 @@ Classes provided by the HTTP-RPC framework include:
 * [BeanAdapter](#beanadapter) - map adapter for Java bean types
 * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
 * [ElementAdapter] - map adapter for XML elements
+* [ResourceBundleAdapter] - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
 * [Collections](#collections) - utility methods for working with collections
 
@@ -463,8 +464,6 @@ This code would produce output similar to the following:
 ...
 ```
 
-Column names actually represent "key paths" and can refer to nested map values using dot notation (e.g. "name.first"). This can be useful for encoding hierarchical data structures (such as complex Java beans or MongoDB documents) as CSV.
-
 String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
 ### CSVDecoder
@@ -492,22 +491,7 @@ public TemplateEncoder(URL url) { ... }
 public TemplateEncoder(URL url, Charset charset) { ... }
 ```
 
-The first argument specifies the URL of the template document (generally as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default.
-
-The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
-
-The following methods can be used to get and set the optional base name of the resource bundle that will be used to resolve resource references. If unspecified, any resource references will resolve to `null`:
-
-```java
-public String getBaseName() { ... }
-public void setBaseName(String baseName) { ... }
-```
-
-Values can be added to the template context using the following method, which accepts a map of context entries:
-
-```java
-public void setContext(Map<String, ?>) { ... }
-```
+The first argument specifies the URL of the template document (generally as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default. The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
  
 Templates are applied using one of the following methods:
 
@@ -573,7 +557,7 @@ templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZo
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
 
 ## BeanAdapter
-The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing custom data structures to be easily serialized. 
+The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing strongly typed data structures to be easily serialized. 
 
 If a property value is `null` or an instance of one of the following types, it is returned as is:
 
@@ -703,7 +687,7 @@ public int getIgnored() {
 A call to `get()` for the key "ignored" would produce `null`.
 
 ### Typed Access
-`BeanAdapter` can also be used to facilitate type-safe access to deserialized JSON or CSV data. For example, `JSONDecoder` would parse the data returned by the previous example into a collection of map and list values. The `adapt()` method of the `BeanAdapter` class can be used to efficiently map this loosely typed data structure to a strongly typed object hierarchy. This method takes an object and a result type as arguments, and returns an instance of the given type that adapts the underlying value:
+`BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
 
 ```java
 public static <T> T adapt(Object value, Type type) { ... }
@@ -867,28 +851,10 @@ The service would return something like this:
 ]
 ```
 
-### Nested Results
-Key paths can be used as column labels to produce nested results. For example, given the following query:
-
-```sql
-SELECT first_name as 'name.first', last_name as 'name.last' FROM contact
-```
-
-the values of the "first_name" and "last_name" columns would be returned in a nested map structure as shown below:
-
-```json
-[
-  {
-    "name": {
-      "first": "...",
-      "last": "..."
-    }
-  },
-  ...
-]
-```
-
 ## ElementAdapter
+TODO
+
+## ResourceBundleAdapter
 TODO
 
 ## StreamAdapter

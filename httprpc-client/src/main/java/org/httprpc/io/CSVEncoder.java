@@ -14,8 +14,6 @@
 
 package org.httprpc.io;
 
-import org.httprpc.beans.BeanAdapter;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -94,7 +92,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                     writer.write(delimiter);
                 }
 
-                encode(BeanAdapter.valueAt(map, key), writer);
+                encode(map.get(key), writer);
 
                 i++;
             }

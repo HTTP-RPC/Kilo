@@ -30,8 +30,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.httprpc.util.Collections.entry;
@@ -203,18 +201,5 @@ public class BeanAdapterTest {
         assertEquals(2, nestedBeanMapTypeArguments.length);
         assertEquals(String.class, nestedBeanMapTypeArguments[0]);
         assertEquals(TestBean.NestedBean.class, nestedBeanMapTypeArguments[1]);
-    }
-
-    @Test
-    public void testValueAt() {
-        Map<String, ?> map = mapOf(
-            entry("a", mapOf(
-                entry("b", mapOf(
-                    entry("c", 123)
-                ))
-            ))
-        );
-
-        assertEquals(Integer.valueOf(123), BeanAdapter.valueAt(map, "a.b.c"));
     }
 }

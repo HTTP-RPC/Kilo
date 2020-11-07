@@ -14,8 +14,6 @@
 
 package org.httprpc.io;
 
-import org.httprpc.beans.BeanAdapter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -829,7 +827,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     value = null;
                                 }
                             } else if (key.startsWith(CONTEXT_PREFIX)) {
-                                value = BeanAdapter.valueAt(context, key.substring(CONTEXT_PREFIX.length()));
+                                value = context.get(key.substring(CONTEXT_PREFIX.length()));
                             } else {
                                 value = getMarkerValue(dictionary, key);
                             }
@@ -888,7 +886,19 @@ public class TemplateEncoder extends Encoder<Object> {
         if (name.equals(".")) {
             return dictionary.get(name);
         } else {
-            return BeanAdapter.valueAt(dictionary, name);
+            Object value = dictionary;
+
+            String[] components = name.split("\\.");
+
+            for (int i = 0; i < components.length; i++) {
+                if (!(value instanceof Map<?, ?>)) {
+                    return null;
+                }
+
+                value = ((Map<?, ?>)value).get(components[i]);
+            }
+
+            return value;
         }
     }
 

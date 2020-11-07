@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        String expected = "\"a\",\"b\",\"c\",\"d.e\",\"f\",\"g\"\r\n"
+        String expected = "\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,0,3\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
@@ -40,11 +40,9 @@ public class CSVEncoderTest {
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
                 entry("c", 2.0),
-                entry("d", mapOf(
-                    entry("e", true)
-                )),
-                entry("f", new Date(0)),
-                entry("g", DayOfWeek.THURSDAY)
+                entry("d", true),
+                entry("e", new Date(0)),
+                entry("f", DayOfWeek.THURSDAY)
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),
@@ -55,7 +53,7 @@ public class CSVEncoderTest {
 
         StringWriter writer = new StringWriter();
 
-        CSVEncoder csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d.e", "f", "g"));
+        CSVEncoder csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f"));
 
         csvEncoder.write(values, writer);
 
