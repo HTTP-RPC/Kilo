@@ -27,9 +27,9 @@ import java.util.Set;
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {
-        private NodeList nodeList;
+        NodeList nodeList;
 
-        public NodeListAdapter(NodeList nodeList) {
+        NodeListAdapter(NodeList nodeList) {
             this.nodeList = nodeList;
         }
 

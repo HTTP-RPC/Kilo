@@ -41,10 +41,10 @@ import java.util.TreeMap;
 public class BeanAdapter extends AbstractMap<String, Object> {
     // Iterable adapter
     private static class IterableAdapter extends AbstractList<Object> {
-        private Iterable<?> iterable;
-        private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
+        Iterable<?> iterable;
+        HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public IterableAdapter(Iterable<?> iterable, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+        IterableAdapter(Iterable<?> iterable, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
             this.iterable = iterable;
             this.accessorCache = accessorCache;
         }
@@ -87,10 +87,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
-        private Map<?, ?> map;
-        private HashMap<Class<?>, HashMap<String, Method>> accessorCache;
+        Map<?, ?> map;
+        HashMap<Class<?>, HashMap<String, Method>> accessorCache;
 
-        public MapAdapter(Map<?, ?> map, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
+        MapAdapter(Map<?, ?> map, HashMap<Class<?>, HashMap<String, Method>> accessorCache) {
             this.map = map;
             this.accessorCache = accessorCache;
         }

@@ -348,9 +348,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
     // Map iterator
     private static class MapIterator implements Iterator<Map<?, ?>> {
-        private Iterator<? extends Map.Entry<?, ?>> iterator;
+        Iterator<? extends Map.Entry<?, ?>> iterator;
 
-        public MapIterator(Map<?, ?> map) {
+        MapIterator(Map<?, ?> map) {
             iterator = map.entrySet().iterator();
         }
 
