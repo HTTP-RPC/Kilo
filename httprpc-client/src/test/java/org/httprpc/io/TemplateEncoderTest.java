@@ -75,7 +75,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testConditionalSection() throws IOException {
+    public void testConditionalSection1() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 
         Map<String, ?> value = mapOf(
@@ -552,5 +552,24 @@ public class TemplateEncoderTest {
         }
 
         assertEquals("ABCDEFG", result);
+    }
+
+    @Test
+    public void testEscape() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("escape.txt"));
+
+        Map<String, ?> value = mapOf(
+            entry("a", mapOf(
+                entry("b/c", "A")
+            ))
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(value, writer);
+            result = writer.toString();
+        }
+
+        assertEquals("A", result);
     }
 }

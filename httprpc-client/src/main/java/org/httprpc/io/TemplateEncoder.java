@@ -815,14 +815,45 @@ public class TemplateEncoder extends Encoder<Object> {
         } else {
             Object value = dictionary;
 
-            String[] components = name.split("/");
+            StringBuilder keyBuilder = new StringBuilder();
 
-            for (int i = 0; i < components.length; i++) {
-                if (!(value instanceof Map<?, ?>)) {
-                    return null;
+            int i = 0;
+            int n = name.length();
+
+            while (i <= n) {
+                char c = (i < n) ? name.charAt(i) : 0;
+
+                if (c == 0 || c == '/') {
+                    if (!(value instanceof Map<?, ?>)) {
+                        return null;
+                    }
+
+                    String key = keyBuilder.toString();
+
+                    if (key.length() > 0) {
+                        value = ((Map<?, ?>)value).get(key);
+                    }
+
+                    keyBuilder.setLength(0);
+                } else {
+                    if (c == '\\') {
+                        i++;
+
+                        if (i == n) {
+                            throw new IllegalArgumentException("Unterminated escape sequence.");
+                        }
+
+                        c = name.charAt(i);
+
+                        if (c != '/') {
+                            throw new IllegalArgumentException("Invalid escape sequence.");
+                        }
+                    }
+
+                    keyBuilder.append(c);
                 }
 
-                value = ((Map<?, ?>)value).get(components[i]);
+                i++;
             }
 
             return value;

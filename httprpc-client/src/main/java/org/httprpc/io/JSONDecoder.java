@@ -184,34 +184,65 @@ public class JSONDecoder extends Decoder {
             if (c == '\\') {
                 c = reader.read();
 
-                if (c == 'b') {
-                    c = '\b';
-                } else if (c == 'f') {
-                    c = '\f';
-                } else if (c == 'r') {
-                    c = '\r';
-                } else if (c == 'n') {
-                    c = '\n';
-                } else if (c == 't') {
-                    c = '\t';
-                } else if (c == 'u') {
-                    StringBuilder characterBuilder = new StringBuilder();
-
-                    while (c != EOF && characterBuilder.length() < 4) {
-                        c = reader.read();
-
-                        characterBuilder.append((char)c);
+                switch (c) {
+                    case 'b': {
+                        c = '\b';
+                        break;
                     }
 
-                    if (c == EOF) {
-                        throw new IOException("Invalid Unicode escape sequence.");
+                    case 'f': {
+                        c = '\f';
+                        break;
                     }
 
-                    String unicodeValue = characterBuilder.toString();
+                    case 'r': {
+                        c = '\r';
+                        break;
+                    }
 
-                    c = (char)Integer.parseInt(unicodeValue, 16);
-                } else if (c != '"' && c != '\\' && c != '/') {
-                    throw new IOException("Unsupported escape sequence.");
+                    case 'n': {
+                        c = '\n';
+                        break;
+                    }
+
+                    case 't': {
+                        c = '\t';
+                        break;
+                    }
+
+                    case 'u': {
+                        StringBuilder characterBuilder = new StringBuilder();
+
+                        while (c != EOF && characterBuilder.length() < 4) {
+                            c = reader.read();
+
+                            characterBuilder.append((char)c);
+                        }
+
+                        if (c == EOF) {
+                            throw new IOException("Incomplete Unicode escape sequence.");
+                        }
+
+                        String unicodeValue = characterBuilder.toString();
+
+                        c = (char)Integer.parseInt(unicodeValue, 16);
+
+                        break;
+                    }
+
+                    case '"':
+                    case '\\':
+                    case '/': {
+                        break;
+                    }
+
+                    case EOF: {
+                        throw new IOException("Unterminated escape sequence.");
+                    }
+
+                    default: {
+                        throw new IOException("Invalid escape sequence.");
+                    }
                 }
             }
 
