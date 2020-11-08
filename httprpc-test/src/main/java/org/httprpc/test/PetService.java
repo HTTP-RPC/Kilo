@@ -100,7 +100,7 @@ public class PetService extends WebService {
                     TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
                     templateEncoder.write(mapOf(
-                        entry("resources", new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets"))),
+                        entry("labels", new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets"))),
                         entry("pets", resultSetAdapter)
                     ), getResponse().getOutputStream());
                 } else {

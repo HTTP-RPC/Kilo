@@ -16,9 +16,18 @@ package org.httprpc.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ResourceBundle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ResourceBundleAdapterTest {
     @Test
     public void testResourceBundle() {
-        // TODO
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".test");
+        ResourceBundleAdapter resourceBundleAdapter = new ResourceBundleAdapter(resourceBundle);
+
+        assertEquals("A", resourceBundleAdapter.get("a"));
+        assertEquals("B", resourceBundleAdapter.get("b"));
+        assertEquals("C", resourceBundleAdapter.get("c"));
     }
 }
