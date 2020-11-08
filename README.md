@@ -548,7 +548,7 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is an implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
+Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
 
 For example, ... TODO
 
@@ -579,18 +579,8 @@ try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQ
 The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading ":" character. For example:
 
 ```sql
-SELECT * FROM some_table 
-WHERE column_a = :a OR column_b = :b OR column_c = COALESCE(:c, 4.0)
+SELECT * FROM some_table WHERE column_a = :a OR column_b = :b
 ```
-
-Colons within single quotes are ignored. For example, this query would search for the literal string "x:y:z":
-
-```sql
-SELECT * FROM some_table 
-WHERE column_a = 'x:y:z'
-```
-
-Occurrences of two successive colons ("::") are also ignored.
 
 The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
 
@@ -601,8 +591,7 @@ Parameters parameters = Parameters.parse(sql);
 The `getSQL()` method returns the parsed SQL in standard JDBC syntax:
 
 ```sql
-SELECT * FROM some_table 
-WHERE column_a = ? OR column_b = ? OR column_c = COALESCE(?, 4.0)
+SELECT * FROM some_table WHERE column_a = ? OR column_b = ?
 ```
 
 This value is used to create the actual prepared statement:
@@ -626,10 +615,36 @@ Once applied, the statement can be executed:
 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery());    
 ```
 
+Colons within single quotes are ignored. For example, this query would search for the literal string "x:y:z":
+
+```sql
+SELECT * FROM some_table WHERE column_a = 'x:y:z'
+```
+
+Occurrences of two successive colons ("::") are also ignored.
+
 ## ElementAdapter
+The `ElementAdapter` class provides access to the contents of an XML `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
+
+For example:
+
 TODO
 
+Attribute values can be obtained by prepending an "@" symbol to the attribute name:
+
+TODO
+
+A list of sub-elements can be obtained by appending an asterisk to the element name:
+
+TODO
+
+Finally, the text content of an element can be obtained by calling `toString()` on the adapter instance:
+
+TODO 
+
 ## ResourceBundleAdapter
+The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. For example:
+
 TODO
 
 ## StreamAdapter
