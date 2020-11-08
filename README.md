@@ -372,29 +372,11 @@ System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
 ```
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, the following two methods are functionally equivalent:
+The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, ... 
 
-```java
-@RequestMethod("GET")
-public List<String> getList() {
-    return Arrays.asList("one", "two", "three");
-}
-```
+TODO 
 
-```java
-@RequestMethod("GET")
-public void getList() {
-    List<String> list = return Arrays.asList("one", "two", "three");
-
-    JSONEncoder jsonEncoder = new JSONEncoder();
-
-    try {
-        jsonEncoder.write(list, getResponse().getOutputStream());
-    }
-}
-```
-
-Values are converted to their JSON equivalents as described earlier. Unsupported types are serialized as `null`.
+Values are converted to their JSON equivalents as described earlier. Unsupported types are treated as `null`.
 
 The `JSONDecoder` class (used internally by `WebServiceProxy`) deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
@@ -404,21 +386,7 @@ The `JSONDecoder` class (used internally by `WebServiceProxy`) deserializes a JS
 * array: `java.util.List`
 * object: `java.util.Map`
 
-For example, the following code snippet uses `JSONDecoder` to parse a JSON array containing the first 8 values of the Fibonacci sequence:
-
-```java
-JSONDecoder jsonDecoder = new JSONDecoder();
-
-List<Number> fibonacci = jsonDecoder.read(new StringReader("[0, 1, 1, 2, 3, 5, 8, 13]"));
-
-System.out.println(fibonacci.get(4)); // 3
-```
-
-## CSVEncoder and CSVDecoder
-Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
-
-### CSVEncoder
-The `CSVEncoder` class can be used to encode an iterable sequence of map values to CSV. For example, the following JSON document contains a list of objects representing the months of the year and their respective day counts:
+For example, given the following JSON document:
 
 ```json
 [
@@ -438,50 +406,38 @@ The `CSVEncoder` class can be used to encode an iterable sequence of map values 
 ]
 ```
 
-`JSONDecoder` could be used to parse this document into a list of maps as shown below:
+`JSONDecoder` could be used to parse the data into a list of maps as shown below:
+
+TODO Print message containing month name and number of days
 
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
 
 List<Map<String, Object>> months = jsonDecoder.read(inputStream);
+
+for (Map<String, Object> month : months) {
+    ...
+}
 ```
 
-`CSVEncoder` could then be used to export the results as CSV. The string values passed to the encoder's constructor represent the columns in the output document (as well as the map keys to which the columns correspond):
+## CSVEncoder and CSVDecoder
+Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
-```java
-CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "days"));
+### CSVEncoder
+The `CSVEncoder` class can be used to serialize an iterable sequence of map values to CSV. For example, ... 
 
-csvEncoder.write(months, System.out);
-```
-
-This code would produce output similar to the following:
-
-```csv
-"name","days"
-"January",31
-"February",28
-"March",31
-...
-```
+TODO Service example
 
 String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
 ### CSVDecoder
-The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a "cursor" over the records in the document. This allows a consumer to process records as they are read, reducing memory consumption and improving throughput.
+The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a "cursor" over the records in the document. This allows a consumer to process records as they are read, minimizing memory consumption while maximizing throughput.
 
-The following code would perform the reverse conversion (from CSV to JSON):
+For example, ... 
 
-```java
-// Read from CSV
-CSVDecoder csvDecoder = new CSVDecoder();
+TODO Client example
 
-Iterable<Map<String, String>> months = csvDecoder.read(inputStream);
-
-// Write to JSON
-JSONEncoder jsonEncoder = new JSONEncoder();
-
-jsonEncoder.write(months, System.out);
-```
+Columns with empty headings are ignored. Empty field values are treated as null.
 
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). It provides the following constructors:
@@ -533,7 +489,7 @@ If _map.txt_ is defined as follows:
 a = {{a}}, b = {{b}}, c = {{c}}
 ```
 
-this code would produce the following output:
+the preceding code would generate the following output:
 
 ```
 a = hello, b = 123, c = true
@@ -557,9 +513,7 @@ templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZo
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
 
 ## BeanAdapter
-The `BeanAdapter` class implements the `Map` interface and exposes any properties defined by a bean as entries in the map, allowing strongly typed data structures to be easily serialized. 
-
-If a property value is `null` or an instance of one of the following types, it is returned as is:
+The `BeanAdapter` class provides access to the properties of a Java bean instance via the `Map` interface. If a property value is `null` or an instance of one of the following types, it is returned as is:
 
 * `CharSequence`
 * `Number`
@@ -571,120 +525,13 @@ If a property value is `null` or an instance of one of the following types, it i
 * `java.util.time.LocalDateTime`
 * `java.net.URL`
 
-If a property returns an instance of `Iterable` or `Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in a `BeanAdapter`.
+If the value is an instance of `Iterable` or `Map`, it is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in an instance of `BeanAdapter`.
 
-For example, the following class might be used to represent a node in a hierarchical object graph:
+For example, ... TODO
 
-```java
-public class TreeNode {
-    private String name;
+Any property tagged with the `Ignore` annotation will be excluded from the map. For example, ... 
 
-    private List<TreeNode> children = null;
-
-    public TreeNode(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<TreeNode> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<TreeNode> children) {
-        this.children = children;
-    }
-```
-
-A service method that returns a `TreeNode` structure is shown below:
-
-```java
-@RequestMethod("GET")
-public TreeNode getTree() {
-    TreeNode root = new TreeNode("Seasons");
-
-    TreeNode winter = new TreeNode("Winter");
-    winter.setChildren(Arrays.asList(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
-
-    TreeNode spring = new TreeNode("Spring");
-    spring.setChildren(Arrays.asList(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
-
-    TreeNode summer = new TreeNode("Summer");
-    summer.setChildren(Arrays.asList(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
-
-    TreeNode fall = new TreeNode("Fall");
-    fall.setChildren(Arrays.asList(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
-
-    root.setChildren(Arrays.asList(winter, spring, summer, fall));
-
-    return root;
-}
-```
-
-`WebService` automatically wraps the return value in a `BeanAdapter` so it can be serialized to JSON. However, the method could also be written (slightly more verbosely) as follows:
-
-```java
-@RequestMethod("GET")
-public Map<String, ?> getTree() {
-    TreeNode root = new TreeNode("Seasons");
-
-    ...
-
-    return new BeanAdapter(root);    
-)
-```
-
-Although the values are actually stored in the strongly typed properties of the `TreeNode` object, the adapter makes the data appear as a map, producing the following output:
-
-```json
-{
-  "name": "Seasons",
-  "children": [
-    {
-      "name": "Winter",
-      "children": [
-        {
-          "name": "January",
-          "children": null
-        },
-        {
-          "name": "February",
-          "children": null
-        },
-        {
-          "name": "March",
-          "children": null
-        }
-      ]
-    },
-    ...
-  ]
-}
-```
-
-### Custom Property Keys
-The `Key` annotation can be used to associate a custom key with a bean property. For example, the following property would appear as "first_name" in the resulting map instead of "firstName":
-
-```java
-@Key("first_name")
-public String getFirstName() {
-    return firstName;
-}
-```
-
-### Excluding Values
-Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
-
-```java
-@Ignore
-public int getIgnored() {
-    return -1;
-}
-```
-
-A call to `get()` for the key "ignored" would produce `null`.
+TODO
 
 ### Typed Access
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
@@ -703,29 +550,23 @@ If the value is already an instance of the requested type, it is returned as is.
 
 Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is an implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
 
-For example, given the following interface:
+For example, ... TODO
 
-```java
-public interface TreeNode {
-    String getName();
-    List<TreeNode> getChildren();
-}
-```
+### Custom Property Keys
+The `Key` annotation can be used to associate a custom key with a bean property. This association is bi-directional; when adapting a bean for access via the `Map` interface, the annotation represents the key that will be used to obtain the value from the bean. Conversely, when adapting a map for typed access, it represents the key that will be used to obtain the value from the map.
 
-the `adapt()` method can be used to model the preceding result data as a collection of `TreeNode` values:
-
-```java
-TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
-
-root.getName(); // "Seasons"
-root.getChildren().get(0).getName(); // "Winter"
-root.getChildren().get(0).getChildren().get(0).getName(); // "January"
-```
+For example, ... TODO
 
 ## ResultSetAdapter and Parameters
-The `ResultSetAdapter` class implements the `Iterable` interface and makes each row in a JDBC result set appear as an instance of `Map`, allowing query results to be efficiently serialized. `ResultSetAdapter` also implements `AutoCloseable` and ensures that the underlying result set is closed when the adapter itself is closed. 
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Access to individual rows is provided via the `Map` interface: 
 
-For example:
+```java
+public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable { ... }
+```
+
+`ResultSetAdapter` also implements `AutoCloseable` and ensures that the underlying result set is closed when the adapter is closed. 
+
+For example, the following code could be used to serialize the results of a database query to JSON:
 
 ```java
 try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
@@ -792,7 +633,7 @@ TODO
 TODO
 
 ## StreamAdapter
-The `StreamAdapter` class presents the contents of a stream as an iterable sequence. This can be used to serialize the result of a stream operation without needing to first collect the results, which may be expensive if the stream is large:
+The `StreamAdapter` class provides access to the contents of a stream via the `Iterable` interface. For example, it can be used to serialize the result of a stream operation without needing to first collect the results, which could be expensive if the stream is large:
 
 ```java
   List<Integer> values = Arrays.asList(1, 2, 3);
@@ -801,6 +642,8 @@ The `StreamAdapter` class presents the contents of a stream as an iterable seque
 
   jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), writer);
 ```
+
+`StreamAdapter` also implements `AutoCloseable` and ensures that the underlying stream is closed when the adapter is closed.
 
 ## Collections
 The `Collections` class provides a set of static utility methods for instantiating immutable list and map values:
