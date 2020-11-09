@@ -27,11 +27,11 @@ Classes provided by the HTTP-RPC framework include:
 
 * [WebService](#webservice) - abstract base class for web services
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
-* [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
+* [JSONEncoder/JSONDecoder](#jsonencoder-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
+* [CSVEncoder/CSVDecoder](#csvencoder-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a template document
-* [BeanAdapter](#beanadapter) - map adapter for Java bean types
-* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
+* [BeanAdapter](#beanadapter) - map adapter for Java beans
+* [ResultSetAdapter/Parameters](#resultsetadapter-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
 * [Collections](#collections) - utility methods for working with collections
