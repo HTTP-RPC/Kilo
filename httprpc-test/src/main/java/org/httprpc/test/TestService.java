@@ -14,7 +14,6 @@
 
 package org.httprpc.test;
 
-import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -33,7 +32,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,6 +40,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
@@ -68,7 +67,7 @@ public class TestService extends WebService {
     @ResourcePath("a/?:a/b/?/c/?:c/d/?")
     public Map<String, ?> testGetKeys() {
         return mapOf(
-            entry("list", Arrays.asList(getKey(0), getKey(1), getKey(2), getKey(3))),
+            entry("list", listOf(getKey(0), getKey(1), getKey(2), getKey(3))),
             entry("map", mapOf(
                 entry("a", getKey("a")),
                 entry("b", getKey("b")),

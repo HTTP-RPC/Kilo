@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.List;
 
+import static org.httprpc.util.Collections.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StreamAdapterTest {
@@ -29,7 +29,7 @@ public class StreamAdapterTest {
     public void testStreamAdapter() throws IOException {
         String expected = "[2,4,6]";
 
-        List<Integer> values = Arrays.asList(1, 2, 3);
+        List<Integer> values = listOf(1, 2, 3);
 
         StringWriter writer = new StringWriter();
 

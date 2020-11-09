@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -398,6 +399,8 @@ public class TemplateEncoder extends Encoder<Object> {
     private HashMap<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
+    private LinkedList<String> sectionNames = new LinkedList<>();
+
     private static HashMap<String, Modifier> defaultModifiers = new HashMap<>();
 
     private static final int EOF = -1;
@@ -652,6 +655,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
                     switch (markerType) {
                         case CONDITIONAL_SECTION_START: {
+                            sectionNames.push(marker);
+
                             Object value = getMarkerValue(dictionary, marker);
 
                             if (value != null) {
@@ -659,6 +664,8 @@ public class TemplateEncoder extends Encoder<Object> {
                             } else {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);
                             }
+
+                            sectionNames.pop();
 
                             break;
                         }
@@ -677,6 +684,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                     marker = marker.substring(0, i);
                                 }
                             }
+
+                            sectionNames.push(marker);
 
                             Object value = getMarkerValue(dictionary, marker);
 
@@ -717,10 +726,14 @@ public class TemplateEncoder extends Encoder<Object> {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);
                             }
 
+                            sectionNames.pop();
+
                             break;
                         }
 
                         case INVERTED_SECTION_START: {
+                            sectionNames.push(marker);
+
                             Object value = getMarkerValue(dictionary, marker);
 
                             if (value == null
@@ -730,10 +743,17 @@ public class TemplateEncoder extends Encoder<Object> {
                             } else {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);
                             }
+
+                            sectionNames.pop();
+
+                            break;
                         }
 
                         case SECTION_END: {
-                            // No-op
+                            if (!sectionNames.peek().equals(marker)) {
+                                throw new IOException("Invalid closing section marker.");
+                            }
+
                             return;
                         }
 

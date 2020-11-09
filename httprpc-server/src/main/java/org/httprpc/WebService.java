@@ -57,6 +57,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyList;
+import static org.httprpc.util.Collections.listOf;
 
 /**
  * Abstract base class for web services.
@@ -65,32 +66,32 @@ public abstract class WebService extends HttpServlet {
     private static final long serialVersionUID = 0;
 
     private static class Resource {
-        private static List<String> order = Arrays.asList("get", "post", "put", "delete");
+        static List<String> order = listOf("get", "post", "put", "delete");
 
-        public final TreeMap<String, LinkedList<Handler>> handlerMap = new TreeMap<>((verb1, verb2) -> {
+        final TreeMap<String, LinkedList<Handler>> handlerMap = new TreeMap<>((verb1, verb2) -> {
             int i1 = order.indexOf(verb1);
             int i2 = order.indexOf(verb2);
 
             return Integer.compare((i1 == -1) ? order.size() : i1,  (i2 == -1) ? order.size() : i2);
         });
 
-        public final TreeMap<String, Resource> resources = new TreeMap<>();
+        final TreeMap<String, Resource> resources = new TreeMap<>();
     }
 
     private static class Handler {
-        public final Method method;
+        final Method method;
 
-        public final ArrayList<String> keys = new ArrayList<>();
+        final ArrayList<String> keys = new ArrayList<>();
 
-        public Handler(Method method) {
+        Handler(Method method) {
             this.method = method;
         }
     }
 
     private static class PartURLConnection extends URLConnection {
-        private Part part;
+        Part part;
 
-        public PartURLConnection(URL url, Part part) {
+        PartURLConnection(URL url, Part part) {
             super(url);
 
             this.part = part;
@@ -108,9 +109,9 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static class PartURLStreamHandler extends URLStreamHandler {
-        private Part part;
+        Part part;
 
-        public PartURLStreamHandler(Part part) {
+        PartURLStreamHandler(Part part) {
             this.part = part;
         }
 

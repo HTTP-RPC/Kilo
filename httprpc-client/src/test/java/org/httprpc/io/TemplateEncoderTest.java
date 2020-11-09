@@ -265,7 +265,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMapRepeatingSection2() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating8.txt"));
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating7.txt"));
 
         Map<String, ?> value = mapOf(
             entry("entries", mapOf(

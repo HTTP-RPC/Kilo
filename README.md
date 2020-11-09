@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -15,10 +15,10 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Getting HTTP-RPC
 HTTP-RPC is distributed via Maven Central: 
 
-* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and working with common file formats and relational databases
+* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and interacting with common file formats and relational databases
 * [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services
 
-**NOTE** The `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-server` should be used for new development. 
+**NOTE** The legacy `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-client` or `org.httprpc:httprpc-server` should be used for new development. 
 
 Java 8 or later is required. Web service support requires a servlet container supporting Java Servlet specification 3.1 or later.
 
@@ -28,12 +28,11 @@ Classes provided by the HTTP-RPC framework include:
 * [WebService](#webservice) - abstract base class for web services
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of map values to/from CSV
+* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a template document
 * [BeanAdapter](#beanadapter) - map adapter for Java bean types
 * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
-* [ElementAdapter] - map adapter for XML elements
-* [ResourceBundleAdapter] - map adapter for resource bundles
+* [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
 * [Collections](#collections) - utility methods for working with collections
 
@@ -42,7 +41,7 @@ Each is discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as [JSON](http://json.org). Service classes must be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. 
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON. Service classes must be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
@@ -302,7 +301,7 @@ public <T> T invoke() throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version automatically deserializes a successful server response using `JSONDecoder`. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
+The first version automatically deserializes a successful server response using `JSONDecoder`, which is discussed in more detail below. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
 
 ```java
 public interface ResponseHandler<T> {
@@ -313,19 +312,25 @@ public interface ResponseHandler<T> {
 If a service returns an error response, a `WebServiceException` will be thrown. If the content type of the response is "text/plain", the body of the response will be provided in the exception message.
 
 ### Example
-The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier. `listOf()`, `mapOf()`, and `entry()` are static utility methods provided by the `org.httprpc.util.Collections` class that can be used to declaratively create immutable collection instances:
 
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
 
+// GET /math/sum?a=2&b=4
 webServiceProxy.setArguments(mapOf(
     entry("a", 4),
     entry("b", 2)
 ));
 
-Number result = webServiceProxy.invoke();
+System.out.println(webServiceProxy.invoke()); // 6.0
 
-System.out.println(result); // 6.0
+// GET /math/sum?values=1&values=2&values=3
+webServiceProxy.setArguments(mapOf(
+    entry("values", listOf(1, 2, 3))
+));
+
+System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
 ### Typed Access
@@ -337,13 +342,11 @@ public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) { 
 public static <T> T adapt(URL baseURL, Class<T> type, BiFunction<String, URL, WebServiceProxy> factory) { ... }
 ```
 
-All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a map of HTTP header values that will be submitted with every service request. The third accepts a callback that is used to produce web service proxy instances.
+All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a map of HTTP header values that will be submitted with every service request. The third accepts a callback that is used to produce web service proxy instances. Interface types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. Named path variables can be supplied by extending the `Map` interface in the service type.
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. If the provided interface type extends the `Map` interface, the `put()` method can be used to supply values for any named path variables.
 
-Service adapters must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
-
-`POST` requests are always submitted using the multi-part encoding. Values are returned as described for `WebServiceProxy` and adapted as described [earlier](#beanadapter) based on the method return type.
+`POST` requests are always submitted using the multi-part encoding. Return values are handled as described for `WebServiceProxy`, and are automatically coerced to the correct type.
 
 For example, the following interface might be used to model the operations of the math service:
 
@@ -368,13 +371,47 @@ MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/h
 System.out.println(mathService.getSum(4, 2)); // 6.0
 
 // GET /math/sum?values=1&values=2&values=3
-System.out.println(mathService.getSum(Arrays.asList(1.0, 2.0, 3.0))); // 6.0
+System.out.println(mathService.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example, ... 
+The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example: 
 
-TODO 
+```java
+Map<String, Object> map = mapOf(
+    entry("vegetables", listOf(
+        "carrots", 
+        "peas", 
+        "potatoes"
+    )),
+    entry("desserts", listOf(
+        "cookies",
+        "cake",
+        "ice cream"
+    ))
+);
+
+JSONEncoder jsonEncoder = new JSONEncoder();
+
+jsonEncoder.write(map, System.out);
+```
+
+This code would produce the following output:
+
+```json
+{
+  "vegetables": [
+    "carrots",
+    "peas",
+    "potatoes"
+  ],
+  "desserts": [
+    "cookies",
+    "cake",
+    "ice cream"
+  ]
+}
+``` 
 
 Values are converted to their JSON equivalents as described earlier. Unsupported types are treated as `null`.
 
@@ -408,34 +445,54 @@ For example, given the following JSON document:
 
 `JSONDecoder` could be used to parse the data into a list of maps as shown below:
 
-TODO Print message containing month name and number of days
-
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
 
 List<Map<String, Object>> months = jsonDecoder.read(inputStream);
 
 for (Map<String, Object> month : months) {
-    ...
+    System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));
 }
 ```
 
 ## CSVEncoder and CSVDecoder
-Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a [CSV](https://tools.ietf.org/html/rfc4180) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
+Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a CSV (comma-separated value) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
 
 ### CSVEncoder
-The `CSVEncoder` class can be used to serialize an iterable sequence of map values to CSV. For example, ... 
+The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the following code could be used to export the month/day list from the previous example as CSV. The string values passed to the constructor represent the columns in the output document and the map keys to which those columns correspond:
 
-TODO Service example
+```java
+CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "days"));
+
+csvEncoder.write(months, System.out);
+```
+
+This code would produce the following output:
+
+```csv
+"name","days"
+"January",31
+"February",28
+"March",31
+...
+```
 
 String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
 ### CSVDecoder
-The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns a "cursor" over the records in the document. This allows a consumer to process records as they are read, minimizing memory consumption while maximizing throughput.
+The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns the data as a forward-scrolling cursor, allowing consumers to process rows as soon as they are read.
 
-For example, ... 
+For example, given the CSV above as input, the following code would produce the same results as `JSONDecoder` example:
 
-TODO Client example
+```java
+CSVDecoder csvDecoder = new CSVDecoder();
+
+Iterable<Map<String, String>> months = csvDecoder.read(inputStream);
+
+for (Map<String, Object> month : months) {
+    System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));
+}
+```
 
 Columns with empty headings are ignored. Empty field values are treated as null.
 
@@ -447,7 +504,7 @@ public TemplateEncoder(URL url) { ... }
 public TemplateEncoder(URL url, Charset charset) { ... }
 ```
 
-The first argument specifies the URL of the template document (generally as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default. The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
+The first argument specifies the URL of the template document (for example, as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default. The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
  
 Templates are applied using one of the following methods:
 
@@ -462,37 +519,18 @@ public void write(Object value, Writer writer, Locale locale, TimeZone timeZone)
 
 The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
 
-For example, the following code snippet applies a template named _map.txt_ to the contents of a data dictionary whose values are specified by a hash map:
+For example, the following code snippet applies a template named _example.txt_ to a map instance:
 
 ```java
-HashMap<String, Object> map = new HashMap<>();
-    
-map.put("a", "hello");
-map.put("b", 123);
-map.put("c", true);
+Map<String, Object> map = mapOf(
+    entry("a", "hello"),
+    entry("b", 123),
+    entry("c", true)
+);
 
-TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("map.txt"), "text/plain");
+TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("example.txt"));
 
-String result;
-try (StringWriter writer = new StringWriter()) {
-    encoder.write(map, writer);
-    
-    result = writer.toString();
-}
-    
-System.out.println(result);
-```
-
-If _map.txt_ is defined as follows:
-
-```
-a = {{a}}, b = {{b}}, c = {{c}}
-```
-
-the preceding code would generate the following output:
-
-```
-a = hello, b = 123, c = true
+templateEncoder.write(map, outputStream);
 ```
 
 ### Custom Modifiers
@@ -527,11 +565,98 @@ The `BeanAdapter` class provides access to the properties of a Java bean instanc
 
 If the value is an instance of `Iterable` or `Map`, it is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in an instance of `BeanAdapter`.
 
-For example, ... TODO
+For example, the following class might be used to represent a node in a hierarchical object graph:
 
-Any property tagged with the `Ignore` annotation will be excluded from the map. For example, ... 
+```java
+public class TreeNode {
+    private String name;
 
-TODO
+    private List<TreeNode> children = null;
+
+    public TreeNode(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<TreeNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TreeNode> children) {
+        this.children = children;
+    }
+```
+
+This class could be used to create a simple hierarchy as shown below:
+
+```java
+TreeNode root = new TreeNode("Seasons");
+
+TreeNode winter = new TreeNode("Winter");
+winter.setChildren(listOf(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
+
+TreeNode spring = new TreeNode("Spring");
+spring.setChildren(listOf(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
+
+TreeNode summer = new TreeNode("Summer");
+summer.setChildren(listOf(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
+
+TreeNode fall = new TreeNode("Fall");
+fall.setChildren(listOf(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
+
+root.setChildren(listOf(winter, spring, summer, fall));
+```
+
+The following code could be used to write this tree structure to the console as JSON:
+
+```java
+JSONEncoder jsonEncoder = new JSONEncoder();
+
+jsonEncoder.write(new BeanAdapter(root), System.out);
+```
+
+producing the following result:
+
+```json
+{
+  "name": "Seasons",
+  "children": [
+    {
+      "name": "Winter",
+      "children": [
+        {
+          "name": "January",
+          "children": null
+        },
+        {
+          "name": "February",
+          "children": null
+        },
+        {
+          "name": "March",
+          "children": null
+        }
+      ]
+    },
+    ...
+  ]
+}
+```
+
+### Excluding Values
+Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
+
+```java
+@Ignore
+public int getX() {
+    return x;
+}
+```
+
+This will cause the `get()` method to return `null` for the key "x".
 
 ### Typed Access
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
@@ -542,7 +667,7 @@ public static <T> T adapt(Object value, Type type) { ... }
 
 If the value is already an instance of the requested type, it is returned as is. Otherwise:
 
-* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method. Missing or `null` values are automatically converted to `0` or `false` for primitive types.
+* If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method (e.g. `Integer#valueOf()`). Missing or `null` values are automatically converted to `0` or `false` for primitive types.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
 * If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
@@ -550,12 +675,53 @@ If the value is already an instance of the requested type, it is returned as is.
 
 Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
 
-For example, ... TODO
+For example, given the following interface:
+
+```java
+public interface TreeNode {
+    String getName();
+    List<TreeNode> getChildren();
+}
+```
+
+the `adapt()` method can be used to model the JSON data from the previous section as a collection of `TreeNode` values:
+
+```java
+TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
+
+root.getName(); // "Seasons"
+root.getChildren().get(0).getName(); // "Winter"
+root.getChildren().get(0).getChildren().get(0).getName(); // "January"
+```
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom key with a bean property. This association is bi-directional; when adapting a bean for access via the `Map` interface, the annotation represents the key that will be used to obtain the value from the bean. Conversely, when adapting a map for typed access, it represents the key that will be used to obtain the value from the map.
+The `Key` annotation can be used to associate a custom key with a bean property. This association is bi-directional; when adapting a bean for access via the `Map` interface, the annotation represents the key that will be used to obtain the value from the bean. Conversely, when adapting a map for typed access, it represents the key that will be used to obtain the value from the map. 
 
-For example, ... TODO
+For example, when an instance of this class is wrapped in a `BeanAdapter`, the value returned by `getFirstName()` will be accessible via "first_name" rather than "firstName": 
+
+```java
+public class Person {
+    private String firstName = null;
+    
+    @Key("first_name")
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+}
+```
+
+Similarly, when a proxy instance of this interface is created by the `adapt()` method, `getFirstName()` will return the value associated with "first_name" in the underlying map, not "firstName":  
+
+```
+public interface Person {
+    @Key("first_name")
+    String getFirstName();
+}
+```
 
 ## ResultSetAdapter and Parameters
 The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Access to individual rows is provided via the `Map` interface: 
@@ -564,7 +730,7 @@ The `ResultSetAdapter` class provides access to the contents of a JDBC result se
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable { ... }
 ```
 
-`ResultSetAdapter` also implements `AutoCloseable` and ensures that the underlying result set is closed when the adapter is closed. 
+`ResultSetAdapter` also implements `AutoCloseable` and ensures that the underlying result set is closed when the adapter is closed.
 
 For example, the following code could be used to serialize the results of a database query to JSON:
 
@@ -579,8 +745,10 @@ try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQ
 The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading ":" character. For example:
 
 ```sql
-SELECT * FROM some_table WHERE column_a = :a OR column_b = :b
+select name from pet where owner = :owner
 ```
+
+Colons within single quotes and occurrences of two successive unquoted colons ("::") are ignored.
 
 The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
 
@@ -591,21 +759,16 @@ Parameters parameters = Parameters.parse(sql);
 The `getSQL()` method returns the parsed SQL in standard JDBC syntax:
 
 ```sql
-SELECT * FROM some_table WHERE column_a = ? OR column_b = ?
+select name from pet where owner = ?
 ```
 
-This value is used to create the actual prepared statement:
+This value is used to create the actual prepared statement. Arguments values are specified via the `apply()` method:
 
 ```java
 PreparedStatement statement = connection.prepareStatement(parameters.getSQL());
-```
 
-Arguments values are specified via the `apply()` method (`mapOf()` is a static utility method provided by the `org.httprpc.util.Collections` class):
-
-```java
 parameters.apply(statement, mapOf(
-  entry("a", "hello"),
-  entry("b", 3)
+  entry("owner", "Gwen")
 ));
 ```
 
@@ -615,43 +778,78 @@ Once applied, the statement can be executed:
 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery());    
 ```
 
-Colons within single quotes are ignored. For example, this query would search for the literal string "x:y:z":
+## ElementAdapter
+The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
 
-```sql
-SELECT * FROM some_table WHERE column_a = 'x:y:z'
+For example, the following markup might be used to represent the status of a bank account:
+
+```xml
+<account id="101">
+    <holder>
+        <firstName>John</firstName>
+        <lastName>Smith</lastName>
+    </holder>
+    <transactions>
+        <credit>
+            <amount>100.00</amount>
+            <date>10/5/2020</date>
+        </credit>
+        <credit>
+            <amount>50.00</amount>
+            <date>10/12/2020</date>
+        </credit>
+        <debit>
+            <amount>25.00</amount>
+            <date>10/14/2020</date>
+        </debit>
+        <credit>
+            <amount>75.00</amount>
+            <date>10/19/2020</date>
+        </credit>
+    </transactions>
+</account>
 ```
 
-Occurrences of two successive colons ("::") are also ignored.
+This code could be used to display the account holder's name:
 
-## ElementAdapter
-The `ElementAdapter` class provides access to the contents of an XML `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
+```java
+ElementAdapter rootAdapter = new ElementAdapter(document.getDocumentElement());
 
-For example:
+Map<String, Object> holder = (Map<String, Object>)rootAdapter.get("holder");
 
-TODO
+System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName")));
+```
 
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
 
-TODO
+```java
+System.out.println(accountAdapter.get("@id")); // "101"
+```
 
 A list of sub-elements can be obtained by appending an asterisk to the element name:
 
-TODO
+```java
+Map<String, Object> transactions = (Map<String, Object>)rootAdapter.get("transactions");
+
+List<Map<String, Object>> credits = transactions.get("credit*");
+
+for (Map<String, Object> credit : credits) {
+    ...
+}
+```
 
 Finally, the text content of an element can be obtained by calling `toString()` on the adapter instance:
 
-TODO 
-
-## ResourceBundleAdapter
-The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. For example:
-
-TODO
+```java
+System.out.println(credit.get("amount").toString());
+System.out.println(credit.get("date").toString());
+```
 
 ## StreamAdapter
 The `StreamAdapter` class provides access to the contents of a stream via the `Iterable` interface. For example, it can be used to serialize the result of a stream operation without needing to first collect the results, which could be expensive if the stream is large:
 
 ```java
-  List<Integer> values = Arrays.asList(1, 2, 3);
+  List<Integer> values = listOf(1, 2, 3);
 
   JSONEncoder jsonEncoder = new JSONEncoder(true);
 

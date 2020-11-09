@@ -21,6 +21,8 @@ import org.httprpc.WebService;
 import javax.servlet.annotation.WebServlet;
 import java.util.Arrays;
 
+import static org.httprpc.util.Collections.listOf;
+
 /**
  * Tree service.
  */
@@ -35,18 +37,18 @@ public class TreeService extends WebService {
         TreeNode root = new TreeNode("Seasons");
 
         TreeNode winter = new TreeNode("Winter");
-        winter.setChildren(Arrays.asList(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
+        winter.setChildren(listOf(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
 
         TreeNode spring = new TreeNode("Spring");
-        spring.setChildren(Arrays.asList(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
+        spring.setChildren(listOf(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
 
         TreeNode summer = new TreeNode("Summer");
-        summer.setChildren(Arrays.asList(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
+        summer.setChildren(listOf(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
 
         TreeNode fall = new TreeNode("Fall");
-        fall.setChildren(Arrays.asList(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
+        fall.setChildren(listOf(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
 
-        root.setChildren(Arrays.asList(winter, spring, summer, fall));
+        root.setChildren(listOf(winter, spring, summer, fall));
 
         return root;
     }

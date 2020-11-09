@@ -23,7 +23,6 @@ import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
 import org.httprpc.sql.Parameters;
 import org.httprpc.sql.ResultSetAdapter;
-import org.httprpc.util.ResourceBundleAdapter;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -36,12 +35,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 
 /**
@@ -73,7 +71,7 @@ public class PetService extends WebService {
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        Parameters parameters = Parameters.parse("SELECT name, species, sex, birth FROM pet WHERE owner = :owner");
+        Parameters parameters = Parameters.parse("select name, species, sex, birth from pet where owner = :owner");
 
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
@@ -91,7 +89,7 @@ public class PetService extends WebService {
                 } else if (format.equals("csv")) {
                     getResponse().setContentType("text/csv");
 
-                    CSVEncoder csvEncoder = new CSVEncoder(Arrays.asList("name", "species", "sex", "birth"));
+                    CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth"));
 
                     csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else if (format.equals("html")) {
@@ -99,10 +97,7 @@ public class PetService extends WebService {
 
                     TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                    templateEncoder.write(mapOf(
-                        entry("labels", new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets"))),
-                        entry("pets", resultSetAdapter)
-                    ), getResponse().getOutputStream());
+                    templateEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else {
                     throw new IllegalArgumentException();
                 }
