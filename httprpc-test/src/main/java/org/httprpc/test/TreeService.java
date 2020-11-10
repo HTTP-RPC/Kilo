@@ -19,7 +19,6 @@ import org.httprpc.RequestMethod;
 import org.httprpc.WebService;
 
 import javax.servlet.annotation.WebServlet;
-import java.util.Arrays;
 
 import static org.httprpc.util.Collections.listOf;
 
@@ -29,8 +28,6 @@ import static org.httprpc.util.Collections.listOf;
 @WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
 @Description("Tree service.")
 public class TreeService extends WebService {
-    private static final long serialVersionUID = 0;
-
     @RequestMethod("GET")
     @Description("Returns an example tree structure.")
     public TreeNode getTree() {

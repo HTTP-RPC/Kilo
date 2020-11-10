@@ -26,8 +26,6 @@ import java.io.PrintWriter;
 @WebServlet(urlPatterns={"/echo/*"}, loadOnStartup=1)
 @Description("Echoes a string value by writing a custom response.")
 public class EchoService extends WebService {
-    private static final long serialVersionUID = 0;
-
     @RequestMethod("GET")
     @Description("Echoes a string value to the servlet response stream.")
     public void echo(

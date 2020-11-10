@@ -48,7 +48,7 @@ The `RequestMethod` annotation is used to associate a service method with an HTT
 Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
 ```java
-@WebServlet(urlPatterns={"/math/*"})
+@WebServlet(urlPatterns={"/math/*"}, loadOnStartup = 1)
 public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
@@ -109,7 +109,7 @@ Missing or `null` values are automatically converted to `0` or `false` for primi
 `URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
 ```java
-@WebServlet(urlPatterns={"/upload/*"})
+@WebServlet(urlPatterns={"/upload/*"}, loadOnStartup = 1)
 @MultipartConfig
 public class FileUploadService extends WebService {
     @RequestMethod("POST")
@@ -263,11 +263,9 @@ Methods are grouped by resource path. Parameter and return types are encoded as 
 Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
-@WebServlet(urlPatterns={"/math/*"})
+@WebServlet(urlPatterns={"/math/*"}, loadOnStartup = 1)
 @Description("Math example service.")
 public class MathService extends WebService {
-    private static final long serialVersionUID = 0;
-
     @RequestMethod("GET")
     @ResourcePath("sum")
     @Description("Calculates the sum of two numbers.")
@@ -301,7 +299,7 @@ public <T> T invoke() throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version automatically deserializes a successful server response using `JSONDecoder`, which is discussed in more detail below. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
+The first version automatically deserializes a successful server response using `JSONDecoder`, which is discussed in more detail later. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
 
 ```java
 public interface ResponseHandler<T> {
@@ -314,7 +312,7 @@ If a service returns an error response, a `WebServiceException` will be thrown. 
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier. `listOf()`, `mapOf()`, and `entry()` are static utility methods provided by the `org.httprpc.util.Collections` class that can be used to declaratively create immutable collection instances:
 
 ```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/httprpc-server/math/sum"));
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
 
 // GET /math/sum?a=2&b=4
 webServiceProxy.setArguments(mapOf(
@@ -322,14 +320,14 @@ webServiceProxy.setArguments(mapOf(
     entry("b", 2)
 ));
 
-System.out.println(webServiceProxy.invoke()); // 6.0
+System.out.println((Number)webServiceProxy.invoke()); // 6.0
 
 // GET /math/sum?values=1&values=2&values=3
 webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))
 ));
 
-System.out.println(webServiceProxy.invoke()); // 6.0
+System.out.println((Number)webServiceProxy.invoke()); // 6.0
 ```
 
 ### Typed Access
@@ -364,7 +362,7 @@ public interface MathService {
 This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
 
 ```java
-MathService mathService = WebServiceProxy.adapt(new URL("http://localhost:8080/httprpc-test/math/"), MathService.class);
+MathService mathService = WebServiceProxy.adapt(new URL(serverURL, "math/"), MathService.class);
 
 // GET /math/sum?a=2&b=4
 System.out.println(mathService.getSum(4, 2)); // 6.0
@@ -488,7 +486,7 @@ CSVDecoder csvDecoder = new CSVDecoder();
 
 Iterable<Map<String, String>> months = csvDecoder.read(inputStream);
 
-for (Map<String, Object> month : months) {
+for (Map<String, String> month : months) {
     System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));
 }
 ```
@@ -503,7 +501,7 @@ public TemplateEncoder(URL url) { ... }
 public TemplateEncoder(URL url, Charset charset) { ... }
 ```
 
-The first argument specifies the URL of the template document (for example, as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default. The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
+The first argument specifies the URL of the template document (typically as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default. The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
  
 Templates are applied using one of the following methods:
 
@@ -529,7 +527,7 @@ Map<String, Object> map = mapOf(
 
 TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("example.txt"));
 
-templateEncoder.write(map, outputStream);
+templateEncoder.write(map, System.out);
 ```
 
 ### Custom Modifiers
@@ -587,6 +585,7 @@ public class TreeNode {
     public void setChildren(List<TreeNode> children) {
         this.children = children;
     }
+}
 ```
 
 This class could be used to create a simple hierarchy as shown below:
@@ -617,7 +616,7 @@ JSONEncoder jsonEncoder = new JSONEncoder();
 jsonEncoder.write(new BeanAdapter(root), System.out);
 ```
 
-producing the following result:
+producing output similar to the following:
 
 ```json
 {
@@ -644,6 +643,8 @@ producing the following result:
   ]
 }
 ```
+
+Note that the order in which properties are traversed is not guaranteed to match the order in which the accessor methods are declared in a class. This is because the JDK itself makes no guarantees about the order in which methods are returned by `Class#getMethods()`, which is used internally by `BeanAdapter` to identify accessor methods. 
 
 ### Excluding Values
 Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
@@ -686,11 +687,15 @@ public interface TreeNode {
 the `adapt()` method can be used to model the JSON data from the previous section as a collection of `TreeNode` values:
 
 ```java
+JSONDecoder jsonDecoder = new JSONDecoder();
+
+Map<String, Object> map = jsonDecoder.read(inputStream);
+
 TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
 
-root.getName(); // "Seasons"
-root.getChildren().get(0).getName(); // "Winter"
-root.getChildren().get(0).getChildren().get(0).getName(); // "January"
+System.out.println(root.getName()); // "Seasons"
+System.out.println(root.getChildren().get(0).getName()); // "Winter"
+System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // "January"
 ```
 
 ### Custom Property Keys
@@ -715,7 +720,7 @@ public class Person {
 
 Similarly, when a proxy instance of this interface is created by the `adapt()` method, `getFirstName()` will return the value associated with "first_name" in the underlying map, not "firstName":  
 
-```
+```java
 public interface Person {
     @Key("first_name")
     String getFirstName();
@@ -737,7 +742,7 @@ For example, the following code could be used to serialize the results of a data
 try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
     JSONEncoder jsonEncoder = new JSONEncoder();
     
-    jsonEncoder.write(resultSetAdapter, outputStream);
+    jsonEncoder.write(resultSetAdapter, System.out);
 }
 ```
 
@@ -812,9 +817,9 @@ For example, the following markup might be used to represent the status of a ban
 This code could be used to display the account holder's name:
 
 ```java
-ElementAdapter rootAdapter = new ElementAdapter(document.getDocumentElement());
+ElementAdapter accountAdapter = new ElementAdapter(document.getDocumentElement());
 
-Map<String, Object> holder = (Map<String, Object>)rootAdapter.get("holder");
+Map<String, Object> holder = (Map<String, Object>)accountAdapter.get("holder");
 
 System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName")));
 ```
@@ -828,9 +833,9 @@ System.out.println(accountAdapter.get("@id")); // "101"
 A list of sub-elements can be obtained by appending an asterisk to the element name:
 
 ```java
-Map<String, Object> transactions = (Map<String, Object>)rootAdapter.get("transactions");
+Map<String, Object> transactions = (Map<String, Object>)accountAdapter.get("transactions");
 
-List<Map<String, Object>> credits = transactions.get("credit*");
+List<Map<String, Object>> credits = (List<Map<String, Object>>)transactions.get("credit*");
 
 for (Map<String, Object> credit : credits) {
     ...
@@ -852,7 +857,7 @@ The `StreamAdapter` class provides access to the contents of a stream via the `I
 
   JSONEncoder jsonEncoder = new JSONEncoder(true);
 
-  jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), writer);
+  jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), System.out);
 ```
 
 `StreamAdapter` also implements `AutoCloseable` and ensures that the underlying stream is closed when the adapter is closed.
@@ -876,8 +881,6 @@ In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin]
 @Description("System info service.")
 class SystemInfoService : WebService() {
     class SystemInfo(
-        val hostName: String,
-        val hostAddress: String,
         val availableProcessors: Int,
         val freeMemory: Long,
         val totalMemory: Long
@@ -886,12 +889,9 @@ class SystemInfoService : WebService() {
     @RequestMethod("GET")
     @Description("Returns system info.")
     fun getSystemInfo(): SystemInfo {
-        val localHost = InetAddress.getLocalHost()
         val runtime = Runtime.getRuntime()
 
         return SystemInfo(
-            localHost.hostName,
-            localHost.hostAddress,
             runtime.availableProcessors(),
             runtime.freeMemory(),
             runtime.totalMemory()
@@ -904,11 +904,9 @@ A response produced by the service might look like this:
 
 ```json
 {
-  "hostName": "vm.local",
-  "hostAddress": "192.168.1.12",
-  "availableProcessors": 4,
-  "freeMemory": 222234120,
-  "totalMemory": 257949696
+  "availableProcessors": 16,
+  "freeMemory": 85845656,
+  "totalMemory": 134217728
 }
 ```
 

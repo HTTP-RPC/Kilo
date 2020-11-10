@@ -32,8 +32,6 @@ import java.util.List;
 @MultipartConfig
 @Description("File upload example service.")
 public class FileUploadService extends WebService {
-    private static final long serialVersionUID = 0;
-
     @RequestMethod("POST")
     @Description("Uploads a single file.")
     public long upload(

@@ -47,8 +47,6 @@ import static org.httprpc.util.Collections.mapOf;
  */
 @WebServlet(urlPatterns={"/pets/*"}, loadOnStartup=1)
 public class PetService extends WebService {
-    private static final long serialVersionUID = 0;
-
     private DataSource dataSource = null;
 
     public interface Pet {

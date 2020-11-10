@@ -46,8 +46,6 @@ import static org.httprpc.util.Collections.mapOf;
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
 public class TestService extends WebService {
-    private static final long serialVersionUID = 0;
-
     @RequestMethod("GET")
     public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
         Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {

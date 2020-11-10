@@ -27,8 +27,6 @@ import java.util.List;
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 @Description("Simulates a product catalog.")
 public class CatalogService extends WebService {
-    private static final long serialVersionUID = 0;
-
     public static class Item {
         private String description;
         private double price;

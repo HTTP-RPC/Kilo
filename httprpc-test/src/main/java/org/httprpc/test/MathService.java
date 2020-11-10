@@ -25,8 +25,6 @@ import java.util.List;
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
 @Description("Math example service.")
 public class MathService extends WebService {
-    private static final long serialVersionUID = 0;
-
     @RequestMethod("GET")
     @ResourcePath("sum")
     @Description("Calculates the sum of two numbers.")
