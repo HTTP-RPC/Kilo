@@ -93,7 +93,7 @@ public class ElementAdapterTest {
         assertEquals("B", map.getB1());
         assertEquals("two", map.getB2());
 
-        TestInterface.MapInterface.ListInterface list = map.getList();
+        TestInterface.ListInterface list = map.getList();
 
         assertEquals("C", list.getC());
 

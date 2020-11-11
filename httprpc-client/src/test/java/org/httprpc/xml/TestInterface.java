@@ -21,17 +21,6 @@ import java.util.Map;
 
 public interface TestInterface {
     interface MapInterface {
-        interface ListInterface {
-            @Key("@c")
-            String getC();
-
-            @Key("item*")
-            List<String> getStringItems();
-
-            @Key("item*")
-            List<Map<String, ?>> getMapItems();
-        }
-
         @Key("@b")
         String getB1();
 
@@ -39,6 +28,17 @@ public interface TestInterface {
         String getB2();
 
         ListInterface getList();
+    }
+
+    interface ListInterface {
+        @Key("@c")
+        String getC();
+
+        @Key("item*")
+        List<String> getStringItems();
+
+        @Key("item*")
+        List<Map<String, ?>> getMapItems();
     }
 
     @Key("@a")

@@ -616,35 +616,34 @@ JSONEncoder jsonEncoder = new JSONEncoder();
 jsonEncoder.write(new BeanAdapter(root), System.out);
 ```
 
-producing output similar to the following:
+producing the following output:
 
 ```json
 {
-  "name": "Seasons",
   "children": [
     {
-      "name": "Winter",
       "children": [
         {
-          "name": "January",
-          "children": null
+          "children": null,
+          "name": "January"
         },
         {
-          "name": "February",
-          "children": null
+          "children": null,
+          "name": "February"
         },
         {
-          "name": "March",
-          "children": null
+          "children": null,
+          "name": "March"
         }
-      ]
+      ],
+      "name": "Winter"
     },
     ...
   ]
 }
 ```
 
-Note that the order in which properties are traversed is not guaranteed to match the order in which the accessor methods are declared in a class. This is because the JDK itself makes no guarantees about the order in which methods are returned by `Class#getMethods()`, which is used internally by `BeanAdapter` to identify accessor methods. 
+Note that properties are traversed in alphabetical order rather than the order in which they were declared. Because the original declaration order is not available at runtime, `BeanAdapter` internally sorts properties alphabetically by key. 
 
 ### Excluding Values
 Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
@@ -673,7 +672,7 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above.
+Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above. `Object` methods such as `toString()` are delegated to the underlying map.
 
 For example, given the following interface:
 

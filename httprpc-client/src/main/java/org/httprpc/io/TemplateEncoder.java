@@ -865,7 +865,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                         c = name.charAt(i);
 
-                        if (c != '/') {
+                        if (!(c == '/' || c == '\\')) {
                             throw new IllegalArgumentException("Invalid escape sequence.");
                         }
                     }

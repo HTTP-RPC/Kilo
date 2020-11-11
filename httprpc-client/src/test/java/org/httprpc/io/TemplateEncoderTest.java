@@ -560,7 +560,7 @@ public class TemplateEncoderTest {
 
         Map<String, ?> value = mapOf(
             entry("a", mapOf(
-                entry("b/c", "A")
+                entry("b/\\c", "A")
             ))
         );
 
