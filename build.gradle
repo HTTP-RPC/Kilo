@@ -25,8 +25,8 @@ subprojects {
     }
 
     dependencies {
-        testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+        testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+        testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.4.2')
     }
 
     java {
@@ -47,7 +47,7 @@ subprojects {
         }
     }
 
-    if (!project.name.endsWith("test")) {
+    if (!project.name.endsWith('test')) {
         task sourcesJar(type: Jar) {
             from sourceSets.main.allJava
             classifier = 'sources'
@@ -61,7 +61,7 @@ subprojects {
         publishing {
             repositories {
                 maven {
-                    url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
 
                     credentials {
                         username nexusUsername
