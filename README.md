@@ -283,7 +283,9 @@ public class MathService extends WebService {
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to issue API requests to a server. This class provides a single constructor that accepts the following arguments:
+The `WebServiceProxy` class is used to issue API requests to a server. A Swift version is available as part of the [Kilo](https://github.com/gk-brown/Kilo) project.
+
+`WebServiceProxy` provides a single constructor that accepts the following arguments:
 
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
@@ -494,7 +496,9 @@ for (Map<String, String> month : months) {
 Columns with empty headings are ignored. Empty field values are treated as null.
 
 ## TemplateEncoder
-The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). It provides the following constructors:
+The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) format and supports most Mustache features. 
+
+`TemplateEncoder` provides the following constructors:
 
 ```java
 public TemplateEncoder(URL url) { ... }
