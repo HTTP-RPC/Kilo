@@ -605,6 +605,10 @@ public class TemplateEncoder extends Encoder<Object> {
             if (c == '{') {
                 c = reader.read();
 
+                if (c == EOF) {
+                    continue;
+                }
+
                 if (c == '{') {
                     c = reader.read();
 
@@ -631,10 +635,60 @@ public class TemplateEncoder extends Encoder<Object> {
 
                     StringBuilder markerBuilder = new StringBuilder();
 
-                    while (c != '}' && c != EOF) {
+                    while (c != ':' && c != '}' && c != EOF) {
                         markerBuilder.append((char)c);
 
                         c = reader.read();
+                    }
+
+                    if (markerBuilder.length() == 0) {
+                        throw new IOException("Invalid marker.");
+                    }
+
+                    String marker = markerBuilder.toString();
+
+                    LinkedList<String> modifierNames = new LinkedList<>();
+                    HashMap<String, String> modifierArguments = new HashMap<>();
+
+                    if (c == ':') {
+                        StringBuilder modifierNameBuilder = new StringBuilder();
+                        StringBuilder modifierArgumentBuilder = new StringBuilder();
+
+                        boolean argument = false;
+
+                        while (c != EOF) {
+                            c = reader.read();
+
+                            if (c == EOF) {
+                                continue;
+                            }
+
+                            if (c == ':' || c == '}') {
+                                if (modifierNameBuilder.length() == 0) {
+                                    throw new IOException("Invalid modifier name.");
+                                }
+
+                                String modifierName = modifierNameBuilder.toString();
+
+                                modifierNames.add(modifierName);
+                                modifierArguments.put(modifierName, modifierArgumentBuilder.toString());
+
+                                modifierNameBuilder.setLength(0);
+                                modifierArgumentBuilder.setLength(0);
+
+                                argument = false;
+
+                                if (c == '}') {
+                                    break;
+                                }
+                            } else if (c == '=') {
+                                argument = true;
+                            } else if (argument) {
+                                modifierArgumentBuilder.append((char)c);
+                            } else {
+                                modifierNameBuilder.append((char)c);
+                            }
+                        }
                     }
 
                     if (c == EOF) {
@@ -645,12 +699,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
                     if (c != '}') {
                         throw new IOException("Improperly terminated marker.");
-                    }
-
-                    String marker = markerBuilder.toString();
-
-                    if (marker.length() == 0) {
-                        throw new IOException("Invalid marker.");
                     }
 
                     switch (markerType) {
@@ -775,31 +823,14 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
 
                         case VARIABLE: {
-                            String[] components = marker.split(":");
-
-                            Object value = getMarkerValue(dictionary, components[0]);
+                            Object value = getMarkerValue(dictionary, marker);
 
                             if (value != null) {
-                                if (components.length > 1) {
-                                    for (int i = 1; i < components.length; i++) {
-                                        String component = components[i];
+                                for (String modifierName : modifierNames) {
+                                    Modifier modifier = modifiers.get(modifierName);
 
-                                        int j = component.indexOf('=');
-
-                                        String name, argument;
-                                        if (j == -1) {
-                                            name = component;
-                                            argument = null;
-                                        } else {
-                                            name = component.substring(0, j);
-                                            argument = component.substring(j + 1);
-                                        }
-
-                                        Modifier modifier = modifiers.get(name);
-
-                                        if (modifier != null) {
-                                            value = modifier.apply(value, argument, locale, timeZone);
-                                        }
+                                    if (modifier != null) {
+                                        value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                                     }
                                 }
 

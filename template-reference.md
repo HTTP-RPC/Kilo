@@ -12,6 +12,8 @@ Template documents include "markers" that are replaced with values provided by t
 
 Each of these marker types is discussed in more detail below.
 
+Nested values can be referred to by path; e.g. "name/first". A literal slash or backslash character can be used in a variable or section name by escaping it with a leading backslash.
+
 ## Variables
 Variable markers inject a named value from the data dictionary into the output. For example:
 
@@ -22,8 +24,6 @@ Variable markers inject a named value from the data dictionary into the output. 
 ```
 
 Variable names represent keys into the data dictionary. When the template is processed, the markers are replaced with the corresponding values from the dictionary. If a variable value is not defined (i.e. is missing or `null`), it is excluded from the generated output.
-
-Nested values can be referred to by path; e.g. "name/first". A literal slash or backslash character can be used in a variable name by escaping it with a leading backslash.  
 
 The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.
 
