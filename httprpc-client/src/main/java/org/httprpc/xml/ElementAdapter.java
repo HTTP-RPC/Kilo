@@ -65,6 +65,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     @Override
     public Object get(Object key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
         String name = key.toString();
 
         Object value;

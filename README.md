@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 90KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -33,6 +33,7 @@ Classes provided by the HTTP-RPC framework include:
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
+* [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
 * [Collections](#collections) - utility methods for working with collections
 
@@ -850,6 +851,40 @@ Finally, the text content of an element can be obtained by calling `toString()` 
 ```java
 System.out.println(credit.get("amount").toString());
 System.out.println(credit.get("date").toString());
+```
+
+## ResourceBundleAdapter
+The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the contents of a template document, for example:
+
+```html
+<table>
+    <!-- {{?headings}} -->
+    <tr>
+        <td>{{name}}</td>
+        <td>{{description}}</td>
+        <td>{{quantity}}</td>
+    </tr>
+    <!-- {{/headings}} -->
+
+    <!-- {{#items}} -->
+    <tr>
+        <td>{{name}}</td>
+        <td>{{description}}</td>
+        <td>{{quantity}}</td>
+    </tr>
+    <!-- {{/items}} -->
+</table>
+```
+
+```java
+TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("list.html"));
+
+ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".headings");
+
+templateEncoder.write(mapOf(
+    entry("headings", new ResourceBundleAdapter(resourceBundle)),
+    entry("items", items)
+), System.out);
 ```
 
 ## StreamAdapter
