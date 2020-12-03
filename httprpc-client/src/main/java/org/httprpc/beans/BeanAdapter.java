@@ -14,6 +14,7 @@
 
 package org.httprpc.beans;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -142,6 +143,53 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     };
                 }
             };
+        }
+    }
+
+    // Typed invocation handler
+    private static class TypedInvocationHandler implements InvocationHandler {
+        Map<?, ?> map;
+
+        TypedInvocationHandler(Map<?, ?> map) {
+            this.map = map;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+            if (method.getDeclaringClass() == Object.class) {
+                return method.invoke(this, arguments);
+            } else {
+                String key = getKey(method);
+
+                if (key == null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                return adapt(map.get(key), method.getGenericReturnType());
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return map.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (object instanceof Proxy) {
+                object = Proxy.getInvocationHandler(object);
+            }
+
+            if (!(object instanceof TypedInvocationHandler)) {
+                return false;
+            }
+
+            return map.equals(((TypedInvocationHandler)object).map);
+        }
+
+        @Override
+        public String toString() {
+            return map.toString();
         }
     }
 
@@ -511,29 +559,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
             } else if (value instanceof Map<?, ?>) {
-                return adaptBean((Map<?, ?>)value, type);
+                return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+                    new Class<?>[] {type},
+                    new TypedInvocationHandler((Map<?, ?>)value)));
             } else {
                 throw new IllegalArgumentException();
             }
         } else {
             return null;
         }
-    }
-
-    private static Object adaptBean(Map<?, ?> map, Class<?> type) {
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, (proxy, method, arguments) -> {
-            if (method.getDeclaringClass() == Object.class) {
-                return method.invoke(map, arguments);
-            } else {
-                String key = getKey(method);
-
-                if (key == null) {
-                    throw new UnsupportedOperationException();
-                }
-
-                return adapt(map.get(key), method.getGenericReturnType());
-            }
-        }));
     }
 
     /**

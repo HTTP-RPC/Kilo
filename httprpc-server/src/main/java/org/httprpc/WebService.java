@@ -63,8 +63,6 @@ import static org.httprpc.util.Collections.listOf;
  * Abstract base class for web services.
  */
 public abstract class WebService extends HttpServlet {
-    private static final long serialVersionUID = 0;
-
     private static class Resource {
         static List<String> order = listOf("get", "post", "put", "delete");
 

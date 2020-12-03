@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
@@ -101,6 +103,118 @@ public class WebServiceProxy {
          * The decoded value.
          */
         T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+    }
+
+    // Typed invocation handler
+    private static class TypedInvocationHandler implements InvocationHandler {
+        URL baseURL;
+        Class<?> type;
+        BiFunction<String, URL, WebServiceProxy> factory;
+
+        HashMap<Object, Object> keys;
+
+        TypedInvocationHandler(URL baseURL, Class<?> type, BiFunction<String, URL, WebServiceProxy> factory) {
+            this.baseURL = baseURL;
+            this.type = type;
+            this.factory = factory;
+
+            if (Map.class.isAssignableFrom(type)) {
+                keys = new HashMap<>();
+            } else {
+                keys = null;
+            }
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+            Class<?> declaringClass = method.getDeclaringClass();
+
+            if (declaringClass == Object.class) {
+                return method.invoke(this, arguments);
+            } else if (declaringClass == Map.class) {
+                return method.invoke(keys, arguments);
+            } else {
+                RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
+
+                if (requestMethod == null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
+
+                URL url;
+                if (resourcePath != null) {
+                    String[] components = resourcePath.value().split("/");
+
+                    for (int i = 0; i < components.length; i++) {
+                        String component = components[i];
+
+                        if (component.length() == 0) {
+                            continue;
+                        }
+
+                        if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
+                            int k = ResourcePath.PATH_VARIABLE_PREFIX.length();
+
+                            if (component.length() == k || component.charAt(k++) != ':') {
+                                throw new IllegalStateException("Invalid path variable.");
+                            }
+
+                            Object value = getParameterValue(keys.get(component.substring(k)));
+
+                            if (value != null) {
+                                components[i] = URLEncoder.encode(value.toString(), UTF_8);
+                            } else {
+                                components[i] = "";
+                            }
+                        }
+                    }
+
+                    url = new URL(baseURL, String.join("/", components));
+                } else {
+                    url = baseURL;
+                }
+
+                WebServiceProxy webServiceProxy = factory.apply(requestMethod.value(), url);
+
+                Parameter[] parameters = method.getParameters();
+
+                HashMap<String, Object> argumentMap = new HashMap<>();
+
+                for (int i = 0; i < parameters.length; i++) {
+                    Parameter parameter = parameters[i];
+
+                    argumentMap.put(parameter.getName(), arguments[i]);
+                }
+
+                webServiceProxy.setArguments(argumentMap);
+
+                return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return type.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (object instanceof Proxy) {
+                object = Proxy.getInvocationHandler(object);
+            }
+
+            if (!(object instanceof TypedInvocationHandler)) {
+                return false;
+            }
+
+            return (type == ((TypedInvocationHandler)object).type);
+        }
+
+        @Override
+        public String toString() {
+            return type.toString();
+        }
     }
 
     private String method;
@@ -672,76 +786,8 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        HashMap<Object, Object> keys;
-        if (Map.class.isAssignableFrom(type)) {
-            keys = new HashMap<>();
-        } else {
-            keys = null;
-        }
-
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type},  (proxy, method, arguments) -> {
-            if (method.getDeclaringClass() == Map.class) {
-                return method.invoke(keys, arguments);
-            } else {
-                RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
-
-                if (requestMethod == null) {
-                    throw new UnsupportedOperationException();
-                }
-
-                ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
-
-                URL url;
-                if (resourcePath != null) {
-                    String[] components = resourcePath.value().split("/");
-
-                    for (int i = 0; i < components.length; i++) {
-                        String component = components[i];
-
-                        if (component.length() == 0) {
-                            continue;
-                        }
-
-                        if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
-                            int k = ResourcePath.PATH_VARIABLE_PREFIX.length();
-
-                            if (component.length() == k || component.charAt(k++) != ':') {
-                                throw new IllegalStateException("Invalid path variable.");
-                            }
-
-                            Object value = getParameterValue(keys.get(component.substring(k)));
-
-                            if (value != null) {
-                                components[i] = URLEncoder.encode(value.toString(), UTF_8);
-                            }
-                        }
-                    }
-
-                    url = new URL(baseURL, String.join("/", components));
-                } else {
-                    url = baseURL;
-                }
-
-                if (keys != null) {
-                    keys.clear();
-                }
-
-                WebServiceProxy webServiceProxy = factory.apply(requestMethod.value(), url);
-
-                Parameter[] parameters = method.getParameters();
-
-                HashMap<String, Object> argumentMap = new HashMap<>();
-
-                for (int i = 0; i < parameters.length; i++) {
-                    Parameter parameter = parameters[i];
-
-                    argumentMap.put(parameter.getName(), arguments[i]);
-                }
-
-                webServiceProxy.setArguments(argumentMap);
-
-                return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
-            }
-        }));
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
+            new Class<?>[] {type},
+            new TypedInvocationHandler(baseURL, type, factory)));
     }
 }

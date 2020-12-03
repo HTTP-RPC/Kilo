@@ -360,7 +360,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMath() throws Exception {
+    public void testMath() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
 
         webServiceProxy.setArguments(mapOf(
@@ -372,10 +372,7 @@ public class WebServiceProxyTest {
 
         assertNotNull(result);
         assertEquals(6.0, result.doubleValue());
-    }
 
-    @Test
-    public void testMathService() throws Exception {
         MathService mathService = WebServiceProxy.adapt(new URL(serverURL, "math/"), MathService.class);
 
         assertEquals(6.0, mathService.getSum(4, 2));
@@ -383,7 +380,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testTree() throws Exception {
+    public void testTree() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "tree/"));
 
         TreeNode seasons = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
@@ -400,5 +397,15 @@ public class WebServiceProxyTest {
 
         assertNotNull(january);
         assertEquals("January", january.getName());
+    }
+
+    @Test
+    public void testAdapt() throws Exception {
+        TestService testService1 = WebServiceProxy.adapt(new URL(serverURL, "test1/"), TestService.class);
+        TestService testService2 = WebServiceProxy.adapt(new URL(serverURL, "test2/"), TestService.class);
+
+        assertEquals(testService1, testService2);
+        assertEquals(TestService.class.hashCode(), testService1.hashCode());
+        assertEquals(TestService.class.toString(), testService1.toString());
     }
 }

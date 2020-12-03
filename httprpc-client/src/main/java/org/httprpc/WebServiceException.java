@@ -20,8 +20,6 @@ import java.io.IOException;
  * Thrown to indicate that a service operation returned an error.
  */
 public class WebServiceException extends IOException {
-    private static final long serialVersionUID = 0;
-
     private int statusCode;
 
     /**

@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.httprpc.util.Collections.entry;
@@ -64,6 +65,27 @@ public class BeanAdapterTest {
 
         assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
         assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
+    }
+
+    @Test
+    public void testMapAdapt() {
+        Map<String, Object> map1 = new HashMap<String, Object>() {
+            @Override
+            public String toString() {
+                return "abc";
+            }
+        };
+
+        map1.put("flag", true);
+
+        Map<String, Object> map2 = mapOf(entry("flag", true));
+
+        TestInterface.NestedInterface nestedBean1 = BeanAdapter.adapt(map1, TestInterface.NestedInterface.class);
+        TestInterface.NestedInterface nestedBean2 = BeanAdapter.adapt(map2, TestInterface.NestedInterface.class);
+
+        assertEquals(nestedBean1, nestedBean2);
+        assertEquals(map1.hashCode(), nestedBean1.hashCode());
+        assertEquals(map1.toString(), nestedBean1.toString());
     }
 
     @Test
