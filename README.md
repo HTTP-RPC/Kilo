@@ -788,7 +788,17 @@ ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(
 ```
 
 ## QueryBuilder
-TODO
+The `QueryBuilder` class provides a fluent API for programmatically constructing SQL queries. 
+
+For example, the query from the previous section could be created as follows using `QueryBuilder`:
+
+```java
+String sql = QueryBuilder.select("name", "species", "sex", "birth")
+    .from("pet")
+    .where("owner = :owner").toString();
+```
+
+Insert, update, and delete operations are also supported. In general, string values provided to insert and update statements via the `values()` and `set()` methods are wrapped in single quotes, and any embdedded single quotes are replaced with two successive single quotes. However, any string that starts with ":" or is equal to "?" is assumed to be a parameter reference and is not escaped.    
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 

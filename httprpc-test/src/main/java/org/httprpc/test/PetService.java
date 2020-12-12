@@ -22,6 +22,7 @@ import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
 import org.httprpc.sql.Parameters;
+import org.httprpc.sql.QueryBuilder;
 import org.httprpc.sql.ResultSetAdapter;
 import org.httprpc.util.ResourceBundleAdapter;
 
@@ -71,7 +72,9 @@ public class PetService extends WebService {
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        Parameters parameters = Parameters.parse("select name, species, sex, birth from pet where owner = :owner");
+        Parameters parameters = Parameters.parse(QueryBuilder.select("name", "species", "sex", "birth")
+            .from("pet")
+            .where("owner = :owner").toString());
 
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
@@ -113,10 +116,12 @@ public class PetService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
+        String sql = QueryBuilder.select("birth").from("pet").toString();
+
         double averageAge;
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery("select birth from pet"))) {
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(sql))) {
             Date now = new Date();
 
             Stream<Pet> pets = resultSetAdapter.stream().map(result -> BeanAdapter.adapt(result, Pet.class));

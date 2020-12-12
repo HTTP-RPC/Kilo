@@ -99,31 +99,11 @@ public class QueryBuilder {
         return new QueryBuilder("delete from " + table);
     }
 
-    private static String encode(Object value) {
-        if (value instanceof String) {
-            String string = (String)value;
-
-            if (string.startsWith(":") || string.equals("?")) {
-                return string;
-            } else {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                stringBuilder.append("'");
-                stringBuilder.append(string.replace("'", "''"));
-                stringBuilder.append("'");
-
-                return stringBuilder.toString();
-            }
-
-        } else {
-            return String.valueOf(value);
-        }
-    }
-
     /**
      * Appends a "from" clause to a query.
      *
      * @param tables
+     * The table names.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -272,5 +252,26 @@ public class QueryBuilder {
     @Override
     public String toString() {
         return sqlBuilder.toString();
+    }
+
+    private static String encode(Object value) {
+        if (value instanceof String) {
+            String string = (String)value;
+
+            if (string.startsWith(":") || string.equals("?")) {
+                return string;
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                stringBuilder.append("'");
+                stringBuilder.append(string.replace("'", "''"));
+                stringBuilder.append("'");
+
+                return stringBuilder.toString();
+            }
+
+        } else {
+            return String.valueOf(value);
+        }
     }
 }
