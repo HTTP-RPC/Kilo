@@ -37,11 +37,11 @@ public class QueryBuilderTest {
 
     @Test
     public void testInsertInto() {
-        String sql = QueryBuilder.insertInto("A", "a", "b", "c")
-            .values(1, true, "hello")
+        String sql = QueryBuilder.insertInto("A", "a", "b", "c", "d", "e")
+            .values(1, true, "hello", ":a", "?")
             .toString();
 
-        System.out.println(sql);
+        assertEquals("insert into A (a, b, c, d, e) values (1, true, 'hello', :a, ?)", sql);
     }
 
     @Test
@@ -50,10 +50,12 @@ public class QueryBuilderTest {
             .set("a", 1)
             .set("b", true)
             .set("c", "hello")
+            .set("d", ":d")
+            .set("e", "?")
             .where("a is not null")
             .toString();
 
-        System.out.println(sql);
+        assertEquals("update A set a = 1 set b = true set c = 'hello' set d = :d set e = ? where a is not null", sql);
     }
 
     @Test

@@ -116,7 +116,7 @@ public class PetService extends WebService {
         double averageAge;
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery("SELECT birth FROM pet"))) {
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery("select birth from pet"))) {
             Date now = new Date();
 
             Stream<Pet> pets = resultSetAdapter.stream().map(result -> BeanAdapter.adapt(result, Pet.class));

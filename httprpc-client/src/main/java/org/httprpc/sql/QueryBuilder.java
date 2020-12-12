@@ -15,7 +15,7 @@
 package org.httprpc.sql;
 
 /**
- * Class for dynamically constructing a SQL query.
+ * Class for programmatically constructing a SQL query.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder = new StringBuilder();
@@ -25,9 +25,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Creates a "select" query.
+     *
      * @param columns
+     * The column names.
+     *
      * @return
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder select(String... columns) {
         if (columns == null) {
@@ -38,10 +42,16 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Creates an "insert into" query.
+     *
      * @param table
+     * The table name.
+     *
      * @param columns
+     * The column names.
+     *
      * @return
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder insertInto(String table, String... columns) {
         if (table == null) {
@@ -56,9 +66,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Creates an "update" query.
+     *
      * @param table
+     * The table name.
+     *
      * @return
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder update(String table) {
         if (table == null) {
@@ -69,9 +83,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Creates a "delete from" query.
+     *
      * @param table
+     * The table name.
+     *
      * @return
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder deleteFrom(String table) {
         if (table == null) {
@@ -81,10 +99,34 @@ public class QueryBuilder {
         return new QueryBuilder("delete from " + table);
     }
 
+    private static String encode(Object value) {
+        if (value instanceof String) {
+            String string = (String)value;
+
+            if (string.startsWith(":") || string.equals("?")) {
+                return string;
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                stringBuilder.append("'");
+                stringBuilder.append(string.replace("'", "''"));
+                stringBuilder.append("'");
+
+                return stringBuilder.toString();
+            }
+
+        } else {
+            return String.valueOf(value);
+        }
+    }
+
     /**
-     * TODO
+     * Appends a "from" clause to a query.
+     *
      * @param tables
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder from(String... tables) {
         if (tables == null) {
@@ -98,9 +140,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Appends a "join" clause to a query.
+     *
      * @param table
+     * The table name.
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder join(String table) {
         if (table == null) {
@@ -114,9 +160,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Appends an "on" clause to a query.
+     *
      * @param predicate
+     * The predicate.
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder on(String predicate) {
         if (predicate == null) {
@@ -130,9 +180,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Appends a "where" clause to a query.
+     *
      * @param predicate
+     * The predicate.
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder where(String predicate) {
         if (predicate == null) {
@@ -146,9 +200,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Appends an "order by" clause to a query.
+     *
      * @param columns
+     * The column names.
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder orderBy(String... columns) {
         if (columns == null) {
@@ -162,9 +220,13 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Appends a "values" clause to a query.
+     *
      * @param values
+     * The column values.
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder values(Object... values) {
         if (values == null) {
@@ -178,7 +240,7 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(values[i]);
+            sqlBuilder.append(encode(values[i]));
         }
 
         sqlBuilder.append(")");
@@ -187,16 +249,22 @@ public class QueryBuilder {
     }
 
     /**
-     * TODO
+     * Appends a "set" command to a query.
+     *
      * @param column
+     * The column name.
+     *
      * @param value
+     * The column value.
+     *
      * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder set(String column, Object value) {
         sqlBuilder.append(" set ");
         sqlBuilder.append(column);
         sqlBuilder.append(" = ");
-        sqlBuilder.append(value);
+        sqlBuilder.append(encode(value));
 
         return this;
     }

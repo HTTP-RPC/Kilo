@@ -32,6 +32,7 @@ Classes provided by the HTTP-RPC framework include:
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
+* [QueryBuilder](#querybuilder) - programmatically constructs a SQL query
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
@@ -785,6 +786,9 @@ Once applied, the statement can be executed:
 ```java
 ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery());    
 ```
+
+## QueryBuilder
+TODO
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
