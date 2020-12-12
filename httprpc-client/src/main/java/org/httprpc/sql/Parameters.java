@@ -73,7 +73,7 @@ public class Parameters {
      * A string containing the SQL to parse.
      *
      * @return
-     * An {@link Parameters} instance containing the parsed SQL.
+     * A {@link Parameters} instance containing the parsed SQL.
      */
     public static Parameters parse(String sql) {
         if (sql == null) {
@@ -97,7 +97,7 @@ public class Parameters {
      * A reader containing the SQL to parse.
      *
      * @return
-     * An {@link Parameters} instance containing the parsed SQL.
+     * A {@link Parameters} instance containing the parsed SQL.
      *
      * @throws IOException
      * If an exception occurs while reading the SQL statement.
