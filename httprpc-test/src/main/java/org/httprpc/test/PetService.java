@@ -62,9 +62,9 @@ public class PetService extends WebService {
 
         try {
             Context initialCtx = new InitialContext();
-            Context environmentContext = (Context) initialCtx.lookup("java:comp/env");
+            Context environmentContext = (Context)initialCtx.lookup("java:comp/env");
 
-            dataSource = (DataSource) environmentContext.lookup("jdbc/MenagerieDB");
+            dataSource = (DataSource)environmentContext.lookup("jdbc/MenagerieDB");
         } catch (NamingException exception) {
             throw new ServletException(exception);
         }
@@ -124,9 +124,9 @@ public class PetService extends WebService {
             ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(sql))) {
             Date now = new Date();
 
-            Stream<Pet> pets = resultSetAdapter.stream().map(result -> BeanAdapter.adapt(result, Pet.class));
-
-            averageAge = pets.mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
+            averageAge = resultSetAdapter.stream()
+                .map(result -> (Pet)BeanAdapter.adapt(result, Pet.class))
+                .mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
         }
 
         return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
