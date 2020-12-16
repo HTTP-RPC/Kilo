@@ -120,17 +120,17 @@ public class Parameters {
 
         while (c != EOF) {
             if (c == '-') {
-                sqlBuilder.append((char) c);
+                sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
 
                 singleLineComment = (c == '-') && !multiLineComment;
 
-                sqlBuilder.append((char) c);
+                sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
             } else if (c == '\r' || c == '\n') {
-                sqlBuilder.append((char) c);
+                sqlBuilder.append((char)c);
 
                 singleLineComment = false;
 
@@ -146,13 +146,13 @@ public class Parameters {
 
                 c = sqlReader.read();
             } else if (c == '*' && multiLineComment) {
-                sqlBuilder.append((char) c);
+                sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
 
                 multiLineComment = (c != '/');
 
-                sqlBuilder.append((char) c);
+                sqlBuilder.append((char)c);
 
                 c = sqlReader.read();
             } else if (singleLineComment || multiLineComment) {

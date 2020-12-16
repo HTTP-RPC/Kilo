@@ -26,6 +26,9 @@ dependencies {
 
     implementation project(':httprpc-server')
 
+    implementation 'org.hibernate:hibernate-core:5.4.9.Final'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.0'
+
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 }
 

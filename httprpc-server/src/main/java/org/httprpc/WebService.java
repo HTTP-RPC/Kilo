@@ -70,7 +70,7 @@ public abstract class WebService extends HttpServlet {
             int i1 = order.indexOf(verb1);
             int i2 = order.indexOf(verb2);
 
-            return Integer.compare((i1 == -1) ? order.size() : i1,  (i2 == -1) ? order.size() : i2);
+            return Integer.compare((i1 == -1) ? order.size() : i1, (i2 == -1) ? order.size() : i2);
         });
 
         final TreeMap<String, Resource> resources = new TreeMap<>();
@@ -833,7 +833,7 @@ public abstract class WebService extends HttpServlet {
         } else {
             if (!structures.containsKey(type)) {
                 structures.put(type, null);
-                
+
                 Map<String, Type> properties = BeanAdapter.getProperties(type);
 
                 StringBuilder structureBuilder = new StringBuilder();

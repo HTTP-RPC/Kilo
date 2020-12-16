@@ -741,7 +741,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             if (value == null) {
                                 iterator = Collections.emptyIterator();
                             } else if (value instanceof Iterable<?>) {
-                                iterator  = ((Iterable<?>)value).iterator();
+                                iterator = ((Iterable<?>)value).iterator();
                             } else if (value instanceof Map<?, ?>) {
                                 iterator = new MapIterator((Map<?, ?>)value);
                             } else {

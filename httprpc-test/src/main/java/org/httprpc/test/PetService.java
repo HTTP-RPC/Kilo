@@ -39,7 +39,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.stream.Stream;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;

@@ -152,7 +152,7 @@ public class WebServiceProxyTest {
         testService.put("c", 456);
         testService.put("d", "göodbye");
 
-        Map<String, ?> result  = testService.testGetKeys();
+        Map<String, ?> result = testService.testGetKeys();
 
         assertEquals(mapOf(
             entry("list", listOf("123", "héllo", "456", "göodbye")),
@@ -169,7 +169,7 @@ public class WebServiceProxyTest {
     public void testGetFibonacci() throws IOException {
         TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
-        List<Integer> result  = testService.testGetFibonacci(8);
+        List<Integer> result = testService.testGetFibonacci(8);
 
         assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
     }
