@@ -196,5 +196,15 @@
 <br/>
 <a href="${pageContext.request.contextPath}/pets/average-age">Average Age</a><br/>
 
+<hr/>
+
+<a href="${pageContext.request.contextPath}/employees?api">Employees (API)</a><br/>
+<br/>
+<a href="${pageContext.request.contextPath}/employees/sql">Employees (SQL)</a><br/>
+<a href="${pageContext.request.contextPath}/employees/hql">Employees (HQL)</a><br/>
+<a href="${pageContext.request.contextPath}/employees/sql-stream">Employees (SQL stream)</a><br/>
+<a href="${pageContext.request.contextPath}/employees/hql-stream">Employees (HQL stream)</a><br/>
+<a href="${pageContext.request.contextPath}/employees/hql-stream-jackson">Employees (HQL stream Jackson)</a><br/>
+
 </body>
 </html>
