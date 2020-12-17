@@ -199,16 +199,6 @@
 <hr/>
 
 <a href="${pageContext.request.contextPath}/employees?api">Employees (API)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/employees/sql">Employees (SQL)</a><br/>
-<a href="${pageContext.request.contextPath}/employees/sql-jackson">Employees (SQL Jackson)</a><br/>
-<a href="${pageContext.request.contextPath}/employees/sql-stream">Employees (SQL stream)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/employees/hql">Employees (HQL)</a><br/>
-<a href="${pageContext.request.contextPath}/employees/hql-jackson">Employees (HQL Jackson)</a><br/>
-<a href="${pageContext.request.contextPath}/employees/hql-stream">Employees (HQL stream)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/employees/hql-stream-jackson">Employees (HQL stream Jackson)</a><br/>
 
 </body>
 </html>

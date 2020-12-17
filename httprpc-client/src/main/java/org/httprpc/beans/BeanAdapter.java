@@ -335,18 +335,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             @Override
             public Iterator<Entry<String, Object>> iterator() {
                 return new Iterator<Entry<String, Object>>() {
-                    private Iterator<String> keys = accessors.keySet().iterator();
+                    private Iterator<Entry<String, Method>> iterator = accessors.entrySet().iterator();
 
                     @Override
                     public boolean hasNext() {
-                        return keys.hasNext();
+                        return iterator.hasNext();
                     }
 
                     @Override
                     public Entry<String, Object> next() {
-                        String key = keys.next();
+                        Entry<String, Method> entry = iterator.next();
 
-                        return new SimpleImmutableEntry<>(key, get(key));
+                        try {
+                            return new SimpleImmutableEntry<>(entry.getKey(), adapt(entry.getValue().invoke(bean), accessorCache));
+                        } catch (InvocationTargetException | IllegalAccessException exception) {
+                            throw new RuntimeException(exception);
+                        }
                     }
                 };
             }

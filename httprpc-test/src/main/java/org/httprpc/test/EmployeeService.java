@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.httprpc.RequestMethod;
-import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONEncoder;
@@ -34,9 +33,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @WebServlet(urlPatterns={"/employees/*"}, loadOnStartup=1)
 public class EmployeeService extends WebService {
@@ -103,17 +102,16 @@ public class EmployeeService extends WebService {
     }
 
     private DataSource dataSource = null;
-
     private SessionFactory sessionFactory = null;
 
     private ThreadLocal<Boolean> useJackson = new ThreadLocal<>();
 
-    private static final String SQL_QUERY = QueryBuilder.select("emp_no AS employeeNumber",
-        "first_name AS firstName",
-        "last_name AS lastName",
+    private static final String SQL_QUERY = QueryBuilder.select("emp_no as employeeNumber",
+        "first_name as firstName",
+        "last_name as lastName",
         "gender",
-        "birth_date AS birthDate",
-        "hire_date AS hireDate").from("employees").toString();
+        "birth_date as birthDate",
+        "hire_date as hireDate").from("employees").toString();
 
     private static final String HQL_QUERY = QueryBuilder.select("e").from("EmployeeService$EmployeeEntity e").toString();
 
@@ -140,8 +138,6 @@ public class EmployeeService extends WebService {
         configuration.addAnnotatedClass(EmployeeEntity.class);
 
         sessionFactory = configuration.buildSessionFactory();
-
-        useJackson.set(false);
     }
 
     @Override
@@ -154,112 +150,104 @@ public class EmployeeService extends WebService {
     }
 
     @Override
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            super.service(request, response);
+        } finally {
+            useJackson.remove();
+        }
+    }
+
+    @Override
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         if (useJackson.get()) {
             ObjectMapper objectMapper = new ObjectMapper();
 
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-            objectMapper.writeValue(getResponse().getOutputStream(), result);
+            objectMapper.writeValue(response.getOutputStream(), result);
         } else {
             super.encodeResult(request, response, result);
         }
     }
 
     @RequestMethod("GET")
-    @ResourcePath("sql")
-    public List<Employee> getEmployees() throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(SQL_QUERY))) {
-            return resultSetAdapter.stream()
-                .map(result -> (Employee)BeanAdapter.adapt(result, Employee.class))
-                .collect(Collectors.toList());
+    public List<? extends Employee> getEmployees(boolean hql, boolean jackson, boolean stream) throws IOException, SQLException {
+        if (stream) {
+            streamEmployees(hql, jackson);
+            return null;
+        } else {
+            return getEmployees(hql, jackson);
         }
     }
 
-    @RequestMethod("GET")
-    @ResourcePath("sql-jackson")
-    public List<Employee> getEmployeesJackson() throws SQLException {
-        useJackson.set(true);
+    private List<? extends Employee> getEmployees(boolean hql, boolean jackson) throws SQLException {
+        useJackson.set(jackson);
 
-        try {
-            return getEmployees();
-        } finally {
-            useJackson.set(false);
+        if (hql) {
+            try (Session session = sessionFactory.openSession()) {
+                return session.createQuery(HQL_QUERY, EmployeeEntity.class).list();
+            }
+        } else {
+            try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(SQL_QUERY))) {
+                return resultSetAdapter.stream()
+                    .map(result -> (Employee)BeanAdapter.adapt(result, Employee.class))
+                    .collect(Collectors.toList());
+            }
         }
     }
 
-    @RequestMethod("GET")
-    @ResourcePath("sql-stream")
-    public void streamEmployees() throws SQLException, IOException {
+    private void streamEmployees(boolean hql, boolean jackson) throws IOException, SQLException {
         getResponse().setContentType("application/json");
 
-        JSONEncoder jsonEncoder = new JSONEncoder();
+        if (jackson) {
+            streamEmployeesJackson(hql);
+        } else {
+            JSONEncoder jsonEncoder = new JSONEncoder();
 
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(SQL_QUERY))) {
-            jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+            if (hql) {
+                try (Session session = sessionFactory.openSession();
+                    StreamAdapter<Map<String, ?>> streamAdapter = new StreamAdapter<>(session.createQuery(HQL_QUERY, EmployeeEntity.class).stream().map(BeanAdapter::new))) {
+                    jsonEncoder.write(streamAdapter, getResponse().getOutputStream());
+                }
+            } else {
+                try (Connection connection = dataSource.getConnection();
+                    Statement statement = connection.createStatement();
+                    ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(SQL_QUERY))) {
+                    jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+                }
+            }
         }
     }
 
-    @RequestMethod("GET")
-    @ResourcePath("hql")
-    public List<? extends Employee> getEmployeesHibernate() {
-        try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(HQL_QUERY, EmployeeEntity.class).list();
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("hql-jackson")
-    public List<? extends Employee> getEmployeesHibernateJackson() {
-        useJackson.set(true);
-
-        try {
-            return getEmployeesHibernate();
-        } finally {
-            useJackson.set(false);
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("hql-stream")
-    public void streamEmployeesHibernate() throws IOException {
-        getResponse().setContentType("application/json");
-
-        JSONEncoder jsonEncoder = new JSONEncoder();
-
-        try (Session session = sessionFactory.openSession();
-            StreamAdapter<?> streamAdapter = new StreamAdapter<>(session.createQuery(HQL_QUERY, EmployeeEntity.class).stream().map(BeanAdapter::new))) {
-            jsonEncoder.write(streamAdapter, getResponse().getOutputStream());
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("hql-stream-jackson")
-    public void streamEmployeesHibernateJackson() throws IOException {
-        getResponse().setContentType("application/json");
-
+    private void streamEmployeesJackson(boolean hql) throws IOException, SQLException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         ObjectWriter objectWriter = objectMapper.writer();
 
-        try (Session session = sessionFactory.openSession();
-            Stream<EmployeeEntity> stream = session.createQuery(HQL_QUERY, EmployeeEntity.class).stream();
-            SequenceWriter sequenceWriter = objectWriter.writeValues(getResponse().getOutputStream())) {
-            sequenceWriter.init(true);
+        if (hql) {
+            try (Session session = sessionFactory.openSession();
+                StreamAdapter<? extends Employee> streamAdapter = new StreamAdapter<>(session.createQuery(HQL_QUERY, EmployeeEntity.class).stream());
+                SequenceWriter sequenceWriter = objectWriter.writeValues(getResponse().getOutputStream())) {
+                sequenceWriter.init(true);
 
-            stream.forEach(employee -> {
-                try {
+                for (Employee employee : streamAdapter) {
                     sequenceWriter.write(employee);
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
                 }
-            });
+            }
+        } else {
+            try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(SQL_QUERY));
+                SequenceWriter sequenceWriter = objectWriter.writeValues(getResponse().getOutputStream())) {
+                sequenceWriter.init(true);
+
+                for (Map<String, ?> result : resultSetAdapter) {
+                    sequenceWriter.write(result);
+                }
+            }
         }
     }
 }
