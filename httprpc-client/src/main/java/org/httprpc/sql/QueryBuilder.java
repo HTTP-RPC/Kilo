@@ -140,6 +140,46 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "left join" clause to a query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder leftJoin(String table) {
+        if (table == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" left join ");
+        sqlBuilder.append(table);
+
+        return this;
+    }
+
+    /**
+     * Appends a "right join" clause to a query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder rightJoin(String table) {
+        if (table == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" right join ");
+        sqlBuilder.append(table);
+
+        return this;
+    }
+
+    /**
      * Appends an "on" clause to a query.
      *
      * @param predicate

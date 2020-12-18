@@ -24,13 +24,15 @@ public class QueryBuilderTest {
         String sql = QueryBuilder.select("a", "b", "c")
             .from("A")
             .join("B").on("A.id = B.id and x = 50")
-            .join("C").on("B.id = C.id")
+            .leftJoin("C").on("B.id = C.id")
+            .rightJoin("D").on("C.id = D.id")
             .where("(a > 10 or b < 200) and c = :c")
             .orderBy("a", "b").toString();
 
         assertEquals("select a, b, c from A "
             + "join B on A.id = B.id and x = 50 "
-            + "join C on B.id = C.id "
+            + "left join C on B.id = C.id "
+            + "right join D on C.id = D.id "
             + "where (a > 10 or b < 200) and c = :c "
             + "order by a, b", sql);
     }
