@@ -16,6 +16,8 @@ package org.httprpc.sql;
 
 import org.junit.jupiter.api.Test;
 
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QueryBuilderTest {
@@ -43,11 +45,15 @@ public class QueryBuilderTest {
 
     @Test
     public void testInsertInto() {
-        String sql = QueryBuilder.insertInto("A", "a", "b", "c", "d", "e")
-            .values(1, true, "hello", ":a", "?")
-            .toString();
+        String sql = QueryBuilder.insertInto("A", mapOf(
+            entry("a", 1),
+            entry("b", true),
+            entry("c", "hello"),
+            entry("d", ":d"),
+            entry("e", "?")
+        )).toString();
 
-        assertEquals("insert into A (a, b, c, d, e) values (1, true, 'hello', :a, ?)", sql);
+        assertEquals("insert into A (a, b, c, d, e) values (1, true, 'hello', :d, ?)", sql);
     }
 
     @Test

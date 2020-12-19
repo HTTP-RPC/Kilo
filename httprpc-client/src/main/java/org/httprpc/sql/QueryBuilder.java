@@ -14,6 +14,8 @@
 
 package org.httprpc.sql;
 
+import java.util.Map;
+
 /**
  * Class for programmatically constructing a SQL query.
  */
@@ -63,6 +65,48 @@ public class QueryBuilder {
         }
 
         return new QueryBuilder("insert into " + table + " (" + String.join(", ", columns) + ")");
+    }
+
+    /**
+     * Creates an "insert into" query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @param row
+     * The row to insert.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder insertInto(String table, Map<String, ?> row) {
+        if (table == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (row == null) {
+            throw new IllegalArgumentException();
+        }
+
+        int n = row.size();
+
+        String[] columns = new String[n];
+        Object[] values = new Object[n];
+
+        int i = 0;
+
+        for (Map.Entry<String, ?> entry : row.entrySet()) {
+            columns[i] = entry.getKey();
+            values[i] = entry.getValue();
+
+            i++;
+        }
+
+        QueryBuilder queryBuilder = insertInto(table, columns);
+
+        queryBuilder.values(values);
+
+        return queryBuilder;
     }
 
     /**
