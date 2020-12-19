@@ -293,6 +293,10 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder limit(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException();
+        }
+        
         sqlBuilder.append(" limit ");
         sqlBuilder.append(count);
 
