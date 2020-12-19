@@ -240,6 +240,22 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "limit" clause to a query.
+     *
+     * @param count
+     * The limit count.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder limit(int count) {
+        sqlBuilder.append(" limit ");
+        sqlBuilder.append(count);
+
+        return this;
+    }
+
+    /**
      * Appends a "for update" clause to a query.
      *
      * @return

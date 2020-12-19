@@ -28,6 +28,7 @@ public class QueryBuilderTest {
             .rightJoin("D").on("C.id = D.id")
             .where("(a > 10 or b < 200) and c = :c")
             .orderBy("a", "b")
+            .limit(10)
             .forUpdate().toString();
 
         assertEquals("select a, b, c from A "
@@ -36,6 +37,7 @@ public class QueryBuilderTest {
             + "right join D on C.id = D.id "
             + "where (a > 10 or b < 200) and c = :c "
             + "order by a, b "
+            + "limit 10 "
             + "for update", sql);
     }
 
