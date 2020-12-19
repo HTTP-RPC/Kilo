@@ -337,19 +337,22 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testParentContext() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("parent.txt"));
+    public void testInheritance() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inheritance.txt"));
 
         Map<String, ?> dictionary = mapOf(
-            entry("a", "A"),
+            entry("a", "$"),
             entry("b", mapOf(
                 entry("c", "C")
             )),
-            entry("list", listOf(1, 2, 3)),
-            entry("map", mapOf(
-                entry("x", "one"),
-                entry("y", "two"),
-                entry("z", "three")
+            entry("d", mapOf(
+                entry("a", "A"),
+                entry("list", listOf(1, 2, 3)),
+                entry("map", mapOf(
+                    entry("x", "one"),
+                    entry("y", "two"),
+                    entry("z", "three")
+                ))
             ))
         );
 
