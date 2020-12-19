@@ -337,6 +337,32 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testParentContext() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("parent.txt"));
+
+        Map<String, ?> dictionary = mapOf(
+            entry("a", "A"),
+            entry("b", mapOf(
+                entry("c", "C")
+            )),
+            entry("list", listOf(1, 2, 3)),
+            entry("map", mapOf(
+                entry("x", "one"),
+                entry("y", "two"),
+                entry("z", "three")
+            ))
+        );
+
+        String result;
+        try (StringWriter writer = new StringWriter()) {
+            encoder.write(dictionary, writer);
+            result = writer.toString();
+        }
+
+        assertEquals("AC1,AC2,AC3 ACone,ACtwo,ACthree", result);
+    }
+
+    @Test
     public void testComment() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("comment.txt"));
 

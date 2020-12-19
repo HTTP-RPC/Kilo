@@ -240,6 +240,18 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "for update" clause to a query.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder forUpdate() {
+        sqlBuilder.append(" for update");
+
+        return this;
+    }
+
+    /**
      * Appends a "values" clause to a query.
      *
      * @param values

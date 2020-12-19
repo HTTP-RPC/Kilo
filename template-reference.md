@@ -3,7 +3,7 @@ Templates are documents that describe an output format such as HTML. They allow 
 
 Template documents include "markers" that are replaced with values provided by the data dictionary when the template is processed:
 
-* {{_variable_}} - injects a variable from the data dictionary into the output
+* {{_variable_}} - injects a value from the data dictionary into the output
 * {{?_section_}}...{{/_section_}} - defines a conditional section
 * {{#_section_}}...{{/_section_}} - defines a repeating section
 * {{^_section_}}...{{/_section_}} - defines an inverted section
@@ -11,8 +11,6 @@ Template documents include "markers" that are replaced with values provided by t
 * {{!_comment_}} - provides non-rendered informational content
 
 Each of these marker types is discussed in more detail below.
-
-Nested values can be referred to by path; e.g. "name/first". A literal slash or backslash character can be used in a variable or section name by escaping it with a leading backslash.
 
 ## Variables
 Variable markers inject a named value from the data dictionary into the output. For example:
@@ -23,7 +21,9 @@ Variable markers inject a named value from the data dictionary into the output. 
 <p>Average: {{average}}</p> 
 ```
 
-Variable names represent keys into the data dictionary. When the template is processed, the markers are replaced with the corresponding values from the dictionary. If a variable value is not defined (i.e. is missing or `null`), it is excluded from the generated output.
+Variable names represent keys into the data dictionary. When the template is processed, the markers are replaced with the corresponding values from the dictionary. When traversing sections, dictionary values are recursively inherited. If a value is not provided by the current dictionary or any of its parents, it is excluded from the generated output. 
+
+Nested values can be referred to by path; e.g. "name/first". A literal slash or backslash character can be used in a variable or section name by escaping it with a leading backslash.
 
 The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.
 

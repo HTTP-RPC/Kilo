@@ -399,6 +399,8 @@ public class TemplateEncoder extends Encoder<Object> {
     private HashMap<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
+    private LinkedList<Map<?, ?>> dictionaries = new LinkedList<>();
+
     private LinkedList<String> sectionNames = new LinkedList<>();
 
     private static HashMap<String, Modifier> defaultModifiers = new HashMap<>();
@@ -599,6 +601,8 @@ public class TemplateEncoder extends Encoder<Object> {
             dictionary = singletonMap(".", root);
         }
 
+        dictionaries.push(dictionary);
+
         int c = reader.read();
 
         while (c != EOF) {
@@ -705,7 +709,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         case CONDITIONAL_SECTION_START: {
                             sectionNames.push(marker);
 
-                            Object value = getMarkerValue(dictionary, marker);
+                            Object value = getMarkerValue(marker);
 
                             if (value != null) {
                                 writeRoot(value, writer, locale, timeZone, reader);
@@ -735,7 +739,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             sectionNames.push(marker);
 
-                            Object value = getMarkerValue(dictionary, marker);
+                            Object value = getMarkerValue(marker);
 
                             Iterator<?> iterator;
                             if (value == null) {
@@ -782,7 +786,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         case INVERTED_SECTION_START: {
                             sectionNames.push(marker);
 
-                            Object value = getMarkerValue(dictionary, marker);
+                            Object value = getMarkerValue(marker);
 
                             if (value == null
                                 || (value instanceof Iterable<?> && !((Iterable<?>)value).iterator().hasNext())
@@ -801,6 +805,8 @@ public class TemplateEncoder extends Encoder<Object> {
                             if (!sectionNames.peek().equals(marker)) {
                                 throw new IOException("Invalid closing section marker.");
                             }
+
+                            dictionaries.pop();
 
                             return;
                         }
@@ -823,7 +829,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
 
                         case VARIABLE: {
-                            Object value = getMarkerValue(dictionary, marker);
+                            Object value = getMarkerValue(marker);
 
                             if (value != null) {
                                 for (String modifierName : modifierNames) {
@@ -858,25 +864,23 @@ public class TemplateEncoder extends Encoder<Object> {
 
             c = reader.read();
         }
+
+        dictionaries.pop();
     }
 
-    private static Object getMarkerValue(Map<String, ?> dictionary, String name) {
-        if (name.equals(".")) {
-            return dictionary.get(name);
-        } else {
-            Object value = dictionary;
-
+    private Object getMarkerValue(String name) {
+        for (Object value : dictionaries) {
             StringBuilder keyBuilder = new StringBuilder();
 
             int i = 0;
             int n = name.length();
 
-            while (i <= n) {
+            while (i <= n && value != null) {
                 char c = (i < n) ? name.charAt(i) : 0;
 
                 if (c == 0 || c == '/') {
                     if (!(value instanceof Map<?, ?>)) {
-                        return null;
+                        continue;
                     }
 
                     String key = keyBuilder.toString();
@@ -907,8 +911,12 @@ public class TemplateEncoder extends Encoder<Object> {
                 i++;
             }
 
-            return value;
+            if (value != null) {
+                return value;
+            }
         }
+
+        return null;
     }
 
     /**
