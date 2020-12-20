@@ -267,7 +267,15 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(encode(values.get(columns.get(i))));
+            Object value = values.get(columns.get(i));
+
+            if (value instanceof QueryBuilder) {
+                sqlBuilder.append("(");
+                sqlBuilder.append(value.toString());
+                sqlBuilder.append(")");
+            } else {
+                sqlBuilder.append(encode(value));
+            }
         }
 
         sqlBuilder.append(")");
@@ -322,7 +330,16 @@ public class QueryBuilder {
 
             sqlBuilder.append(entry.getKey());
             sqlBuilder.append(" = ");
-            sqlBuilder.append(encode(entry.getValue()));
+
+            Object value = entry.getValue();
+
+            if (value instanceof QueryBuilder) {
+                sqlBuilder.append("(");
+                sqlBuilder.append(value.toString());
+                sqlBuilder.append(")");
+            } else {
+                sqlBuilder.append(encode(value));
+            }
 
             i++;
         }
@@ -372,7 +389,6 @@ public class QueryBuilder {
 
                 return stringBuilder.toString();
             }
-
         } else {
             return String.valueOf(value);
         }

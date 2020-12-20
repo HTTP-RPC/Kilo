@@ -50,10 +50,11 @@ public class QueryBuilderTest {
             entry("b", true),
             entry("c", "hello"),
             entry("d", ":d"),
-            entry("e", "?")
+            entry("e", "?"),
+            entry("f", QueryBuilder.select("f").from("F"))
         )).toString();
 
-        assertEquals("insert into A (a, b, c, d, e) values (1, true, 'hello', :d, ?)", sql);
+        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', :d, ?, (select f from F))", sql);
     }
 
     @Test
@@ -63,10 +64,11 @@ public class QueryBuilderTest {
             entry("b", true),
             entry("c", "hello"),
             entry("d", ":d"),
-            entry("e", "?")
+            entry("e", "?"),
+            entry("f", QueryBuilder.select("f").from("F"))
         )).where("a is not null").toString();
 
-        assertEquals("update A set a = 1, b = true, c = 'hello', d = :d, e = ? where a is not null", sql);
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = :d, e = ?, f = (select f from F) where a is not null", sql);
     }
 
     @Test
