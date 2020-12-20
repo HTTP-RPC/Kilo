@@ -14,16 +14,17 @@
 
 package org.httprpc.sql;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * Class for programmatically constructing a SQL query.
  */
 public class QueryBuilder {
-    private StringBuilder sqlBuilder = new StringBuilder();
+    private StringBuilder sqlBuilder;
 
-    private QueryBuilder(String operation) {
-        sqlBuilder.append(operation);
+    private QueryBuilder(StringBuilder sqlBuilder) {
+        this.sqlBuilder = sqlBuilder;
     }
 
     /**
@@ -40,107 +41,12 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        return new QueryBuilder("select " + String.join(", ", columns));
-    }
+        StringBuilder sqlBuilder = new StringBuilder();
 
-    /**
-     * Creates an "insert into" query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @param columns
-     * The column names.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder insertInto(String table, String... columns) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
+        sqlBuilder.append("select ");
+        sqlBuilder.append(String.join(", ", columns));
 
-        if (columns == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new QueryBuilder("insert into " + table + " (" + String.join(", ", columns) + ")");
-    }
-
-    /**
-     * Creates an "insert into" query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @param row
-     * The row to insert.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder insertInto(String table, Map<String, ?> row) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (row == null) {
-            throw new IllegalArgumentException();
-        }
-
-        int n = row.size();
-
-        String[] columns = new String[n];
-        Object[] values = new Object[n];
-
-        int i = 0;
-
-        for (Map.Entry<String, ?> entry : row.entrySet()) {
-            columns[i] = entry.getKey();
-            values[i] = entry.getValue();
-
-            i++;
-        }
-
-        QueryBuilder queryBuilder = insertInto(table, columns);
-
-        queryBuilder.values(values);
-
-        return queryBuilder;
-    }
-
-    /**
-     * Creates an "update" query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder update(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new QueryBuilder("update " + table);
-    }
-
-    /**
-     * Creates a "delete from" query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder deleteFrom(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new QueryBuilder("delete from " + table);
+        return new QueryBuilder(sqlBuilder);
     }
 
     /**
@@ -296,7 +202,7 @@ public class QueryBuilder {
         if (count < 0) {
             throw new IllegalArgumentException();
         }
-        
+
         sqlBuilder.append(" limit ");
         sqlBuilder.append(count);
 
@@ -316,53 +222,134 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "values" clause to a query.
+     * Creates an "insert into" query.
+     *
+     * @param table
+     * The table name.
      *
      * @param values
-     * The column values.
+     * The values to insert.
      *
      * @return
-     * The {@link QueryBuilder} instance.
+     * The new {@link QueryBuilder} instance.
      */
-    public QueryBuilder values(Object... values) {
+    public static QueryBuilder insertInto(String table, Map<String, ?> values) {
+        if (table == null) {
+            throw new IllegalArgumentException();
+        }
+
         if (values == null) {
             throw new IllegalArgumentException();
         }
 
-        sqlBuilder.append(" values (");
+        StringBuilder sqlBuilder = new StringBuilder();
 
-        for (int i = 0; i < values.length; i++) {
+        sqlBuilder.append("insert into ");
+        sqlBuilder.append(table);
+        sqlBuilder.append(" (");
+
+        ArrayList<String> columns = new ArrayList<>(values.keySet());
+
+        int n = columns.size();
+
+        for (int i = 0; i < n; i++) {
             if (i > 0) {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(encode(values[i]));
+            sqlBuilder.append(columns.get(i));
+        }
+
+        sqlBuilder.append(") values (");
+
+        for (int i = 0; i < n; i++) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(encode(values.get(columns.get(i))));
         }
 
         sqlBuilder.append(")");
 
-        return this;
+        return new QueryBuilder(sqlBuilder);
+    }
+
+    /**
+     * Creates an "update" query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder update(String table) {
+        if (table == null) {
+            throw new IllegalArgumentException();
+        }
+
+        StringBuilder sqlBuilder = new StringBuilder();
+
+        sqlBuilder.append("update ");
+        sqlBuilder.append(table);
+
+        return new QueryBuilder(sqlBuilder);
     }
 
     /**
      * Appends a "set" command to a query.
      *
-     * @param column
-     * The column name.
-     *
-     * @param value
-     * The column value.
+     * @param values
+     * The values to update.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder set(String column, Object value) {
+    public QueryBuilder set(Map<String, ?> values) {
+        if (values == null) {
+            throw new IllegalArgumentException();
+        }
+
         sqlBuilder.append(" set ");
-        sqlBuilder.append(column);
-        sqlBuilder.append(" = ");
-        sqlBuilder.append(encode(value));
+
+        int i = 0;
+
+        for (Map.Entry<String, ?> entry : values.entrySet()) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(entry.getKey());
+            sqlBuilder.append(" = ");
+            sqlBuilder.append(encode(entry.getValue()));
+
+            i++;
+        }
 
         return this;
+    }
+
+    /**
+     * Creates a "delete from" query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder deleteFrom(String table) {
+        if (table == null) {
+            throw new IllegalArgumentException();
+        }
+
+        StringBuilder sqlBuilder = new StringBuilder();
+
+        sqlBuilder.append("delete from ");
+        sqlBuilder.append(table);
+
+        return new QueryBuilder(sqlBuilder);
     }
 
     @Override

@@ -58,16 +58,15 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdate() {
-        String sql = QueryBuilder.update("A")
-            .set("a", 1)
-            .set("b", true)
-            .set("c", "hello")
-            .set("d", ":d")
-            .set("e", "?")
-            .where("a is not null")
-            .toString();
+        String sql = QueryBuilder.update("A").set(mapOf(
+            entry("a", 1),
+            entry("b", true),
+            entry("c", "hello"),
+            entry("d", ":d"),
+            entry("e", "?")
+        )).where("a is not null").toString();
 
-        assertEquals("update A set a = 1 set b = true set c = 'hello' set d = :d set e = ? where a is not null", sql);
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = :d, e = ? where a is not null", sql);
     }
 
     @Test
