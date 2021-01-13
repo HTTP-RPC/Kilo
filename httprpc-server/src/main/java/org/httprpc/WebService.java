@@ -405,8 +405,6 @@ public abstract class WebService extends HttpServlet {
         } else if (result == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
-            response.setStatus(HttpServletResponse.SC_OK);
-
             encodeResult(request, response, result);
         }
     }

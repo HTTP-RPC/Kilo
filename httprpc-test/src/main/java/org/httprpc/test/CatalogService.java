@@ -21,6 +21,7 @@ import org.httprpc.WebService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,12 @@ public class CatalogService extends WebService {
         @Description("The item's price.") double price
     ) {
         items.add(new Item(description, price));
+
+        HttpServletResponse response = getResponse();
+
+        if (response != null) {
+            response.setStatus(HttpServletResponse.SC_CREATED);
+        }
 
         return items.size();
     }

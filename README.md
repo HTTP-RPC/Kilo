@@ -199,7 +199,7 @@ Return values are converted to their JSON equivalents as follows:
 * `Iterable`: array
 * `java.util.Map` or Java bean: object
 
-If a method returns `void` or `Void`, an HTTP 204 response will be returned to the caller. If a method returns `null`, an HTTP 404 response will be returned.
+By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
 
 #### Custom Result Encodings
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom encoding. See the method documentation for more information.
@@ -212,7 +212,7 @@ protected HttpServletRequest getRequest() { ... }
 protected HttpServletResponse getResponse() { ... }
 ```
 
-For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
+For example, a service might use the request to get the name of the current user, or use the response to return a custom header or status code.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
 
