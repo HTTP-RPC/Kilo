@@ -32,7 +32,7 @@ public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
         String expected = "\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,0,3\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,3,0\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
         List<Map<String, ?>> values = listOf(
@@ -41,8 +41,8 @@ public class CSVEncoderTest {
                 entry("b", 1),
                 entry("c", 2.0),
                 entry("d", true),
-                entry("e", new Date(0)),
-                entry("f", DayOfWeek.THURSDAY)
+                entry("e", DayOfWeek.THURSDAY),
+                entry("f", new Date(0))
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),

@@ -14,6 +14,7 @@
 
 package org.httprpc.beans;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,6 +33,7 @@ public interface TestInterface {
     double getDouble();
     String getString();
     Date getDate();
+    Instant getInstant();
     LocalDate getLocalDate();
     LocalTime getLocalTime();
     LocalDateTime getLocalDateTime();

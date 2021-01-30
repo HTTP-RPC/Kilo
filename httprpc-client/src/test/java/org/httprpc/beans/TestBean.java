@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -83,6 +84,11 @@ public class TestBean implements TestInterface {
     @Override
     public Date getDate() {
         return new Date(0);
+    }
+
+    @Override
+    public Instant getInstant() {
+        return Instant.ofEpochMilli(1);
     }
 
     @Override

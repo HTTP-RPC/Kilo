@@ -2,6 +2,8 @@
 {{timestamp:format=isoDateTime}},
 {{date:format=shortDate}},
 {{date:format=isoDateTime}},
+{{instant:format=shortDate}},
+{{instant:format=isoDateTime}},
 {{localDate:format=shortDate}},
 {{localTime:format=shortTime}},
 {{localDateTime:format=shortDateTime}}

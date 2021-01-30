@@ -22,9 +22,11 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -367,9 +369,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Boolean}</li>
      * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
-     * <li>{@link LocalDate}</li>
-     * <li>{@link LocalTime}</li>
-     * <li>{@link LocalDateTime}</li>
+     * <li>{@link TemporalAccessor}</li>
      * <li>{@link URL}</li>
      * </ul>
      *
@@ -400,9 +400,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Boolean
             || value instanceof Enum<?>
             || value instanceof Date
-            || value instanceof LocalDate
-            || value instanceof LocalTime
-            || value instanceof LocalDateTime
+            || value instanceof TemporalAccessor
             || value instanceof URL) {
             return value;
         } else if (value instanceof Iterable<?>) {
@@ -427,6 +425,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link Object#toString()}.</li>
      * <li>If the target type is {@link Date}, the value is coerced to a long
      * value and passed to {@link Date#Date(long)}.</li>
+     * <li>If the target type is {@link Instant} and the value is an instance of
+     * {@link Date}, the value is adapted via {@link Date#toInstant()}. Otherwise,
+     * the value's string representation is parsed using
+     * {@link Instant#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDate}, the value's string
      * representation is parsed using {@link LocalDate#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalTime}, the value's string
@@ -555,6 +557,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     return new Date(((Number)value).longValue());
                 } else {
                     return new Date(Long.parseLong(value.toString()));
+                }
+            } else if (type == Instant.class) {
+                if (value instanceof Date) {
+                    return ((Date)value).toInstant();
+                } else {
+                    return Instant.parse(value.toString());
                 }
             } else if (type == LocalDate.class) {
                 return LocalDate.parse(value.toString());

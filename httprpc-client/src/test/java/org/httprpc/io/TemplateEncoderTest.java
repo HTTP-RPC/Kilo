@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -396,6 +397,7 @@ public class TemplateEncoderTest {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("format2.txt"));
 
         Date date = new Date();
+        Instant instant = date.toInstant();
         LocalDate localDate = LocalDate.now();
         LocalTime localTime = LocalTime.now();
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -405,6 +407,7 @@ public class TemplateEncoderTest {
             encoder.write(mapOf(
                 entry("timestamp", date.getTime()),
                 entry("date", date),
+                entry("instant", instant),
                 entry("localDate", localDate),
                 entry("localTime", localTime),
                 entry("localDateTime", localDateTime)
@@ -415,6 +418,8 @@ public class TemplateEncoderTest {
         ZonedDateTime now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
         assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
             + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"

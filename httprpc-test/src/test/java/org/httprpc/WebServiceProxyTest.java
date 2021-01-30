@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,6 +53,7 @@ public class WebServiceProxyTest {
             int getNumber();
             boolean getFlag();
             Date getDate();
+            Instant getInstant();
             LocalDate getLocalDate();
             LocalTime getLocalTime();
             LocalDateTime getLocalDateTime();
@@ -68,7 +70,7 @@ public class WebServiceProxyTest {
 
         @RequestMethod("POST")
         Response testMultipartPost(String string, List<String> strings, int number, boolean flag,
-            Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+            Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
             List<URL> attachments) throws IOException;
     }
 
@@ -88,6 +90,7 @@ public class WebServiceProxyTest {
     }
 
     private Date date = new Date();
+    private Instant instant = Instant.ofEpochMilli(1);
 
     private LocalDate localDate = LocalDate.now();
     private LocalTime localTime = LocalTime.now();
@@ -123,6 +126,7 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
+            entry("instant", instant),
             entry("date", date),
             entry("localDate", localDate),
             entry("localTime", localTime),
@@ -137,6 +141,7 @@ public class WebServiceProxyTest {
             entry("number", 123L),
             entry("flag", true),
             entry("date", date.getTime()),
+            entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
             entry("localDateTime", localDateTime.toString())
@@ -184,6 +189,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("flag", true),
             entry("date", date),
+            entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime)
@@ -197,6 +203,7 @@ public class WebServiceProxyTest {
             entry("number", 123L),
             entry("flag", true),
             entry("date", date.getTime()),
+            entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
             entry("localDateTime", localDateTime.toString()),
@@ -212,7 +219,7 @@ public class WebServiceProxyTest {
         TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
         TestService.Response response = testService.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, true,
-            date, localDate, localTime, localDateTime,
+            date, instant, localDate, localTime, localDateTime,
             listOf(textTestURL, imageTestURL));
 
         assertNotNull(response);
@@ -222,6 +229,7 @@ public class WebServiceProxyTest {
             && response.getNumber() == 123
             && response.getFlag()
             && response.getDate().equals(date)
+            && response.getInstant().equals(instant)
             && response.getLocalDate().equals(localDate)
             && response.getLocalTime().equals(localTime)
             && response.getLocalDateTime().equals(localDateTime)

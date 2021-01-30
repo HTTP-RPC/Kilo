@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,11 @@ public class JSONEncoderTest {
     @Test
     public void testDate() throws IOException {
         assertEquals("0", encode(new Date(0)));
+    }
+
+    @Test
+    public void testInstant() throws IOException {
+        assertEquals("\"1970-01-01T00:00:00.001Z\"", encode(Instant.ofEpochMilli(1)));
     }
 
     @Test

@@ -98,9 +98,10 @@ Method arguments may be any of the following types:
 * `Double`/`double`
 * `Boolean`/`boolean`
 * `java.util.Date` (from a long value representing epoch time in milliseconds)
-* `java.util.time.LocalDate` ("yyyy-mm-dd")
-* `java.util.time.LocalTime` ("hh:mm")
-* `java.util.time.LocalDateTime` ("yyyy-mm-ddThh:mm")
+* `java.time.Instant` ("yyyy-mm-ddThh:mm:ss[.sss]Z")
+* `java.time.LocalDate` ("yyyy-mm-dd")
+* `java.time.LocalTime` ("hh:mm")
+* `java.time.LocalDateTime` ("yyyy-mm-ddThh:mm")
 * `java.util.List`
 * `java.net.URL`
 
@@ -192,10 +193,8 @@ Return values are converted to their JSON equivalents as follows:
 * `Boolean`: true/false
 * `Enum`: ordinal value
 * `java.util.Date`: long value representing epoch time in milliseconds
-* `java.util.time.LocalDate`: "yyyy-mm-dd"
-* `java.util.time.LocalTime`: "hh:mm"
-* `java.util.time.LocalDateTime`: "yyyy-mm-ddThh:mm"
-* `java.net.URL`: string (external form)
+* `java.time.TemporalAccessor`: string
+* `java.net.URL`: string
 * `Iterable`: array
 * `java.util.Map` or Java bean: object
 
@@ -254,9 +253,10 @@ Methods are grouped by resource path. Parameter and return types are encoded as 
 * `CharSequence`: "string"
 * `Enum`: "enum"
 * `java.util.Date`: "date"
-* `java.util.time.LocalDate`: "date-local"
-* `java.util.time.LocalTime`: "time-local"
-* `java.util.time.LocalDateTime`: "datetime-local"
+* `java.time.Instant`: "instant"
+* `java.time.LocalDate`: "date-local"
+* `java.time.LocalTime`: "time-local"
+* `java.time.LocalDateTime`: "datetime-local"
 * `java.net.URL`: "file" for parameters, "url" for return values
 * `java.lang.Iterable`, `java.util.Collection`, or `java.util.List`: "[<em>element type</em>]"
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
@@ -561,9 +561,7 @@ The `BeanAdapter` class provides access to the properties of a Java bean instanc
 * `Boolean`
 * `Enum`
 * `java.util.Date`
-* `java.util.time.LocalDate`
-* `java.util.time.LocalTime`
-* `java.util.time.LocalDateTime`
+* `java.time.TemporalAccessor`
 * `java.net.URL`
 
 If the value is an instance of `Iterable` or `Map`, it is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in an instance of `BeanAdapter`.
@@ -675,7 +673,7 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method (e.g. `Integer#valueOf()`). Missing or `null` values are automatically converted to `0` or `false` for primitive types.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
 * If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
-* If the target type is `java.util.time.LocalDate`, `java.util.time.LocalTime`, or `java.util.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
+* If the target type is `java.time.Instant`, `java.time.LocalDate`, `java.time.LocalTime`, or `java.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
 Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above. `Object` methods such as `toString()` are delegated to the underlying map.

@@ -18,9 +18,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.Map;
 
@@ -94,7 +92,7 @@ public class JSONEncoder extends Encoder<Object> {
             encode(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
             encode(((Date)value).getTime(), writer);
-        } else if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
+        } else if (value instanceof TemporalAccessor) {
             encode(value.toString(), writer);
         } else if (value instanceof URL) {
             encode(value.toString(), writer);

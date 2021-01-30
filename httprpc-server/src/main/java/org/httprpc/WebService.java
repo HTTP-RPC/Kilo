@@ -40,6 +40,7 @@ import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -786,6 +787,8 @@ public abstract class WebService extends HttpServlet {
             return "enum";
         } else if (Date.class.isAssignableFrom(type)) {
             return "date";
+        } else if (type == Instant.class) {
+            return "instant";
         } else if (type == LocalDate.class) {
             return "date-local";
         } else if (type == LocalTime.class) {

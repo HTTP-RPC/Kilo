@@ -29,10 +29,10 @@
 <form action="${pageContext.request.contextPath}/catalog/items" method="post" enctype="application/x-www-form-urlencoded">
 <table>
 <tr>
-<td>Description</td><td><input type="text" name="description"/></td>
+<td>Description</td><td><input name="description"/></td>
 </tr>
 <tr>
-<td>Price</td><td><input type="text" name="price"/></td>
+<td>Price</td><td><input name="price"/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit" value="Add Item"/></td>
@@ -47,10 +47,10 @@
 <form action="${pageContext.request.contextPath}/catalog/items/1" method="post" enctype="application/x-www-form-urlencoded">
 <table>
 <tr>
-<td>Description</td><td><input type="text" name="description"/></td>
+<td>Description</td><td><input name="description"/></td>
 </tr>
 <tr>
-<td>Price</td><td><input type="text" name="price"/></td>
+<td>Price</td><td><input name="price"/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit" value="Update Item 1"/></td>
@@ -97,7 +97,7 @@
 
 <a href="${pageContext.request.contextPath}/test?api">Test (API)</a><br/>
 <br/>
-<a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
+<a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&instant=1970-01-01T00:00:00.001Z&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
 <a href="${pageContext.request.contextPath}/test/a/123/b/héllo/c/456/d/göodbye">GET (Keys)</a><br/>
 <a href="${pageContext.request.contextPath}/test/fibonacci?count=8">GET (Fibonacci)</a><br/>
 
@@ -106,7 +106,7 @@
 <form action="${pageContext.request.contextPath}/test" method="post" enctype="application/x-www-form-urlencoded">
 <table>
 <tr>
-<td>String</td><td><input type="text" name="string" value="héllo"/></td>
+<td>String</td><td><input name="string" value="héllo"/></td>
 </tr>
 <tr>
 <td>Strings</td>
@@ -119,19 +119,25 @@
 </td>
 </tr>
 <tr>
-<td>Number</td><td><input type="text" name="number" value="123"/></td>
+<td>Number</td><td><input name="number" value="123"/></td>
 </tr>
 <tr>
-<td>Flag</td><td><input type="text" name="flag" value="true"/></td>
+<td>Flag</td><td><input name="flag" value="true"/></td>
 </tr>
 <tr>
-<td>Local Date</td><td><input type="date" name="localDate" value="2018-06-28"/></td>
+<td>Date</td><td><input name="date" value="0"/></td>
 </tr>
 <tr>
-<td>Local Time</td><td><input type="time" name="localTime" value="10:45"/></td>
+<td>Instant</td><td><input name="instant" value="1970-01-01T00:00:00.001Z"/></td>
 </tr>
 <tr>
-<td>Local Date/Time</td><td><input type="datetime-local" name="localDateTime" value="2018-06-28T10:45"/></td>
+<td>Local Date</td><td><input name="localDate" value="2018-06-28"/></td>
+</tr>
+<tr>
+<td>Local Time</td><td><input name="localTime" value="10:45"/></td>
+</tr>
+<tr>
+<td>Local Date/Time</td><td><input name="localDateTime" value="2018-06-28T10:45"/></td>
 </tr>
 <tr>
 <td colspan="2"><input type="submit"/></td>
@@ -144,7 +150,7 @@
 <form action="${pageContext.request.contextPath}/test" method="post" enctype="multipart/form-data">
 <table>
 <tr>
-<td>String</td><td><input type="text" name="string" value="héllo"/></td>
+<td>String</td><td><input name="string" value="héllo"/></td>
 </tr>
 <tr>
 <td>Strings</td>
@@ -157,19 +163,25 @@
 </td>
 </tr>
 <tr>
-<td>Number</td><td><input type="text" name="number" value="123"/></td>
+<td>Number</td><td><input name="number" value="123"/></td>
 </tr>
 <tr>
-<td>Flag</td><td><input type="text" name="flag" value="true"/></td>
+<td>Flag</td><td><input name="flag" value="true"/></td>
 </tr>
 <tr>
-<td>Local Date</td><td><input type="date" name="localDate" value="2018-06-28"/></td>
+<td>Date</td><td><input name="date" value="0"/></td>
 </tr>
 <tr>
-<td>Local Time</td><td><input type="time" name="localTime" value="10:45"/></td>
+<td>Instant</td><td><input name="instant" value="1970-01-01T00:00:00.001Z"/></td>
 </tr>
 <tr>
-<td>Local Date/Time</td><td><input type="datetime-local" name="localDateTime" value="2018-06-28T10:45"/></td>
+<td>Local Date</td><td><input name="localDate" value="2018-06-28"/></td>
+</tr>
+<tr>
+<td>Local Time</td><td><input name="localTime" value="10:45"/></td>
+</tr>
+<tr>
+<td>Local Date/Time</td><td><input name="localDateTime" value="2018-06-28T10:45"/></td>
 </tr>
 <tr>
 <td>Attachments</td><td><input type="file" name="attachments" multiple/></td>

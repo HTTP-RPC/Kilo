@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -98,6 +99,7 @@ public class BeanAdapterTest {
             entry("bigInteger", BigInteger.valueOf(8192L)),
             entry("dayOfWeek", DayOfWeek.values()[3]),
             entry("date", new Date(0)),
+            entry("instant", Instant.ofEpochMilli(1)),
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
@@ -151,6 +153,7 @@ public class BeanAdapterTest {
         assertEquals(4.0, result.getDouble(), 0.0);
         assertEquals("abc", result.getString());
         assertEquals(new Date(0), result.getDate());
+        assertEquals(Instant.ofEpochMilli(1), result.getInstant());
         assertEquals(LocalDate.parse("2018-06-28"), result.getLocalDate());
         assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
         assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
@@ -175,6 +178,15 @@ public class BeanAdapterTest {
         Map<String, ?> map = new BeanAdapter(testInterface);
 
         assertEquals(10, map.get("i"));
+    }
+
+    @Test
+    public void testInstant() {
+        Date date = new Date(1);
+
+        Instant instant = BeanAdapter.adapt(date, Instant.class);
+
+        assertEquals(Instant.ofEpochMilli(1), instant);
     }
 
     @Test

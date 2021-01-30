@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -48,13 +49,14 @@ import static org.httprpc.util.Collections.mapOf;
 public class TestService extends WebService {
     @RequestMethod("GET")
     public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
-        Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
+        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
         return mapOf(
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
             entry("flag", flag),
             entry("date", date),
+            entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime)
@@ -126,7 +128,7 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag,
-        Date date, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
@@ -154,6 +156,7 @@ public class TestService extends WebService {
             entry("number", number),
             entry("flag", flag),
             entry("date", date),
+            entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),

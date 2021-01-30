@@ -5,6 +5,7 @@
     "string": "abc",
     "dayOfWeek": 3,
     "date": 0,
+    "instant": "1970-01-01T00:00:00.001Z",
     "localDate": "2018-06-28",
     "localTime": "10:45",
     "localDateTime": "2018-06-28T10:45",

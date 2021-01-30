@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -189,7 +190,11 @@ public class TemplateEncoder extends Encoder<Object> {
             }
 
             if (value instanceof Date) {
-                value = ZonedDateTime.ofInstant(((Date)value).toInstant(), timeZone.toZoneId());
+                value = ((Date)value).toInstant();
+            }
+
+            if (value instanceof Instant) {
+                value = ZonedDateTime.ofInstant((Instant)value, timeZone.toZoneId());
             }
 
             TemporalAccessor temporalAccessor = (TemporalAccessor)value;

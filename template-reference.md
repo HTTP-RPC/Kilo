@@ -54,7 +54,7 @@ For example, the following marker applies a format string to a value and then UR
 Applications may also define their own custom modifiers.
 
 #### Locale-Specific Formatting
-In addition to `printf()`-style formatting, the `format` modifier also supports the following arguments for locale-specific formatting of numbers and dates:
+In addition to `printf()`-style formatting, the `format` modifier also supports the following arguments for locale-specific formatting of numbers and dates/times:
 
   * `currency` - applies a currency format
   * `percent` - applies a percentage format
