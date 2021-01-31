@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -92,6 +93,17 @@ public class PetService extends WebService {
                     getResponse().setContentType("text/csv");
 
                     CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth"));
+
+                    csvEncoder.setLabels(mapOf(
+                        entry("name", "Name"),
+                        entry("species", "Species"),
+                        entry("sex", "Sex"),
+                        entry("birth", "Birth")
+                    ));
+
+                    csvEncoder.setFormats(mapOf(
+                        entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
+                    ));
 
                     csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
                 } else if (format.equals("html")) {

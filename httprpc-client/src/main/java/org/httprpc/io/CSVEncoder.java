@@ -17,9 +17,12 @@ package org.httprpc.io;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.text.Format;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 
 /**
  * CSV encoder.
@@ -27,6 +30,9 @@ import java.util.Map;
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;
     private char delimiter;
+
+    private Map<String, String> labels = emptyMap();
+    private Map<String, Format> formats = emptyMap();
 
     /**
      * Constructs a new CSV encoder.
@@ -58,6 +64,54 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         this.delimiter = delimiter;
     }
 
+    /**
+     * Returns the column labels.
+     *
+     * @return
+     * The column labels.
+     */
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    /**
+     * Sets the column labels.
+     *
+     * @param labels
+     * The column labels.
+     */
+    public void setLabels(Map<String, String> labels) {
+        if (labels == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.labels = labels;
+    }
+
+    /**
+     * Returns the column formats.
+     *
+     * @return
+     * The column formats.
+     */
+    public Map<String, Format> getFormats() {
+        return formats;
+    }
+
+    /**
+     * Sets the column formats.
+     *
+     * @param formats
+     * The column formats.
+     */
+    public void setFormats(Map<String, Format> formats) {
+        if (formats == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.formats = formats;
+    }
+
     @Override
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);
@@ -73,7 +127,13 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                 writer.write(delimiter);
             }
 
-            encode(key, writer);
+            String label = labels.get(key);
+
+            if (label == null) {
+                label = key;
+            }
+
+            encode(label, writer);
 
             i++;
         }
@@ -92,7 +152,15 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                     writer.write(delimiter);
                 }
 
-                encode(map.get(key), writer);
+                Object value = map.get(key);
+
+                Format format = formats.get(key);
+
+                if (format != null) {
+                    value = format.format(value);
+                }
+
+                encode(value, writer);
 
                 i++;
             }
