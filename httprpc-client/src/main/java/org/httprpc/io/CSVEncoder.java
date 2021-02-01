@@ -154,10 +154,12 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
                 Object value = map.get(key);
 
-                Format format = formats.get(key);
+                if (value != null) {
+                    Format format = formats.get(key);
 
-                if (format != null) {
-                    value = format.format(value);
+                    if (format != null) {
+                        value = format.format(value);
+                    }
                 }
 
                 encode(value, writer);

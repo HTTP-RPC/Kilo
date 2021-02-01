@@ -34,7 +34,7 @@ public class CSVEncoderTest {
     public void testWrite() throws IOException {
         String expected = "\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"G\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,3,0,\"12%\"\r\n"
-            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,,\"34%\"\r\n";
+            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,,\r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -50,7 +50,7 @@ public class CSVEncoderTest {
                 entry("a", " D\r\nÉ\r\nF\r\n"),
                 entry("b", 2),
                 entry("c", 4.0),
-                entry("g", 0.34)
+                entry("g", null)
             )
         );
 
