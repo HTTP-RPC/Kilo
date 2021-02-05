@@ -61,7 +61,7 @@ public class Collections {
      */
     @SafeVarargs
     public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
-        LinkedHashMap<K, V> map = new LinkedHashMap<>();
+        Map<K, V> map = new LinkedHashMap<>();
 
         for (Map.Entry<K, V> entry : entries) {
             map.put(entry.getKey(), entry.getValue());

@@ -35,6 +35,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -401,14 +402,14 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private URL url;
     private Charset charset;
-    private HashMap<String, Modifier> modifiers;
+    private Map<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
-    private LinkedList<Map<?, ?>> dictionaries = new LinkedList<>();
+    private Deque<Map<?, ?>> dictionaries = new LinkedList<>();
 
-    private LinkedList<String> sectionNames = new LinkedList<>();
+    private Deque<String> sectionNames = new LinkedList<>();
 
-    private static HashMap<String, Modifier> defaultModifiers = new HashMap<>();
+    private static Map<String, Modifier> defaultModifiers = new HashMap<>();
 
     private static final int EOF = -1;
 
@@ -656,8 +657,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
                     String marker = markerBuilder.toString();
 
-                    LinkedList<String> modifierNames = new LinkedList<>();
-                    HashMap<String, String> modifierArguments = new HashMap<>();
+                    Deque<String> modifierNames = new LinkedList<>();
+                    Map<String, String> modifierArguments = new HashMap<>();
 
                     if (c == ':') {
                         StringBuilder modifierNameBuilder = new StringBuilder();

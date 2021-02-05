@@ -42,11 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class WebServiceProxyTest {
     public interface TestService extends Map<String, Object> {
         interface Response {
-            interface AttachmentInfo {
-                int getBytes();
-                int getChecksum();
-            }
-
             String getString();
             List<String> getStrings();
             int getNumber();
@@ -57,6 +52,11 @@ public class WebServiceProxyTest {
             LocalTime getLocalTime();
             LocalDateTime getLocalDateTime();
             List<AttachmentInfo> getAttachmentInfo();
+        }
+
+        interface AttachmentInfo {
+            int getBytes();
+            int getChecksum();
         }
 
         @RequestMethod("GET")

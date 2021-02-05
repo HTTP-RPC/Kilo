@@ -15,6 +15,7 @@
 package org.httprpc.sql;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -248,7 +249,7 @@ public class QueryBuilder {
         sqlBuilder.append(table);
         sqlBuilder.append(" (");
 
-        ArrayList<String> columns = new ArrayList<>(values.keySet());
+        List<String> columns = new ArrayList<>(values.keySet());
 
         int n = columns.size();
 

@@ -57,7 +57,7 @@ public class CatalogService extends WebService {
         }
     }
 
-    private ArrayList<Item> items = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
     @Override
     public void init() throws ServletException {

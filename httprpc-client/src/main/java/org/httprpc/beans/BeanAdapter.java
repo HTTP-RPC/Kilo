@@ -45,9 +45,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Iterable adapter
     private static class IterableAdapter extends AbstractList<Object> {
         Iterable<?> iterable;
-        HashMap<Class<?>, TreeMap<String, Method>> accessorCache;
+        Map<Class<?>, Map<String, Method>> accessorCache;
 
-        IterableAdapter(Iterable<?> iterable, HashMap<Class<?>, TreeMap<String, Method>> accessorCache) {
+        IterableAdapter(Iterable<?> iterable, Map<Class<?>, Map<String, Method>> accessorCache) {
             this.iterable = iterable;
             this.accessorCache = accessorCache;
         }
@@ -91,9 +91,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         Map<?, ?> map;
-        HashMap<Class<?>, TreeMap<String, Method>> accessorCache;
+        Map<Class<?>, Map<String, Method>> accessorCache;
 
-        MapAdapter(Map<?, ?> map, HashMap<Class<?>, TreeMap<String, Method>> accessorCache) {
+        MapAdapter(Map<?, ?> map, Map<Class<?>, Map<String, Method>> accessorCache) {
             this.map = map;
             this.accessorCache = accessorCache;
         }
@@ -196,9 +196,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private Object bean;
-    private HashMap<Class<?>, TreeMap<String, Method>> accessorCache;
+    private Map<Class<?>, Map<String, Method>> accessorCache;
 
-    private TreeMap<String, Method> accessors;
+    private Map<String, Method> accessors;
 
     private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
@@ -213,7 +213,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         this(bean, new HashMap<>());
     }
 
-    private BeanAdapter(Object bean, HashMap<Class<?>, TreeMap<String, Method>> accessorCache) {
+    private BeanAdapter(Object bean, Map<Class<?>, Map<String, Method>> accessorCache) {
         if (bean == null) {
             throw new IllegalArgumentException();
         }
@@ -377,7 +377,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return (T)adapt(value, new HashMap<>());
     }
 
-    private static Object adapt(Object value, HashMap<Class<?>, TreeMap<String, Method>> accessorCache) {
+    private static Object adapt(Object value, Map<Class<?>, Map<String, Method>> accessorCache) {
         if (value == null
             || value instanceof CharSequence
             || value instanceof Number
@@ -710,8 +710,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * The accessors defined by the given type.
      */
-    public static TreeMap<String, Method> getAccessors(Class<?> type) {
-        TreeMap<String, Method> accessors = new TreeMap<>();
+    public static Map<String, Method> getAccessors(Class<?> type) {
+        Map<String, Method> accessors = new TreeMap<>();
 
         Method[] methods = type.getMethods();
 

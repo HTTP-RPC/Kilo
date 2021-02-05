@@ -17,7 +17,9 @@ package org.httprpc.io;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 class PagedReader extends Reader {
     private Reader reader;
@@ -28,8 +30,8 @@ class PagedReader extends Reader {
 
     private boolean endOfFile = false;
 
-    private ArrayList<char[]> pages = new ArrayList<>();
-    private LinkedList<Integer> marks = new LinkedList<>();
+    private List<char[]> pages = new ArrayList<>();
+    private Deque<Integer> marks = new LinkedList<>();
 
     private static int DEFAULT_PAGE_SIZE = 1024;
     private static int EOF = -1;

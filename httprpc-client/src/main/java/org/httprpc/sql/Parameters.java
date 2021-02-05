@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -27,11 +28,11 @@ import java.util.Map;
  */
 public class Parameters {
     private String sql;
-    private LinkedList<String> keys;
+    private Deque<String> keys;
 
     private static final int EOF = -1;
 
-    private Parameters(String sql, LinkedList<String> keys) {
+    private Parameters(String sql, Deque<String> keys) {
         this.sql = sql;
         this.keys = keys;
     }
@@ -107,7 +108,7 @@ public class Parameters {
             throw new IllegalArgumentException();
         }
 
-        LinkedList<String> keys = new LinkedList<>();
+        Deque<String> keys = new LinkedList<>();
 
         StringBuilder sqlBuilder = new StringBuilder();
 

@@ -49,11 +49,6 @@ import static org.httprpc.util.Collections.mapOf;
 @MultipartConfig
 public class TestService extends WebService {
     public interface Response {
-        interface AttachmentInfo {
-            int getBytes();
-            int getChecksum();
-        }
-
         String getString();
         List<String> getStrings();
         int getNumber();
@@ -64,6 +59,11 @@ public class TestService extends WebService {
         LocalTime getLocalTime();
         LocalDateTime getLocalDateTime();
         List<AttachmentInfo> getAttachmentInfo();
+    }
+
+    public interface AttachmentInfo {
+        int getBytes();
+        int getChecksum();
     }
 
     @RequestMethod("GET")

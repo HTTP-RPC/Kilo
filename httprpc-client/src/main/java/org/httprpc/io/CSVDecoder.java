@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -40,8 +41,8 @@ public class CSVDecoder extends Decoder {
 
         private StringBuilder valueBuilder = new StringBuilder();
 
-        private ArrayList<String> keys = new ArrayList<>();
-        private ArrayList<String> values = new ArrayList<>();
+        private List<String> keys = new ArrayList<>();
+        private List<String> values = new ArrayList<>();
 
         private Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {
             private Boolean hasNext = null;
@@ -69,7 +70,7 @@ public class CSVDecoder extends Decoder {
                     throw new NoSuchElementException();
                 }
 
-                LinkedHashMap<String, String> row = new LinkedHashMap<>();
+                Map<String, String> row = new LinkedHashMap<>();
 
                 for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
                     String key = keys.get(i);
@@ -102,7 +103,7 @@ public class CSVDecoder extends Decoder {
             readValues(reader, keys, delimiter);
         }
 
-        private void readValues(Reader reader, ArrayList<String> values, char delimiter) throws IOException {
+        private void readValues(Reader reader, List<String> values, char delimiter) throws IOException {
             int c = reader.read();
 
             while (c != '\r' && c != '\n' && c != EOF) {

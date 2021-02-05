@@ -111,7 +111,7 @@ public class WebServiceProxy {
         Class<?> type;
         BiFunction<String, URL, WebServiceProxy> factory;
 
-        HashMap<Object, Object> keys;
+        Map<Object, Object> keys;
 
         TypedInvocationHandler(URL baseURL, Class<?> type, BiFunction<String, URL, WebServiceProxy> factory) {
             this.baseURL = baseURL;
@@ -179,7 +179,7 @@ public class WebServiceProxy {
 
                 Parameter[] parameters = method.getParameters();
 
-                HashMap<String, Object> argumentMap = new HashMap<>();
+                Map<String, Object> argumentMap = new HashMap<>();
 
                 for (int i = 0; i < parameters.length; i++) {
                     Parameter parameter = parameters[i];
@@ -552,7 +552,7 @@ public class WebServiceProxy {
         T result;
         if (responseCode / 100 == 2) {
             if (responseCode % 100 < 4 && responseHandler != null) {
-                HashMap<String, String> headers = new HashMap<>();
+                Map<String, String> headers = new HashMap<>();
 
                 for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
                     String key = entry.getKey();
