@@ -28,6 +28,7 @@ import java.util.List;
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 @Description("Simulates a product catalog.")
 public class CatalogService extends WebService {
+    @Description("Represents an item in the catalog.")
     public static class Item {
         private String description;
         private double price;

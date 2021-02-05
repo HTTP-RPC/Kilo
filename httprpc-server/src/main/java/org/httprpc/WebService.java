@@ -635,6 +635,14 @@ public abstract class WebService extends HttpServlet {
                 xmlStreamWriter.writeCharacters(name);
                 xmlStreamWriter.writeEndElement();
 
+                Description typeDescription = type.getAnnotation(Description.class);
+
+                if (typeDescription != null) {
+                    xmlStreamWriter.writeStartElement("p");
+                    xmlStreamWriter.writeCharacters(typeDescription.value());
+                    xmlStreamWriter.writeEndElement();
+                }
+
                 xmlStreamWriter.writeStartElement("ul");
 
                 for (Map.Entry<String, Method> propertyEntry : typeEntry.getValue().entrySet()) {

@@ -30,6 +30,7 @@ import static org.httprpc.util.Collections.listOf;
 @WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
 @Description("Tree service.")
 public class TreeService extends WebService {
+    @Description("Represents a node in the tree.")
     public static class TreeNode {
         private String name;
 
