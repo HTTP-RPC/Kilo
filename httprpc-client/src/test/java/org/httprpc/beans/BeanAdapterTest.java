@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -191,7 +192,8 @@ public class BeanAdapterTest {
 
     @Test
     public void testGetProperties() {
-        Map<String, Type> properties = BeanAdapter.getProperties(TestBean.class);
+        Map<String, Type> properties = BeanAdapter.getAccessors(TestBean.class).entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getGenericReturnType()));
 
         assertEquals(Integer.TYPE, properties.get("i"));
         assertEquals(Long.TYPE, properties.get("long"));

@@ -20,6 +20,8 @@ import org.httprpc.WebService;
 
 import javax.servlet.annotation.WebServlet;
 
+import java.util.List;
+
 import static org.httprpc.util.Collections.listOf;
 
 /**
@@ -28,6 +30,30 @@ import static org.httprpc.util.Collections.listOf;
 @WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
 @Description("Tree service.")
 public class TreeService extends WebService {
+    public static class TreeNode {
+        private String name;
+
+        private List<TreeNode> children = null;
+
+        private TreeNode(String name) {
+            this.name = name;
+        }
+
+        @Description("The tree node's name.")
+        public String getName() {
+            return name;
+        }
+
+        @Description("The tree node's children.")
+        public List<TreeNode> getChildren() {
+            return children;
+        }
+
+        private void setChildren(List<TreeNode> children) {
+            this.children = children;
+        }
+    }
+
     @RequestMethod("GET")
     @Description("Returns an example tree structure.")
     public TreeNode getTree() {

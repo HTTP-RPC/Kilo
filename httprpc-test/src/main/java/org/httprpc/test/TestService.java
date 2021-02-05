@@ -17,6 +17,7 @@ package org.httprpc.test;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
+import org.httprpc.beans.BeanAdapter;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -47,6 +48,24 @@ import static org.httprpc.util.Collections.mapOf;
 @WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
 @MultipartConfig
 public class TestService extends WebService {
+    public interface Response {
+        interface AttachmentInfo {
+            int getBytes();
+            int getChecksum();
+        }
+
+        String getString();
+        List<String> getStrings();
+        int getNumber();
+        boolean getFlag();
+        Date getDate();
+        Instant getInstant();
+        LocalDate getLocalDate();
+        LocalTime getLocalTime();
+        LocalDateTime getLocalDateTime();
+        List<AttachmentInfo> getAttachmentInfo();
+    }
+
     @RequestMethod("GET")
     public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
@@ -127,7 +146,7 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    public Map<String, ?> testPost(String string, List<String> strings, int number, boolean flag,
+    public Response testPost(String string, List<String> strings, int number, boolean flag,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
@@ -150,7 +169,7 @@ public class TestService extends WebService {
             ));
         }
 
-        return mapOf(
+        return BeanAdapter.adapt(mapOf(
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
@@ -161,7 +180,7 @@ public class TestService extends WebService {
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
             entry("attachmentInfo", attachmentInfo)
-        );
+        ), Response.class);
     }
 
     @RequestMethod("POST")

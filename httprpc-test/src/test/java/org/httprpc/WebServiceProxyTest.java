@@ -14,7 +14,6 @@
 
 package org.httprpc;
 
-import org.httprpc.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -84,9 +83,14 @@ public class WebServiceProxyTest {
         double getSum(List<Double> values) throws IOException;
     }
 
-    public interface TreeNode {
-        String getName();
-        List<TreeNode> getChildren();
+    public interface TreeService {
+        interface TreeNode {
+            String getName();
+            List<TreeNode> getChildren();
+        }
+
+        @RequestMethod("GET")
+        TreeNode getTree();
     }
 
     private Date date = new Date();
@@ -389,19 +393,19 @@ public class WebServiceProxyTest {
 
     @Test
     public void testTree() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "tree/"));
+        TreeService treeService = WebServiceProxy.adapt(new URL(serverURL, "tree/"), TreeService.class);
 
-        TreeNode seasons = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
+        TreeService.TreeNode seasons = treeService.getTree();
 
         assertNotNull(seasons);
         assertEquals("Seasons", seasons.getName());
 
-        TreeNode winter = seasons.getChildren().get(0);
+        TreeService.TreeNode winter = seasons.getChildren().get(0);
 
         assertNotNull(winter);
         assertEquals("Winter", winter.getName());
 
-        TreeNode january = winter.getChildren().get(0);
+        TreeService.TreeNode january = winter.getChildren().get(0);
 
         assertNotNull(january);
         assertEquals("January", january.getName());

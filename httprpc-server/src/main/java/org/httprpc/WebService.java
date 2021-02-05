@@ -614,20 +614,20 @@ public abstract class WebService extends HttpServlet {
 
             xmlStreamWriter.writeStartElement("body");
 
-            TreeMap<Class<?>, String> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+            TreeMap<Class<?>, TreeMap<String, Method>> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
-            Description description = getClass().getAnnotation(Description.class);
+            Description serviceDescription = getClass().getAnnotation(Description.class);
 
-            if (description != null) {
+            if (serviceDescription != null) {
                 xmlStreamWriter.writeStartElement("p");
-                xmlStreamWriter.writeCharacters(description.value());
+                xmlStreamWriter.writeCharacters(serviceDescription.value());
                 xmlStreamWriter.writeEndElement();
             }
 
             describeResource(request.getServletPath(), root, structures, xmlStreamWriter);
 
-            for (Map.Entry<Class<?>, String> entry : structures.entrySet()) {
-                Class<?> type = entry.getKey();
+            for (Map.Entry<Class<?>, TreeMap<String, Method>> typeEntry : structures.entrySet()) {
+                Class<?> type = typeEntry.getKey();
 
                 String name = type.getSimpleName();
 
@@ -635,8 +635,31 @@ public abstract class WebService extends HttpServlet {
                 xmlStreamWriter.writeCharacters(name);
                 xmlStreamWriter.writeEndElement();
 
-                xmlStreamWriter.writeStartElement("pre");
-                xmlStreamWriter.writeCharacters(entry.getValue());
+                xmlStreamWriter.writeStartElement("ul");
+
+                for (Map.Entry<String, Method> propertyEntry : typeEntry.getValue().entrySet()) {
+                    Method method = propertyEntry.getValue();
+
+                    xmlStreamWriter.writeStartElement("li");
+
+                    xmlStreamWriter.writeStartElement("code");
+
+                    xmlStreamWriter.writeCharacters(propertyEntry.getKey());
+                    xmlStreamWriter.writeCharacters(": ");
+                    xmlStreamWriter.writeCharacters(describe(method.getGenericReturnType(), null));
+
+                    xmlStreamWriter.writeEndElement();
+
+                    Description propertyDescription = method.getAnnotation(Description.class);
+
+                    if (propertyDescription != null) {
+                        xmlStreamWriter.writeCharacters(" - ");
+                        xmlStreamWriter.writeCharacters(propertyDescription.value());
+                    }
+
+                    xmlStreamWriter.writeEndElement();
+                }
+
                 xmlStreamWriter.writeEndElement();
             }
 
@@ -649,7 +672,7 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private void describeResource(String path, Resource resource, TreeMap<Class<?>, String> structures,
+    private void describeResource(String path, Resource resource, TreeMap<Class<?>, TreeMap<String, Method>> structures,
         XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
         if (!resource.handlerMap.isEmpty()) {
             xmlStreamWriter.writeStartElement("h2");
@@ -735,7 +758,7 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static String describe(Type type, Map<Class<?>, String> structures) {
+    private static String describe(Type type, Map<Class<?>, TreeMap<String, Method>> structures) {
         if (type instanceof Class<?>) {
             return describe((Class<?>)type, structures);
         } else if (type instanceof WildcardType) {
@@ -760,7 +783,7 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static String describe(Class<?> type, Map<Class<?>, String> structures) {
+    private static String describe(Class<?> type, Map<Class<?>, TreeMap<String, Method>> structures) {
         if (type == Object.class) {
             return "any";
         } else if (type == Void.TYPE || type == Void.class) {
@@ -832,30 +855,14 @@ public abstract class WebService extends HttpServlet {
                 }
             }, structures);
         } else {
-            if (!structures.containsKey(type)) {
-                structures.put(type, null);
+            if (structures != null && !structures.containsKey(type)) {
+                TreeMap<String, Method> accessors = BeanAdapter.getAccessors(type);
 
-                Map<String, Type> properties = BeanAdapter.getProperties(type);
+                structures.put(type, accessors);
 
-                StringBuilder structureBuilder = new StringBuilder();
-
-                structureBuilder.append("{\n");
-
-                int i = 0;
-
-                for (Map.Entry<String, Type> entry : properties.entrySet()) {
-                    if (i > 0) {
-                        structureBuilder.append(",\n");
-                    }
-
-                    structureBuilder.append("  " + entry.getKey() + ": " + describe(entry.getValue(), structures));
-
-                    i++;
+                for (Map.Entry<String, Method> entry : accessors.entrySet()) {
+                    describe(entry.getValue().getGenericReturnType(), structures);
                 }
-
-                structureBuilder.append("\n}");
-
-                structures.put(type, structureBuilder.toString());
             }
 
             return type.getSimpleName();

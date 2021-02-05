@@ -236,23 +236,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         accessors = accessorCache.get(type);
 
         if (accessors == null) {
-            accessors = new TreeMap<>();
-
-            Method[] methods = type.getMethods();
-
-            for (int i = 0; i < methods.length; i++) {
-                Method method = methods[i];
-
-                if (method.getDeclaringClass() == Object.class) {
-                    continue;
-                }
-
-                String key = getKey(method);
-
-                if (key != null) {
-                    accessors.put(key, method);
-                }
-            }
+            accessors = getAccessors(type);
 
             accessorCache.put(type, accessors);
         }
@@ -718,18 +702,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the properties of a given type.
+     * Returns the accessors for a given type.
      *
      * @param type
      * The bean type.
      *
      * @return
-     * A map containing the properties of the given type.
+     * The accessors defined by the given type.
      */
-    public static Map<String, Type> getProperties(Class<?> type) {
-        Method[] methods = type.getMethods();
+    public static TreeMap<String, Method> getAccessors(Class<?> type) {
+        TreeMap<String, Method> accessors = new TreeMap<>();
 
-        TreeMap<String, Type> properties = new TreeMap<>();
+        Method[] methods = type.getMethods();
 
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
@@ -741,10 +725,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             String key = getKey(method);
 
             if (key != null) {
-                properties.put(key, method.getGenericReturnType());
+                accessors.put(key, method);
             }
         }
 
-        return properties;
+        return accessors;
     }
 }

@@ -258,7 +258,8 @@ Methods are grouped by resource path. Parameter and return types are encoded as 
 * `java.net.URL`: "file" for parameters, "url" for return values
 * `java.lang.Iterable`, `java.util.Collection`, or `java.util.List`: "[<em>element type</em>]"
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
-* Any other type: "{property1: <em>property1 type</em>, property2: <em>property2 type</em>, ...}"
+
+Any other type is considered a Java bean and is described by its simple class name.
 
 Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
@@ -277,6 +278,24 @@ public class MathService extends WebService {
     }
     
     ...
+}
+```
+
+The `Description` annotation can also be applied to bean properties:
+
+```java
+public static class Item {
+    ...
+
+    @Description("The item's description.")
+    public String getDescription() {
+        return description;
+    }
+
+    @Description("The item's price.")
+    public double getPrice() {
+        return price;
+    }
 }
 ```
 

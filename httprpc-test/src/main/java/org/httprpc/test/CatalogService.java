@@ -37,6 +37,7 @@ public class CatalogService extends WebService {
             this.price = price;
         }
 
+        @Description("The item's description.")
         public String getDescription() {
             return description;
         }
@@ -45,6 +46,7 @@ public class CatalogService extends WebService {
             this.description = description;
         }
 
+        @Description("The item's price.")
         public double getPrice() {
             return price;
         }
