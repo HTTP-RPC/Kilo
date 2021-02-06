@@ -34,7 +34,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +66,12 @@ public class TestService extends WebService {
     public interface AttachmentInfo {
         int getBytes();
         int getChecksum();
+    }
+
+    public static class TestList extends ArrayList<Integer> {
+    }
+
+    public static class TestMap extends HashMap<String, Double> {
     }
 
     @RequestMethod("GET")
@@ -135,6 +143,18 @@ public class TestService extends WebService {
                 return next;
             }
         };
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("list")
+    public TestList testGetList() {
+        return new TestList();
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("map")
+    public TestMap testGetMap() {
+        return new TestMap();
     }
 
     @Override

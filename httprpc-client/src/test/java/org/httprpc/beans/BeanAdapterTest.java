@@ -111,7 +111,6 @@ public class BeanAdapterTest {
             entry("list", listOf(2L, 4.0, mapOf(
                 entry("flag", true)
             ))),
-            entry("testArrayList", listOf()),
             entry("nestedBeanList", listOf(mapOf(
                 entry("flag", false)
             ))),
@@ -122,7 +121,6 @@ public class BeanAdapterTest {
                     entry("flag", true)
                 )))
             ),
-            entry("testHashMap", mapOf()),
             entry("nestedBeanMap", mapOf(
                 entry("nestedBean", mapOf(
                     entry("flag", false)
@@ -215,8 +213,6 @@ public class BeanAdapterTest {
         assertEquals(1, listTypeArguments.length);
         assertTrue(listTypeArguments[0] instanceof WildcardType);
 
-        assertEquals(TestBean.TestArrayList.class, properties.get("testArrayList"));
-
         Type[] nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
 
         assertEquals(1, nestedBeanListTypeArguments.length);
@@ -229,8 +225,6 @@ public class BeanAdapterTest {
         assertEquals(2, mapTypeArguments.length);
         assertEquals(String.class, mapTypeArguments[0]);
         assertTrue(mapTypeArguments[1] instanceof WildcardType);
-
-        assertEquals(TestBean.TestHashMap.class, properties.get("testHashMap"));
 
         Type[] nestedBeanMapTypeArguments = ((ParameterizedType)properties.get("nestedBeanMap")).getActualTypeArguments();
 

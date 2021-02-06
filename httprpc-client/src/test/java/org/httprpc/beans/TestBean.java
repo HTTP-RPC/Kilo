@@ -46,12 +46,6 @@ public class TestBean implements TestInterface {
         }
     }
 
-    public static class TestArrayList extends ArrayList<Object> {
-    }
-
-    public static class TestHashMap extends HashMap<String, Object> {
-    }
-
     @Override
     @Key("i")
     public int getInt() {
@@ -124,10 +118,6 @@ public class TestBean implements TestInterface {
         return listOf(2L, 4.0, mapOf(entry("flag", true)));
     }
 
-    public TestArrayList getTestArrayList() {
-        return new TestArrayList();
-    }
-
     @Override
     public List<NestedBean> getNestedBeanList() {
         return listOf(new NestedBean(false));
@@ -141,10 +131,6 @@ public class TestBean implements TestInterface {
             entry("nestedBean", mapOf(
                 entry("flag", true)
             )));
-    }
-
-    public TestHashMap getTestHashMap() {
-        return new TestHashMap();
     }
 
     @Override

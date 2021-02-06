@@ -46,7 +46,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
@@ -777,18 +776,17 @@ public abstract class WebService extends HttpServlet {
         if (type instanceof Class<?>) {
             return describe((Class<?>)type);
         } else if (type instanceof WildcardType) {
-            WildcardType wildcardType = (WildcardType)type;
-
-            return describe(wildcardType.getUpperBounds()[0]);
+            return describe(((WildcardType)type).getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
 
             Type rawType = parameterizedType.getRawType();
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (rawType == Iterable.class || rawType == Collection.class || rawType == List.class) {
-                return "[" + describe(actualTypeArguments[0]) + "]";
+            if (rawType instanceof Class<?> && Iterable.class.isAssignableFrom((Class<?>)rawType)) {
+                return "[" + describe(parameterizedType.getActualTypeArguments()[0]) + "]";
             } else if (rawType == Map.class) {
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
                 return "[" + describe(actualTypeArguments[0]) + ": " + describe(actualTypeArguments[1]) + "]";
             } else {
                 throw new IllegalArgumentException();
