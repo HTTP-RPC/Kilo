@@ -665,7 +665,8 @@ public abstract class WebService extends HttpServlet {
 
                     xmlStreamWriter.writeCharacters(propertyEntry.getKey());
                     xmlStreamWriter.writeCharacters(": ");
-                    xmlStreamWriter.writeCharacters(describe(method.getGenericReturnType()));
+
+                    describeType(method.getGenericReturnType(), xmlStreamWriter);
 
                     xmlStreamWriter.writeEndElement();
 
@@ -709,7 +710,8 @@ public abstract class WebService extends HttpServlet {
 
                     xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase());
                     xmlStreamWriter.writeCharacters(" -> ");
-                    xmlStreamWriter.writeCharacters(describe(handler.method.getGenericReturnType()));
+
+                    describeType(handler.method.getGenericReturnType(), xmlStreamWriter);
 
                     if (deprecated != null) {
                         xmlStreamWriter.writeEndElement();
@@ -747,7 +749,7 @@ public abstract class WebService extends HttpServlet {
                             && ((ParameterizedType)type).getActualTypeArguments()[0] == URL.class) {
                             xmlStreamWriter.writeCharacters("[file]");
                         } else {
-                            xmlStreamWriter.writeCharacters(describe(type));
+                            describeType(type, xmlStreamWriter);
                         }
 
                         xmlStreamWriter.writeEndElement();
@@ -772,22 +774,44 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private String describe(Type type) {
+    private void describeType(Type type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
         if (type instanceof Class<?>) {
-            return describe((Class<?>)type);
+            describeType((Class<?>)type, xmlStreamWriter);
         } else if (type instanceof WildcardType) {
-            return describe(((WildcardType)type).getUpperBounds()[0]);
+            describeType(((WildcardType)type).getUpperBounds()[0], xmlStreamWriter);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
 
             Type rawType = parameterizedType.getRawType();
 
             if (rawType instanceof Class<?> && Iterable.class.isAssignableFrom((Class<?>)rawType)) {
-                return "[" + describe(parameterizedType.getActualTypeArguments()[0]) + "]";
+                if (xmlStreamWriter != null) {
+                    xmlStreamWriter.writeCharacters("[");
+                }
+
+                describeType(parameterizedType.getActualTypeArguments()[0], xmlStreamWriter);
+
+                if (xmlStreamWriter != null) {
+                    xmlStreamWriter.writeCharacters("]");
+                }
             } else if (rawType == Map.class) {
                 Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-                return "[" + describe(actualTypeArguments[0]) + ": " + describe(actualTypeArguments[1]) + "]";
+                if (xmlStreamWriter != null) {
+                    xmlStreamWriter.writeCharacters("[");
+                }
+
+                describeType(actualTypeArguments[0], xmlStreamWriter);
+
+                if (xmlStreamWriter != null) {
+                    xmlStreamWriter.writeCharacters(": ");
+                }
+
+                describeType(actualTypeArguments[1], xmlStreamWriter);
+
+                if (xmlStreamWriter != null) {
+                    xmlStreamWriter.writeCharacters("]");
+                }
             } else {
                 throw new IllegalArgumentException();
             }
@@ -796,93 +820,104 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private String describe(Class<?> type) {
+    private void describeType(Class<?> type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
         if (type.isArray()) {
             throw new IllegalArgumentException();
         }
 
+        String description;
         if (type == Object.class) {
-            return "any";
+            description = "any";
         } else if (type == Void.TYPE || type == Void.class) {
-            return "void";
+            description = "void";
         } else if (type == Byte.TYPE || type == Byte.class) {
-            return "byte";
+            description = "byte";
         } else if (type == Short.TYPE || type == Short.class) {
-            return "short";
+            description = "short";
         } else if (type == Integer.TYPE || type == Integer.class) {
-            return "integer";
+            description = "integer";
         } else if (type == Long.TYPE || type == Long.class) {
-            return "long";
+            description = "long";
         } else if (type == Float.TYPE || type == Float.class) {
-            return "float";
+            description = "float";
         } else if (type == Double.TYPE || type == Double.class) {
-            return "double";
+            description = "double";
         } else if (Number.class.isAssignableFrom(type)) {
-            return "number";
+            description = "number";
         } else if (type == Boolean.TYPE || type == Boolean.class) {
-            return "boolean";
+            description = "boolean";
         } else if (CharSequence.class.isAssignableFrom(type)) {
-            return "string";
+            description = "string";
         } else if (Enum.class.isAssignableFrom(type)) {
-            return "enum";
+            description = "enum";
         } else if (Date.class.isAssignableFrom(type)) {
-            return "date";
+            description = "date";
         } else if (type == Instant.class) {
-            return "instant";
+            description = "instant";
         } else if (type == LocalDate.class) {
-            return "date-local";
+            description = "date-local";
         } else if (type == LocalTime.class) {
-            return "time-local";
+            description = "time-local";
         } else if (type == LocalDateTime.class) {
-            return "datetime-local";
+            description = "datetime-local";
         } else if (type == URL.class) {
-            return "url";
-        } else if (Iterable.class.isAssignableFrom(type)) {
-            return describe(new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] {Object.class};
-                }
-
-                @Override
-                public Type getRawType() {
-                    return Iterable.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            });
-        } else if (Map.class.isAssignableFrom(type)) {
-            return describe(new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] {Object.class, Object.class};
-                }
-
-                @Override
-                public Type getRawType() {
-                    return Map.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            });
+            description = "url";
         } else {
-            if (!structures.containsKey(type)) {
-                Map<String, Method> accessors = BeanAdapter.getAccessors(type);
+            if (Iterable.class.isAssignableFrom(type)) {
+                describeType(new ParameterizedType() {
+                    @Override
+                    public Type[] getActualTypeArguments() {
+                        return new Type[] {Object.class};
+                    }
 
-                structures.put(type, accessors);
+                    @Override
+                    public Type getRawType() {
+                        return Iterable.class;
+                    }
 
-                for (Map.Entry<String, Method> entry : accessors.entrySet()) {
-                    describe(entry.getValue().getGenericReturnType());
+                    @Override
+                    public Type getOwnerType() {
+                        return null;
+                    }
+                }, xmlStreamWriter);
+            } else if (Map.class.isAssignableFrom(type)) {
+                describeType(new ParameterizedType() {
+                    @Override
+                    public Type[] getActualTypeArguments() {
+                        return new Type[] {Object.class, Object.class};
+                    }
+
+                    @Override
+                    public Type getRawType() {
+                        return Map.class;
+                    }
+
+                    @Override
+                    public Type getOwnerType() {
+                        return null;
+                    }
+                }, xmlStreamWriter);
+            } else {
+                if (!structures.containsKey(type)) {
+                    Map<String, Method> accessors = BeanAdapter.getAccessors(type);
+
+                    structures.put(type, accessors);
+
+                    for (Map.Entry<String, Method> entry : accessors.entrySet()) {
+                        describeType(entry.getValue().getGenericReturnType(), null);
+                    }
+                }
+
+                if (xmlStreamWriter != null) {
+                    xmlStreamWriter.writeCharacters(type.getSimpleName());
                 }
             }
 
-            return type.getSimpleName();
+            return;
+        }
+
+        if (xmlStreamWriter != null) {
+            xmlStreamWriter.writeCharacters(description);
         }
     }
 }
