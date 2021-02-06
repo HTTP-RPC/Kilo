@@ -157,6 +157,12 @@ public class TestService extends WebService {
         return new TestMap();
     }
 
+    @RequestMethod("GET")
+    @ResourcePath("generic")
+    public Iterable<List<Map<String, Double>>> testGetGeneric() {
+        return null;
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         PrintWriter writer = response.getWriter();
