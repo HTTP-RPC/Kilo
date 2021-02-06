@@ -643,7 +643,10 @@ public abstract class WebService extends HttpServlet {
                 String name = type.getSimpleName();
 
                 xmlStreamWriter.writeStartElement("h3");
+                xmlStreamWriter.writeStartElement("a");
+                xmlStreamWriter.writeAttribute("id", name);
                 xmlStreamWriter.writeCharacters(name);
+                xmlStreamWriter.writeEndElement();
                 xmlStreamWriter.writeEndElement();
 
                 Description typeDescription = type.getAnnotation(Description.class);
@@ -909,7 +912,12 @@ public abstract class WebService extends HttpServlet {
                 }
 
                 if (xmlStreamWriter != null) {
-                    xmlStreamWriter.writeCharacters(type.getSimpleName());
+                    String name = type.getSimpleName();
+
+                    xmlStreamWriter.writeStartElement("a");
+                    xmlStreamWriter.writeAttribute("href", "#" + name);
+                    xmlStreamWriter.writeCharacters(name);
+                    xmlStreamWriter.writeEndElement();
                 }
             }
 
