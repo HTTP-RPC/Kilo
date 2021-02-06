@@ -773,9 +773,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private String describe(Type type) {
-        if (type instanceof Class<?>) {
-            return describe((Class<?>)type);
-        } else if (type instanceof WildcardType) {
+        if (type instanceof WildcardType) {
             return describe(((WildcardType)type).getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
@@ -790,6 +788,44 @@ public abstract class WebService extends HttpServlet {
                 return "[" + describe(actualTypeArguments[0]) + ": " + describe(actualTypeArguments[1]) + "]";
             } else {
                 throw new IllegalArgumentException();
+            }
+        } else if (type instanceof Class<?>) {
+            if (Iterable.class.isAssignableFrom((Class<?>)type)) {
+                return describe(new ParameterizedType() {
+                    @Override
+                    public Type[] getActualTypeArguments() {
+                        return new Type[] {Object.class};
+                    }
+
+                    @Override
+                    public Type getRawType() {
+                        return Iterable.class;
+                    }
+
+                    @Override
+                    public Type getOwnerType() {
+                        return null;
+                    }
+                });
+            } else if (Map.class.isAssignableFrom((Class<?>)type)) {
+                return describe(new ParameterizedType() {
+                    @Override
+                    public Type[] getActualTypeArguments() {
+                        return new Type[] {Object.class, Object.class};
+                    }
+
+                    @Override
+                    public Type getRawType() {
+                        return Map.class;
+                    }
+
+                    @Override
+                    public Type getOwnerType() {
+                        return null;
+                    }
+                });
+            } else {
+                return describe((Class<?>)type);
             }
         } else {
             throw new IllegalArgumentException();
@@ -837,40 +873,6 @@ public abstract class WebService extends HttpServlet {
             return "datetime-local";
         } else if (type == URL.class) {
             return "url";
-        } else if (Iterable.class.isAssignableFrom(type)) {
-            return describe(new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] {Object.class};
-                }
-
-                @Override
-                public Type getRawType() {
-                    return Iterable.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            });
-        } else if (Map.class.isAssignableFrom(type)) {
-            return describe(new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] {Object.class, Object.class};
-                }
-
-                @Override
-                public Type getRawType() {
-                    return Map.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            });
         } else {
             if (!structures.containsKey(type)) {
                 Map<String, Method> accessors = BeanAdapter.getAccessors(type);
