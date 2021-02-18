@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -66,6 +67,34 @@ public class TestService extends WebService {
     public interface AttachmentInfo {
         int getBytes();
         int getChecksum();
+    }
+
+    public interface A {
+        int getA();
+    }
+
+    public interface B {
+        @Description("B's version of B")
+        double getB();
+    }
+
+    public interface C extends A, B {
+        @Override
+        @Description("C's version of B")
+        double getB();
+        String getC();
+    }
+
+    public static class D {
+        public int getD() {
+            return 0;
+        }
+    }
+
+    public static class E extends D {
+        public double getE() {
+            return 0;
+        }
     }
 
     public static class TestList extends ArrayList<Integer> {
@@ -143,6 +172,18 @@ public class TestService extends WebService {
                 return next;
             }
         };
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("c")
+    public C testGetC() {
+        return null;
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("e")
+    public E testGetE() {
+        return null;
     }
 
     @RequestMethod("GET")

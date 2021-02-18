@@ -643,10 +643,46 @@ public abstract class WebService extends HttpServlet {
                 String name = type.getSimpleName();
 
                 xmlStreamWriter.writeStartElement("h3");
+
                 xmlStreamWriter.writeStartElement("a");
                 xmlStreamWriter.writeAttribute("id", name);
                 xmlStreamWriter.writeCharacters(name);
                 xmlStreamWriter.writeEndElement();
+
+                if (type.isInterface()) {
+                    Class<?>[] interfaces = type.getInterfaces();
+
+                    if (interfaces.length > 0) {
+                        xmlStreamWriter.writeCharacters(" : ");
+
+                        for (int i = 0; i < interfaces.length; i++) {
+                            if (i > 0) {
+                                xmlStreamWriter.writeCharacters(", ");
+                            }
+
+                            String interfaceName = interfaces[i].getSimpleName();
+
+                            xmlStreamWriter.writeStartElement("a");
+                            xmlStreamWriter.writeAttribute("href", "#" + interfaceName);
+                            xmlStreamWriter.writeCharacters(interfaceName);
+                            xmlStreamWriter.writeEndElement();
+                        }
+                    }
+                } else {
+                    Class<?> baseType = type.getSuperclass();
+
+                    if (baseType != Object.class) {
+                        String baseTypeName = baseType.getSimpleName();
+
+                        xmlStreamWriter.writeCharacters(" : ");
+
+                        xmlStreamWriter.writeStartElement("a");
+                        xmlStreamWriter.writeAttribute("href", "#" + baseTypeName);
+                        xmlStreamWriter.writeCharacters(baseTypeName);
+                        xmlStreamWriter.writeEndElement();
+                    }
+                }
+
                 xmlStreamWriter.writeEndElement();
 
                 Description typeDescription = type.getAnnotation(Description.class);
@@ -661,6 +697,10 @@ public abstract class WebService extends HttpServlet {
 
                 for (Map.Entry<String, Method> propertyEntry : typeEntry.getValue().entrySet()) {
                     Method method = propertyEntry.getValue();
+
+                    if (method.getDeclaringClass() != type) {
+                        continue;
+                    }
 
                     xmlStreamWriter.writeStartElement("li");
 
@@ -906,8 +946,28 @@ public abstract class WebService extends HttpServlet {
 
                     structures.put(type, accessors);
 
+                    if (type.isInterface()) {
+                        Class<?>[] interfaces = type.getInterfaces();
+
+                        for (int i = 0; i < interfaces.length; i++) {
+                            describeType(interfaces[i], null);
+                        }
+                    } else {
+                        Class<?> baseType = type.getSuperclass();
+
+                        if (baseType != Object.class) {
+                            describeType(baseType, null);
+                        }
+                    }
+
                     for (Map.Entry<String, Method> entry : accessors.entrySet()) {
-                        describeType(entry.getValue().getGenericReturnType(), null);
+                        Method method = entry.getValue();
+
+                        if (method.getDeclaringClass() != type) {
+                            continue;
+                        }
+
+                        describeType(method.getGenericReturnType(), null);
                     }
                 }
 
