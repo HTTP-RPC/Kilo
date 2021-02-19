@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebServiceProxyTest {
-    public interface TestService extends Map<String, Object> {
+    public interface TestService {
         interface Response {
             String getString();
             List<String> getStrings();
@@ -156,10 +156,12 @@ public class WebServiceProxyTest {
     public void testGetKeys() throws IOException {
         TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
-        testService.put("a", 123);
-        testService.put("b", "héllo");
-        testService.put("c", 456);
-        testService.put("d", "göodbye");
+        WebServiceProxy.setKeys(testService, mapOf(
+            entry("a", 123),
+            entry("b", "héllo"),
+            entry("c", 456),
+            entry("d", "göodbye")
+        ));
 
         Map<String, ?> result = testService.testGetKeys();
 

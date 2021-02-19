@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -111,18 +112,12 @@ public class WebServiceProxy {
         Class<?> type;
         BiFunction<String, URL, WebServiceProxy> factory;
 
-        Map<Object, Object> keys;
+        Map<String, ?> keys = Collections.emptyMap();
 
         TypedInvocationHandler(URL baseURL, Class<?> type, BiFunction<String, URL, WebServiceProxy> factory) {
             this.baseURL = baseURL;
             this.type = type;
             this.factory = factory;
-
-            if (Map.class.isAssignableFrom(type)) {
-                keys = new HashMap<>();
-            } else {
-                keys = null;
-            }
         }
 
         @Override
@@ -131,8 +126,6 @@ public class WebServiceProxy {
 
             if (declaringClass == Object.class) {
                 return method.invoke(this, arguments);
-            } else if (declaringClass == Map.class) {
-                return method.invoke(keys, arguments);
             } else {
                 RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
 
@@ -789,5 +782,49 @@ public class WebServiceProxy {
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
             new Class<?>[] {type},
             new TypedInvocationHandler(baseURL, type, factory)));
+    }
+
+    /**
+     * Returns the keys associated with an adapter instance.
+     *
+     * @param adapter
+     * The adapter instance.
+     *
+     * @return
+     * The keys associated with the adapter instance.
+     */
+    public static Map<String, ?> getKeys(Object adapter) {
+        return getTypedInvocationHandler(adapter).keys;
+    }
+
+    /**
+     * Sets the keys associated with an adapter instance.
+     *
+     * @param adapter
+     * The adapter instance.
+     *
+     * @param keys
+     * The keys to associate with the adapter instance.
+     */
+    public static void setKeys(Object adapter, Map<String, ?> keys) {
+        if (keys == null) {
+            throw new IllegalArgumentException();
+        }
+
+        getTypedInvocationHandler(adapter).keys = keys;
+    }
+
+    private static TypedInvocationHandler getTypedInvocationHandler(Object adapter) {
+        if (!(adapter instanceof Proxy)) {
+            throw new IllegalArgumentException();
+        }
+
+        Object invocationHandler = Proxy.getInvocationHandler(adapter);
+
+        if (!(invocationHandler instanceof TypedInvocationHandler)) {
+            throw new IllegalArgumentException();
+        }
+
+        return (TypedInvocationHandler)invocationHandler;
     }
 }

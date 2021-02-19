@@ -362,7 +362,7 @@ public static <T> T adapt(URL baseURL, Class<T> type, BiFunction<String, URL, We
 
 All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a map of HTTP header values that will be submitted with every service request. The third accepts a callback that is used to produce web service proxy instances. Interface types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. If the provided interface type extends the `Map` interface, the `put()` method can be used to supply values for any named path variables.
+The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. The `WebServiceProxy#setKeys()` method can be used to supply values for any named path variables.
 
 `POST` requests are always submitted using the multi-part encoding. Return values are handled as described for `WebServiceProxy`, and are automatically coerced to the correct type.
 
