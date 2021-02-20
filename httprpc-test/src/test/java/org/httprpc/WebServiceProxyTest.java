@@ -161,9 +161,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetKeys() throws IOException {
-        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
-
-        WebServiceProxy.setKeys(testService, mapOf(
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class, (resourcePath) -> mapOf(
             entry("a", 123),
             entry("b", "héllo"),
             entry("c", 456),
@@ -254,8 +252,6 @@ public class WebServiceProxyTest {
 
     @Test
     public void testBodyPost() throws IOException {
-        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
-
         Map<String, ?> content = mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
@@ -263,7 +259,14 @@ public class WebServiceProxyTest {
             entry("flag", true)
         );
 
-        WebServiceProxy.setBody(testService, content);
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class,
+            (resourcePath) -> null, (method, url) -> {
+            WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
+
+            webServiceProxy.setBody(content);
+
+            return webServiceProxy;
+        });
 
         Map<String, ?> result = testService.testBodyPost(101);
 
@@ -344,12 +347,17 @@ public class WebServiceProxyTest {
 
     @Test
     public void testHeaders() throws IOException {
-        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class,
+            (resourcePath) -> null, (method, url) -> {
+            WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
 
-        WebServiceProxy.setHeaders(testService, mapOf(
-            entry("X-Header-A", "abc"),
-            entry("X-Header-B", 123)
-        ));
+            webServiceProxy.setHeaders(mapOf(
+                entry("X-Header-A", "abc"),
+                entry("X-Header-B", 123)
+            ));
+
+            return webServiceProxy;
+        });
 
         Map<String, ?> result = testService.getHeaders();
 

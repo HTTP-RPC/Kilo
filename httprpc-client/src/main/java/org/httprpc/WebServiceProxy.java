@@ -32,7 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -41,6 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
@@ -112,17 +112,16 @@ public class WebServiceProxy {
     private static class TypedInvocationHandler implements InvocationHandler {
         URL baseURL;
         Class<?> type;
-        BiFunction<String, URL, WebServiceProxy> factory;
+        Function<ResourcePath, Map<String, ?>> keyMapFactory;
+        BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory;
 
-        Map<String, ?> keys = Collections.emptyMap();
-        Map<String, ?> headers = Collections.emptyMap();
-
-        Object body = null;
-
-        TypedInvocationHandler(URL baseURL, Class<?> type, BiFunction<String, URL, WebServiceProxy> factory) {
+        TypedInvocationHandler(URL baseURL, Class<?> type,
+            Function<ResourcePath, Map<String, ?>> keyMapFactory,
+            BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
             this.baseURL = baseURL;
             this.type = type;
-            this.factory = factory;
+            this.keyMapFactory = keyMapFactory;
+            this.webServiceProxyFactory = webServiceProxyFactory;
         }
 
         @Override
@@ -142,6 +141,8 @@ public class WebServiceProxy {
 
                 URL url;
                 if (resourcePath != null) {
+                    Map<String, ?> keys = keyMapFactory.apply(resourcePath);
+
                     String[] components = resourcePath.value().split("/");
 
                     for (int i = 0; i < components.length; i++) {
@@ -156,6 +157,10 @@ public class WebServiceProxy {
 
                             if (component.length() == k || component.charAt(k++) != ':') {
                                 throw new IllegalStateException("Invalid path variable.");
+                            }
+
+                            if (keys == null) {
+                                throw new IllegalStateException("No keys provided.");
                             }
 
                             Object value = getParameterValue(keys.get(component.substring(k)));
@@ -173,9 +178,7 @@ public class WebServiceProxy {
                     url = baseURL;
                 }
 
-                WebServiceProxy webServiceProxy = factory.apply(requestMethod.value(), url);
-
-                webServiceProxy.setHeaders(headers);
+                WebServiceProxy webServiceProxy = webServiceProxyFactory.apply(requestMethod.value(), url);
 
                 Parameter[] parameters = method.getParameters();
 
@@ -186,8 +189,6 @@ public class WebServiceProxy {
                 }
 
                 webServiceProxy.setArguments(argumentMap);
-
-                webServiceProxy.setBody(body);
 
                 return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
             }
@@ -758,12 +759,33 @@ public class WebServiceProxy {
      * An instance of the given type that adapts the target service.
      */
     public static <T> T adapt(URL baseURL, Class<T> type) {
-        return adapt(baseURL, type, (method, url) -> {
+        return adapt(baseURL, type, (resourcePath) -> null);
+    }
+
+    /**
+     * Creates a type-safe web service proxy adapter.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param baseURL
+     * The base URL of the web service.
+     *
+     * @param type
+     * The type of the adapter.
+     *
+     * @param keyMapFactory
+     * A function that produces a key map, or <code>null</code> if no keys are required.
+     *
+     * @return
+     * An instance of the given type that adapts the target service.
+     */
+    public static <T> T adapt(URL baseURL, Class<T> type,
+        Function<ResourcePath, Map<String, ?>> keyMapFactory) {
+        return adapt(baseURL, type, keyMapFactory, (method, url) -> {
             WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
 
-            if (method.equalsIgnoreCase("POST")) {
-                webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
-            }
+            webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
 
             return webServiceProxy;
         });
@@ -781,13 +803,18 @@ public class WebServiceProxy {
      * @param type
      * The type of the adapter.
      *
-     * @param factory
-     * A callback for producing web service proxy instances.
+     * @param keyMapFactory
+     * A function that produces a key map, or <code>null</code> if no keys are required.
+     *
+     * @param webServiceProxyFactory
+     * A function that produces a web service proxy instance.
      *
      * @return
      * An instance of the given type that adapts the target service.
      */
-    public static <T> T adapt(URL baseURL, Class<T> type, BiFunction<String, URL, WebServiceProxy> factory) {
+    public static <T> T adapt(URL baseURL, Class<T> type,
+        Function<ResourcePath, Map<String, ?>> keyMapFactory,
+        BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
         if (baseURL == null) {
             throw new IllegalArgumentException();
         }
@@ -796,115 +823,16 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        if (factory == null) {
+        if (keyMapFactory == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (webServiceProxyFactory == null) {
             throw new IllegalArgumentException();
         }
 
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
             new Class<?>[] {type},
-            new TypedInvocationHandler(baseURL, type, factory)));
-    }
-
-    /**
-     * Returns the keys associated with an adapter instance.
-     *
-     * @param adapter
-     * The adapter instance.
-     *
-     * @return
-     * The keys associated with the adapter instance.
-     */
-    public static Map<String, ?> getKeys(Object adapter) {
-        return getTypedInvocationHandler(adapter).keys;
-    }
-
-    /**
-     * Sets the keys associated with an adapter instance.
-     *
-     * @param adapter
-     * The adapter instance.
-     *
-     * @param keys
-     * The keys to associate with the adapter instance.
-     */
-    public static void setKeys(Object adapter, Map<String, ?> keys) {
-        if (keys == null) {
-            throw new IllegalArgumentException();
-        }
-
-        getTypedInvocationHandler(adapter).keys = keys;
-    }
-
-    /**
-     * Returns the keys associated with an adapter instance.
-     *
-     * @param adapter
-     * The adapter instance.
-     *
-     * @return
-     * The keys associated with the adapter instance.
-     */
-    public static Map<String, ?> getHeaders(Object adapter) {
-        return getTypedInvocationHandler(adapter).keys;
-    }
-
-    /**
-     * Sets the keys associated with an adapter instance.
-     *
-     * @param adapter
-     * The adapter instance.
-     *
-     * @param headers
-     * The keys to associate with the adapter instance.
-     */
-    public static void setHeaders(Object adapter, Map<String, ?> headers) {
-        if (headers == null) {
-            throw new IllegalArgumentException();
-        }
-
-        getTypedInvocationHandler(adapter).headers = headers;
-    }
-
-    /**
-     * Returns the request body associated with an adapter instance.
-     *
-     * @param adapter
-     * The adapter instance.
-     *
-     * @return
-     * The request body associated with the adapter instance, or <code>null</code>
-     * if no request body has been set.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getBody(Object adapter) {
-        return (T)getTypedInvocationHandler(adapter).body;
-    }
-
-    /**
-     * Sets the request body associated with an adapter instance.
-     *
-     * @param adapter
-     * The adapter instance.
-     *
-     * @param body
-     * The request body to associate with the adapter instance, or <code>null</code>
-     * for no request body.
-     */
-    public static void setBody(Object adapter, Object body) {
-        getTypedInvocationHandler(adapter).body = body;
-    }
-
-    private static TypedInvocationHandler getTypedInvocationHandler(Object adapter) {
-        if (!(adapter instanceof Proxy)) {
-            throw new IllegalArgumentException();
-        }
-
-        Object invocationHandler = Proxy.getInvocationHandler(adapter);
-
-        if (!(invocationHandler instanceof TypedInvocationHandler)) {
-            throw new IllegalArgumentException();
-        }
-
-        return (TypedInvocationHandler)invocationHandler;
+            new TypedInvocationHandler(baseURL, type, keyMapFactory, webServiceProxyFactory)));
     }
 }

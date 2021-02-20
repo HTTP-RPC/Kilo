@@ -195,6 +195,7 @@ public uploadContent() {
     ...
 }
 ```
+
 By default, body data is assumed to be JSON. However, subclasses can override the `decodeBody()` method to support other representations.
 
 The decoded body is coerced to the declared type using the `BeanAdapter#adapt()` method, which is discussed in more detail later. If the decoded content cannot be converted to the specified type, an HTTP 415 response will be returned.
@@ -215,7 +216,7 @@ Return values are converted to their JSON equivalents as follows:
 By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
 
 #### Custom Result Encodings
-Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to provide a custom encoding. See the method documentation for more information.
+Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative encodings. See the method documentation for more information.
 
 ### Request and Repsonse Properties
 `WebService` provides the following methods to allow a service method to access the request and response objects associated with the current invocation:
@@ -372,14 +373,15 @@ The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate t
 
 ```java
 public static <T> T adapt(URL baseURL, Class<T> type) { ... }
-public static <T> T adapt(URL baseURL, Class<T> type, BiFunction<String, URL, WebServiceProxy> factory) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, 
+    Function<ResourcePath, Map<String, ?>> keyMapFactory) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, 
+    Function<ResourcePath, Map<String, ?>> keyMapFactory,
+    BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) { ... }
 ```
-
-Both versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second accepts a callback that is used to produce service proxy instances. Interface types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
+All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a callback that is used to supply values for any named path variables. The third accepts an additional callback that is used to produce service proxy instances. Interface types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. 
-
-The `WebServiceProxy#setKeys()` method can be used to supply values for named path variables. Similarly, `WebServiceProxy#setHeaders()` and `WebServiceProxy#setBody()` can be used to provide header and body content, respectively, to an adapter instance. Values set via these methods will be submitted with each subsequent method invocation until they are cleared.
 
 `POST` requests are generally submitted using the multi-part encoding or as JSON. However, this behavior can be overridden by a custom service proxy factory. 
 
