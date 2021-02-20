@@ -251,7 +251,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testBodyPost() throws IOException {
+    public void testCustomBodyPost() throws IOException {
         Map<String, ?> content = mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
@@ -274,7 +274,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testImagePost() throws IOException {
+    public void testCustomImagePost() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
