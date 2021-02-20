@@ -115,9 +115,7 @@ public class WebServiceProxy {
         Function<ResourcePath, Map<String, ?>> keyMapFactory;
         BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory;
 
-        TypedInvocationHandler(URL baseURL, Class<?> type,
-            Function<ResourcePath, Map<String, ?>> keyMapFactory,
-            BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
+        TypedInvocationHandler(URL baseURL, Class<?> type, Function<ResourcePath, Map<String, ?>> keyMapFactory, BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
             this.baseURL = baseURL;
             this.type = type;
             this.keyMapFactory = keyMapFactory;
@@ -780,8 +778,7 @@ public class WebServiceProxy {
      * @return
      * An instance of the given type that adapts the target service.
      */
-    public static <T> T adapt(URL baseURL, Class<T> type,
-        Function<ResourcePath, Map<String, ?>> keyMapFactory) {
+    public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory) {
         return adapt(baseURL, type, keyMapFactory, (method, url) -> {
             WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
 
@@ -812,9 +809,7 @@ public class WebServiceProxy {
      * @return
      * An instance of the given type that adapts the target service.
      */
-    public static <T> T adapt(URL baseURL, Class<T> type,
-        Function<ResourcePath, Map<String, ?>> keyMapFactory,
-        BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
+    public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory, BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
         if (baseURL == null) {
             throw new IllegalArgumentException();
         }

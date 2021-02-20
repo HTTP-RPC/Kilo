@@ -184,9 +184,9 @@ protected String getKey(String name) { ... }
 For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
 
 ### Custom Body Content
-The `Content` annotation can be used to associate custom body content with a service method. Annotated methods can access the decoded data via the `getContent()` method. 
+The `Content` annotation can be used to associate custom body content with a service method. It defines a single `value()` attribute representing the expected content type. Annotated methods can access the decoded content via the `getContent()` method. 
 
-For example, the following method might be used to create a new account using data passed in the request body:
+For example, the following service method might be used to create a new account record using data passed in the request body:
 
 ```java
 @RequestMethod("POST")
@@ -375,11 +375,8 @@ The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate t
 
 ```java
 public static <T> T adapt(URL baseURL, Class<T> type) { ... }
-public static <T> T adapt(URL baseURL, Class<T> type, 
-    Function<ResourcePath, Map<String, ?>> keyMapFactory) { ... }
-public static <T> T adapt(URL baseURL, Class<T> type, 
-    Function<ResourcePath, Map<String, ?>> keyMapFactory,
-    BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory) { ... }
+public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory, BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) { ... }
 ```
 All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a callback that is used to supply values for any named path variables. The third accepts an additional callback that is used to produce service proxy instances. Interface types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
