@@ -14,7 +14,7 @@
 
 package org.httprpc.test;
 
-import org.httprpc.Body;
+import org.httprpc.Content;
 import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
@@ -104,7 +104,7 @@ public class TestService extends WebService {
     public static class TestMap extends HashMap<String, Double> {
     }
 
-    public interface Content {
+    public interface Body {
         String getString();
         List<String> getStrings();
         int getNumber();
@@ -259,9 +259,9 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    @Body(Content.class)
-    public Content testPost(int id) {
-        return getBody();
+    @Content(Body.class)
+    public Body testPost(int id) {
+        return getContent();
     }
 
     @RequestMethod("POST")

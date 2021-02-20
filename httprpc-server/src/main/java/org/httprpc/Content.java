@@ -6,14 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that associates a body type with a service method.
+ * Annotation that associates custom body content with a service method.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Body {
+public @interface Content {
     /**
      * @return
-     * The body type.
+     * The content type.
      */
     Class<?> value();
 }

@@ -130,7 +130,7 @@ public abstract class WebService extends HttpServlet {
     private ThreadLocal<List<String>> keyList = new ThreadLocal<>();
     private ThreadLocal<Map<String, String>> keyMap = new ThreadLocal<>();
 
-    private ThreadLocal<Object> body = new ThreadLocal<>();
+    private ThreadLocal<Object> content = new ThreadLocal<>();
 
     private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
 
@@ -367,11 +367,11 @@ public abstract class WebService extends HttpServlet {
 
         Object result;
         try {
-            Body body = handler.method.getAnnotation(Body.class);
+            Content content = handler.method.getAnnotation(Content.class);
 
-            if (body != null) {
+            if (content != null) {
                 try {
-                    this.body.set(decodeBody(request, body.value()));
+                    this.content.set(decodeContent(request, content.value()));
                 } catch (Exception exception) {
                     response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
                     return;
@@ -421,7 +421,7 @@ public abstract class WebService extends HttpServlet {
             this.keyList.set(null);
             this.keyMap.set(null);
 
-            this.body.set(null);
+            this.content.set(null);
         }
 
         if (response.isCommitted()) {
@@ -567,17 +567,17 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Returns the body content associated with the current request.
+     * Returns the content associated with the current request.
      *
      * @param <T>
-     * The body type.
+     * The content type.
      *
      * @return
-     * The body content, or <code>null</code> if no body was provided.
+     * The request content, or <code>null</code> if no content was provided.
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getBody() {
-        return (T)body.get();
+    protected <T> T getContent() {
+        return (T)content.get();
     }
 
     /**
@@ -598,21 +598,21 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Decodes the body of a service request.
+     * Decodes the content of a service request.
      *
      * @param request
      * The servlet request.
      *
      * @param type
-     * The body type.
+     * The content type.
      *
      * @return
-     * The decoded body content.
+     * The decoded content.
      *
      * @throws IOException
-     * If an exception occurs while decoding the body.
+     * If an exception occurs while decoding the content.
      */
-    protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
+    protected Object decodeContent(HttpServletRequest request, Class<?> type) throws IOException {
         JSONDecoder jsonDecoder = new JSONDecoder();
 
         return BeanAdapter.adapt(jsonDecoder.read(request.getInputStream()), type);
@@ -801,12 +801,12 @@ public abstract class WebService extends HttpServlet {
 
                     xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase());
 
-                    Body body = handler.method.getAnnotation(Body.class);
+                    Content content = handler.method.getAnnotation(Content.class);
 
-                    if (body != null) {
+                    if (content != null) {
                         xmlStreamWriter.writeCharacters(" (");
 
-                        describeType(body.value(), xmlStreamWriter);
+                        describeType(content.value(), xmlStreamWriter);
 
                         xmlStreamWriter.writeCharacters(")");
                     }

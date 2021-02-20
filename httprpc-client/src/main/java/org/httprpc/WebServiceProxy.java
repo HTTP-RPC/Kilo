@@ -226,7 +226,7 @@ public class WebServiceProxy {
     private Map<String, ?> headers = emptyMap();
     private Map<String, ?> arguments = emptyMap();
 
-    private Object body;
+    private Object content;
 
     private RequestHandler requestHandler = null;
 
@@ -354,23 +354,23 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the request body.
+     * Returns the request content.
      *
      * @return
-     * A value representing the request body, or <code>null</code> for no body.
+     * A value representing the request content, or <code>null</code> for no content.
      */
-    public Object getBody() {
-        return body;
+    public Object getContent() {
+        return content;
     }
 
     /**
-     * Returns the request body.
+     * Returns the request content.
      *
-     * @param body
-     * A value representing the request body, or <code>null</code> if no body has been set.
+     * @param content
+     * A value representing the request content, or <code>null</code> if no content has been set.
      */
-    public void setBody(Object body) {
-        this.body = body;
+    public void setContent(Object content) {
+        this.content = content;
     }
 
     /**
@@ -471,7 +471,7 @@ public class WebServiceProxy {
     public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
         URL url;
         RequestHandler requestHandler;
-        if (body != null && this.requestHandler == null) {
+        if (content != null && this.requestHandler == null) {
             url = this.url;
 
             requestHandler = new RequestHandler() {
@@ -484,7 +484,7 @@ public class WebServiceProxy {
                 public void encodeRequest(OutputStream outputStream) throws IOException {
                     JSONEncoder jsonEncoder = new JSONEncoder();
 
-                    jsonEncoder.write(body, outputStream);
+                    jsonEncoder.write(content, outputStream);
                 }
             };
         } else if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
