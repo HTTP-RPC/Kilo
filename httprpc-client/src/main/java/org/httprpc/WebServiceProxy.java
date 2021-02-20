@@ -224,7 +224,7 @@ public class WebServiceProxy {
     private Map<String, ?> headers = emptyMap();
     private Map<String, ?> arguments = emptyMap();
 
-    private Object content;
+    private Object body;
 
     private RequestHandler requestHandler = null;
 
@@ -352,23 +352,23 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the request content.
+     * Returns the request body.
      *
      * @return
-     * A value representing the request content, or <code>null</code> for no content.
+     * A value representing the body content, or <code>null</code> if no body has been set.
      */
-    public Object getContent() {
-        return content;
+    public Object getBody() {
+        return body;
     }
 
     /**
-     * Returns the request content.
+     * Sets the request body.
      *
-     * @param content
-     * A value representing the request content, or <code>null</code> if no content has been set.
+     * @param body
+     * A value representing the body content, or <code>null</code> for no body.
      */
-    public void setContent(Object content) {
-        this.content = content;
+    public void setBody(Object body) {
+        this.body = body;
     }
 
     /**
@@ -469,7 +469,7 @@ public class WebServiceProxy {
     public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
         URL url;
         RequestHandler requestHandler;
-        if (content != null && this.requestHandler == null) {
+        if (body != null) {
             url = this.url;
 
             requestHandler = new RequestHandler() {
@@ -482,7 +482,7 @@ public class WebServiceProxy {
                 public void encodeRequest(OutputStream outputStream) throws IOException {
                     JSONEncoder jsonEncoder = new JSONEncoder();
 
-                    jsonEncoder.write(content, outputStream);
+                    jsonEncoder.write(body, outputStream);
                 }
             };
         } else if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {

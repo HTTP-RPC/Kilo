@@ -263,7 +263,7 @@ public class WebServiceProxyTest {
             (resourcePath) -> null, (method, url) -> {
             WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
 
-            webServiceProxy.setContent(content);
+            webServiceProxy.setBody(content);
 
             return webServiceProxy;
         });

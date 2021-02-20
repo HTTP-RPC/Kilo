@@ -184,7 +184,7 @@ protected String getKey(String name) { ... }
 For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
 
 ### Custom Body Content
-The `Content` annotation can be used to associate custom body content with a service method. It defines a single `value()` attribute representing the expected content type. Annotated methods can access the decoded content via the `getContent()` method. 
+The `Content` annotation can be used to associate custom body content with a service method. It defines a single `value()` attribute representing the expected body type. Annotated methods can access the decoded content via the `getBody()` method. 
 
 For example, the following service method might be used to create a new account record using data passed in the request body:
 
@@ -192,13 +192,13 @@ For example, the following service method might be used to create a new account 
 @RequestMethod("POST")
 @Content(Account.class)
 public createAccount() {
-    Account account = getContent();
+    Account account = getBody();
 
     ...
 }
 ```
 
-By default, body data is assumed to be JSON. However, subclasses can override the `decodeContent()` method to support other representations. If the provided data cannot be deserialized to the specified type, an HTTP 415 response will be returned.
+By default, body data is assumed to be JSON. However, subclasses can override the `decodeBody()` method to support other representations. If the provided data cannot be deserialized to the specified type, an HTTP 415 response will be returned.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -319,16 +319,14 @@ public static class Item {
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to issue API requests to a server. A Swift version is available as part of the [Kilo](https://github.com/gk-brown/Kilo) project.
-
-`WebServiceProxy` provides a single constructor that accepts the following arguments:
+The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
 
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
 
-Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Custom body content can be supplied via the `setContent()` method. 
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Custom body content can be provided via the `setBody()` method. When specified, body content is serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom request encodings.
 
-Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if a custom body is provided either via `setContent()` or by a custom request handler (specified via the `setRequestHandler()` method), `POST` arguments will be sent in the query string.
+Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if a custom body is provided either via `setBody()` or by a custom request handler, `POST` arguments will be sent in the query string.
 
 The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
 
