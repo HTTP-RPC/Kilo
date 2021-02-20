@@ -16,6 +16,7 @@ package org.httprpc;
 
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONDecoder;
+import org.httprpc.io.JSONEncoder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -113,6 +115,9 @@ public class WebServiceProxy {
         BiFunction<String, URL, WebServiceProxy> factory;
 
         Map<String, ?> keys = Collections.emptyMap();
+        Map<String, ?> headers = Collections.emptyMap();
+
+        Object body = null;
 
         TypedInvocationHandler(URL baseURL, Class<?> type, BiFunction<String, URL, WebServiceProxy> factory) {
             this.baseURL = baseURL;
@@ -170,17 +175,19 @@ public class WebServiceProxy {
 
                 WebServiceProxy webServiceProxy = factory.apply(requestMethod.value(), url);
 
+                webServiceProxy.setHeaders(headers);
+
                 Parameter[] parameters = method.getParameters();
 
-                Map<String, Object> argumentMap = new HashMap<>();
+                Map<String, Object> argumentMap = new LinkedHashMap<>();
 
                 for (int i = 0; i < parameters.length; i++) {
-                    Parameter parameter = parameters[i];
-
-                    argumentMap.put(parameter.getName(), arguments[i]);
+                    argumentMap.put(parameters[i].getName(), arguments[i]);
                 }
 
                 webServiceProxy.setArguments(argumentMap);
+
+                webServiceProxy.setBody(body);
 
                 return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
             }
@@ -217,6 +224,8 @@ public class WebServiceProxy {
 
     private Map<String, ?> headers = emptyMap();
     private Map<String, ?> arguments = emptyMap();
+
+    private Object body;
 
     private RequestHandler requestHandler = null;
 
@@ -344,6 +353,26 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns the request body.
+     *
+     * @return
+     * A value representing the request body, or <code>null</code> for no body.
+     */
+    public Object getBody() {
+        return body;
+    }
+
+    /**
+     * Returns the request body.
+     *
+     * @param body
+     * A value representing the request body, or <code>null</code> if no body has been set.
+     */
+    public void setBody(Object body) {
+        this.body = body;
+    }
+
+    /**
      * Returns the request handler.
      *
      * @return
@@ -441,7 +470,23 @@ public class WebServiceProxy {
     public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
         URL url;
         RequestHandler requestHandler;
-        if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
+        if (body != null && this.requestHandler == null) {
+            url = this.url;
+
+            requestHandler = new RequestHandler() {
+                @Override
+                public String getContentType() {
+                    return "application/json";
+                }
+
+                @Override
+                public void encodeRequest(OutputStream outputStream) throws IOException {
+                    JSONEncoder jsonEncoder = new JSONEncoder();
+
+                    jsonEncoder.write(body, outputStream);
+                }
+            };
+        } else if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
             url = this.url;
 
             requestHandler = new RequestHandler() {
@@ -713,36 +758,12 @@ public class WebServiceProxy {
      * An instance of the given type that adapts the target service.
      */
     public static <T> T adapt(URL baseURL, Class<T> type) {
-        return adapt(baseURL, type, emptyMap());
-    }
-
-    /**
-     * Creates a type-safe web service proxy adapter.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param baseURL
-     * The base URL of the web service.
-     *
-     * @param type
-     * The type of the adapter.
-     *
-     * @param headers
-     * A map of header values that will be submitted with service requests.
-     *
-     * @return
-     * An instance of the given type that adapts the target service.
-     */
-    public static <T> T adapt(URL baseURL, Class<T> type, Map<String, ?> headers) {
         return adapt(baseURL, type, (method, url) -> {
             WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
 
             if (method.equalsIgnoreCase("POST")) {
                 webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
             }
-
-            webServiceProxy.setHeaders(headers);
 
             return webServiceProxy;
         });
@@ -812,6 +833,65 @@ public class WebServiceProxy {
         }
 
         getTypedInvocationHandler(adapter).keys = keys;
+    }
+
+    /**
+     * Returns the keys associated with an adapter instance.
+     *
+     * @param adapter
+     * The adapter instance.
+     *
+     * @return
+     * The keys associated with the adapter instance.
+     */
+    public static Map<String, ?> getHeaders(Object adapter) {
+        return getTypedInvocationHandler(adapter).keys;
+    }
+
+    /**
+     * Sets the keys associated with an adapter instance.
+     *
+     * @param adapter
+     * The adapter instance.
+     *
+     * @param headers
+     * The keys to associate with the adapter instance.
+     */
+    public static void setHeaders(Object adapter, Map<String, ?> headers) {
+        if (headers == null) {
+            throw new IllegalArgumentException();
+        }
+
+        getTypedInvocationHandler(adapter).headers = headers;
+    }
+
+    /**
+     * Returns the request body associated with an adapter instance.
+     *
+     * @param adapter
+     * The adapter instance.
+     *
+     * @return
+     * The request body associated with the adapter instance, or <code>null</code>
+     * if no request body has been set.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getBody(Object adapter) {
+        return (T)getTypedInvocationHandler(adapter).body;
+    }
+
+    /**
+     * Sets the request body associated with an adapter instance.
+     *
+     * @param adapter
+     * The adapter instance.
+     *
+     * @param body
+     * The request body to associate with the adapter instance, or <code>null</code>
+     * for no request body.
+     */
+    public static void setBody(Object adapter, Object body) {
+        getTypedInvocationHandler(adapter).body = body;
     }
 
     private static TypedInvocationHandler getTypedInvocationHandler(Object adapter) {

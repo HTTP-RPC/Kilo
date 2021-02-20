@@ -15,6 +15,7 @@
 package org.httprpc;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.io.JSONDecoder;
 import org.httprpc.io.JSONEncoder;
 
 import javax.servlet.ServletException;
@@ -128,6 +129,8 @@ public abstract class WebService extends HttpServlet {
 
     private ThreadLocal<List<String>> keyList = new ThreadLocal<>();
     private ThreadLocal<Map<String, String>> keyMap = new ThreadLocal<>();
+
+    private ThreadLocal<Object> body = new ThreadLocal<>();
 
     private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
 
@@ -364,6 +367,17 @@ public abstract class WebService extends HttpServlet {
 
         Object result;
         try {
+            Body body = handler.method.getAnnotation(Body.class);
+
+            if (body != null) {
+                try {
+                    this.body.set(decodeBody(request, body.value()));
+                } catch (Exception exception) {
+                    response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
+                    return;
+                }
+            }
+
             result = handler.method.invoke(this, getArguments(handler.method, parameterMap));
         } catch (InvocationTargetException | IllegalAccessException exception) {
             if (response.isCommitted()) {
@@ -406,6 +420,8 @@ public abstract class WebService extends HttpServlet {
 
             this.keyList.set(null);
             this.keyMap.set(null);
+
+            this.body.set(null);
         }
 
         if (response.isCommitted()) {
@@ -419,7 +435,7 @@ public abstract class WebService extends HttpServlet {
         } else if (result == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
-            encodeResult(request, response, result);
+            encodeResult(response, result);
         }
     }
 
@@ -551,6 +567,20 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
+     * Returns the body content associated with the current request.
+     *
+     * @param <T>
+     * The body type.
+     *
+     * @return
+     * The body content, or <code>null</code> if no body was provided.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T getBody() {
+        return (T)body.get();
+    }
+
+    /**
      * Determines if the current request is authorized.
      *
      * @param request
@@ -568,10 +598,28 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Encodes the result of a service operation.
+     * Decodes the body of a service request.
      *
      * @param request
      * The servlet request.
+     *
+     * @param type
+     * The body type.
+     *
+     * @return
+     * The decoded body content.
+     *
+     * @throws IOException
+     * If an exception occurs while decoding the body.
+     */
+    protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
+        JSONDecoder jsonDecoder = new JSONDecoder();
+
+        return BeanAdapter.adapt(jsonDecoder.read(request.getInputStream()), type);
+    }
+
+    /**
+     * Encodes the result of a service operation.
      *
      * @param response
      * The servlet response.
@@ -582,7 +630,7 @@ public abstract class WebService extends HttpServlet {
      * @throws IOException
      * If an exception occurs while encoding the result.
      */
-    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
+    protected void encodeResult(HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format("application/json;charset=%s", UTF_8));
 
         JSONEncoder jsonEncoder = new JSONEncoder(isCompact());
@@ -752,6 +800,17 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase());
+
+                    Body body = handler.method.getAnnotation(Body.class);
+
+                    if (body != null) {
+                        xmlStreamWriter.writeCharacters(" (");
+
+                        describeType(body.value(), xmlStreamWriter);
+
+                        xmlStreamWriter.writeCharacters(")");
+                    }
+
                     xmlStreamWriter.writeCharacters(" -> ");
 
                     describeType(handler.method.getGenericReturnType(), xmlStreamWriter);

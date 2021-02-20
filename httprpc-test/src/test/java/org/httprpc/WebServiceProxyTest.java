@@ -71,6 +71,13 @@ public class WebServiceProxyTest {
         Response testMultipartPost(String string, List<String> strings, int number, boolean flag,
             Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
             List<URL> attachments) throws IOException;
+
+        @RequestMethod("POST")
+        Map<String, ?> testBodyPost(int id) throws IOException;
+
+        @RequestMethod("GET")
+        @ResourcePath("headers")
+        Map<String, ?> getHeaders() throws IOException;
     }
 
     public interface MathService {
@@ -246,6 +253,24 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testBodyPost() throws IOException {
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
+
+        Map<String, ?> content = mapOf(
+            entry("string", "héllo&gøod+bye?"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123L),
+            entry("flag", true)
+        );
+
+        WebServiceProxy.setBody(testService, content);
+
+        Map<String, ?> result = testService.testBodyPost(101);
+
+        assertEquals(content, result);
+    }
+
+    @Test
     public void testCustomPost() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
@@ -315,6 +340,23 @@ public class WebServiceProxyTest {
         webServiceProxy.invoke();
 
         assertTrue(true);
+    }
+
+    @Test
+    public void testHeaders() throws IOException {
+        TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
+
+        WebServiceProxy.setHeaders(testService, mapOf(
+            entry("X-Header-A", "abc"),
+            entry("X-Header-B", 123)
+        ));
+
+        Map<String, ?> result = testService.getHeaders();
+
+        assertEquals(mapOf(
+            entry("X-Header-A", "abc"),
+            entry("X-Header-B", "123")
+        ), result);
     }
 
     @Test

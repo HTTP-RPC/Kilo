@@ -159,14 +159,14 @@ public class EmployeeService extends WebService {
     }
 
     @Override
-    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
+    protected void encodeResult(HttpServletResponse response, Object result) throws IOException {
         if (useJackson.get()) {
             ObjectMapper objectMapper = new ObjectMapper();
 
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             objectMapper.writeValue(response.getOutputStream(), result);
         } else {
-            super.encodeResult(request, response, result);
+            super.encodeResult(response, result);
         }
     }
 

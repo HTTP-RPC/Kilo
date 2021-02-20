@@ -14,6 +14,7 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Body;
 import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
@@ -101,6 +102,13 @@ public class TestService extends WebService {
     }
 
     public static class TestMap extends HashMap<String, Double> {
+    }
+
+    public interface Content {
+        String getString();
+        List<String> getStrings();
+        int getNumber();
+        boolean getFlag();
     }
 
     @RequestMethod("GET")
@@ -251,6 +259,12 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
+    @Body(Content.class)
+    public Content testPost(int id) {
+        return getBody();
+    }
+
+    @RequestMethod("POST")
     public void testPost(String name) throws IOException {
         echo();
     }
@@ -275,6 +289,17 @@ public class TestService extends WebService {
     @RequestMethod("DELETE")
     public void testDelete(int id) {
         // No-op
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("headers")
+    public Map<String, ?> testHeaders() {
+        HttpServletRequest request = getRequest();
+
+        return mapOf(
+            entry("X-Header-A", request.getHeader("X-Header-A")),
+            entry("X-Header-B", request.getHeader("X-Header-B"))
+        );
     }
 
     @RequestMethod("GET")
