@@ -274,7 +274,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomPost() throws IOException {
+    public void testImagePost() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
 
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
