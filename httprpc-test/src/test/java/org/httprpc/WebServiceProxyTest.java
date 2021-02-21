@@ -14,6 +14,7 @@
 
 package org.httprpc;
 
+import org.httprpc.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -59,6 +60,13 @@ public class WebServiceProxyTest {
             int getChecksum();
         }
 
+        interface Body {
+            String getString();
+            List<String> getStrings();
+            int getNumber();
+            boolean getFlag();
+        }
+
         @RequestMethod("GET")
         @ResourcePath("a/?:a/b/?:b/c/?:c/d/?:d")
         Map<String, ?> testGetKeys() throws IOException;
@@ -73,7 +81,7 @@ public class WebServiceProxyTest {
             List<URL> attachments) throws IOException;
 
         @RequestMethod("POST")
-        Map<String, ?> testBodyPost(int id) throws IOException;
+        Body testBodyPost(int id) throws IOException;
 
         @RequestMethod("GET")
         @ResourcePath("headers")
@@ -252,25 +260,25 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomBodyPost() throws IOException {
-        Map<String, ?> content = mapOf(
+        TestService.Body body = BeanAdapter.adapt(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
             entry("flag", true)
-        );
+        ), TestService.Body.class);
 
         TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class,
             (resourcePath) -> null, (method, url) -> {
             WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
 
-            webServiceProxy.setBody(content);
+            webServiceProxy.setBody(body);
 
             return webServiceProxy;
         });
 
-        Map<String, ?> result = testService.testBodyPost(101);
+        TestService.Body result = testService.testBodyPost(101);
 
-        assertEquals(content, result);
+        assertEquals(body, result);
     }
 
     @Test

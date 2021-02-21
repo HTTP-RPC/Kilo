@@ -482,7 +482,7 @@ public class WebServiceProxy {
                 public void encodeRequest(OutputStream outputStream) throws IOException {
                     JSONEncoder jsonEncoder = new JSONEncoder();
 
-                    jsonEncoder.write(body, outputStream);
+                    jsonEncoder.write(BeanAdapter.adapt(body), outputStream);
                 }
             };
         } else if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
