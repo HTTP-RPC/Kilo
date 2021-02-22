@@ -190,8 +190,6 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
             }
 
             writer.write('"');
-        } else if (value instanceof Enum<?>) {
-            encode(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
             encode(((Date)value).getTime(), writer);
         } else {

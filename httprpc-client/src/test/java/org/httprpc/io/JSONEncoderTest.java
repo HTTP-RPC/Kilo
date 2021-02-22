@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -60,16 +58,6 @@ public class JSONEncoderTest {
     @Test
     public void testInstant() throws IOException {
         assertEquals("\"1970-01-01T00:00:00.001Z\"", encode(Instant.ofEpochMilli(1)));
-    }
-
-    @Test
-    public void testURL() throws IOException {
-        assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
-    }
-
-    @Test
-    public void testEnum() throws IOException {
-        assertEquals("3", encode(DayOfWeek.THURSDAY));
     }
 
     @Test

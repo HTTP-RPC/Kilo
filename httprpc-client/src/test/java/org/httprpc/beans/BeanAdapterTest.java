@@ -14,11 +14,8 @@
 
 package org.httprpc.beans;
 
-import org.httprpc.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -30,23 +27,99 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BeanAdapterTest {
+    public static class TestList extends ArrayList<Integer> {
+    }
+
+    public static class TestMap extends HashMap<String, Double> {
+    }
+
     @Test
-    public void testPrimitiveAdapt() {
+    public void testBeanAdapter() throws MalformedURLException {
+        Map<String, ?> map = mapOf(
+            entry("i", 1),
+            entry("long", 2L),
+            entry("double", 4.0),
+            entry("string", "abc"),
+            entry("bigInteger", BigInteger.valueOf(8192L)),
+            entry("dayOfWeek", DayOfWeek.values()[3]),
+            entry("date", new Date(0)),
+            entry("instant", Instant.ofEpochMilli(1)),
+            entry("localDate", LocalDate.parse("2018-06-28")),
+            entry("localTime", LocalTime.parse("10:45")),
+            entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
+            entry("URL", new URL("http://localhost:8080")),
+            entry("nestedBean", mapOf(
+                entry("flag", true)
+            )),
+            entry("list", listOf(
+                1, 2L, 4.0, "abc"
+            )),
+            entry("integerList", listOf(
+                1, 2, 3, 4
+            )),
+            entry("nestedBeanList", listOf(
+                mapOf(
+                    entry("flag", true)
+                ))
+            ),
+            entry("map", mapOf(
+                entry("a", 1),
+                entry("b", 2L),
+                entry("c", 4.0),
+                entry("d", "abc")
+            )),
+            entry("doubleMap", mapOf(
+                entry("a", 1.0),
+                entry("b", 2.0),
+                entry("c", 3.0),
+                entry("d", 4.0)
+            )),
+            entry("nestedBeanMap", mapOf(
+                entry("nestedBean", mapOf(
+                    entry("flag", true)
+                ))
+            ))
+        );
+
+        assertEquals(map, new BeanAdapter(BeanAdapter.adapt(map, TestInterface.class)));
+        assertEquals(map, new BeanAdapter(BeanAdapter.adapt(map, TestBean.class)));
+    }
+
+    @Test
+    public void testInvalidGet() {
+        BeanAdapter beanAdapter = new BeanAdapter(new TestBean());
+
+        assertNull(beanAdapter.get("foo"));
+    }
+
+    @Test
+    public void testInvalidPut() {
+        BeanAdapter beanAdapter = new BeanAdapter(new TestBean());
+
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("dayOfWeek", 0));
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("date", "xyz"));
+    }
+
+    @Test
+    public void testPrimitiveCoercion() {
         assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));
         assertEquals(BeanAdapter.adapt("1", Byte.TYPE), Byte.valueOf((byte)1));
 
@@ -70,7 +143,16 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testMapAdapt() {
+    public void testInstantCoercion() {
+        Date date = new Date(1);
+
+        Instant instant = BeanAdapter.adapt(date, Instant.class);
+
+        assertEquals(Instant.ofEpochMilli(1), instant);
+    }
+
+    @Test
+    public void testObjectMethodDelegation() {
         Map<String, Object> map1 = new HashMap<String, Object>() {
             @Override
             public String toString() {
@@ -91,107 +173,19 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testBeanAdapter1() throws MalformedURLException {
-        Map<String, ?> expected = mapOf(
-            entry("i", 1),
-            entry("long", 2L),
-            entry("double", 4.0),
-            entry("string", "abc"),
-            entry("bigInteger", BigInteger.valueOf(8192L)),
-            entry("dayOfWeek", DayOfWeek.values()[3]),
-            entry("date", new Date(0)),
-            entry("instant", Instant.ofEpochMilli(1)),
-            entry("localDate", LocalDate.parse("2018-06-28")),
-            entry("localTime", LocalTime.parse("10:45")),
-            entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
-            entry("URL", new URL("http://localhost:8080")),
-            entry("nestedBean", mapOf(
-                entry("flag", true)
-            )),
-            entry("list", listOf(2L, 4.0, mapOf(
-                entry("flag", true)
-            ))),
-            entry("nestedBeanList", listOf(mapOf(
-                entry("flag", false)
-            ))),
-            entry("map", mapOf(
-                entry("long", 2L),
-                entry("double", 4.0),
-                entry("nestedBean", mapOf(
-                    entry("flag", true)
-                )))
-            ),
-            entry("nestedBeanMap", mapOf(
-                entry("nestedBean", mapOf(
-                    entry("flag", false)
-                )))
-            )
-        );
-
-        Map<String, Object> actual = new BeanAdapter(new TestBean());
-
-        assertEquals(expected, actual);
-        assertNull(actual.get("ignored"));
+    public void testReifiedList() {
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.adapt(emptyList(), TestList.class));
     }
 
     @Test
-    public void testBeanAdapter2() throws IOException {
-        JSONDecoder jsonDecoder = new JSONDecoder();
-
-        Map<String, ?> map;
-        try (InputStream inputStream = getClass().getResourceAsStream("test.json")) {
-            map = jsonDecoder.read(inputStream);
-        }
-
-        TestInterface result = BeanAdapter.adapt(map, TestInterface.class);
-
-        assertNotNull(result);
-
-        assertEquals(1, result.getInt());
-        assertEquals(2L, result.getLong());
-        assertEquals(4.0, result.getDouble(), 0.0);
-        assertEquals("abc", result.getString());
-        assertEquals(new Date(0), result.getDate());
-        assertEquals(Instant.ofEpochMilli(1), result.getInstant());
-        assertEquals(LocalDate.parse("2018-06-28"), result.getLocalDate());
-        assertEquals(LocalTime.parse("10:45"), result.getLocalTime());
-        assertEquals(LocalDateTime.parse("2018-06-28T10:45"), result.getLocalDateTime());
-
-        assertTrue(result.getNestedBean().getFlag());
-
-        assertEquals(2L, ((Number)result.getList().get(0)).longValue());
-        assertEquals(4.0, ((Number)result.getList().get(1)).doubleValue(), 0.0);
-        assertEquals(true, ((Map<?, ?>)result.getList().get(2)).get("flag"));
-        assertFalse(result.getNestedBeanList().get(0).getFlag());
-
-        assertEquals(2L, ((Number)result.getMap().get("long")).longValue());
-        assertEquals(4.0, ((Number)result.getMap().get("double")).doubleValue(), 0.0);
-        assertEquals(true, ((Map<?, ?>)result.getMap().get("nestedBean")).get("flag"));
-        assertFalse(result.getNestedBeanMap().get("nestedBean").getFlag());
-    }
-
-    @Test
-    public void testInterfaceKey() {
-        TestInterface testInterface = BeanAdapter.adapt(mapOf(entry("i", 10)), TestInterface.class);
-
-        Map<String, ?> map = new BeanAdapter(testInterface);
-
-        assertEquals(10, map.get("i"));
-    }
-
-    @Test
-    public void testInstant() {
-        Date date = new Date(1);
-
-        Instant instant = BeanAdapter.adapt(date, Instant.class);
-
-        assertEquals(Instant.ofEpochMilli(1), instant);
+    public void testReifiedMap() {
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.adapt(emptyMap(), TestMap.class));
     }
 
     @Test
     public void testGetProperties() {
-        Map<String, Type> properties = BeanAdapter.getAccessors(TestBean.class).entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getGenericReturnType()));
+        Map<String, Type> properties = BeanAdapter.getProperties(TestBean.class).entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));
 
         assertEquals(Integer.TYPE, properties.get("i"));
         assertEquals(Long.TYPE, properties.get("long"));
@@ -204,6 +198,7 @@ public class BeanAdapterTest {
         assertEquals(LocalTime.class, properties.get("localTime"));
         assertEquals(LocalDateTime.class, properties.get("localDateTime"));
         assertEquals(URL.class, properties.get("URL"));
+
         assertEquals(TestBean.NestedBean.class, properties.get("nestedBean"));
 
         assertTrue(properties.get("list") instanceof ParameterizedType);
@@ -212,6 +207,13 @@ public class BeanAdapterTest {
 
         assertEquals(1, listTypeArguments.length);
         assertTrue(listTypeArguments[0] instanceof WildcardType);
+
+        assertTrue(properties.get("integerList") instanceof ParameterizedType);
+
+        Type[] integerListTypeArguments = ((ParameterizedType)properties.get("integerList")).getActualTypeArguments();
+
+        assertEquals(1, integerListTypeArguments.length);
+        assertEquals(Integer.class, integerListTypeArguments[0]);
 
         Type[] nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
 
@@ -225,6 +227,14 @@ public class BeanAdapterTest {
         assertEquals(2, mapTypeArguments.length);
         assertEquals(String.class, mapTypeArguments[0]);
         assertTrue(mapTypeArguments[1] instanceof WildcardType);
+
+        assertTrue(properties.get("doubleMap") instanceof ParameterizedType);
+
+        Type[] doubleMapTypeArguments = ((ParameterizedType)properties.get("doubleMap")).getActualTypeArguments();
+
+        assertEquals(2, doubleMapTypeArguments.length);
+        assertEquals(String.class, doubleMapTypeArguments[0]);
+        assertEquals(Double.class, doubleMapTypeArguments[1]);
 
         Type[] nestedBeanMapTypeArguments = ((ParameterizedType)properties.get("nestedBeanMap")).getActualTypeArguments();
 

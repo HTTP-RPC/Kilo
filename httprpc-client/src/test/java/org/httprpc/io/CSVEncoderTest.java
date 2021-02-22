@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.NumberFormat;
-import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        String expected = "\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"G\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,3,0,\"12%\"\r\n"
-            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,,\r\n";
+        String expected = "\"a\",\"b\",\"c\",\"d\",\"e\",\"F\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,0,\"12%\"\r\n"
+            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
         List<Map<String, ?>> values = listOf(
             mapOf(
@@ -42,28 +41,27 @@ public class CSVEncoderTest {
                 entry("b", 1),
                 entry("c", 2.0),
                 entry("d", true),
-                entry("e", DayOfWeek.THURSDAY),
-                entry("f", new Date(0)),
-                entry("g", 0.12)
+                entry("e", new Date(0)),
+                entry("f", 0.12)
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),
                 entry("b", 2),
                 entry("c", 4.0),
-                entry("g", null)
+                entry("f", null)
             )
         );
 
         StringWriter writer = new StringWriter();
 
-        CSVEncoder csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f", "g"));
+        CSVEncoder csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f"));
 
         csvEncoder.setLabels(mapOf(
-            entry("g", "G")
+            entry("f", "F")
         ));
 
         csvEncoder.setFormats(mapOf(
-            entry("g", NumberFormat.getPercentInstance())
+            entry("f", NumberFormat.getPercentInstance())
         ));
 
         csvEncoder.write(values, writer);

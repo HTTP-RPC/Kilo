@@ -16,7 +16,6 @@ package org.httprpc.io;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
@@ -88,13 +87,9 @@ public class JSONEncoder extends Encoder<Object> {
             writer.write("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.write(value.toString());
-        } else if (value instanceof Enum<?>) {
-            encode(((Enum<?>)value).ordinal(), writer);
         } else if (value instanceof Date) {
             encode(((Date)value).getTime(), writer);
         } else if (value instanceof TemporalAccessor) {
-            encode(value.toString(), writer);
-        } else if (value instanceof URL) {
             encode(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.write("[");

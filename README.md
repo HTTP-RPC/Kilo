@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -206,10 +206,8 @@ Return values are converted to their JSON equivalents as follows:
 * `CharSequence`: string
 * `Number`: number
 * `Boolean`: true/false
-* `Enum`: ordinal value
 * `java.util.Date`: long value representing epoch time in milliseconds
 * `java.time.TemporalAccessor`: string
-* `java.net.URL`: string
 * `Iterable`: array
 * `java.util.Map` or Java bean: object
 
@@ -242,11 +240,6 @@ The first argument contains the current request, and the second the service meth
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException` or `UnsupportedOperationException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
 
-### Inter-Service Communication
-A service implementation can obtain a reference to another service instance via the `getService()` method of the `WebService` class. This can be useful when the behavior of one service relies on logic provided by a different service. The target service must be annotated with `javax.servlet.annotation.WebServlet`.
-
-Methods on the target service are executed in the same thread that handled the initial request. However, the servlet request and response values from the source service are not propagated to the target. Any required values from the request must be passed as arguments to the target method; similarly, any information destined for the response must be returned by the method.
-
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:
 
@@ -254,7 +247,7 @@ API documentation can be viewed by appending "?api" to a service URL; for exampl
 GET /math?api
 ```
 
-Methods are grouped by resource path. Parameter and return types are encoded as follows:
+Methods are grouped by resource path. Body, parameter, and return types are encoded as follows:
 
 * `Object`: "any"
 * `Void` or `void`: "void"
@@ -266,14 +259,13 @@ Methods are grouped by resource path. Parameter and return types are encoded as 
 * `Double` or `double`: "double"
 * Any other `Number`: "number"
 * `CharSequence`: "string"
-* `Enum`: "enum"
 * `java.util.Date`: "date"
 * `java.time.Instant`: "instant"
 * `java.time.LocalDate`: "date-local"
 * `java.time.LocalTime`: "time-local"
 * `java.time.LocalDateTime`: "datetime-local"
-* `java.net.URL`: "file" for parameters, "url" for return values
-* `java.lang.Iterable`, `java.util.Collection`, or `java.util.List`: "[<em>element type</em>]"
+* `java.net.URL`: "file"
+* `java.lang.Iterable`: "[<em>element type</em>]"
 * `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
 
 Any other type is considered a Java bean and is described by its simple class name.
@@ -513,7 +505,7 @@ This code would produce the following output:
 ...
 ```
 
-String values are automatically wrapped in double-quotes and escaped. Enums are encoded using their ordinal values. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
+String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
 ### CSVDecoder
 The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns the data as a forward-scrolling cursor, allowing consumers to process rows as soon as they are read.
@@ -589,28 +581,16 @@ templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZo
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
 
 ## BeanAdapter
-The `BeanAdapter` class provides access to the properties of a Java bean instance via the `Map` interface. If a property value is `null` or an instance of one of the following types, it is returned as is:
-
-* `CharSequence`
-* `Number`
-* `Boolean`
-* `Enum`
-* `java.util.Date`
-* `java.time.TemporalAccessor`
-* `java.net.URL`
-
-If the value is an instance of `Iterable` or `Map`, it is wrapped in an adapter of the same type that automatically adapts its sub-elements. Otherwise, the value is assumed to be a bean and is wrapped in an instance of `BeanAdapter`.
-
-For example, the following class might be used to represent a node in a hierarchical object graph:
+The `BeanAdapter` class provides access to the properties of a Java bean instance via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
 
 ```java
 public class TreeNode {
     private String name;
+    private List<TreeNode> children;
 
-    private List<TreeNode> children = null;
-
-    public TreeNode(String name) {
+    public TreeNode(String name, List<TreeNode> children) {
         this.name = name;
+        this.children = children;
     }
 
     public String getName() {
@@ -620,81 +600,47 @@ public class TreeNode {
     public List<TreeNode> getChildren() {
         return children;
     }
-
-    public void setChildren(List<TreeNode> children) {
-        this.children = children;
-    }
 }
 ```
 
-This class could be used to create a simple hierarchy as shown below:
+A simple tree structure could be created and serialized to JSON like this:
 
 ```java
-TreeNode root = new TreeNode("Seasons");
+TreeNode root = TreeNode("Seasons", listOf(
+    new TreeNode("Winter", listOf(
+        new TreeNode("January", null),
+        new TreeNode("February", null),
+        new TreeNode("March", null)
+    )),
+    new TreeNode("Spring", listOf(
+        new TreeNode("April", null),
+        new TreeNode("May", null),
+        new TreeNode("June", null)
+    )),
+    new TreeNode("Summer", listOf(
+        new TreeNode("July", null),
+        new TreeNode("August", null),
+        new TreeNode("September", null)
+    )),
+    new TreeNode("Fall", listOf(
+        new TreeNode("October", null),
+        new TreeNode("November", null),
+        new TreeNode("December", null)
+    ))
+));
 
-TreeNode winter = new TreeNode("Winter");
-winter.setChildren(listOf(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
-
-TreeNode spring = new TreeNode("Spring");
-spring.setChildren(listOf(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
-
-TreeNode summer = new TreeNode("Summer");
-summer.setChildren(listOf(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
-
-TreeNode fall = new TreeNode("Fall");
-fall.setChildren(listOf(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
-
-root.setChildren(listOf(winter, spring, summer, fall));
-```
-
-The following code could be used to write this tree structure to the console as JSON:
-
-```java
 JSONEncoder jsonEncoder = new JSONEncoder();
 
 jsonEncoder.write(new BeanAdapter(root), System.out);
 ```
 
-producing the following output:
-
-```json
-{
-  "children": [
-    {
-      "children": [
-        {
-          "children": null,
-          "name": "January"
-        },
-        {
-          "children": null,
-          "name": "February"
-        },
-        {
-          "children": null,
-          "name": "March"
-        }
-      ],
-      "name": "Winter"
-    },
-    ...
-  ]
-}
-```
-
-Note that properties are traversed in alphabetical order rather than the order in which they were declared. Because the original declaration order is not available at runtime, `BeanAdapter` internally sorts properties alphabetically by key. 
-
-### Excluding Values
-Any property tagged with the `Ignore` annotation will be excluded from the map. For example:
+or used as a data dictionary for a template document like this:
 
 ```java
-@Ignore
-public int getX() {
-    return x;
-}
-```
+TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("tree.html"));
 
-This will cause the `get()` method to return `null` for the key "x".
+templateEncoder.write(new BeanAdapter(root), System.out);
+```
 
 ### Typed Access
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
@@ -711,9 +657,14 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is `java.time.Instant`, `java.time.LocalDate`, `java.time.LocalTime`, or `java.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
-Otherwise, the target is assumed to be a bean interface, and the value is assumed to be a map. The return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. Property values are adapted as described above. `Object` methods such as `toString()` are delegated to the underlying map.
+Otherwise, the target is assumed to be a bean, and the value is assumed to be a map:
 
-For example, given the following interface:
+* If the target is an interface, the return value is a proxy implementation of the given interface that maps accessor methods to entries in the map. `Object` methods are delegated to the underlying map.
+* If the target is a concrete type, an instance of the type is dynamically created and populated using the entries in the map. 
+
+In either case, property values are adapted as described above.
+
+For example, given this interface:
 
 ```java
 public interface TreeNode {
@@ -722,7 +673,7 @@ public interface TreeNode {
 }
 ```
 
-the `adapt()` method can be used to model the JSON data from the previous section as a collection of `TreeNode` values:
+the following code could be used to translate the JSON data generated by the previous example into a collection of `TreeNode` values:
 
 ```java
 JSONDecoder jsonDecoder = new JSONDecoder();
@@ -737,9 +688,14 @@ System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); //
 ```
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom key with a bean property. This association is bi-directional; when adapting a bean for access via the `Map` interface, the annotation represents the key that will be used to obtain the value from the bean. Conversely, when adapting a map for typed access, it represents the key that will be used to obtain the value from the map. 
+The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when reading or writing property values. For example:
 
-For example, when an instance of this class is wrapped in a `BeanAdapter`, the value returned by `getFirstName()` will be accessible via "first_name" rather than "firstName": 
+```java
+public interface Person {
+    @Key("first_name")
+    String getFirstName();
+}
+```
 
 ```java
 public class Person {
@@ -750,18 +706,10 @@ public class Person {
         return firstName;
     }
     
+    @Key("first_name")
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-}
-```
-
-Similarly, when a proxy instance of this interface is created by the `adapt()` method, `getFirstName()` will return the value associated with "first_name" in the underlying map, not "firstName":  
-
-```java
-public interface Person {
-    @Key("first_name")
-    String getFirstName();
 }
 ```
 

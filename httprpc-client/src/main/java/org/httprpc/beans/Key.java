@@ -20,14 +20,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that associates a map key with an accessor method.
+ * Annotation that associates a custom name with a bean property.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Key {
     /**
      * @return
-     * The map key associated with the accessor method.
+     * The custom property name.
      */
     String value();
 }

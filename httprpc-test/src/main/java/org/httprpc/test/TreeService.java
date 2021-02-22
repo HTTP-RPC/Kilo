@@ -33,11 +33,11 @@ public class TreeService extends WebService {
     @Description("Represents a node in the tree.")
     public static class TreeNode {
         private String name;
+        private List<TreeNode> children;
 
-        private List<TreeNode> children = null;
-
-        private TreeNode(String name) {
+        public TreeNode(String name, List<TreeNode> children) {
             this.name = name;
+            this.children = children;
         }
 
         @Description("The tree node's name.")
@@ -49,31 +49,32 @@ public class TreeService extends WebService {
         public List<TreeNode> getChildren() {
             return children;
         }
-
-        private void setChildren(List<TreeNode> children) {
-            this.children = children;
-        }
     }
 
     @RequestMethod("GET")
     @Description("Returns an example tree structure.")
     public TreeNode getTree() {
-        TreeNode root = new TreeNode("Seasons");
-
-        TreeNode winter = new TreeNode("Winter");
-        winter.setChildren(listOf(new TreeNode("January"), new TreeNode("February"), new TreeNode("March")));
-
-        TreeNode spring = new TreeNode("Spring");
-        spring.setChildren(listOf(new TreeNode("April"), new TreeNode("May"), new TreeNode("June")));
-
-        TreeNode summer = new TreeNode("Summer");
-        summer.setChildren(listOf(new TreeNode("July"), new TreeNode("August"), new TreeNode("September")));
-
-        TreeNode fall = new TreeNode("Fall");
-        fall.setChildren(listOf(new TreeNode("October"), new TreeNode("November"), new TreeNode("December")));
-
-        root.setChildren(listOf(winter, spring, summer, fall));
-
-        return root;
+        return new TreeNode("Seasons", listOf(
+            new TreeNode("Winter", listOf(
+                new TreeNode("January", null),
+                new TreeNode("February", null),
+                new TreeNode("March", null)
+            )),
+            new TreeNode("Spring", listOf(
+                new TreeNode("April", null),
+                new TreeNode("May", null),
+                new TreeNode("June", null)
+            )),
+            new TreeNode("Summer", listOf(
+                new TreeNode("July", null),
+                new TreeNode("August", null),
+                new TreeNode("September", null)
+            )),
+            new TreeNode("Fall", listOf(
+                new TreeNode("October", null),
+                new TreeNode("November", null),
+                new TreeNode("December", null)
+            ))
+        ));
     }
 }

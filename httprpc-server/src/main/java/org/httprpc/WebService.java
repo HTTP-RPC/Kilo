@@ -19,7 +19,6 @@ import org.httprpc.io.JSONDecoder;
 import org.httprpc.io.JSONEncoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,7 +54,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyList;
 import static org.httprpc.util.Collections.listOf;
@@ -122,7 +120,7 @@ public abstract class WebService extends HttpServlet {
 
     private Resource root = null;
 
-    private Map<Class<?>, Map<String, Method>> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+    private Map<Class<?>, Map<String, BeanAdapter.Property>> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
@@ -132,27 +130,7 @@ public abstract class WebService extends HttpServlet {
 
     private ThreadLocal<Object> body = new ThreadLocal<>();
 
-    private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
-
     private static final String UTF_8 = "UTF-8";
-
-    /**
-     * Returns a service instance.
-     *
-     * @param type
-     * The service type.
-     *
-     * @param <T>
-     * The service type.
-     *
-     * @return
-     * The service instance, or <code>null</code> if no service of the given type
-     * exists.
-     */
-    @SuppressWarnings("unchecked")
-    protected static <T extends WebService> T getService(Class<T> type) {
-        return (T)services.get(type);
-    }
 
     @Override
     public void init() throws ServletException {
@@ -228,12 +206,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         sort(root);
-
-        Class<? extends WebService> type = getClass();
-
-        if (getClass().getAnnotation(WebServlet.class) != null) {
-            services.put(type, this);
-        }
     }
 
     private static void sort(Resource root) {
@@ -384,7 +356,7 @@ public abstract class WebService extends HttpServlet {
         Object result;
         try {
             result = handler.method.invoke(this, getArguments(handler.method, parameterMap));
-        } catch (InvocationTargetException | IllegalAccessException exception) {
+        } catch (IllegalAccessException | InvocationTargetException exception) {
             if (response.isCommitted()) {
                 throw new ServletException(exception);
             } else {
@@ -690,7 +662,7 @@ public abstract class WebService extends HttpServlet {
 
             describeResource(request.getServletPath(), root, xmlStreamWriter);
 
-            for (Map.Entry<Class<?>, Map<String, Method>> typeEntry : structures.entrySet()) {
+            for (Map.Entry<Class<?>, Map<String, BeanAdapter.Property>> typeEntry : structures.entrySet()) {
                 Class<?> type = typeEntry.getKey();
 
                 String name = type.getSimpleName();
@@ -748,10 +720,10 @@ public abstract class WebService extends HttpServlet {
 
                 xmlStreamWriter.writeStartElement("ul");
 
-                for (Map.Entry<String, Method> propertyEntry : typeEntry.getValue().entrySet()) {
-                    Method method = propertyEntry.getValue();
+                for (Map.Entry<String, BeanAdapter.Property> propertyEntry : typeEntry.getValue().entrySet()) {
+                    Method accessor = propertyEntry.getValue().getAccessor();
 
-                    if (method.getDeclaringClass() != type) {
+                    if (accessor == null || accessor.getDeclaringClass() != type) {
                         continue;
                     }
 
@@ -762,11 +734,11 @@ public abstract class WebService extends HttpServlet {
                     xmlStreamWriter.writeCharacters(propertyEntry.getKey());
                     xmlStreamWriter.writeCharacters(": ");
 
-                    describeType(method.getGenericReturnType(), xmlStreamWriter);
+                    describeType(accessor.getGenericReturnType(), xmlStreamWriter);
 
                     xmlStreamWriter.writeEndElement();
 
-                    Description propertyDescription = method.getAnnotation(Description.class);
+                    Description propertyDescription = accessor.getAnnotation(Description.class);
 
                     if (propertyDescription != null) {
                         xmlStreamWriter.writeCharacters(" - ");
@@ -847,17 +819,7 @@ public abstract class WebService extends HttpServlet {
                         xmlStreamWriter.writeCharacters(parameter.getName());
                         xmlStreamWriter.writeCharacters(": ");
 
-                        Type type = parameter.getParameterizedType();
-
-                        if (type == URL.class) {
-                            xmlStreamWriter.writeCharacters("file");
-                        } else if (type instanceof ParameterizedType
-                            && ((ParameterizedType)type).getRawType() == List.class
-                            && ((ParameterizedType)type).getActualTypeArguments()[0] == URL.class) {
-                            xmlStreamWriter.writeCharacters("[file]");
-                        } else {
-                            describeType(type, xmlStreamWriter);
-                        }
+                        describeType(parameter.getParameterizedType(), xmlStreamWriter);
 
                         xmlStreamWriter.writeEndElement();
 
@@ -928,7 +890,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeType(Class<?> type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
-        if (type.isArray()) {
+        if (type.isArray() || Enum.class.isAssignableFrom(type)) {
             throw new IllegalArgumentException();
         }
 
@@ -955,8 +917,6 @@ public abstract class WebService extends HttpServlet {
             description = "boolean";
         } else if (CharSequence.class.isAssignableFrom(type)) {
             description = "string";
-        } else if (Enum.class.isAssignableFrom(type)) {
-            description = "enum";
         } else if (Date.class.isAssignableFrom(type)) {
             description = "date";
         } else if (type == Instant.class) {
@@ -968,7 +928,7 @@ public abstract class WebService extends HttpServlet {
         } else if (type == LocalDateTime.class) {
             description = "datetime-local";
         } else if (type == URL.class) {
-            description = "url";
+            description = "file";
         } else {
             if (Iterable.class.isAssignableFrom(type)) {
                 describeType(new ParameterizedType() {
@@ -1006,9 +966,9 @@ public abstract class WebService extends HttpServlet {
                 }, xmlStreamWriter);
             } else {
                 if (!structures.containsKey(type)) {
-                    Map<String, Method> accessors = BeanAdapter.getAccessors(type);
+                    Map<String, BeanAdapter.Property> properties = BeanAdapter.getProperties(type);
 
-                    structures.put(type, accessors);
+                    structures.put(type, properties);
 
                     if (type.isInterface()) {
                         Class<?>[] interfaces = type.getInterfaces();
@@ -1024,14 +984,14 @@ public abstract class WebService extends HttpServlet {
                         }
                     }
 
-                    for (Map.Entry<String, Method> entry : accessors.entrySet()) {
-                        Method method = entry.getValue();
+                    for (Map.Entry<String, BeanAdapter.Property> entry : properties.entrySet()) {
+                        Method accessor = entry.getValue().getAccessor();
 
-                        if (method.getDeclaringClass() != type) {
+                        if (accessor == null || accessor.getDeclaringClass() != type) {
                             continue;
                         }
 
-                        describeType(method.getGenericReturnType(), null);
+                        describeType(accessor.getGenericReturnType(), null);
                     }
                 }
 

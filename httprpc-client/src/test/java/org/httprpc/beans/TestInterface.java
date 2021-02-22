@@ -14,6 +14,9 @@
 
 package org.httprpc.beans;
 
+import java.math.BigInteger;
+import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,18 +31,26 @@ public interface TestInterface {
     }
 
     @Key("i")
-    int getInt();
+    int getInteger();
     long getLong();
     double getDouble();
     String getString();
+    BigInteger getBigInteger();
+    DayOfWeek getDayOfWeek();
     Date getDate();
     Instant getInstant();
     LocalDate getLocalDate();
     LocalTime getLocalTime();
     LocalDateTime getLocalDateTime();
+    URL getURL();
+
     NestedInterface getNestedBean();
+
     List<?> getList();
+    List<Integer> getIntegerList();
     List<? extends NestedInterface> getNestedBeanList();
+
     Map<String, ?> getMap();
+    Map<String, Double> getDoubleMap();
     Map<String, ? extends NestedInterface> getNestedBeanMap();
 }

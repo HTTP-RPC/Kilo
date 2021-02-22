@@ -14,6 +14,7 @@
 
 package org.httprpc.beans;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,9 +31,11 @@ import java.time.temporal.TemporalAccessor;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,19 +45,50 @@ import java.util.TreeMap;
  * {@link Map} adapter for Java bean types.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
+    /**
+     * Class representing a bean property.
+     */
+    public static class Property {
+        private Method accessor = null;
+        private List<Method> mutators = new LinkedList<>();
+
+        private Property() {
+        }
+
+        /**
+         * Returns the property's accessor.
+         *
+         * @return
+         * The property's accessor, or <code>null</code> if no accessor is defined.
+         */
+        public Method getAccessor() {
+            return accessor;
+        }
+
+        /**
+         * Returns the property's mutators.
+         *
+         * @return
+         * The property's mutators.
+         */
+        public List<Method> getMutators() {
+            return Collections.unmodifiableList(mutators);
+        }
+    }
+
     // Iterable adapter
     private static class IterableAdapter extends AbstractList<Object> {
         Iterable<?> iterable;
-        Map<Class<?>, Map<String, Method>> accessorCache;
+        Map<Class<?>, Map<String, Property>> propertyCache;
 
-        IterableAdapter(Iterable<?> iterable, Map<Class<?>, Map<String, Method>> accessorCache) {
+        IterableAdapter(Iterable<?> iterable, Map<Class<?>, Map<String, Property>> propertyCache) {
             this.iterable = iterable;
-            this.accessorCache = accessorCache;
+            this.propertyCache = propertyCache;
         }
 
         @Override
         public Object get(int index) {
-            return adapt(getList().get(index), accessorCache);
+            return adapt(getList().get(index), propertyCache);
         }
 
         @Override
@@ -82,7 +116,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 @Override
                 public Object next() {
-                    return adapt(iterator.next(), accessorCache);
+                    return adapt(iterator.next(), propertyCache);
                 }
             };
         }
@@ -91,16 +125,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         Map<?, ?> map;
-        Map<Class<?>, Map<String, Method>> accessorCache;
+        Map<Class<?>, Map<String, Property>> propertyCache;
 
-        MapAdapter(Map<?, ?> map, Map<Class<?>, Map<String, Method>> accessorCache) {
+        MapAdapter(Map<?, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
             this.map = map;
-            this.accessorCache = accessorCache;
+            this.propertyCache = propertyCache;
         }
 
         @Override
         public Object get(Object key) {
-            return adapt(map.get(key), accessorCache);
+            return adapt(map.get(key), propertyCache);
         }
 
         @Override
@@ -133,7 +167,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                                 @Override
                                 public Object getValue() {
-                                    return adapt(entry.getValue(), accessorCache);
+                                    return adapt(entry.getValue(), propertyCache);
                                 }
 
                                 @Override
@@ -196,12 +230,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private Object bean;
-    private Map<Class<?>, Map<String, Method>> accessorCache;
+    private Map<Class<?>, Map<String, Property>> propertyCache;
 
-    private Map<String, Method> accessors;
+    private Map<String, Property> properties;
 
     private static final String GET_PREFIX = "get";
     private static final String IS_PREFIX = "is";
+
+    private static final String SET_PREFIX = "set";
 
     /**
      * Constructs a new bean adapter.
@@ -213,13 +249,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         this(bean, new HashMap<>());
     }
 
-    private BeanAdapter(Object bean, Map<Class<?>, Map<String, Method>> accessorCache) {
+    private BeanAdapter(Object bean, Map<Class<?>, Map<String, Property>> propertyCache) {
         if (bean == null) {
             throw new IllegalArgumentException();
         }
 
         this.bean = bean;
-        this.accessorCache = accessorCache;
+        this.propertyCache = propertyCache;
 
         Class<?> type = bean.getClass();
 
@@ -233,58 +269,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             type = interfaces[0];
         }
 
-        accessors = accessorCache.get(type);
+        properties = propertyCache.get(type);
 
-        if (accessors == null) {
-            accessors = getAccessors(type);
+        if (properties == null) {
+            properties = getProperties(type);
 
-            accessorCache.put(type, accessors);
-        }
-    }
-
-    private static String getKey(Method method) {
-        if (method.isBridge()) {
-            return null;
-        }
-
-        String methodName = method.getName();
-
-        String prefix;
-        if (methodName.startsWith(GET_PREFIX)) {
-            prefix = GET_PREFIX;
-        } else if (methodName.startsWith(IS_PREFIX)) {
-            prefix = IS_PREFIX;
-        } else {
-            return null;
-        }
-
-        if (method.getParameterCount() > 0) {
-            return null;
-        }
-
-        if (method.getAnnotation(Ignore.class) != null) {
-            return null;
-        }
-
-        Key key = method.getAnnotation(Key.class);
-
-        if (key == null) {
-            int j = prefix.length();
-            int n = methodName.length();
-
-            if (j == n) {
-                return null;
-            }
-
-            char c = methodName.charAt(j++);
-
-            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                c = Character.toLowerCase(c);
-            }
-
-            return c + methodName.substring(j);
-        } else {
-            return key.value();
+            propertyCache.put(type, properties);
         }
     }
 
@@ -294,13 +284,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        Method method = accessors.get(key);
+        Property property = properties.get(key);
 
         Object value;
-        if (method != null) {
+        if (property != null && property.accessor != null) {
             try {
-                value = adapt(method.invoke(bean), accessorCache);
-            } catch (InvocationTargetException | IllegalAccessException exception) {
+                value = adapt(property.accessor.invoke(bean), propertyCache);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
                 throw new RuntimeException(exception);
             }
         } else {
@@ -311,17 +301,42 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     @Override
+    public Object put(String key, Object value) {
+        Property property = properties.get(key);
+
+        if (property == null) {
+            throw new UnsupportedOperationException();
+        }
+
+        int i = 0;
+
+        for (Method mutator : property.mutators) {
+            try {
+                mutator.invoke(bean, (Object)adapt(value, mutator.getGenericParameterTypes()[0]));
+            } catch (Exception exception) {
+                i++;
+            }
+        }
+
+        if (i == property.mutators.size()) {
+            throw new UnsupportedOperationException();
+        }
+
+        return null;
+    }
+
+    @Override
     public Set<Entry<String, Object>> entrySet() {
         return new AbstractSet<Entry<String, Object>>() {
             @Override
             public int size() {
-                return accessors.size();
+                return properties.size();
             }
 
             @Override
             public Iterator<Entry<String, Object>> iterator() {
                 return new Iterator<Entry<String, Object>>() {
-                    private Iterator<Entry<String, Method>> iterator = accessors.entrySet().iterator();
+                    private Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
 
                     @Override
                     public boolean hasNext() {
@@ -330,13 +345,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     @Override
                     public Entry<String, Object> next() {
-                        Entry<String, Method> entry = iterator.next();
+                        Entry<String, Property> entry = iterator.next();
 
+                        Object value;
                         try {
-                            return new SimpleImmutableEntry<>(entry.getKey(), adapt(entry.getValue().invoke(bean), accessorCache));
-                        } catch (InvocationTargetException | IllegalAccessException exception) {
+                            Property property = entry.getValue();
+
+                            if (property.accessor != null) {
+                                value = adapt(property.accessor.invoke(bean), propertyCache);
+                            } else {
+                                value = null;
+                            }
+                        } catch (IllegalAccessException | InvocationTargetException exception) {
                             throw new RuntimeException(exception);
                         }
+
+                        return new SimpleImmutableEntry<>(entry.getKey(), value);
                     }
                 };
             }
@@ -344,8 +368,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value. If the value is <code>null</code> or an instance of one of
-     * the following types, it is returned as is:
+     * Adapts a value for loosely typed access. If the value is <code>null</code>
+     * or an instance of one of the following types, it is returned as is:
      *
      * <ul>
      * <li>{@link CharSequence}</li>
@@ -357,10 +381,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * If the value is an instance of {@link Iterable}, it is wrapped in an
-     * adapter that will adapt the sequences's elements. If the value is a
-     * {@link Map}, it is wrapped in an adapter that will adapt the map's
-     * values. Otherwise, the value is assumed to be a bean and is wrapped in a
+     * If the value is an {@link Iterable}, it is wrapped in an adapter that will
+     * recursively adapt the iterable's elements. If the value is a {@link Map},
+     * it is wrapped in an adapter that will recursively adapt the map's values.
+     * Otherwise, the value is assumed to be a bean and is wrapped in a
      * {@link BeanAdapter}.
      *
      * @param <T>
@@ -377,7 +401,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return (T)adapt(value, new HashMap<>());
     }
 
-    private static Object adapt(Object value, Map<Class<?>, Map<String, Method>> accessorCache) {
+    private static Object adapt(Object value, Map<Class<?>, Map<String, Property>> propertyCache) {
         if (value == null
             || value instanceof CharSequence
             || value instanceof Number
@@ -388,17 +412,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof URL) {
             return value;
         } else if (value instanceof Iterable<?>) {
-            return new IterableAdapter((Iterable<?>)value, accessorCache);
+            return new IterableAdapter((Iterable<?>)value, propertyCache);
         } else if (value instanceof Map<?, ?>) {
-            return new MapAdapter((Map<?, ?>)value, accessorCache);
+            return new MapAdapter((Map<?, ?>)value, propertyCache);
         } else {
-            return new BeanAdapter(value, accessorCache);
+            return new BeanAdapter(value, propertyCache);
         }
     }
 
     /**
-     * Adapts a value for typed access. If the value is already an instance of
-     * the given type, it is returned as is. Otherwise:
+     * Adapts a value for strongly typed access. If the value is already an
+     * instance of the given type, it is returned as is. Otherwise:
      *
      * <ul>
      * <li>If the target type is a number or boolean, the value is parsed or
@@ -422,13 +446,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * </ul>
      *
      * If the target type is a {@link List}, the value is wrapped in an adapter
-     * that will adapt the list's elements. If the target type is a {@link Map},
-     * the value is wrapped in an adapter that will adapt the map's values.
+     * that will recursively adapt the list's elements. If the target type is a
+     * {@link Map}, the value is wrapped in an adapter that will recursively adapt
+     * the map's values.
      *
-     * Otherwise, the target is assumed to be a bean interface, and the value is
-     * assumed to be a map. The return value is an implementation of the given
-     * interface that maps accessor methods to entries in the map. Property values
-     * are adapted as described above.
+     * Otherwise, the target is assumed to be a bean, and the value is assumed to
+     * be a map:
+     *
+     * <ul>
+     * <li>If the target is an interface, the return value is a proxy
+     * implementation of the given interface that maps accessor methods to entries
+     * in the map. `Object` methods are delegated to the underlying map.</li>
+     * <li>If the target is a concrete type, an instance of the type is dynamically
+     * created and populated using the entries in the map.</li>
+     * </ul>
+     *
+     * In either case, property values are adapted as described above.
      *
      * @param <T>
      * The target type.
@@ -440,7 +473,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The target type.
      *
      * @return
-     * An instance of the given type that adapts the given value.
+     * The adapted value.
      */
     @SuppressWarnings("unchecked")
     public static <T> T adapt(Object value, Type type) {
@@ -554,10 +587,36 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
-            } else if (value instanceof Map<?, ?>) {
-                return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
-                    new Class<?>[] {type},
-                    new TypedInvocationHandler((Map<?, ?>)value)));
+            } else if (value instanceof Map<?, ?>
+                && !Iterable.class.isAssignableFrom(type)
+                && !Map.class.isAssignableFrom(type)) {
+                Map<?, ?> map = (Map<?, ?>)value;
+
+                if (type.isInterface()) {
+                    return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map)));
+                } else {
+                    Constructor<?> constructor;
+                    try {
+                        constructor = type.getConstructor();
+                    } catch (NoSuchMethodException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    Object bean;
+                    try {
+                        bean = constructor.newInstance();
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    BeanAdapter beanAdapter = new BeanAdapter(bean);
+
+                    for (Map.Entry<?, ?> entry : map.entrySet()) {
+                        beanAdapter.put(entry.getKey().toString(), entry.getValue());
+                    }
+
+                    return bean;
+                }
             } else {
                 throw new IllegalArgumentException();
             }
@@ -702,16 +761,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the accessors for a given type.
+     * Returns the properties for a given type.
      *
      * @param type
      * The bean type.
      *
      * @return
-     * The accessors defined by the given type.
+     * The properties defined by the given type.
      */
-    public static Map<String, Method> getAccessors(Class<?> type) {
-        Map<String, Method> accessors = new TreeMap<>();
+    public static Map<String, Property> getProperties(Class<?> type) {
+        Map<String, Property> properties = new TreeMap<>();
 
         Method[] methods = type.getMethods();
 
@@ -725,10 +784,62 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             String key = getKey(method);
 
             if (key != null) {
-                accessors.put(key, method);
+                Property property = properties.get(key);
+
+                if (property == null) {
+                    property = new Property();
+
+                    properties.put(key, property);
+                }
+
+                if (method.getParameterCount() == 0) {
+                    property.accessor = method;
+                } else {
+                    property.mutators.add(method);
+                }
             }
         }
 
-        return accessors;
+        return properties;
+    }
+
+    private static String getKey(Method method) {
+        if (method.isBridge()) {
+            return null;
+        }
+
+        String methodName = method.getName();
+
+        String prefix;
+        if (methodName.startsWith(GET_PREFIX) && method.getParameterCount() == 0) {
+            prefix = GET_PREFIX;
+        } else if (methodName.startsWith(IS_PREFIX) && method.getParameterCount() == 0) {
+            prefix = IS_PREFIX;
+        } else if (methodName.startsWith(SET_PREFIX) && method.getParameterCount() == 1) {
+            prefix = SET_PREFIX;
+        } else {
+            return null;
+        }
+
+        Key key = method.getAnnotation(Key.class);
+
+        if (key == null) {
+            int j = prefix.length();
+            int n = methodName.length();
+
+            if (j == n) {
+                return null;
+            }
+
+            char c = methodName.charAt(j++);
+
+            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+                c = Character.toLowerCase(c);
+            }
+
+            return c + methodName.substring(j);
+        } else {
+            return key.value();
+        }
     }
 }

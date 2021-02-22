@@ -15,131 +15,223 @@
 package org.httprpc.beans;
 
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.httprpc.util.Collections.entry;
-import static org.httprpc.util.Collections.listOf;
-import static org.httprpc.util.Collections.mapOf;
-
 public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {
-        private boolean flag;
-
-        public NestedBean(boolean flag) {
-            this.flag = flag;
-        }
+        private boolean flag = false;
 
         @Override
         public boolean getFlag() {
             return flag;
         }
+
+        public void setFlag(boolean flag) {
+            this.flag = flag;
+        }
     }
 
-    @Override
+    private int i = 0;
+    private long l = 0;
+    private double d = 0;
+    private String string = null;
+    private BigInteger bigInteger = null;
+    private DayOfWeek dayOfWeek = null;
+    private Date date = null;
+    private Instant instant = null;
+    private LocalDate localDate = null;
+    private LocalTime localTime = null;
+    private LocalDateTime localDateTime = null;
+    private URL url = null;
+
+    private NestedBean nestedBean = null;
+
+    private List<?> list = null;
+    private List<Integer> integerList = null;
+    private List<NestedBean> nestedBeanList = null;
+
+    private Map<String, ?> map = null;
+    private Map<String, Double> doubleMap = null;
+    private Map<String, NestedBean> nestedBeanMap = null;
+
     @Key("i")
-    public int getInt() {
-        return 1;
+    @Override
+    public int getInteger() {
+        return i;
+    }
+
+    @Key("i")
+    public void setInteger(int i) {
+        this.i = i;
     }
 
     @Override
     public long getLong() {
-        return 2L;
+        return l;
+    }
+
+    public void setLong(long l) {
+        this.l = l;
     }
 
     @Override
     public double getDouble() {
-        return 4.0;
+        return d;
+    }
+
+    public void setDouble(double d) {
+        this.d = d;
     }
 
     @Override
     public String getString() {
-        return "abc";
+        return string;
     }
 
+    public void setString(String string) {
+        this.string = string;
+    }
+
+    @Override
     public BigInteger getBigInteger() {
-        return BigInteger.valueOf(8192L);
+        return bigInteger;
     }
 
+    public void setBigInteger(BigInteger bigInteger) {
+        this.bigInteger = bigInteger;
+    }
+
+    @Override
     public DayOfWeek getDayOfWeek() {
-        return DayOfWeek.values()[3];
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     @Override
     public Date getDate() {
-        return new Date(0);
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override
     public Instant getInstant() {
-        return Instant.ofEpochMilli(1);
+        return instant;
+    }
+
+    public void setInstant(Instant instant) {
+        this.instant = instant;
     }
 
     @Override
     public LocalDate getLocalDate() {
-        return LocalDate.parse("2018-06-28");
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
     }
 
     @Override
     public LocalTime getLocalTime() {
-        return LocalTime.parse("10:45");
+        return localTime;
+    }
+
+    public void setLocalTime(LocalTime localTime) {
+        this.localTime = localTime;
     }
 
     @Override
     public LocalDateTime getLocalDateTime() {
-        return LocalDateTime.parse("2018-06-28T10:45");
+        return localDateTime;
     }
 
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.localDateTime = localDateTime;
+    }
+
+    @Override
     public URL getURL() {
-        try {
-            return new URL("http://localhost:8080");
-        } catch (MalformedURLException exception) {
-            throw new RuntimeException(exception);
-        }
+        return url;
+    }
+
+    public void setURL(URL url) {
+        this.url = url;
     }
 
     @Override
     public NestedBean getNestedBean() {
-        return new NestedBean(true);
+        return nestedBean;
+    }
+
+    public void setNestedBean(NestedBean nestedBean) {
+        this.nestedBean = nestedBean;
     }
 
     @Override
     public List<?> getList() {
-        return listOf(2L, 4.0, mapOf(entry("flag", true)));
+        return list;
+    }
+
+    public void setList(List<?> list) {
+        this.list = list;
+    }
+
+    @Override
+    public List<Integer> getIntegerList() {
+        return integerList;
+    }
+
+    public void setIntegerList(List<Integer> integerList) {
+        this.integerList = integerList;
     }
 
     @Override
     public List<NestedBean> getNestedBeanList() {
-        return listOf(new NestedBean(false));
+        return nestedBeanList;
+    }
+
+    public void setNestedBeanList(List<NestedBean> nestedBeanList) {
+        this.nestedBeanList = nestedBeanList;
     }
 
     @Override
     public Map<String, ?> getMap() {
-        return mapOf(
-            entry("long", 2L),
-            entry("double", 4.0),
-            entry("nestedBean", mapOf(
-                entry("flag", true)
-            )));
+        return map;
+    }
+
+    public void setMap(Map<String, ?> map) {
+        this.map = map;
+    }
+
+    @Override
+    public Map<String, Double> getDoubleMap() {
+        return doubleMap;
+    }
+
+    public void setDoubleMap(Map<String, Double> doubleMap) {
+        this.doubleMap = doubleMap;
     }
 
     @Override
     public Map<String, NestedBean> getNestedBeanMap() {
-        return mapOf(entry("nestedBean", new NestedBean(false)));
+        return nestedBeanMap;
     }
 
-    @Ignore
-    public int getIgnored() {
-        return -1;
+    public void setNestedBeanMap(Map<String, NestedBean> nestedBeanMap) {
+        this.nestedBeanMap = nestedBeanMap;
     }
 }
