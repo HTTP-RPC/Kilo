@@ -21,42 +21,6 @@
 <hr/>
 
 <a href="${pageContext.request.contextPath}/catalog?api">Catalog (API)</a><br/>
-<br/>
-<a href="${pageContext.request.contextPath}/catalog/items">Items</a><br/>
-
-<br/>
-
-<form action="${pageContext.request.contextPath}/catalog/items" method="post" enctype="application/x-www-form-urlencoded">
-<table>
-<tr>
-<td>Description</td><td><input name="description"/></td>
-</tr>
-<tr>
-<td>Price</td><td><input name="price"/></td>
-</tr>
-<tr>
-<td colspan="2"><input type="submit" value="Add Item"/></td>
-</tr>
-</table>
-</form>
-
-<a href="${pageContext.request.contextPath}/catalog/items/1">Item 1</a><br/>
-
-<br/>
-
-<form action="${pageContext.request.contextPath}/catalog/items/1" method="post" enctype="application/x-www-form-urlencoded">
-<table>
-<tr>
-<td>Description</td><td><input name="description"/></td>
-</tr>
-<tr>
-<td>Price</td><td><input name="price"/></td>
-</tr>
-<tr>
-<td colspan="2"><input type="submit" value="Update Item 1"/></td>
-</tr>
-</table>
-</form>
 
 <hr/>
 

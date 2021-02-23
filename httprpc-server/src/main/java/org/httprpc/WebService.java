@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyList;
@@ -359,38 +360,40 @@ public abstract class WebService extends HttpServlet {
         } catch (IllegalAccessException | InvocationTargetException exception) {
             if (response.isCommitted()) {
                 throw new ServletException(exception);
-            } else {
-                Throwable cause = exception.getCause();
-
-                if (cause != null) {
-                    int status;
-                    if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
-                        status = HttpServletResponse.SC_FORBIDDEN;
-                    } else if (cause instanceof IllegalStateException) {
-                        status = HttpServletResponse.SC_CONFLICT;
-                    } else {
-                        status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    }
-
-                    response.setStatus(status);
-
-                    String message = cause.getMessage();
-
-                    if (message != null) {
-                        response.setContentType(String.format("text/plain;charset=%s", UTF_8));
-
-                        PrintWriter writer = response.getWriter();
-
-                        writer.append(message);
-
-                        writer.flush();
-                    }
-
-                    return;
-                } else {
-                    throw new ServletException(exception);
-                }
             }
+
+            Throwable cause = exception.getCause();
+
+            if (cause == null) {
+                throw new ServletException(exception);
+            }
+
+            int status;
+            if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
+                status = HttpServletResponse.SC_FORBIDDEN;
+            } else if (cause instanceof NoSuchElementException) {
+                status = HttpServletResponse.SC_NOT_FOUND;
+            } else if (cause instanceof IllegalStateException) {
+                status = HttpServletResponse.SC_CONFLICT;
+            } else {
+                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            }
+
+            response.setStatus(status);
+
+            String message = cause.getMessage();
+
+            if (message != null) {
+                response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+
+                PrintWriter writer = response.getWriter();
+
+                writer.append(message);
+
+                writer.flush();
+            }
+
+            return;
         } finally {
             this.request.set(null);
             this.response.set(null);

@@ -119,19 +119,6 @@ public class WebServiceProxyTest {
 
     private static final int EOF = -1;
 
-    public static class AttachmentInfo {
-        private int bytes = 0;
-        private int checksum = 0;
-
-        public int getBytes() {
-            return bytes;
-        }
-
-        public int getChecksum() {
-            return checksum;
-        }
-    }
-
     public WebServiceProxyTest() throws IOException {
         serverURL = new URL("http://localhost:8080/httprpc-test-1.0/");
     }
@@ -472,7 +459,12 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testAdapt() throws Exception {
+    public void testCatalog() throws IOException {
+        // TODO Test positive and negative (not found) cases
+    }
+
+    @Test
+    public void testObjectMethodDelegation() throws Exception {
         TestService testService1 = WebServiceProxy.adapt(new URL(serverURL, "test1/"), TestService.class);
         TestService testService2 = WebServiceProxy.adapt(new URL(serverURL, "test2/"), TestService.class);
 

@@ -14,28 +14,31 @@
 
 package org.httprpc.test;
 
+import org.httprpc.Content;
 import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
+import org.httprpc.beans.Key;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 @Description("Simulates a product catalog.")
 public class CatalogService extends WebService {
     @Description("Represents an item in the catalog.")
     public static class Item {
+        private Integer id;
         private String description;
-        private double price;
+        private Double price;
 
-        private Item(String description, double price) {
-            this.description = description;
-            this.price = price;
+        @Key("id")
+        @Description("The item's ID.")
+        public Integer getID() {
+            return id;
         }
 
         @Description("The item's description.")
@@ -43,88 +46,60 @@ public class CatalogService extends WebService {
             return description;
         }
 
-        private void setDescription(String description) {
+        public void setDescription(String description) {
             this.description = description;
         }
 
         @Description("The item's price.")
-        public double getPrice() {
+        public Double getPrice() {
             return price;
         }
 
-        private void setPrice(double price) {
+        public void setPrice(Double price) {
             this.price = price;
         }
     }
 
-    private List<Item> items = new ArrayList<>();
+    private Map<Integer, Item> items = new HashMap<>();
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-
-        addItem("Hat", 15.00);
-        addItem("Mittens", 12.00);
-        addItem("Scarf", 9.00);
-    }
+    private int nextID = 1;
 
     @RequestMethod("GET")
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
-    public List<Item> getItems() {
-        return items;
+    public Iterable<Item> getItems() {
+        return items.values();
     }
 
     @RequestMethod("POST")
     @ResourcePath("items")
-    @Description("Adds a new item to the catalog.")
-    public int addItem(
-        @Description("The item's description.") String description,
-        @Description("The item's price.") double price
-    ) {
-        items.add(new Item(description, price));
+    @Description("Adds an item to the catalog.")
+    @Content(Item.class)
+    public Item addItem() {
+        Item item = getBody();
 
-        HttpServletResponse response = getResponse();
+        item.id = nextID++;
 
-        if (response != null) {
-            response.setStatus(HttpServletResponse.SC_CREATED);
-        }
+        items.put(item.id, item);
 
-        return items.size();
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("items/?:itemID")
-    @Description("Returns a single item.")
-    public Item getItem() {
-        int itemID = Integer.parseInt(getKey("itemID"));
-
-        Item item;
-        if (itemID > 0 && itemID <= items.size()) {
-            item = items.get(itemID - 1);
-        } else {
-            item = null;
-        }
+        getResponse().setStatus(HttpServletResponse.SC_CREATED);
 
         return item;
     }
 
-    @RequestMethod("POST")
-    @ResourcePath("items/?:itemID")
+    @RequestMethod("PUT")
+    @ResourcePath("items/?")
     @Description("Updates an item.")
-    public void updateItem(
-        @Description("The item's description.") String description,
-        @Description("The item's price.") double price
-    ) {
-        int itemID = Integer.parseInt(getKey("itemID"));
+    @Content(Item.class)
+    public void updateItem() {
+        // TODO Ensure that IDs match?
+        // TODO How to handle "not found"?
+    }
 
-        if (itemID > 0 && itemID <= items.size()) {
-            Item item = items.get(itemID - 1);
-
-            item.setDescription(description);
-            item.setPrice(price);
-        } else {
-            throw new IllegalArgumentException("Item not found.");
-        }
+    @RequestMethod("DELETE")
+    @ResourcePath("items/?")
+    @Description("Deletes an item.")
+    public void deleteItem() {
+        // TODO Return 404 if not found?
     }
 }

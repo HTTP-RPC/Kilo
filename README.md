@@ -238,7 +238,12 @@ protected boolean isAuthorized(HttpServletRequest request, Method method) { ... 
 The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
 
 ### Exceptions
-If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. If the exception is an instance of `IllegalArgumentException` or `UnsupportedOperationException`, an HTTP 403 response will be returned. For `IllegalStateException`, HTTP 409 will be returned. For any other exception type, HTTP 500 will be returned. 
+If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status will be returned as shown below:
+
+* `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
+* `NoSuchElementException` - HTTP 404 (not found)
+* `IllegalStateException` - HTTP 409 (conflict)
+* Any other exception type - HTTP 500 (internal server error)
 
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:
