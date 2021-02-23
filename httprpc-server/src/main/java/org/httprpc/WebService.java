@@ -590,6 +590,12 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
+        String contentType = request.getContentType();
+
+        if (contentType != null && !contentType.startsWith("application/json")) {
+            throw new UnsupportedOperationException();
+        }
+
         JSONDecoder jsonDecoder = new JSONDecoder();
 
         return BeanAdapter.adapt(jsonDecoder.read(request.getInputStream()), type);

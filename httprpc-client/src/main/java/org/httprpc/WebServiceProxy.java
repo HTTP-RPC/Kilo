@@ -469,23 +469,7 @@ public class WebServiceProxy {
     public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
         URL url;
         RequestHandler requestHandler;
-        if (body != null) {
-            url = this.url;
-
-            requestHandler = new RequestHandler() {
-                @Override
-                public String getContentType() {
-                    return "application/json";
-                }
-
-                @Override
-                public void encodeRequest(OutputStream outputStream) throws IOException {
-                    JSONEncoder jsonEncoder = new JSONEncoder();
-
-                    jsonEncoder.write(BeanAdapter.adapt(body), outputStream);
-                }
-            };
-        } else if (method.equalsIgnoreCase("POST") && this.requestHandler == null) {
+        if (method.equalsIgnoreCase("POST") && body == null && this.requestHandler == null) {
             url = this.url;
 
             requestHandler = new RequestHandler() {
@@ -539,7 +523,23 @@ public class WebServiceProxy {
                 url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), this.url.getFile() + "?" + query);
             }
 
-            requestHandler = this.requestHandler;
+            if (body != null) {
+                requestHandler = new RequestHandler() {
+                    @Override
+                    public String getContentType() {
+                        return "application/json";
+                    }
+
+                    @Override
+                    public void encodeRequest(OutputStream outputStream) throws IOException {
+                        JSONEncoder jsonEncoder = new JSONEncoder();
+
+                        jsonEncoder.write(BeanAdapter.adapt(body), outputStream);
+                    }
+                };
+            } else {
+                requestHandler = this.requestHandler;
+            }
         }
 
         // Open URL connection
