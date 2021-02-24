@@ -15,6 +15,7 @@
 package org.httprpc;
 
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.beans.Key;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -38,6 +39,7 @@ import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebServiceProxyTest {
@@ -108,14 +110,66 @@ public class WebServiceProxyTest {
         TreeNode getTree();
     }
 
+    public interface CatalogService {
+        class Item {
+            private Integer id;
+            private String description;
+            private Double price;
+
+            @Key("id")
+            public Integer getID() {
+                return id;
+            }
+
+            @Key("id")
+            public void setID(int id) {
+                this.id = id;
+            }
+
+            public String getDescription() {
+                return description;
+            }
+
+            public void setDescription(String description) {
+                this.description = description;
+            }
+
+            public Double getPrice() {
+                return price;
+            }
+
+            public void setPrice(Double price) {
+                this.price = price;
+            }
+
+            @Override
+            public int hashCode() {
+                return 0;
+            }
+
+            @Override
+            public boolean equals(Object object) {
+                if (!(object instanceof Item)) {
+                    return false;
+                }
+
+                Item item = (Item)object;
+
+                return id != null && id.equals(item.id)
+                    && description != null && description.equals(item.description)
+                    && price != null && price.equals(item.price);
+            }
+        }
+    }
+
+    private URL serverURL;
+
     private Date date = new Date();
     private Instant instant = Instant.ofEpochMilli(1);
 
     private LocalDate localDate = LocalDate.now();
     private LocalTime localTime = LocalTime.now();
     private LocalDateTime localDateTime = LocalDateTime.now();
-
-    private URL serverURL;
 
     private static final int EOF = -1;
 
@@ -460,7 +514,59 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCatalog() throws IOException {
-        // TODO Test positive and negative (not found) cases
+        CatalogService.Item item = addCatalogItem("abc", 150.00);
+
+        assertNotNull(item);
+        assertNotNull(item.getID());
+        assertEquals("abc", item.getDescription());
+        assertEquals(150.00, item.getPrice());
+
+        assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
+
+        item.setDescription("xyz");
+        item.setPrice(300.00);
+
+        updateCatalogItem(item);
+
+        assertEquals("xyz", item.getDescription());
+        assertEquals(300.00, item.getPrice());
+
+        assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
+
+        deleteCatalogItem(item.getID());
+
+        assertNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
+    }
+
+    private List<CatalogService.Item> getCatalogItems() throws IOException {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "catalog"));
+
+        return BeanAdapter.adaptList(webServiceProxy.invoke(), CatalogService.Item.class);
+    }
+
+    private CatalogService.Item addCatalogItem(String description, double price) throws IOException {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "catalog"));
+
+        webServiceProxy.setBody(mapOf(
+            entry("description", description),
+            entry("price", price)
+        ));
+
+        return BeanAdapter.adapt(webServiceProxy.invoke(), CatalogService.Item.class);
+    }
+
+    private void updateCatalogItem(CatalogService.Item item) throws IOException {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, String.format("catalog/%s", item.getID())));
+
+        webServiceProxy.setBody(item);
+
+        webServiceProxy.invoke();
+    }
+
+    private void deleteCatalogItem(int itemID) throws IOException {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, String.format("catalog/%s", itemID)));
+
+        webServiceProxy.invoke();
     }
 
     @Test

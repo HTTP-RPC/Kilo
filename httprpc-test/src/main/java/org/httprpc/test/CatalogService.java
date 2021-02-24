@@ -25,6 +25,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 @Description("Simulates a product catalog.")
@@ -39,6 +40,11 @@ public class CatalogService extends WebService {
         @Description("The item's ID.")
         public Integer getID() {
             return id;
+        }
+
+        @Key("id")
+        public void setID(int id) {
+            this.id = id;
         }
 
         @Description("The item's description.")
@@ -65,14 +71,12 @@ public class CatalogService extends WebService {
     private int nextID = 1;
 
     @RequestMethod("GET")
-    @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public Iterable<Item> getItems() {
         return items.values();
     }
 
     @RequestMethod("POST")
-    @ResourcePath("items")
     @Description("Adds an item to the catalog.")
     @Content(Item.class)
     public Item addItem() {
@@ -88,18 +92,29 @@ public class CatalogService extends WebService {
     }
 
     @RequestMethod("PUT")
-    @ResourcePath("items/?")
+    @ResourcePath("?:itemID")
     @Description("Updates an item.")
     @Content(Item.class)
     public void updateItem() {
-        // TODO Ensure that IDs match?
-        // TODO How to handle "not found"?
+        int itemID = Integer.parseInt(getKey("itemID"));
+
+        if (!items.containsKey(itemID)) {
+            throw new NoSuchElementException();
+        }
+
+        Item item = getBody();
+
+        if (itemID != item.id) {
+            throw new IllegalArgumentException();
+        }
+
+        items.put(itemID, item);
     }
 
     @RequestMethod("DELETE")
-    @ResourcePath("items/?")
+    @ResourcePath("?:itemID")
     @Description("Deletes an item.")
     public void deleteItem() {
-        // TODO Return 404 if not found?
+        items.remove(Integer.parseInt(getKey("itemID")));
     }
 }

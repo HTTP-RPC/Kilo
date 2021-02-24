@@ -467,10 +467,6 @@ public abstract class WebService extends HttpServlet {
             if (type == List.class) {
                 Type elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
-                if (!(elementType instanceof Class<?>)) {
-                    throw new UnsupportedOperationException("Unsupported argument type.");
-                }
-
                 List<Object> list;
                 if (values != null) {
                     list = new ArrayList<>(values.size());

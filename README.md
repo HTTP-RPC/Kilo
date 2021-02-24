@@ -252,7 +252,7 @@ API documentation can be viewed by appending "?api" to a service URL; for exampl
 GET /math?api
 ```
 
-Methods are grouped by resource path. Body, parameter, and return types are encoded as follows:
+Methods are grouped by resource path. Parameter, body, and return types are encoded as follows:
 
 * `Object`: "any"
 * `Void` or `void`: "void"
@@ -446,7 +446,7 @@ This code would produce the following output:
 }
 ``` 
 
-Values are converted to their JSON equivalents as described earlier. Unsupported types are treated as `null`.
+Values are converted to their JSON equivalents as described [earlier](#return-values). Unsupported types are treated as `null`.
 
 The `JSONDecoder` class (used internally by `WebServiceProxy`) deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
@@ -648,7 +648,7 @@ templateEncoder.write(new BeanAdapter(root), System.out);
 ```
 
 ### Typed Access
-`BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
+`BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures, such as decoded JSON objects:
 
 ```java
 public static <T> T adapt(Object value, Type type) { ... }
