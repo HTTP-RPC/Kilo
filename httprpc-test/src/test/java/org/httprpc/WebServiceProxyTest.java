@@ -528,9 +528,6 @@ public class WebServiceProxyTest {
 
         updateCatalogItem(item);
 
-        assertEquals("xyz", item.getDescription());
-        assertEquals(300.00, item.getPrice());
-
         assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
 
         deleteCatalogItem(item.getID());
