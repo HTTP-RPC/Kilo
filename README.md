@@ -295,10 +295,11 @@ public class MathService extends WebService {
 }
 ```
 
-The `Description` annotation can also be applied to bean properties:
+The `Description` annotation can also be applied to bean types and properties:
 
 ```java
-public static class Item {
+@Description("Represents an item in a product catalog.")
+public class Item {
     ...
 
     @Description("The item's description.")

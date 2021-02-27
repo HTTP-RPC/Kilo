@@ -20,15 +20,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that associates a description with a service class, method, or
- * method parameter.
+ * Annotation that associates a description with a service class, method,
+ * parameter, or data structure.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})
 public @interface Description {
     /**
      * @return
-     * The description of the class, method, or method parameter.
+     * The description of the service class, method, parameter, or data
+     * structure.
      */
     String value();
 }
