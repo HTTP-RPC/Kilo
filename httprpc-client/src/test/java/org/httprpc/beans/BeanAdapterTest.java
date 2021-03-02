@@ -144,11 +144,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testInstantCoercion() {
-        Date date = new Date(1);
-
-        Instant instant = BeanAdapter.adapt(date, Instant.class);
-
-        assertEquals(Instant.ofEpochMilli(1), instant);
+        assertEquals(Instant.ofEpochMilli(1), BeanAdapter.adapt(new Date(1), Instant.class));
     }
 
     @Test

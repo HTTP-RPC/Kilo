@@ -100,8 +100,8 @@ Method arguments may be any of the following types:
 * `java.time.LocalDate` ("yyyy-mm-dd")
 * `java.time.LocalTime` ("hh:mm")
 * `java.time.LocalDateTime` ("yyyy-mm-ddThh:mm")
-* `java.util.List`
 * `java.net.URL`
+* `java.util.List`
 
 Missing or `null` values are automatically converted to `0` or `false` for primitive types.
 
@@ -206,8 +206,10 @@ Return values are converted to their JSON equivalents as follows:
 * `CharSequence`: string
 * `Number`: number
 * `Boolean`: true/false
-* `java.util.Date`: long value representing epoch time in milliseconds
+* `Enum`: string
+* `java.util.Date`: number representing epoch time in milliseconds
 * `java.time.TemporalAccessor`: string
+* `java.net.URL`: string
 * `Iterable`: array
 * `java.util.Map` or Java bean: object
 
@@ -660,7 +662,10 @@ If the value is already an instance of the requested type, it is returned as is.
 * If the target type is a number or boolean, the value is parsed or coerced using the appropriate conversion method (e.g. `Integer#valueOf()`). Missing or `null` values are automatically converted to `0` or `false` for primitive types.
 * If the target type is a `String`, the value is adapted via its `toString()` method.
 * If the target type is `java.util.Date`, the value is parsed or coerced to a long value representing epoch time in milliseconds and then converted to a `Date`. 
-* If the target type is `java.time.Instant`, `java.time.LocalDate`, `java.time.LocalTime`, or `java.time.LocalDateTime`, the value is converted to a string and parsed using the appropriate `parse()` method.
+* If the target type is `java.time.Instant` and the value is an instance of `Date`, the value is adapted via `Date#toInstant()`. Otherwise, the value's string representation is parsed using `Instant#parse(CharSequence)`.
+* If the target type is `java.time.LocalDate`, the value's string representation is parsed using `LocalDate#parse()`.
+* If the target type is `java.time.LocalTime`, the value's string representation is parsed using `LocalTime#parse()`.
+* If the target type is `java.time.LocalDateTime`, the value's string representation is parsed using `LocalDateTime#parse()`.
 * If the target type is `java.util.List` or `java.util.Map`, the value is wrapped in an adapter of the same type that automatically adapts its sub-elements.
 
 Otherwise, the target is assumed to be a bean, and the value is assumed to be a map:

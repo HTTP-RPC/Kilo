@@ -895,7 +895,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeType(Class<?> type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
-        if (type.isArray() || Enum.class.isAssignableFrom(type)) {
+        if (type.isArray() || type.isEnum()) {
             throw new IllegalArgumentException();
         }
 

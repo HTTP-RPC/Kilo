@@ -443,12 +443,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDateTime}, the value's string
      * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link List} or {@link Map}, the value is wrapped
+     * in an adapter of the same type that automatically adapts its sub-elements.</li>
      * </ul>
-     *
-     * If the target type is a {@link List}, the value is wrapped in an adapter
-     * that will recursively adapt the list's elements. If the target type is a
-     * {@link Map}, the value is wrapped in an adapter that will recursively adapt
-     * the map's values.
      *
      * Otherwise, the target is assumed to be a bean, and the value is assumed to
      * be a map:
