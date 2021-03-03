@@ -237,5 +237,9 @@ public class BeanAdapterTest {
         assertEquals(2, nestedBeanMapTypeArguments.length);
         assertEquals(String.class, nestedBeanMapTypeArguments[0]);
         assertEquals(TestBean.NestedBean.class, nestedBeanMapTypeArguments[1]);
+
+        assertNull(properties.get("x"));
+        assertNull(properties.get("y"));
+        assertNull(properties.get("z"));
     }
 }

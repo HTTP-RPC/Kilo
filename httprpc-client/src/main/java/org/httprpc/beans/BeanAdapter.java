@@ -806,13 +806,21 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         String methodName = method.getName();
+        Class<?> returnType = method.getReturnType();
+        int parameterCount = method.getParameterCount();
 
         String prefix;
-        if (methodName.startsWith(GET_PREFIX) && method.getParameterCount() == 0) {
+        if (methodName.startsWith(GET_PREFIX)
+            && !(returnType == Void.TYPE || returnType == Void.class)
+            && parameterCount == 0) {
             prefix = GET_PREFIX;
-        } else if (methodName.startsWith(IS_PREFIX) && method.getParameterCount() == 0) {
+        } else if (methodName.startsWith(IS_PREFIX)
+            && !(returnType == Void.TYPE || returnType == Void.class)
+            && parameterCount == 0) {
             prefix = IS_PREFIX;
-        } else if (methodName.startsWith(SET_PREFIX) && method.getParameterCount() == 1) {
+        } else if (methodName.startsWith(SET_PREFIX)
+            && (returnType == Void.TYPE || returnType == Void.class)
+            && parameterCount == 1) {
             prefix = SET_PREFIX;
         } else {
             return null;

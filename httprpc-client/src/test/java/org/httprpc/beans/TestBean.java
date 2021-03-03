@@ -234,4 +234,28 @@ public class TestBean implements TestInterface {
     public void setNestedBeanMap(Map<String, NestedBean> nestedBeanMap) {
         this.nestedBeanMap = nestedBeanMap;
     }
+
+    public int get() {
+        return 0;
+    }
+
+    public void getX() {
+        // No-op
+    }
+
+    public boolean is() {
+        return false;
+    }
+
+    public void isY() {
+        // No-op
+    }
+
+    public void set(double value) {
+        // No-op
+    }
+
+    public double setZ(double value) {
+        return value;
+    }
 }
