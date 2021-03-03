@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -54,7 +55,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static java.util.Collections.emptyList;
 import static org.httprpc.util.Collections.listOf;
@@ -121,6 +124,7 @@ public abstract class WebService extends HttpServlet {
 
     private Resource root = null;
 
+    private Set<Class<?>> enumerations = new TreeSet<>(Comparator.comparing(Class::getSimpleName));
     private Map<Class<?>, Map<String, BeanAdapter.Property>> dataTypes = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
@@ -667,6 +671,71 @@ public abstract class WebService extends HttpServlet {
 
             describeResource(request.getServletPath(), root, xmlStreamWriter);
 
+            if (enumerations.size() > 0) {
+                xmlStreamWriter.writeEmptyElement("hr");
+            }
+
+            for (Class<?> type : enumerations) {
+                String name = type.getSimpleName();
+
+                xmlStreamWriter.writeStartElement("h3");
+
+                xmlStreamWriter.writeStartElement("a");
+                xmlStreamWriter.writeAttribute("id", name);
+                xmlStreamWriter.writeCharacters(name);
+                xmlStreamWriter.writeEndElement();
+
+                xmlStreamWriter.writeEndElement();
+
+                Description typeDescription = type.getAnnotation(Description.class);
+
+                if (typeDescription != null) {
+                    xmlStreamWriter.writeStartElement("p");
+                    xmlStreamWriter.writeCharacters(typeDescription.value());
+                    xmlStreamWriter.writeEndElement();
+                }
+
+                xmlStreamWriter.writeStartElement("ul");
+
+                Field[] fields = type.getDeclaredFields();
+
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = fields[i];
+
+                    if (!field.isEnumConstant()) {
+                        continue;
+                    }
+
+                    Object constant;
+                    try {
+                        constant = field.get(null);
+                    } catch (IllegalAccessException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    xmlStreamWriter.writeStartElement("li");
+
+                    xmlStreamWriter.writeStartElement("code");
+                    xmlStreamWriter.writeCharacters(constant.toString());
+                    xmlStreamWriter.writeEndElement();
+
+                    Description constantDescription = field.getAnnotation(Description.class);
+
+                    if (constantDescription != null) {
+                        xmlStreamWriter.writeCharacters(" - ");
+                        xmlStreamWriter.writeCharacters(constantDescription.value());
+                    }
+
+                    xmlStreamWriter.writeEndElement();
+                }
+
+                xmlStreamWriter.writeEndElement();
+            }
+
+            if (dataTypes.size() > 0) {
+                xmlStreamWriter.writeEmptyElement("hr");
+            }
+
             for (Map.Entry<Class<?>, Map<String, BeanAdapter.Property>> typeEntry : dataTypes.entrySet()) {
                 Class<?> type = typeEntry.getKey();
 
@@ -923,7 +992,18 @@ public abstract class WebService extends HttpServlet {
         } else if (CharSequence.class.isAssignableFrom(type)) {
             description = "string";
         } else if (Enum.class.isAssignableFrom(type)) {
-            description = "enum";
+            enumerations.add(type);
+
+            if (xmlStreamWriter != null) {
+                String name = type.getSimpleName();
+
+                xmlStreamWriter.writeStartElement("a");
+                xmlStreamWriter.writeAttribute("href", "#" + name);
+                xmlStreamWriter.writeCharacters(name);
+                xmlStreamWriter.writeEndElement();
+            }
+
+            return;
         } else if (Date.class.isAssignableFrom(type)) {
             description = "date";
         } else if (type == Instant.class) {

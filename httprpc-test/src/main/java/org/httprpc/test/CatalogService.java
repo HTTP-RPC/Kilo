@@ -23,7 +23,9 @@ import org.httprpc.beans.Key;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -66,17 +68,29 @@ public class CatalogService extends WebService {
         }
     }
 
+    @Description("Represents a size option.")
+    public enum Size {
+        @Description("A small size.")
+        SMALL,
+        @Description("A medium size.")
+        MEDIUM,
+        @Description("A large size.")
+        LARGE
+    }
+
     private Map<Integer, Item> items = new HashMap<>();
 
     private int nextID = 1;
 
     @RequestMethod("GET")
+    @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public Iterable<Item> getItems() {
         return items.values();
     }
 
     @RequestMethod("POST")
+    @ResourcePath("items")
     @Description("Adds an item to the catalog.")
     @Content(Item.class)
     public Item addItem() {
@@ -92,7 +106,7 @@ public class CatalogService extends WebService {
     }
 
     @RequestMethod("PUT")
-    @ResourcePath("?:itemID")
+    @ResourcePath("items/?:itemID")
     @Description("Updates an item.")
     @Content(Item.class)
     public void updateItem() {
@@ -112,9 +126,16 @@ public class CatalogService extends WebService {
     }
 
     @RequestMethod("DELETE")
-    @ResourcePath("?:itemID")
+    @ResourcePath("items/?:itemID")
     @Description("Deletes an item.")
     public void deleteItem() {
         items.remove(Integer.parseInt(getKey("itemID")));
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("sizes")
+    @Description("Returns a list of size options.")
+    public List<Size> getSizes() {
+        return Arrays.asList(Size.values());
     }
 }

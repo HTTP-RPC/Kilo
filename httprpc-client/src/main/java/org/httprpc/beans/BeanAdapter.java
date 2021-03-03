@@ -15,6 +15,7 @@
 package org.httprpc.beans;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +23,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -427,10 +429,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <ul>
      * <li>If the target type is a number or boolean, the value is parsed or
      * coerced using the appropriate conversion method. Missing or <code>null</code>
-     * values are automatically converted to <code>0</code> or <code>false</code> for
-     * primitive argument types.</li>
+     * values are automatically converted to <code>0</code> or <code>false</code>
+     * for primitive argument types.</li>
      * <li>If the target type is {@link String}, the value is adapted via
      * {@link Object#toString()}.</li>
+     * <li>If the target type is an {@link Enum}, the adapted value is the first
+     * constant whose string representation matches the value's string
+     * representation.</li>
      * <li>If the target type is {@link Date}, the value is coerced to a long
      * value and passed to {@link Date#Date(long)}.</li>
      * <li>If the target type is {@link Instant} and the value is an instance of
@@ -443,6 +448,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDateTime}, the value's string
      * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link URL}, the value's string representation is
+     * adapted via {@link URL#URL(String)}.</li>
      * <li>If the target type is {@link List} or {@link Map}, the value is wrapped
      * in an adapter of the same type that automatically adapts its sub-elements.</li>
      * </ul>
@@ -566,6 +573,31 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (value != null) {
             if (type == String.class) {
                 return value.toString();
+            } else if (Enum.class.isAssignableFrom(type)) {
+                String name = value.toString();
+
+                Field[] fields = type.getDeclaredFields();
+
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = fields[i];
+
+                    if (!field.isEnumConstant()) {
+                        continue;
+                    }
+
+                    Object constant;
+                    try {
+                        constant = field.get(null);
+                    } catch (IllegalAccessException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    if (name.equals(constant.toString())) {
+                        return constant;
+                    }
+                }
+
+                throw new IllegalArgumentException();
             } else if (type == Date.class) {
                 if (value instanceof Number) {
                     return new Date(((Number)value).longValue());
@@ -584,6 +616,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
+            } else if (type == URL.class) {
+                try {
+                    return new URL(value.toString());
+                } catch (MalformedURLException exception) {
+                    throw new IllegalArgumentException(exception);
+                }
             } else if (value instanceof Map<?, ?>
                 && !Iterable.class.isAssignableFrom(type)
                 && !Map.class.isAssignableFrom(type)) {

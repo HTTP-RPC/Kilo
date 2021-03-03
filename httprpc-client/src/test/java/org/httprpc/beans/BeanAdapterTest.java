@@ -58,7 +58,7 @@ public class BeanAdapterTest {
             entry("double", 4.0),
             entry("string", "abc"),
             entry("bigInteger", BigInteger.valueOf(8192L)),
-            entry("dayOfWeek", DayOfWeek.values()[3]),
+            entry("dayOfWeek", DayOfWeek.MONDAY),
             entry("date", new Date(0)),
             entry("instant", Instant.ofEpochMilli(1)),
             entry("localDate", LocalDate.parse("2018-06-28")),
@@ -114,7 +114,7 @@ public class BeanAdapterTest {
         BeanAdapter beanAdapter = new BeanAdapter(new TestBean());
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
-        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("dayOfWeek", 0));
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("dayOfWeek", "abc"));
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("date", "xyz"));
     }
 
@@ -143,8 +143,26 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testInstantCoercion() {
+    public void testEnumCoercion() {
+        assertEquals(DayOfWeek.MONDAY, BeanAdapter.adapt(DayOfWeek.MONDAY.toString(), DayOfWeek.class));
+    }
+
+    @Test
+    public void testDateCoercion() {
+        assertEquals(new Date(0), BeanAdapter.adapt(0, Date.class));
+    }
+
+    @Test
+    public void testTemporalAccessorCoercion() {
         assertEquals(Instant.ofEpochMilli(1), BeanAdapter.adapt(new Date(1), Instant.class));
+        assertEquals(Instant.parse("1970-01-01T00:00:00.001Z"), BeanAdapter.adapt("1970-01-01T00:00:00.001Z", Instant.class));
+        assertEquals(LocalDate.parse("2018-06-28"), BeanAdapter.adapt("2018-06-28", LocalDate.class));
+        assertEquals(LocalTime.parse("10:45"), BeanAdapter.adapt("10:45", LocalTime.class));
+        assertEquals(LocalDateTime.parse("2018-06-28T10:45"), BeanAdapter.adapt("2018-06-28T10:45", LocalDateTime.class));
+    }
+
+    public void testURLCoercion() throws MalformedURLException {
+        assertEquals(new URL("http://localhost:8080"), BeanAdapter.adapt("http://localhost:8080", URL.class));
     }
 
     @Test

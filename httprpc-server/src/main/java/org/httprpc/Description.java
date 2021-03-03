@@ -21,14 +21,15 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that associates a description with a service class, method,
- * parameter, or data type.
+ * parameter, enumeration, or data type.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 public @interface Description {
     /**
      * @return
-     * The description of the service class, method, parameter, or data type.
+     * The description of the service class, method, parameter, enumeration,
+     * or data type.
      */
     String value();
 }

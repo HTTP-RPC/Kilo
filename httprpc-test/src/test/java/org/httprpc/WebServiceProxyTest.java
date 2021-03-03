@@ -26,10 +26,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class WebServiceProxyTest {
             List<String> getStrings();
             int getNumber();
             boolean getFlag();
+            DayOfWeek getDayOfWeek();
             Date getDate();
             Instant getInstant();
             LocalDate getLocalDate();
@@ -60,6 +63,7 @@ public class WebServiceProxyTest {
         interface AttachmentInfo {
             int getBytes();
             int getChecksum();
+            URL getAttachment();
         }
 
         interface Body {
@@ -78,7 +82,7 @@ public class WebServiceProxyTest {
         List<Integer> testGetFibonacci(int count) throws IOException;
 
         @RequestMethod("POST")
-        Response testMultipartPost(String string, List<String> strings, int number, boolean flag,
+        Response testMultipartPost(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
             Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
             List<URL> attachments) throws IOException;
 
@@ -160,9 +164,17 @@ public class WebServiceProxyTest {
                     && price != null && price.equals(item.price);
             }
         }
+
+        enum Size {
+            SMALL,
+            MEDIUM,
+            LARGE
+        }
     }
 
     private URL serverURL;
+
+    private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
 
     private Date date = new Date();
     private Instant instant = Instant.ofEpochMilli(1);
@@ -186,6 +198,7 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
+            entry("dayOfWeek", dayOfWeek),
             entry("instant", instant),
             entry("date", date),
             entry("localDate", localDate),
@@ -200,6 +213,7 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
             entry("flag", true),
+            entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
             entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
@@ -248,6 +262,7 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true),
+            entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("instant", instant),
             entry("localDate", localDate),
@@ -262,6 +277,7 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123L),
             entry("flag", true),
+            entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
             entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
@@ -279,7 +295,7 @@ public class WebServiceProxyTest {
         TestService testService = WebServiceProxy.adapt(new URL(serverURL, "test/"), TestService.class);
 
         TestService.Response response = testService.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, true,
-            date, instant, localDate, localTime, localDateTime,
+            dayOfWeek, date, instant, localDate, localTime, localDateTime,
             listOf(textTestURL, imageTestURL));
 
         assertNotNull(response);
@@ -288,6 +304,7 @@ public class WebServiceProxyTest {
             && response.getStrings().equals(listOf("a", "b", "c"))
             && response.getNumber() == 123
             && response.getFlag()
+            && response.getDayOfWeek().equals(dayOfWeek)
             && response.getDate().equals(date)
             && response.getInstant().equals(instant)
             && response.getLocalDate().equals(localDate)
@@ -533,16 +550,18 @@ public class WebServiceProxyTest {
         deleteCatalogItem(item.getID());
 
         assertNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
+
+        assertEquals(Arrays.asList(CatalogService.Size.values()), getCatalogSizes());
     }
 
     private List<CatalogService.Item> getCatalogItems() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "catalog"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "catalog/items"));
 
         return BeanAdapter.adaptList(webServiceProxy.invoke(), CatalogService.Item.class);
     }
 
     private CatalogService.Item addCatalogItem(String description, double price) throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "catalog"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "catalog/items"));
 
         webServiceProxy.setBody(mapOf(
             entry("description", description),
@@ -553,7 +572,7 @@ public class WebServiceProxyTest {
     }
 
     private void updateCatalogItem(CatalogService.Item item) throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, String.format("catalog/%s", item.getID())));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, String.format("catalog/items/%s", item.getID())));
 
         webServiceProxy.setBody(item);
 
@@ -561,9 +580,15 @@ public class WebServiceProxyTest {
     }
 
     private void deleteCatalogItem(int itemID) throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, String.format("catalog/%s", itemID)));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, String.format("catalog/items/%s", itemID)));
 
         webServiceProxy.invoke();
+    }
+
+    private List<CatalogService.Size> getCatalogSizes() throws IOException {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "catalog/sizes"));
+
+        return BeanAdapter.adaptList(webServiceProxy.invoke(), CatalogService.Size.class);
     }
 
     @Test

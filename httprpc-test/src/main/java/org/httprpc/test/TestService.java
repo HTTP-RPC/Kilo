@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,6 +58,7 @@ public class TestService extends WebService {
         List<String> getStrings();
         int getNumber();
         boolean getFlag();
+        DayOfWeek getDayOfWeek();
         Date getDate();
         Instant getInstant();
         LocalDate getLocalDate();
@@ -68,6 +70,7 @@ public class TestService extends WebService {
     public interface AttachmentInfo {
         int getBytes();
         int getChecksum();
+        URL getAttachment();
     }
 
     public interface A {
@@ -112,13 +115,14 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag,
+    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
         return mapOf(
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
             entry("flag", flag),
+            entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("instant", instant),
             entry("localDate", localDate),
@@ -221,7 +225,7 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    public Response testPost(String string, List<String> strings, int number, boolean flag,
+    public Response testPost(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
@@ -240,7 +244,8 @@ public class TestService extends WebService {
 
             attachmentInfo.add(mapOf(
                 entry("bytes", bytes),
-                entry("checksum", checksum)
+                entry("checksum", checksum),
+                entry("attachment", attachment)
             ));
         }
 
@@ -249,6 +254,7 @@ public class TestService extends WebService {
             entry("strings", strings),
             entry("number", number),
             entry("flag", flag),
+            entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("instant", instant),
             entry("localDate", localDate),
