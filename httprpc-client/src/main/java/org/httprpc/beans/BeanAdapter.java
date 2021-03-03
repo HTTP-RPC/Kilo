@@ -197,7 +197,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else {
                 String key = getKey(method);
 
-                if (key == null) {
+                if (key == null || method.getParameterCount() > 0) {
                     throw new UnsupportedOperationException();
                 }
 
