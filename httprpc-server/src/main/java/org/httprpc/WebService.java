@@ -895,7 +895,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeType(Class<?> type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
-        if (type.isArray() || type.isEnum()) {
+        if (type.isArray()) {
             throw new IllegalArgumentException();
         }
 
@@ -922,6 +922,8 @@ public abstract class WebService extends HttpServlet {
             description = "boolean";
         } else if (CharSequence.class.isAssignableFrom(type)) {
             description = "string";
+        } else if (Enum.class.isAssignableFrom(type)) {
+            description = "enum";
         } else if (Date.class.isAssignableFrom(type)) {
             description = "date";
         } else if (type == Instant.class) {
@@ -933,7 +935,7 @@ public abstract class WebService extends HttpServlet {
         } else if (type == LocalDateTime.class) {
             description = "datetime-local";
         } else if (type == URL.class) {
-            description = "file";
+            description = "url";
         } else {
             if (Iterable.class.isAssignableFrom(type)) {
                 describeType(new ParameterizedType() {
