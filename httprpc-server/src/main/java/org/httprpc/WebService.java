@@ -121,7 +121,7 @@ public abstract class WebService extends HttpServlet {
 
     private Resource root = null;
 
-    private Map<Class<?>, Map<String, BeanAdapter.Property>> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+    private Map<Class<?>, Map<String, BeanAdapter.Property>> dataTypes = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
@@ -667,7 +667,7 @@ public abstract class WebService extends HttpServlet {
 
             describeResource(request.getServletPath(), root, xmlStreamWriter);
 
-            for (Map.Entry<Class<?>, Map<String, BeanAdapter.Property>> typeEntry : structures.entrySet()) {
+            for (Map.Entry<Class<?>, Map<String, BeanAdapter.Property>> typeEntry : dataTypes.entrySet()) {
                 Class<?> type = typeEntry.getKey();
 
                 String name = type.getSimpleName();
@@ -972,10 +972,10 @@ public abstract class WebService extends HttpServlet {
                     }
                 }, xmlStreamWriter);
             } else {
-                if (!structures.containsKey(type)) {
+                if (!dataTypes.containsKey(type)) {
                     Map<String, BeanAdapter.Property> properties = BeanAdapter.getProperties(type);
 
-                    structures.put(type, properties);
+                    dataTypes.put(type, properties);
 
                     if (type.isInterface()) {
                         Class<?>[] interfaces = type.getInterfaces();
