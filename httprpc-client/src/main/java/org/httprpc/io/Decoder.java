@@ -26,6 +26,8 @@ import java.nio.charset.Charset;
 public abstract class Decoder {
     private Charset charset;
 
+    protected static final int EOF = -1;
+
     /**
      * Constructs a new decoder.
      *

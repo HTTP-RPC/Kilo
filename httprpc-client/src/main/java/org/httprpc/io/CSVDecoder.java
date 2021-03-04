@@ -94,8 +94,6 @@ public class CSVDecoder extends Decoder {
             }
         };
 
-        private static final int EOF = -1;
-
         private Cursor(Reader reader, char delimiter) throws IOException {
             this.reader = reader;
             this.delimiter = delimiter;

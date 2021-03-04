@@ -17,10 +17,10 @@ package org.httprpc;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.JSONDecoder;
 import org.httprpc.io.JSONEncoder;
+import org.httprpc.io.TextDecoder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -612,17 +612,11 @@ public class WebServiceProxy {
         } else {
             String message;
             if (contentType != null && contentType.startsWith("text/plain")) {
-                StringBuilder messageBuilder = new StringBuilder(1024);
+                TextDecoder textDecoder = new TextDecoder();
 
-                try (InputStream inputStream = connection.getErrorStream();
-                    InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-                    int c;
-                    while ((c = reader.read()) != EOF) {
-                        messageBuilder.append((char)c);
-                    }
+                try (InputStream inputStream = connection.getErrorStream()) {
+                    message = textDecoder.read(inputStream);
                 }
-
-                message = messageBuilder.toString();
             } else {
                 String responseMessage = connection.getResponseMessage();
 

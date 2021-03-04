@@ -41,8 +41,6 @@ public class JSONDecoder extends Decoder {
     private static final String FALSE_KEYWORD = "false";
     private static final String NULL_KEYWORD = "null";
 
-    private static final int EOF = -1;
-
     /**
      * Constructs a new JSON decoder.
      */

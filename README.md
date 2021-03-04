@@ -27,6 +27,7 @@ Classes provided by the HTTP-RPC framework include:
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
 * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
+* [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
@@ -506,9 +507,6 @@ for (Map<String, Object> month : months) {
 ```
 
 ## CSVEncoder and CSVDecoder
-Although `WebService` automatically serializes return values as JSON, in some cases it may be preferable to return a CSV (comma-separated value) document instead. Because field keys are specified only at the beginning of the document rather than being duplicated for every record, CSV generally requires less bandwidth than JSON. Additionally, consumers can begin processing CSV as soon as the first record arrives, rather than waiting for the entire document to download.
-
-### CSVEncoder
 The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the following code could be used to export the month/day list from the previous example as CSV. The string values passed to the constructor represent the columns in the output document and the map keys to which those columns correspond:
 
 ```java
@@ -529,8 +527,7 @@ This code would produce the following output:
 
 String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
-### CSVDecoder
-The `CSVDecoder` class deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns the data as a forward-scrolling cursor, allowing consumers to process rows as soon as they are read.
+`CSVDecoder` deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns the data as a forward-scrolling cursor, allowing consumers to process rows as soon as they are read.
 
 For example, given the CSV above as input, the following code would produce the same results as `JSONDecoder` example:
 
@@ -545,6 +542,24 @@ for (Map<String, String> month : months) {
 ```
 
 Columns with empty headings are ignored. Empty field values are treated as null.
+
+## TextEncoder and TextDecoder
+The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
+
+```java
+TextEncoder textEncoder = new TextEncoder();
+
+try (FileOutputStream outputStream = new FileOutputStream(file)) {
+    textEncoder.write("Hello, World!", outputStream);
+}
+
+TextDecoder textDecoder = new TextDecoder();
+
+String text;
+try (FileInputStream inputStream = new FileInputStream(file)) {
+    text = textDecoder.read(inputStream); // Hello, World!
+}
+```
 
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) format and supports most Mustache features. 
@@ -907,6 +922,22 @@ public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
 These methods are provided primarily as a convenience for applications using Java 8. Applications targeting Java 9 and higher can use the standard `List.of()` and `Map.of()` methods provided by the JDK.
+
+`Collections` additionally provides the `valueAt()` method, which can be used to access nested values in an object hierarchy. For example:
+
+```java
+Map<String, ?> map = mapOf(
+    entry("a", mapOf(
+        entry("b", mapOf(
+            entry("c", listOf(
+                1, 2, 3
+            ))
+        ))
+    ))
+);
+
+int value = valueAt(map, "a", "b", "c", 1); // 2
+``` 
 
 # Kotlin Support
 In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following service provides some basic information about the host system:

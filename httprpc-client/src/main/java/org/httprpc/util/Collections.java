@@ -17,6 +17,7 @@ package org.httprpc.util;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -90,5 +91,46 @@ public class Collections {
      */
     public static <K, V> Map.Entry<K, V> entry(K key, V value) {
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
+    }
+
+    /**
+     * Returns the value at a given path.
+     *
+     * @param <T>
+     * The type of the value to return.
+     *
+     * @param root
+     * The root object.
+     *
+     * @param path
+     * The path to the value.
+     *
+     * @return
+     * The value at the given path, or <code>null</code> if the value does not exist.
+     */
+    public static <T> T valueAt(Object root, Object... path) {
+        return valueAt(root, new LinkedList<>(Arrays.asList(path)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T valueAt(Object root, List<?> path) {
+        if (root == null) {
+            return null;
+        } else if (path.isEmpty()) {
+            return (T)root;
+        } else {
+            Object component = path.remove(0);
+
+            Object value;
+            if (root instanceof List<?> && component instanceof Number) {
+                value = ((List<?>)root).get(((Number)component).intValue());
+            } else if (root instanceof Map<?, ?>) {
+                value = ((Map<?, ?>)root).get(component);
+            } else {
+                throw new IllegalArgumentException();
+            }
+
+            return valueAt(value, path);
+        }
     }
 }

@@ -451,7 +451,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>If the target type is {@link URL}, the value's string representation is
      * adapted via {@link URL#URL(String)}.</li>
      * <li>If the target type is {@link List} or {@link Map}, the value is wrapped
-     * in an adapter of the same type that automatically adapts its sub-elements.</li>
+     * in an adapter of the same type that automatically adapts its elements.</li>
      * </ul>
      *
      * Otherwise, the target is assumed to be a bean, and the value is assumed to
