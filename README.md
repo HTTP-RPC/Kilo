@@ -297,7 +297,7 @@ public class MathService extends WebService {
 }
 ```
 
-The `Description` annotation can also be used to document bean types and properties:
+The `Description` annotation can also be applied to bean types and properties:
 
 ```java
 @Description("Represents an item in a product catalog.")
