@@ -61,7 +61,7 @@
 
 <a href="${pageContext.request.contextPath}/test?api">Test (API)</a><br/>
 <br/>
-<a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&instant=1970-01-01T00:00:00.001Z&date=0&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
+<a href="${pageContext.request.contextPath}/test?string=héllo&strings=a&strings=b&strings=c&number=123&flag=true&dayOfWeek=MONDAY&date=0&instant=1970-01-01T00:00:00.001Z&localDate=2018-06-28&localTime=10:45&localDateTime=2018-06-28T10:45">GET</a><br/>
 <a href="${pageContext.request.contextPath}/test/a/123/b/héllo/c/456/d/göodbye">GET (Keys)</a><br/>
 <a href="${pageContext.request.contextPath}/test/fibonacci?count=8">GET (Fibonacci)</a><br/>
 
@@ -87,6 +87,9 @@
 </tr>
 <tr>
 <td>Flag</td><td><input name="flag" value="true"/></td>
+</tr>
+<tr>
+<td>Day of Week</td><td><input name="dayOfWeek" value="MONDAY"/></td>
 </tr>
 <tr>
 <td>Date</td><td><input name="date" value="0"/></td>
@@ -131,6 +134,9 @@
 </tr>
 <tr>
 <td>Flag</td><td><input name="flag" value="true"/></td>
+</tr>
+<tr>
+<td>Day of Week</td><td><input name="dayOfWeek" value="MONDAY"/></td>
 </tr>
 <tr>
 <td>Date</td><td><input name="date" value="0"/></td>

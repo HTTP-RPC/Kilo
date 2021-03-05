@@ -42,13 +42,11 @@ public class TemplateEncoderTest {
     public void testNull() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(null, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("", result);
+        encoder.write(null, writer);
+
+        assertEquals("", writer.toString());
     }
 
     @Test
@@ -63,16 +61,14 @@ public class TemplateEncoderTest {
             ))
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(dictionary, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
+
+        encoder.write(dictionary, writer);
 
         assertEquals(String.format("{a=%s,b=%s,c/d=%s,e=,f/g=}",
             dictionary.get("a"),
             dictionary.get("b"),
-            ((Map<?, ?>)dictionary.get("c")).get("d")), result);
+            ((Map<?, ?>)dictionary.get("c")).get("d")), writer.toString());
     }
 
     @Test
@@ -84,26 +80,22 @@ public class TemplateEncoderTest {
             entry("b", "B")
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("12", result);
+        encoder.write(value, writer);
+
+        assertEquals("12", writer.toString());
     }
 
     @Test
     public void testEmptyRepeatingSection() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("list", emptyList())), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[]", result);
+        encoder.write(mapOf(entry("list", emptyList())), writer);
+
+        assertEquals("[]", writer.toString());
     }
 
     @Test
@@ -117,16 +109,14 @@ public class TemplateEncoderTest {
 
         List<?> list = listOf(dictionary);
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("list", list)), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
+
+        encoder.write(mapOf(entry("list", list)), writer);
 
         assertEquals(String.format("[{a=%s,b=%s,c=%s}]",
             dictionary.get("a"),
             dictionary.get("b"),
-            dictionary.get("c")), result);
+            dictionary.get("c")), writer.toString());
     }
 
     @Test
@@ -145,11 +135,9 @@ public class TemplateEncoderTest {
 
         List<?> list = listOf(dictionary1, dictionary2);
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("list", list)), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
+
+        encoder.write(mapOf(entry("list", list)), writer);
 
         assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]",
             dictionary1.get("a"),
@@ -157,7 +145,7 @@ public class TemplateEncoderTest {
             dictionary1.get("c"),
             dictionary2.get("a"),
             dictionary2.get("b"),
-            dictionary2.get("c")), result);
+            dictionary2.get("c")), writer.toString());
     }
 
     @Test
@@ -176,13 +164,11 @@ public class TemplateEncoderTest {
             )))
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(dictionary, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", result);
+        encoder.write(dictionary, writer);
+
+        assertEquals("{abc=ABC,list1=[{def=DEF,list2=[{one=1,two=2,three=3}]]}", writer.toString());
     }
 
     @Test
@@ -191,26 +177,22 @@ public class TemplateEncoderTest {
 
         List<?> value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[[[hello]]]", result);
+        encoder.write(value, writer);
+
+        assertEquals("[[[hello]]]", writer.toString());
     }
 
     @Test
     public void testNestedEmptyRepeatingSection() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("repeating3.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(emptyList(), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[]", result);
+        encoder.write(emptyList(), writer);
+
+        assertEquals("[]", writer.toString());
     }
 
     @Test
@@ -219,13 +201,11 @@ public class TemplateEncoderTest {
 
         List<?> value = listOf("hello", 42, false);
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[(hello)(42)(false)]", result);
+        encoder.write(value, writer);
+
+        assertEquals("[(hello)(42)(false)]", writer.toString());
     }
 
     @Test
@@ -234,13 +214,11 @@ public class TemplateEncoderTest {
 
         List<?> value = listOf("a", "b", "c");
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("a,b,c", result);
+        encoder.write(value, writer);
+
+        assertEquals("a,b,c", writer.toString());
     }
 
     @Test
@@ -255,13 +233,11 @@ public class TemplateEncoderTest {
             ))
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("one:1,two:2,three:3", result);
+        encoder.write(value, writer);
+
+        assertEquals("one:1,two:2,three:3", writer.toString());
     }
 
     @Test
@@ -276,65 +252,55 @@ public class TemplateEncoderTest {
             ))
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("a:A,b:B,c:C", result);
+        encoder.write(value, writer);
+
+        assertEquals("a:A,b:B,c:C", writer.toString());
     }
 
     @Test
     public void testInvertedSection1() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("not found", result);
+        encoder.write(mapOf(), writer);
+
+        assertEquals("not found", writer.toString());
     }
 
     @Test
     public void testInvertedSection2() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("a", emptyList())), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("not found", result);
+        encoder.write(mapOf(entry("a", emptyList())), writer);
+
+        assertEquals("not found", writer.toString());
     }
 
     @Test
     public void testInvertedSection3() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("a", emptyMap())), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("not found", result);
+        encoder.write(mapOf(entry("a", emptyMap())), writer);
+
+        assertEquals("not found", writer.toString());
     }
 
     @Test
     public void testInvertedSection4() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(entry("a", "A")), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("", result);
+        encoder.write(mapOf(entry("a", "A")), writer);
+
+        assertEquals("", writer.toString());
     }
 
     @Test
@@ -357,39 +323,33 @@ public class TemplateEncoderTest {
             ))
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(dictionary, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("AC1,AC2,AC3 ACone,ACtwo,ACthree", result);
+        encoder.write(dictionary, writer);
+
+        assertEquals("AC1,AC2,AC3 ACone,ACtwo,ACthree", writer.toString());
     }
 
     @Test
     public void testComment() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("comment.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(emptyMap(), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("><", result);
+        encoder.write(emptyMap(), writer);
+
+        assertEquals("><", writer.toString());
     }
 
     @Test
     public void testFloatFormatModifier() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("format1.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(4.5, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("4.50", result);
+        encoder.write(4.5, writer);
+
+        assertEquals("4.50", writer.toString());
     }
 
     @Test
@@ -402,18 +362,17 @@ public class TemplateEncoderTest {
         LocalTime localTime = LocalTime.now();
         LocalDateTime localDateTime = LocalDateTime.now();
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(mapOf(
-                entry("timestamp", date.getTime()),
-                entry("date", date),
-                entry("instant", instant),
-                entry("localDate", localDate),
-                entry("localTime", localTime),
-                entry("localDateTime", localDateTime)
-            ), writer);
-            result = writer.toString();
-        }
+
+        StringWriter writer = new StringWriter();
+
+        encoder.write(mapOf(
+            entry("timestamp", date.getTime()),
+            entry("date", date),
+            entry("instant", instant),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime)
+        ), writer);
 
         ZonedDateTime now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
@@ -425,98 +384,84 @@ public class TemplateEncoderTest {
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
             + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(localDate) + ",\n"
             + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(localTime) + ",\n"
-            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime), result);
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime), writer.toString());
     }
 
     @Test
     public void testURLEscapeModifier() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("url.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("abc:def&xyz", writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("abc%3Adef%26xyz", result);
+        encoder.write("abc:def&xyz", writer);
+
+        assertEquals("abc%3Adef%26xyz", writer.toString());
     }
 
     @Test
     public void testJSONEscapeModifier() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("json.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("\"\\\b\f\n\r\t", writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", result);
+        encoder.write("\"\\\b\f\n\r\t", writer);
+
+        assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", writer.toString());
     }
 
     @Test
     public void testCSVEscapeModifierNumber() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(10, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("10", result);
+        encoder.write(10, writer);
+
+        assertEquals("10", writer.toString());
     }
 
     @Test
     public void testCSVEscapeModifierString() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("a\"b\"c", writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("\"a\"\"b\"\"c\"", result);
+        encoder.write("a\"b\"c", writer);
+
+        assertEquals("\"a\"\"b\"\"c\"", writer.toString());
     }
 
     @Test
     public void testMarkupEscapeModifier() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("html.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("a<b>c&d\"e", writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("a&lt;b&gt;c&amp;d&quot;e", result);
+        encoder.write("a<b>c&d\"e", writer);
+
+        assertEquals("a&lt;b&gt;c&amp;d&quot;e", writer.toString());
     }
 
     @Test
     public void testSimpleInclude() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("master1.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("hello", writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("(hello)", result);
+        encoder.write("hello", writer);
+
+        assertEquals("(hello)", writer.toString());
     }
 
     @Test
     public void testSectionInclude() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("master2.txt"));
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(listOf("a", "b", "c"), writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[(a)(b)(c)]", result);
+        encoder.write(listOf("a", "b", "c"), writer);
+
+        assertEquals("[(a)(b)(c)]", writer.toString());
     }
 
     @Test
@@ -535,13 +480,11 @@ public class TemplateEncoderTest {
             )
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(list, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[[[][]][[][][]][[]]]", result);
+        encoder.write(list, writer);
+
+        assertEquals("[[[][]][[][][]][[]]]", writer.toString());
     }
 
     @Test
@@ -550,13 +493,11 @@ public class TemplateEncoderTest {
 
         List<?> list = emptyList();
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(list, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("[]", result);
+        encoder.write(list, writer);
+
+        assertEquals("[]", writer.toString());
     }
 
     @Test
@@ -579,13 +520,11 @@ public class TemplateEncoderTest {
             return result;
         });
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write("abcdefg", writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("ABCDEFG", result);
+        encoder.write("abcdefg", writer);
+
+        assertEquals("ABCDEFG", writer.toString());
     }
 
     @Test
@@ -598,12 +537,10 @@ public class TemplateEncoderTest {
             ))
         );
 
-        String result;
-        try (StringWriter writer = new StringWriter()) {
-            encoder.write(value, writer);
-            result = writer.toString();
-        }
+        StringWriter writer = new StringWriter();
 
-        assertEquals("A", result);
+        encoder.write(value, writer);
+
+        assertEquals("A", writer.toString());
     }
 }
