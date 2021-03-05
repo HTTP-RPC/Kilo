@@ -458,7 +458,7 @@ public class WebServiceProxy {
      * The result type.
      *
      * @param responseHandler
-     * The response handler, or <code>null</code> for no response handler.
+     * The response handler.
      *
      * @return
      * The result of the operation.
@@ -467,6 +467,10 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
+        if (responseHandler == null) {
+            throw new IllegalArgumentException();
+        }
+
         URL url;
         RequestHandler requestHandler;
         if (method.equalsIgnoreCase("POST") && body == null && this.requestHandler == null) {
@@ -588,7 +592,7 @@ public class WebServiceProxy {
 
         T result;
         if (responseCode / 100 == 2) {
-            if (responseCode % 100 < 4 && responseHandler != null) {
+            if (responseCode % 100 < 4) {
                 Map<String, String> headers = new HashMap<>();
 
                 for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
@@ -611,16 +615,14 @@ public class WebServiceProxy {
             }
         } else {
             String message;
-            if (contentType != null && contentType.startsWith("text/plain")) {
+            if (contentType != null && contentType.startsWith("text/")) {
                 TextDecoder textDecoder = new TextDecoder();
 
                 try (InputStream inputStream = connection.getErrorStream()) {
                     message = textDecoder.read(inputStream);
                 }
             } else {
-                String responseMessage = connection.getResponseMessage();
-
-                message = (responseMessage == null || responseMessage.isEmpty()) ? String.valueOf(responseCode) : responseMessage;
+                message = null;
             }
 
             throw new WebServiceException(message, responseCode);
