@@ -42,6 +42,7 @@ import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebServiceProxyTest {
@@ -170,6 +171,9 @@ public class WebServiceProxyTest {
             MEDIUM,
             LARGE
         }
+    }
+
+    public static class CustomException extends IOException {
     }
 
     private URL serverURL;
@@ -466,8 +470,14 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomErrorHandler() throws IOException {
-        // TODO
+    public void testCustomException() throws IOException {
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/error"));
+
+        webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
+            throw new CustomException();
+        });
+
+        assertThrows(CustomException.class, webServiceProxy::invoke);
     }
 
     @Test
