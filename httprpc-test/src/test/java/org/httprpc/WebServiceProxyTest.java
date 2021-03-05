@@ -466,6 +466,11 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testCustomErrorHandler() throws IOException {
+        // TODO
+    }
+
+    @Test
     public void testTimeout() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
 

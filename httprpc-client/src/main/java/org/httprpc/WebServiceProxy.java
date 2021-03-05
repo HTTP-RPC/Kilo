@@ -108,6 +108,29 @@ public class WebServiceProxy {
         T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
     }
 
+    /**
+     * Interface representing an error handler.
+     */
+    public interface ErrorHandler {
+        /**
+         * Handles an error response.
+         *
+         * @param errorStream
+         * The error stream.
+         *
+         * @param contentType
+         * The content type, or <code>null</code> if the content type is not known.
+         *
+         * @param statusCode
+         * The status code.
+         *
+         * @throws IOException
+         * Representing the error that occurred, or if an exception occurs while
+         * handling the error.
+         */
+        void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
+    }
+
     // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
         URL baseURL;
@@ -227,6 +250,7 @@ public class WebServiceProxy {
     private Object body;
 
     private RequestHandler requestHandler = null;
+    private ErrorHandler errorHandler = null;
 
     private int connectTimeout = 0;
     private int readTimeout = 0;
@@ -236,6 +260,19 @@ public class WebServiceProxy {
     private static final String UTF_8 = "UTF-8";
 
     private static final int EOF = -1;
+
+    private static final ErrorHandler defaultErrorHandler = (errorStream, contentType, statusCode) -> {
+        String message;
+        if (contentType != null && contentType.startsWith("text/")) {
+            TextDecoder textDecoder = new TextDecoder();
+
+            message = textDecoder.read(errorStream);
+        } else {
+            message = null;
+        }
+
+        throw new WebServiceException(message, statusCode);
+    };
 
     /**
      * Constructs a new web service proxy.
@@ -385,10 +422,30 @@ public class WebServiceProxy {
      * Sets the request handler.
      *
      * @param requestHandler
-     * The request handler, or <code>null</code> for no request handler.
+     * The request handler, or <code>null</code> for the default request handler.
      */
     public void setRequestHandler(RequestHandler requestHandler) {
         this.requestHandler = requestHandler;
+    }
+
+    /**
+     * Returns the error handler.
+     *
+     * @return
+     * The error handler, or <code>null</code> if no error handler has been set.
+     */
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    /**
+     * Sets the error handler.
+     *
+     * @param errorHandler
+     * The error handler, or <code>null</code> for the default error handler.
+     */
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     /**
@@ -614,18 +671,17 @@ public class WebServiceProxy {
                 result = null;
             }
         } else {
-            String message;
-            if (contentType != null && contentType.startsWith("text/")) {
-                TextDecoder textDecoder = new TextDecoder();
+            ErrorHandler errorHandler = this.errorHandler;
 
-                try (InputStream inputStream = connection.getErrorStream()) {
-                    message = textDecoder.read(inputStream);
-                }
-            } else {
-                message = null;
+            if (errorHandler == null) {
+                errorHandler = defaultErrorHandler;
             }
 
-            throw new WebServiceException(message, responseCode);
+            try (InputStream inputStream = connection.getErrorStream()) {
+                errorHandler.handleResponse(inputStream, contentType, responseCode);
+            }
+
+            return null;
         }
 
         return result;

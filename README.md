@@ -360,7 +360,7 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, a `WebServiceException` will be thrown. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message.
+If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via the `setErrorHandler()` method.
 
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier. `listOf()`, `mapOf()`, and `entry()` are static utility methods provided by the `org.httprpc.util.Collections` class that can be used to declaratively create immutable collection instances:
 
