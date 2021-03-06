@@ -474,7 +474,7 @@ Values are converted to their JSON equivalents as described [earlier](#return-va
 * array: `java.util.List`
 * object: `java.util.Map`
 
-For example, given the following JSON document:
+For example, given the following document:
 
 ```json
 [
