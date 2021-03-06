@@ -150,7 +150,7 @@ Path variables may be specified by a "?" character in the resource path. For exa
 ```java
 @RequestMethod("GET")
 @ResourcePath("contacts/?/addresses/?")
-public List<Map<String, ?>> getContactAddresses() { ... }
+public List<Address> getContactAddresses() { ... }
 ```
 
 The `getKey()` method returns the value of a path variable associated with the current request:
@@ -173,7 +173,7 @@ Path variables can optionally be assigned a name by appending a colon and key na
 ```java
 @RequestMethod("GET")
 @ResourcePath("contacts/?:contactID/addresses/?:addressType")
-public List<Map<String, ?>> getContactAddresses() { ... }
+public List<Address> getContactAddresses() { ... }
 ```
 
 A named variable can be retrieved via this `getKey()` overload:
@@ -928,7 +928,7 @@ These methods are provided primarily as a convenience for applications using Jav
 `Collections` additionally provides the `valueAt()` method, which can be used to access nested values in an object hierarchy. For example:
 
 ```java
-Map<String, ?> map = mapOf(
+Map<String, Object> map = mapOf(
     entry("a", mapOf(
         entry("b", mapOf(
             entry("c", listOf(
