@@ -686,7 +686,7 @@ templateEncoder.write(new BeanAdapter(root), System.out);
 public static <T> T adapt(Object value, Type type) { ... }
 ```
 
-Values are adapted as described in the class documentation. For example, given this interface:
+For example, given this interface:
 
 ```java
 public interface TreeNode {
@@ -708,6 +708,8 @@ System.out.println(root.getName()); // "Seasons"
 System.out.println(root.getChildren().get(0).getName()); // "Winter"
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // "January"
 ```
+
+See the class documentation for more information. 
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when reading or writing property values. For example:
