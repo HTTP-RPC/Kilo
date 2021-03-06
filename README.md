@@ -343,7 +343,7 @@ Request headers and arguments are specified via the `setHeaders()` and `setArgum
 
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if a custom body is provided either via `setBody()` or by a custom request handler, `POST` arguments will be sent in the query string.
 
-The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. Further, when using the multi-part encoding, `URL` and `Iterable<URL>` values represent file uploads, and behave similarly to `<input type="file">` tags in HTML forms.
+The `toString()` method is generally used to convert an argument to its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 Service operations are invoked via one of the following methods:
 
@@ -362,7 +362,7 @@ public interface ResponseHandler<T> {
 
 If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via the `setErrorHandler()` method.
 
-The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier. `listOf()`, `mapOf()`, and `entry()` are static utility methods provided by the `org.httprpc.util.Collections` class that can be used to declaratively create immutable collection instances:
+The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
 WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
