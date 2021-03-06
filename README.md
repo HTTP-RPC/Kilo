@@ -426,7 +426,7 @@ System.out.println(mathService.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` to serialize a service response. However, it can also be used by application code. For example: 
+The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used by application code. For example: 
 
 ```java
 Map<String, Object> map = mapOf(
@@ -466,7 +466,7 @@ This code would produce the following output:
 
 Values are converted to their JSON equivalents as described [earlier](#return-values). Unsupported types are treated as `null`.
 
-The `JSONDecoder` class (used internally by `WebServiceProxy`) deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
+`JSONDecoder` deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
 * string: `String`
 * number: `Number`
