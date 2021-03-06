@@ -52,7 +52,7 @@ import static org.httprpc.util.Collections.mapOf;
 public class PetService extends WebService {
     private DataSource dataSource = null;
 
-    public interface Pet {
+    private interface Pet {
         Date getBirth();
     }
 
