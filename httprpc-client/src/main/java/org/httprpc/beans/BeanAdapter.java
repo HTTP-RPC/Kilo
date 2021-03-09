@@ -423,10 +423,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value for strongly typed access. If the value is already an
-     * instance of the given type, it is returned as is. Otherwise:
+     * Adapts a value for strongly typed access.
      *
      * <ul>
+     * <li>If the value is already an instance of the given type, it is returned
+     * as is.</li>
      * <li>If the target type is a number or boolean, the value is parsed or
      * coerced using the appropriate conversion method. Missing or <code>null</code>
      * values are automatically converted to <code>0</code> or <code>false</code>
@@ -454,18 +455,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * in an adapter of the same type that automatically adapts its elements.</li>
      * </ul>
      *
-     * Otherwise, the target is assumed to be a bean, and the value is assumed to
-     * be a map:
+     * Otherwise, the value is assumed to be a map and is adapted as follows:
      *
      * <ul>
-     * <li>If the target is an interface, the return value is a proxy
-     * implementation of the given interface that maps accessor methods to entries
-     * in the map. `Object` methods are delegated to the underlying map.</li>
-     * <li>If the target is a concrete type, an instance of the type is dynamically
-     * created and populated using the entries in the map.</li>
+     * <li>If the target type is an interface, the return value is a proxy
+     * implementation of the interface that maps accessor methods to entries in
+     * the map. `Object` methods are delegated to the underlying map.</li>
+     * <li>If the target type is a concrete class, an instance of the type is
+     * dynamically created and populated using the entries in the map.</li>
      * </ul>
-     *
-     * In either case, property values are adapted as described above.
      *
      * @param <T>
      * The target type.
