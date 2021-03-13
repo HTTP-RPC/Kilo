@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'    
-    version = '8.1.1'
+    version = '8.1.2'
 
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
@@ -86,15 +86,9 @@ subprojects {
                                 url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                             }
                         }
-                        developers {
-                            developer {
-                                name = 'Greg Brown'
-                                email = 'gk_brown@icloud.com'
-                            }
-                        }
                         scm {
-                            connection = 'scm:git:git://github.com/gk-brown/HTTP-RPC.git'
-                            url = 'https://github.com/gk-brown/HTTP-RPC/tree/master/httprpc'
+                            connection = 'scm:git:git://github.com/HTTP-RPC/HTTP-RPC.git'
+                            url = 'https://github.com/HTTP-RPC/HTTP-RPC'
                         }
                     }
                 }
