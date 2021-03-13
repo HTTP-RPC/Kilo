@@ -86,6 +86,12 @@ subprojects {
                                 url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                             }
                         }
+                        developers {
+                            developer {
+                                name = 'Greg Brown'
+                                email = 'gk_brown@icloud.com'
+                            }
+                        }
                         scm {
                             connection = 'scm:git:git://github.com/HTTP-RPC/HTTP-RPC.git'
                             url = 'https://github.com/HTTP-RPC/HTTP-RPC'
