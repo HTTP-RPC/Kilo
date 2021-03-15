@@ -513,7 +513,14 @@ public class WebServiceProxy {
         // Write request body
         if (requestHandler != null) {
             connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", requestHandler.getContentType());
+
+            String contentType = requestHandler.getContentType();
+
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            connection.setRequestProperty("Content-Type", contentType);
 
             try (OutputStream outputStream = connection.getOutputStream()) {
                 requestHandler.encodeRequest(outputStream);
