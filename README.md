@@ -383,48 +383,6 @@ webServiceProxy.setArguments(mapOf(
 System.out.println((Number)webServiceProxy.invoke()); // 6.0
 ```
 
-### Typed Access
-The `adapt()` methods of the `WebServiceProxy` class can be used to facilitate type-safe access to web services:
-
-```java
-public static <T> T adapt(URL baseURL, Class<T> type) { ... }
-public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory) { ... }
-public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory, BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) { ... }
-```
-All three versions take a base URL and an interface type as arguments and return an instance of the given type that can be used to invoke service operations. The second version accepts a callback that is used to supply values for any named path variables. The third accepts an additional callback that is used to produce service proxy instances. Interface types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
-
-The `RequestMethod` annotation is used to associate an HTTP verb with an interface method. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the base URL. If unspecified, the method is associated with the base URL itself. 
-
-`POST` requests are generally submitted using the multi-part encoding or as JSON. However, this behavior can be overridden by a custom service proxy factory. 
-
-Return values are handled as described for `WebServiceProxy`, and are automatically coerced to the correct type.
-
-For example, the following interface might be used to model the operations of the math service:
-
-```java
-public interface MathService {
-    @RequestMethod("GET")
-    @ResourcePath("sum")
-    double getSum(double a, double b) throws IOException;
-
-    @RequestMethod("GET")
-    @ResourcePath("sum")
-    double getSum(List<Double> values) throws IOException;
-}
-```
-
-This code uses the `adapt()` method to create an instance of `MathService`, then invokes the `getSum()` method on the returned instance. The results are identical to the previous example:
-
-```java
-MathService mathService = WebServiceProxy.adapt(new URL(serverURL, "math/"), MathService.class);
-
-// GET /math/sum?a=2&b=4
-System.out.println(mathService.getSum(4, 2)); // 6.0
-
-// GET /math/sum?values=1&values=2&values=3
-System.out.println(mathService.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
-```
-
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used by application code. For example: 
 

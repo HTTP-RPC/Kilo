@@ -24,23 +24,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
@@ -67,9 +58,7 @@ public class WebServiceProxy {
          * @return
          * The content type produced by the handler.
          */
-        default String getContentType() {
-            return "application/octet-stream";
-        }
+        String getContentType();
 
         /**
          * Encodes a request to an output stream.
@@ -96,16 +85,13 @@ public class WebServiceProxy {
          * @param contentType
          * The content type, or <code>null</code> if the content type is not known.
          *
-         * @param headers
-         * The response headers.
-         *
          * @throws IOException
          * If an exception occurs.
          *
          * @return
          * The decoded value.
          */
-        T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+        T decodeResponse(InputStream inputStream, String contentType) throws IOException;
     }
 
     /**
@@ -129,114 +115,6 @@ public class WebServiceProxy {
          * handling the error.
          */
         void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
-    }
-
-    // Typed invocation handler
-    private static class TypedInvocationHandler implements InvocationHandler {
-        URL baseURL;
-        Class<?> type;
-        Function<ResourcePath, Map<String, ?>> keyMapFactory;
-        BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory;
-
-        TypedInvocationHandler(URL baseURL, Class<?> type, Function<ResourcePath, Map<String, ?>> keyMapFactory, BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
-            this.baseURL = baseURL;
-            this.type = type;
-            this.keyMapFactory = keyMapFactory;
-            this.webServiceProxyFactory = webServiceProxyFactory;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-            Class<?> declaringClass = method.getDeclaringClass();
-
-            if (declaringClass == Object.class) {
-                return method.invoke(this, arguments);
-            } else {
-                RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
-
-                if (requestMethod == null) {
-                    throw new UnsupportedOperationException();
-                }
-
-                ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
-
-                URL url;
-                if (resourcePath != null) {
-                    Map<String, ?> keys = keyMapFactory.apply(resourcePath);
-
-                    String[] components = resourcePath.value().split("/");
-
-                    for (int i = 0; i < components.length; i++) {
-                        String component = components[i];
-
-                        if (component.length() == 0) {
-                            continue;
-                        }
-
-                        if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
-                            int k = ResourcePath.PATH_VARIABLE_PREFIX.length();
-
-                            if (component.length() == k || component.charAt(k++) != ':') {
-                                throw new IllegalStateException("Invalid path variable.");
-                            }
-
-                            if (keys == null) {
-                                throw new IllegalStateException("No keys provided.");
-                            }
-
-                            Object value = getParameterValue(keys.get(component.substring(k)));
-
-                            if (value != null) {
-                                components[i] = URLEncoder.encode(value.toString(), UTF_8);
-                            } else {
-                                components[i] = "";
-                            }
-                        }
-                    }
-
-                    url = new URL(baseURL, String.join("/", components));
-                } else {
-                    url = baseURL;
-                }
-
-                WebServiceProxy webServiceProxy = webServiceProxyFactory.apply(requestMethod.value(), url);
-
-                Parameter[] parameters = method.getParameters();
-
-                Map<String, Object> argumentMap = new LinkedHashMap<>();
-
-                for (int i = 0; i < parameters.length; i++) {
-                    argumentMap.put(parameters[i].getName(), arguments[i]);
-                }
-
-                webServiceProxy.setArguments(argumentMap);
-
-                return BeanAdapter.adapt(webServiceProxy.invoke(), method.getGenericReturnType());
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return type.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            if (object instanceof Proxy) {
-                object = Proxy.getInvocationHandler(object);
-            }
-
-            if (!(object instanceof TypedInvocationHandler)) {
-                return false;
-            }
-
-            return (type == ((TypedInvocationHandler)object).type);
-        }
-
-        @Override
-        public String toString() {
-            return type.toString();
-        }
     }
 
     private String method;
@@ -501,7 +379,7 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public <T> T invoke() throws IOException {
-        return invoke((inputStream, contentType, headers) -> {
+        return invoke((inputStream, contentType) -> {
             JSONDecoder jsonDecoder = new JSONDecoder();
 
             return jsonDecoder.read(inputStream);
@@ -650,22 +528,8 @@ public class WebServiceProxy {
         T result;
         if (responseCode / 100 == 2) {
             if (responseCode % 100 < 4) {
-                Map<String, String> headers = new HashMap<>();
-
-                for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
-                    String key = entry.getKey();
-
-                    if (key != null) {
-                        List<String> values = entry.getValue();
-
-                        if (!values.isEmpty()) {
-                            headers.put(entry.getKey(), values.get(0));
-                        }
-                    }
-                }
-
                 try (InputStream inputStream = connection.getInputStream()) {
-                    result = responseHandler.decodeResponse(inputStream, contentType, headers);
+                    result = responseHandler.decodeResponse(inputStream, contentType);
                 }
             } else {
                 result = null;
@@ -791,95 +655,5 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
-    }
-
-    /**
-     * Creates a type-safe web service proxy adapter.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param baseURL
-     * The base URL of the web service.
-     *
-     * @param type
-     * The type of the adapter.
-     *
-     * @return
-     * An instance of the given type that adapts the target service.
-     */
-    public static <T> T adapt(URL baseURL, Class<T> type) {
-        return adapt(baseURL, type, (resourcePath) -> null);
-    }
-
-    /**
-     * Creates a type-safe web service proxy adapter.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param baseURL
-     * The base URL of the web service.
-     *
-     * @param type
-     * The type of the adapter.
-     *
-     * @param keyMapFactory
-     * A function that produces a key map, or <code>null</code> if no keys are required.
-     *
-     * @return
-     * An instance of the given type that adapts the target service.
-     */
-    public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory) {
-        return adapt(baseURL, type, keyMapFactory, (method, url) -> {
-            WebServiceProxy webServiceProxy = new WebServiceProxy(method, url);
-
-            webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
-
-            return webServiceProxy;
-        });
-    }
-
-    /**
-     * Creates a type-safe web service proxy adapter.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param baseURL
-     * The base URL of the web service.
-     *
-     * @param type
-     * The type of the adapter.
-     *
-     * @param keyMapFactory
-     * A function that produces a key map, or <code>null</code> if no keys are required.
-     *
-     * @param webServiceProxyFactory
-     * A function that produces a web service proxy instance.
-     *
-     * @return
-     * An instance of the given type that adapts the target service.
-     */
-    public static <T> T adapt(URL baseURL, Class<T> type, Function<ResourcePath, Map<String, ?>> keyMapFactory, BiFunction<String, URL, WebServiceProxy> webServiceProxyFactory) {
-        if (baseURL == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (type == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (keyMapFactory == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (webServiceProxyFactory == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(),
-            new Class<?>[] {type},
-            new TypedInvocationHandler(baseURL, type, keyMapFactory, webServiceProxyFactory)));
     }
 }
