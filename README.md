@@ -349,14 +349,15 @@ Service operations are invoked via one of the following methods:
 
 ```java
 public <T> T invoke() throws IOException { ... }
+public <T> T invoke(Class<? extends T> type) throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version automatically deserializes a successful server response using `JSONDecoder`, which is discussed in more detail later. The second allows a caller to provide a custom response handler. `ResponseHandler` is a functional interface that is defined as follows:
+The first two versions automatically deserialize a successful JSON response (if any). The third allows a caller to provide a custom response handler:
 
 ```java
 public interface ResponseHandler<T> {
-    T decodeResponse(InputStream inputStream, String contentType, Map<String, String> headers) throws IOException;
+    T decodeResponse(InputStream inputStream, String contentType) throws IOException;
 }
 ```
 
@@ -373,14 +374,14 @@ webServiceProxy.setArguments(mapOf(
     entry("b", 2)
 ));
 
-System.out.println((Number)webServiceProxy.invoke()); // 6.0
+System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
 
 // GET /math/sum?values=1&values=2&values=3
 webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))
 ));
 
-System.out.println((Number)webServiceProxy.invoke()); // 6.0
+System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
 ```
 
 ## JSONEncoder and JSONDecoder

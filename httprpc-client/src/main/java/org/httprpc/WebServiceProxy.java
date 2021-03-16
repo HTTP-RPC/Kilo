@@ -378,11 +378,31 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
+    @SuppressWarnings("unchecked")
     public <T> T invoke() throws IOException {
+        return (T)invoke(Object.class);
+    }
+
+    /**
+     * Invokes the service method.
+     *
+     * @param <T>
+     * The result type.
+     *
+     * @param type
+     * The result type.
+     *
+     * @return
+     * The result of the operation.
+     *
+     * @throws IOException
+     * If an exception occurs while executing the operation.
+     */
+    public <T> T invoke(Class<? extends T> type) throws IOException {
         return invoke((inputStream, contentType) -> {
             JSONDecoder jsonDecoder = new JSONDecoder();
 
-            return jsonDecoder.read(inputStream);
+            return BeanAdapter.adapt(jsonDecoder.read(inputStream), type);
         });
     }
 
@@ -401,7 +421,7 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
+    public <T> T invoke(ResponseHandler<? extends T> responseHandler) throws IOException {
         if (responseHandler == null) {
             throw new IllegalArgumentException();
         }

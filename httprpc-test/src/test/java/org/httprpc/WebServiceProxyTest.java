@@ -281,7 +281,7 @@ public class WebServiceProxyTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
-        Response response = BeanAdapter.adapt(webServiceProxy.invoke(), Response.class);
+        Response response = webServiceProxy.invoke(Response.class);
 
         assertNotNull(response);
 
@@ -318,7 +318,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(body);
 
-        Body result = BeanAdapter.adapt(webServiceProxy.invoke(), Body.class);
+        Body result = webServiceProxy.invoke(Body.class);
 
         assertEquals(body, result);
     }
@@ -493,20 +493,20 @@ public class WebServiceProxyTest {
             entry("b", 2)
         ));
 
-        assertEquals(6.0, BeanAdapter.adapt(webServiceProxy.invoke(), Double.class));
+        assertEquals(6.0, webServiceProxy.invoke(Double.class));
 
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         ));
 
-        assertEquals(6.0, BeanAdapter.adapt(webServiceProxy.invoke(), Double.class));
+        assertEquals(6.0, webServiceProxy.invoke(Double.class));
     }
 
     @Test
     public void testTree() throws IOException {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "tree"));
 
-        TreeNode seasons = BeanAdapter.adapt(webServiceProxy.invoke(), TreeNode.class);
+        TreeNode seasons = webServiceProxy.invoke(TreeNode.class);
 
         assertNotNull(seasons);
         assertEquals("Seasons", seasons.getName());
@@ -561,7 +561,7 @@ public class WebServiceProxyTest {
             entry("price", price)
         ));
 
-        return BeanAdapter.adapt(webServiceProxy.invoke(), Item.class);
+        return webServiceProxy.invoke(Item.class);
     }
 
     private void updateCatalogItem(Item item) throws IOException {
