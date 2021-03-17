@@ -156,10 +156,10 @@ public class WebServiceProxy {
      * Constructs a new web service proxy.
      *
      * @param method
-     * The service method.
+     * The HTTP method.
      *
      * @param url
-     * The service URL.
+     * The resource URL.
      */
     public WebServiceProxy(String method, URL url) {
         if (method == null) {
@@ -170,25 +170,25 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        this.method = method;
+        this.method = method.toUpperCase();
         this.url = url;
     }
 
     /**
-     * Returns the service method.
+     * Returns the HTTP method.
      *
      * @return
-     * The service method.
+     * The HTTP method.
      */
     public String getMethod() {
         return method;
     }
 
     /**
-     * Returns the service URL.
+     * Returns the resource URL.
      *
      * @return
-     * The service URL.
+     * The resource URL.
      */
     public URL getURL() {
         return url;
@@ -209,13 +209,18 @@ public class WebServiceProxy {
      *
      * @param encoding
      * The encoding used for POST requests.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setEncoding(Encoding encoding) {
+    public WebServiceProxy setEncoding(Encoding encoding) {
         if (encoding == null) {
             throw new IllegalArgumentException();
         }
 
         this.encoding = encoding;
+
+        return this;
     }
 
     /**
@@ -233,13 +238,18 @@ public class WebServiceProxy {
      *
      * @param headers
      * The header map.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setHeaders(Map<String, ?> headers) {
+    public WebServiceProxy setHeaders(Map<String, ?> headers) {
         if (headers == null) {
             throw new IllegalArgumentException();
         }
 
         this.headers = headers;
+
+        return this;
     }
 
     /**
@@ -257,13 +267,18 @@ public class WebServiceProxy {
      *
      * @param arguments
      * The argument map.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setArguments(Map<String, ?> arguments) {
+    public WebServiceProxy setArguments(Map<String, ?> arguments) {
         if (arguments == null) {
             throw new IllegalArgumentException();
         }
 
         this.arguments = arguments;
+
+        return this;
     }
 
     /**
@@ -281,9 +296,14 @@ public class WebServiceProxy {
      *
      * @param body
      * A value representing the body content, or <code>null</code> for no body.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setBody(Object body) {
+    public WebServiceProxy setBody(Object body) {
         this.body = body;
+
+        return this;
     }
 
     /**
@@ -301,9 +321,14 @@ public class WebServiceProxy {
      *
      * @param requestHandler
      * The request handler, or <code>null</code> for the default request handler.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setRequestHandler(RequestHandler requestHandler) {
+    public WebServiceProxy setRequestHandler(RequestHandler requestHandler) {
         this.requestHandler = requestHandler;
+
+        return this;
     }
 
     /**
@@ -321,9 +346,14 @@ public class WebServiceProxy {
      *
      * @param errorHandler
      * The error handler, or <code>null</code> for the default error handler.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setErrorHandler(ErrorHandler errorHandler) {
+    public WebServiceProxy setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+
+        return this;
     }
 
     /**
@@ -341,9 +371,14 @@ public class WebServiceProxy {
      *
      * @param connectTimeout
      * The connect timeout.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setConnectTimeout(int connectTimeout) {
+    public WebServiceProxy setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
+
+        return this;
     }
 
     /**
@@ -361,13 +396,18 @@ public class WebServiceProxy {
      *
      * @param readTimeout
      * The read timeout.
+     *
+     * @return
+     * The web service proxy.
      */
-    public void setReadTimeout(int readTimeout) {
+    public WebServiceProxy setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
+
+        return this;
     }
 
     /**
-     * Invokes the service method.
+     * Invokes the service operation.
      *
      * @param <T>
      * The result type.
@@ -384,7 +424,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Invokes the service method.
+     * Invokes the service operation.
      *
      * @param <T>
      * The result type.
@@ -407,7 +447,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Invokes the service method.
+     * Invokes the service operation.
      *
      * @param <T>
      * The result type.
@@ -428,7 +468,7 @@ public class WebServiceProxy {
 
         URL url;
         RequestHandler requestHandler;
-        if (method.equalsIgnoreCase("POST") && body == null && this.requestHandler == null) {
+        if (method.equals("POST") && body == null && this.requestHandler == null) {
             url = this.url;
 
             requestHandler = new RequestHandler() {
@@ -683,4 +723,121 @@ public class WebServiceProxy {
             return argument;
         }
     }
+
+    /**
+     * Creates a web service proxy representing a GET request.
+     *
+     * @param url
+     * The resource URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy get(URL url) {
+        return new WebServiceProxy("GET", url);
+    }
+
+    /**
+     * Creates a web service proxy representing a GET request.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @param path
+     * The path to the resource, relative to the base URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy get(URL baseURL, String path) throws IOException {
+        return get(new URL(baseURL, path));
+    }
+
+    /**
+     * Creates a web service proxy representing a POST request.
+     *
+     * @param url
+     * The resource URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy post(URL url) {
+        return new WebServiceProxy("POST", url);
+    }
+
+    /**
+     * Creates a web service proxy representing a POST request.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @param path
+     * The path to the resource, relative to the base URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy post(URL baseURL, String path) throws IOException {
+        return post(new URL(baseURL, path));
+    }
+
+    /**
+     * Creates a web service proxy representing a PUT request.
+     *
+     * @param url
+     * The resource URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy put(URL url) {
+        return new WebServiceProxy("PUT", url);
+    }
+
+    /**
+     * Creates a web service proxy representing a PUT request.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @param path
+     * The path to the resource, relative to the base URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy put(URL baseURL, String path) throws IOException {
+        return put(new URL(baseURL, path));
+    }
+
+    /**
+     * Creates a web service proxy representing a DELETE request.
+     *
+     * @param url
+     * The resource URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy delete(URL url) {
+        return new WebServiceProxy("DELETE", url);
+    }
+
+    /**
+     * Creates a web service proxy representing a DELETE request.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @param path
+     * The path to the resource, relative to the base URL.
+     *
+     * @return
+     * The new web service proxy.
+     */
+    public static WebServiceProxy delete(URL baseURL, String path) throws IOException {
+        return delete(new URL(baseURL, path));
+    }
 }
+

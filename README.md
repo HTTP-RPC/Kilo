@@ -366,7 +366,7 @@ If a service returns an error response, the default error handler will throw a `
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
+WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
 
 // GET /math/sum?a=2&b=4
 webServiceProxy.setArguments(mapOf(
@@ -383,6 +383,24 @@ webServiceProxy.setArguments(mapOf(
 
 System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
 ```
+
+### Fluent Invocation
+`WebServiceProxy` also supports a fluent (i.e. chained) invocation model. For example, the following code is equivalent to the previous example:
+
+```java
+// GET /math/sum?a=2&b=4
+System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+    entry("a", 4),
+    entry("b", 2)
+)).invoke(Double.class)); // 6.0
+
+// GET /math/sum?values=1&values=2&values=3
+System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+    entry("values", listOf(1, 2, 3))
+)).invoke(Double.class)); // 6.0
+```
+
+POST, PUT, and DELETE operations are also supported.
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used by application code. For example: 

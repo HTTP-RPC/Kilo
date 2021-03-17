@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class WebServiceProxyTest {
     public interface Response {
@@ -139,7 +140,7 @@ public class WebServiceProxyTest {
     public static class CustomException extends IOException {
     }
 
-    private URL serverURL;
+    private URL baseURL;
 
     private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
 
@@ -153,14 +154,12 @@ public class WebServiceProxyTest {
     private static final int EOF = -1;
 
     public WebServiceProxyTest() throws IOException {
-        serverURL = new URL("http://localhost:8080/httprpc-test-1.0/");
+        baseURL = new URL("http://localhost:8080/httprpc-test-1.0/");
     }
 
     @Test
     public void testGet() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
-
-        webServiceProxy.setArguments(mapOf(
+        Map<String, ?> result = WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -171,9 +170,7 @@ public class WebServiceProxyTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime)
-        ));
-
-        Map<String, ?> result = webServiceProxy.invoke();
+        )).invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -191,16 +188,12 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetKeys() throws IOException {
-        String path = String.format("test/a/%d/b/%s/c/%d/d/%s",
+        Map<String, ?> result = WebServiceProxy.get(baseURL, String.format("test/a/%d/b/%s/c/%d/d/%s",
             123,
             URLEncoder.encode("héllo", "UTF-8"),
             456,
             URLEncoder.encode("göodbye", "UTF-8")
-        );
-
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, path));
-
-        Map<String, ?> result = webServiceProxy.invoke();
+        )).invoke();
 
         assertEquals(mapOf(
             entry("list", listOf("123", "héllo", "456", "göodbye")),
@@ -215,22 +208,18 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetFibonacci() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/fibonacci"));
+        List<Number> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+            mapOf(
+                entry("count", 8)
+            )
+        ).invoke();
 
-        webServiceProxy.setArguments(mapOf(
-            entry("count", 8)
-        ));
-
-        List<Integer> result = BeanAdapter.adaptList(webServiceProxy.invoke(), Integer.class);
-
-        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
+        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.adaptList(result, Integer.class));
     }
 
     @Test
     public void testURLEncodedPost() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
-
-        webServiceProxy.setArguments(mapOf(
+        Map<String, ?> result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -241,9 +230,7 @@ public class WebServiceProxyTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime)
-        ));
-
-        Map<String, ?> result = webServiceProxy.invoke();
+        )).invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -262,12 +249,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMultipartPost() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
-
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        webServiceProxy.setArguments(mapOf(
+        Response response = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -279,9 +264,7 @@ public class WebServiceProxyTest {
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
             entry("attachments", listOf(textTestURL, imageTestURL))
-        ));
-
-        Response response = webServiceProxy.invoke(Response.class);
+        )).invoke(Response.class);
 
         assertNotNull(response);
 
@@ -303,12 +286,6 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomBodyPost() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("id", 101)
-        ));
-
         Body body = BeanAdapter.adapt(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
@@ -316,20 +293,18 @@ public class WebServiceProxyTest {
             entry("flag", true)
         ), Body.class);
 
-        webServiceProxy.setBody(body);
-
-        Body result = webServiceProxy.invoke(Body.class);
+        Body result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+            entry("id", 101)
+        )).setBody(body).invoke(Body.class);
 
         assertEquals(body, result);
     }
 
     @Test
     public void testCustomImagePost() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "test"));
-
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+        BufferedImage image = WebServiceProxy.post(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
@@ -344,24 +319,18 @@ public class WebServiceProxyTest {
                     }
                 }
             }
-        });
-
-        webServiceProxy.setArguments(mapOf(
+        }).setArguments(mapOf(
             entry("name", imageTestURL.getFile())
-        ));
-
-        BufferedImage image = webServiceProxy.invoke((inputStream, contentType) -> ImageIO.read(inputStream));
+        )).invoke((inputStream, contentType) -> ImageIO.read(inputStream));
 
         assertNotNull(image);
     }
 
     @Test
     public void testPut() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, "test"));
-
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+        String text = WebServiceProxy.put(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
@@ -376,13 +345,9 @@ public class WebServiceProxyTest {
                     }
                 }
             }
-        });
-
-        webServiceProxy.setArguments(mapOf(
+        }).setArguments(mapOf(
             entry("id", 101)
-        ));
-
-        String text = webServiceProxy.invoke((inputStream, contentType) -> {
+        )).invoke((inputStream, contentType) -> {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 
             StringBuilder textBuilder = new StringBuilder();
@@ -400,27 +365,19 @@ public class WebServiceProxyTest {
 
     @Test
     public void testDelete() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, "test"));
-
-        webServiceProxy.setArguments(mapOf(
+        WebServiceProxy.delete(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        ));
-
-        webServiceProxy.invoke();
+        )).invoke();
 
         assertTrue(true);
     }
 
     @Test
     public void testHeaders() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/headers"));
-
-        webServiceProxy.setHeaders(mapOf(
+        Map<String, ?> result = WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
             entry("X-Header-A", "abc"),
             entry("X-Header-B", 123)
-        ));
-
-        Map<String, ?> result = webServiceProxy.invoke();
+        )).invoke();
 
         assertEquals(mapOf(
             entry("X-Header-A", "abc"),
@@ -430,83 +387,55 @@ public class WebServiceProxyTest {
 
     @Test
     public void testUnauthorized() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/unauthorized"));
-
-        int statusCode;
         try {
-            webServiceProxy.invoke();
+            WebServiceProxy.get(baseURL, "test/unauthorized").invoke();
 
-            statusCode = HttpURLConnection.HTTP_OK;
+            fail();
         } catch (WebServiceException exception) {
-            statusCode = exception.getStatusCode();
+            assertEquals(HttpURLConnection.HTTP_FORBIDDEN, exception.getStatusCode());
         }
-
-        assertEquals(HttpURLConnection.HTTP_FORBIDDEN, statusCode);
     }
 
     @Test
     public void testError() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/error"));
-
-        boolean error;
         try {
-            webServiceProxy.invoke();
+            WebServiceProxy.get(baseURL, "test/error").invoke();
 
-            error = false;
+            fail();
         } catch (WebServiceException exception) {
-            error = true;
+            assertTrue(true);
         }
-
-        assertTrue(error);
     }
 
     @Test
-    public void testTimeout() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test"));
-
-        webServiceProxy.setConnectTimeout(500);
-        webServiceProxy.setReadTimeout(4000);
-
-        webServiceProxy.setArguments(mapOf(
-            entry("value", 123),
-            entry("delay", 6000)
-        ));
-
-        boolean timeout;
+    public void testTimeout() {
         try {
-            webServiceProxy.invoke();
+            WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("value", 123),
+                entry("delay", 6000)
+            )).setConnectTimeout(500).setReadTimeout(4000).invoke();
 
-            timeout = false;
+            fail();
         } catch (IOException exception) {
-            timeout = (exception instanceof SocketTimeoutException);
+            assertTrue(exception instanceof SocketTimeoutException);
         }
-
-        assertTrue(timeout);
     }
 
     @Test
     public void testMath() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "math/sum"));
-
-        webServiceProxy.setArguments(mapOf(
+        assertEquals(6.0, WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
-        ));
+        )).invoke(Double.class));
 
-        assertEquals(6.0, webServiceProxy.invoke(Double.class));
-
-        webServiceProxy.setArguments(mapOf(
+        assertEquals(6.0, WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
-        ));
-
-        assertEquals(6.0, webServiceProxy.invoke(Double.class));
+        )).invoke(Double.class));
     }
 
     @Test
     public void testTree() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "tree"));
-
-        TreeNode seasons = webServiceProxy.invoke(TreeNode.class);
+        TreeNode seasons = WebServiceProxy.get(baseURL, "tree").invoke(TreeNode.class);
 
         assertNotNull(seasons);
         assertEquals("Seasons", seasons.getName());
@@ -524,7 +453,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCatalog() throws IOException {
-        Item item = addCatalogItem("abc", 150.00);
+        Item item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
+            entry("description", "abc"),
+            entry("price", 150.00)
+        )).invoke(Item.class);
 
         assertNotNull(item);
         assertNotNull(item.getID());
@@ -536,11 +468,11 @@ public class WebServiceProxyTest {
         item.setDescription("xyz");
         item.setPrice(300.00);
 
-        updateCatalogItem(item);
+        WebServiceProxy.put(baseURL, String.format("catalog/items/%s", item.getID())).setBody(item).invoke();
 
         assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
 
-        deleteCatalogItem(item.getID());
+        WebServiceProxy.delete(baseURL, String.format("catalog/items/%s", item.getID())).invoke();
 
         assertNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
 
@@ -548,45 +480,16 @@ public class WebServiceProxyTest {
     }
 
     private List<Item> getCatalogItems() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "catalog/items"));
-
-        return BeanAdapter.adaptList(webServiceProxy.invoke(), Item.class);
-    }
-
-    private Item addCatalogItem(String description, double price) throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("POST", new URL(serverURL, "catalog/items"));
-
-        webServiceProxy.setBody(mapOf(
-            entry("description", description),
-            entry("price", price)
-        ));
-
-        return webServiceProxy.invoke(Item.class);
-    }
-
-    private void updateCatalogItem(Item item) throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("PUT", new URL(serverURL, String.format("catalog/items/%s", item.getID())));
-
-        webServiceProxy.setBody(item);
-
-        webServiceProxy.invoke();
-    }
-
-    private void deleteCatalogItem(int itemID) throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("DELETE", new URL(serverURL, String.format("catalog/items/%s", itemID)));
-
-        webServiceProxy.invoke();
+        return BeanAdapter.adaptList(WebServiceProxy.get(baseURL, "catalog/items").invoke(), Item.class);
     }
 
     private List<Size> getCatalogSizes() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "catalog/sizes"));
-
-        return BeanAdapter.adaptList(webServiceProxy.invoke(), Size.class);
+        return BeanAdapter.adaptList(WebServiceProxy.get(baseURL, "catalog/sizes").invoke(), Size.class);
     }
 
     @Test
     public void testCustomException() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(serverURL, "test/error"));
+        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
             throw new CustomException();
