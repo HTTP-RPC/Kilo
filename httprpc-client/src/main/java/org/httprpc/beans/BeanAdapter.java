@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * {@link Map} adapter for Java bean types.
@@ -380,6 +381,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link TemporalAccessor}</li>
+     * <li>{@link UUID}</li>
      * <li>{@link URL}</li>
      * </ul>
      *
@@ -411,6 +413,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Enum<?>
             || value instanceof Date
             || value instanceof TemporalAccessor
+            || value instanceof UUID
             || value instanceof URL) {
             return value;
         } else if (value instanceof Iterable<?>) {
@@ -449,6 +452,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDateTime}, the value's string
      * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link UUID}, the value's string representation is
+     * adapted via {@link UUID#fromString(String)}.</li>
      * <li>If the target type is {@link URL}, the value's string representation is
      * adapted via {@link URL#URL(String)}.</li>
      * <li>If the target type is {@link List} or {@link Map}, the value is wrapped
@@ -614,6 +619,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
+            } else if (type == UUID.class) {
+                return UUID.fromString(value.toString());
             } else if (type == URL.class) {
                 try {
                     return new URL(value.toString());

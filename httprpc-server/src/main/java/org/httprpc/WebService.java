@@ -58,6 +58,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.httprpc.util.Collections.listOf;
@@ -1014,6 +1015,8 @@ public abstract class WebService extends HttpServlet {
             description = "time-local";
         } else if (type == LocalDateTime.class) {
             description = "datetime-local";
+        } else if (type == UUID.class) {
+            description = "uuid";
         } else if (type == URL.class) {
             description = "url";
         } else {
