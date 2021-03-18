@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -419,9 +420,8 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    @SuppressWarnings("unchecked")
     public <T> T invoke() throws IOException {
-        return (T)invoke(Object.class);
+        return invoke(Object.class);
     }
 
     /**
@@ -439,7 +439,7 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(Class<? extends T> type) throws IOException {
+    public <T> T invoke(Type type) throws IOException {
         return invoke((inputStream, contentType) -> {
             JSONDecoder jsonDecoder = new JSONDecoder();
 

@@ -349,7 +349,7 @@ Service operations are invoked via one of the following methods:
 
 ```java
 public <T> T invoke() throws IOException { ... }
-public <T> T invoke(Class<? extends T> type) throws IOException { ... }
+public <T> T invoke(Type type) throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 

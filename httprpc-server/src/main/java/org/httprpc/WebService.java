@@ -1018,39 +1018,9 @@ public abstract class WebService extends HttpServlet {
             description = "url";
         } else {
             if (Iterable.class.isAssignableFrom(type)) {
-                describeType(new ParameterizedType() {
-                    @Override
-                    public Type[] getActualTypeArguments() {
-                        return new Type[] {Object.class};
-                    }
-
-                    @Override
-                    public Type getRawType() {
-                        return Iterable.class;
-                    }
-
-                    @Override
-                    public Type getOwnerType() {
-                        return null;
-                    }
-                }, xmlStreamWriter);
+                describeType(BeanAdapter.typeOf(Iterable.class, Object.class), xmlStreamWriter);
             } else if (Map.class.isAssignableFrom(type)) {
-                describeType(new ParameterizedType() {
-                    @Override
-                    public Type[] getActualTypeArguments() {
-                        return new Type[] {Object.class, Object.class};
-                    }
-
-                    @Override
-                    public Type getRawType() {
-                        return Map.class;
-                    }
-
-                    @Override
-                    public Type getOwnerType() {
-                        return null;
-                    }
-                }, xmlStreamWriter);
+                describeType(BeanAdapter.typeOf(Map.class, Object.class, Object.class), xmlStreamWriter);
             } else {
                 if (!dataTypes.containsKey(type)) {
                     Map<String, BeanAdapter.Property> properties = BeanAdapter.getProperties(type);

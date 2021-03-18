@@ -484,7 +484,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (type instanceof Class<?>) {
-            return (T)adapt(value, (Class<?>)type);
+            return (T)adaptValue(value, (Class<?>)type);
         } else if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)type;
 
@@ -497,9 +497,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
                 if (rawType == List.class) {
-                    return (T)adaptList((List<?>)value, actualTypeArguments[0]);
+                    return (T)adaptGenericList((List<?>)value, actualTypeArguments[0]);
                 } else if (rawType == Map.class) {
-                    return (T)adaptMap((Map<?, ?>)value, actualTypeArguments[1]);
+                    return (T)adaptGenericMap((Map<?, ?>)value, actualTypeArguments[1]);
                 } else {
                     throw new IllegalArgumentException();
                 }
@@ -511,7 +511,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object adapt(Object value, Class<?> type) {
+    private static Object adaptValue(Object value, Class<?> type) {
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
@@ -674,7 +674,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * An list implementation that will adapt the list's elements as documented for
      * {@link #adapt(Object, Type)}.
      */
-    public static <E> List<E> adaptList(List<?> list, Type elementType) {
+    public static <E> List<E> adaptList(List<?> list, Class<? extends E> elementType) {
+        return adaptGenericList(list, elementType);
+    }
+
+    private static <E> List<E> adaptGenericList(List<?> list, Type elementType) {
         if (list == null) {
             throw new IllegalArgumentException();
         }
@@ -732,7 +736,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * An map implementation that will adapt the map's values as documented for
      * {@link #adapt(Object, Type)}.
      */
-    public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Type valueType) {
+    public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Class<? extends V> valueType) {
+        return adaptGenericMap(map, valueType);
+    }
+
+    private static <K, V> Map<K, V> adaptGenericMap(Map<K, ?> map, Type valueType) {
         if (map == null) {
             throw new IllegalArgumentException();
         }
@@ -789,6 +797,53 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         };
                     }
                 };
+            }
+        };
+    }
+
+    /**
+     * Generates a parameterized type descriptor.
+     *
+     * @param <T>
+     * The raw type.
+     *
+     * @param rawType
+     * The raw type.
+     *
+     * @param actualTypeArguments
+     * The actual type arguments.
+     *
+     * @return
+     * A parameterized type that describes the given raw type and actual type
+     * arguments.
+     */
+    public static <T> ParameterizedType typeOf(Class<T> rawType, Type... actualTypeArguments) {
+        if (rawType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (actualTypeArguments == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (rawType.getTypeParameters().length != actualTypeArguments.length) {
+            throw new IllegalArgumentException();
+        }
+
+        return new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return actualTypeArguments;
+            }
+
+            @Override
+            public Type getRawType() {
+                return rawType;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
             }
         };
     }

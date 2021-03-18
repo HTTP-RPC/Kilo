@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -163,6 +164,31 @@ public class BeanAdapterTest {
 
     public void testURLCoercion() throws MalformedURLException {
         assertEquals(new URL("http://localhost:8080"), BeanAdapter.adapt("http://localhost:8080", URL.class));
+    }
+
+    @Test
+    public void testListCoercion() {
+        int i = BeanAdapter.adaptList(listOf("1", "2", "3"), Integer.class).get(0);
+
+        assertEquals(1, i);
+    }
+
+    @Test
+    public void testMapCoercion() {
+        int i = BeanAdapter.adaptMap(mapOf(
+            entry("a", "1"),
+            entry("b", "2"),
+            entry("c", "3")
+        ), Integer.class).get("a");
+
+        assertEquals(1, i);
+    }
+
+    @Test
+    public void testTypeOf() {
+        List<Integer> values = BeanAdapter.adapt(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
+
+        assertEquals(listOf(1, 2, 3), values);
     }
 
     @Test

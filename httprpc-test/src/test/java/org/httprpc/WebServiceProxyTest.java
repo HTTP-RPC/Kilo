@@ -208,13 +208,13 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetFibonacci() throws IOException {
-        List<Number> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+        List<Integer> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
             mapOf(
                 entry("count", 8)
             )
-        ).invoke();
+        ).invoke(BeanAdapter.typeOf(List.class, Integer.class));
 
-        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.adaptList(result, Integer.class));
+        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
     }
 
     @Test
@@ -480,11 +480,11 @@ public class WebServiceProxyTest {
     }
 
     private List<Item> getCatalogItems() throws IOException {
-        return BeanAdapter.adaptList(WebServiceProxy.get(baseURL, "catalog/items").invoke(), Item.class);
+        return WebServiceProxy.get(baseURL, "catalog/items").invoke(BeanAdapter.typeOf(List.class, Item.class));
     }
 
     private List<Size> getCatalogSizes() throws IOException {
-        return BeanAdapter.adaptList(WebServiceProxy.get(baseURL, "catalog/sizes").invoke(), Size.class);
+        return WebServiceProxy.get(baseURL, "catalog/sizes").invoke(BeanAdapter.typeOf(List.class, Size.class));
     }
 
     @Test
