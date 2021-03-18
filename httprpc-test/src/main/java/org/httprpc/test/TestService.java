@@ -20,6 +20,7 @@ import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
+import org.httprpc.beans.Key;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -45,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -64,6 +66,8 @@ public class TestService extends WebService {
         LocalDate getLocalDate();
         LocalTime getLocalTime();
         LocalDateTime getLocalDateTime();
+        @Key("uuid")
+        UUID getUUID();
         List<AttachmentInfo> getAttachmentInfo();
     }
 
@@ -116,7 +120,8 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime) {
+        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        UUID uuid) {
         return mapOf(
             entry("string", string),
             entry("strings", strings),
@@ -127,7 +132,8 @@ public class TestService extends WebService {
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
-            entry("localDateTime", localDateTime)
+            entry("localDateTime", localDateTime),
+            entry("uuid", uuid)
         );
     }
 
@@ -227,7 +233,7 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     public Response testPost(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
-        List<URL> attachments) throws IOException {
+        UUID uuid, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (URL attachment : attachments) {
@@ -260,6 +266,7 @@ public class TestService extends WebService {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("uuid", uuid),
             entry("attachmentInfo", attachmentInfo)
         ), Response.class);
     }

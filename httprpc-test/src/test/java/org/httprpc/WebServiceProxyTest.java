@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -60,6 +61,8 @@ public class WebServiceProxyTest {
         LocalDate getLocalDate();
         LocalTime getLocalTime();
         LocalDateTime getLocalDateTime();
+        @Key("uuid")
+        UUID getUUID();
         List<AttachmentInfo> getAttachmentInfo();
     }
 
@@ -143,13 +146,12 @@ public class WebServiceProxyTest {
     private URL baseURL;
 
     private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-
     private Date date = new Date();
     private Instant instant = Instant.ofEpochMilli(1);
-
     private LocalDate localDate = LocalDate.now();
     private LocalTime localTime = LocalTime.now();
     private LocalDateTime localDateTime = LocalDateTime.now();
+    private UUID uuid = UUID.randomUUID();
 
     private static final int EOF = -1;
 
@@ -169,7 +171,8 @@ public class WebServiceProxyTest {
             entry("date", date),
             entry("localDate", localDate),
             entry("localTime", localTime),
-            entry("localDateTime", localDateTime)
+            entry("localDateTime", localDateTime),
+            entry("uuid", uuid)
         )).invoke();
 
         assertEquals(mapOf(
@@ -182,7 +185,8 @@ public class WebServiceProxyTest {
             entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
-            entry("localDateTime", localDateTime.toString())
+            entry("localDateTime", localDateTime.toString()),
+            entry("uuid", uuid.toString())
         ), result);
     }
 
@@ -229,7 +233,8 @@ public class WebServiceProxyTest {
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
-            entry("localDateTime", localDateTime)
+            entry("localDateTime", localDateTime),
+            entry("uuid", uuid)
         )).invoke();
 
         assertEquals(mapOf(
@@ -243,6 +248,7 @@ public class WebServiceProxyTest {
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
             entry("localDateTime", localDateTime.toString()),
+            entry("uuid", uuid.toString()),
             entry("attachmentInfo", listOf())
         ), result);
     }
@@ -263,6 +269,7 @@ public class WebServiceProxyTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("uuid", uuid),
             entry("attachments", listOf(textTestURL, imageTestURL))
         )).invoke(Response.class);
 
@@ -278,6 +285,7 @@ public class WebServiceProxyTest {
             && response.getLocalDate().equals(localDate)
             && response.getLocalTime().equals(localTime)
             && response.getLocalDateTime().equals(localDateTime)
+            && response.getUUID().equals(uuid)
             && response.getAttachmentInfo().get(0).getBytes() == 26
             && response.getAttachmentInfo().get(0).getChecksum() == 2412
             && response.getAttachmentInfo().get(1).getBytes() == 10392
