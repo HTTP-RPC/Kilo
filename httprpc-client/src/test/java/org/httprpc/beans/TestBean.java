@@ -24,6 +24,7 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {
@@ -50,6 +51,7 @@ public class TestBean implements TestInterface {
     private LocalDate localDate = null;
     private LocalTime localTime = null;
     private LocalDateTime localDateTime = null;
+    private UUID uuid = null;
     private URL url = null;
 
     private NestedBean nestedBean = null;
@@ -161,6 +163,15 @@ public class TestBean implements TestInterface {
 
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
+    }
+
+    @Override
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override

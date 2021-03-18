@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -53,7 +54,7 @@ public class JSONEncoderTest {
     }
 
     @Test
-    public void testEnum() throws Exception {
+    public void testEnum() throws IOException {
         assertEquals("\"MONDAY\"", encode(DayOfWeek.MONDAY));
     }
 
@@ -68,7 +69,14 @@ public class JSONEncoderTest {
     }
 
     @Test
-    public void testURL() throws Exception {
+    public void testUUID() throws IOException {
+        UUID uuid = UUID.randomUUID();
+
+        assertEquals(String.format("\"%s\"", uuid), encode(uuid));
+    }
+
+    @Test
+    public void testURL() throws IOException {
         assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
     }
 

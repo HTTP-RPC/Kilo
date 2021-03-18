@@ -24,6 +24,7 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface TestInterface {
     interface NestedInterface {
@@ -42,6 +43,7 @@ public interface TestInterface {
     LocalDate getLocalDate();
     LocalTime getLocalTime();
     LocalDateTime getLocalDateTime();
+    UUID getUUID();
     URL getURL();
 
     NestedInterface getNestedBean();

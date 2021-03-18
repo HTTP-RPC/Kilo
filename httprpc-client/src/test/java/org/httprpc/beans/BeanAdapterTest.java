@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -65,6 +66,7 @@ public class BeanAdapterTest {
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
+            entry("UUID", UUID.randomUUID()),
             entry("URL", new URL("http://localhost:8080")),
             entry("nestedBean", mapOf(
                 entry("flag", true)
@@ -162,6 +164,14 @@ public class BeanAdapterTest {
         assertEquals(LocalDateTime.parse("2018-06-28T10:45"), BeanAdapter.adapt("2018-06-28T10:45", LocalDateTime.class));
     }
 
+    @Test
+    public void testUUIDCoercion() {
+        UUID uuid = UUID.randomUUID();
+
+        assertEquals(uuid, BeanAdapter.adapt(uuid.toString(), UUID.class));
+    }
+
+    @Test
     public void testURLCoercion() throws MalformedURLException {
         assertEquals(new URL("http://localhost:8080"), BeanAdapter.adapt("http://localhost:8080", URL.class));
     }
