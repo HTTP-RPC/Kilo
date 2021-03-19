@@ -778,7 +778,7 @@ String sql = QueryBuilder.select("name", "species", "sex", "birth")
 
 Insert, update, and delete operations are also supported. In general, string values provided to the `insertInto()` and `set()` methods are wrapped in single quotes, and any embdedded single quotes are replaced with two successive single quotes. However, any string that starts with ":" or is equal to "?" is assumed to be a parameter reference and is not escaped. 
 
-If an instance of `QueryBuilder` is passed to `insertInto()` or `set()`, it is considered a subquery and wrapped in parentheses.
+If an instance of `QueryBuilder` is passed to `insertInto()` or `set()`, it is considered a subquery and is wrapped in parentheses.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
