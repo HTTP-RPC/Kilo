@@ -747,14 +747,17 @@ public class WebServiceProxy {
      * @param path
      * The path to the resource, relative to the base URL.
      *
+     * @param args
+     * Path format specifier arguments.
+     *
      * @throws MalformedURLException
      * If a URL cannot be constructed from the base URL and path.
      *
      * @return
      * The new web service proxy.
      */
-    public static WebServiceProxy get(URL baseURL, String path) throws MalformedURLException {
-        return get(new URL(baseURL, path));
+    public static WebServiceProxy get(URL baseURL, String path, Object... args) throws MalformedURLException {
+        return get(new URL(baseURL, String.format(path, args)));
     }
 
     /**
@@ -779,14 +782,17 @@ public class WebServiceProxy {
      * @param path
      * The path to the resource, relative to the base URL.
      *
+     * @param args
+     * Path format specifier arguments.
+     *
      * @throws MalformedURLException
      * If a URL cannot be constructed from the base URL and path.
      *
      * @return
      * The new web service proxy.
      */
-    public static WebServiceProxy post(URL baseURL, String path) throws MalformedURLException {
-        return post(new URL(baseURL, path));
+    public static WebServiceProxy post(URL baseURL, String path, Object... args) throws MalformedURLException {
+        return post(new URL(baseURL, String.format(path, args)));
     }
 
     /**
@@ -811,14 +817,17 @@ public class WebServiceProxy {
      * @param path
      * The path to the resource, relative to the base URL.
      *
+     * @param args
+     * Path format specifier arguments.
+     *
      * @throws MalformedURLException
      * If a URL cannot be constructed from the base URL and path.
      *
      * @return
      * The new web service proxy.
      */
-    public static WebServiceProxy put(URL baseURL, String path) throws MalformedURLException {
-        return put(new URL(baseURL, path));
+    public static WebServiceProxy put(URL baseURL, String path, Object... args) throws MalformedURLException {
+        return put(new URL(baseURL, String.format(path, args)));
     }
 
     /**
@@ -843,14 +852,17 @@ public class WebServiceProxy {
      * @param path
      * The path to the resource, relative to the base URL.
      *
+     * @param args
+     * Path format specifier arguments.
+     *
      * @throws MalformedURLException
      * If a URL cannot be constructed from the base URL and path.
      *
      * @return
      * The new web service proxy.
      */
-    public static WebServiceProxy delete(URL baseURL, String path) throws MalformedURLException {
-        return delete(new URL(baseURL, path));
+    public static WebServiceProxy delete(URL baseURL, String path, Object... args) throws MalformedURLException {
+        return delete(new URL(baseURL, String.format(path, args)));
     }
 }
 

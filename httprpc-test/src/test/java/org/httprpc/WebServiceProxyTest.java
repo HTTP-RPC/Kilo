@@ -192,12 +192,12 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetKeys() throws IOException {
-        Map<String, ?> result = WebServiceProxy.get(baseURL, String.format("test/a/%d/b/%s/c/%d/d/%s",
+        Map<String, ?> result = WebServiceProxy.get(baseURL, "test/a/%d/b/%s/c/%d/d/%s",
             123,
             URLEncoder.encode("héllo", "UTF-8"),
             456,
             URLEncoder.encode("göodbye", "UTF-8")
-        )).invoke();
+        ).invoke();
 
         assertEquals(mapOf(
             entry("list", listOf("123", "héllo", "456", "göodbye")),
