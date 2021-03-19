@@ -476,11 +476,11 @@ public class WebServiceProxyTest {
         item.setDescription("xyz");
         item.setPrice(300.00);
 
-        WebServiceProxy.put(baseURL, String.format("catalog/items/%s", item.getID())).setBody(item).invoke();
+        WebServiceProxy.put(baseURL, "catalog/items/%s", item.getID()).setBody(item).invoke();
 
         assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
 
-        WebServiceProxy.delete(baseURL, String.format("catalog/items/%s", item.getID())).invoke();
+        WebServiceProxy.delete(baseURL, "catalog/items/%s", item.getID()).invoke();
 
         assertNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
 
