@@ -178,7 +178,7 @@ public class WebServiceProxyTest {
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
-            entry("number", 123L),
+            entry("number", 123),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
@@ -240,7 +240,7 @@ public class WebServiceProxyTest {
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
-            entry("number", 123L),
+            entry("number", 123),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
@@ -297,7 +297,7 @@ public class WebServiceProxyTest {
         Body body = BeanAdapter.adapt(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
-            entry("number", 123L),
+            entry("number", 123),
             entry("flag", true)
         ), Body.class);
 

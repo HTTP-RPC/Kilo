@@ -25,6 +25,7 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JSONDecoderTest {
@@ -37,10 +38,12 @@ public class JSONDecoderTest {
 
     @Test
     public void testNumber() throws IOException {
-        assertEquals(42L, (long)decode("42"));
+        assertEquals(42, (int)decode("42"));
+        assertEquals((long)Integer.MAX_VALUE + 1, (long)decode(String.valueOf((long)Integer.MAX_VALUE + 1)));
         assertEquals(42.5, decode("42.5"), 0);
 
-        assertEquals(-789L, (long)decode("-789"));
+        assertEquals(-789, (int)decode("-789"));
+        assertEquals((long)Integer.MIN_VALUE - 1, (long)decode(String.valueOf((long)Integer.MIN_VALUE - 1)));
         assertEquals(-789.10, decode("-789.10"), 0);
     }
 
@@ -54,10 +57,10 @@ public class JSONDecoderTest {
     public void testArray() throws IOException {
         List<?> expected = listOf(
             "abc",
-            123L,
+            123,
             true,
-            listOf(1L, 2.0, 3.0),
-            mapOf(entry("x", 1L), entry("y", 2.0), entry("z", 3.0))
+            listOf(1, 2.0, 3.0),
+            mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
         );
 
         List<?> list = decode("[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]");
@@ -69,10 +72,10 @@ public class JSONDecoderTest {
     public void testObject() throws IOException {
         Map<String, ?> expected = mapOf(
             entry("a", "abc"),
-            entry("b", 123L),
+            entry("b", 123),
             entry("c", true),
-            entry("d", listOf(1L, 2.0, 3.0)),
-            entry("e", mapOf(entry("x", 1L), entry("y", 2.0), entry("z", 3.0)))
+            entry("d", listOf(1, 2.0, 3.0)),
+            entry("e", mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0)))
         );
 
         Map<String, ?> map = decode("{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}");

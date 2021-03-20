@@ -275,9 +275,15 @@ public class JSONDecoder extends Decoder {
 
         Number number;
         if (decimal) {
-            number = Double.valueOf(valueBuilder.toString());
+            number = Double.parseDouble(valueBuilder.toString());
         } else {
-            number = Long.valueOf(valueBuilder.toString());
+            long value = Long.parseLong(valueBuilder.toString());
+
+            if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+                number = value;
+            } else {
+                number = (int)value;
+            }
         }
 
         return number;
