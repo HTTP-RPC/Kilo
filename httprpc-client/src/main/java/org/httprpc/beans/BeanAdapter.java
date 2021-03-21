@@ -652,7 +652,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     BeanAdapter beanAdapter = new BeanAdapter(bean);
 
                     for (Map.Entry<?, ?> entry : map.entrySet()) {
-                        beanAdapter.put(entry.getKey().toString(), entry.getValue());
+                        try {
+                            beanAdapter.put(entry.getKey().toString(), entry.getValue());
+                        } catch (UnsupportedOperationException exception) {
+                            // No-op
+                        }
                     }
 
                     return bean;

@@ -233,6 +233,13 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testMissingProperty() {
+        BeanAdapter.adapt(mapOf(
+            entry("foo", "bar")
+        ), TestBean.class);
+    }
+
+    @Test
     public void testGetProperties() {
         Map<String, Type> properties = BeanAdapter.getProperties(TestBean.class).entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));
