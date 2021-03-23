@@ -137,6 +137,8 @@ public class WebServiceProxy {
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
+    private int statusCode = -1;
+
     private static final String UTF_8 = "UTF-8";
 
     private static final int EOF = -1;
@@ -589,13 +591,13 @@ public class WebServiceProxy {
         }
 
         // Read response
-        int responseCode = connection.getResponseCode();
+        statusCode = connection.getResponseCode();
 
         String contentType = connection.getContentType();
 
         T result;
-        if (responseCode / 100 == 2) {
-            if (responseCode % 100 < 4) {
+        if (statusCode / 100 == 2) {
+            if (statusCode % 100 < 4) {
                 try (InputStream inputStream = connection.getInputStream()) {
                     result = responseHandler.decodeResponse(inputStream, contentType);
                 }
@@ -610,7 +612,7 @@ public class WebServiceProxy {
             }
 
             try (InputStream inputStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(inputStream, contentType, responseCode);
+                errorHandler.handleResponse(inputStream, contentType, statusCode);
             }
 
             return null;
@@ -723,6 +725,17 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
+    }
+
+    /**
+     * Returns the status code produced by the most recent invocation.
+     *
+     * @return
+     * The status code produced by the most recent invocation, or
+     * <code>-1</code> if the proxy has never been invoked.
+     */
+    public int getStatusCode() {
+        return statusCode;
     }
 
     /**
