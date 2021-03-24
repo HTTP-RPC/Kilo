@@ -411,7 +411,8 @@ public class WebServiceProxyTest {
 
             fail();
         } catch (WebServiceException exception) {
-            assertTrue(true);
+            assertNotNull(exception.getMessage());
+            assertEquals(500, exception.getStatusCode());
         }
     }
 
