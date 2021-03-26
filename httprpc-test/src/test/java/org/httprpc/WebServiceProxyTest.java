@@ -258,7 +258,7 @@ public class WebServiceProxyTest {
         URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        Response response = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        Response response = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -465,7 +465,7 @@ public class WebServiceProxyTest {
         Item item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
             entry("description", "abc"),
             entry("price", 150.00)
-        )).invoke(Item.class);
+        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(Item.class);
 
         assertNotNull(item);
         assertNotNull(item.getID());

@@ -51,6 +51,21 @@ public class WebServiceProxy {
     }
 
     /**
+     * Success status values.
+     */
+    public enum Status {
+        OK(200),
+        CREATED(201),
+        NO_CONTENT(204);
+
+        private int code;
+
+        Status(int code) {
+            this.code = code;
+        }
+    }
+
+    /**
      * Interface representing a request handler.
      */
     public interface RequestHandler {
@@ -134,6 +149,8 @@ public class WebServiceProxy {
 
     private int connectTimeout = 0;
     private int readTimeout = 0;
+
+    private Status expectedStatus = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
@@ -409,6 +426,28 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns the expected status.
+     *
+     * @return
+     * The expected status.
+     */
+    public Status getExpectedStatus() {
+        return expectedStatus;
+    }
+
+    /**
+     * Sets the expected status.
+     *
+     * @param expectedStatus
+     * The web service proxy.
+     */
+    public WebServiceProxy setExpectedStatus(Status expectedStatus) {
+        this.expectedStatus = expectedStatus;
+
+        return this;
+    }
+
+    /**
      * Invokes the service operation.
      *
      * @param <T>
@@ -589,13 +628,17 @@ public class WebServiceProxy {
         }
 
         // Read response
-        int responseCode = connection.getResponseCode();
+        int statusCode = connection.getResponseCode();
 
         String contentType = connection.getContentType();
 
         T result;
-        if (responseCode / 100 == 2) {
-            if (responseCode % 100 < 4) {
+        if (statusCode / 100 == 2) {
+            if (expectedStatus != null && expectedStatus.code != statusCode) {
+                throw new WebServiceException("Unexpected status.", statusCode);
+            }
+
+            if (statusCode % 100 < 4) {
                 try (InputStream inputStream = connection.getInputStream()) {
                     result = responseHandler.decodeResponse(inputStream, contentType);
                 }
@@ -610,7 +653,7 @@ public class WebServiceProxy {
             }
 
             try (InputStream inputStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(inputStream, contentType, responseCode);
+                errorHandler.handleResponse(inputStream, contentType, statusCode);
             }
 
             return null;
