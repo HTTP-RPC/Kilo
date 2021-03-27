@@ -46,7 +46,14 @@ public class WebServiceProxy {
      * Encoding options for POST requests.
      */
     public enum Encoding {
+        /**
+         * The "application/x-www-form-urlencoded" encoding.
+         */
         APPLICATION_X_WWW_FORM_URLENCODED,
+
+        /**
+         * The "multipart/form-data" encoding.
+         */
         MULTIPART_FORM_DATA
     }
 
@@ -54,11 +61,22 @@ public class WebServiceProxy {
      * Success status values.
      */
     public enum Status {
+        /**
+         * Indicates that the request was successful.
+         */
         OK(200),
+
+        /**
+         * Indicates that the request resulted in the creation of a new resource.
+         */
         CREATED(201),
+
+        /**
+         * Indicates that the request returned no content.
+         */
         NO_CONTENT(204);
 
-        private int code;
+        private final int code;
 
         Status(int code) {
             this.code = code;
@@ -439,6 +457,9 @@ public class WebServiceProxy {
      * Sets the expected status.
      *
      * @param expectedStatus
+     * The expected status.
+     *
+     * @return
      * The web service proxy.
      */
     public WebServiceProxy setExpectedStatus(Status expectedStatus) {
@@ -908,4 +929,3 @@ public class WebServiceProxy {
         return delete(new URL(baseURL, String.format(path, args)));
     }
 }
-
