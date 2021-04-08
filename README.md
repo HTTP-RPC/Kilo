@@ -507,14 +507,12 @@ This code would produce the following output:
 
 String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
-`CSVDecoder` deserializes a CSV document into an iterable sequence of maps. Rather than loading the entire payload into memory and returning the data as a list, `CSVDecoder` returns the data as a forward-scrolling cursor, allowing consumers to process rows as soon as they are read.
-
-For example, given the CSV above as input, the following code would produce the same results as `JSONDecoder` example:
+`CSVDecoder` deserializes a CSV document into an iterable sequence of maps. For example, given the preceding CSV as input, the following code would produce the same output as the earlier `JSONDecoder` example:
 
 ```java
 CSVDecoder csvDecoder = new CSVDecoder();
 
-Iterable<Map<String, String>> months = csvDecoder.read(inputStream);
+List<Map<String, String>> months = csvDecoder.read(inputStream);
 
 for (Map<String, String> month : months) {
     System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));

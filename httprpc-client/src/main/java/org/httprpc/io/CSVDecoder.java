@@ -15,7 +15,6 @@
 package org.httprpc.io;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,28 +23,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
  * CSV decoder.
  */
-@SuppressWarnings("unchecked")
-public class CSVDecoder extends Decoder {
-    /**
-     * CSV cursor.
-     */
-    public static class Cursor implements Iterable<Map<String, String>> {
-        private Reader reader;
-        private char delimiter;
+public class CSVDecoder extends Decoder<Iterable<Map<String, String>>> {
+    private static class Cursor implements Iterable<Map<String, String>> {
+        Reader reader;
+        char delimiter;
 
-        private StringBuilder valueBuilder = new StringBuilder();
+        StringBuilder valueBuilder = new StringBuilder();
 
-        private List<String> keys = new ArrayList<>();
-        private List<String> values = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
+        List<String> values = new ArrayList<>();
 
-        private Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {
-            private Boolean hasNext = null;
+        Iterator<Map<String, String>> iterator = new Iterator<Map<String, String>>() {
+            Boolean hasNext = null;
 
             @Override
             public boolean hasNext() {
@@ -94,14 +89,14 @@ public class CSVDecoder extends Decoder {
             }
         };
 
-        private Cursor(Reader reader, char delimiter) throws IOException {
+        Cursor(Reader reader, char delimiter) throws IOException {
             this.reader = reader;
             this.delimiter = delimiter;
 
             readValues(reader, keys, delimiter);
         }
 
-        private void readValues(Reader reader, List<String> values, char delimiter) throws IOException {
+        void readValues(Reader reader, List<String> values, char delimiter) throws IOException {
             int c = reader.read();
 
             while (c != '\r' && c != '\n' && c != EOF) {
@@ -153,46 +148,59 @@ public class CSVDecoder extends Decoder {
         public Iterator<Map<String, String>> iterator() {
             return iterator;
         }
-
-        /**
-         * Returns a stream over the results.
-         *
-         * @return
-         * A stream over the results.
-         */
-        public Stream<Map<String, String>> stream() {
-            return StreamSupport.stream(spliterator(), false);
-        }
     }
 
+    private boolean cursor;
     private char delimiter;
 
     /**
      * Constructs a new CSV decoder.
      */
     public CSVDecoder() {
-        this(',');
+        this(false);
     }
 
     /**
      * Constructs a new CSV decoder.
      *
+     * @param cursor
+     * <code>true</code> if the results should be returned as a scrolling cursor;
+     * <code>false</code>, otherwise.
+     */
+    public CSVDecoder(boolean cursor) {
+        this(cursor, ',');
+    }
+
+    /**
+     * Constructs a new CSV decoder.
+     *
+     * @param cursor
+     * <code>true</code> if the results should be returned as a scrolling cursor;
+     * <code>false</code>, otherwise.
+     *
      * @param delimiter
      * The character to use as a field delimiter.
      */
-    public CSVDecoder(char delimiter) {
+    public CSVDecoder(boolean cursor, char delimiter) {
         super(StandardCharsets.ISO_8859_1);
 
+        this.cursor = cursor;
         this.delimiter = delimiter;
     }
 
     @Override
-    public Cursor read(InputStream inputStream) throws IOException {
-        return super.read(inputStream);
-    }
+    @SuppressWarnings("unchecked")
+    public <U extends Iterable<Map<String, String>>> U read(Reader reader) throws IOException {
+        if (reader == null) {
+            throw new IllegalArgumentException();
+        }
 
-    @Override
-    public Cursor read(Reader reader) throws IOException {
-        return new Cursor(new BufferedReader(reader), delimiter);
+        Cursor cursor = new Cursor(new BufferedReader(reader), delimiter);
+
+        if (this.cursor) {
+            return (U)cursor;
+        } else {
+            return (U)StreamSupport.stream(cursor.spliterator(), false).collect(Collectors.toList());
+        }
     }
 }

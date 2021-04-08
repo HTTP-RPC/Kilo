@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -58,8 +59,6 @@ public class CSVDecoderTest {
 
         CSVDecoder csvDecoder = new CSVDecoder();
 
-        List<Map<String, String>> actual = csvDecoder.read(reader).stream().collect(Collectors.toList());
-
-        assertEquals(expected, actual);
+        assertEquals(expected, csvDecoder.read(reader));
     }
 }

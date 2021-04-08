@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
  * Abstract base class for encoders.
  *
  * @param <T>
- * The value type.
+ * The type of value consumed by the encoder.
  */
 public abstract class Encoder<T> {
     private Charset charset;
@@ -35,7 +35,7 @@ public abstract class Encoder<T> {
      * @param charset
      * The character set to use when encoding an output stream.
      */
-    protected Encoder(Charset charset) {
+    public Encoder(Charset charset) {
         if (charset == null) {
             throw new IllegalArgumentException();
         }

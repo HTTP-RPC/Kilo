@@ -28,7 +28,7 @@ import java.util.TreeMap;
 /**
  * JSON decoder.
  */
-public class JSONDecoder extends Decoder {
+public class JSONDecoder extends Decoder<Object> {
     private boolean sorted;
 
     private int c = EOF;
@@ -63,7 +63,11 @@ public class JSONDecoder extends Decoder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T read(Reader reader) throws IOException {
+    public <U> U read(Reader reader) throws IOException {
+        if (reader == null) {
+            throw new IllegalArgumentException();
+        }
+
         reader = new BufferedReader(reader);
 
         Object value = null;
@@ -160,7 +164,7 @@ public class JSONDecoder extends Decoder {
             skipWhitespace(reader);
         }
 
-        return (T)value;
+        return (U)value;
     }
 
     private void skipWhitespace(Reader reader) throws IOException {

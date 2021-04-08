@@ -22,8 +22,11 @@ import java.nio.charset.Charset;
 
 /**
  * Abstract base class for decoders.
+ *
+ * @param <T>
+ * The type of value produced by the decoder.
  */
-public abstract class Decoder {
+public abstract class Decoder<T> {
     private Charset charset;
 
     protected static final int EOF = -1;
@@ -34,7 +37,7 @@ public abstract class Decoder {
      * @param charset
      * The character set to use when decoding an input stream.
      */
-    protected Decoder(Charset charset) {
+    public Decoder(Charset charset) {
         if (charset == null) {
             throw new IllegalArgumentException();
         }
@@ -55,8 +58,8 @@ public abstract class Decoder {
     /**
      * Reads a value from an input stream.
      *
-     * @param <T>
-     * The value type.
+     * @param <U>
+     * The decoded value type.
      *
      * @param inputStream
      * The input stream to read from.
@@ -67,7 +70,7 @@ public abstract class Decoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public <T> T read(InputStream inputStream) throws IOException {
+    public <U extends T> U read(InputStream inputStream) throws IOException {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
@@ -78,8 +81,8 @@ public abstract class Decoder {
     /**
      * Reads a value from a character stream.
      *
-     * @param <T>
-     * The value type.
+     * @param <U>
+     * The decoded value type.
      *
      * @param reader
      * The character stream to read from.
@@ -90,5 +93,5 @@ public abstract class Decoder {
      * @throws IOException
      * If an exception occurs.
      */
-    public abstract <T> T read(Reader reader) throws IOException;
+    public abstract <U extends T> U read(Reader reader) throws IOException;
 }
