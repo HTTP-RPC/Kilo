@@ -114,6 +114,10 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
     @Override
     public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
+        if (writer == null) {
+            throw new IllegalArgumentException();
+        }
+
         writer = new BufferedWriter(writer);
 
         int i = 0;

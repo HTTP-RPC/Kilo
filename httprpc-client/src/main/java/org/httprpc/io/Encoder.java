@@ -66,6 +66,10 @@ public abstract class Encoder<T> {
      * If an exception occurs.
      */
     public void write(T value, OutputStream outputStream) throws IOException {
+        if (outputStream == null) {
+            throw new IllegalArgumentException();
+        }
+
         write(value, new OutputStreamWriter(outputStream, charset));
     }
 

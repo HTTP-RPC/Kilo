@@ -53,6 +53,10 @@ public class JSONEncoder extends Encoder<Object> {
 
     @Override
     public void write(Object value, Writer writer) throws IOException {
+        if (writer == null) {
+            throw new IllegalArgumentException();
+        }
+
         writer = new BufferedWriter(writer);
 
         encode(value, writer);

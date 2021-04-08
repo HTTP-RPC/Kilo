@@ -68,6 +68,10 @@ public abstract class Decoder {
      * If an exception occurs.
      */
     public <T> T read(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            throw new IllegalArgumentException();
+        }
+
         return read(new InputStreamReader(inputStream, charset));
     }
 
