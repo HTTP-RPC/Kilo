@@ -25,11 +25,14 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalAmount;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -381,6 +384,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link TemporalAccessor}</li>
+     * <li>{@link TemporalAmount}</li>
      * <li>{@link UUID}</li>
      * <li>{@link URL}</li>
      * </ul>
@@ -413,6 +417,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Enum<?>
             || value instanceof Date
             || value instanceof TemporalAccessor
+            || value instanceof TemporalAmount
             || value instanceof UUID
             || value instanceof URL) {
             return value;
@@ -452,6 +457,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
      * <li>If the target type is {@link LocalDateTime}, the value's string
      * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link Duration}, the value's string
+     * representation is parsed using {@link Duration#parse(CharSequence)}.</li>
+     * <li>If the target type is {@link Period}, the value's string
+     * representation is parsed using {@link Period#parse(CharSequence)}.</li>
      * <li>If the target type is {@link UUID}, the value's string representation is
      * adapted via {@link UUID#fromString(String)}.</li>
      * <li>If the target type is {@link URL}, the value's string representation is
@@ -619,6 +628,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
+            } else if (type == Duration.class) {
+                return Duration.parse(value.toString());
+            } else if (type == Period.class) {
+                return Period.parse(value.toString());
             } else if (type == UUID.class) {
                 return UUID.fromString(value.toString());
             } else if (type == URL.class) {

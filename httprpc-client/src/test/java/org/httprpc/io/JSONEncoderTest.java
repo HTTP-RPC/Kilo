@@ -20,7 +20,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +69,18 @@ public class JSONEncoderTest {
     }
 
     @Test
-    public void testInstant() throws IOException {
+    public void testTemporalAccessors() throws IOException {
         assertEquals("\"1970-01-01T00:00:00.001Z\"", encode(Instant.ofEpochMilli(1)));
+
+        assertEquals("\"2018-06-28\"", encode(LocalDate.parse("2018-06-28")));
+        assertEquals("\"10:45\"", encode(LocalTime.parse("10:45")));
+        assertEquals("\"2018-06-28T10:45\"", encode(LocalDateTime.parse("2018-06-28T10:45")));
+    }
+
+    @Test
+    public void testTemporalAmounts() throws IOException {
+        assertEquals("\"PT2H30M\"", encode(Duration.parse("PT2H30M")));
+        assertEquals("\"P3Y2M\"", encode(Period.parse("P3Y2M")));
     }
 
     @Test

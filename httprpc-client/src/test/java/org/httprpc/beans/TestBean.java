@@ -17,10 +17,12 @@ package org.httprpc.beans;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,8 @@ public class TestBean implements TestInterface {
     private LocalDate localDate = null;
     private LocalTime localTime = null;
     private LocalDateTime localDateTime = null;
+    private Duration duration = null;
+    private Period period = null;
     private UUID uuid = null;
     private URL url = null;
 
@@ -163,6 +167,24 @@ public class TestBean implements TestInterface {
 
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
+    }
+
+    @Override
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    @Override
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Period period) {
+        this.period = period;
     }
 
     @Override

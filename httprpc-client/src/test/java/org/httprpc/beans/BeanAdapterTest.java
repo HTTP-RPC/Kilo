@@ -23,10 +23,12 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,6 +68,8 @@ public class BeanAdapterTest {
             entry("localDate", LocalDate.parse("2018-06-28")),
             entry("localTime", LocalTime.parse("10:45")),
             entry("localDateTime", LocalDateTime.parse("2018-06-28T10:45")),
+            entry("duration", Duration.parse("PT2H30M")),
+            entry("period", Period.parse("P3Y2M")),
             entry("UUID", UUID.randomUUID()),
             entry("URL", new URL("http://localhost:8080")),
             entry("nestedBean", mapOf(
@@ -158,10 +162,17 @@ public class BeanAdapterTest {
     @Test
     public void testTemporalAccessorCoercion() {
         assertEquals(Instant.ofEpochMilli(1), BeanAdapter.adapt(new Date(1), Instant.class));
+
         assertEquals(Instant.parse("1970-01-01T00:00:00.001Z"), BeanAdapter.adapt("1970-01-01T00:00:00.001Z", Instant.class));
         assertEquals(LocalDate.parse("2018-06-28"), BeanAdapter.adapt("2018-06-28", LocalDate.class));
         assertEquals(LocalTime.parse("10:45"), BeanAdapter.adapt("10:45", LocalTime.class));
         assertEquals(LocalDateTime.parse("2018-06-28T10:45"), BeanAdapter.adapt("2018-06-28T10:45", LocalDateTime.class));
+    }
+
+    @Test
+    public void testTemporalAmountCoercion() {
+        assertEquals(Duration.parse("PT2H30M"), BeanAdapter.adapt("PT2H30M", Duration.class));
+        assertEquals(Period.parse("P3Y2M"), BeanAdapter.adapt("P3Y2M", Period.class));
     }
 
     @Test
@@ -254,6 +265,8 @@ public class BeanAdapterTest {
         assertEquals(LocalDate.class, properties.get("localDate"));
         assertEquals(LocalTime.class, properties.get("localTime"));
         assertEquals(LocalDateTime.class, properties.get("localDateTime"));
+        assertEquals(Duration.class, properties.get("duration"));
+        assertEquals(Period.class, properties.get("period"));
         assertEquals(URL.class, properties.get("URL"));
 
         assertEquals(TestBean.NestedBean.class, properties.get("nestedBean"));

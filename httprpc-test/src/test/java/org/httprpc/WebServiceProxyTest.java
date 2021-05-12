@@ -29,10 +29,12 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +63,8 @@ public class WebServiceProxyTest {
         LocalDate getLocalDate();
         LocalTime getLocalTime();
         LocalDateTime getLocalDateTime();
+        Duration getDuration();
+        Period getPeriod();
         @Key("uuid")
         UUID getUUID();
         List<AttachmentInfo> getAttachmentInfo();
@@ -151,6 +155,8 @@ public class WebServiceProxyTest {
     private LocalDate localDate = LocalDate.now();
     private LocalTime localTime = LocalTime.now();
     private LocalDateTime localDateTime = LocalDateTime.now();
+    private Duration duration = Duration.ofHours(2);
+    private Period period = Period.ofDays(4);
     private UUID uuid = UUID.randomUUID();
 
     private static final int EOF = -1;
@@ -172,6 +178,8 @@ public class WebServiceProxyTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("duration", duration),
+            entry("period", period),
             entry("uuid", uuid)
         )).invoke();
 
@@ -186,6 +194,8 @@ public class WebServiceProxyTest {
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
             entry("localDateTime", localDateTime.toString()),
+            entry("duration", duration.toString()),
+            entry("period", period.toString()),
             entry("uuid", uuid.toString())
         ), result);
     }
@@ -234,6 +244,8 @@ public class WebServiceProxyTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("duration", duration),
+            entry("period", period),
             entry("uuid", uuid)
         )).invoke();
 
@@ -248,6 +260,8 @@ public class WebServiceProxyTest {
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
             entry("localDateTime", localDateTime.toString()),
+            entry("duration", duration.toString()),
+            entry("period", period.toString()),
             entry("uuid", uuid.toString()),
             entry("attachmentInfo", listOf())
         ), result);
@@ -269,6 +283,8 @@ public class WebServiceProxyTest {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("duration", duration),
+            entry("period", period),
             entry("uuid", uuid),
             entry("attachments", listOf(textTestURL, imageTestURL))
         )).invoke(Response.class);
@@ -285,6 +301,8 @@ public class WebServiceProxyTest {
             && response.getLocalDate().equals(localDate)
             && response.getLocalTime().equals(localTime)
             && response.getLocalDateTime().equals(localDateTime)
+            && response.getDuration().equals(duration)
+            && response.getPeriod().equals(period)
             && response.getUUID().equals(uuid)
             && response.getAttachmentInfo().get(0).getBytes() == 26
             && response.getAttachmentInfo().get(0).getChecksum() == 2412

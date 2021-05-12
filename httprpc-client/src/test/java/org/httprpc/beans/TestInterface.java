@@ -17,10 +17,12 @@ package org.httprpc.beans;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,8 @@ public interface TestInterface {
     LocalDate getLocalDate();
     LocalTime getLocalTime();
     LocalDateTime getLocalDateTime();
+    Duration getDuration();
+    Period getPeriod();
     UUID getUUID();
     URL getURL();
 

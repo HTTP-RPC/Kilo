@@ -101,6 +101,8 @@ Method arguments may be any of the following types:
 * `java.time.LocalDate` ("yyyy-mm-dd")
 * `java.time.LocalTime` ("hh:mm")
 * `java.time.LocalDateTime` ("yyyy-mm-ddThh:mm")
+* `java.time.Duration`: ISO-8601 duration
+* `java.time.Period`: ISO-8601 period
 * `java.util.UUID`
 * `java.net.URL`
 * `java.util.List`
@@ -211,6 +213,7 @@ Return values are converted to their JSON equivalents as follows:
 * `Enum`: string
 * `java.util.Date`: number representing epoch time in milliseconds
 * `java.time.TemporalAccessor`: string
+* `java.time.TemporalAmount`: string
 * `java.util.UUID`: string
 * `java.net.URL`: string
 * `Iterable`: array
@@ -274,6 +277,8 @@ Methods are grouped by resource path. Parameter, body, and return types are enco
 * `java.time.LocalDate`: "date-local"
 * `java.time.LocalTime`: "time-local"
 * `java.time.LocalDateTime`: "datetime-local"
+* `java.time.Duration`: "duration"
+* `java.time.Period`: "period"
 * `java.util.UUID`: "uuid"
 * `java.net.URL`: "url"
 * `java.lang.Iterable`: "[<em>element type</em>]"

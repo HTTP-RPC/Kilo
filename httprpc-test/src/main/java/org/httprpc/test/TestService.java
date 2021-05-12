@@ -34,10 +34,12 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,6 +68,8 @@ public class TestService extends WebService {
         LocalDate getLocalDate();
         LocalTime getLocalTime();
         LocalDateTime getLocalDateTime();
+        Duration getDuration();
+        Period getPeriod();
         @Key("uuid")
         UUID getUUID();
         List<AttachmentInfo> getAttachmentInfo();
@@ -121,6 +125,7 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        Duration duration, Period period,
         UUID uuid) {
         return mapOf(
             entry("string", string),
@@ -133,6 +138,8 @@ public class TestService extends WebService {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("duration", duration),
+            entry("period", period),
             entry("uuid", uuid)
         );
     }
@@ -233,6 +240,7 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     public Response testPost(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        Duration duration, Period period,
         UUID uuid, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
@@ -266,6 +274,8 @@ public class TestService extends WebService {
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
+            entry("duration", duration),
+            entry("period", period),
             entry("uuid", uuid),
             entry("attachmentInfo", attachmentInfo)
         ), Response.class);

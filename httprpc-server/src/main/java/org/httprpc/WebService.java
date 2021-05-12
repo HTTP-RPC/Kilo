@@ -41,10 +41,12 @@ import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -1015,6 +1017,10 @@ public abstract class WebService extends HttpServlet {
             description = "time-local";
         } else if (type == LocalDateTime.class) {
             description = "datetime-local";
+        } else if (type == Duration.class) {
+            description = "duration";
+        } else if (type == Period.class) {
+            description = "period";
         } else if (type == UUID.class) {
             description = "uuid";
         } else if (type == URL.class) {

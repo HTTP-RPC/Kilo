@@ -19,6 +19,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -97,7 +98,7 @@ public class JSONEncoder extends Encoder<Object> {
             encode(value.toString(), writer);
         } else if (value instanceof Date) {
             encode(((Date)value).getTime(), writer);
-        } else if (value instanceof TemporalAccessor || value instanceof UUID || value instanceof URL) {
+        } else if (value instanceof TemporalAccessor || value instanceof TemporalAmount || value instanceof UUID || value instanceof URL) {
             encode(value.toString(), writer);
         } else if (value instanceof Iterable<?>) {
             writer.write("[");
