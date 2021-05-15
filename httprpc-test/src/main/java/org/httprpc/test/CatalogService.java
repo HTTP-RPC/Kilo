@@ -110,7 +110,7 @@ public class CatalogService extends WebService {
     @Description("Updates an item.")
     @Content(Item.class)
     public void updateItem() {
-        int itemID = Integer.parseInt(getKey("itemID"));
+        int itemID = getKey("itemID", Integer.class);
 
         if (!items.containsKey(itemID)) {
             throw new NoSuchElementException();

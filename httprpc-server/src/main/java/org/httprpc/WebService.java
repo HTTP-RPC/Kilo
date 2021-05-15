@@ -533,7 +533,26 @@ public abstract class WebService extends HttpServlet {
      * The key value.
      */
     protected String getKey(int index) {
-        return keyList.get().get(index);
+        return getKey(index, String.class);
+    }
+
+    /**
+     * Returns the value of a key in the request path.
+     *
+     * @param <T>
+     * The key type.
+     * 
+     * @param index
+     * The index of the key to return.
+     *
+     * @param type
+     * The key type.
+     *
+     * @return
+     * The key value.
+     */
+    protected <T> T getKey(int index, Class<T> type) {
+        return BeanAdapter.adapt(keyList.get().get(index), type);
     }
 
     /**
@@ -546,7 +565,26 @@ public abstract class WebService extends HttpServlet {
      * The key value.
      */
     protected String getKey(String name) {
-        return keyMap.get().get(name);
+        return getKey(name, String.class);
+    }
+
+    /**
+     * Returns the value of a key in the request path.
+     *
+     * @param <T>
+     * The key type.
+     *
+     * @param name
+     * The name of the key to return.
+     *
+     * @param type
+     * The key type.
+     *
+     * @return
+     * The key value.
+     */
+    protected <T> T getKey(String name, Class<T> type) {
+        return BeanAdapter.adapt(keyMap.get().get(name), type);
     }
 
     /**
