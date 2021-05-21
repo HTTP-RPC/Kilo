@@ -183,7 +183,7 @@ public class WebServiceProxy {
 
             message = textDecoder.read(errorStream);
         } else {
-            message = null;
+            message = String.format("HTTP %d", statusCode);
         }
 
         throw new WebServiceException(message, statusCode);
