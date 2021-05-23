@@ -147,6 +147,8 @@ public class BeanAdapterTest {
 
         assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
         assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.adapt(1, Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.adapt(0, Boolean.TYPE), Boolean.FALSE);
     }
 
     @Test

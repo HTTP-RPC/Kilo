@@ -579,7 +579,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type == Boolean.TYPE || type == Boolean.class) {
             if (value == null) {
                 return (type == Boolean.TYPE) ? Boolean.FALSE : null;
-            } else if (value instanceof Number) {
+            } else if (value instanceof Byte
+                || value instanceof Short
+                || value instanceof Integer
+                || value instanceof Long) {
                 return ((Number)value).longValue() != 0;
             } else {
                 return Boolean.parseBoolean(value.toString());
