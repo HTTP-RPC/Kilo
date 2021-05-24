@@ -584,6 +584,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 || value instanceof Integer
                 || value instanceof Long) {
                 return ((Number)value).longValue() != 0;
+            } else if (value instanceof Float
+                || value instanceof Double) {
+                return ((Number)value).doubleValue() != 0.0;
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
