@@ -271,6 +271,7 @@ Methods are grouped by resource path. Parameter, body, and return types are enco
 * `Float` or `float`: "float"
 * `Double` or `double`: "double"
 * Any other `Number`: "number"
+* `Boolean` or `boolean`: "boolean"
 * `CharSequence`: "string"
 * `java.util.Date`: "date"
 * `java.time.Instant`: "instant"
