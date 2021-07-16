@@ -54,6 +54,11 @@ public class JSONDecoderTest {
     }
 
     @Test
+    public void testNull() throws IOException {
+        assertNull(decode("null"));
+    }
+
+    @Test
     public void testArray() throws IOException {
         List<?> expected = listOf(
             "abc",

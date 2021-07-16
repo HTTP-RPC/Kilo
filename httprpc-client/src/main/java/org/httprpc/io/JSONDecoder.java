@@ -113,19 +113,19 @@ public class JSONDecoder extends Decoder<Object> {
                     value = readString(reader);
                 } else if (c == '+' || c == '-' || Character.isDigit(c)) {
                     value = readNumber(reader);
-                } else if (c == 't') {
+                } else if (c == TRUE_KEYWORD.charAt(0)) {
                     if (!readKeyword(reader, TRUE_KEYWORD)) {
                         throw new IOException();
                     }
 
                     value = Boolean.TRUE;
-                } else if (c == 'f') {
+                } else if (c == FALSE_KEYWORD.charAt(0)) {
                     if (!readKeyword(reader, FALSE_KEYWORD)) {
                         throw new IOException();
                     }
 
                     value = Boolean.FALSE;
-                } else if (c == 'n') {
+                } else if (c == NULL_KEYWORD.charAt(0)) {
                     if (!readKeyword(reader, NULL_KEYWORD)) {
                         throw new IOException();
                     }
