@@ -31,7 +31,9 @@ public class QueryBuilderTest {
             .where("(a > 10 or b < 200) and c = :c")
             .orderBy("a", "b")
             .limit(10)
-            .forUpdate().toString();
+            .forUpdate()
+            .union(QueryBuilder.select("a", "b", "c")
+                .from("C")).toString();
 
         assertEquals("select a, b, c from A "
             + "join B on A.id = B.id and x = 50 "
@@ -40,7 +42,9 @@ public class QueryBuilderTest {
             + "where (a > 10 or b < 200) and c = :c "
             + "order by a, b "
             + "limit 10 "
-            + "for update", sql);
+            + "for update "
+            + "union "
+            + "select a, b, c from C", sql);
     }
 
     @Test
@@ -74,8 +78,7 @@ public class QueryBuilderTest {
     @Test
     public void testDelete() {
         String sql = QueryBuilder.deleteFrom("A")
-            .where("a < 150")
-            .toString();
+            .where("a < 150").toString();
 
         assertEquals("delete from A where a < 150", sql);
     }

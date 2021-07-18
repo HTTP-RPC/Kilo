@@ -223,6 +223,22 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "union" clause to a query.
+     *
+     * @param queryBuilder
+     * The query builder to append.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder union(QueryBuilder queryBuilder) {
+        sqlBuilder.append(" union ");
+        sqlBuilder.append(queryBuilder.toString());
+
+        return this;
+    }
+
+    /**
      * Creates an "insert into" query.
      *
      * @param table
@@ -272,7 +288,7 @@ public class QueryBuilder {
 
             if (value instanceof QueryBuilder) {
                 sqlBuilder.append("(");
-                sqlBuilder.append(value.toString());
+                sqlBuilder.append(value);
                 sqlBuilder.append(")");
             } else {
                 sqlBuilder.append(encode(value));
@@ -336,7 +352,7 @@ public class QueryBuilder {
 
             if (value instanceof QueryBuilder) {
                 sqlBuilder.append("(");
-                sqlBuilder.append(value.toString());
+                sqlBuilder.append(value);
                 sqlBuilder.append(")");
             } else {
                 sqlBuilder.append(encode(value));
