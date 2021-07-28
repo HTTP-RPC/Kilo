@@ -258,7 +258,7 @@ public abstract class WebService extends HttpServlet {
                 Resource child = resource.resources.get(component);
 
                 if (child == null) {
-                    child = resource.resources.get("?");
+                    child = resource.resources.get(ResourcePath.PATH_VARIABLE_PREFIX);
 
                     if (child == null) {
                         super.service(request, response);
