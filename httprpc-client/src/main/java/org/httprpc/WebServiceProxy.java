@@ -673,8 +673,8 @@ public class WebServiceProxy {
                 errorHandler = defaultErrorHandler;
             }
 
-            try (InputStream inputStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(inputStream, contentType, statusCode);
+            try (InputStream errorStream = connection.getErrorStream()) {
+                errorHandler.handleResponse(errorStream, contentType, statusCode);
             }
 
             return null;

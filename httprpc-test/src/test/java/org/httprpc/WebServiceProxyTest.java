@@ -16,6 +16,7 @@ package org.httprpc;
 
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.beans.Key;
+import org.httprpc.io.TextDecoder;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -145,6 +146,9 @@ public class WebServiceProxyTest {
     }
 
     public static class CustomException extends IOException {
+        public CustomException(String message) {
+            super(message);
+        }
     }
 
     private URL baseURL;
@@ -519,7 +523,9 @@ public class WebServiceProxyTest {
         WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
-            throw new CustomException();
+            TextDecoder textDecoder = new TextDecoder();
+
+            throw new CustomException(textDecoder.read(errorStream));
         });
 
         assertThrows(CustomException.class, webServiceProxy::invoke);
