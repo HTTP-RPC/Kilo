@@ -9,7 +9,6 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Contents
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
-* [Kotlin Support](#kotlin-support)
 * [Additional Information](#additional-information)
 
 # Getting HTTP-RPC
@@ -924,43 +923,6 @@ Map<String, Object> map = mapOf(
 
 int value = valueAt(map, "a", "b", "c", 1); // 2
 ``` 
-
-# Kotlin Support
-In addition to Java, HTTP-RPC web services can be implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following service provides some basic information about the host system:
-
-```kotlin
-@WebServlet(urlPatterns = ["/system-info/*"], loadOnStartup = 1)
-@Description("System info service.")
-class SystemInfoService : WebService() {
-    class SystemInfo(
-        val availableProcessors: Int,
-        val freeMemory: Long,
-        val totalMemory: Long
-    )
-
-    @RequestMethod("GET")
-    @Description("Returns system info.")
-    fun getSystemInfo(): SystemInfo {
-        val runtime = Runtime.getRuntime()
-
-        return SystemInfo(
-            runtime.availableProcessors(),
-            runtime.freeMemory(),
-            runtime.totalMemory()
-        )
-    }
-}
-```
-
-A response produced by the service might look like this:
-
-```json
-{
-  "availableProcessors": 16,
-  "freeMemory": 85845656,
-  "totalMemory": 134217728
-}
-```
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test).
