@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'    
-    version = '8.3.5'
+    version = '8.3.6'
 
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
@@ -32,6 +32,10 @@ subprojects {
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    javadoc {
+        options.addStringOption('Xdoclint:none', '-quiet')
     }
 
     test {

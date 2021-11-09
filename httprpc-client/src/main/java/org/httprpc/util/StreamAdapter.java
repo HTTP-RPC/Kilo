@@ -23,6 +23,12 @@ import java.util.stream.Stream;
 public class StreamAdapter<T> implements Iterable<T>, AutoCloseable {
     private Stream<T> stream;
 
+    /**
+     * Constructs a new stream adapter.
+     *
+     * @param stream
+     * The source stream.
+     */
     public StreamAdapter(Stream<T> stream) {
         this.stream = stream;
     }

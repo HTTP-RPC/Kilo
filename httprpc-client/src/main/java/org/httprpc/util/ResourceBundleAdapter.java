@@ -26,6 +26,12 @@ import java.util.Set;
 public class ResourceBundleAdapter extends AbstractMap<String, String> {
     private ResourceBundle resourceBundle;
 
+    /**
+     * Constructs a new resource bundle adapter.
+     *
+     * @param resourceBundle
+     * The source resource bundle.
+     */
     public ResourceBundleAdapter(ResourceBundle resourceBundle) {
         if (resourceBundle == null) {
             throw new IllegalArgumentException();
