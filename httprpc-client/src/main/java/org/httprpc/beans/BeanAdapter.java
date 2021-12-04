@@ -712,7 +712,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static <E> List<E> adaptGenericList(List<?> list, Type elementType) {
         if (list == null) {
-            throw new IllegalArgumentException();
+            return null;
         }
 
         if (elementType == null) {
@@ -774,7 +774,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static <K, V> Map<K, V> adaptGenericMap(Map<K, ?> map, Type valueType) {
         if (map == null) {
-            throw new IllegalArgumentException();
+            return null;
         }
 
         if (valueType == null) {

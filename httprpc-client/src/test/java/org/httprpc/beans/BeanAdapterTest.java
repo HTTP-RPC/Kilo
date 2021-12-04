@@ -197,6 +197,8 @@ public class BeanAdapterTest {
         int i = BeanAdapter.adaptList(listOf("1", "2", "3"), Integer.class).get(0);
 
         assertEquals(1, i);
+
+        assertNull(BeanAdapter.adaptList(null, Object.class));
     }
 
     @Test
@@ -208,6 +210,8 @@ public class BeanAdapterTest {
         ), Integer.class).get("a");
 
         assertEquals(1, i);
+
+        assertNull(BeanAdapter.adaptMap(null, Object.class));
     }
 
     @Test
