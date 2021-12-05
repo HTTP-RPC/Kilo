@@ -72,6 +72,26 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testPath() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("path.txt"));
+
+        Map<String, ?> dictionary = mapOf(
+            entry("a", mapOf(
+                entry("b", 0),
+                entry("d", mapOf(
+                    entry("e", 1)
+                ))
+            ))
+        );
+
+        StringWriter writer = new StringWriter();
+
+        encoder.write(dictionary, writer);
+
+        assertEquals("1", writer.toString());
+    }
+
+    @Test
     public void testConditionalSection1() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 

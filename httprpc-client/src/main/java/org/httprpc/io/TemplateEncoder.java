@@ -886,7 +886,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                 if (c == 0 || c == '/') {
                     if (!(value instanceof Map<?, ?>)) {
-                        continue;
+                        return null;
                     }
 
                     String key = keyBuilder.toString();
