@@ -351,6 +351,18 @@ public class TestService extends WebService {
         return value;
     }
 
+    @RequestMethod("GET")
+    @ResourcePath("math/sum")
+    public double getSum(double a, double b) {
+        return getService(MathService.class).getSum(a, b);
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("math/sum")
+    public double getSum(List<Double> values) {
+        return getService(MathService.class).getSum(values);
+    }
+
     @Override
     protected boolean isAuthorized(HttpServletRequest request, Method method) {
         String pathInfo = request.getPathInfo();

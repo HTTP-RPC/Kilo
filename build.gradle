@@ -13,8 +13,8 @@
  */
 
 subprojects {
-    group = 'org.httprpc'    
-    version = '8.3.5'
+    group = 'org.httprpc'
+    version = '8.3.6'
 
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'

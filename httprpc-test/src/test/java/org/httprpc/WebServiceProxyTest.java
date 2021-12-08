@@ -454,12 +454,12 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMath() throws IOException {
-        assertEquals(6.0, WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+        assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
         )).invoke(Double.class));
 
-        assertEquals(6.0, WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+        assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         )).invoke(Double.class));
     }

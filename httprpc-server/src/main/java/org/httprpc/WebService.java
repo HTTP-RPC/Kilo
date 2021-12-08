@@ -19,6 +19,7 @@ import org.httprpc.io.JSONDecoder;
 import org.httprpc.io.JSONEncoder;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +62,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyList;
 import static org.httprpc.util.Collections.listOf;
@@ -138,7 +140,27 @@ public abstract class WebService extends HttpServlet {
 
     private ThreadLocal<Object> body = new ThreadLocal<>();
 
+    private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
+
     private static final String UTF_8 = "UTF-8";
+
+    /**
+     * Returns a service instance.
+     *
+     * @param type
+     * The service type.
+     *
+     * @param <T>
+     * The service type.
+     *
+     * @return
+     * The service instance, or <code>null</code> if no service of the given type
+     * exists.
+     */
+    @SuppressWarnings("unchecked")
+    protected static <T extends WebService> T getService(Class<T> type) {
+        return (T)services.get(type);
+    }
 
     @Override
     public void init() throws ServletException {
@@ -214,6 +236,12 @@ public abstract class WebService extends HttpServlet {
         }
 
         sort(root);
+
+        Class<? extends WebService> type = getClass();
+
+        if (getClass().getAnnotation(WebServlet.class) != null) {
+            services.put(type, this);
+        }
     }
 
     private static void sort(Resource root) {
@@ -541,7 +569,7 @@ public abstract class WebService extends HttpServlet {
      *
      * @param <T>
      * The key type.
-     * 
+     *
      * @param index
      * The index of the key to return.
      *
