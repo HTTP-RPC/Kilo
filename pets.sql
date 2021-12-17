@@ -21,3 +21,7 @@ insert into pet (name, owner, species, sex, birth, death) values ('Bowser', 'Dia
 insert into pet (name, owner, species, sex, birth, death) values ('Chirpy', 'Gwen', 'bird', 'f', '1998-09-11', null);
 insert into pet (name, owner, species, sex, birth, death) values ('Whistler', 'Gwen', 'bird', null, '1997-12-09', null);
 insert into pet (name, owner, species, sex, birth, death) values ('Slim', 'Benny', 'snake', 'm', '1996-04-29', null);
+
+create user 'demo'@'%' identified by 'demo123!';
+grant select on menagerie.* to 'demo'@'%';
+flush privileges;
