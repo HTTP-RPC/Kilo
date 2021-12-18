@@ -158,7 +158,7 @@ public abstract class WebService extends HttpServlet {
      * exists.
      */
     @SuppressWarnings("unchecked")
-    protected static <T extends WebService> T getService(Class<T> type) {
+    public static <T extends WebService> T getInstance(Class<T> type) {
         return (T)services.get(type);
     }
 

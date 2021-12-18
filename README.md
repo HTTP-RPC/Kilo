@@ -253,9 +253,7 @@ If an exception is thrown by a service method and the response has not yet been 
 * Any other exception type - HTTP 500 (internal server error)
 
 ### Inter-Service Communication
-A service implementation can obtain a reference to another service instance via the `getService()` method of the `WebService` class. This can be useful when the behavior of one service relies on logic provided by a different service. The target service must be annotated with `javax.servlet.annotation.WebServlet`.
-
-Methods on the target service are executed in the same thread that handled the initial request. However, the servlet request and response values from the source service are not propagated to the target.
+A reference to any service annotated with `javax.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:

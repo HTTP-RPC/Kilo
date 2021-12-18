@@ -354,13 +354,13 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("math/sum")
     public double getSum(double a, double b) {
-        return getService(MathService.class).getSum(a, b);
+        return getInstance(MathService.class).getSum(a, b);
     }
 
     @RequestMethod("GET")
     @ResourcePath("math/sum")
     public double getSum(List<Double> values) {
-        return getService(MathService.class).getSum(values);
+        return getInstance(MathService.class).getSum(values);
     }
 
     @Override
