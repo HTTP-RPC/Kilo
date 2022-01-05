@@ -24,15 +24,12 @@ dependencies {
     compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
 
     implementation project(':httprpc-server')
-
-    implementation 'org.hibernate:hibernate-core:5.5.7.Final'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
 }
 
 compileJava {
     options.compilerArgs = [
         '-parameters'
-    ] 
+    ]
 }
 
 compileTestJava {

@@ -12,7 +12,6 @@
 <a href="${pageContext.request.contextPath}/math?api">Math API</a><br/>
 <a href="${pageContext.request.contextPath}/tree?api">Tree API</a><br/>
 <a href="${pageContext.request.contextPath}/catalog?api">Catalog API</a><br/>
-<a href="${pageContext.request.contextPath}/employees?api">Employees API</a><br/>
 
 <hr/>
 
