@@ -185,7 +185,7 @@ public class WebServiceProxyTest {
             entry("duration", duration),
             entry("period", period),
             entry("uuid", uuid)
-        )).invoke();
+        )).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -211,7 +211,7 @@ public class WebServiceProxyTest {
             URLEncoder.encode("héllo", "UTF-8"),
             456,
             URLEncoder.encode("göodbye", "UTF-8")
-        ).invoke();
+        ).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("list", listOf("123", "héllo", "456", "göodbye")),
@@ -230,7 +230,7 @@ public class WebServiceProxyTest {
             mapOf(
                 entry("count", 8)
             )
-        ).invoke(BeanAdapter.typeOf(List.class, Integer.class));
+        ).setMonitorStream(System.out).invoke(BeanAdapter.typeOf(List.class, Integer.class));
 
         assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
     }
@@ -325,7 +325,7 @@ public class WebServiceProxyTest {
 
         Body result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        )).setBody(body).invoke(Body.class);
+        )).setBody(body).setMonitorStream(System.out).invoke(Body.class);
 
         assertEquals(body, result);
     }
@@ -377,7 +377,7 @@ public class WebServiceProxyTest {
             }
         }).setArguments(mapOf(
             entry("id", 101)
-        )).invoke((inputStream, contentType) -> {
+        )).setMonitorStream(System.out).invoke((inputStream, contentType) -> {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 
             StringBuilder textBuilder = new StringBuilder();
@@ -397,7 +397,7 @@ public class WebServiceProxyTest {
     public void testDelete() throws IOException {
         WebServiceProxy.delete(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        )).invoke();
+        )).setMonitorStream(System.out).invoke();
 
         assertTrue(true);
     }
@@ -429,7 +429,7 @@ public class WebServiceProxyTest {
     @Test
     public void testError() throws IOException {
         try {
-            WebServiceProxy.get(baseURL, "test/error").invoke();
+            WebServiceProxy.get(baseURL, "test/error").setMonitorStream(System.out).invoke();
 
             fail();
         } catch (WebServiceException exception) {
@@ -444,7 +444,7 @@ public class WebServiceProxyTest {
             WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
                 entry("value", 123),
                 entry("delay", 6000)
-            )).setConnectTimeout(500).setReadTimeout(4000).invoke();
+            )).setConnectTimeout(500).setReadTimeout(4000).setMonitorStream(System.out).invoke();
 
             fail();
         } catch (IOException exception) {
@@ -527,6 +527,8 @@ public class WebServiceProxyTest {
 
             throw new CustomException(textDecoder.read(errorStream));
         });
+
+        webServiceProxy.setMonitorStream(System.out);
 
         assertThrows(CustomException.class, webServiceProxy::invoke);
     }

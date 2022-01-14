@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -152,6 +153,57 @@ public class WebServiceProxy {
         void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
     }
 
+    private class MonitoredInputStream extends InputStream {
+        InputStream inputStream;
+
+        MonitoredInputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+        }
+
+        @Override
+        public int read() throws IOException {
+            int b = inputStream.read();
+
+            if (monitorStream != null && b != -1) {
+                monitorStream.write(b);
+            }
+
+            return b;
+        }
+
+        @Override
+        public void close() throws IOException {
+            inputStream.close();
+        }
+    }
+
+    private class MonitoredOutputStream extends OutputStream {
+        OutputStream outputStream;
+
+        MonitoredOutputStream(OutputStream outputStream) {
+            this.outputStream = outputStream;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            outputStream.write(b);
+
+            if (monitorStream != null) {
+                monitorStream.write(b);
+            }
+        }
+
+        @Override
+        public void flush() throws IOException {
+            outputStream.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            outputStream.close();
+        }
+    }
+
     private String method;
     private URL url;
 
@@ -169,6 +221,8 @@ public class WebServiceProxy {
     private int readTimeout = 0;
 
     private Status expectedStatus = null;
+
+    private PrintStream monitorStream = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
@@ -469,6 +523,28 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns the monitor stream.
+     *
+     * @return
+     * The monitor stream, or <code>null</code> if no monitor stream is set.
+     */
+    public PrintStream getMonitorStream() {
+        return monitorStream;
+    }
+
+    /**
+     * Sets the monitor stream.
+     *
+     * @param monitorStream
+     * The monitor stream, or <code>null</code> for no monitor.
+     */
+    public WebServiceProxy setMonitorStream(PrintStream monitorStream) {
+        this.monitorStream = monitorStream;
+
+        return this;
+    }
+
+    /**
      * Invokes the service operation.
      *
      * @param <T>
@@ -602,6 +678,10 @@ public class WebServiceProxy {
             }
         }
 
+        if (monitorStream != null) {
+            monitorStream.println(String.format("%s %s", method, url));
+        }
+
         // Open URL connection
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
@@ -643,13 +723,22 @@ public class WebServiceProxy {
 
             connection.setRequestProperty("Content-Type", contentType);
 
-            try (OutputStream outputStream = connection.getOutputStream()) {
+            try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
                 requestHandler.encodeRequest(outputStream);
+            } finally {
+                if (monitorStream != null) {
+                    monitorStream.println();
+                    monitorStream.flush();
+                }
             }
         }
 
         // Read response
         int statusCode = connection.getResponseCode();
+
+        if (monitorStream != null) {
+            monitorStream.println(String.format("HTTP %d", statusCode));
+        }
 
         String contentType = connection.getContentType();
 
@@ -660,8 +749,13 @@ public class WebServiceProxy {
             }
 
             if (statusCode % 100 < 4) {
-                try (InputStream inputStream = connection.getInputStream()) {
+                try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
                     result = responseHandler.decodeResponse(inputStream, contentType);
+                } finally {
+                    if (monitorStream != null) {
+                        monitorStream.println();
+                        monitorStream.flush();
+                    }
                 }
             } else {
                 result = null;
@@ -674,7 +768,12 @@ public class WebServiceProxy {
             }
 
             try (InputStream errorStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(errorStream, contentType, statusCode);
+                errorHandler.handleResponse(new MonitoredInputStream(errorStream), contentType, statusCode);
+            } finally {
+                if (monitorStream != null) {
+                    monitorStream.println();
+                    monitorStream.flush();
+                }
             }
 
             return null;
