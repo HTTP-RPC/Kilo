@@ -418,7 +418,7 @@ public class WebServiceProxyTest {
     @Test
     public void testUnauthorized() throws IOException {
         try {
-            WebServiceProxy.get(baseURL, "test/unauthorized").invoke();
+            WebServiceProxy.get(baseURL, "test/unauthorized").setMonitorStream(System.out).invoke();
 
             fail();
         } catch (WebServiceException exception) {
@@ -457,16 +457,16 @@ public class WebServiceProxyTest {
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
-        )).invoke(Double.class));
+        )).setMonitorStream(System.out).invoke(Double.class));
 
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
-        )).invoke(Double.class));
+        )).setMonitorStream(System.out).invoke(Double.class));
     }
 
     @Test
     public void testTree() throws IOException {
-        TreeNode seasons = WebServiceProxy.get(baseURL, "tree").invoke(TreeNode.class);
+        TreeNode seasons = WebServiceProxy.get(baseURL, "tree").setMonitorStream(System.out).invoke(TreeNode.class);
 
         assertNotNull(seasons);
         assertEquals("Seasons", seasons.getName());

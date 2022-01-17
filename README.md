@@ -396,7 +396,7 @@ System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
 ```
 
 ### Fluent Invocation
-`WebServiceProxy` also supports a fluent (i.e. chained) invocation model. For example, the following code is equivalent to the previous example:
+`WebServiceProxy` supports a fluent (i.e. chained) invocation model. For example, the following code is equivalent to the previous example:
 
 ```java
 // GET /math/sum?a=2&b=4
@@ -412,6 +412,34 @@ System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
 ```
 
 POST, PUT, and DELETE operations are also supported.
+
+### Monitoring Service Invocations
+Service request and response data can be captured by setting the monitor stream on a proxy instance. For example:
+
+```java
+List<Integer> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+    mapOf(
+        entry("count", 8)
+    )
+).setMonitorStream(System.out).invoke(BeanAdapter.typeOf(List.class, Integer.class));
+```
+
+This code would produce the following output:
+
+```
+GET http://localhost:8080/httprpc-test-1.0/test/fibonacci?count=8
+HTTP 200
+[
+  0,
+  1,
+  1,
+  2,
+  3,
+  5,
+  8,
+  13
+]
+```
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used by application code. For example: 
