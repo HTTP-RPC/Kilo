@@ -140,7 +140,7 @@ public abstract class WebService extends HttpServlet {
 
     private ThreadLocal<Object> body = new ThreadLocal<>();
 
-    private static ConcurrentHashMap<Class<?>, WebService> services = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Class<?>, WebService> instances = new ConcurrentHashMap<>();
 
     private static final String UTF_8 = "UTF-8";
 
@@ -159,7 +159,7 @@ public abstract class WebService extends HttpServlet {
      */
     @SuppressWarnings("unchecked")
     public static <T extends WebService> T getInstance(Class<T> type) {
-        return (T)services.get(type);
+        return (T)instances.get(type);
     }
 
     @Override
@@ -240,7 +240,7 @@ public abstract class WebService extends HttpServlet {
         Class<? extends WebService> type = getClass();
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
-            services.put(type, this);
+            instances.put(type, this);
         }
     }
 
