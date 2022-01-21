@@ -937,7 +937,7 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
-These methods are provided primarily as a convenience for applications using Java 8. Applications targeting Java 9 and higher can use the standard `List.of()` and `Map.of()` methods provided by the JDK.
+These methods are provided as an alternative to similar methods defined by the `List` and `Map` classes, which do not permit `null` values.
 
 `Collections` additionally provides the `valueAt()` method, which can be used to access nested values in an object hierarchy. For example:
 
