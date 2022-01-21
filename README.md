@@ -693,11 +693,11 @@ TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("tr
 templateEncoder.write(new BeanAdapter(root), System.out);
 ```
 
-### Typed Access
+### Type Coercion
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures, such as decoded JSON objects:
 
 ```java
-public static <T> T adapt(Object value, Type type) { ... }
+public static <T> T coerce(Object value, Type type) { ... }
 ```
 
 For example, given this interface:
@@ -716,7 +716,7 @@ JSONDecoder jsonDecoder = new JSONDecoder();
 
 Map<String, Object> map = jsonDecoder.read(inputStream);
 
-TreeNode root = BeanAdapter.adapt(map, TreeNode.class);
+TreeNode root = BeanAdapter.coerce(map, TreeNode.class);
 
 System.out.println(root.getName()); // "Seasons"
 System.out.println(root.getChildren().get(0).getName()); // "Winter"

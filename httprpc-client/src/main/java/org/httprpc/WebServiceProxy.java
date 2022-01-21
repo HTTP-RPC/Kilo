@@ -579,7 +579,7 @@ public class WebServiceProxy {
         return invoke((inputStream, contentType) -> {
             JSONDecoder jsonDecoder = new JSONDecoder();
 
-            return BeanAdapter.adapt(jsonDecoder.read(inputStream), type);
+            return BeanAdapter.coerce(jsonDecoder.read(inputStream), type);
         });
     }
 

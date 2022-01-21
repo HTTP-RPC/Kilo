@@ -263,7 +263,7 @@ public class TestService extends WebService {
             ));
         }
 
-        return BeanAdapter.adapt(mapOf(
+        return BeanAdapter.coerce(mapOf(
             entry("string", string),
             entry("strings", strings),
             entry("number", number),

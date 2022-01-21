@@ -507,7 +507,7 @@ public abstract class WebService extends HttpServlet {
                     list = new ArrayList<>(values.size());
 
                     for (Object value : values) {
-                        list.add(BeanAdapter.adapt(value, elementType));
+                        list.add(BeanAdapter.coerce(value, elementType));
                     }
                 } else {
                     list = emptyList();
@@ -522,7 +522,7 @@ public abstract class WebService extends HttpServlet {
                     value = null;
                 }
 
-                argument = BeanAdapter.adapt(value, type);
+                argument = BeanAdapter.coerce(value, type);
             }
 
             arguments[i] = argument;
@@ -580,7 +580,7 @@ public abstract class WebService extends HttpServlet {
      * The key value.
      */
     protected <T> T getKey(int index, Class<T> type) {
-        return BeanAdapter.adapt(keyList.get().get(index), type);
+        return BeanAdapter.coerce(keyList.get().get(index), type);
     }
 
     /**
@@ -612,7 +612,7 @@ public abstract class WebService extends HttpServlet {
      * The key value.
      */
     protected <T> T getKey(String name, Class<T> type) {
-        return BeanAdapter.adapt(keyMap.get().get(name), type);
+        return BeanAdapter.coerce(keyMap.get().get(name), type);
     }
 
     /**
@@ -670,7 +670,7 @@ public abstract class WebService extends HttpServlet {
 
         JSONDecoder jsonDecoder = new JSONDecoder();
 
-        return BeanAdapter.adapt(jsonDecoder.read(request.getInputStream()), type);
+        return BeanAdapter.coerce(jsonDecoder.read(request.getInputStream()), type);
     }
 
     /**

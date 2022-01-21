@@ -207,7 +207,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new UnsupportedOperationException();
                 }
 
-                return adapt(map.get(key), method.getGenericReturnType());
+                return coerce(map.get(key), method.getGenericReturnType());
             }
         }
 
@@ -318,7 +318,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         for (Method mutator : property.mutators) {
             try {
-                mutator.invoke(bean, (Object)adapt(value, mutator.getGenericParameterTypes()[0]));
+                mutator.invoke(bean, (Object)coerce(value, mutator.getGenericParameterTypes()[0]));
             } catch (Exception exception) {
                 i++;
             }
@@ -374,7 +374,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value for loosely typed access. If the value is <code>null</code>
+     * Adapts a value for loose typing. If the value is <code>null</code>
      * or an instance of one of the following types, it is returned as is:
      *
      * <ul>
@@ -431,101 +431,101 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value for strongly typed access.
+     * Coerces a value to a specific type. If the value is already an instance of
+     * the requested type, it is returned as is.
+     *
+     * If the requested type is one of the following, the return value is obtained
+     * via an appropriate conversion method; for example, {@link Number#intValue()},
+     * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:
      *
      * <ul>
-     * <li>If the value is already an instance of the given type, it is returned
-     * as is.</li>
-     * <li>If the target type is a number or boolean, the value is parsed or
-     * coerced using the appropriate conversion method. Missing or <code>null</code>
-     * values are automatically converted to <code>0</code> or <code>false</code>
-     * for primitive argument types.</li>
-     * <li>If the target type is {@link String}, the value is adapted via
-     * {@link Object#toString()}.</li>
-     * <li>If the target type is an {@link Enum}, the adapted value is the first
-     * constant whose string representation matches the value's string
-     * representation.</li>
-     * <li>If the target type is {@link Date}, the value is coerced to a long
-     * value and passed to {@link Date#Date(long)}.</li>
-     * <li>If the target type is {@link Instant} and the value is an instance of
-     * {@link Date}, the value is adapted via {@link Date#toInstant()}. Otherwise,
-     * the value's string representation is parsed using
-     * {@link Instant#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link LocalDate}, the value's string
-     * representation is parsed using {@link LocalDate#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link LocalTime}, the value's string
-     * representation is parsed using {@link LocalTime#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link LocalDateTime}, the value's string
-     * representation is parsed using {@link LocalDateTime#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link Duration}, the value's string
-     * representation is parsed using {@link Duration#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link Period}, the value's string
-     * representation is parsed using {@link Period#parse(CharSequence)}.</li>
-     * <li>If the target type is {@link UUID}, the value's string representation is
-     * adapted via {@link UUID#fromString(String)}.</li>
-     * <li>If the target type is {@link URL}, the value's string representation is
-     * adapted via {@link URL#URL(String)}.</li>
-     * <li>If the target type is {@link List} or {@link Map}, the value is wrapped
-     * in an adapter of the same type that automatically adapts its elements.</li>
+     * <li>{@link Byte} or <code>byte</code></li>
+     * <li>{@link Short} or <code>short</code></li>
+     * <li>{@link Integer} or <code>int</code></li>
+     * <li>{@link Long} or <code>long</code></li>
+     * <li>{@link Float} or <code>float</code></li>
+     * <li>{@link Double} or <code>double</code></li>
+     * <li>{@link Boolean} or <code>boolean</code></li>
+     * <li>{@link String}</li>
+     * <li>{@link Date}</li>
+     * <li>{@link Instant}</li>
+     * <li>{@link LocalDate}</li>
+     * <li>{@link LocalTime}</li>
+     * <li>{@link LocalDateTime}</li>
+     * <li>{@link Duration}</li>
+     * <li>{@link Period}</li>
+     * <li>{@link Duration}</li>
+     * <li>{@link Period}</li>
+     * <li>{@link UUID}</li>
+     * <li>{@link URL}</li>
      * </ul>
      *
-     * Otherwise, the value is assumed to be a map and is adapted as follows:
+     * If the target type is an {@link Enum}, the resulting value is the first
+     * constant whose string representation matches the value's string
+     * representation.
+     * <br/>
+     * If the target type is {@link List} or {@link Map}, the value is wrapped
+     * in an instance of the same type that automatically coerces its elements
+     * or values, respectively.
+     * <br/>
+     * Otherwise, the target type is assumed to be a bean. The provided value is
+     * assumed to be a map and is converted as follows:
      *
      * <ul>
      * <li>If the target type is an interface, the return value is a proxy
      * implementation of the interface that maps accessor methods to entries in
-     * the map. `Object` methods are delegated to the underlying map.</li>
+     * the map. {@link Object} methods are delegated to the underlying map.</li>
      * <li>If the target type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
+     *
+     * For reference types, <code>null</code> values are returned as is. For
+     * numeric or boolean primitives, they are converted to 0 or false,
+     * respectively.
      *
      * @param <T>
      * The target type.
      *
      * @param value
-     * The value to adapt.
+     * The value to coerce.
      *
      * @param type
      * The target type.
      *
      * @return
-     * The adapted value.
+     * The coerced value.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T adapt(Object value, Type type) {
+    public static <T> T coerce(Object value, Type type) {
         if (type == null) {
             throw new IllegalArgumentException();
         }
 
         if (type instanceof Class<?>) {
-            return (T)adaptValue(value, (Class<?>)type);
+            return (T)coerceValue(value, (Class<?>)type);
         } else if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)type;
 
-            return adapt(value, wildcardType.getUpperBounds()[0]);
+            return coerce(value, wildcardType.getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
-            if (value != null) {
-                ParameterizedType parameterizedType = (ParameterizedType)type;
+            ParameterizedType parameterizedType = (ParameterizedType)type;
 
-                Type rawType = parameterizedType.getRawType();
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            Type rawType = parameterizedType.getRawType();
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-                if (rawType == List.class) {
-                    return (T)adaptGenericList((List<?>)value, actualTypeArguments[0]);
-                } else if (rawType == Map.class) {
-                    return (T)adaptGenericMap((Map<?, ?>)value, actualTypeArguments[1]);
-                } else {
-                    throw new IllegalArgumentException();
-                }
+            if (rawType == List.class) {
+                return (T)coerceList((List<?>)value, actualTypeArguments[0]);
+            } else if (rawType == Map.class) {
+                return (T)coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         } else {
             throw new IllegalArgumentException();
         }
     }
 
-    private static Object adaptValue(Object value, Class<?> type) {
+    private static Object coerceValue(Object value, Class<?> type) {
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
@@ -690,39 +690,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * Adapts a list instance for typed access.
-     *
-     * @param <E>
-     * The target element type.
-     *
-     * @param list
-     * The list to adapt.
-     *
-     * @param elementType
-     * The target element type.
-     *
-     * @return
-     * An list implementation that will adapt the list's elements as documented for
-     * {@link #adapt(Object, Type)}.
-     */
-    public static <E> List<E> adaptList(List<?> list, Class<? extends E> elementType) {
-        return adaptGenericList(list, elementType);
-    }
-
-    private static <E> List<E> adaptGenericList(List<?> list, Type elementType) {
+    private static List<?> coerceList(List<?> list, Type elementType) {
         if (list == null) {
             return null;
         }
 
-        if (elementType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new AbstractList<E>() {
+        return new AbstractList<Object>() {
             @Override
-            public E get(int index) {
-                return adapt(list.get(index), elementType);
+            public Object get(int index) {
+                return coerce(list.get(index), elementType);
             }
 
             @Override
@@ -731,8 +707,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             @Override
-            public Iterator<E> iterator() {
-                return new Iterator<E>() {
+            public Iterator<Object> iterator() {
+                return new Iterator<Object>() {
                     private Iterator<?> iterator = list.iterator();
 
                     @Override
@@ -741,64 +717,37 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
-                    public E next() {
-                        return adapt(iterator.next(), elementType);
+                    public Object next() {
+                        return coerce(iterator.next(), elementType);
                     }
                 };
             }
         };
     }
 
-    /**
-     * Adapts a map instance for typed access.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <V>
-     * The target value type.
-     *
-     * @param map
-     * The map to adapt.
-     *
-     * @param valueType
-     * The target value type.
-     *
-     * @return
-     * An map implementation that will adapt the map's values as documented for
-     * {@link #adapt(Object, Type)}.
-     */
-    public static <K, V> Map<K, V> adaptMap(Map<K, ?> map, Class<? extends V> valueType) {
-        return adaptGenericMap(map, valueType);
-    }
-
-    private static <K, V> Map<K, V> adaptGenericMap(Map<K, ?> map, Type valueType) {
+    private static Map<?, ?> coerceMap(Map<?, ?> map, Type valueType) {
         if (map == null) {
             return null;
         }
 
-        if (valueType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new AbstractMap<K, V>() {
+        return new AbstractMap<Object, Object>() {
             @Override
-            public V get(Object key) {
-                return adapt(map.get(key), valueType);
+            public Object get(Object key) {
+                return coerce(map.get(key), valueType);
             }
 
             @Override
-            public Set<Entry<K, V>> entrySet() {
-                return new AbstractSet<Entry<K, V>>() {
+            public Set<Entry<Object, Object>> entrySet() {
+                return new AbstractSet<Entry<Object, Object>>() {
                     @Override
                     public int size() {
                         return map.size();
                     }
 
                     @Override
-                    public Iterator<Entry<K, V>> iterator() {
-                        return new Iterator<Entry<K, V>>() {
-                            private Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
+                    public Iterator<Entry<Object, Object>> iterator() {
+                        return new Iterator<Entry<Object, Object>>() {
+                            private Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
                             @Override
                             public boolean hasNext() {
@@ -806,22 +755,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             }
 
                             @Override
-                            public Entry<K, V> next() {
-                                return new Entry<K, V>() {
-                                    private Entry<K, ?> entry = iterator.next();
+                            public Entry<Object, Object> next() {
+                                return new Entry<Object, Object>() {
+                                    private Entry<?, ?> entry = iterator.next();
 
                                     @Override
-                                    public K getKey() {
+                                    public Object getKey() {
                                         return entry.getKey();
                                     }
 
                                     @Override
-                                    public V getValue() {
-                                        return adapt(entry.getValue(), valueType);
+                                    public Object getValue() {
+                                        return coerce(entry.getValue(), valueType);
                                     }
 
                                     @Override
-                                    public V setValue(V value) {
+                                    public Object setValue(Object value) {
                                         throw new UnsupportedOperationException();
                                     }
                                 };
@@ -836,9 +785,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Generates a parameterized type descriptor.
      *
-     * @param <T>
-     * The raw type.
-     *
      * @param rawType
      * The raw type.
      *
@@ -849,7 +795,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * A parameterized type that describes the given raw type and actual type
      * arguments.
      */
-    public static <T> ParameterizedType typeOf(Class<T> rawType, Type... actualTypeArguments) {
+    public static ParameterizedType typeOf(Class<?> rawType, Type... actualTypeArguments) {
         if (rawType == null) {
             throw new IllegalArgumentException();
         }

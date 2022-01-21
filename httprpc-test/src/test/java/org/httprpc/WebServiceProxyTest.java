@@ -316,7 +316,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomBodyPost() throws IOException {
-        Body body = BeanAdapter.adapt(mapOf(
+        Body body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),

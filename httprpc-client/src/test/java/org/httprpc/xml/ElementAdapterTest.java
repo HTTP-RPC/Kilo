@@ -84,7 +84,7 @@ public class ElementAdapterTest {
     }
 
     private void testTypedAccess(ElementAdapter elementAdapter) {
-        TestInterface testInterface = BeanAdapter.adapt(elementAdapter, TestInterface.class);
+        TestInterface testInterface = BeanAdapter.coerce(elementAdapter, TestInterface.class);
 
         assertEquals("A", testInterface.getA());
 

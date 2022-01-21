@@ -105,8 +105,8 @@ public class BeanAdapterTest {
             ))
         );
 
-        assertEquals(map, new BeanAdapter(BeanAdapter.adapt(map, TestInterface.class)));
-        assertEquals(map, new BeanAdapter(BeanAdapter.adapt(map, TestBean.class)));
+        assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestInterface.class)));
+        assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestBean.class)));
     }
 
     @Test
@@ -127,98 +127,89 @@ public class BeanAdapterTest {
 
     @Test
     public void testPrimitiveCoercion() {
-        assertEquals(BeanAdapter.adapt(null, Byte.TYPE), Byte.valueOf((byte)0));
-        assertEquals(BeanAdapter.adapt("1", Byte.TYPE), Byte.valueOf((byte)1));
+        assertEquals(BeanAdapter.coerce(null, Byte.TYPE), Byte.valueOf((byte)0));
+        assertEquals(BeanAdapter.coerce("1", Byte.TYPE), Byte.valueOf((byte)1));
 
-        assertEquals(BeanAdapter.adapt(null, Short.TYPE), Short.valueOf((short)0));
-        assertEquals(BeanAdapter.adapt("2", Short.TYPE), Short.valueOf((short)2));
+        assertEquals(BeanAdapter.coerce(null, Short.TYPE), Short.valueOf((short)0));
+        assertEquals(BeanAdapter.coerce("2", Short.TYPE), Short.valueOf((short)2));
 
-        assertEquals(BeanAdapter.adapt(null, Integer.TYPE), Integer.valueOf(0));
-        assertEquals(BeanAdapter.adapt("3", Integer.TYPE), Integer.valueOf(3));
+        assertEquals(BeanAdapter.coerce(null, Integer.TYPE), Integer.valueOf(0));
+        assertEquals(BeanAdapter.coerce("3", Integer.TYPE), Integer.valueOf(3));
 
-        assertEquals(BeanAdapter.adapt(null, Long.TYPE), Long.valueOf(0));
-        assertEquals(BeanAdapter.adapt("4", Long.TYPE), Long.valueOf(4));
+        assertEquals(BeanAdapter.coerce(null, Long.TYPE), Long.valueOf(0));
+        assertEquals(BeanAdapter.coerce("4", Long.TYPE), Long.valueOf(4));
 
-        assertEquals(BeanAdapter.adapt(null, Float.TYPE), Float.valueOf(0));
-        assertEquals(BeanAdapter.adapt("5.0", Float.TYPE), Float.valueOf(5));
+        assertEquals(BeanAdapter.coerce(null, Float.TYPE), Float.valueOf(0));
+        assertEquals(BeanAdapter.coerce("5.0", Float.TYPE), Float.valueOf(5));
 
-        assertEquals(BeanAdapter.adapt(null, Double.TYPE), Double.valueOf(0));
-        assertEquals(BeanAdapter.adapt("6.0", Double.TYPE), Double.valueOf(6));
+        assertEquals(BeanAdapter.coerce(null, Double.TYPE), Double.valueOf(0));
+        assertEquals(BeanAdapter.coerce("6.0", Double.TYPE), Double.valueOf(6));
 
-        assertEquals(BeanAdapter.adapt(null, Boolean.TYPE), Boolean.FALSE);
-        assertEquals(BeanAdapter.adapt("true", Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.adapt(1, Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.adapt(0, Boolean.TYPE), Boolean.FALSE);
-        assertEquals(BeanAdapter.adapt(0.5, Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.adapt(1.0, Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.adapt(0.0, Boolean.TYPE), Boolean.FALSE);
+        assertEquals(BeanAdapter.coerce(null, Boolean.TYPE), Boolean.FALSE);
+        assertEquals(BeanAdapter.coerce("true", Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.coerce(1, Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.coerce(0, Boolean.TYPE), Boolean.FALSE);
+        assertEquals(BeanAdapter.coerce(0.5, Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.coerce(1.0, Boolean.TYPE), Boolean.TRUE);
+        assertEquals(BeanAdapter.coerce(0.0, Boolean.TYPE), Boolean.FALSE);
     }
 
     @Test
     public void testEnumCoercion() {
-        assertEquals(DayOfWeek.MONDAY, BeanAdapter.adapt(DayOfWeek.MONDAY.toString(), DayOfWeek.class));
+        assertEquals(DayOfWeek.MONDAY, BeanAdapter.coerce(DayOfWeek.MONDAY.toString(), DayOfWeek.class));
     }
 
     @Test
     public void testDateCoercion() {
-        assertEquals(new Date(0), BeanAdapter.adapt(0, Date.class));
+        assertEquals(new Date(0), BeanAdapter.coerce(0, Date.class));
     }
 
     @Test
     public void testTemporalAccessorCoercion() {
-        assertEquals(Instant.ofEpochMilli(1), BeanAdapter.adapt(new Date(1), Instant.class));
+        assertEquals(Instant.ofEpochMilli(1), BeanAdapter.coerce(new Date(1), Instant.class));
 
-        assertEquals(Instant.parse("1970-01-01T00:00:00.001Z"), BeanAdapter.adapt("1970-01-01T00:00:00.001Z", Instant.class));
-        assertEquals(LocalDate.parse("2018-06-28"), BeanAdapter.adapt("2018-06-28", LocalDate.class));
-        assertEquals(LocalTime.parse("10:45"), BeanAdapter.adapt("10:45", LocalTime.class));
-        assertEquals(LocalDateTime.parse("2018-06-28T10:45"), BeanAdapter.adapt("2018-06-28T10:45", LocalDateTime.class));
+        assertEquals(Instant.parse("1970-01-01T00:00:00.001Z"), BeanAdapter.coerce("1970-01-01T00:00:00.001Z", Instant.class));
+        assertEquals(LocalDate.parse("2018-06-28"), BeanAdapter.coerce("2018-06-28", LocalDate.class));
+        assertEquals(LocalTime.parse("10:45"), BeanAdapter.coerce("10:45", LocalTime.class));
+        assertEquals(LocalDateTime.parse("2018-06-28T10:45"), BeanAdapter.coerce("2018-06-28T10:45", LocalDateTime.class));
     }
 
     @Test
     public void testTemporalAmountCoercion() {
-        assertEquals(Duration.parse("PT2H30M"), BeanAdapter.adapt("PT2H30M", Duration.class));
-        assertEquals(Period.parse("P3Y2M"), BeanAdapter.adapt("P3Y2M", Period.class));
+        assertEquals(Duration.parse("PT2H30M"), BeanAdapter.coerce("PT2H30M", Duration.class));
+        assertEquals(Period.parse("P3Y2M"), BeanAdapter.coerce("P3Y2M", Period.class));
     }
 
     @Test
     public void testUUIDCoercion() {
         UUID uuid = UUID.randomUUID();
 
-        assertEquals(uuid, BeanAdapter.adapt(uuid.toString(), UUID.class));
+        assertEquals(uuid, BeanAdapter.coerce(uuid.toString(), UUID.class));
     }
 
     @Test
     public void testURLCoercion() throws MalformedURLException {
-        assertEquals(new URL("http://localhost:8080"), BeanAdapter.adapt("http://localhost:8080", URL.class));
+        assertEquals(new URL("http://localhost:8080"), BeanAdapter.coerce("http://localhost:8080", URL.class));
     }
 
     @Test
     public void testListCoercion() {
-        int i = BeanAdapter.adaptList(listOf("1", "2", "3"), Integer.class).get(0);
+        List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
 
-        assertEquals(1, i);
+        assertEquals(listOf(1, 2, 3), list);
 
-        assertNull(BeanAdapter.adaptList(null, Object.class));
+        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(List.class, Object.class)));
     }
 
     @Test
     public void testMapCoercion() {
-        int i = BeanAdapter.adaptMap(mapOf(
-            entry("a", "1"),
-            entry("b", "2"),
-            entry("c", "3")
-        ), Integer.class).get("a");
+        Map<String, Double> map = BeanAdapter.coerce(mapOf(
+            entry("a", "1.0"),
+            entry("b", "2.0"),
+            entry("c", "3.0")
+        ), BeanAdapter.typeOf(Map.class, String.class, Double.class));
 
-        assertEquals(1, i);
-
-        assertNull(BeanAdapter.adaptMap(null, Object.class));
-    }
-
-    @Test
-    public void testTypeOf() {
-        List<Integer> values = BeanAdapter.adapt(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
-
-        assertEquals(listOf(1, 2, 3), values);
+        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(Map.class, String.class, Object.class)));
     }
 
     @Test
@@ -234,8 +225,8 @@ public class BeanAdapterTest {
 
         Map<String, Object> map2 = mapOf(entry("flag", true));
 
-        TestInterface.NestedInterface nestedBean1 = BeanAdapter.adapt(map1, TestInterface.NestedInterface.class);
-        TestInterface.NestedInterface nestedBean2 = BeanAdapter.adapt(map2, TestInterface.NestedInterface.class);
+        TestInterface.NestedInterface nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
+        TestInterface.NestedInterface nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
 
         assertEquals(nestedBean1, nestedBean2);
         assertEquals(map1.hashCode(), nestedBean1.hashCode());
@@ -244,17 +235,17 @@ public class BeanAdapterTest {
 
     @Test
     public void testReifiedList() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.adapt(emptyList(), TestList.class));
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(emptyList(), TestList.class));
     }
 
     @Test
     public void testReifiedMap() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.adapt(emptyMap(), TestMap.class));
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(emptyMap(), TestMap.class));
     }
 
     @Test
     public void testMissingProperty() {
-        BeanAdapter.adapt(mapOf(
+        BeanAdapter.coerce(mapOf(
             entry("foo", "bar")
         ), TestBean.class);
     }

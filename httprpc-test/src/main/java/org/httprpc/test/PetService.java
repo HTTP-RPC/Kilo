@@ -136,7 +136,7 @@ public class PetService extends WebService {
             Date now = new Date();
 
             averageAge = resultSetAdapter.stream()
-                .map(result -> (Pet)BeanAdapter.adapt(result, Pet.class))
+                .map(result -> (Pet)BeanAdapter.coerce(result, Pet.class))
                 .mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
         }
 
