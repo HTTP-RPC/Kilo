@@ -21,8 +21,8 @@ import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
 import org.httprpc.beans.Key;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

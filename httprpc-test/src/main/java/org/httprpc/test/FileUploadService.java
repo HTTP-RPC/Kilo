@@ -18,8 +18,8 @@ import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.WebService;
 
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

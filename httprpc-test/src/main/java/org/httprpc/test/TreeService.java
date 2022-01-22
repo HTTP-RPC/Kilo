@@ -18,7 +18,7 @@ import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.WebService;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 
 import java.util.List;
 

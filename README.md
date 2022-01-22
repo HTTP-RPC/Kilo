@@ -15,7 +15,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 HTTP-RPC is distributed via Maven Central: 
 
 * [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and interacting with common file formats and relational databases (Java 8 or later required)
-* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services (Java Servlet specification 3.1 or later required)
+* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
 
 **NOTE** The legacy `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-client` or `org.httprpc:httprpc-server` should be used for new development. 
 
@@ -253,7 +253,7 @@ If an exception is thrown by a service method and the response has not yet been 
 * Any other exception type - HTTP 500 (internal server error)
 
 ### Inter-Service Communication
-A reference to any service annotated with `javax.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
+A reference to any service annotated with `jakarta.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
 ### API Documentation
 API documentation can be viewed by appending "?api" to a service URL; for example:

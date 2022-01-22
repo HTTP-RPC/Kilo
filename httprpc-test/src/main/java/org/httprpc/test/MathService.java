@@ -19,7 +19,7 @@ import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 import java.util.List;
 
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
