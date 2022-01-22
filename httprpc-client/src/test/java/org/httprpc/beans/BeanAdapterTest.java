@@ -194,11 +194,11 @@ public class BeanAdapterTest {
 
     @Test
     public void testListCoercion() {
-        List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), List.class, Integer.class);
+        List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
 
         assertEquals(listOf(1, 2, 3), list);
 
-        assertNull(BeanAdapter.coerce(null, List.class, Object.class));
+        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(List.class, Object.class)));
     }
 
     @Test
@@ -207,9 +207,9 @@ public class BeanAdapterTest {
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
-        ), Map.class, String.class, Double.class);
+        ), BeanAdapter.typeOf(Map.class, String.class, Double.class));
 
-        assertNull(BeanAdapter.coerce(null, Map.class, String.class, Object.class));
+        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(Map.class, String.class, Object.class)));
     }
 
     @Test

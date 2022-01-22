@@ -527,28 +527,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * Coerces a value to a parameterized type.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param value
-     * The value to coerce.
-     *
-     * @param rawType
-     * The target's raw type.
-     *
-     * @param actualTypeArguments
-     * The target's actual type arguments.
-     *
-     * @return
-     * The coerced value.
-     */
-    public static <T> T coerce(Object value, Class<?> rawType, Type... actualTypeArguments) {
-        return coerce(value, typeOf(rawType, actualTypeArguments));
-    }
-
     private static Object coerceValue(Object value, Class<?> type) {
         if (type.isInstance(value)) {
             return value;
