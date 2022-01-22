@@ -454,8 +454,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link LocalDateTime}</li>
      * <li>{@link Duration}</li>
      * <li>{@link Period}</li>
-     * <li>{@link Duration}</li>
-     * <li>{@link Period}</li>
      * <li>{@link UUID}</li>
      * <li>{@link URL}</li>
      * </ul>
@@ -597,31 +595,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (value != null) {
             if (type == String.class) {
                 return value.toString();
-            } else if (Enum.class.isAssignableFrom(type)) {
-                String name = value.toString();
-
-                Field[] fields = type.getDeclaredFields();
-
-                for (int i = 0; i < fields.length; i++) {
-                    Field field = fields[i];
-
-                    if (!field.isEnumConstant()) {
-                        continue;
-                    }
-
-                    Object constant;
-                    try {
-                        constant = field.get(null);
-                    } catch (IllegalAccessException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    if (name.equals(constant.toString())) {
-                        return constant;
-                    }
-                }
-
-                throw new IllegalArgumentException();
             } else if (type == Date.class) {
                 if (value instanceof Number) {
                     return new Date(((Number)value).longValue());
@@ -652,6 +625,31 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } catch (MalformedURLException exception) {
                     throw new IllegalArgumentException(exception);
                 }
+            } else if (Enum.class.isAssignableFrom(type)) {
+                String name = value.toString();
+
+                Field[] fields = type.getDeclaredFields();
+
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = fields[i];
+
+                    if (!field.isEnumConstant()) {
+                        continue;
+                    }
+
+                    Object constant;
+                    try {
+                        constant = field.get(null);
+                    } catch (IllegalAccessException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    if (name.equals(constant.toString())) {
+                        return constant;
+                    }
+                }
+
+                throw new IllegalArgumentException();
             } else if (value instanceof Map<?, ?>
                 && !Iterable.class.isAssignableFrom(type)
                 && !Map.class.isAssignableFrom(type)) {
