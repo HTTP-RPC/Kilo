@@ -431,12 +431,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a value to a specific type. If the value is already an instance of
-     * the requested type, it is returned as is.
+     * Coerces a value to a given type.
      *
-     * If the requested type is one of the following, the return value is obtained
-     * via an appropriate conversion method; for example, {@link Number#intValue()},
-     * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:
+     * For class types, if the value is already an instance of the requested
+     * type, it is returned as is.
+     * <br/>
+     * Otherwise, if the requested type is one of the following, the return
+     * value is obtained via an appropriate conversion method; for example,
+     * {@link Number#intValue()}, {@link Object#toString()}, or
+     * {@link LocalDate#parse(CharSequence)}:
      *
      * <ul>
      * <li>{@link Byte} or <code>byte</code></li>
@@ -462,12 +465,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * constant whose string representation matches the value's string
      * representation.
      * <br/>
-     * If the target type is {@link List} or {@link Map}, the value is wrapped
-     * in an instance of the same type that automatically coerces its elements
-     * or values, respectively.
-     * <br/>
-     * Otherwise, the target type is assumed to be a bean. The provided value is
-     * assumed to be a map and is converted as follows:
+     * If none of the previous apply, the target type is assumed to be a bean.
+     * The provided value is assumed to be a map and is converted as follows:
      *
      * <ul>
      * <li>If the target type is an interface, the return value is a proxy
@@ -476,6 +475,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>If the target type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
+     *
+     * For wildcard types, the value is coerced to the wildcard's upper bound.
+     * For parameterized types, if the target type is {@link List} or
+     * {@link Map}, the value is wrapped in an instance of the same type that
+     * automatically coerces its elements or values, respectively, to the
+     * appropriate type. Other parameterized types are not supported.
      *
      * For reference types, <code>null</code> values are returned as is. For
      * numeric or boolean primitives, they are converted to 0 or false,
@@ -528,6 +533,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object coerce(Object value, Class<?> type) {
+        if (List.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
+            throw new IllegalArgumentException();
+        }
+
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
@@ -592,7 +601,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else {
                 return Boolean.parseBoolean(value.toString());
             }
-        } else if (value != null) {
+        } else {
+            if (value == null) {
+                return null;
+            }
+
             if (type == String.class) {
                 return value.toString();
             } else if (type == Date.class) {
@@ -650,9 +663,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
 
                 throw new IllegalArgumentException();
-            } else if (value instanceof Map<?, ?>
-                && !Iterable.class.isAssignableFrom(type)
-                && !Map.class.isAssignableFrom(type)) {
+            } else {
+                if (!(value instanceof Map<?, ?>)) {
+                    throw new IllegalArgumentException();
+                }
+
                 Map<?, ?> map = (Map<?, ?>)value;
 
                 if (type.isInterface()) {
@@ -684,11 +699,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     return bean;
                 }
-            } else {
-                throw new IllegalArgumentException();
             }
-        } else {
-            return null;
         }
     }
 
@@ -827,7 +838,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The bean type.
      *
      * @return
-     * The properties defined by the given type.
+     * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
         Map<String, Property> properties = new TreeMap<>();
