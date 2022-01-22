@@ -500,7 +500,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (type instanceof Class<?>) {
-            return (T)coerceValue(value, (Class<?>)type);
+            return (T)coerce(value, (Class<?>)type);
         } else if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)type;
 
@@ -516,9 +516,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class) {
-                return (T)coerceList((List<?>)value, actualTypeArguments[0]);
+                return (T)coerce((List<?>)value, actualTypeArguments[0]);
             } else if (rawType == Map.class) {
-                return (T)coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
+                return (T)coerce((Map<?, ?>)value, actualTypeArguments[1]);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -527,7 +527,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object coerceValue(Object value, Class<?> type) {
+    private static Object coerce(Object value, Class<?> type) {
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
@@ -692,7 +692,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static List<?> coerceList(List<?> list, Type elementType) {
+    private static List<?> coerce(List<?> list, Type elementType) {
         return new AbstractList<Object>() {
             @Override
             public Object get(int index) {
@@ -723,7 +723,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         };
     }
 
-    private static Map<?, ?> coerceMap(Map<?, ?> map, Type valueType) {
+    private static Map<?, ?> coerce(Map<?, ?> map, Type valueType) {
         return new AbstractMap<Object, Object>() {
             @Override
             public Object get(Object key) {
