@@ -508,6 +508,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             return coerce(value, wildcardType.getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
+            if (value == null) {
+                return null;
+            }
+
             ParameterizedType parameterizedType = (ParameterizedType)type;
 
             Type rawType = parameterizedType.getRawType();
@@ -691,10 +695,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static List<?> coerceList(List<?> list, Type elementType) {
-        if (list == null) {
-            return null;
-        }
-
         return new AbstractList<Object>() {
             @Override
             public Object get(int index) {
@@ -726,10 +726,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Map<?, ?> coerceMap(Map<?, ?> map, Type valueType) {
-        if (map == null) {
-            return null;
-        }
-
         return new AbstractMap<Object, Object>() {
             @Override
             public Object get(Object key) {
