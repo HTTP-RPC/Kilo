@@ -432,7 +432,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     /**
      * Coerces a value to a given type.
-     *
+     * <br/>
      * For class types, if the value is already an instance of the requested
      * type, it is returned as is.
      * <br/>
@@ -477,14 +477,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * </ul>
      *
      * For wildcard types, the value is coerced to the wildcard's upper bound.
+     * <br/>
      * For parameterized types, if the target type is {@link List} or
      * {@link Map}, the value is wrapped in an instance of the same type that
      * automatically coerces its elements or values, respectively, to the
      * appropriate type. Other parameterized types are not supported.
-     *
+     * <br/>
      * For reference types, <code>null</code> values are returned as is. For
-     * numeric or boolean primitives, they are converted to 0 or false,
-     * respectively.
+     * numeric or boolean primitives, they are converted to 0 or
+     * <code>false</code>, respectively.
      *
      * @param <T>
      * The target type.
