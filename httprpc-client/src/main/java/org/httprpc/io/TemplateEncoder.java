@@ -874,6 +874,7 @@ public class TemplateEncoder extends Encoder<Object> {
         dictionaries.pop();
     }
 
+    @SuppressWarnings("java:S4838")
     private Object getMarkerValue(String name) {
         for (Object value : dictionaries) {
             StringBuilder keyBuilder = new StringBuilder();
