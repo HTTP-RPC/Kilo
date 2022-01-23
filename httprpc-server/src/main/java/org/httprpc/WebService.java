@@ -429,13 +429,13 @@ public abstract class WebService extends HttpServlet {
 
             return;
         } finally {
-            this.request.set(null);
-            this.response.set(null);
+            this.request.remove();
+            this.response.remove();
 
-            this.keyList.set(null);
-            this.keyMap.set(null);
+            this.keyList.remove();
+            this.keyMap.remove();
 
-            this.body.set(null);
+            this.body.remove();
         }
 
         if (response.isCommitted()) {
@@ -739,7 +739,7 @@ public abstract class WebService extends HttpServlet {
 
             describeResource(request.getServletPath(), root, xmlStreamWriter);
 
-            if (enumerations.size() > 0) {
+            if (!enumerations.isEmpty()) {
                 xmlStreamWriter.writeEmptyElement("hr");
             }
 

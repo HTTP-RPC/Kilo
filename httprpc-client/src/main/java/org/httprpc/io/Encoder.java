@@ -35,7 +35,7 @@ public abstract class Encoder<T> {
      * @param charset
      * The character set to use when encoding an output stream.
      */
-    public Encoder(Charset charset) {
+    protected Encoder(Charset charset) {
         if (charset == null) {
             throw new IllegalArgumentException();
         }

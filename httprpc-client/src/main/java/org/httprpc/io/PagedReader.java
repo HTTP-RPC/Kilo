@@ -33,8 +33,8 @@ class PagedReader extends Reader {
     private List<char[]> pages = new ArrayList<>();
     private Deque<Integer> marks = new LinkedList<>();
 
-    private static int DEFAULT_PAGE_SIZE = 1024;
-    private static int EOF = -1;
+    private static final int DEFAULT_PAGE_SIZE = 1024;
+    private static final int EOF = -1;
 
     public PagedReader(Reader reader) {
         this(reader, DEFAULT_PAGE_SIZE);
@@ -79,6 +79,7 @@ class PagedReader extends Reader {
     }
 
     @Override
+    @SuppressWarnings("java:S1994")
     public int read(char[] cbuf, int off, int len) throws IOException {
         int c = 0;
         int n = 0;

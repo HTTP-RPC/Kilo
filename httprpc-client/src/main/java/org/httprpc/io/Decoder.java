@@ -37,7 +37,7 @@ public abstract class Decoder<T> {
      * @param charset
      * The character set to use when decoding an input stream.
      */
-    public Decoder(Charset charset) {
+    protected Decoder(Charset charset) {
         if (charset == null) {
             throw new IllegalArgumentException();
         }

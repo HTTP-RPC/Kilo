@@ -307,6 +307,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     @Override
+    @SuppressWarnings("java:S1905")
     public Object put(String key, Object value) {
         Property property = properties.get(key);
 

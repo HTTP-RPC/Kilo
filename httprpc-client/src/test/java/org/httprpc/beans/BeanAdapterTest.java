@@ -42,6 +42,7 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -138,13 +139,13 @@ public class BeanAdapterTest {
         assertEquals(BeanAdapter.coerce(null, Double.TYPE), Double.valueOf(0));
         assertEquals(BeanAdapter.coerce("6.0", Double.TYPE), Double.valueOf(6));
 
-        assertEquals(BeanAdapter.coerce(null, Boolean.TYPE), Boolean.FALSE);
-        assertEquals(BeanAdapter.coerce("true", Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.coerce(1, Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.coerce(0, Boolean.TYPE), Boolean.FALSE);
-        assertEquals(BeanAdapter.coerce(0.5, Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.coerce(1.0, Boolean.TYPE), Boolean.TRUE);
-        assertEquals(BeanAdapter.coerce(0.0, Boolean.TYPE), Boolean.FALSE);
+        assertEquals(Boolean.FALSE, BeanAdapter.coerce(null, Boolean.TYPE));
+        assertEquals(Boolean.TRUE, BeanAdapter.coerce("true", Boolean.TYPE));
+        assertEquals(Boolean.TRUE, BeanAdapter.coerce(1, Boolean.TYPE));
+        assertEquals(Boolean.FALSE, BeanAdapter.coerce(0, Boolean.TYPE));
+        assertEquals(Boolean.TRUE, BeanAdapter.coerce(0.5, Boolean.TYPE));
+        assertEquals(Boolean.TRUE, BeanAdapter.coerce(1.0, Boolean.TYPE));
+        assertEquals(Boolean.FALSE, BeanAdapter.coerce(0.0, Boolean.TYPE));
     }
 
     @Test
@@ -238,9 +239,11 @@ public class BeanAdapterTest {
 
     @Test
     public void testMissingProperty() {
-        BeanAdapter.coerce(mapOf(
+        TestBean testBean = BeanAdapter.coerce(mapOf(
             entry("foo", "bar")
         ), TestBean.class);
+
+        assertNotNull(testBean);
     }
 
     @Test
