@@ -226,13 +226,13 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetFibonacci() throws IOException {
-        List<Integer> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+        List<Number> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
             mapOf(
                 entry("count", 8)
             )
-        ).setMonitorStream(System.out).invoke(BeanAdapter.typeOf(List.class, Integer.class));
+        ).setMonitorStream(System.out).invoke();
 
-        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
+        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.coerceElements(result, Integer.class));
     }
 
     @Test

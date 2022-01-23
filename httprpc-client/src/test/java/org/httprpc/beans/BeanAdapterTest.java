@@ -188,22 +188,41 @@ public class BeanAdapterTest {
 
     @Test
     public void testListCoercion() {
-        List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
+        List<Integer> list = BeanAdapter.coerceElements(listOf("1", "2", "3"), Integer.class);
 
         assertEquals(listOf(1, 2, 3), list);
 
-        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(List.class, Object.class)));
+        assertNull(BeanAdapter.coerceElements(null, Object.class));
     }
 
     @Test
     public void testMapCoercion() {
+        Map<String, Double> map = BeanAdapter.coerceValues(mapOf(
+            entry("a", "1.0"),
+            entry("b", "2.0"),
+            entry("c", "3.0")
+        ), Double.class);
+
+        assertNull(BeanAdapter.coerceValues(null, Object.class));
+    }
+
+    @Test
+    public void testTypeOf() {
+        List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
+
+        assertEquals(listOf(1, 2, 3), list);
+
         Map<String, Double> map = BeanAdapter.coerce(mapOf(
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
         ), BeanAdapter.typeOf(Map.class, String.class, Double.class));
 
-        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(Map.class, String.class, Object.class)));
+        assertEquals(mapOf(
+            entry("a", 1.0),
+            entry("b", 2.0),
+            entry("c", 3.0)
+        ), map);
     }
 
     @Test

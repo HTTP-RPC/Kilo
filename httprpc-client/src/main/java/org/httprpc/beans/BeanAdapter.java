@@ -517,9 +517,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class) {
-                return (T)coerce((List<?>)value, actualTypeArguments[0]);
+                return (T)coerceElements((List<?>)value, actualTypeArguments[0]);
             } else if (rawType == Map.class) {
-                return (T)coerce((Map<?, ?>)value, actualTypeArguments[1]);
+                return (T)coerceValues((Map<?, ?>)value, actualTypeArguments[1]);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -699,10 +699,34 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static List<Object> coerce(List<?> list, Type elementType) {
-        return new AbstractList<Object>() {
+    /**
+     * Coerces list elements to a given type.
+     *
+     * @param <E>
+     * The target element type.
+     *
+     * @param list
+     * The source list.
+     *
+     * @param elementType
+     * The target element type.
+     *
+     * @return
+     * An list implementation that will coerce the list's elements to the
+     * requested type.
+     */
+    public static <E> List<E> coerceElements(List<?> list, Type elementType) {
+        if (list == null) {
+            return null;
+        }
+
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new AbstractList<E>() {
             @Override
-            public Object get(int index) {
+            public E get(int index) {
                 return coerce(list.get(index), elementType);
             }
 
@@ -712,8 +736,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             @Override
-            public Iterator<Object> iterator() {
-                return new Iterator<Object>() {
+            public Iterator<E> iterator() {
+                return new Iterator<E>() {
                     private Iterator<?> iterator = list.iterator();
 
                     @Override
@@ -722,7 +746,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
-                    public Object next() {
+                    public E next() {
                         return coerce(iterator.next(), elementType);
                     }
                 };
@@ -730,25 +754,52 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         };
     }
 
-    private static Map<Object, Object> coerce(Map<?, ?> map, Type valueType) {
-        return new AbstractMap<Object, Object>() {
+    /**
+     * Coerces map values to a given type.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The target value type.
+     *
+     * @param map
+     * The source map.
+     *
+     * @param valueType
+     * The target value type.
+     *
+     * @return
+     * A map implementation that will coerce the map's values to the requested
+     * type.
+     */
+    public static <K, V> Map<K, V> coerceValues(Map<K, ?> map, Type valueType) {
+        if (map == null) {
+            return null;
+        }
+
+        if (valueType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new AbstractMap<K, V>() {
             @Override
-            public Object get(Object key) {
+            public V get(Object key) {
                 return coerce(map.get(key), valueType);
             }
 
             @Override
-            public Set<Entry<Object, Object>> entrySet() {
-                return new AbstractSet<Entry<Object, Object>>() {
+            public Set<Entry<K, V>> entrySet() {
+                return new AbstractSet<Entry<K, V>>() {
                     @Override
                     public int size() {
                         return map.size();
                     }
 
                     @Override
-                    public Iterator<Entry<Object, Object>> iterator() {
-                        return new Iterator<Entry<Object, Object>>() {
-                            private Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
+                    public Iterator<Entry<K, V>> iterator() {
+                        return new Iterator<Entry<K, V>>() {
+                            private Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
 
                             @Override
                             public boolean hasNext() {
@@ -756,22 +807,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             }
 
                             @Override
-                            public Entry<Object, Object> next() {
-                                return new Entry<Object, Object>() {
-                                    private Entry<?, ?> entry = iterator.next();
+                            public Entry<K, V> next() {
+                                return new Entry<K, V>() {
+                                    private Entry<K, ?> entry = iterator.next();
 
                                     @Override
-                                    public Object getKey() {
+                                    public K getKey() {
                                         return entry.getKey();
                                     }
 
                                     @Override
-                                    public Object getValue() {
+                                    public V getValue() {
                                         return coerce(entry.getValue(), valueType);
                                     }
 
                                     @Override
-                                    public Object setValue(Object value) {
+                                    public V setValue(Object value) {
                                         throw new UnsupportedOperationException();
                                     }
                                 };
