@@ -52,11 +52,9 @@ public interface TestInterface {
 
     NestedInterface getNestedBean();
 
-    List<?> getList();
     List<Integer> getIntegerList();
-    List<? extends NestedInterface> getNestedBeanList();
+    List<NestedInterface> getNestedBeanList();
 
-    Map<String, ?> getMap();
     Map<String, Double> getDoubleMap();
-    Map<String, ? extends NestedInterface> getNestedBeanMap();
+    Map<String, NestedInterface> getNestedBeanMap();
 }

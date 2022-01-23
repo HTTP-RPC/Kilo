@@ -105,7 +105,7 @@ public class ElementAdapterTest {
         assertEquals("déf", stringItems.get(1));
         assertEquals("ghi", stringItems.get(2));
 
-        List<Map<String, ?>> mapItems = list.getMapItems();
+        List<Map<String, Object>> mapItems = list.getMapItems();
 
         assertEquals(3, mapItems.size());
 

@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -476,8 +475,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
      *
-     * For wildcard types, the value is coerced to the wildcard's upper bound.
-     * <br/>
      * For parameterized types, if the target type is {@link List} or
      * {@link Map}, the value is wrapped in an instance of the same type that
      * automatically coerces its elements or values, respectively, to the
@@ -507,10 +504,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         if (type instanceof Class<?>) {
             return (T)coerce(value, (Class<?>)type);
-        } else if (type instanceof WildcardType) {
-            WildcardType wildcardType = (WildcardType)type;
-
-            return coerce(value, wildcardType.getUpperBounds()[0]);
         } else if (type instanceof ParameterizedType) {
             if (value == null) {
                 return null;
@@ -704,7 +697,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static List<?> coerce(List<?> list, Type elementType) {
+    private static List<Object> coerce(List<?> list, Type elementType) {
         return new AbstractList<Object>() {
             @Override
             public Object get(int index) {
@@ -735,7 +728,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         };
     }
 
-    private static Map<?, ?> coerce(Map<?, ?> map, Type valueType) {
+    private static Map<Object, Object> coerce(Map<?, ?> map, Type valueType) {
         return new AbstractMap<Object, Object>() {
             @Override
             public Object get(Object key) {

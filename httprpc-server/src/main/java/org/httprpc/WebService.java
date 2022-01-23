@@ -38,7 +38,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -989,8 +988,6 @@ public abstract class WebService extends HttpServlet {
     private void describeType(Type type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
         if (type instanceof Class<?>) {
             describeType((Class<?>)type, xmlStreamWriter);
-        } else if (type instanceof WildcardType) {
-            describeType(((WildcardType)type).getUpperBounds()[0], xmlStreamWriter);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
 

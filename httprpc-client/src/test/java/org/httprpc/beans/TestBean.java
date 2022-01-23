@@ -58,15 +58,13 @@ public class TestBean implements TestInterface {
     private UUID uuid = null;
     private URL url = null;
 
-    private NestedBean nestedBean = null;
+    private NestedInterface nestedBean = null;
 
-    private List<?> list = null;
     private List<Integer> integerList = null;
-    private List<NestedBean> nestedBeanList = null;
+    private List<NestedInterface> nestedBeanList = null;
 
-    private Map<String, ?> map = null;
     private Map<String, Double> doubleMap = null;
-    private Map<String, NestedBean> nestedBeanMap = null;
+    private Map<String, NestedInterface> nestedBeanMap = null;
 
     @Key("i")
     @Override
@@ -206,21 +204,12 @@ public class TestBean implements TestInterface {
     }
 
     @Override
-    public NestedBean getNestedBean() {
+    public NestedInterface getNestedBean() {
         return nestedBean;
     }
 
-    public void setNestedBean(NestedBean nestedBean) {
+    public void setNestedBean(NestedInterface nestedBean) {
         this.nestedBean = nestedBean;
-    }
-
-    @Override
-    public List<?> getList() {
-        return list;
-    }
-
-    public void setList(List<?> list) {
-        this.list = list;
     }
 
     @Override
@@ -233,21 +222,12 @@ public class TestBean implements TestInterface {
     }
 
     @Override
-    public List<NestedBean> getNestedBeanList() {
+    public List<NestedInterface> getNestedBeanList() {
         return nestedBeanList;
     }
 
-    public void setNestedBeanList(List<NestedBean> nestedBeanList) {
+    public void setNestedBeanList(List<NestedInterface> nestedBeanList) {
         this.nestedBeanList = nestedBeanList;
-    }
-
-    @Override
-    public Map<String, ?> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, ?> map) {
-        this.map = map;
     }
 
     @Override
@@ -260,11 +240,11 @@ public class TestBean implements TestInterface {
     }
 
     @Override
-    public Map<String, NestedBean> getNestedBeanMap() {
+    public Map<String, NestedInterface> getNestedBeanMap() {
         return nestedBeanMap;
     }
 
-    public void setNestedBeanMap(Map<String, NestedBean> nestedBeanMap) {
+    public void setNestedBeanMap(Map<String, NestedInterface> nestedBeanMap) {
         this.nestedBeanMap = nestedBeanMap;
     }
 

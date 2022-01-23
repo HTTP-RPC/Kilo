@@ -209,8 +209,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
 
-    private Map<String, ?> headers = emptyMap();
-    private Map<String, ?> arguments = emptyMap();
+    private Map<String, Object> headers = emptyMap();
+    private Map<String, Object> arguments = emptyMap();
 
     private Object body;
 
@@ -320,7 +320,7 @@ public class WebServiceProxy {
      * @return
      * The header map.
      */
-    public Map<String, ?> getHeaders() {
+    public Map<String, Object> getHeaders() {
         return headers;
     }
 
@@ -333,7 +333,7 @@ public class WebServiceProxy {
      * @return
      * The web service proxy.
      */
-    public WebServiceProxy setHeaders(Map<String, ?> headers) {
+    public WebServiceProxy setHeaders(Map<String, Object> headers) {
         if (headers == null) {
             throw new IllegalArgumentException();
         }
@@ -349,7 +349,7 @@ public class WebServiceProxy {
      * @return
      * The argument map.
      */
-    public Map<String, ?> getArguments() {
+    public Map<String, Object> getArguments() {
         return arguments;
     }
 
@@ -362,7 +362,7 @@ public class WebServiceProxy {
      * @return
      * The web service proxy.
      */
-    public WebServiceProxy setArguments(Map<String, ?> arguments) {
+    public WebServiceProxy setArguments(Map<String, Object> arguments) {
         if (arguments == null) {
             throw new IllegalArgumentException();
         }
@@ -869,10 +869,11 @@ public class WebServiceProxy {
         writer.flush();
     }
 
-    private static Iterable<?> getParameterValues(Object argument) {
-        Iterable<?> values;
+    @SuppressWarnings("unchecked")
+    private static Iterable<Object> getParameterValues(Object argument) {
+        Iterable<Object> values;
         if (argument instanceof Iterable<?>) {
-            values = (Iterable<?>)getParameterValue(argument);
+            values = (Iterable<Object>)getParameterValue(argument);
         } else {
             values = singletonList(getParameterValue(argument));
         }

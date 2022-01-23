@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -75,9 +74,6 @@ public class BeanAdapterTest {
             entry("nestedBean", mapOf(
                 entry("flag", true)
             )),
-            entry("list", listOf(
-                1, 2L, 4.0, "abc"
-            )),
             entry("integerList", listOf(
                 1, 2, 3, 4
             )),
@@ -86,12 +82,6 @@ public class BeanAdapterTest {
                     entry("flag", true)
                 ))
             ),
-            entry("map", mapOf(
-                entry("a", 1),
-                entry("b", 2L),
-                entry("c", 4.0),
-                entry("d", "abc")
-            )),
             entry("doubleMap", mapOf(
                 entry("a", 1.0),
                 entry("b", 2.0),
@@ -105,7 +95,10 @@ public class BeanAdapterTest {
             ))
         );
 
-        assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestInterface.class)));
+        TestInterface x = BeanAdapter.coerce(map, TestInterface.class);
+        Map<String, ?> y =  new BeanAdapter(x);
+
+        assertEquals(map, y);
         assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestBean.class)));
     }
 
@@ -269,14 +262,7 @@ public class BeanAdapterTest {
         assertEquals(Period.class, properties.get("period"));
         assertEquals(URL.class, properties.get("URL"));
 
-        assertEquals(TestBean.NestedBean.class, properties.get("nestedBean"));
-
-        assertTrue(properties.get("list") instanceof ParameterizedType);
-
-        Type[] listTypeArguments = ((ParameterizedType)properties.get("list")).getActualTypeArguments();
-
-        assertEquals(1, listTypeArguments.length);
-        assertTrue(listTypeArguments[0] instanceof WildcardType);
+        assertEquals(TestInterface.NestedInterface.class, properties.get("nestedBean"));
 
         assertTrue(properties.get("integerList") instanceof ParameterizedType);
 
@@ -288,15 +274,7 @@ public class BeanAdapterTest {
         Type[] nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
 
         assertEquals(1, nestedBeanListTypeArguments.length);
-        assertEquals(TestBean.NestedBean.class, nestedBeanListTypeArguments[0]);
-
-        assertTrue(properties.get("map") instanceof ParameterizedType);
-
-        Type[] mapTypeArguments = ((ParameterizedType)properties.get("map")).getActualTypeArguments();
-
-        assertEquals(2, mapTypeArguments.length);
-        assertEquals(String.class, mapTypeArguments[0]);
-        assertTrue(mapTypeArguments[1] instanceof WildcardType);
+        assertEquals(TestInterface.NestedInterface.class, nestedBeanListTypeArguments[0]);
 
         assertTrue(properties.get("doubleMap") instanceof ParameterizedType);
 
@@ -310,7 +288,7 @@ public class BeanAdapterTest {
 
         assertEquals(2, nestedBeanMapTypeArguments.length);
         assertEquals(String.class, nestedBeanMapTypeArguments[0]);
-        assertEquals(TestBean.NestedBean.class, nestedBeanMapTypeArguments[1]);
+        assertEquals(TestInterface.NestedInterface.class, nestedBeanMapTypeArguments[1]);
 
         assertNull(properties.get("x"));
         assertNull(properties.get("y"));

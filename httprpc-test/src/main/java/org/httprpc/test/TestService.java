@@ -123,7 +123,7 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    public Map<String, ?> testGet(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
+    public Map<String, Object> testGet(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
         UUID uuid) {
@@ -146,7 +146,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("a/?:a/b/?/c/?:c/d/?")
-    public Map<String, ?> testGetKeys() {
+    public Map<String, Object> testGetKeys() {
         return mapOf(
             entry("list", listOf(getKey(0), getKey(1), getKey(2), getKey(3))),
             entry("map", mapOf(
@@ -316,7 +316,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("headers")
-    public Map<String, ?> testHeaders() {
+    public Map<String, String> testHeaders() {
         HttpServletRequest request = getRequest();
 
         return mapOf(

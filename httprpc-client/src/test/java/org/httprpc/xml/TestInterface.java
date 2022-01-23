@@ -38,7 +38,7 @@ public interface TestInterface {
         List<String> getStringItems();
 
         @Key("item*")
-        List<Map<String, ?>> getMapItems();
+        List<Map<String, Object>> getMapItems();
     }
 
     @Key("@a")
