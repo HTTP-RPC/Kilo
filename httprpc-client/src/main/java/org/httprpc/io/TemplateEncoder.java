@@ -354,7 +354,7 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     // Map iterator
-    private static class MapIterator implements Iterator<Map<?, ?>> {
+    private static class MapIterator implements Iterator<Map<Object, Object>> {
         Iterator<? extends Map.Entry<?, ?>> iterator;
 
         MapIterator(Map<?, ?> map) {
@@ -367,7 +367,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         @Override
-        public Map<?, ?> next() {
+        public Map<Object, Object> next() {
             return new AbstractMap<Object, Object>() {
                 private Entry<?, ?> entry = iterator.next();
 

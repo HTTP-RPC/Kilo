@@ -101,12 +101,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return getList().size();
         }
 
-        private List<?> getList() {
+        @SuppressWarnings("unchecked")
+        private List<Object> getList() {
             if (!(iterable instanceof List<?>)) {
                 throw new UnsupportedOperationException();
             }
 
-            return (List<?>)iterable;
+            return (List<Object>)iterable;
         }
 
         @Override
