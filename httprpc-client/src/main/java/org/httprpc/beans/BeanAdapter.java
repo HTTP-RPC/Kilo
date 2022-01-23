@@ -517,9 +517,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class) {
-                return (T)coerceElements((List<?>)value, actualTypeArguments[0]);
+                return (T)coerceList((List<?>)value, actualTypeArguments[0]);
             } else if (rawType == Map.class) {
-                return (T)coerceValues((Map<?, ?>)value, actualTypeArguments[1]);
+                return (T)coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -715,7 +715,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * An list implementation that will coerce the list's elements to the
      * requested type.
      */
-    public static <E> List<E> coerceElements(List<?> list, Type elementType) {
+    public static <E> List<E> coerceList(List<?> list, Type elementType) {
         if (list == null) {
             return null;
         }
@@ -773,7 +773,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * A map implementation that will coerce the map's values to the requested
      * type.
      */
-    public static <K, V> Map<K, V> coerceValues(Map<K, ?> map, Type valueType) {
+    public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Type valueType) {
         if (map == null) {
             return null;
         }

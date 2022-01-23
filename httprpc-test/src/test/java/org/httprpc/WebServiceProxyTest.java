@@ -232,7 +232,7 @@ public class WebServiceProxyTest {
             )
         ).setMonitorStream(System.out).invoke();
 
-        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.coerceElements(result, Integer.class));
+        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.coerceList(result, Integer.class));
     }
 
     @Test
