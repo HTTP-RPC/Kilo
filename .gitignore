@@ -1,6 +1,7 @@
 .gradle
 gradle.properties
 .idea/workspace.xml
+.idea/sonarlint
 **/build
 **/out
 **/.DS_Store

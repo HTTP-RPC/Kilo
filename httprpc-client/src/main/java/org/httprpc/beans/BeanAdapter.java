@@ -507,10 +507,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (type instanceof Class<?>) {
             return (T)coerce(value, (Class<?>)type);
         } else if (type instanceof ParameterizedType) {
-            if (value == null) {
-                return null;
-            }
-
             ParameterizedType parameterizedType = (ParameterizedType)type;
 
             Type rawType = parameterizedType.getRawType();
