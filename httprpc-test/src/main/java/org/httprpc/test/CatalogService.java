@@ -160,7 +160,7 @@ public class CatalogService extends WebService {
     public Item addItem() throws SQLException {
         Item item = getBody();
 
-        Integer id = BeanAdapter.coerce(QueryBuilder.insertInto("item", mapOf(
+        Integer itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item", mapOf(
             entry("description", ":description"),
             entry("price", ":price")
         )).execute(getConnection(), mapOf(
@@ -168,8 +168,8 @@ public class CatalogService extends WebService {
             entry("price", item.getPrice())
         )).getGeneratedKeys().get(0), Integer.class);
 
-        Map<String, Object> result = QueryBuilder.select("*").from("item").where("id = :id").execute(getConnection(), mapOf(
-            entry("id", id)
+        Map<String, Object> result = QueryBuilder.select("*").from("item").where("id = :itemID").execute(getConnection(), mapOf(
+            entry("itemID", itemID)
         )).getResult();
 
         getResponse().setStatus(HttpServletResponse.SC_CREATED);
