@@ -1,8 +1,8 @@
-drop schema if exists menagerie;
+drop schema if exists demo;
 
-create schema menagerie;
+create schema demo;
 
-use menagerie;
+use demo;
 
 create table pet (
   name varchar(20),
@@ -22,6 +22,15 @@ insert into pet (name, owner, species, sex, birth, death) values ('Chirpy', 'Gwe
 insert into pet (name, owner, species, sex, birth, death) values ('Whistler', 'Gwen', 'bird', null, '1997-12-09', null);
 insert into pet (name, owner, species, sex, birth, death) values ('Slim', 'Benny', 'snake', 'm', '1996-04-29', null);
 
+create table item (
+    id int not null auto_increment,
+    description varchar(256) not null,
+    price double not null,
+    primary key (id)
+);
+
+drop user if exists 'demo'@'%';
+
 create user 'demo'@'%' identified by 'demo123!';
-grant select on menagerie.* to 'demo'@'%';
+grant select, insert, update, delete on demo.* to 'demo'@'%';
 flush privileges;

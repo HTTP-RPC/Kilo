@@ -30,7 +30,7 @@ Classes provided by the HTTP-RPC framework include:
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
-* [QueryBuilder](#querybuilder) - programmatically constructs a SQL query
+* [QueryBuilder](#querybuilder) - programmatically constructs/executes a SQL query
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
@@ -800,19 +800,19 @@ ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(
 ```
 
 ## QueryBuilder
-The `QueryBuilder` class provides a fluent API for programmatically constructing SQL queries. 
+The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. 
 
 For example, the query from the previous section could be created as follows using `QueryBuilder`:
 
 ```java
-String sql = QueryBuilder.select("name", "species", "sex", "birth")
-    .from("pet")
-    .where("owner = :owner").toString();
+String sql = QueryBuilder.select("name", "species", "sex", "birth").from("pet").where("owner = :owner").toString();
 ```
 
 Insert, update, and delete operations are also supported. In general, string values provided to the `insertInto()` and `set()` methods are wrapped in single quotes, and any embdedded single quotes are replaced with two successive single quotes. However, any string that starts with ":" or is equal to "?" is assumed to be a parameter reference and is not escaped. 
 
 If an instance of `QueryBuilder` is passed to `insertInto()` or `set()`, it is considered a subquery and is wrapped in parentheses.
+
+See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) or [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 

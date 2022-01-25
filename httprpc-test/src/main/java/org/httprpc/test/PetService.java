@@ -45,16 +45,13 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 
-/**
- * Pet service.
- */
 @WebServlet(urlPatterns={"/pets/*"}, loadOnStartup=1)
 public class PetService extends WebService {
-    private DataSource dataSource = null;
-
     private interface Pet {
         Date getBirth();
     }
+
+    private DataSource dataSource = null;
 
     @Override
     public void init() throws ServletException {
@@ -64,7 +61,7 @@ public class PetService extends WebService {
             Context initialCtx = new InitialContext();
             Context environmentContext = (Context)initialCtx.lookup("java:comp/env");
 
-            dataSource = (DataSource)environmentContext.lookup("jdbc/MenagerieDB");
+            dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
         } catch (NamingException exception) {
             throw new ServletException(exception);
         }
@@ -72,9 +69,9 @@ public class PetService extends WebService {
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        Parameters parameters = Parameters.parse(QueryBuilder.select("name", "species", "sex", "birth")
-            .from("pet")
-            .where("owner = :owner").toString());
+        String sql = QueryBuilder.select("name", "species", "sex", "birth").from("pet").where("owner = :owner").toString();
+
+        Parameters parameters = Parameters.parse(sql);
 
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {

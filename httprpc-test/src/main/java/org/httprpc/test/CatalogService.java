@@ -14,20 +14,33 @@
 
 package org.httprpc.test;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.Content;
 import org.httprpc.Description;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
+import org.httprpc.beans.BeanAdapter;
 import org.httprpc.beans.Key;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletResponse;
+import org.httprpc.sql.QueryBuilder;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
+
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 @Description("Simulates a product catalog.")
@@ -78,58 +91,120 @@ public class CatalogService extends WebService {
         LARGE
     }
 
-    private Map<Integer, Item> items = new HashMap<>();
+    private DataSource dataSource = null;
 
-    private int nextID = 1;
+    private ThreadLocal<Connection> connection = new ThreadLocal<>();
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        try {
+            Context initialCtx = new InitialContext();
+            Context environmentContext = (Context)initialCtx.lookup("java:comp/env");
+
+            dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
+        } catch (NamingException exception) {
+            throw new ServletException(exception);
+        }
+    }
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            this.connection.set(connection);
+
+            try {
+                super.service(request, response);
+
+                if (response.getStatus() / 100 == 2) {
+                    connection.commit();
+                } else {
+                    connection.rollback();
+                }
+            } catch (IOException | SQLException | RuntimeException exception) {
+                connection.rollback();
+
+                log(exception.getMessage(), exception);
+
+                throw exception;
+            } finally {
+                connection.setAutoCommit(true);
+
+                this.connection.remove();
+            }
+        } catch (SQLException exception) {
+            throw new ServletException(exception);
+        }
+    }
+
+    private Connection getConnection() {
+        return connection.get();
+    }
 
     @RequestMethod("GET")
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
-    public Iterable<Item> getItems() {
-        return items.values();
+    public List<Item> getItems() throws SQLException {
+        List<Map<String, Object>> results = QueryBuilder.select("*").from("item").execute(getConnection()).getResults();
+
+        return BeanAdapter.coerceList(results, Item.class);
     }
 
     @RequestMethod("POST")
     @ResourcePath("items")
     @Description("Adds an item to the catalog.")
     @Content(Item.class)
-    public Item addItem() {
+    public Item addItem() throws SQLException {
         Item item = getBody();
 
-        item.id = nextID++;
+        Integer id = BeanAdapter.coerce(QueryBuilder.insertInto("item", mapOf(
+            entry("description", ":description"),
+            entry("price", ":price")
+        )).execute(getConnection(), mapOf(
+            entry("description", item.getDescription()),
+            entry("price", item.getPrice())
+        )).getGeneratedKeys().get(0), Integer.class);
 
-        items.put(item.id, item);
+        Map<String, Object> result = QueryBuilder.select("*").from("item").where("id = :id").execute(getConnection(), mapOf(
+            entry("id", id)
+        )).getResult();
 
         getResponse().setStatus(HttpServletResponse.SC_CREATED);
 
-        return item;
+        return BeanAdapter.coerce(result, Item.class);
     }
 
     @RequestMethod("PUT")
     @ResourcePath("items/?:itemID")
     @Description("Updates an item.")
     @Content(Item.class)
-    public void updateItem() {
-        int itemID = getKey("itemID", Integer.class);
-
-        if (!items.containsKey(itemID)) {
-            throw new NoSuchElementException();
-        }
+    public void updateItem() throws SQLException {
+        Integer itemID = getKey("itemID", Integer.class);
 
         Item item = getBody();
 
-        if (itemID != item.id) {
-            throw new IllegalArgumentException();
-        }
-
-        items.put(itemID, item);
+        QueryBuilder.update("item").set(mapOf(
+            entry("description", ":description"),
+            entry("price", ":price")
+        )).where("id = :itemID").execute(getConnection(), mapOf(
+            entry("itemID", itemID),
+            entry("description", item.getDescription()),
+            entry("price", item.getPrice())
+        ));
     }
 
     @RequestMethod("DELETE")
     @ResourcePath("items/?:itemID")
     @Description("Deletes an item.")
-    public void deleteItem() {
-        items.remove(Integer.parseInt(getKey("itemID")));
+    public void deleteItem() throws SQLException {
+        Integer itemID = getKey("itemID", Integer.class);
+
+        QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), mapOf(
+            entry("itemID", itemID)
+        ));
     }
 
     @RequestMethod("GET")
