@@ -37,6 +37,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -147,8 +148,9 @@ public abstract class WebService extends HttpServlet {
 
             Resource resource = resources.get(path);
 
-            // TODO Flat map?
             operations = resource.handlerMap.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream()
+                    .map(value -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), value)))
                 .map(entry -> new OperationDescriptor(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         }
@@ -198,34 +200,36 @@ public abstract class WebService extends HttpServlet {
      * Describes a service operation.
      */
     public static class OperationDescriptor {
-        private String verb;
+        private String method;
         private String description;
         private TypeDescriptor consumes;
         private TypeDescriptor produces;
         private List<VariableDescriptor> parameters;
         private boolean deprecated;
 
-        private OperationDescriptor(String verb, Method method) {
-            this.verb = verb;
+        private OperationDescriptor(String method, Handler handler) {
+            this.method = method;
 
-            this.description = description;
+            description = Optional.ofNullable(handler.method.getAnnotation(Description.class)).map(Description::value).orElse(null);
 
-            this.consumes = consumes;
-            this.produces = produces;
+            // TODO Produce type descriptors from Body annotation and (generic) return type
+            consumes = null;
+            produces = null;
 
-            this.parameters = parameters;
+            // TODO Produce variable/type descriptors from (generic) parameter types
+            parameters = null;
 
-            this.deprecated = deprecated;
+            deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
 
         /**
-         * Returns the HTTP verb used to invoke the operation.
+         * Returns the HTTP method used to invoke the operation.
          *
          * @return
-         * The operation's verb.
+         * The HTTP method used to invoke the operation.
          */
-        public String getVerb() {
-            return verb;
+        public String getMethod() {
+            return method;
         }
 
         /**
@@ -432,11 +436,18 @@ public abstract class WebService extends HttpServlet {
         private List<VariableDescriptor> properties;
 
         private StructureDescriptor(Class<?> type) {
+            name = type.getSimpleName();
+
+            if (type.isInterface()) {
+                supertypes = Arrays.stream(type.getInterfaces()).map(TypeDescriptor::new).collect(Collectors.toList());
+            } else {
+                supertypes = Collections.singletonList(new TypeDescriptor(type.getSuperclass()));
+            }
+
+            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+
             // TODO
-            this.name = name;
-            this.supertypes = supertypes;
-            this.description = description;
-            this.properties = properties;
+            properties = null;
         }
 
         /**
