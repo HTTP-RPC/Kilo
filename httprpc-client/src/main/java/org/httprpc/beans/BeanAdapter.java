@@ -630,7 +630,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } catch (MalformedURLException exception) {
                     throw new IllegalArgumentException(exception);
                 }
-            } else if (Enum.class.isAssignableFrom(type)) {
+            } else if (type.isEnum()) {
                 String name = value.toString();
 
                 Field[] fields = type.getDeclaredFields();
