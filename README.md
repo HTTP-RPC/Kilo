@@ -344,6 +344,8 @@ public enum Size {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
+The `Endpoint` annotation can be used to provide additional information about service endpoints. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) service for more information.
+
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
 

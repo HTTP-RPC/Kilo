@@ -18,6 +18,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.Content;
 import org.httprpc.Description;
+import org.httprpc.Endpoint;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -44,6 +45,8 @@ import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
 @Description("Simulates a product catalog.")
+@Endpoint(path = "items", description = "Item collection.")
+@Endpoint(path = "items/?", description = "Item detail.", keys = {"The item ID."})
 public class CatalogService extends WebService {
     @Description("Represents an item in the catalog.")
     public static class Item {

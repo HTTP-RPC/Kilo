@@ -24,13 +24,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -41,27 +37,24 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static org.httprpc.util.Collections.listOf;
@@ -70,6 +63,534 @@ import static org.httprpc.util.Collections.listOf;
  * Abstract base class for web services.
  */
 public abstract class WebService extends HttpServlet {
+    /**
+     * Describes a service instance.
+     */
+    public static class ServiceDescriptor {
+        private String description;
+        private List<EndpointDescriptor> endpoints;
+        private List<EnumerationDescriptor> enumerations;
+        private List<StructureDescriptor> structures;
+
+        private ServiceDescriptor(String description,
+            List<EndpointDescriptor> endpoints,
+            List<EnumerationDescriptor> enumerations,
+            List<StructureDescriptor> structures) {
+            this.description = description;
+            this.endpoints = endpoints;
+            this.enumerations = enumerations;
+            this.structures = structures;
+        }
+
+        /**
+         * Returns a description of the service.
+         *
+         * @return
+         * The service description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the endpoints provided by the service.
+         *
+         * @return
+         * The service endpoints.
+         */
+        public List<EndpointDescriptor> getEndpoints() {
+            return endpoints;
+        }
+
+        /**
+         * Returns the enumerations defined by the service.
+         *
+         * @return
+         * The service enumerations.
+         */
+        public List<EnumerationDescriptor> getEnumerations() {
+            return enumerations;
+        }
+
+        /**
+         * Returns the structures defined by the service.
+         *
+         * @return
+         * The service structures.
+         */
+        public List<StructureDescriptor> getStructures() {
+            return structures;
+        }
+    }
+
+    /**
+     * Describes a service endpoint.
+     */
+    public static class EndpointDescriptor {
+        private String path;
+        private String description;
+        private List<String> keys;
+        private List<OperationDescriptor> operations;
+
+        private EndpointDescriptor(String path, Map<String, Endpoint> endpoints, Map<String, Resource> resources) {
+            this.path = path;
+
+            Endpoint endpoint = endpoints.get(path);
+
+            if (endpoint != null) {
+                description = endpoint.description();
+                keys = Collections.unmodifiableList(Arrays.asList(endpoint.keys()));
+            } else {
+                description = null;
+                keys = null;
+            }
+
+            Resource resource = resources.get(path);
+
+            // TODO Flat map?
+            operations = resource.handlerMap.entrySet().stream()
+                .map(entry -> new OperationDescriptor(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+        }
+
+        /**
+         * Returns the endpoint's path.
+         *
+         * @return
+         * The endpoint's path.
+         */
+        public String getPath() {
+            return path;
+        }
+
+        /**
+         * Returns a description of the endpoint.
+         *
+         * @return
+         * The endpoint's description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the keys defined by the endpoint.
+         *
+         * @return
+         * The endpoint's keys.
+         */
+        public List<String> getKeys() {
+            return keys;
+        }
+
+        /**
+         * Returns the operations provided by the endpoint.
+         *
+         * @return
+         * The endpoint's operations.
+         */
+        public List<OperationDescriptor> getOperations() {
+            return operations;
+        }
+    }
+
+    /**
+     * Describes a service operation.
+     */
+    public static class OperationDescriptor {
+        private String verb;
+        private String description;
+        private TypeDescriptor consumes;
+        private TypeDescriptor produces;
+        private List<VariableDescriptor> parameters;
+        private boolean deprecated;
+
+        private OperationDescriptor(String verb, Method method) {
+            this.verb = verb;
+
+            this.description = description;
+
+            this.consumes = consumes;
+            this.produces = produces;
+
+            this.parameters = parameters;
+
+            this.deprecated = deprecated;
+        }
+
+        /**
+         * Returns the HTTP verb used to invoke the operation.
+         *
+         * @return
+         * The operation's verb.
+         */
+        public String getVerb() {
+            return verb;
+        }
+
+        /**
+         * Returns a description of the operation.
+         *
+         * @return
+         * The operation's description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the type of content consumed by the operation.
+         *
+         * @return
+         * The type of content consumed by the operation, or <code>null</code>
+         * if the operation does not accept request content.
+         */
+        public TypeDescriptor getConsumes() {
+            return consumes;
+        }
+
+        /**
+         * Returns the type of content produced by the operation.
+         *
+         * @return
+         * The type of content produced by the operation, or <code>null</code>
+         * if the operation does not return response content.
+         */
+        public TypeDescriptor getProduces() {
+            return produces;
+        }
+
+        /**
+         * Returns the parameters defined by the operation.
+         *
+         * @return
+         * The operation's parameters.
+         */
+        public List<VariableDescriptor> getParameters() {
+            return parameters;
+        }
+
+        /**
+         * Indicates that the operation is deprecated.
+         *
+         * @return
+         * <code>true</code> if the operation is deprecated; <code>false</code>,
+         * otherwise.
+         */
+        public boolean isDeprecated() {
+            return deprecated;
+        }
+    }
+
+    /**
+     * Describes a variable.
+     */
+    public static class VariableDescriptor {
+        private String name;
+        private TypeDescriptor type;
+        private String description;
+
+        private VariableDescriptor(String name, TypeDescriptor type, String description) {
+            this.name = name;
+            this.type = type;
+            this.description = description;
+        }
+
+        /**
+         * Returns the name of the variable.
+         *
+         * @return
+         * The variable's name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns the type of the variable.
+         *
+         * @return
+         * The variable's type.
+         */
+        public TypeDescriptor getType() {
+            return type;
+        }
+
+        /**
+         * Returns a description of the variable.
+         *
+         * @return
+         * The variable's description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+    }
+
+    /**
+     * Describes an enumeration.
+     */
+    public static class EnumerationDescriptor {
+        private String name;
+        private String description;
+        private List<ConstantDescriptor> values;
+
+        private EnumerationDescriptor(Class<?> type) {
+            name = type.getSimpleName();
+
+            description = Optional.ofNullable(type.getAnnotation(Description.class))
+                .map(Description::value)
+                .orElse(null);
+
+            values = Arrays.stream(type.getDeclaredFields())
+                .filter(Field::isEnumConstant)
+                .map(ConstantDescriptor::new)
+                .collect(Collectors.toList());
+        }
+
+        /**
+         * Returns the name of the enumeration.
+         *
+         * @return
+         * The enumeration's name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns a description of the enumeration.
+         *
+         * @return
+         * The enumeration's description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the values defined by the enumeration.
+         *
+         * @return
+         * The enumeration's values.
+         */
+        public List<ConstantDescriptor> getValues() {
+            return values;
+        }
+    }
+
+    /**
+     * Describes a constant.
+     */
+    public static class ConstantDescriptor {
+        private String name;
+        private String description;
+
+        private ConstantDescriptor(Field field) {
+            Object constant;
+            try {
+                constant = field.get(null);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            name = constant.toString();
+
+            description = Optional.ofNullable(field.getAnnotation(Description.class))
+                .map(Description::value)
+                .orElse(null);
+        }
+
+        /**
+         * Returns the name of the constant.
+         *
+         * @return
+         * The constant's name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns a description of the constant.
+         *
+         * @return
+         * The constant's description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+    }
+
+    /**
+     * Describes a structure.
+     */
+    public static class StructureDescriptor {
+        private String name;
+        private List<TypeDescriptor> supertypes;
+        private String description;
+        private List<VariableDescriptor> properties;
+
+        private StructureDescriptor(Class<?> type) {
+            // TODO
+            this.name = name;
+            this.supertypes = supertypes;
+            this.description = description;
+            this.properties = properties;
+        }
+
+        /**
+         * Returns the name of the structure.
+         *
+         * @return
+         * The structure's name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns the structure's supertypes.
+         *
+         * @return
+         * The structure's supertypes.
+         */
+        public List<TypeDescriptor> getSupertypes() {
+            return supertypes;
+        }
+
+        /**
+         * Returns a description of the structure.
+         *
+         * @return
+         * The structure's description, or <code>null</code> for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the properties defined by the structure.
+         *
+         * @return
+         * The structure's properties.
+         */
+        public List<VariableDescriptor> getProperties() {
+            return properties;
+        }
+    }
+
+    /**
+     * Describes a type.
+     */
+    public static class TypeDescriptor {
+        private Class<?> type;
+
+        private TypeDescriptor(Class<?> type) {
+            this.type = type;
+        }
+
+        /**
+         * Returns the type represented by the descriptor.
+         *
+         * @return
+         * The descriptor's type.
+         */
+        public Class<?> getType() {
+            return type;
+        }
+
+        /**
+         * Returns the name of the type represented by the descriptor.
+         *
+         * @return
+         * The type name.
+         */
+        public String getName() {
+            return type.getSimpleName();
+        }
+
+        /**
+         * Indicates that the type is intrinsic.
+         *
+         * @return
+         * <code>true</code> if the type is intrinsic; <code>false</code>,
+         * otherwise.
+         */
+        public boolean isIntrinsic() {
+            // TODO Return true for primitives, false for enums and beans
+            return true;
+        }
+    }
+
+    /**
+     * Describes a list type.
+     */
+    public static class ListTypeDescriptor extends TypeDescriptor {
+        private TypeDescriptor elementType;
+
+        private ListTypeDescriptor(TypeDescriptor elementType) {
+            super(List.class);
+
+            this.elementType = elementType;
+        }
+
+        @Override
+        public boolean isIntrinsic() {
+            return true;
+        }
+
+        /**
+         * Returns the type of the elements contained by the list.
+         *
+         * @return
+         * The list's element type.
+         */
+        public TypeDescriptor getElementType() {
+            return elementType;
+        }
+    }
+
+    /**
+     * Describes a map type.
+     */
+    public static class MapTypeDescriptor extends TypeDescriptor {
+        private TypeDescriptor keyType;
+        private TypeDescriptor valueType;
+
+        private MapTypeDescriptor(TypeDescriptor keyType, TypeDescriptor valueType) {
+            super(Map.class);
+
+            this.keyType = keyType;
+            this.valueType = valueType;
+        }
+
+        @Override
+        public boolean isIntrinsic() {
+            return true;
+        }
+
+        /**
+         * Returns the type of the keys used to look up values in the map.
+         *
+         * @return
+         * The map's key type.
+         */
+        public TypeDescriptor getKeyType() {
+            return keyType;
+        }
+
+        /**
+         * Returns the type of the values contained by the map.
+         *
+         * @return
+         * The map's value type.
+         */
+        public TypeDescriptor getValueType() {
+            return valueType;
+        }
+    }
+
     private static class Resource {
         static List<String> order = listOf("get", "post", "put", "delete");
 
@@ -127,9 +648,6 @@ public abstract class WebService extends HttpServlet {
     }
 
     private Resource root = null;
-
-    private Set<Class<?>> enumerations = new TreeSet<>(Comparator.comparing(Class::getSimpleName));
-    private Map<Class<?>, Map<String, BeanAdapter.Property>> dataTypes = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
@@ -263,7 +781,7 @@ public abstract class WebService extends HttpServlet {
             String queryString = request.getQueryString();
 
             if (queryString != null && queryString.equals("api")) {
-                describeService(request, response);
+                encodeResult(response, getServiceDescriptor(request.getServletPath()));
                 return;
             }
         }
@@ -703,442 +1221,44 @@ public abstract class WebService extends HttpServlet {
         return false;
     }
 
-    private void describeService(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType(String.format("text/html;charset=%s", UTF_8));
+    /**
+     * Returns the service descriptor.
+     *
+     * @param servletPath
+     * The servlet path.
+     *
+     * @return
+     * The service descriptor.
+     */
+    public ServiceDescriptor getServiceDescriptor(String servletPath) {
+        // TODO Lazily evaluate (make method synchronized)
 
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+        Class<? extends WebService> type = getClass();
 
-        try {
-            XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(response.getWriter());
+        String description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
 
-            xmlStreamWriter.writeStartElement("html");
-            xmlStreamWriter.writeStartElement("head");
-            xmlStreamWriter.writeStartElement("style");
+        Map<String, Endpoint> endpoints = Arrays.stream(type.getAnnotationsByType(Endpoint.class)).collect(Collectors.toMap(Endpoint::path, Function.identity()));
 
-            try (InputStream inputStream = WebService.class.getResourceAsStream("api.css")) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        Map<String, Resource> resources = new LinkedHashMap<>();
 
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    xmlStreamWriter.writeCharacters(line + "\n");
-                }
-            }
+        Set<Class<?>> enumerations = new TreeSet<>(Comparator.comparing(Class::getSimpleName));
+        Set<Class<?>> structures = new TreeSet<>(Comparator.comparing(Class::getSimpleName));
 
-            xmlStreamWriter.writeEndElement();
-            xmlStreamWriter.writeEndElement();
+        describeResource(servletPath, root, resources, enumerations, structures);
 
-            xmlStreamWriter.writeStartElement("body");
-
-            Description serviceDescription = getClass().getAnnotation(Description.class);
-
-            if (serviceDescription != null) {
-                xmlStreamWriter.writeStartElement("p");
-                xmlStreamWriter.writeCharacters(serviceDescription.value());
-                xmlStreamWriter.writeEndElement();
-            }
-
-            describeResource(request.getServletPath(), root, xmlStreamWriter);
-
-            if (!enumerations.isEmpty()) {
-                xmlStreamWriter.writeEmptyElement("hr");
-            }
-
-            for (Class<?> type : enumerations) {
-                String name = type.getSimpleName();
-
-                xmlStreamWriter.writeStartElement("h3");
-
-                xmlStreamWriter.writeStartElement("a");
-                xmlStreamWriter.writeAttribute("id", name);
-                xmlStreamWriter.writeCharacters(name);
-                xmlStreamWriter.writeEndElement();
-
-                xmlStreamWriter.writeEndElement();
-
-                Description typeDescription = type.getAnnotation(Description.class);
-
-                if (typeDescription != null) {
-                    xmlStreamWriter.writeStartElement("p");
-                    xmlStreamWriter.writeCharacters(typeDescription.value());
-                    xmlStreamWriter.writeEndElement();
-                }
-
-                xmlStreamWriter.writeStartElement("ul");
-
-                Field[] fields = type.getDeclaredFields();
-
-                for (int i = 0; i < fields.length; i++) {
-                    Field field = fields[i];
-
-                    if (!field.isEnumConstant()) {
-                        continue;
-                    }
-
-                    Object constant;
-                    try {
-                        constant = field.get(null);
-                    } catch (IllegalAccessException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    xmlStreamWriter.writeStartElement("li");
-
-                    xmlStreamWriter.writeStartElement("code");
-                    xmlStreamWriter.writeCharacters(constant.toString());
-                    xmlStreamWriter.writeEndElement();
-
-                    Description constantDescription = field.getAnnotation(Description.class);
-
-                    if (constantDescription != null) {
-                        xmlStreamWriter.writeCharacters(" - ");
-                        xmlStreamWriter.writeCharacters(constantDescription.value());
-                    }
-
-                    xmlStreamWriter.writeEndElement();
-                }
-
-                xmlStreamWriter.writeEndElement();
-            }
-
-            if (dataTypes.size() > 0) {
-                xmlStreamWriter.writeEmptyElement("hr");
-            }
-
-            for (Map.Entry<Class<?>, Map<String, BeanAdapter.Property>> typeEntry : dataTypes.entrySet()) {
-                Class<?> type = typeEntry.getKey();
-
-                String name = type.getSimpleName();
-
-                xmlStreamWriter.writeStartElement("h3");
-
-                xmlStreamWriter.writeStartElement("a");
-                xmlStreamWriter.writeAttribute("id", name);
-                xmlStreamWriter.writeCharacters(name);
-                xmlStreamWriter.writeEndElement();
-
-                if (type.isInterface()) {
-                    Class<?>[] interfaces = type.getInterfaces();
-
-                    if (interfaces.length > 0) {
-                        xmlStreamWriter.writeCharacters(" : ");
-
-                        for (int i = 0; i < interfaces.length; i++) {
-                            if (i > 0) {
-                                xmlStreamWriter.writeCharacters(", ");
-                            }
-
-                            String interfaceName = interfaces[i].getSimpleName();
-
-                            xmlStreamWriter.writeStartElement("a");
-                            xmlStreamWriter.writeAttribute("href", "#" + interfaceName);
-                            xmlStreamWriter.writeCharacters(interfaceName);
-                            xmlStreamWriter.writeEndElement();
-                        }
-                    }
-                } else {
-                    Class<?> baseType = type.getSuperclass();
-
-                    if (baseType != Object.class) {
-                        String baseTypeName = baseType.getSimpleName();
-
-                        xmlStreamWriter.writeCharacters(" : ");
-
-                        xmlStreamWriter.writeStartElement("a");
-                        xmlStreamWriter.writeAttribute("href", "#" + baseTypeName);
-                        xmlStreamWriter.writeCharacters(baseTypeName);
-                        xmlStreamWriter.writeEndElement();
-                    }
-                }
-
-                xmlStreamWriter.writeEndElement();
-
-                Description typeDescription = type.getAnnotation(Description.class);
-
-                if (typeDescription != null) {
-                    xmlStreamWriter.writeStartElement("p");
-                    xmlStreamWriter.writeCharacters(typeDescription.value());
-                    xmlStreamWriter.writeEndElement();
-                }
-
-                xmlStreamWriter.writeStartElement("ul");
-
-                for (Map.Entry<String, BeanAdapter.Property> propertyEntry : typeEntry.getValue().entrySet()) {
-                    Method accessor = propertyEntry.getValue().getAccessor();
-
-                    if (accessor == null || accessor.getDeclaringClass() != type) {
-                        continue;
-                    }
-
-                    xmlStreamWriter.writeStartElement("li");
-
-                    xmlStreamWriter.writeStartElement("code");
-
-                    xmlStreamWriter.writeCharacters(propertyEntry.getKey());
-                    xmlStreamWriter.writeCharacters(": ");
-
-                    describeType(accessor.getGenericReturnType(), xmlStreamWriter);
-
-                    xmlStreamWriter.writeEndElement();
-
-                    Description propertyDescription = accessor.getAnnotation(Description.class);
-
-                    if (propertyDescription != null) {
-                        xmlStreamWriter.writeCharacters(" - ");
-                        xmlStreamWriter.writeCharacters(propertyDescription.value());
-                    }
-
-                    xmlStreamWriter.writeEndElement();
-                }
-
-                xmlStreamWriter.writeEndElement();
-            }
-
-            xmlStreamWriter.writeEndElement();
-            xmlStreamWriter.writeEndElement();
-
-            xmlStreamWriter.close();
-        } catch (XMLStreamException exception) {
-            throw new IOException(exception);
-        }
+        return new ServiceDescriptor(description,
+            resources.keySet().stream().map(path -> new EndpointDescriptor(path, endpoints, resources))
+                .collect(Collectors.toList()),
+            enumerations.stream().map(EnumerationDescriptor::new)
+                .collect(Collectors.toList()),
+            structures.stream().map(StructureDescriptor::new)
+                .collect(Collectors.toList()));
     }
 
-    private void describeResource(String path, Resource resource, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
-        if (!resource.handlerMap.isEmpty()) {
-            xmlStreamWriter.writeStartElement("h2");
-            xmlStreamWriter.writeCharacters(path);
-            xmlStreamWriter.writeEndElement();
+    private void describeResource(String path, Resource resource, Map<String, Resource> resources, Set<Class<?>> enumerations, Set<Class<?>> structures) {
+        // TODO
+        resources.put(path + "TODO", resource);
 
-            for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
-                for (Handler handler : entry.getValue()) {
-                    xmlStreamWriter.writeStartElement("pre");
-
-                    Deprecated deprecated = handler.method.getAnnotation(Deprecated.class);
-
-                    if (deprecated != null) {
-                        xmlStreamWriter.writeStartElement("del");
-                    }
-
-                    xmlStreamWriter.writeCharacters(entry.getKey().toUpperCase());
-
-                    Content content = handler.method.getAnnotation(Content.class);
-
-                    if (content != null) {
-                        xmlStreamWriter.writeCharacters(" (");
-
-                        describeType(content.value(), xmlStreamWriter);
-
-                        xmlStreamWriter.writeCharacters(")");
-                    }
-
-                    xmlStreamWriter.writeCharacters(" -> ");
-
-                    describeType(handler.method.getGenericReturnType(), xmlStreamWriter);
-
-                    if (deprecated != null) {
-                        xmlStreamWriter.writeEndElement();
-                    }
-
-                    xmlStreamWriter.writeEndElement();
-
-                    Description methodDescription = handler.method.getAnnotation(Description.class);
-
-                    if (methodDescription != null) {
-                        xmlStreamWriter.writeStartElement("p");
-                        xmlStreamWriter.writeCharacters(methodDescription.value());
-                        xmlStreamWriter.writeEndElement();
-                    }
-
-                    Parameter[] parameters = handler.method.getParameters();
-
-                    xmlStreamWriter.writeStartElement("ul");
-
-                    for (int i = 0; i < parameters.length; i++) {
-                        Parameter parameter = parameters[i];
-
-                        xmlStreamWriter.writeStartElement("li");
-
-                        xmlStreamWriter.writeStartElement("code");
-                        xmlStreamWriter.writeCharacters(parameter.getName());
-                        xmlStreamWriter.writeCharacters(": ");
-
-                        describeType(parameter.getParameterizedType(), xmlStreamWriter);
-
-                        xmlStreamWriter.writeEndElement();
-
-                        Description parameterDescription = parameter.getAnnotation(Description.class);
-
-                        if (parameterDescription != null) {
-                            xmlStreamWriter.writeCharacters(" - ");
-                            xmlStreamWriter.writeCharacters(parameterDescription.value());
-                        }
-
-                        xmlStreamWriter.writeEndElement();
-                    }
-
-                    xmlStreamWriter.writeEndElement();
-                }
-            }
-        }
-
-        for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
-            describeResource(path + "/" + entry.getKey(), entry.getValue(), xmlStreamWriter);
-        }
-    }
-
-    private void describeType(Type type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
-        if (type instanceof Class<?>) {
-            describeType((Class<?>)type, xmlStreamWriter);
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType)type;
-
-            Type rawType = parameterizedType.getRawType();
-
-            if (rawType instanceof Class<?> && Iterable.class.isAssignableFrom((Class<?>)rawType)) {
-                if (xmlStreamWriter != null) {
-                    xmlStreamWriter.writeCharacters("[");
-                }
-
-                describeType(parameterizedType.getActualTypeArguments()[0], xmlStreamWriter);
-
-                if (xmlStreamWriter != null) {
-                    xmlStreamWriter.writeCharacters("]");
-                }
-            } else if (rawType == Map.class) {
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-                if (xmlStreamWriter != null) {
-                    xmlStreamWriter.writeCharacters("[");
-                }
-
-                describeType(actualTypeArguments[0], xmlStreamWriter);
-
-                if (xmlStreamWriter != null) {
-                    xmlStreamWriter.writeCharacters(": ");
-                }
-
-                describeType(actualTypeArguments[1], xmlStreamWriter);
-
-                if (xmlStreamWriter != null) {
-                    xmlStreamWriter.writeCharacters("]");
-                }
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private void describeType(Class<?> type, XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
-        if (type.isArray()) {
-            throw new IllegalArgumentException();
-        }
-
-        String description;
-        if (type == Object.class) {
-            description = "any";
-        } else if (type == Void.TYPE || type == Void.class) {
-            description = "void";
-        } else if (type == Byte.TYPE || type == Byte.class) {
-            description = "byte";
-        } else if (type == Short.TYPE || type == Short.class) {
-            description = "short";
-        } else if (type == Integer.TYPE || type == Integer.class) {
-            description = "integer";
-        } else if (type == Long.TYPE || type == Long.class) {
-            description = "long";
-        } else if (type == Float.TYPE || type == Float.class) {
-            description = "float";
-        } else if (type == Double.TYPE || type == Double.class) {
-            description = "double";
-        } else if (Number.class.isAssignableFrom(type)) {
-            description = "number";
-        } else if (type == Boolean.TYPE || type == Boolean.class) {
-            description = "boolean";
-        } else if (CharSequence.class.isAssignableFrom(type)) {
-            description = "string";
-        } else if (Enum.class.isAssignableFrom(type)) {
-            enumerations.add(type);
-
-            if (xmlStreamWriter != null) {
-                String name = type.getSimpleName();
-
-                xmlStreamWriter.writeStartElement("a");
-                xmlStreamWriter.writeAttribute("href", "#" + name);
-                xmlStreamWriter.writeCharacters(name);
-                xmlStreamWriter.writeEndElement();
-            }
-
-            return;
-        } else if (Date.class.isAssignableFrom(type)) {
-            description = "date";
-        } else if (type == Instant.class) {
-            description = "instant";
-        } else if (type == LocalDate.class) {
-            description = "date-local";
-        } else if (type == LocalTime.class) {
-            description = "time-local";
-        } else if (type == LocalDateTime.class) {
-            description = "datetime-local";
-        } else if (type == Duration.class) {
-            description = "duration";
-        } else if (type == Period.class) {
-            description = "period";
-        } else if (type == UUID.class) {
-            description = "uuid";
-        } else if (type == URL.class) {
-            description = "url";
-        } else {
-            if (Iterable.class.isAssignableFrom(type)) {
-                describeType(BeanAdapter.typeOf(Iterable.class, Object.class), xmlStreamWriter);
-            } else if (Map.class.isAssignableFrom(type)) {
-                describeType(BeanAdapter.typeOf(Map.class, Object.class, Object.class), xmlStreamWriter);
-            } else {
-                if (!dataTypes.containsKey(type)) {
-                    Map<String, BeanAdapter.Property> properties = BeanAdapter.getProperties(type);
-
-                    dataTypes.put(type, properties);
-
-                    if (type.isInterface()) {
-                        Class<?>[] interfaces = type.getInterfaces();
-
-                        for (int i = 0; i < interfaces.length; i++) {
-                            describeType(interfaces[i], null);
-                        }
-                    } else {
-                        Class<?> baseType = type.getSuperclass();
-
-                        if (baseType != Object.class) {
-                            describeType(baseType, null);
-                        }
-                    }
-
-                    for (Map.Entry<String, BeanAdapter.Property> entry : properties.entrySet()) {
-                        Method accessor = entry.getValue().getAccessor();
-
-                        if (accessor == null || accessor.getDeclaringClass() != type) {
-                            continue;
-                        }
-
-                        describeType(accessor.getGenericReturnType(), null);
-                    }
-                }
-
-                if (xmlStreamWriter != null) {
-                    String name = type.getSimpleName();
-
-                    xmlStreamWriter.writeStartElement("a");
-                    xmlStreamWriter.writeAttribute("href", "#" + name);
-                    xmlStreamWriter.writeCharacters(name);
-                    xmlStreamWriter.writeEndElement();
-                }
-            }
-
-            return;
-        }
-
-        if (xmlStreamWriter != null) {
-            xmlStreamWriter.writeCharacters(description);
-        }
+        // TODO
     }
 }
