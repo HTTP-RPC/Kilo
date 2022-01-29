@@ -1215,35 +1215,39 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeResource(String path, Resource resource, Map<String, Endpoint> endpoints) {
-        EndpointDescriptor endpoint = new EndpointDescriptor(path, endpoints.get(path));
+        if (!resource.handlerMap.isEmpty()) {
+            EndpointDescriptor endpoint = new EndpointDescriptor(path, endpoints.get(path));
 
-        for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
-            for (Handler handler : entry.getValue()) {
-                OperationDescriptor operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
+            for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
+                for (Handler handler : entry.getValue()) {
+                    OperationDescriptor operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
 
-                Content content = handler.method.getAnnotation(Content.class);
+                    Content content = handler.method.getAnnotation(Content.class);
 
-                if (content != null) {
-                    operation.consumes = describeType(content.value());
-                }
+                    if (content != null) {
+                        operation.consumes = describeType(content.value());
+                    }
 
-                operation.produces = describeType(handler.method.getGenericReturnType());
+                    operation.produces = describeType(handler.method.getGenericReturnType());
 
-                Parameter[] parameters = handler.method.getParameters();
+                    Parameter[] parameters = handler.method.getParameters();
 
-                for (int i = 0; i < parameters.length; i++) {
-                    Parameter parameter = parameters[i];
+                    for (int i = 0; i < parameters.length; i++) {
+                        Parameter parameter = parameters[i];
 
-                    VariableDescriptor parameterDescriptor = new VariableDescriptor(parameter);
+                        VariableDescriptor parameterDescriptor = new VariableDescriptor(parameter);
 
-                    parameterDescriptor.type = describeType(parameter.getParameterizedType());
+                        parameterDescriptor.type = describeType(parameter.getParameterizedType());
 
-                    operation.parameters.add(parameterDescriptor);
+                        operation.parameters.add(parameterDescriptor);
+                    }
+
+                    endpoint.operations.add(operation);
                 }
             }
-        }
 
-        serviceDescriptor.endpoints.add(endpoint);
+            serviceDescriptor.endpoints.add(endpoint);
+        }
 
         for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
             describeResource(path + "/" + entry.getKey(), entry.getValue(), endpoints);
