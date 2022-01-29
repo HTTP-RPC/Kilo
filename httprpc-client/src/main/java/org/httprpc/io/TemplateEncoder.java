@@ -717,7 +717,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             Object value = getMarkerValue(marker);
 
-                            if (value != null && (!(value instanceof Iterable<?>) || ((Iterable<?>)value).iterator().hasNext())) {
+                            if (value != null
+                                && (!(value instanceof Boolean) || ((Boolean)value))
+                                && (!(value instanceof Iterable<?>) || ((Iterable<?>)value).iterator().hasNext())) {
                                 writeRoot(value, writer, locale, timeZone, reader);
                             } else {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);
@@ -794,7 +796,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             Object value = getMarkerValue(marker);
 
-                            if (value == null || (value instanceof Iterable<?> && !((Iterable<?>)value).iterator().hasNext())) {
+                            if (value == null
+                                || (value instanceof Boolean && !((Boolean)value))
+                                || (value instanceof Iterable<?> && !((Iterable<?>)value).iterator().hasNext())) {
                                 writeRoot(value, writer, locale, timeZone, reader);
                             } else {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);

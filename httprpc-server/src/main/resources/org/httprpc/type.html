@@ -1,1 +1,1 @@
-{{?elementType}}[{{name}}]{{/elementType}}{{^elementType}}{{?keyType}}[{{name}}: {{valueType/name}}]{{/keyType}}{{^keyType}}{{name}}{{/keyType}}{{/elementType}}
+{{?intrinsic}}{{?elementType}}[{{name}}]{{/elementType}}{{^elementType}}{{?keyType}}[{{name}}: {{valueType/name}}]{{/keyType}}{{^keyType}}{{name}}{{/keyType}}{{/elementType}}{{/intrinsic}}{{^intrinsic}}<a href="#{{name}}">{{name}}</a>{{/intrinsic}}
