@@ -38,6 +38,12 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
@@ -1302,8 +1308,12 @@ public abstract class WebService extends HttpServlet {
             || CharSequence.class.isAssignableFrom(type)
             || type == Void.class
             || Date.class.isAssignableFrom(type)
-            || TemporalAccessor.class.isAssignableFrom(type)
-            || TemporalAmount.class.isAssignableFrom(type)
+            || type == Instant.class
+            || type == LocalDate.class
+            || type == LocalTime.class
+            || type == LocalDateTime.class
+            || type == Duration.class
+            || type == Period.class
             || type == UUID.class
             || type == URL.class) {
             return new TypeDescriptor(type, true);
