@@ -262,34 +262,7 @@ API documentation can be viewed by appending "?api" to a service URL; for exampl
 GET /math?api
 ```
 
-Methods are grouped by resource path. Parameter, body, and return types are encoded as follows:
-
-* `Object`: "any"
-* `Void` or `void`: "void"
-* `Byte` or `byte`: "byte"
-* `Short` or `short`: "short"
-* `Integer` or `int`: "integer"
-* `Long` or `long`: "long"
-* `Float` or `float`: "float"
-* `Double` or `double`: "double"
-* Any other `Number`: "number"
-* `Boolean` or `boolean`: "boolean"
-* `CharSequence`: "string"
-* `java.util.Date`: "date"
-* `java.time.Instant`: "instant"
-* `java.time.LocalDate`: "date-local"
-* `java.time.LocalTime`: "time-local"
-* `java.time.LocalDateTime`: "datetime-local"
-* `java.time.Duration`: "duration"
-* `java.time.Period`: "period"
-* `java.util.UUID`: "uuid"
-* `java.net.URL`: "url"
-* `java.lang.Iterable`: "[<em>element type</em>]"
-* `java.util.Map`: "[<em>key type</em>: <em>value type</em>]"
-
-Any other type is described by its simple class name.
-
-Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
+Methods are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
 @WebServlet(urlPatterns={"/math/*"}, loadOnStartup = 1)
