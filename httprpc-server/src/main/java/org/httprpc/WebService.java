@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import org.httprpc.io.TemplateEncoder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -753,7 +754,12 @@ public abstract class WebService extends HttpServlet {
             String queryString = request.getQueryString();
 
             if (queryString != null && queryString.equals("api")) {
-                encodeResult(response, getServiceDescriptor(request.getServletPath()));
+                response.setContentType(String.format("text/html;charset=%s", UTF_8));
+
+                TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+
+                templateEncoder.write(getServiceDescriptor(request.getServletPath()), response.getOutputStream());
+
                 return;
             }
         }
