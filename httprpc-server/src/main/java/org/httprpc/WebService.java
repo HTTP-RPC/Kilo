@@ -1301,6 +1301,8 @@ public abstract class WebService extends HttpServlet {
                 if (enumeration == null) {
                     enumeration = new EnumerationDescriptor(type);
 
+                    serviceDescriptor.enumerations.put(type, enumeration);
+
                     Field[] fields = type.getDeclaredFields();
 
                     for (int i = 0; i < fields.length; i++) {
@@ -1312,14 +1314,14 @@ public abstract class WebService extends HttpServlet {
 
                         enumeration.values.add(new ConstantDescriptor(field));
                     }
-
-                    serviceDescriptor.enumerations.put(type, enumeration);
                 }
             } else {
                 StructureDescriptor structure = serviceDescriptor.structures.get(type);
 
                 if (structure == null) {
                     structure = new StructureDescriptor(type);
+
+                    serviceDescriptor.structures.put(type, structure);
 
                     if (type.isInterface()) {
                         Class<?>[] interfaces = type.getInterfaces();
@@ -1348,8 +1350,6 @@ public abstract class WebService extends HttpServlet {
 
                         structure.properties.add(propertyDescriptor);
                     }
-
-                    serviceDescriptor.structures.put(type, structure);
                 }
             }
 
