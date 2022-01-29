@@ -1276,9 +1276,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeType(Class<?> type) {
-        if (type.isArray()
-            || Iterable.class.isAssignableFrom(type)
-            || Map.class.isAssignableFrom(type)) {
+        if (type.isArray()) {
             throw new IllegalArgumentException();
         }
 
@@ -1294,6 +1292,10 @@ public abstract class WebService extends HttpServlet {
             || type == UUID.class
             || type == URL.class) {
             return new TypeDescriptor(type, true);
+        } else if (Iterable.class.isAssignableFrom(type)) {
+            return describeType(BeanAdapter.typeOf(Iterable.class, Object.class));
+        } else if (Map.class.isAssignableFrom(type)) {
+            return describeType(BeanAdapter.typeOf(Map.class, Object.class, Object.class));
         } else {
             if (type.isEnum()) {
                 EnumerationDescriptor enumeration = serviceDescriptor.enumerations.get(type);
