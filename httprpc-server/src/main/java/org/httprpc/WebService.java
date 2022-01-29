@@ -751,14 +751,22 @@ public abstract class WebService extends HttpServlet {
         String pathInfo = request.getPathInfo();
 
         if (verb.equals("get") && pathInfo == null) {
-            String queryString = request.getQueryString();
+            String api = request.getParameter("api");
 
-            if (queryString != null && queryString.equals("api")) {
-                response.setContentType(String.format("text/html;charset=%s", UTF_8));
+            if (api != null) {
+                ServiceDescriptor serviceDescriptor = getServiceDescriptor(request.getServletPath());
 
-                TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+                if (api.isEmpty() || api.equals("html")) {
+                    response.setContentType(String.format("text/html;charset=%s", UTF_8));
 
-                templateEncoder.write(getServiceDescriptor(request.getServletPath()), response.getOutputStream());
+                    TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+
+                    templateEncoder.write(serviceDescriptor, response.getOutputStream());
+                } else if (api.equals("json")) {
+                    encodeResult(response, serviceDescriptor);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                }
 
                 return;
             }
