@@ -28,6 +28,7 @@ import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -271,7 +272,17 @@ public abstract class WebService extends HttpServlet {
 
         private TypeDescriptor type = null;
 
-        // TODO Constructors
+        private VariableDescriptor(Parameter parameter) {
+            name = parameter.getName();
+
+            description = Optional.ofNullable(parameter.getAnnotation(Description.class)).map(Description::value).orElse(null);
+        }
+
+        private VariableDescriptor(String name, Method accessor) {
+            this.name = name;
+
+            description = Optional.ofNullable(accessor.getAnnotation(Description.class)).map(Description::value).orElse(null);
+        }
 
         /**
          * Returns the name of the variable.
@@ -311,9 +322,13 @@ public abstract class WebService extends HttpServlet {
         private String name;
         private String description;
 
-        private Iterable<ConstantDescriptor> values = new LinkedList<>();
+        private List<ConstantDescriptor> values = new LinkedList<>();
 
-        // TODO Constructor
+        private EnumerationDescriptor(Class<?> type) {
+            name = type.getSimpleName();
+
+            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+        }
 
         /**
          * Returns the name of the enumeration.
@@ -353,7 +368,18 @@ public abstract class WebService extends HttpServlet {
         private String name;
         private String description;
 
-        // TODO Constructor
+        private ConstantDescriptor(Field field) {
+            Object constant;
+            try {
+                constant = field.get(null);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            name = constant.toString();
+
+            description = Optional.ofNullable(field.getAnnotation(Description.class)).map(Description::value).orElse(null);
+        }
 
         /**
          * Returns the name of the constant.
@@ -386,7 +412,11 @@ public abstract class WebService extends HttpServlet {
         private List<TypeDescriptor> supertypes = new LinkedList<>();
         private List<VariableDescriptor> properties = new LinkedList<>();
 
-        // TODO Constructor
+        private StructureDescriptor(Class<?> type) {
+            name = type.getSimpleName();
+
+            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+        }
 
         /**
          * Returns the name of the structure.
@@ -434,23 +464,11 @@ public abstract class WebService extends HttpServlet {
      */
     public static class TypeDescriptor {
         private Class<?> type;
+        private boolean intrinsic;
 
-        private TypeDescriptor(Class<?> type) {
-            if (type.isArray()) {
-                throw new IllegalArgumentException();
-            }
-
+        private TypeDescriptor(Class<?> type, boolean intrinsic) {
             this.type = type;
-        }
-
-        /**
-         * Returns the type represented by the descriptor.
-         *
-         * @return
-         * The descriptor's type.
-         */
-        public Class<?> getType() {
-            return type;
+            this.intrinsic = intrinsic;
         }
 
         /**
@@ -460,7 +478,7 @@ public abstract class WebService extends HttpServlet {
          * The type name.
          */
         public String getName() {
-            // TODO Use map?
+            // TODO Look up in map?
             return type.getSimpleName();
         }
 
@@ -472,8 +490,7 @@ public abstract class WebService extends HttpServlet {
          * otherwise.
          */
         public boolean isIntrinsic() {
-            // TODO Use map?
-            return true;
+            return intrinsic;
         }
     }
 
@@ -484,7 +501,7 @@ public abstract class WebService extends HttpServlet {
         private TypeDescriptor elementType;
 
         private IterableTypeDescriptor(TypeDescriptor elementType) {
-            super(Iterable.class);
+            super(Iterable.class, true);
 
             this.elementType = elementType;
         }
@@ -508,7 +525,7 @@ public abstract class WebService extends HttpServlet {
         private TypeDescriptor valueType;
 
         private MapTypeDescriptor(TypeDescriptor keyType, TypeDescriptor valueType) {
-            super(Map.class);
+            super(Map.class, true);
 
             this.keyType = keyType;
             this.valueType = valueType;
@@ -621,7 +638,7 @@ public abstract class WebService extends HttpServlet {
      * exists.
      */
     @SuppressWarnings("unchecked")
-    public synchronized static <T extends WebService> T getInstance(Class<T> type) {
+    public static synchronized <T extends WebService> T getInstance(Class<T> type) {
         return (T)instances.get(type);
     }
 
@@ -1191,7 +1208,35 @@ public abstract class WebService extends HttpServlet {
     }
 
     private void describeResource(String path, Resource resource, Map<String, Endpoint> endpoints) {
-        // TODO Describe resource/endpoint here; add to service endpoint list
+        EndpointDescriptor endpoint = new EndpointDescriptor(path, endpoints.get(path));
+
+        for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
+            for (Handler handler : entry.getValue()) {
+                OperationDescriptor operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
+
+                Content content = handler.method.getAnnotation(Content.class);
+
+                if (content != null) {
+                    operation.consumes = describeType(content.value());
+                }
+
+                operation.produces = describeType(handler.method.getGenericReturnType());
+
+                Parameter[] parameters = handler.method.getParameters();
+
+                for (int i = 0; i < parameters.length; i++) {
+                    Parameter parameter = parameters[i];
+
+                    VariableDescriptor parameterDescriptor = new VariableDescriptor(parameter);
+
+                    parameterDescriptor.type = describeType(parameter.getParameterizedType());
+
+                    operation.parameters.add(parameterDescriptor);
+                }
+            }
+        }
+
+        serviceDescriptor.endpoints.add(endpoint);
 
         for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
             describeResource(path + "/" + entry.getKey(), entry.getValue(), endpoints);
@@ -1200,9 +1245,7 @@ public abstract class WebService extends HttpServlet {
 
     private TypeDescriptor describeType(Type type) {
         if (type instanceof Class<?>) {
-            return new TypeDescriptor((Class<?>)type);
-
-            // TODO Capture in service enumerations or structures map
+            return describeType((Class<?>)type);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType)type;
 
@@ -1218,6 +1261,76 @@ public abstract class WebService extends HttpServlet {
             }
         } else {
             throw new IllegalArgumentException();
+        }
+    }
+
+    private TypeDescriptor describeType(Class<?> type) {
+        if (type.isArray()) {
+            throw new IllegalArgumentException();
+        }
+
+        // TODO Other types
+
+        if (Enum.class.isAssignableFrom(type)) {
+            EnumerationDescriptor enumeration = serviceDescriptor.enumerations.get(type);
+
+            if (enumeration == null) {
+                enumeration = new EnumerationDescriptor(type);
+
+                Field[] fields = type.getDeclaredFields();
+
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = fields[i];
+
+                    if (!field.isEnumConstant()) {
+                        continue;
+                    }
+
+                    enumeration.values.add(new ConstantDescriptor(field));
+                }
+
+                serviceDescriptor.enumerations.put(type, enumeration);
+            }
+
+            return new TypeDescriptor(type, false);
+        } else {
+            StructureDescriptor structure = serviceDescriptor.structures.get(type);
+
+            if (structure == null) {
+                structure = new StructureDescriptor(type);
+
+                if (type.isInterface()) {
+                    Class<?>[] interfaces = type.getInterfaces();
+
+                    for (int i = 0; i < interfaces.length; i++) {
+                        structure.supertypes.add(describeType(interfaces[i]));
+                    }
+                } else {
+                    Class<?> baseType = type.getSuperclass();
+
+                    if (baseType != Object.class) {
+                        structure.supertypes.add(describeType(baseType));
+                    }
+                }
+
+                for (Map.Entry<String, BeanAdapter.Property> entry : BeanAdapter.getProperties(type).entrySet()) {
+                    Method accessor = entry.getValue().getAccessor();
+
+                    if (accessor == null || accessor.getDeclaringClass() != type) {
+                        continue;
+                    }
+
+                    VariableDescriptor propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
+
+                    propertyDescriptor.type = describeType(accessor.getGenericReturnType());
+
+                    structure.properties.add(propertyDescriptor);
+                }
+
+                serviceDescriptor.structures.put(type, structure);
+            }
+
+            return new TypeDescriptor(type, false);
         }
     }
 }
