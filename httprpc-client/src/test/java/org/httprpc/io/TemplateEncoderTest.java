@@ -95,16 +95,33 @@ public class TemplateEncoderTest {
     public void testConditionalSection1() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 
-        Map<String, ?> value = mapOf(
-            entry("a", "A"),
-            entry("b", "B")
-        );
+        StringWriter writer = new StringWriter();
+
+        encoder.write(mapOf(), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSection2() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 
         StringWriter writer = new StringWriter();
 
-        encoder.write(value, writer);
+        encoder.write(mapOf(entry("a", emptyList())), writer);
 
-        assertEquals("12", writer.toString());
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSection3() throws IOException {
+        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+
+        StringWriter writer = new StringWriter();
+
+        encoder.write(mapOf(entry("a", "A")), writer);
+
+        assertEquals("found", writer.toString());
     }
 
     @Test
@@ -303,17 +320,6 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection3() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
-
-        StringWriter writer = new StringWriter();
-
-        encoder.write(mapOf(entry("a", emptyMap())), writer);
-
-        assertEquals("not found", writer.toString());
-    }
-
-    @Test
-    public void testInvertedSection4() throws IOException {
         TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
         StringWriter writer = new StringWriter();

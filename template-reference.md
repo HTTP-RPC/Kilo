@@ -87,7 +87,7 @@ Date/time values may be represented by one of the following:
 * an instance of `java.util.time.TemporalAccessor`
 
 ## Conditional Sections
-Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. If the value does not exist or is `null`, the section is excluded from the output.
+Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section.
 
 For example, given the following data dictionary:
 
@@ -113,7 +113,7 @@ the content of the "name" section in this template would be included in the gene
 ```
 
 ## Repeating Sections
-Repeating section markers define a section of content that is repeated once for every element in a sequence of values. The marker name must refer to an instance of either `java.lang.Iterable` or `java.util.Map` in the data dictionary. The elements of the sequence provide the data dictionaries for successive iterations through the section. Missing or empty sequences are ignored.
+Repeating section markers define a section of content that is repeated once for every element in a sequence of values. The marker name must refer to an instance of either `java.lang.Iterable` or `java.util.Map` in the data dictionary. The elements of the sequence provide the data dictionaries for successive iterations through the section.
 
 For example, a data dictionary that contains information about homes for sale might look like this:
 
@@ -187,9 +187,7 @@ This template could be used to generate a comma-separated list of name/value pai
 ``` 
 
 ## Inverted Sections
-Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary or refers to an empty sequence.
-
-For example, given the following data dictionary:
+Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary. For example, given the following data dictionary:
 
 ```json
 {
