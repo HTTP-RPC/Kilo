@@ -28,7 +28,6 @@ import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -37,10 +36,8 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -50,7 +47,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -123,29 +119,20 @@ public abstract class WebService extends HttpServlet {
     public static class EndpointDescriptor {
         private String path;
         private String description;
-        private List<String> keys;
-        private List<OperationDescriptor> operations;
+        private Iterable<String> keys;
 
-        private EndpointDescriptor(String path, Map<String, Endpoint> endpoints, Map<String, Resource> resources) {
+        private List<OperationDescriptor> operations = new LinkedList<>();
+
+        private EndpointDescriptor(String path, Endpoint endpoint) {
             this.path = path;
-
-            Endpoint endpoint = endpoints.get(path);
 
             if (endpoint != null) {
                 description = endpoint.description();
-                keys = Collections.unmodifiableList(Arrays.asList(endpoint.keys()));
+                keys = Arrays.asList(endpoint.keys());
             } else {
                 description = null;
                 keys = null;
             }
-
-            Resource resource = resources.get(path);
-
-            operations = resource.handlerMap.entrySet().stream()
-                .flatMap(entry -> entry.getValue().stream()
-                    .map(value -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), value)))
-                .map(entry -> new OperationDescriptor(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
         }
 
         /**
@@ -174,7 +161,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The endpoint's keys.
          */
-        public List<String> getKeys() {
+        public Iterable<String> getKeys() {
             return keys;
         }
 
@@ -184,7 +171,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The endpoint's operations.
          */
-        public List<OperationDescriptor> getOperations() {
+        public Iterable<OperationDescriptor> getOperations() {
             return operations;
         }
     }
@@ -195,27 +182,18 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
-        private TypeDescriptor consumes;
-        private TypeDescriptor produces;
-        private List<VariableDescriptor> parameters;
+
         private boolean deprecated;
+
+        private TypeDescriptor consumes = null;
+        private TypeDescriptor produces = null;
+
+        private List<VariableDescriptor> parameters = new LinkedList<>();
 
         private OperationDescriptor(String method, Handler handler) {
             this.method = method;
 
             description = Optional.ofNullable(handler.method.getAnnotation(Description.class)).map(Description::value).orElse(null);
-
-            Content content = handler.method.getAnnotation(Content.class);
-
-            if (content != null) {
-                consumes = describeType(content.value());
-            } else {
-                consumes = null;
-            }
-
-            produces = describeType(handler.method.getGenericReturnType());
-
-            parameters = Arrays.stream(handler.method.getParameters()).map(VariableDescriptor::new).collect(Collectors.toList());
 
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
@@ -238,6 +216,17 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Indicates that the operation is deprecated.
+         *
+         * @return
+         * <code>true</code> if the operation is deprecated; <code>false</code>,
+         * otherwise.
+         */
+        public boolean isDeprecated() {
+            return deprecated;
         }
 
         /**
@@ -268,19 +257,8 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The operation's parameters.
          */
-        public List<VariableDescriptor> getParameters() {
+        public Iterable<VariableDescriptor> getParameters() {
             return parameters;
-        }
-
-        /**
-         * Indicates that the operation is deprecated.
-         *
-         * @return
-         * <code>true</code> if the operation is deprecated; <code>false</code>,
-         * otherwise.
-         */
-        public boolean isDeprecated() {
-            return deprecated;
         }
     }
 
@@ -289,22 +267,11 @@ public abstract class WebService extends HttpServlet {
      */
     public static class VariableDescriptor {
         private String name;
-        private TypeDescriptor type;
         private String description;
 
-        private VariableDescriptor(Parameter parameter) {
-            name = parameter.getName();
+        private TypeDescriptor type = null;
 
-            type = describeType(parameter.getParameterizedType());
-
-            description = Optional.ofNullable(parameter.getAnnotation(Description.class)).map(Description::value).orElse(null);
-        }
-
-        private VariableDescriptor(String name, BeanAdapter.Property property) {
-            this.name = name;
-
-            type = describeType(property.getAccessor().getGenericReturnType());
-        }
+        // TODO Constructors
 
         /**
          * Returns the name of the variable.
@@ -317,16 +284,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns the type of the variable.
-         *
-         * @return
-         * The variable's type.
-         */
-        public TypeDescriptor getType() {
-            return type;
-        }
-
-        /**
          * Returns a description of the variable.
          *
          * @return
@@ -334,6 +291,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Returns the type of the variable.
+         *
+         * @return
+         * The variable's type.
+         */
+        public TypeDescriptor getType() {
+            return type;
         }
     }
 
@@ -343,20 +310,10 @@ public abstract class WebService extends HttpServlet {
     public static class EnumerationDescriptor {
         private String name;
         private String description;
-        private List<ConstantDescriptor> values;
 
-        private EnumerationDescriptor(Class<?> type) {
-            name = type.getSimpleName();
+        private Iterable<ConstantDescriptor> values = new LinkedList<>();
 
-            description = Optional.ofNullable(type.getAnnotation(Description.class))
-                .map(Description::value)
-                .orElse(null);
-
-            values = Arrays.stream(type.getDeclaredFields())
-                .filter(Field::isEnumConstant)
-                .map(ConstantDescriptor::new)
-                .collect(Collectors.toList());
-        }
+        // TODO Constructor
 
         /**
          * Returns the name of the enumeration.
@@ -384,7 +341,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The enumeration's values.
          */
-        public List<ConstantDescriptor> getValues() {
+        public Iterable<ConstantDescriptor> getValues() {
             return values;
         }
     }
@@ -396,20 +353,7 @@ public abstract class WebService extends HttpServlet {
         private String name;
         private String description;
 
-        private ConstantDescriptor(Field field) {
-            Object constant;
-            try {
-                constant = field.get(null);
-            } catch (IllegalAccessException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            name = constant.toString();
-
-            description = Optional.ofNullable(field.getAnnotation(Description.class))
-                .map(Description::value)
-                .orElse(null);
-        }
+        // TODO Constructor
 
         /**
          * Returns the name of the constant.
@@ -437,30 +381,12 @@ public abstract class WebService extends HttpServlet {
      */
     public static class StructureDescriptor {
         private String name;
-        private List<TypeDescriptor> supertypes;
         private String description;
-        private List<VariableDescriptor> properties;
 
-        private StructureDescriptor(Class<?> type) {
-            name = type.getSimpleName();
+        private List<TypeDescriptor> supertypes = new LinkedList<>();
+        private List<VariableDescriptor> properties = new LinkedList<>();
 
-            if (type.isInterface()) {
-                supertypes = Arrays.stream(type.getInterfaces()).map(TypeDescriptor::new).collect(Collectors.toList());
-            } else {
-                supertypes = Collections.singletonList(new TypeDescriptor(type.getSuperclass()));
-            }
-
-            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
-
-            properties = BeanAdapter.getProperties(type).entrySet().stream()
-                .filter(entry -> {
-                    Method accessor = entry.getValue().getAccessor();
-
-                    return (accessor != null && accessor.getDeclaringClass() == type);
-                })
-                .map(entry -> new VariableDescriptor(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-        }
+        // TODO Constructor
 
         /**
          * Returns the name of the structure.
@@ -470,16 +396,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getName() {
             return name;
-        }
-
-        /**
-         * Returns the structure's supertypes.
-         *
-         * @return
-         * The structure's supertypes.
-         */
-        public List<TypeDescriptor> getSupertypes() {
-            return supertypes;
         }
 
         /**
@@ -493,12 +409,22 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
+         * Returns the structure's supertypes.
+         *
+         * @return
+         * The structure's supertypes.
+         */
+        public Iterable<TypeDescriptor> getSupertypes() {
+            return supertypes;
+        }
+
+        /**
          * Returns the properties defined by the structure.
          *
          * @return
          * The structure's properties.
          */
-        public List<VariableDescriptor> getProperties() {
+        public Iterable<VariableDescriptor> getProperties() {
             return properties;
         }
     }
@@ -534,7 +460,7 @@ public abstract class WebService extends HttpServlet {
          * The type name.
          */
         public String getName() {
-            // TODO Use map
+            // TODO Use map?
             return type.getSimpleName();
         }
 
@@ -546,7 +472,7 @@ public abstract class WebService extends HttpServlet {
          * otherwise.
          */
         public boolean isIntrinsic() {
-            // TODO Use map
+            // TODO Use map?
             return true;
         }
     }
@@ -677,8 +603,7 @@ public abstract class WebService extends HttpServlet {
 
     private ServiceDescriptor serviceDescriptor = null;
 
-    // TODO Synchronize access?
-    private static ConcurrentHashMap<Class<?>, WebService> instances = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, WebService> instances = new HashMap<>();
 
     private static final String UTF_8 = "UTF-8";
 
@@ -696,7 +621,7 @@ public abstract class WebService extends HttpServlet {
      * exists.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends WebService> T getInstance(Class<T> type) {
+    public synchronized static <T extends WebService> T getInstance(Class<T> type) {
         return (T)instances.get(type);
     }
 
@@ -778,7 +703,9 @@ public abstract class WebService extends HttpServlet {
         Class<? extends WebService> type = getClass();
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
-            instances.put(type, this);
+            synchronized (instances) {
+                instances.put(type, this);
+            }
         }
     }
 
