@@ -44,15 +44,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,18 +66,14 @@ public abstract class WebService extends HttpServlet {
      */
     public static class ServiceDescriptor {
         private String description;
-        private List<EndpointDescriptor> endpoints;
-        private List<EnumerationDescriptor> enumerations;
-        private List<StructureDescriptor> structures;
 
-        private ServiceDescriptor(String description,
-            List<EndpointDescriptor> endpoints,
-            List<EnumerationDescriptor> enumerations,
-            List<StructureDescriptor> structures) {
-            this.description = description;
-            this.endpoints = endpoints;
-            this.enumerations = enumerations;
-            this.structures = structures;
+        private List<EndpointDescriptor> endpoints = new LinkedList<>();
+
+        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+
+        private ServiceDescriptor(Class<? extends WebService> type) {
+            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
         }
 
         /**
@@ -99,7 +92,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The service endpoints.
          */
-        public List<EndpointDescriptor> getEndpoints() {
+        public Iterable<EndpointDescriptor> getEndpoints() {
             return endpoints;
         }
 
@@ -109,8 +102,8 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The service enumerations.
          */
-        public List<EnumerationDescriptor> getEnumerations() {
-            return enumerations;
+        public Iterable<EnumerationDescriptor> getEnumerations() {
+            return enumerations.values();
         }
 
         /**
@@ -119,8 +112,8 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The service structures.
          */
-        public List<StructureDescriptor> getStructures() {
-            return structures;
+        public Iterable<StructureDescriptor> getStructures() {
+            return structures.values();
         }
     }
 
@@ -212,12 +205,17 @@ public abstract class WebService extends HttpServlet {
 
             description = Optional.ofNullable(handler.method.getAnnotation(Description.class)).map(Description::value).orElse(null);
 
-            // TODO Produce type descriptors from Body annotation and (generic) return type
-            consumes = null;
-            produces = null;
+            Content content = handler.method.getAnnotation(Content.class);
 
-            // TODO Produce variable/type descriptors from (generic) parameter types
-            parameters = null;
+            if (content != null) {
+                consumes = describeType(content.value());
+            } else {
+                consumes = null;
+            }
+
+            produces = describeType(handler.method.getGenericReturnType());
+
+            parameters = Arrays.stream(handler.method.getParameters()).map(VariableDescriptor::new).collect(Collectors.toList());
 
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
@@ -294,10 +292,18 @@ public abstract class WebService extends HttpServlet {
         private TypeDescriptor type;
         private String description;
 
-        private VariableDescriptor(String name, TypeDescriptor type, String description) {
+        private VariableDescriptor(Parameter parameter) {
+            name = parameter.getName();
+
+            type = describeType(parameter.getParameterizedType());
+
+            description = Optional.ofNullable(parameter.getAnnotation(Description.class)).map(Description::value).orElse(null);
+        }
+
+        private VariableDescriptor(String name, BeanAdapter.Property property) {
             this.name = name;
-            this.type = type;
-            this.description = description;
+
+            type = describeType(property.getAccessor().getGenericReturnType());
         }
 
         /**
@@ -446,8 +452,14 @@ public abstract class WebService extends HttpServlet {
 
             description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
 
-            // TODO
-            properties = null;
+            properties = BeanAdapter.getProperties(type).entrySet().stream()
+                .filter(entry -> {
+                    Method accessor = entry.getValue().getAccessor();
+
+                    return (accessor != null && accessor.getDeclaringClass() == type);
+                })
+                .map(entry -> new VariableDescriptor(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
         }
 
         /**
@@ -498,6 +510,10 @@ public abstract class WebService extends HttpServlet {
         private Class<?> type;
 
         private TypeDescriptor(Class<?> type) {
+            if (type.isArray()) {
+                throw new IllegalArgumentException();
+            }
+
             this.type = type;
         }
 
@@ -518,6 +534,7 @@ public abstract class WebService extends HttpServlet {
          * The type name.
          */
         public String getName() {
+            // TODO Use map
             return type.getSimpleName();
         }
 
@@ -529,33 +546,28 @@ public abstract class WebService extends HttpServlet {
          * otherwise.
          */
         public boolean isIntrinsic() {
-            // TODO Return true for primitives, false for enums and beans
+            // TODO Use map
             return true;
         }
     }
 
     /**
-     * Describes a list type.
+     * Describes an iterable type.
      */
-    public static class ListTypeDescriptor extends TypeDescriptor {
+    public static class IterableTypeDescriptor extends TypeDescriptor {
         private TypeDescriptor elementType;
 
-        private ListTypeDescriptor(TypeDescriptor elementType) {
-            super(List.class);
+        private IterableTypeDescriptor(TypeDescriptor elementType) {
+            super(Iterable.class);
 
             this.elementType = elementType;
         }
 
-        @Override
-        public boolean isIntrinsic() {
-            return true;
-        }
-
         /**
-         * Returns the type of the elements contained by the list.
+         * Returns the type of the elements traversed by the iterable.
          *
          * @return
-         * The list's element type.
+         * The iterables's element type.
          */
         public TypeDescriptor getElementType() {
             return elementType;
@@ -574,11 +586,6 @@ public abstract class WebService extends HttpServlet {
 
             this.keyType = keyType;
             this.valueType = valueType;
-        }
-
-        @Override
-        public boolean isIntrinsic() {
-            return true;
         }
 
         /**
@@ -668,6 +675,9 @@ public abstract class WebService extends HttpServlet {
 
     private ThreadLocal<Object> body = new ThreadLocal<>();
 
+    private ServiceDescriptor serviceDescriptor = null;
+
+    // TODO Synchronize access?
     private static ConcurrentHashMap<Class<?>, WebService> instances = new ConcurrentHashMap<>();
 
     private static final String UTF_8 = "UTF-8";
@@ -1241,35 +1251,46 @@ public abstract class WebService extends HttpServlet {
      * @return
      * The service descriptor.
      */
-    public ServiceDescriptor getServiceDescriptor(String servletPath) {
-        // TODO Lazily evaluate (make method synchronized)
+    public synchronized ServiceDescriptor getServiceDescriptor(String servletPath) {
+        if (serviceDescriptor == null) {
+            Class<? extends WebService> type = getClass();
 
-        Class<? extends WebService> type = getClass();
+            serviceDescriptor = new ServiceDescriptor(type);
 
-        String description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            describeResource(servletPath, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class)).collect(Collectors.toMap(Endpoint::path, Function.identity())));
+        }
 
-        Map<String, Endpoint> endpoints = Arrays.stream(type.getAnnotationsByType(Endpoint.class)).collect(Collectors.toMap(Endpoint::path, Function.identity()));
-
-        Map<String, Resource> resources = new LinkedHashMap<>();
-
-        Set<Class<?>> enumerations = new TreeSet<>(Comparator.comparing(Class::getSimpleName));
-        Set<Class<?>> structures = new TreeSet<>(Comparator.comparing(Class::getSimpleName));
-
-        describeResource(servletPath, root, resources, enumerations, structures);
-
-        return new ServiceDescriptor(description,
-            resources.keySet().stream().map(path -> new EndpointDescriptor(path, endpoints, resources))
-                .collect(Collectors.toList()),
-            enumerations.stream().map(EnumerationDescriptor::new)
-                .collect(Collectors.toList()),
-            structures.stream().map(StructureDescriptor::new)
-                .collect(Collectors.toList()));
+        return serviceDescriptor;
     }
 
-    private void describeResource(String path, Resource resource, Map<String, Resource> resources, Set<Class<?>> enumerations, Set<Class<?>> structures) {
-        // TODO
-        resources.put(path + "TODO", resource);
+    private void describeResource(String path, Resource resource, Map<String, Endpoint> endpoints) {
+        // TODO Describe resource/endpoint here; add to service endpoint list
 
-        // TODO
+        for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
+            describeResource(path + "/" + entry.getKey(), entry.getValue(), endpoints);
+        }
+    }
+
+    private TypeDescriptor describeType(Type type) {
+        if (type instanceof Class<?>) {
+            return new TypeDescriptor((Class<?>)type);
+
+            // TODO Capture in service enumerations or structures map
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType)type;
+
+            Type rawType = parameterizedType.getRawType();
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+            if (rawType instanceof Class<?> && Iterable.class.isAssignableFrom((Class<?>)rawType)) {
+                return new IterableTypeDescriptor(describeType(actualTypeArguments[0]));
+            } else if (rawType == Map.class) {
+                return new MapTypeDescriptor(describeType(actualTypeArguments[0]), describeType(actualTypeArguments[1]));
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 }
