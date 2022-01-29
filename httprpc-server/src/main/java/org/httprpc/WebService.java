@@ -761,7 +761,7 @@ public abstract class WebService extends HttpServlet {
 
                     TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
 
-                    templateEncoder.write(serviceDescriptor, response.getOutputStream());
+                    templateEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
                 } else if (api.equals("json")) {
                     encodeResult(response, serviceDescriptor);
                 } else {
@@ -1222,7 +1222,8 @@ public abstract class WebService extends HttpServlet {
 
             serviceDescriptor = new ServiceDescriptor(type);
 
-            describeResource(servletPath, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class)).collect(Collectors.toMap(Endpoint::path, Function.identity())));
+            describeResource(servletPath, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class))
+                .collect(Collectors.toMap(endpoint -> servletPath + "/" + endpoint.path(), Function.identity())));
         }
 
         return serviceDescriptor;

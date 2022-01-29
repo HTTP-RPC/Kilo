@@ -31,6 +31,65 @@
     </style>
 </head>
 <body>
-<!-- TODO -->
+{{?description}}
+<p>{{.}}</p>
+{{/description}}
+
+<!-- Endpoints -->
+{{#endpoints}}
+<h2>{{path}}</h2>
+{{?description}}
+<p>{{.}}</p>
+{{/description}}
+<ul>
+    {{#keys}}
+    <li>{{.}}</li>
+    {{/keys}}
+</ul>
+{{#operations}}
+<!-- TODO Consumes -->
+<!-- TODO Link to non-intrinsic types -->
+<pre>{{method}}{{?produces}} -&gt; {{name}}{{/produces}}</pre>
+{{?description}}
+<p>{{.}}</p>
+{{/description}}
+<ul>
+    <!-- TODO Link to non-intrinsic types -->
+    {{#parameters}}
+    <li><code>{{name}}: {{type/name}}</code> {{?description}} - {{.}}{{/description}}</li>
+    {{/parameters}}
+</ul>
+{{/operations}}
+{{/endpoints}}
+
+<!-- Enumerations -->
+<hr/>
+{{#enumerations}}
+<h3><a id="{{name}}">{{name}}</a></h3>
+{{?description}}
+<p>{{.}}</p>
+{{/description}}
+<ul>
+{{#values}}
+    <li><code>{{name}}</code> {{?description}} - {{.}}{{/description}}</li>
+{{/values}}
+</ul>
+{{/enumerations}}
+
+<!-- Structures -->
+<hr/>
+{{#structures}}
+<!-- TODO Include supertypes -->
+<h3><a id="{{name}}">{{name}}</a></h3>
+{{?description}}
+<p>{{.}}</p>
+{{/description}}
+<ul>
+    <!-- TODO Link to non-intrinsic types -->
+    {{#properties}}
+    <li><code>{{name}}: {{type/name}}</code> {{?description}} - {{.}}{{/description}}</li>
+    {{/properties}}
+</ul>
+{{/structures}}
 </body>
 </html>
