@@ -37,9 +37,12 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,6 +51,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -478,8 +482,11 @@ public abstract class WebService extends HttpServlet {
          * The type name.
          */
         public String getName() {
-            // TODO Look up in map?
-            return type.getSimpleName();
+            if (type.isPrimitive()) {
+                return type.getName();
+            } else {
+                return type.getSimpleName();
+            }
         }
 
         /**
@@ -1265,69 +1272,81 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeType(Class<?> type) {
-        if (type.isArray()) {
+        if (type.isArray()
+            || Iterable.class.isAssignableFrom(type)
+            || Map.class.isAssignableFrom(type)) {
             throw new IllegalArgumentException();
         }
 
-        // TODO Other types
-
-        if (Enum.class.isAssignableFrom(type)) {
-            EnumerationDescriptor enumeration = serviceDescriptor.enumerations.get(type);
-
-            if (enumeration == null) {
-                enumeration = new EnumerationDescriptor(type);
-
-                Field[] fields = type.getDeclaredFields();
-
-                for (int i = 0; i < fields.length; i++) {
-                    Field field = fields[i];
-
-                    if (!field.isEnumConstant()) {
-                        continue;
-                    }
-
-                    enumeration.values.add(new ConstantDescriptor(field));
-                }
-
-                serviceDescriptor.enumerations.put(type, enumeration);
-            }
-
-            return new TypeDescriptor(type, false);
+        if (type.isPrimitive()
+            || type == Object.class
+            || type == Boolean.class
+            || Number.class.isAssignableFrom(type)
+            || CharSequence.class.isAssignableFrom(type)
+            || type == Void.class
+            || Date.class.isAssignableFrom(type)
+            || TemporalAccessor.class.isAssignableFrom(type)
+            || TemporalAmount.class.isAssignableFrom(type)
+            || type == UUID.class
+            || type == URL.class) {
+            return new TypeDescriptor(type, true);
         } else {
-            StructureDescriptor structure = serviceDescriptor.structures.get(type);
+            if (type.isEnum()) {
+                EnumerationDescriptor enumeration = serviceDescriptor.enumerations.get(type);
 
-            if (structure == null) {
-                structure = new StructureDescriptor(type);
+                if (enumeration == null) {
+                    enumeration = new EnumerationDescriptor(type);
 
-                if (type.isInterface()) {
-                    Class<?>[] interfaces = type.getInterfaces();
+                    Field[] fields = type.getDeclaredFields();
 
-                    for (int i = 0; i < interfaces.length; i++) {
-                        structure.supertypes.add(describeType(interfaces[i]));
+                    for (int i = 0; i < fields.length; i++) {
+                        Field field = fields[i];
+
+                        if (!field.isEnumConstant()) {
+                            continue;
+                        }
+
+                        enumeration.values.add(new ConstantDescriptor(field));
                     }
-                } else {
-                    Class<?> baseType = type.getSuperclass();
 
-                    if (baseType != Object.class) {
-                        structure.supertypes.add(describeType(baseType));
-                    }
+                    serviceDescriptor.enumerations.put(type, enumeration);
                 }
+            } else {
+                StructureDescriptor structure = serviceDescriptor.structures.get(type);
 
-                for (Map.Entry<String, BeanAdapter.Property> entry : BeanAdapter.getProperties(type).entrySet()) {
-                    Method accessor = entry.getValue().getAccessor();
+                if (structure == null) {
+                    structure = new StructureDescriptor(type);
 
-                    if (accessor == null || accessor.getDeclaringClass() != type) {
-                        continue;
+                    if (type.isInterface()) {
+                        Class<?>[] interfaces = type.getInterfaces();
+
+                        for (int i = 0; i < interfaces.length; i++) {
+                            structure.supertypes.add(describeType(interfaces[i]));
+                        }
+                    } else {
+                        Class<?> baseType = type.getSuperclass();
+
+                        if (baseType != Object.class) {
+                            structure.supertypes.add(describeType(baseType));
+                        }
                     }
 
-                    VariableDescriptor propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
+                    for (Map.Entry<String, BeanAdapter.Property> entry : BeanAdapter.getProperties(type).entrySet()) {
+                        Method accessor = entry.getValue().getAccessor();
 
-                    propertyDescriptor.type = describeType(accessor.getGenericReturnType());
+                        if (accessor == null || accessor.getDeclaringClass() != type) {
+                            continue;
+                        }
 
-                    structure.properties.add(propertyDescriptor);
+                        VariableDescriptor propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
+
+                        propertyDescriptor.type = describeType(accessor.getGenericReturnType());
+
+                        structure.properties.add(propertyDescriptor);
+                    }
+
+                    serviceDescriptor.structures.put(type, structure);
                 }
-
-                serviceDescriptor.structures.put(type, structure);
             }
 
             return new TypeDescriptor(type, false);
