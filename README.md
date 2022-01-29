@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 100KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 120KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -14,8 +14,8 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Getting HTTP-RPC
 HTTP-RPC is distributed via Maven Central: 
 
-* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and interacting with common file formats and relational databases (Java 8 or later required)
-* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
+* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) (90KB) - provides support for consuming web services and interacting with common file formats and relational databases (Java 8 or later required)
+* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) (30KB) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
 
 **NOTE** The legacy `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-client` or `org.httprpc:httprpc-server` should be used for new development. 
 
