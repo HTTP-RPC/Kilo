@@ -132,7 +132,7 @@ For example, a data dictionary that contains information about homes for sale mi
       "numberOfBedrooms": 3,
       "numberOfBathrooms": 1.5
     },
-    ...        
+    ...
   ]
 }
 ```
