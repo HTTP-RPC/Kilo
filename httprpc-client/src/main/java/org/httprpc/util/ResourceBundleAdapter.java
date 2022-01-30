@@ -54,6 +54,15 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
     }
 
     @Override
+    public boolean containsKey(Object key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return resourceBundle.containsKey(key.toString());
+    }
+
+    @Override
     public Set<Entry<String, String>> entrySet() {
         throw new UnsupportedOperationException();
     }

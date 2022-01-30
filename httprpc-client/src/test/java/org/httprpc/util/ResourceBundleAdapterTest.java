@@ -19,7 +19,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ResourceBundleAdapterTest {
     @Test
@@ -28,9 +30,13 @@ public class ResourceBundleAdapterTest {
 
         ResourceBundleAdapter resourceBundleAdapter = new ResourceBundleAdapter(resourceBundle);
 
+        assertTrue(resourceBundleAdapter.containsKey("a"));
+
         assertEquals(resourceBundle.getString("a"), resourceBundleAdapter.get("a"));
         assertEquals(resourceBundle.getString("b"), resourceBundleAdapter.get("b"));
         assertEquals(resourceBundle.getString("c"), resourceBundleAdapter.get("c"));
+
+        assertFalse(resourceBundleAdapter.containsKey("d"));
 
         assertNull(resourceBundleAdapter.get("d"));
     }

@@ -72,8 +72,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         String name = key.toString();
 
         Object value;
-        if (name.startsWith(ATTRIBUTE_PREFIX)) {
-            name = name.substring(ATTRIBUTE_PREFIX.length());
+        if (isAttribute(name)) {
+            name = getAttributeName(name);
 
             if (element.hasAttribute(name)) {
                 value = element.getAttribute(name);
@@ -81,10 +81,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
                 value = null;
             }
         } else {
-            if (name.endsWith(LIST_SUFFIX)) {
-                name = name.substring(0, name.length() - LIST_SUFFIX.length());
-
-                value = new NodeListAdapter(element.getElementsByTagName(name));
+            if (isList(name)) {
+                value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)));
             } else {
                 NodeList nodeList = element.getElementsByTagName(name);
 
@@ -100,6 +98,25 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     @Override
+    public boolean containsKey(Object key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        String name = key.toString();
+
+        if (isAttribute(name)) {
+            return element.hasAttribute(getAttributeName(name));
+        } else {
+            if (isList(name)) {
+                return true;
+            } else {
+                return element.getElementsByTagName(name).getLength() > 0;
+            }
+        }
+    }
+
+    @Override
     public Set<Entry<String, Object>> entrySet() {
         throw new UnsupportedOperationException();
     }
@@ -107,5 +124,21 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     @Override
     public String toString() {
         return element.getTextContent();
+    }
+
+    private static boolean isAttribute(String name) {
+        return name.startsWith(ATTRIBUTE_PREFIX);
+    }
+
+    private static String getAttributeName(String name) {
+        return name.substring(ATTRIBUTE_PREFIX.length());
+    }
+
+    private static boolean isList(String name) {
+        return name.endsWith(LIST_SUFFIX);
+    }
+
+    private static String getListTagName(String name) {
+        return name.substring(0, name.length() - LIST_SUFFIX.length());
     }
 }

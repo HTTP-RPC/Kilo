@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
     @Test
@@ -52,16 +54,28 @@ public class ElementAdapterTest {
 
     @SuppressWarnings("unchecked")
     private void testUntypedAccess(ElementAdapter elementAdapter) {
+        assertTrue(elementAdapter.containsKey("@a"));
+        assertFalse(elementAdapter.containsKey("@b"));
+
         assertEquals("A", elementAdapter.get("@a"));
 
+        assertTrue(elementAdapter.containsKey("map"));
+
         Map<String, ?> map = (Map<String, ?>)elementAdapter.get("map");
+
+        assertTrue(map.containsKey("@b"));
+        assertFalse(map.containsKey("@c"));
 
         assertEquals("B", map.get("@b"));
         assertEquals("two", map.get("b").toString());
 
+        assertTrue(map.containsKey("list"));
+
         Map<String, ?> list = (Map<String, ?>)map.get("list");
 
         assertEquals("C", list.get("@c"));
+
+        assertTrue(list.containsKey("item*"));
 
         List<?> items = (List<?>)list.get("item*");
 
@@ -81,6 +95,12 @@ public class ElementAdapterTest {
 
         assertEquals("3", item3.get("@d"));
         assertEquals("ghi", item3.toString());
+
+        assertTrue(list.containsKey("xyz*"));
+
+        List<?> xyz = (List<?>)list.get("xyz*");
+
+        assertTrue(xyz.isEmpty());
     }
 
     private void testTypedAccess(ElementAdapter elementAdapter) {
