@@ -47,7 +47,8 @@
     {{/keys}}
 </ul>
 {{#operations}}
-<pre>{{method}}{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}</pre>
+<pre>{{?deprecated}}<del>{{/deprecated}}{{method}}{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}}</del>{{/deprecated}}
+</pre>
 {{?description}}
 <p>{{.}}</p>
 {{/description}}
