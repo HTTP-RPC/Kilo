@@ -88,7 +88,7 @@ public class TemplateEncoderTest {
 
         encoder.write(dictionary, writer);
 
-        assertEquals("1", writer.toString());
+        assertEquals("01", writer.toString());
     }
 
     @Test
@@ -389,8 +389,10 @@ public class TemplateEncoderTest {
                     entry("x", "one"),
                     entry("y", "two"),
                     entry("z", "three")
-                ))
-            ))
+                )),
+                entry("e", null)
+            )),
+            entry("e", "E")
         );
 
         StringWriter writer = new StringWriter();
@@ -595,22 +597,5 @@ public class TemplateEncoderTest {
         encoder.write("abcdefg", writer);
 
         assertEquals("ABCDEFG", writer.toString());
-    }
-
-    @Test
-    public void testEscape() throws IOException {
-        TemplateEncoder encoder = new TemplateEncoder(getClass().getResource("escape.txt"));
-
-        Map<String, ?> value = mapOf(
-            entry("a", mapOf(
-                entry("b/\\c", "A")
-            ))
-        );
-
-        StringWriter writer = new StringWriter();
-
-        encoder.write(value, writer);
-
-        assertEquals("A", writer.toString());
     }
 }

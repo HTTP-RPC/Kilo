@@ -33,12 +33,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -377,17 +379,36 @@ public class TemplateEncoder extends Encoder<Object> {
                         throw new IllegalArgumentException();
                     }
 
-                    if (key.equals("~")) {
+                    if (key.equals(KEY_REFERENCE)) {
                         return entry.getKey();
                     } else {
                         Object value = entry.getValue();
 
                         if (value instanceof Map<?, ?>) {
                             return ((Map<?, ?>)value).get(key);
-                        } else if (key.equals(".")) {
+                        } else if (key.equals(SELF_REFERENCE)) {
                             return value;
                         } else {
                             return null;
+                        }
+                    }
+                }
+
+                @Override
+                public boolean containsKey(Object key) {
+                    if (key == null) {
+                        throw new IllegalArgumentException();
+                    }
+
+                    if (key.equals(KEY_REFERENCE)) {
+                        return true;
+                    } else {
+                        Object value = entry.getValue();
+
+                        if (value instanceof Map<?, ?>) {
+                            return ((Map<?, ?>)value).containsKey(key);
+                        } else {
+                            return key.equals(SELF_REFERENCE);
                         }
                     }
                 }
@@ -412,6 +433,9 @@ public class TemplateEncoder extends Encoder<Object> {
     private static Map<String, Modifier> defaultModifiers = new HashMap<>();
 
     private static final int EOF = -1;
+
+    private static final String KEY_REFERENCE = "~";
+    private static final String SELF_REFERENCE = ".";
 
     static {
         defaultModifiers.put("format", new FormatModifier());
@@ -604,7 +628,7 @@ public class TemplateEncoder extends Encoder<Object> {
         if (root instanceof Map<?, ?>) {
             dictionary = (Map<String, ?>)root;
         } else {
-            dictionary = singletonMap(".", root);
+            dictionary = singletonMap(SELF_REFERENCE, root);
         }
 
         dictionaries.push(dictionary);
@@ -876,56 +900,30 @@ public class TemplateEncoder extends Encoder<Object> {
         dictionaries.pop();
     }
 
-    @SuppressWarnings("java:S4838")
     private Object getMarkerValue(String name) {
-        for (Object value : dictionaries) {
-            StringBuilder keyBuilder = new StringBuilder();
+        List<String> path = new LinkedList<>(Arrays.asList(name.split("/")));
 
-            int i = 0;
-            int n = name.length();
-
-            while (i <= n && value != null) {
-                char c = (i < n) ? name.charAt(i) : 0;
-
-                if (c == 0 || c == '/') {
-                    if (!(value instanceof Map<?, ?>)) {
-                        return null;
-                    }
-
-                    String key = keyBuilder.toString();
-
-                    if (key.length() > 0) {
-                        value = ((Map<?, ?>)value).get(key);
-                    }
-
-                    keyBuilder.setLength(0);
-                } else {
-                    if (c == '\\') {
-                        i++;
-
-                        if (i == n) {
-                            throw new IllegalArgumentException("Unterminated escape sequence.");
-                        }
-
-                        c = name.charAt(i);
-
-                        if (!(c == '/' || c == '\\')) {
-                            throw new IllegalArgumentException("Invalid escape sequence.");
-                        }
-                    }
-
-                    keyBuilder.append(c);
-                }
-
-                i++;
+        for (Map<?, ?> dictionary : dictionaries) {
+            if (!dictionary.containsKey(path.get(0))) {
+                continue;
             }
 
-            if (value != null) {
-                return value;
-            }
+            return valueAt(dictionary, path);
         }
 
         return null;
+    }
+
+    private static Object valueAt(Map<?, ?> root, List<?> path) {
+        Object value = root.get(path.remove(0));
+
+        if (path.isEmpty()) {
+            return value;
+        } else if (value instanceof Map<?, ?>){
+            return valueAt((Map<?, ?>)value, path);
+        } else {
+            return null;
+        }
     }
 
     /**

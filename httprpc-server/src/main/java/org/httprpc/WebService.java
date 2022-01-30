@@ -1268,6 +1268,10 @@ public abstract class WebService extends HttpServlet {
      * The service descriptor.
      */
     public synchronized ServiceDescriptor getServiceDescriptor(String servletPath) {
+        if (servletPath == null) {
+            throw new IllegalArgumentException();
+        }
+
         if (serviceDescriptor == null) {
             Class<? extends WebService> type = getClass();
 
