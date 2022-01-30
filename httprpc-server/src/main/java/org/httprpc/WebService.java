@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.httprpc.io.TemplateEncoder;
+import org.httprpc.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,13 +56,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
+import static org.httprpc.util.Collections.mapOf;
 
 /**
  * Abstract base class for web services.
@@ -812,7 +816,12 @@ public abstract class WebService extends HttpServlet {
 
                     TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
 
-                    templateEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
+                    ResourceBundle resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
+
+                    templateEncoder.write(mapOf(
+                        entry("labels", new ResourceBundleAdapter(resourceBundle)),
+                        entry("service", new BeanAdapter(serviceDescriptor))
+                    ), response.getOutputStream());
                 } else if (api.equals("json")) {
                     encodeResult(response, serviceDescriptor);
                 } else {

@@ -164,9 +164,10 @@
   </script>
 </head>
 <body>
+{{?service}}
 <div id="toc">
   <ol>
-    <li><a href="#endpoints">Endpoints</a>
+    <li><a href="#endpoints">{{labels/endpoints}}</a>
       <ol>
         {{#endpoints}}
         <li><a href="#{{path}}">{{path}}</a></li>
@@ -175,7 +176,7 @@
     </li>
 
     {{?enumerations}}
-    <li><a href="#enumerations">Enumerations</a>
+    <li><a href="#enumerations">{{labels/enumerations}}</a>
       <ol>
         {{#.}}
         <li><a href="#{{name}}">{{name}}</a></li>
@@ -185,7 +186,7 @@
     {{/enumerations}}
 
     {{?structures}}
-    <li><a href="#structures">Structures</a>
+    <li><a href="#structures">{{labels/structures}}</a>
       <ol>
         {{#.}}
         <li><a href="#{{name}}">{{name}}</a></li>
@@ -201,7 +202,7 @@
   {{/description}}
 
   <div id="endpoints">
-    <h1>Endpoints</h1>
+    <h1>{{labels/endpoints}}</h1>
 
     {{#endpoints}}
     <section id="{{path}}">
@@ -209,11 +210,15 @@
       {{?description}}
       <p>{{.}}</p>
       {{/description}}
-      <ul>
-        {{#keys}}
-        <li>{{.}}</li>
-        {{/keys}}
-      </ul>
+
+      {{?keys}}
+      <table>
+        <tr><th>{{labels/key}}</th><th></th><th></th></tr>
+        {{#.}}
+        <tr><td><code>{{.}}</code></td><td></td><td></td></tr>
+        {{/.}}
+      </table>
+      {{/keys}}
 
       {{#operations}}
       {{?deprecated}}<del>{{/deprecated}}
@@ -225,7 +230,7 @@
 
       {{?parameters}}
       <table>
-        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+        <tr><th>{{labels/parameter}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
         {{#.}}
         <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
         {{/.}}
@@ -238,7 +243,7 @@
 
   {{?enumerations}}
   <div id="enumerations">
-    <h1>Enumerations</h1>
+    <h1>{{labels/enumerations}}</h1>
 
     {{#.}}
     <section id="{{name}}">
@@ -248,9 +253,9 @@
       {{/description}}
 
       <table>
-        <tr><th>Name</th><th>Description</th></tr>
+        <tr><th>{{labels/name}}</th><th>{{labels/description}}</th><th></th></tr>
         {{#values}}
-        <tr><td><code>{{name}}</code></td><td>{{description}}</td></tr>
+        <tr><td><code>{{name}}</code></td><td>{{description}}</td><td></td></tr>
         {{/values}}
       </table>
     </section>
@@ -260,7 +265,7 @@
 
   {{?structures}}
   <div id="structures">
-    <h1>Structures</h1>
+    <h1>{{labels/structures}}</h1>
 
     {{#.}}
     <section id="{{name}}">
@@ -269,7 +274,7 @@
       <p>{{.}}</p>
       {{/description}}
       <table>
-        <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+        <tr><th>{{labels/property}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
         {{#properties}}
         <tr><td><code>{{name}}</code></td><td><code class="type">{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
         {{/properties}}
@@ -279,5 +284,6 @@
   </div>
   {{/structures}}
 </div>
+{{/service}}
 </body>
 </html>
