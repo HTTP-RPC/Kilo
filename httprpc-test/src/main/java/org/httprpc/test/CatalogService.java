@@ -43,7 +43,7 @@ import java.util.Map;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;
 
-@WebServlet(urlPatterns={"/catalog/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
 @Description("Simulates a product catalog.")
 @Endpoint(path = "items", description = "Item collection.")
 @Endpoint(path = "items/?", description = "Item detail.", keys = {"The item ID."})

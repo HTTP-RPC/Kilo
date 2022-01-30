@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * File upload example service.
  */
-@WebServlet(urlPatterns={"/upload/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns = {"/upload/*"}, loadOnStartup = 1)
 @MultipartConfig
 @Description("File upload example service.")
 public class FileUploadService extends WebService {

@@ -54,7 +54,7 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 
-@WebServlet(urlPatterns={"/test/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
 public class TestService extends WebService {
     public interface Response {

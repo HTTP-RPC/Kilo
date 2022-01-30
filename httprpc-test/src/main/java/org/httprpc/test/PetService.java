@@ -45,7 +45,7 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 
-@WebServlet(urlPatterns={"/pets/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends WebService {
     private interface Pet {
         Date getBirth();

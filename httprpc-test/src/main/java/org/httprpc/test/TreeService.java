@@ -27,7 +27,7 @@ import static org.httprpc.util.Collections.listOf;
 /**
  * Tree service.
  */
-@WebServlet(urlPatterns={"/tree/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns = {"/tree/*"}, loadOnStartup = 1)
 @Description("Tree service.")
 public class TreeService extends WebService {
     @Description("Represents a node in the tree.")

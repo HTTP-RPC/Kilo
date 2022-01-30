@@ -22,7 +22,7 @@ import org.httprpc.WebService;
 import jakarta.servlet.annotation.WebServlet;
 import java.util.List;
 
-@WebServlet(urlPatterns={"/math/*"}, loadOnStartup=1)
+@WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
 @Description("Math example service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
