@@ -44,8 +44,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -506,6 +504,58 @@ public abstract class WebService extends HttpServlet {
         public boolean isIntrinsic() {
             return intrinsic;
         }
+
+        /**
+         * Indicates that the type is an iterable.
+         *
+         * @return
+         * <code>true</code> if the type is an iterable; <code>false</code>,
+         * otherwise.
+         */
+        public boolean isIterable() {
+            return false;
+        }
+
+        /**
+         * Returns the element type.
+         *
+         * @return
+         * The element type, or <code>null</code> if the type is not an
+         * iterable.
+         */
+        public TypeDescriptor getElementType() {
+            return null;
+        }
+
+        /**
+         * Indicates that the type is a map.
+         *
+         * @return
+         * <code>true</code> if the type is a map; <code>false</code>, otherwise.
+         */
+        public boolean isMap() {
+            return false;
+        }
+
+        /**
+         * Returns the key type.
+         *
+         * @return
+         * The key type, or <code>null</code> if the type is not a map.
+         */
+        public TypeDescriptor getKeyType() {
+            return null;
+        }
+
+        /**
+         * Returns the value type.
+         *
+         * @return
+         * The value type, or <code>null</code> if the type is not a map.
+         */
+        public TypeDescriptor getValueType() {
+            return null;
+        }
     }
 
     /**
@@ -520,12 +570,12 @@ public abstract class WebService extends HttpServlet {
             this.elementType = elementType;
         }
 
-        /**
-         * Returns the type of the elements traversed by the iterable.
-         *
-         * @return
-         * The iterables's element type.
-         */
+        @Override
+        public boolean isIterable() {
+            return true;
+        }
+
+        @Override
         public TypeDescriptor getElementType() {
             return elementType;
         }
@@ -545,22 +595,17 @@ public abstract class WebService extends HttpServlet {
             this.valueType = valueType;
         }
 
-        /**
-         * Returns the type of the keys used to look up values in the map.
-         *
-         * @return
-         * The map's key type.
-         */
+        @Override
+        public boolean isMap() {
+            return true;
+        }
+
+        @Override
         public TypeDescriptor getKeyType() {
             return keyType;
         }
 
-        /**
-         * Returns the type of the values contained by the map.
-         *
-         * @return
-         * The map's value type.
-         */
+        @Override
         public TypeDescriptor getValueType() {
             return valueType;
         }
