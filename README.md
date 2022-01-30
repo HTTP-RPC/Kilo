@@ -262,6 +262,8 @@ API documentation can be viewed by appending "?api" to a service URL; for exampl
 GET /math?api
 ```
 
+<img src="README/api.png" width="576px"/>
+
 Methods are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
