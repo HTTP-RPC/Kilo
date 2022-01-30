@@ -47,14 +47,14 @@
     {{/keys}}
 </ul>
 {{#operations}}
-<pre>{{?deprecated}}<del>{{/deprecated}}{{method}}{{?consumes}} ({{name}}){{/consumes}}{{?produces}} -&gt; {{name}}{{/produces}}{{?deprecated}}</del>{{/deprecated}}
+<pre>{{?deprecated}}<del>{{/deprecated}}{{method}}{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}}</del>{{/deprecated}}
 </pre>
 {{?description}}
 <p>{{.}}</p>
 {{/description}}
 <ul>
     {{#parameters}}
-    <li><code>{{name}}: {{?type}}{{name}}{{/type}}</code> {{?description}} - {{.}}{{/description}}</li>
+    <li><code>{{name}}: {{?type}}{{>type.html}}{{/type}}</code> {{?description}} - {{.}}{{/description}}</li>
     {{/parameters}}
 </ul>
 {{/operations}}
@@ -80,13 +80,13 @@
 {{?structures}}
 <hr/>
 {{#.}}
-<h3><a id="{{name}}">{{name}}</a>{{?supertypes}} : {{#.[, ]}}{{name}}{{/.}}{{/supertypes}}</h3>
+<h3><a id="{{name}}">{{name}}</a>{{?supertypes}} : {{#.[, ]}}{{>type.html}}{{/.}}{{/supertypes}}</h3>
 {{?description}}
 <p>{{.}}</p>
 {{/description}}
 <ul>
     {{#properties}}
-    <li><code>{{name}}: {{?type}}{{name}}{{/type}}</code> {{?description}} - {{.}}{{/description}}</li>
+    <li><code>{{name}}: {{?type}}{{>type.html}}{{/type}}</code> {{?description}} - {{.}}{{/description}}</li>
     {{/properties}}
 </ul>
 {{/.}}
