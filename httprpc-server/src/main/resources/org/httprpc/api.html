@@ -63,7 +63,6 @@
     :is(h1, h2, h3) a {
       text-decoration-thickness: 1px;
     }
-
     table {
       border-collapse: collapse;
       width: 100%;
@@ -207,14 +206,12 @@
 
   <div id="endpoints">
     <h1>{{labels/endpoints}}</h1>
-
     {{#endpoints}}
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
       {{?description}}
       <p>{{.}}</p>
       {{/description}}
-
       {{?keys}}
       <table>
         <tr><th>{{labels/key}}</th><th></th><th></th></tr>
@@ -223,13 +220,11 @@
         {{/.}}
       </table>
       {{/keys}}
-
       {{#operations}}
       <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{labels/deprecated}}</strong>{{/deprecated}}</pre>
       {{?description}}
       <p>{{.}}</p>
       {{/description}}
-
       {{?parameters}}
       <table>
         <tr><th>{{labels/parameter}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
@@ -246,14 +241,12 @@
   {{?enumerations}}
   <div id="enumerations">
     <h1>{{labels/enumerations}}</h1>
-
     {{#.}}
     <section id="{{name}}">
       <h2><a id="{{name}}">{{name}}</a></h2>
       {{?description}}
       <p>{{.}}</p>
       {{/description}}
-
       <table>
         <tr><th>{{labels/name}}</th><th>{{labels/description}}</th><th></th></tr>
         {{#values}}
@@ -268,7 +261,6 @@
   {{?structures}}
   <div id="structures">
     <h1>{{labels/structures}}</h1>
-
     {{#.}}
     <section id="{{name}}">
       <h2><a id="{{name}}">{{name}}</a>{{?supertypes}} : {{#.[, ]}}{{>type.html}}{{/.}}{{/supertypes}}</h2>
