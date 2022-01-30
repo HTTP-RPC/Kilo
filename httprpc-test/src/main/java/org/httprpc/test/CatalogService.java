@@ -47,6 +47,7 @@ import static org.httprpc.util.Collections.mapOf;
 @Description("Simulates a product catalog.")
 @Endpoint(path = "items", description = "Item collection.")
 @Endpoint(path = "items/?", description = "Item detail.", keys = {"The item ID."})
+@Endpoint(path = "sizes", description = "Size collection.")
 public class CatalogService extends WebService {
     @Description("Represents an item in the catalog.")
     public static class Item {
