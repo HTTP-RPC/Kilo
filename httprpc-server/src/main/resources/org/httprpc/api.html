@@ -148,136 +148,119 @@
       color: var(--color-neutral);
     }
   </style>
-  <script>
-    const highlightActive = function(){
-      var curHash = window.location.hash
-      if(curHash) {
-        tocLinks.forEach(link => {
-          if(link.getAttribute('href') === curHash){
-            link.classList.add('active')
-          } else {
-            link.classList.remove('active')
-          }
-        });
-      }
-    }
-    var tocLinks = document.querySelectorAll('#toc a');
-    window.addEventListener('load', highlightActive, false);
-    window.addEventListener('hashchange', highlightActive, false);
-  </script>
 </head>
 <body>
-{{?service}}
+<!-- {{?service}} -->
 <div id="toc">
   <ol>
     <li><a href="#endpoints">{{labels/endpoints}}</a>
       <ol>
-        {{#endpoints}}
+        <!-- {{#endpoints}} -->
         <li><a href="#{{path}}">{{path}}</a></li>
-        {{/endpoints}}
+        <!-- {{/endpoints}} -->
       </ol>
     </li>
 
-    {{?enumerations}}
+    <!-- {{?enumerations}} -->
     <li><a href="#enumerations">{{labels/enumerations}}</a>
       <ol>
-        {{#.}}
+        <!-- {{#.}} -->
         <li><a href="#{{name}}">{{name}}</a></li>
-        {{/.}}
+        <!-- {{/.}} -->
       </ol>
     </li>
-    {{/enumerations}}
+    <!-- {{/enumerations}} -->
 
-    {{?structures}}
+    <!-- {{?structures}} -->
     <li><a href="#structures">{{labels/structures}}</a>
       <ol>
-        {{#.}}
+        <!-- {{#.}} -->
         <li><a href="#{{name}}">{{name}}</a></li>
-        {{/.}}
+        <!-- {{/.}} -->
       </ol>
     </li>
-    {{/structures}}
+    <!-- {{/structures}} -->
   </ol>
 </div>
 <div id="docs">
-  {{?description}}
+  <!-- {{?description}} -->
   <p>{{.}}</p>
-  {{/description}}
+  <!-- {{/description}} -->
 
   <div id="endpoints">
     <h1>{{labels/endpoints}}</h1>
-    {{#endpoints}}
+    <!-- {{#endpoints}} -->
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
-      {{?description}}
+      <!-- {{?description}} -->
       <p>{{.}}</p>
-      {{/description}}
-      {{?keys}}
+      <!-- {{/description}} -->
+      <!-- {{?keys}} -->
       <table>
         <tr><th>{{labels/key}}</th><th></th><th></th></tr>
-        {{#.}}
+        <!-- {{#.}} -->
         <tr><td><code>{{.}}</code></td><td></td><td></td></tr>
-        {{/.}}
+        <!-- {{/.}} -->
       </table>
-      {{/keys}}
-      {{#operations}}
+      <!-- {{/keys}} -->
+      <!-- {{#operations}} -->
       <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{labels/deprecated}}</strong>{{/deprecated}}</pre>
-      {{?description}}
+      <!-- {{?description}} -->
       <p>{{.}}</p>
-      {{/description}}
-      {{?parameters}}
+      <!-- {{/description}} -->
+      <!-- {{?parameters}} -->
       <table>
         <tr><th>{{labels/parameter}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
-        {{#.}}
+        <!-- {{#.}} -->
         <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
-        {{/.}}
+        <!-- {{/.}} -->
       </table>
-      {{/parameters}}
-      {{/operations}}
+      <!-- {{/parameters}} -->
+      <!-- {{/operations}} -->
     </section>
-    {{/endpoints}}
+    <!-- {{/endpoints}} -->
   </div>
 
-  {{?enumerations}}
+  <!-- {{?enumerations}} -->
   <div id="enumerations">
     <h1>{{labels/enumerations}}</h1>
-    {{#.}}
+    <!-- {{#.}} -->
     <section id="{{name}}">
       <h2><a id="{{name}}">{{name}}</a></h2>
-      {{?description}}
+      <!-- {{?description}} -->
       <p>{{.}}</p>
-      {{/description}}
+      <!-- {{/description}} -->
       <table>
         <tr><th>{{labels/name}}</th><th>{{labels/description}}</th><th></th></tr>
-        {{#values}}
+        <!-- {{#values}} -->
         <tr><td><code>{{name}}</code></td><td>{{description}}</td><td></td></tr>
-        {{/values}}
+        <!-- {{/values}} -->
       </table>
     </section>
-    {{/.}}
+    <!-- {{/.}} -->
   </div>
-  {{/enumerations}}
+  <!-- {{/enumerations}} -->
 
-  {{?structures}}
+  <!-- {{?structures}} -->
   <div id="structures">
     <h1>{{labels/structures}}</h1>
-    {{#.}}
+    <!-- {{#.}} -->
     <section id="{{name}}">
       <h2><a id="{{name}}">{{name}}</a>{{?supertypes}} : {{#.[, ]}}{{>type.html}}{{/.}}{{/supertypes}}</h2>
-      {{?description}}
+      <!-- {{?description}} -->
       <p>{{.}}</p>
-      {{/description}}
+      <!-- {{/description}} -->
       <table>
         <tr><th>{{labels/property}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
-        {{#properties}}
+        <!-- {{#properties}} -->
         <tr><td><code>{{name}}</code></td><td><code class="type">{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
-        {{/properties}}
+        <!-- {{/properties}} -->
       </table>
     </section>
-    {{/.}}
+    <!-- {{/.}} -->
   </div>
-  {{/structures}}
+  <!-- {{/structures}} -->
 </div>
-{{/service}}
+<!-- {{/service}} -->
 </body>
 </html>
