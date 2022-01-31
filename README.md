@@ -48,7 +48,7 @@ The `RequestMethod` annotation is used to associate a service method with an HTT
 Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
 
 ```java
-@WebServlet(urlPatterns={"/math/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
 public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
@@ -113,7 +113,7 @@ Missing or `null` values are automatically converted to `0` or `false` for primi
 `URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
 
 ```java
-@WebServlet(urlPatterns={"/upload/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/upload/*"}, loadOnStartup = 1)
 @MultipartConfig
 public class FileUploadService extends WebService {
     @RequestMethod("POST")
@@ -267,7 +267,7 @@ GET /math?api
 Methods are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
-@WebServlet(urlPatterns={"/math/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
 @Description("Math example service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
