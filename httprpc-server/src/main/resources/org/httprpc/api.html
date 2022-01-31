@@ -1,8 +1,9 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <style>
     :root {
-      font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;;
+      font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       font-size: 14px;
       scroll-behavior: smooth;
       color: #393939;
@@ -28,6 +29,8 @@
       padding: 1em;
       background: var(--color-neutral-light);
       border-right: 1px solid var(--color-neutral-medium);
+      max-height: 100vh;
+      overflow: scroll;
     }
     ol {
       padding-left: 1em;
@@ -84,13 +87,13 @@
     :first-child:is(td,th) {
       padding-left: 0;
     }
-    th:nth-child(1){
+    th:nth-child(1) {
       width: 16%;
     }
-    th:nth-child(2){
+    th:nth-child(2) {
       width: 16%;
     }
-    th:nth-child(3){
+    th:nth-child(3) {
       width: 68%;
     }
     td:nth-child(3) {
@@ -109,7 +112,7 @@
     :is(table, p) + :is(pre, h2) {
       margin-top: 2rem;
     }
-    section :is(table,p){
+    section :is(table,p) {
       margin-left: 1rem;
     }
     a {
@@ -148,6 +151,26 @@
       color: var(--color-neutral);
     }
   </style>
+  <script>
+    // Highlight the active item in the table of contents.
+    document.addEventListener('DOMContentLoaded', function() { 
+      const tocLinks = document.querySelectorAll('#toc a');
+      const highlightActive = function() {
+        var hash = window.location.hash;
+        if (hash) {
+          tocLinks.forEach(link => {
+            if (link.getAttribute('href') === hash) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      }
+      window.addEventListener('load', highlightActive, false);
+      window.addEventListener('hashchange', highlightActive, false);
+    });
+  </script>
 </head>
 <body>
 <!-- {{?service}} -->
