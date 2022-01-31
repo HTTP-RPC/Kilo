@@ -106,7 +106,7 @@ Method arguments may be any of the following types:
 * `java.net.URL`
 * `java.util.List`
 
-Missing or `null` values are automatically converted to `0` or `false` for primitive types.
+Unspecified values are automatically converted to `0` or `false` for primitive types.
 
 `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
@@ -262,7 +262,7 @@ API documentation can be viewed by appending "?api" to a service URL; for exampl
 GET /math?api
 ```
 
-<img src="README/api.png" width="576px"/>
+<img src="README/api.png" width="640px"/>
 
 Methods are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
@@ -319,7 +319,7 @@ public enum Size {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
-The `Endpoint` annotation can be used to provide additional information about service endpoints. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) service for more information.
+The `Endpoint` annotation can be used to provide additional information about service endpoints. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
