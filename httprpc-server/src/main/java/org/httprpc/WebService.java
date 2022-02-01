@@ -1185,7 +1185,7 @@ public abstract class WebService extends HttpServlet {
      * The body type.
      *
      * @return
-     * The decoded body content, or <code>null</code> if no content was provided.
+     * The decoded body content.
      */
     @SuppressWarnings("unchecked")
     protected <T> T getBody() {

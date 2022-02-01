@@ -184,7 +184,21 @@ A named variable can be retrieved via this `getKey()` overload:
 protected String getKey(String name) { ... }
 ```
  
-For example, given the preceding request, the key with name "contactID" would be "jsmith" and the key with name "addressType" would be "home".
+For example, given the preceding `GET` request, the value of the key named "contactID" would be "jsmith", and the value of "addressType" would be "home".
+
+#### Typed Access
+Although path components are always specified as strings, they can be easily converted to other types via one of the following overloads:
+
+```java
+protected <T> T getKey(int index, Class<T> type) { ... }
+protected <T> T getKey(String name, Class<T> type) { ... }
+```
+
+For example, this code would return the value of the first path variable as an integer:
+
+```java
+int id = getKey(0, Integer.class);
+```
 
 ### Custom Body Content
 The `Content` annotation can be used to associate custom body content with a service method. It defines a single `value()` attribute representing the expected body type. Annotated methods can access the decoded content via the `getBody()` method. 
