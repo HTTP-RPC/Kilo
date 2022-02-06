@@ -29,6 +29,7 @@ import java.util.stream.StreamSupport;
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
+    private ResultSetMetaData resultSetMetaData;
 
     private Iterator<Map<String, Object>> iterator = new Iterator<Map<String, Object>>() {
         private Boolean hasNext = null;
@@ -55,10 +56,8 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
             Map<String, Object> row = new LinkedHashMap<>();
 
             try {
-                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-
-                for (int i = 0, n = resultSetMetaData.getColumnCount(); i < n; i++) {
-                    row.put(resultSetMetaData.getColumnLabel(i + 1), resultSet.getObject(i + 1));
+                for (int i = 1, n = resultSetMetaData.getColumnCount(); i <= n; i++) {
+                    row.put(resultSetMetaData.getColumnLabel(i), resultSet.getObject(i));
                 }
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
@@ -82,6 +81,12 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         }
 
         this.resultSet = resultSet;
+
+        try {
+            resultSetMetaData = resultSet.getMetaData();
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     /**
