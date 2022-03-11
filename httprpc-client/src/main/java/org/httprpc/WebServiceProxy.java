@@ -768,7 +768,7 @@ public class WebServiceProxy {
             }
 
             try (InputStream errorStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(new MonitoredInputStream(errorStream), contentType, statusCode);
+                errorHandler.handleResponse((errorStream == null) ? null : new MonitoredInputStream(errorStream), contentType, statusCode);
             } finally {
                 if (monitorStream != null) {
                     monitorStream.println();
