@@ -783,7 +783,7 @@ public abstract class WebService extends HttpServlet {
         Class<? extends WebService> type = getClass();
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
-            synchronized (instances) {
+            synchronized (WebService.class) {
                 instances.put(type, this);
             }
         }
