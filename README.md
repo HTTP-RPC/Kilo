@@ -930,7 +930,16 @@ public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 
 These methods are provided as an alternative to similar methods defined by the `List` and `Map` classes, which do not permit `null` values.
 
-`Collections` additionally provides the `valueAt()` method, which can be used to access nested values in an object hierarchy. For example:
+Additionally, `Collections` provides the following methods for creating empty lists and maps:
+
+```java
+public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
+public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
+```
+
+These provide a slightly more readable alternative to `java.util.Collections.<Integer>emptyList()` and `java.util.Collections.<String, Integer>emptyMap()`, respectively.
+
+Finally, `Collections` provides the `valueAt()` method, which can be used to access nested values in an object hierarchy. For example:
 
 ```java
 Map<String, Object> map = mapOf(

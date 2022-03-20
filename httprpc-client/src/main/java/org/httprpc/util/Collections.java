@@ -35,7 +35,7 @@ public class Collections {
      * The list elements.
      *
      * @param <E>
-     * The type of the elements in the list.
+     * The element type.
      *
      * @return
      * An immutable list containing the provided elements.
@@ -91,6 +91,52 @@ public class Collections {
      */
     public static <K, V> Map.Entry<K, V> entry(K key, V value) {
         return new AbstractMap.SimpleImmutableEntry<>(key, value);
+    }
+
+    /**
+     * Returns an empty list.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * An empty list.
+     */
+    public static <E> List<E> emptyListOf(Class<E> elementType) {
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.emptyList();
+    }
+
+    /**
+     * Returns an empty map.
+     *
+     * @param keyType
+     * The key type.
+     *
+     * @param valueType
+     * The value type.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * An empty map.
+     */
+    public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) {
+        if (keyType == null || valueType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return java.util.Collections.emptyMap();
     }
 
     /**

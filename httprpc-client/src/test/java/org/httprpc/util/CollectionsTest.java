@@ -16,8 +16,13 @@ package org.httprpc.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static org.httprpc.util.Collections.emptyListOf;
+import static org.httprpc.util.Collections.emptyMapOf;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
@@ -25,8 +30,49 @@ import static org.httprpc.util.Collections.valueAt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CollectionsTest {
+    @Test
+    public void testListOf() {
+        ArrayList<Integer> list = new ArrayList<>(3);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        assertEquals(list, listOf(1, 2, 3));
+    }
+
+    @Test
+    public void testMapOf() {
+        HashMap<String, Integer> map = new HashMap<>();
+
+        map.put("a", 1);
+        map.put("b", 2);
+        map.put("c", 3);
+
+        assertEquals(map, mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        ));
+    }
+
+    @Test
+    public void testEmptyListOf() {
+        assertTrue(emptyListOf(Integer.class).isEmpty());
+
+        assertEquals(java.util.Collections.<Integer>emptyList(), emptyListOf(Integer.class));
+    }
+
+    @Test
+    public void testEmptyMapOf() {
+        assertTrue(emptyMapOf(String.class, Integer.class).isEmpty());
+
+        assertEquals(java.util.Collections.<String, Integer>emptyMap(), emptyMapOf(String.class, Integer.class));
+    }
+
     @Test
     public void testValueAt() {
         Map<?, ?> map = mapOf(
