@@ -34,7 +34,7 @@ Classes provided by the HTTP-RPC framework include:
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
-* [Collections](#collections) - utility methods for working with collections
+* [Collections and Optionals](#collections-and-optionals) - utility methods for working with collections and optional values, respectively
 
 Each is discussed in more detail in the following sections.
 
@@ -919,7 +919,7 @@ The `StreamAdapter` class provides access to the contents of a stream via the `I
 
 `StreamAdapter` also implements `AutoCloseable` and ensures that the underlying stream is closed when the adapter is closed.
 
-## Collections
+## Collections and Optionals
 The `Collections` class provides a set of static utility methods for instantiating immutable list and map values:
 
 ```java
@@ -945,6 +945,15 @@ Map<String, Object> map = mapOf(
 
 int value = valueAt(map, "a", "b", "c", 1); // 2
 ``` 
+
+The `Optionals` class contains methods for working with optional (or "nullable") values:
+
+```java
+public static <T> T coalesce(T... values) { ... }
+public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { ... }
+```
+
+These methods are provided as a less verbose alternative to similar methods defined by the `Optional`class.
 
 # Additional Information
 This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test).

@@ -66,6 +66,7 @@ import static java.util.Collections.emptyList;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
+import static org.httprpc.util.Optionals.map;
 
 /**
  * Abstract base class for web services.
@@ -83,7 +84,7 @@ public abstract class WebService extends HttpServlet {
         private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
         private ServiceDescriptor(Class<? extends WebService> type) {
-            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -207,7 +208,7 @@ public abstract class WebService extends HttpServlet {
         private OperationDescriptor(String method, Handler handler) {
             this.method = method;
 
-            description = Optional.ofNullable(handler.method.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(handler.method.getAnnotation(Description.class), Description::value);
 
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
@@ -288,13 +289,13 @@ public abstract class WebService extends HttpServlet {
         private VariableDescriptor(Parameter parameter) {
             name = parameter.getName();
 
-            description = Optional.ofNullable(parameter.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(parameter.getAnnotation(Description.class), Description::value);
         }
 
         private VariableDescriptor(String name, Method accessor) {
             this.name = name;
 
-            description = Optional.ofNullable(accessor.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(accessor.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -340,7 +341,7 @@ public abstract class WebService extends HttpServlet {
         private EnumerationDescriptor(Class<?> type) {
             name = type.getSimpleName();
 
-            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -391,7 +392,7 @@ public abstract class WebService extends HttpServlet {
 
             name = constant.toString();
 
-            description = Optional.ofNullable(field.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(field.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -428,7 +429,7 @@ public abstract class WebService extends HttpServlet {
         private StructureDescriptor(Class<?> type) {
             name = type.getSimpleName();
 
-            description = Optional.ofNullable(type.getAnnotation(Description.class)).map(Description::value).orElse(null);
+            description = map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
