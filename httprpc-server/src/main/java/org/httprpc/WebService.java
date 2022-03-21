@@ -55,7 +55,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -76,6 +75,7 @@ public abstract class WebService extends HttpServlet {
      * Describes a service instance.
      */
     public static class ServiceDescriptor {
+        private String path;
         private String description;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
@@ -83,8 +83,20 @@ public abstract class WebService extends HttpServlet {
         private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
         private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
 
-        private ServiceDescriptor(Class<? extends WebService> type) {
+        private ServiceDescriptor(String path, Class<? extends WebService> type) {
+            this.path = path;
+
             description = map(type.getAnnotation(Description.class), Description::value);
+        }
+
+        /**
+         * Returns the path to the service.
+         *
+         * @return
+         * The service's path.
+         */
+        public String getPath() {
+            return path;
         }
 
         /**
@@ -151,7 +163,7 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns the endpoint's path.
+         * Returns the path to the endpoint.
          *
          * @return
          * The endpoint's path.
@@ -684,7 +696,7 @@ public abstract class WebService extends HttpServlet {
 
     private ServiceDescriptor serviceDescriptor = null;
 
-    private static final Map<Class<?>, WebService> instances = new HashMap<>();
+    private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
     private static final String UTF_8 = "UTF-8";
 
@@ -706,8 +718,39 @@ public abstract class WebService extends HttpServlet {
         return (T)instances.get(type);
     }
 
+    /**
+     * Returns a list of descriptors for all active services.
+     *
+     * @return
+     * A list of descriptors for all active services.
+     */
+    public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
+        return instances.values().stream()
+            .map(WebService::getServiceDescriptor)
+            .sorted(Comparator.comparing(WebService.ServiceDescriptor::getPath))
+            .collect(Collectors.toList());
+    }
+
     @Override
     public void init() throws ServletException {
+        Class<? extends WebService> type = getClass();
+
+        WebServlet webServlet = type.getAnnotation(WebServlet.class);
+
+        String[] urlPatterns = webServlet.urlPatterns();
+
+        if (urlPatterns.length == 0) {
+            throw new ServletException("At least one URL pattern is required.");
+        }
+
+        String path = urlPatterns[0];
+
+        if (!path.startsWith("/") && (path.length() == 1 || path.endsWith("/*"))) {
+            throw new ServletException("Invalid URL pattern.");
+        }
+
+        path = path.substring(0, path.length() - 2);
+
         root = new Resource();
 
         Method[] methods = getClass().getMethods();
@@ -781,7 +824,10 @@ public abstract class WebService extends HttpServlet {
 
         sort(root);
 
-        Class<? extends WebService> type = getClass();
+        serviceDescriptor = new ServiceDescriptor(path, type);
+
+        describeResource(path, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class))
+            .collect(Collectors.toMap(Endpoint::path, Function.identity())));
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
             synchronized (WebService.class) {
@@ -810,26 +856,16 @@ public abstract class WebService extends HttpServlet {
             String api = request.getParameter("api");
 
             if (api != null) {
-                ServiceDescriptor serviceDescriptor = getServiceDescriptor(request.getServletPath());
+                response.setContentType(String.format("text/html;charset=%s", UTF_8));
 
-                if (api.isEmpty() || api.equals("html")) {
-                    response.setContentType(String.format("text/html;charset=%s", UTF_8));
+                TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
 
-                    TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+                ResourceBundle resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
 
-                    ResourceBundle resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
-
-                    templateEncoder.write(mapOf(
-                        entry("labels", new ResourceBundleAdapter(resourceBundle)),
-                        entry("service", new BeanAdapter(serviceDescriptor))
-                    ), response.getOutputStream());
-                } else if (api.equals("json")) {
-                    encodeResult(response, serviceDescriptor);
-                } else {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                }
-
-                return;
+                templateEncoder.write(mapOf(
+                    entry("labels", new ResourceBundleAdapter(resourceBundle)),
+                    entry("service", new BeanAdapter(serviceDescriptor))
+                ), response.getOutputStream());
             }
         }
 
@@ -1271,26 +1307,10 @@ public abstract class WebService extends HttpServlet {
     /**
      * Returns the service descriptor.
      *
-     * @param servletPath
-     * The servlet path.
-     *
      * @return
      * The service descriptor.
      */
-    public synchronized ServiceDescriptor getServiceDescriptor(String servletPath) {
-        if (servletPath == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (serviceDescriptor == null) {
-            Class<? extends WebService> type = getClass();
-
-            serviceDescriptor = new ServiceDescriptor(type);
-
-            describeResource(servletPath, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class))
-                .collect(Collectors.toMap(endpoint -> servletPath + "/" + endpoint.path(), Function.identity())));
-        }
-
+    public ServiceDescriptor getServiceDescriptor() {
         return serviceDescriptor;
     }
 

@@ -5,6 +5,16 @@
     version="5.0">
     <display-name>HTTP-RPC Server Test</display-name>
 
+    <servlet>
+        <servlet-name>index-servlet</servlet-name>
+        <servlet-class>org.httprpc.IndexServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>index-servlet</servlet-name>
+        <url-pattern/>
+    </servlet-mapping>
+
     <resource-ref>
         <description>Menagerie DB</description>
         <res-ref-name>jdbc/MenagerieDB</res-ref-name>

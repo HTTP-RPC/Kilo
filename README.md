@@ -84,6 +84,8 @@ GET /math/sum?values=1&values=2&values=3
 
 In either case, the service would return the value 6 in response.
 
+At least one URL pattern is required, and it must be a path mapping (i.e. must begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be loaded automatically on startup so they will be immediately available to other services and included in the generated [documentation](#api-documentation).
+
 ### Method Arguments
 Method arguments may be any of the following types:
 
@@ -334,6 +336,21 @@ public enum Size {
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
 The `Endpoint` annotation can be used to provide additional information about service endpoints. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
+
+#### IndexServlet
+An index of all active services can be enabled by declaring an instance of `org.httprpc.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
+
+```xml
+<servlet>
+    <servlet-name>index-servlet</servlet-name>
+    <servlet-class>org.httprpc.IndexServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>index-servlet</servlet-name>
+    <url-pattern/>
+</servlet-mapping>
+```
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
