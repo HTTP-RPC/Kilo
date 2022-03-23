@@ -193,6 +193,8 @@ public class BeanAdapterTest {
         assertEquals(listOf(1, 2, 3), list);
 
         assertNull(BeanAdapter.coerceList(null, Object.class));
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce("abc", BeanAdapter.typeOf(List.class, Integer.class)));
     }
 
     @Test
@@ -204,6 +206,8 @@ public class BeanAdapterTest {
         ), Double.class);
 
         assertNull(BeanAdapter.coerceMap(null, Object.class));
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce("abc", BeanAdapter.typeOf(Map.class, String.class, Integer.class)));
     }
 
     @Test
@@ -211,6 +215,8 @@ public class BeanAdapterTest {
         List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
 
         assertEquals(listOf(1, 2, 3), list);
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(List.class));
 
         Map<String, Double> map = BeanAdapter.coerce(mapOf(
             entry("a", "1.0"),
@@ -223,6 +229,8 @@ public class BeanAdapterTest {
             entry("b", 2.0),
             entry("c", 3.0)
         ), map);
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(Map.class, String.class));
     }
 
     @Test

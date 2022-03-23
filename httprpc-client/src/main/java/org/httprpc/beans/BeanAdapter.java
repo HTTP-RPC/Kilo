@@ -512,9 +512,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             Type rawType = parameterizedType.getRawType();
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (rawType == List.class) {
+            if (rawType == List.class && value instanceof List<?>) {
                 return (T)coerceList((List<?>)value, actualTypeArguments[0]);
-            } else if (rawType == Map.class) {
+            } else if (rawType == Map.class && value instanceof Map<?, ?>) {
                 return (T)coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
             } else {
                 throw new IllegalArgumentException();
