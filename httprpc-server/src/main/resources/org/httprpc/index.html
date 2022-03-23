@@ -1,12 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{labels/title}}</title>
+  <title>{{labels/title}}</title>
+  <style>
+    :root {
+      font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      scroll-behavior: smooth;
+      color: #393939;
+      --color-link: hsl(214, 83%, 43%);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      line-height: 1.2;
+    }
+    #toc {
+      padding: 1em;
+    }
+    ol {
+      padding-left: 1rem;
+      display: grid;
+      grid-gap: .5rem 1rem;
+      grid-template-columns: max-content auto;
+    }
+    ol li {
+      list-style: none;
+      display: contents;
+    }
+    #toc a {
+      display: block;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      overflow-y: scroll;
+    }
+    a {
+      color: var(--color-link);
+    }
+  </style>
 </head>
 <body>
-<h1>{{labels/services}}</h1>
-<!-- {{#services}} -->
-<a href="{{contextPath}}/{{path}}?api">{{path}}</a>{{?description}} - {{.}}{{/description}}<br>
-<!-- {{/services}} -->
+<div id="toc">
+  <h1>{{labels/services}}</h1>
+  <ol>
+    <!-- {{#services}} -->
+    <li><a href="{{contextPath}}/{{path}}?api">{{path}}</a><span>{{description}}</span></li>
+    <!-- {{/services}} -->
+  </ol>
+</div>
 </body>
 </html>
