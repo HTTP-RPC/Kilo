@@ -19,8 +19,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation that defines a group of service endpoints.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Endpoints {
+    /**
+     * @return
+     * The group of service endpoints.
+     */
     Endpoint[] value();
 }

@@ -27,6 +27,9 @@ import java.util.ResourceBundle;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;
 
+/**
+ * Generates an index of all active services.
+ */
 public class IndexServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
