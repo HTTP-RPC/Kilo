@@ -827,7 +827,7 @@ public abstract class WebService extends HttpServlet {
         serviceDescriptor = new ServiceDescriptor(path, type);
 
         describeResource(path, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class))
-            .collect(Collectors.toMap(Endpoint::path, Function.identity())));
+            .collect(Collectors.toMap(endpoint -> serviceDescriptor.path + "/" + endpoint.path(), Function.identity())));
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
             synchronized (WebService.class) {
