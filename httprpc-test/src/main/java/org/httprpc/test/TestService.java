@@ -16,6 +16,7 @@ package org.httprpc.test;
 
 import org.httprpc.Content;
 import org.httprpc.Description;
+import org.httprpc.Endpoint;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -56,6 +57,12 @@ import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
+@Endpoint(path = "a/?/b/?/c/?/d/?", description = "Key test endpoint.", keys = {
+    "The first key.",
+    "The second key.",
+    "The third key.",
+    "The fourth key (which has a really long description)."
+})
 public class TestService extends WebService {
     public interface Response {
         String getString();
