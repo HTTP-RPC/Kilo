@@ -45,9 +45,7 @@ import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
 @Description("Simulates a product catalog.")
-@Endpoint(path = "items", description = "Item collection.")
-@Endpoint(path = "items/?", description = "Item detail.", keys = {"The item ID."})
-@Endpoint(path = "sizes", description = "Size collection.")
+@Endpoint(path = "items/?", keys = {"The item ID."})
 public class CatalogService extends WebService {
     @Description("Represents an item in the catalog.")
     public static class Item {

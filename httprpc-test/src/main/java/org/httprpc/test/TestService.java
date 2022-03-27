@@ -57,7 +57,7 @@ import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
-@Endpoint(path = "a/?/b/?/c/?/d/?", description = "Key test endpoint.", keys = {
+@Endpoint(path = "a/?/b/?/c/?/d/?", keys = {
     "The first key.",
     "The second key.",
     "The third key.",

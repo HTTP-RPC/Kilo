@@ -145,21 +145,17 @@ public abstract class WebService extends HttpServlet {
      */
     public static class EndpointDescriptor {
         private String path;
-        private String description;
         private Iterable<String> keys;
 
         private List<OperationDescriptor> operations = new LinkedList<>();
 
-        private EndpointDescriptor(String path, Endpoint endpoint) {
+        private EndpointDescriptor(String path, Map<String, Endpoint> endpoints) {
             this.path = path;
 
-            if (endpoint != null) {
-                description = endpoint.description();
-                keys = Arrays.asList(endpoint.keys());
-            } else {
-                description = null;
-                keys = null;
-            }
+            keys = endpoints.entrySet().stream()
+                .filter(entry -> path.startsWith(entry.getKey()))
+                .findFirst().map(entry -> Arrays.asList(entry.getValue().keys()))
+                .orElse(null);
         }
 
         /**
@@ -170,16 +166,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getPath() {
             return path;
-        }
-
-        /**
-         * Returns a description of the endpoint.
-         *
-         * @return
-         * The endpoint's description, or <code>null</code> for no description.
-         */
-        public String getDescription() {
-            return description;
         }
 
         /**
@@ -826,8 +812,11 @@ public abstract class WebService extends HttpServlet {
 
         serviceDescriptor = new ServiceDescriptor(path, type);
 
-        describeResource(path, root, Arrays.stream(type.getAnnotationsByType(Endpoint.class))
-            .collect(Collectors.toMap(endpoint -> serviceDescriptor.path + "/" + endpoint.path(), Function.identity())));
+        Map<String, Endpoint> endpoints = Arrays.stream(type.getAnnotationsByType(Endpoint.class))
+            .collect(Collectors.toMap(endpoint -> serviceDescriptor.path + "/" + endpoint.path(),
+                Function.identity(), (endpoint1, endpoint2) -> endpoint1, TreeMap::new));
+
+        describeResource(path, root, endpoints);
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
             synchronized (WebService.class) {
@@ -1316,7 +1305,7 @@ public abstract class WebService extends HttpServlet {
 
     private void describeResource(String path, Resource resource, Map<String, Endpoint> endpoints) {
         if (!resource.handlerMap.isEmpty()) {
-            EndpointDescriptor endpoint = new EndpointDescriptor(path, endpoints.get(path));
+            EndpointDescriptor endpoint = new EndpointDescriptor(path, endpoints);
 
             for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
                 for (Handler handler : entry.getValue()) {

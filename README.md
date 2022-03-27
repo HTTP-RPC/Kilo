@@ -335,7 +335,7 @@ public enum Size {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
-The `Endpoint` annotation can be used to provide additional information about service endpoints. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
+The `Endpoint` annotation can be used to provide additional information about an endpoint's keys. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
 
 #### IndexServlet
 An index of all active services can be enabled by declaring an instance of `org.httprpc.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:

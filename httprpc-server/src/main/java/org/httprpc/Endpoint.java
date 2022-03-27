@@ -29,15 +29,9 @@ import java.lang.annotation.Target;
 public @interface Endpoint {
     /**
      * @return
-     * The full path to the endpoint, relative to the service.
+     * The path to the endpoint, relative to the service.
      */
     String path();
-
-    /**
-     * @return
-     * A description of the endpoint.
-     */
-    String description();
 
     /**
      * @return
