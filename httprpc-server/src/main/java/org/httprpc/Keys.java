@@ -19,12 +19,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation that describes an endpoint's keys.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Keys {
     /**
      * @return
-     * Descriptions of an endpoint's keys.
+     * The descriptions of the endpoint's keys, in the order in which they
+     * are declared.
      */
     String[] value() default {};
 }
