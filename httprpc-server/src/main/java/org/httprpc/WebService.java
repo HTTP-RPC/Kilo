@@ -58,7 +58,6 @@ import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -145,17 +144,11 @@ public abstract class WebService extends HttpServlet {
      */
     public static class EndpointDescriptor {
         private String path;
-        private Iterable<String> keys;
 
         private List<OperationDescriptor> operations = new LinkedList<>();
 
-        private EndpointDescriptor(String path, Map<String, Endpoint> endpoints) {
+        private EndpointDescriptor(String path) {
             this.path = path;
-
-            keys = endpoints.entrySet().stream()
-                .filter(entry -> path.startsWith(entry.getKey()))
-                .findFirst().map(entry -> Arrays.asList(entry.getValue().keys()))
-                .orElse(null);
         }
 
         /**
@@ -166,16 +159,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getPath() {
             return path;
-        }
-
-        /**
-         * Returns the keys defined by the endpoint.
-         *
-         * @return
-         * The endpoint's keys.
-         */
-        public Iterable<String> getKeys() {
-            return keys;
         }
 
         /**
@@ -195,6 +178,7 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
+        private Iterable<String> keys;
 
         private boolean deprecated;
 
@@ -207,6 +191,7 @@ public abstract class WebService extends HttpServlet {
             this.method = method;
 
             description = map(handler.method.getAnnotation(Description.class), Description::value);
+            keys = map(handler.method.getAnnotation(Keys.class), keys -> Arrays.asList(keys.value()));
 
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
@@ -229,6 +214,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Returns the keys defined by the operation.
+         *
+         * @return
+         * The endpoint's keys.
+         */
+        public Iterable<String> getKeys() {
+            return keys;
         }
 
         /**
@@ -812,11 +807,7 @@ public abstract class WebService extends HttpServlet {
 
         serviceDescriptor = new ServiceDescriptor(path, type);
 
-        Map<String, Endpoint> endpoints = Arrays.stream(type.getAnnotationsByType(Endpoint.class))
-            .collect(Collectors.toMap(endpoint -> serviceDescriptor.path + "/" + endpoint.path(),
-                Function.identity(), (endpoint1, endpoint2) -> endpoint1, TreeMap::new));
-
-        describeResource(path, root, endpoints);
+        describeResource(path, root);
 
         if (getClass().getAnnotation(WebServlet.class) != null) {
             synchronized (WebService.class) {
@@ -1303,9 +1294,9 @@ public abstract class WebService extends HttpServlet {
         return serviceDescriptor;
     }
 
-    private void describeResource(String path, Resource resource, Map<String, Endpoint> endpoints) {
+    private void describeResource(String path, Resource resource) {
         if (!resource.handlerMap.isEmpty()) {
-            EndpointDescriptor endpoint = new EndpointDescriptor(path, endpoints);
+            EndpointDescriptor endpoint = new EndpointDescriptor(path);
 
             for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
                 for (Handler handler : entry.getValue()) {
@@ -1339,7 +1330,7 @@ public abstract class WebService extends HttpServlet {
         }
 
         for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
-            describeResource(path + "/" + entry.getKey(), entry.getValue(), endpoints);
+            describeResource(path + "/" + entry.getKey(), entry.getValue());
         }
     }
 

@@ -15,27 +15,16 @@
 package org.httprpc;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Annotation that describes a service endpoint.
- */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Repeatable(Endpoints.class)
-public @interface Endpoint {
+@Target(ElementType.METHOD)
+public @interface Keys {
     /**
      * @return
-     * The path to the endpoint, relative to the service.
+     * Descriptions of an endpoint's keys.
      */
-    String path();
-
-    /**
-     * @return
-     * Descriptions of the endpoint's keys.
-     */
-    String[] keys() default {};
+    String[] value() default {};
 }

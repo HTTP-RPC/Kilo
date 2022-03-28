@@ -211,26 +211,30 @@
     <!-- {{#endpoints}} -->
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
+      <!-- {{#operations}} -->
+      <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{labels/deprecated}}</strong>{{/deprecated}}</pre>
+      <!-- {{?description}} -->
+      <p>{{.}}</p>
+      <!-- {{/description}} -->
       <!-- {{?keys}} -->
+      <p>
       <table>
         <tr><th colspan="3">{{labels/keys}}</th></tr>
         <!-- {{#.}} -->
         <tr><td colspan="3"><code>{{.}}</code></td></tr>
         <!-- {{/.}} -->
       </table>
+      </p>
       <!-- {{/keys}} -->
-      <!-- {{#operations}} -->
-      <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{labels/deprecated}}</strong>{{/deprecated}}</pre>
-      <!-- {{?description}} -->
-      <p>{{.}}</p>
-      <!-- {{/description}} -->
       <!-- {{?parameters}} -->
+      <p>
       <table>
         <tr><th>{{labels/parameter}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
         <!-- {{#.}} -->
         <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
         <!-- {{/.}} -->
       </table>
+      </p>
       <!-- {{/parameters}} -->
       <!-- {{/operations}} -->
     </section>

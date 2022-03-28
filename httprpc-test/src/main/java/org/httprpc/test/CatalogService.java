@@ -18,7 +18,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.Content;
 import org.httprpc.Description;
-import org.httprpc.Endpoint;
+import org.httprpc.Keys;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
 import org.httprpc.WebService;
@@ -45,7 +45,6 @@ import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
 @Description("Simulates a product catalog.")
-@Endpoint(path = "items/?", keys = {"The item ID."})
 public class CatalogService extends WebService {
     @Description("Represents an item in the catalog.")
     public static class Item {
@@ -182,6 +181,7 @@ public class CatalogService extends WebService {
     @RequestMethod("PUT")
     @ResourcePath("items/?:itemID")
     @Description("Updates an item.")
+    @Keys({"The item ID."})
     @Content(Item.class)
     public void updateItem() throws SQLException {
         Integer itemID = getKey("itemID", Integer.class);
@@ -201,6 +201,7 @@ public class CatalogService extends WebService {
     @RequestMethod("DELETE")
     @ResourcePath("items/?:itemID")
     @Description("Deletes an item.")
+    @Keys({"The item ID."})
     public void deleteItem() throws SQLException {
         Integer itemID = getKey("itemID", Integer.class);
 
