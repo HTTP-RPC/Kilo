@@ -44,6 +44,16 @@ public class QueryBuilder {
 
     private static final int EOF = -1;
 
+    /**
+     * Creates a query builder from a SQL query.
+     *
+     * @param sql
+     * The SQL query.
+     */
+    public QueryBuilder(String sql) {
+        this(new StringBuilder(sql));
+    }
+
     private QueryBuilder(StringBuilder sqlBuilder) {
         this.sqlBuilder = sqlBuilder;
     }
