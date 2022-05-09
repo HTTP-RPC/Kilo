@@ -27,8 +27,7 @@ Classes provided by the HTTP-RPC framework include:
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
-* [QueryBuilder](#querybuilder) - provides a fluent API for programmatically constructing and executing SQL queries
-* [ResultSetAdapter](#resultsetadapter) - iterable adapter for JDBC result sets
+* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
@@ -750,15 +749,59 @@ public class Person {
 }
 ```
 
-## QueryBuilder
-The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries.
+## QueryBuilder and ResultSetAdapter
+The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. For example, given the following table (from the MySQL sample database):
 
-TODO
+```sql
+create table pet (
+  name varchar(20),
+  owner varchar(20),
+  species varchar(20),
+  sex char(1),
+  birth date,
+  death date
+);
+```
 
-## ResultSetAdapter
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface.
+this code could be used to create a query that selects all columns and rows in the table:
 
-TODO
+```java
+QueryBuilder.select("*").from("pet");
+```
+
+The resulting SQL would look like this:
+
+```sql
+select * from pet
+```
+
+To select only rows associated with a particular owner, the following query could be used:
+
+```java
+QueryBuilder.select("*").from("pet").where("owner = :owner");
+```
+
+The colon character identifies "owner" as a variable. Variables can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
+
+```java
+QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
+
+try (Connection connection = dataSource.getConnection();
+    PreparedStatement statement = queryBuilder.prepare(connection);
+    ResultSetAdapter resultSetAdapter = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+        entry("owner", owner)
+    )))) { ... }
+```
+
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has very low latency. However, for smaller data sets, the following more concise alternative can be used:
+
+```java
+List<Map<String, Object>> pets = queryBuilder.execute(dataSource.getConnection(), mapOf(
+    entry("owner", owner)
+).getResults();
+```
+
+Database updates are supported by the `executeUpdate()` method.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 

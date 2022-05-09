@@ -68,7 +68,7 @@ public class PetService extends WebService {
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        QueryBuilder queryBuilder = QueryBuilder.select("name", "species", "sex", "birth").from("pet").where("owner = :owner");
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = queryBuilder.prepare(connection);
@@ -84,13 +84,14 @@ public class PetService extends WebService {
             } else if (format.equals("csv")) {
                 getResponse().setContentType("text/csv");
 
-                CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth"));
+                CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
                 csvEncoder.setLabels(mapOf(
                     entry("name", "Name"),
                     entry("species", "Species"),
                     entry("sex", "Sex"),
-                    entry("birth", "Birth")
+                    entry("birth", "Birth"),
+                    entry("death", "Death")
                 ));
 
                 csvEncoder.setFormats(mapOf(
