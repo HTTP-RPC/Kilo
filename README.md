@@ -2,7 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 125KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 120KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
@@ -17,8 +17,6 @@ HTTP-RPC is distributed via Maven Central:
 * [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and interacting with common file formats and relational databases (Java 8 or later required)
 * [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
 
-**NOTE** The legacy `org.httprpc:httprpc` artifact is deprecated. `org.httprpc:httprpc-client` or `org.httprpc:httprpc-server` should be used for new development. 
-
 # HTTP-RPC Classes
 Classes provided by the HTTP-RPC framework include:
 
@@ -29,8 +27,8 @@ Classes provided by the HTTP-RPC framework include:
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
-* [ResultSetAdapter and Parameters](#resultsetadapter-and-parameters) - iterable adapter for JDBC result sets/applies named parameter values to prepared statements
-* [QueryBuilder](#querybuilder) - programmatically constructs/executes a SQL query
+* [QueryBuilder](#querybuilder) - provides a fluent API for programmatically constructing and executing SQL queries
+* [ResultSetAdapter](#resultsetadapter) - iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
@@ -752,75 +750,15 @@ public class Person {
 }
 ```
 
-## ResultSetAdapter and Parameters
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Access to individual rows is provided via the `Map` interface: 
-
-```java
-public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable { ... }
-```
-
-`ResultSetAdapter` also implements `AutoCloseable` and ensures that the underlying result set is closed when the adapter is closed.
-
-For example, the following code could be used to serialize the results of a database query to JSON:
-
-```java
-try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
-    JSONEncoder jsonEncoder = new JSONEncoder();
-    
-    jsonEncoder.write(resultSetAdapter, System.out);
-}
-```
-
-The `Parameters` class is used to simplify execution of prepared statements. It provides a means for executing statements using named parameter values rather than indexed arguments. Parameter names are specified by a leading ":" character. For example:
-
-```sql
-select name from pet where owner = :owner
-```
-
-Colons within single quotes and occurrences of two successive unquoted colons ("::") are ignored.
-
-The `parse()` method is used to create a `Parameters` instance from a SQL statement. It takes a string or reader containing the SQL text as an argument; for example:
-
-```java
-Parameters parameters = Parameters.parse(sql);
-```
-
-The `getSQL()` method returns the parsed SQL in standard JDBC syntax:
-
-```sql
-select name from pet where owner = ?
-```
-
-This value is used to create the actual prepared statement. Arguments values are specified via the `apply()` method:
-
-```java
-PreparedStatement statement = connection.prepareStatement(parameters.getSQL());
-
-parameters.apply(statement, mapOf(
-  entry("owner", "Gwen")
-));
-```
-
-Once applied, the statement can be executed:
-
-```java
-ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery());    
-```
-
 ## QueryBuilder
-The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. 
+The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries.
 
-For example, the query from the previous section could be created as follows using `QueryBuilder`:
+TODO
 
-```java
-String sql = QueryBuilder.select("name", "species", "sex", "birth").from("pet").where("owner = :owner").toString();
-```
+## ResultSetAdapter
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface.
 
-Insert, update, and delete operations are also supported. In general, string values provided to the `insertInto()` and `set()` methods are wrapped in single quotes, and any embdedded single quotes are replaced with two successive single quotes. However, any string that starts with ":" or is equal to "?" is assumed to be a parameter reference and is not escaped. 
-
-If an instance of `QueryBuilder` is passed to `insertInto()` or `set()`, it is considered a subquery and is wrapped in parentheses.
-
-See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) or [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) service examples for more information.
+TODO
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 

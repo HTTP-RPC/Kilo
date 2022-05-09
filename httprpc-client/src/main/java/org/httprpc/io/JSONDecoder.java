@@ -28,6 +28,7 @@ import java.util.TreeMap;
 /**
  * JSON decoder.
  */
+@SuppressWarnings("unchecked")
 public class JSONDecoder extends Decoder<Object> {
     private boolean sorted;
 
@@ -62,7 +63,6 @@ public class JSONDecoder extends Decoder<Object> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <U> U read(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();

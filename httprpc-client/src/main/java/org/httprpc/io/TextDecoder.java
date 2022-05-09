@@ -22,9 +22,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Text decoder.
  */
-public class TextDecoder extends Decoder<CharSequence> {
-    private boolean builder;
-
+@SuppressWarnings("unchecked")
+public class TextDecoder extends Decoder<String> {
     /**
      * Constructs a new text decoder.
      */
@@ -39,28 +38,11 @@ public class TextDecoder extends Decoder<CharSequence> {
      * The character set to use when decoding the text.
      */
     public TextDecoder(Charset charset) {
-        this(charset, false);
-    }
-
-    /**
-     * Constructs a new text decoder.
-     *
-     * @param charset
-     * The character set to use when decoding the text.
-     *
-     * @param builder
-     * <code>true</code> if the result should be returned as a mutable builder;
-     * <code>false</code>, otherwise.
-     */
-    public TextDecoder(Charset charset, boolean builder) {
         super(charset);
-
-        this.builder = builder;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <U extends CharSequence> U read(Reader reader) throws IOException {
+    public String read(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
@@ -74,10 +56,6 @@ public class TextDecoder extends Decoder<CharSequence> {
             stringBuilder.append((char)c);
         }
 
-        if (builder) {
-            return (U)stringBuilder;
-        } else {
-            return (U)stringBuilder.toString();
-        }
+        return stringBuilder.toString();
     }
 }

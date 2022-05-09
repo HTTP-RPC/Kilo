@@ -16,6 +16,8 @@ package org.httprpc.sql;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,5 +83,19 @@ public class QueryBuilderTest {
             .where("a < 150").toString();
 
         assertEquals("delete from A where a < 150", sql);
+    }
+
+    @Test
+    public void testQuotedColon() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
+
+        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.prepare());
+    }
+
+    @Test
+    public void testDoubleColon() {
+        QueryBuilder queryBuilder = QueryBuilder.select("'ab:c'::varchar(16) as abc");
+
+        assertEquals("select 'ab:c'::varchar(16) as abc", queryBuilder.prepare());
     }
 }

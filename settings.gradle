@@ -1,3 +1,3 @@
 rootProject.name = 'HTTP-RPC'
 
-include  'httprpc', 'httprpc-client', 'httprpc-server', 'httprpc-test'
+include  'httprpc-client', 'httprpc-server', 'httprpc-test'

@@ -14,6 +14,8 @@
 
 package org.httprpc.sql;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,12 +24,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Class for programmatically constructing a SQL query.
+ * Class for programmatically constructing and executing a SQL query.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -35,6 +39,10 @@ public class QueryBuilder {
     private List<Map<String, Object>> results = null;
     private int updateCount = -1;
     private List<Object> generatedKeys = null;
+
+    private Deque<String> keys = null;
+
+    private static final int EOF = -1;
 
     private QueryBuilder(StringBuilder sqlBuilder) {
         this.sqlBuilder = sqlBuilder;
@@ -430,10 +438,8 @@ public class QueryBuilder {
      * If an error occurs while executing the query.
      */
     public QueryBuilder execute(Connection connection, Map<String, ?> arguments) throws SQLException {
-        Parameters parameters = Parameters.parse(toString());
-
-        try (PreparedStatement statement = connection.prepareStatement(parameters.getSQL(), Statement.RETURN_GENERATED_KEYS)) {
-            parameters.apply(statement, arguments);
+        try (PreparedStatement statement = prepare(connection)) {
+            apply(statement, arguments);
 
             if (statement.execute()) {
                 try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.getResultSet())) {
@@ -468,20 +474,26 @@ public class QueryBuilder {
      * most a single row.
      *
      * @return
-     * The query result, or <code>null</code> if the query did not produce a
-     * result set, or if the query did not return any rows.
+     * The query result, or <code>null</code> if the query either did not
+     * produce a result set or did not return any rows.
      */
     public Map<String, Object> getResult() {
         if (results == null) {
             return null;
         }
 
-        if (results.isEmpty()) {
-            return null;
-        } else if (results.size() == 1) {
-            return results.get(0);
-        } else {
-            throw new IllegalStateException();
+        switch (results.size()) {
+            case 0: {
+                return null;
+            }
+
+            case 1: {
+                return results.get(0);
+            }
+
+            default: {
+                throw new IllegalStateException();
+            }
         }
     }
 
@@ -516,6 +528,148 @@ public class QueryBuilder {
      */
     public List<Object> getGeneratedKeys() {
         return generatedKeys;
+    }
+
+    /**
+     * Prepares a query for execution.
+     *
+     * @return
+     * The prepared query text.
+     */
+    public String prepare() {
+        if (keys != null) {
+            throw new IllegalStateException();
+        }
+
+        keys = new LinkedList<>();
+
+        StringReader sqlReader = new StringReader(sqlBuilder.toString());
+
+        StringBuilder sqlBuilder = new StringBuilder();
+
+        boolean quoted = false;
+
+        try {
+            int c = sqlReader.read();
+
+            while (c != EOF) {
+                if (c == ':' && !quoted) {
+                    c = sqlReader.read();
+
+                    if (c == ':') {
+                        sqlBuilder.append("::");
+
+                        c = sqlReader.read();
+                    } else {
+                        StringBuilder keyBuilder = new StringBuilder();
+
+                        while (c != EOF && Character.isJavaIdentifierPart(c)) {
+                            keyBuilder.append((char)c);
+
+                            c = sqlReader.read();
+                        }
+
+                        keys.add(keyBuilder.toString());
+
+                        sqlBuilder.append("?");
+                    }
+                } else {
+                    if (c == '\'') {
+                        quoted = !quoted;
+                    }
+
+                    sqlBuilder.append((char)c);
+
+                    c = sqlReader.read();
+                }
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        return sqlBuilder.toString();
+    }
+
+    /**
+     * Prepares a query for execution.
+     *
+     * @param connection
+     * The connection on which the query will be executed.
+     *
+     * @return
+     * A prepared statement that can be used to execute the query.
+     *
+     * @throws SQLException
+     * If an error occurs while preparing the query.
+     */
+    public PreparedStatement prepare(Connection connection) throws SQLException {
+        return connection.prepareStatement(prepare(), Statement.RETURN_GENERATED_KEYS);
+    }
+
+    /**
+     * Applies arguments to a prepared statement.
+     *
+     * @param statement
+     * The prepared statement.
+     *
+     * @param arguments
+     * The arguments to apply.
+     *
+     * @throws SQLException
+     * If an error occurs while applying the arguments.
+     */
+    public void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        if (keys == null) {
+            throw new IllegalStateException();
+        }
+
+        int i = 1;
+
+        for (String key : keys) {
+            statement.setObject(i++, arguments.get(key));
+        }
+    }
+
+    /**
+     * Executes a query.
+     *
+     * @param statement
+     * The statement that will be used to execute the query.
+     *
+     * @param arguments
+     * The query arguments.
+     *
+     * @return
+     * The query results.
+     *
+     * @throws SQLException
+     * If an error occurs while executing the query.
+     */
+    public ResultSet executeQuery(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        apply(statement, arguments);
+
+        return statement.executeQuery();
+    }
+
+    /**
+     * Executes a query.
+     *
+     * @param statement
+     * The statement that will be used to execute the query.
+     *
+     * @param arguments
+     * The query arguments.
+     *
+     * @return
+     * The number of rows that were affected by the query.
+     *
+     * @throws SQLException
+     * If an error occurs while executing the query.
+     */
+    public int executeUpdate(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        apply(statement, arguments);
+
+        return statement.executeUpdate();
     }
 
     @Override

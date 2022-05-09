@@ -21,7 +21,6 @@ import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.CSVEncoder;
 import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
-import org.httprpc.sql.Parameters;
 import org.httprpc.sql.QueryBuilder;
 import org.httprpc.sql.ResultSetAdapter;
 import org.httprpc.util.ResourceBundleAdapter;
@@ -69,54 +68,49 @@ public class PetService extends WebService {
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        String sql = QueryBuilder.select("name", "species", "sex", "birth").from("pet").where("owner = :owner").toString();
-
-        Parameters parameters = Parameters.parse(sql);
+        QueryBuilder queryBuilder = QueryBuilder.select("name", "species", "sex", "birth").from("pet").where("owner = :owner");
 
         try (Connection connection = dataSource.getConnection();
-            PreparedStatement statement = connection.prepareStatement(parameters.getSQL())) {
-            parameters.apply(statement, mapOf(
+            PreparedStatement statement = queryBuilder.prepare(connection);
+            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
-            ));
+            )))) {
+            if (format == null || format.equals("json")) {
+                getResponse().setContentType("application/json");
 
-            try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery())) {
-                if (format == null || format.equals("json")) {
-                    getResponse().setContentType("application/json");
+                JSONEncoder jsonEncoder = new JSONEncoder();
 
-                    JSONEncoder jsonEncoder = new JSONEncoder();
+                jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+            } else if (format.equals("csv")) {
+                getResponse().setContentType("text/csv");
 
-                    jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
-                } else if (format.equals("csv")) {
-                    getResponse().setContentType("text/csv");
+                CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth"));
 
-                    CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth"));
+                csvEncoder.setLabels(mapOf(
+                    entry("name", "Name"),
+                    entry("species", "Species"),
+                    entry("sex", "Sex"),
+                    entry("birth", "Birth")
+                ));
 
-                    csvEncoder.setLabels(mapOf(
-                        entry("name", "Name"),
-                        entry("species", "Species"),
-                        entry("sex", "Sex"),
-                        entry("birth", "Birth")
-                    ));
+                csvEncoder.setFormats(mapOf(
+                    entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
+                ));
 
-                    csvEncoder.setFormats(mapOf(
-                        entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
-                    ));
+                csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+            } else if (format.equals("html")) {
+                getResponse().setContentType("text/html");
 
-                    csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
-                } else if (format.equals("html")) {
-                    getResponse().setContentType("text/html");
+                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                    TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+                ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
 
-                    ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
-
-                    templateEncoder.write(mapOf(
-                        entry("headings", new ResourceBundleAdapter(resourceBundle)),
-                        entry("data", resultSetAdapter)
-                    ), getResponse().getOutputStream());
-                } else {
-                    throw new IllegalArgumentException();
-                }
+                templateEncoder.write(mapOf(
+                    entry("headings", new ResourceBundleAdapter(resourceBundle)),
+                    entry("data", resultSetAdapter)
+                ), getResponse().getOutputStream());
+            } else {
+                throw new IllegalArgumentException();
             }
         }
     }
