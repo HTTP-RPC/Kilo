@@ -801,7 +801,9 @@ List<Map<String, Object>> pets = queryBuilder.execute(dataSource.getConnection()
 ).getResults();
 ```
 
-Insert, update, and delete operations are also supported.
+Insert, update, and delete operations are also supported. 
+
+See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) or [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
