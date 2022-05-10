@@ -14,8 +14,6 @@
 
 package org.httprpc.sql;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,13 +34,11 @@ import java.util.stream.Collectors;
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
 
+    private Deque<String> keys = new LinkedList<>();
+
     private List<Map<String, Object>> results = null;
     private int updateCount = -1;
     private List<Object> generatedKeys = null;
-
-    private Deque<String> keys = null;
-
-    private static final int EOF = -1;
 
     private QueryBuilder(StringBuilder sqlBuilder) {
         this.sqlBuilder = sqlBuilder;
@@ -165,7 +161,8 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" on ");
-        sqlBuilder.append(predicate);
+
+        append(predicate);
 
         return this;
     }
@@ -185,9 +182,55 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" where ");
-        sqlBuilder.append(predicate);
+
+        append(predicate);
 
         return this;
+    }
+
+    private void append(String predicate) {
+        boolean quoted = false;
+
+        int n = predicate.length();
+        int i = 0;
+
+        while (i < n) {
+            char c = predicate.charAt(i++);
+
+            if (c == ':' && !quoted) {
+                StringBuilder keyBuilder = new StringBuilder();
+
+                while (i < n) {
+                    c = predicate.charAt(i);
+
+                    if (!Character.isJavaIdentifierPart(c)) {
+                        break;
+                    }
+
+                    keyBuilder.append(c);
+
+                    i++;
+                }
+
+                if (keyBuilder.length() == 0) {
+                    throw new IllegalArgumentException("Missing key.");
+                }
+
+                keys.add(keyBuilder.toString());
+
+                sqlBuilder.append("?");
+            } else {
+                if (i < n && c == '\'') {
+                    sqlBuilder.append(c);
+
+                    c = predicate.charAt(i++);
+
+                    quoted = !quoted || c == '\'';
+                }
+
+                sqlBuilder.append(c);
+            }
+        }
     }
 
     /**
@@ -269,13 +312,25 @@ public class QueryBuilder {
      *
      * @return
      * The new {@link QueryBuilder} instance.
+     *
+     * @deprecated Use {@link #insertInto(String)} and {@link #values(Map)} instead.
      */
+    @Deprecated
     public static QueryBuilder insertInto(String table, Map<String, ?> values) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
+        return insertInto(table).values(values);
+    }
 
-        if (values == null) {
+    /**
+     * Creates an "insert into" query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder insertInto(String table) {
+        if (table == null) {
             throw new IllegalArgumentException();
         }
 
@@ -283,6 +338,24 @@ public class QueryBuilder {
 
         sqlBuilder.append("insert into ");
         sqlBuilder.append(table);
+
+        return new QueryBuilder(sqlBuilder);
+    }
+
+    /**
+     * Appends column values to an "insert into" query.
+     *
+     * @param values
+     * The values to insert.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder values(Map<String, ?> values) {
+        if (values == null) {
+            throw new IllegalArgumentException();
+        }
+
         sqlBuilder.append(" (");
 
         List<String> columns = new ArrayList<>(values.keySet());
@@ -304,20 +377,12 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            Object value = values.get(columns.get(i));
-
-            if (value instanceof QueryBuilder) {
-                sqlBuilder.append("(");
-                sqlBuilder.append(value);
-                sqlBuilder.append(")");
-            } else {
-                sqlBuilder.append(encode(value));
-            }
+            encode(values.get(columns.get(i)));
         }
 
         sqlBuilder.append(")");
 
-        return new QueryBuilder(sqlBuilder);
+        return this;
     }
 
     /**
@@ -343,7 +408,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "set" command to a query.
+     * Appends column values to an "update" query.
      *
      * @param values
      * The values to update.
@@ -368,20 +433,54 @@ public class QueryBuilder {
             sqlBuilder.append(entry.getKey());
             sqlBuilder.append(" = ");
 
-            Object value = entry.getValue();
-
-            if (value instanceof QueryBuilder) {
-                sqlBuilder.append("(");
-                sqlBuilder.append(value);
-                sqlBuilder.append(")");
-            } else {
-                sqlBuilder.append(encode(value));
-            }
+            encode(entry.getValue());
 
             i++;
         }
 
         return this;
+    }
+
+    private void encode(Object value) {
+        if (value instanceof String) {
+            String string = (String)value;
+
+            if (string.equals("?")) {
+                keys.add(null);
+
+                sqlBuilder.append(string);
+            } else if (string.startsWith(":")) {
+                String key = string.substring(1);
+
+                if (key.isEmpty()) {
+                    throw new IllegalArgumentException("Missing key.");
+                }
+
+                keys.add(key);
+
+                sqlBuilder.append("?");
+            } else {
+                sqlBuilder.append("'");
+
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    char c = string.charAt(i);
+
+                    if (c == '\'') {
+                        sqlBuilder.append(c);
+                    }
+
+                    sqlBuilder.append(c);
+                }
+
+                sqlBuilder.append("'");
+            }
+        } else if (value instanceof QueryBuilder) {
+            sqlBuilder.append("(");
+            sqlBuilder.append(value);
+            sqlBuilder.append(")");
+        } else {
+            sqlBuilder.append(value);
+        }
     }
 
     /**
@@ -543,56 +642,6 @@ public class QueryBuilder {
      * If an error occurs while preparing the query.
      */
     public PreparedStatement prepare(Connection connection) throws SQLException {
-        if (keys != null) {
-            throw new IllegalStateException();
-        }
-
-        keys = new LinkedList<>();
-
-        StringReader sqlReader = new StringReader(sqlBuilder.toString());
-
-        StringBuilder sqlBuilder = new StringBuilder();
-
-        boolean quoted = false;
-
-        try {
-            int c = sqlReader.read();
-
-            while (c != EOF) {
-                if (c == ':' && !quoted) {
-                    c = sqlReader.read();
-
-                    if (c == ':') {
-                        sqlBuilder.append("::");
-
-                        c = sqlReader.read();
-                    } else {
-                        StringBuilder keyBuilder = new StringBuilder();
-
-                        while (c != EOF && Character.isJavaIdentifierPart(c)) {
-                            keyBuilder.append((char)c);
-
-                            c = sqlReader.read();
-                        }
-
-                        keys.add(keyBuilder.toString());
-
-                        sqlBuilder.append("?");
-                    }
-                } else {
-                    if (c == '\'') {
-                        quoted = !quoted;
-                    }
-
-                    sqlBuilder.append((char)c);
-
-                    c = sqlReader.read();
-                }
-            }
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
         return connection.prepareStatement(sqlBuilder.toString(), Statement.RETURN_GENERATED_KEYS);
     }
 
@@ -646,6 +695,10 @@ public class QueryBuilder {
         int i = 1;
 
         for (String key : keys) {
+            if (key == null) {
+                continue;
+            }
+
             statement.setObject(i++, arguments.get(key));
         }
     }
@@ -653,25 +706,5 @@ public class QueryBuilder {
     @Override
     public String toString() {
         return sqlBuilder.toString();
-    }
-
-    private static String encode(Object value) {
-        if (value instanceof String) {
-            String string = (String)value;
-
-            if (string.startsWith(":") || string.equals("?")) {
-                return string;
-            } else {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                stringBuilder.append("'");
-                stringBuilder.append(string.replace("'", "''"));
-                stringBuilder.append("'");
-
-                return stringBuilder.toString();
-            }
-        } else {
-            return String.valueOf(value);
-        }
     }
 }

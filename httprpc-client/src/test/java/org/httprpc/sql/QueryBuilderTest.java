@@ -16,32 +16,31 @@ package org.httprpc.sql;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QueryBuilderTest {
     @Test
     public void testSelect() {
-        String sql = QueryBuilder.select("a", "b", "c")
+        String sql = QueryBuilder.select("a", "b", "c", "d")
             .from("A")
             .join("B").on("A.id = B.id and x = 50")
-            .leftJoin("C").on("B.id = C.id")
-            .rightJoin("D").on("C.id = D.id")
-            .where("(a > 10 or b < 200) and c = :c")
+            .leftJoin("C").on("B.id = C.id and b = :b")
+            .rightJoin("D").on("C.id = D.id and c = :c")
+            .where("(a > 10 or b < 200) and d != ?")
             .orderBy("a", "b")
             .limit(10)
             .forUpdate()
             .union(QueryBuilder.select("a", "b", "c")
                 .from("C")).toString();
 
-        assertEquals("select a, b, c from A "
+        assertEquals("select a, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
-            + "left join C on B.id = C.id "
-            + "right join D on C.id = D.id "
-            + "where (a > 10 or b < 200) and c = :c "
+            + "left join C on B.id = C.id and b = ? "
+            + "right join D on C.id = D.id and c = ? "
+            + "where (a > 10 or b < 200) and d != ? "
             + "order by a, b "
             + "limit 10 "
             + "for update "
@@ -60,7 +59,7 @@ public class QueryBuilderTest {
             entry("f", QueryBuilder.select("f").from("F"))
         )).toString();
 
-        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', :d, ?, (select f from F))", sql);
+        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F))", sql);
     }
 
     @Test
@@ -74,7 +73,7 @@ public class QueryBuilderTest {
             entry("f", QueryBuilder.select("f").from("F"))
         )).where("a is not null").toString();
 
-        assertEquals("update A set a = 1, b = true, c = 'hello', d = :d, e = ?, f = (select f from F) where a is not null", sql);
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F) where a is not null", sql);
     }
 
     @Test
@@ -93,9 +92,21 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testDoubleColon() {
-        QueryBuilder queryBuilder = QueryBuilder.select("'ab:c'::varchar(16) as abc");
+    public void testEscapedQuotes() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a''b'':c''' and bar = ''''");
 
-        assertEquals("select 'ab:c'::varchar(16) as abc", queryBuilder.toString());
+        assertEquals("select * from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.toString());
+    }
+
+    @Test
+    public void testMissingPredicateKey() {
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select("*").from("xyz").where("foo = :"));
+    }
+
+    @Test
+    public void testMissingValueKey() {
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
+            entry("foo", ":")
+        )));
     }
 }
