@@ -44,16 +44,6 @@ public class QueryBuilder {
 
     private static final int EOF = -1;
 
-    /**
-     * Creates a query builder from a SQL query.
-     *
-     * @param sql
-     * The SQL query.
-     */
-    public QueryBuilder(String sql) {
-        this(new StringBuilder(sql));
-    }
-
     private QueryBuilder(StringBuilder sqlBuilder) {
         this.sqlBuilder = sqlBuilder;
     }
@@ -543,10 +533,16 @@ public class QueryBuilder {
     /**
      * Prepares a query for execution.
      *
+     * @param connection
+     * The connection on which the query will be executed.
+     *
      * @return
-     * The prepared query text.
+     * A prepared statement that can be used to execute the query.
+     *
+     * @throws SQLException
+     * If an error occurs while preparing the query.
      */
-    public String prepare() {
+    public PreparedStatement prepare(Connection connection) throws SQLException {
         if (keys != null) {
             throw new IllegalStateException();
         }
@@ -597,47 +593,7 @@ public class QueryBuilder {
             throw new RuntimeException(exception);
         }
 
-        return sqlBuilder.toString();
-    }
-
-    /**
-     * Prepares a query for execution.
-     *
-     * @param connection
-     * The connection on which the query will be executed.
-     *
-     * @return
-     * A prepared statement that can be used to execute the query.
-     *
-     * @throws SQLException
-     * If an error occurs while preparing the query.
-     */
-    public PreparedStatement prepare(Connection connection) throws SQLException {
-        return connection.prepareStatement(prepare(), Statement.RETURN_GENERATED_KEYS);
-    }
-
-    /**
-     * Applies arguments to a prepared statement.
-     *
-     * @param statement
-     * The prepared statement.
-     *
-     * @param arguments
-     * The arguments to apply.
-     *
-     * @throws SQLException
-     * If an error occurs while applying the arguments.
-     */
-    public void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
-        if (keys == null) {
-            throw new IllegalStateException();
-        }
-
-        int i = 1;
-
-        for (String key : keys) {
-            statement.setObject(i++, arguments.get(key));
-        }
+        return connection.prepareStatement(sqlBuilder.toString(), Statement.RETURN_GENERATED_KEYS);
     }
 
     /**
@@ -680,6 +636,18 @@ public class QueryBuilder {
         apply(statement, arguments);
 
         return statement.executeUpdate();
+    }
+
+    private void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        if (keys == null) {
+            throw new IllegalStateException();
+        }
+
+        int i = 1;
+
+        for (String key : keys) {
+            statement.setObject(i++, arguments.get(key));
+        }
     }
 
     @Override

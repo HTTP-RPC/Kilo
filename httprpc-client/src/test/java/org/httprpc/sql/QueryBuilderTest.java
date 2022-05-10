@@ -87,15 +87,15 @@ public class QueryBuilderTest {
 
     @Test
     public void testQuotedColon() {
-        QueryBuilder queryBuilder = new QueryBuilder("select * from xyz where foo = 'a:b:c'");
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
 
-        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.prepare());
+        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.toString());
     }
 
     @Test
     public void testDoubleColon() {
-        QueryBuilder queryBuilder = new QueryBuilder("select 'ab:c'::varchar(16) as abc");
+        QueryBuilder queryBuilder = QueryBuilder.select("'ab:c'::varchar(16) as abc");
 
-        assertEquals("select 'ab:c'::varchar(16) as abc", queryBuilder.prepare());
+        assertEquals("select 'ab:c'::varchar(16) as abc", queryBuilder.toString());
     }
 }
