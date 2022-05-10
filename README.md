@@ -6,6 +6,10 @@ HTTP-RPC is an open-source framework for creating and consuming RESTful and REST
 
 This guide introduces the HTTP-RPC framework and provides an overview of its key features.
 
+**NOTE** HTTP-RPC will be renamed to Kilo in an upcoming release. This name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+
+![](kilo.png)
+
 # Contents
 * [Getting HTTP-RPC](#getting-http-rpc)
 * [HTTP-RPC Classes](#http-rpc-classes)
