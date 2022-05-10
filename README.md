@@ -27,7 +27,7 @@ Classes provided by the HTTP-RPC framework include:
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
-* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
+* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries; iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [StreamAdapter](#streamadapter) - iterable adapter for streams
@@ -548,7 +548,7 @@ This code would produce the following output:
 
 String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
-`CSVDecoder` deserializes a CSV document into an iterable sequence of maps. For example, given the preceding CSV as input, the following code would produce the same output as the earlier `JSONDecoder` example:
+`CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding CSV as input, the following code would produce the same output as the earlier `JSONDecoder` example:
 
 ```java
 CSVDecoder csvDecoder = new CSVDecoder();
@@ -750,7 +750,7 @@ public class Person {
 ```
 
 ## QueryBuilder and ResultSetAdapter
-The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. For example, given the following table (from the MySQL sample database):
+The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:
 
 ```sql
 create table pet (
@@ -763,7 +763,7 @@ create table pet (
 );
 ```
 
-this code could be used to create a query that selects all columns and rows in the table:
+this code could be used to create a query that returns all columns and rows in the table:
 
 ```java
 QueryBuilder.select("*").from("pet");
@@ -801,7 +801,7 @@ List<Map<String, Object>> pets = queryBuilder.execute(dataSource.getConnection()
 ).getResults();
 ```
 
-Database updates are supported by the `executeUpdate()` method.
+Insert, update, and delete operations are also supported.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
