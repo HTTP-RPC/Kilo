@@ -16,26 +16,40 @@ package org.httprpc.sql;
 
 import org.junit.jupiter.api.Test;
 
+import javax.management.Query;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.mapOf;
 
 public class ParametersTest {
     @Test
     public void testParameters() {
-        Parameters parameters = Parameters.parse("insert into xyz (foo, bar) values :foo, :bar");
+        String sql = QueryBuilder.insertInto("xyz").values(mapOf(
+            entry("foo", ":foo"),
+            entry("bar", ":bar"),
+            entry("baz", QueryBuilder.select("x").from("y").where("z = :z"))
+        )).toString();
 
-        assertEquals("insert into xyz (foo, bar) values ?, ?", parameters.getSQL());
+        Parameters parameters = Parameters.parse(sql);
+
+        assertEquals("insert into xyz (foo, bar, baz) values (?, ?, (select x from y where z = ?))", parameters.getSQL());
     }
 
     @Test
     public void testColon() {
-        Parameters parameters = Parameters.parse("select * from xyz where foo = 'a:b:c'");
+        String sql = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'").toString();
+
+        Parameters parameters = Parameters.parse(sql);
 
         assertEquals("select * from xyz where foo = 'a:b:c'", parameters.getSQL());
     }
 
     @Test
     public void testDoubleColon() {
-        Parameters parameters = Parameters.parse("select 'ab:c'::varchar(16) as abc");
+        String sql = QueryBuilder.select("'ab:c'::varchar(16) as abc").toString();
+
+        Parameters parameters = Parameters.parse(sql);
 
         assertEquals("select 'ab:c'::varchar(16) as abc", parameters.getSQL());
     }

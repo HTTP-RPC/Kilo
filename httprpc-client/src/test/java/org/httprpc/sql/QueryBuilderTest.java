@@ -34,7 +34,7 @@ public class QueryBuilderTest {
             .limit(10)
             .forUpdate()
             .union(QueryBuilder.select("a", "b", "c")
-                .from("C")).toString();
+                .from("C")).getSQL();
 
         assertEquals("select a, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
@@ -57,7 +57,7 @@ public class QueryBuilderTest {
             entry("d", ":d"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
-        )).toString();
+        )).getSQL();
 
         assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", sql);
     }
@@ -71,7 +71,7 @@ public class QueryBuilderTest {
             entry("d", ":d"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
-        )).where("a is not null").toString();
+        )).where("a is not null").getSQL();
 
         assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", sql);
     }
@@ -79,7 +79,7 @@ public class QueryBuilderTest {
     @Test
     public void testDelete() {
         String sql = QueryBuilder.deleteFrom("A")
-            .where("a < 150").toString();
+            .where("a < 150").getSQL();
 
         assertEquals("delete from A where a < 150", sql);
     }
@@ -95,7 +95,7 @@ public class QueryBuilderTest {
     public void testEscapedQuotes() {
         QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a''b'':c''' and bar = ''''");
 
-        assertEquals("select * from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.toString());
+        assertEquals("select * from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.getSQL());
     }
 
     @Test

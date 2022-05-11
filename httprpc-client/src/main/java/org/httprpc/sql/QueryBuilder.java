@@ -23,6 +23,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -459,7 +460,7 @@ public class QueryBuilder {
             QueryBuilder queryBuilder = (QueryBuilder)value;
 
             sqlBuilder.append("(");
-            sqlBuilder.append(queryBuilder);
+            sqlBuilder.append(queryBuilder.getSQL());
             sqlBuilder.append(")");
 
             keys.addAll(queryBuilder.keys);
@@ -688,8 +689,27 @@ public class QueryBuilder {
         }
     }
 
+    String getSQL() {
+        return sqlBuilder.toString();
+    }
+
     @Override
     public String toString() {
-        return sqlBuilder.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Iterator<String> keyIterator = keys.iterator();
+
+        for (int i = 0, n = sqlBuilder.length(); i < n; i++) {
+            char c = sqlBuilder.charAt(i);
+
+            if (c == '?') {
+                stringBuilder.append(':');
+                stringBuilder.append(keyIterator.next());
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }
