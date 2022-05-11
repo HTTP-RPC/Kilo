@@ -308,6 +308,25 @@ public class QueryBuilder {
      * @param table
      * The table name.
      *
+     * @param values
+     * The values to insert.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     *
+     * @deprecated Use {@link #insertInto(String)} and {@link #values(Map)} instead.
+     */
+    @Deprecated
+    public static QueryBuilder insertInto(String table, Map<String, ?> values) {
+        return insertInto(table).values(values);
+    }
+
+    /**
+     * Creates an "insert into" query.
+     *
+     * @param table
+     * The table name.
+     *
      * @return
      * The new {@link QueryBuilder} instance.
      */

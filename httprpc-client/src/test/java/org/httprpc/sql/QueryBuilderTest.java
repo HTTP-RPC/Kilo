@@ -50,7 +50,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testInsertInto() {
-        String sql = QueryBuilder.insertInto("A").values(mapOf(
+        String sql = QueryBuilder.insertInto("A", mapOf(
             entry("a", 1),
             entry("b", true),
             entry("c", "hello"),
