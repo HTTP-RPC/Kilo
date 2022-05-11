@@ -72,7 +72,7 @@ public class PetService extends WebService {
 
         try (Connection connection = dataSource.getConnection();
             PreparedStatement statement = queryBuilder.prepare(connection);
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+            ResultSetAdapter results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             )))) {
             if (format == null || format.equals("json")) {
@@ -80,7 +80,7 @@ public class PetService extends WebService {
 
                 JSONEncoder jsonEncoder = new JSONEncoder();
 
-                jsonEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+                jsonEncoder.write(results, getResponse().getOutputStream());
             } else if (format.equals("csv")) {
                 getResponse().setContentType("text/csv");
 
@@ -98,7 +98,7 @@ public class PetService extends WebService {
                     entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
                 ));
 
-                csvEncoder.write(resultSetAdapter, getResponse().getOutputStream());
+                csvEncoder.write(results, getResponse().getOutputStream());
             } else if (format.equals("html")) {
                 getResponse().setContentType("text/html");
 
@@ -108,7 +108,7 @@ public class PetService extends WebService {
 
                 templateEncoder.write(mapOf(
                     entry("headings", new ResourceBundleAdapter(resourceBundle)),
-                    entry("data", resultSetAdapter)
+                    entry("data", results)
                 ), getResponse().getOutputStream());
             } else {
                 throw new IllegalArgumentException();
@@ -124,10 +124,10 @@ public class PetService extends WebService {
         double averageAge;
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.executeQuery(sql))) {
+            ResultSetAdapter results = new ResultSetAdapter(statement.executeQuery(sql))) {
             Date now = new Date();
 
-            averageAge = resultSetAdapter.stream()
+            averageAge = results.stream()
                 .map(result -> (Pet)BeanAdapter.coerce(result, Pet.class))
                 .mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
         }

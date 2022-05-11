@@ -785,29 +785,72 @@ To select only rows associated with a particular owner, the following query coul
 QueryBuilder.select("*").from("pet").where("owner = :owner");
 ```
 
-The colon character identifies "owner" as a variable. Variables can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
+The colon character identifies "owner" as a variable. The resulting SQL would look like this:
+
+```sql
+select * from pet where owner = ?
+```
+
+Variables can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
 
 ```java
-QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
-
-try (Connection connection = dataSource.getConnection();
+try (Connection connection = getConnection();
     PreparedStatement statement = queryBuilder.prepare(connection);
-    ResultSetAdapter resultSetAdapter = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+    ResultSetAdapter results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
         entry("owner", owner)
-    )))) { ... }
+    )))) { 
+    for (Map<String, Object> result : results) {
+        ...
+    }
+}
 ```
 
 The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has very low latency. However, for smaller data sets, the following more concise alternative can be used:
 
 ```java
-List<Map<String, Object>> pets = queryBuilder.execute(dataSource.getConnection(), mapOf(
+List<Map<String, Object>> results = queryBuilder.execute(getConnection(), mapOf(
     entry("owner", owner)
 ).getResults();
 ```
 
-Insert, update, and delete operations are also supported. 
+Insert, update, and delete operations are also supported. For example:
 
-See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) or [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) service examples for more information.
+```java
+// insert into item (description, price) values (?, ?)
+
+QueryBuilder.insertInto("item").values(mapOf(
+    entry("description", ":description"),
+    entry("price", ":price")
+)).execute(getConnection(), mapOf(
+    entry("description", item.getDescription()),
+    entry("price", item.getPrice())
+));
+```
+
+```java
+// update item set description = ?, price = ? where id = ?
+
+QueryBuilder.update("item").set(mapOf(
+    entry("description", ":description"),
+    entry("price", ":price")
+)).where("id = :itemID").execute(getConnection(), mapOf(
+    entry("itemID", itemID),
+    entry("description", item.getDescription()),
+    entry("price", item.getPrice())
+));
+```
+
+```java
+// delete from item where id = ?
+
+QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), mapOf(
+    entry("itemID", itemID)
+));
+```
+
+If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses.
+
+See the [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
