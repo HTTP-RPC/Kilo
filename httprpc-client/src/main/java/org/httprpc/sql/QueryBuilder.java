@@ -220,6 +220,10 @@ public class QueryBuilder {
                 keys.add(keyBuilder.toString());
 
                 sqlBuilder.append("?");
+            } else if (c == '?') {
+                keys.add(null);
+
+                sqlBuilder.append(c);
             } else {
                 if (i < n && c == '\'') {
                     sqlBuilder.append(c);
@@ -706,6 +710,10 @@ public class QueryBuilder {
 
             statement.setObject(i++, arguments.get(key));
         }
+    }
+
+    List<String> getKeys() {
+        return new ArrayList<>(keys);
     }
 
     String getSQL() {

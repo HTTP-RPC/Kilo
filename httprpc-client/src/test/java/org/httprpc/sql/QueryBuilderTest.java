@@ -17,6 +17,7 @@ package org.httprpc.sql;
 import org.junit.jupiter.api.Test;
 
 import static org.httprpc.util.Collections.entry;
+import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class QueryBuilderTest {
     @Test
     public void testSelect() {
-        String sql = QueryBuilder.select("a", "b", "c", "d")
+        QueryBuilder queryBuilder = QueryBuilder.select("a", "b", "c", "d")
             .from("A")
             .join("B").on("A.id = B.id and x = 50")
             .leftJoin("C").on("B.id = C.id and b = :b")
@@ -34,7 +35,9 @@ public class QueryBuilderTest {
             .limit(10)
             .forUpdate()
             .union(QueryBuilder.select("a", "b", "c")
-                .from("C")).getSQL();
+                .from("C"));
+
+        assertEquals(listOf("b", "c", null), queryBuilder.getKeys());
 
         assertEquals("select a, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
@@ -45,43 +48,46 @@ public class QueryBuilderTest {
             + "limit 10 "
             + "for update "
             + "union "
-            + "select a, b, c from C", sql);
+            + "select a, b, c from C", queryBuilder.getSQL());
     }
 
     @Test
     public void testInsertInto() {
-        String sql = QueryBuilder.insertInto("A", mapOf(
+        QueryBuilder queryBuilder = QueryBuilder.insertInto("A", mapOf(
             entry("a", 1),
             entry("b", true),
             entry("c", "hello"),
             entry("d", ":d"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
-        )).getSQL();
+        ));
 
-        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", sql);
+        assertEquals(listOf("d", null, "g"), queryBuilder.getKeys());
+
+        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", queryBuilder.getSQL());
     }
 
     @Test
     public void testUpdate() {
-        String sql = QueryBuilder.update("A").set(mapOf(
+        QueryBuilder queryBuilder = QueryBuilder.update("A").set(mapOf(
             entry("a", 1),
             entry("b", true),
             entry("c", "hello"),
             entry("d", ":d"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
-        )).where("a is not null").getSQL();
+        )).where("a is not null");
 
-        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", sql);
+        assertEquals(listOf("d", null, "g"), queryBuilder.getKeys());
+
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", queryBuilder.getSQL());
     }
 
     @Test
     public void testDelete() {
-        String sql = QueryBuilder.deleteFrom("A")
-            .where("a < 150").getSQL();
+        QueryBuilder queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
 
-        assertEquals("delete from A where a < 150", sql);
+        assertEquals("delete from A where a < 150", queryBuilder.getSQL());
     }
 
     @Test
