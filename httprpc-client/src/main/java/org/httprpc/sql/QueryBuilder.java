@@ -456,9 +456,13 @@ public class QueryBuilder {
                 sqlBuilder.append("'");
             }
         } else if (value instanceof QueryBuilder) {
+            QueryBuilder queryBuilder = (QueryBuilder)value;
+
             sqlBuilder.append("(");
-            sqlBuilder.append(value);
+            sqlBuilder.append(queryBuilder);
             sqlBuilder.append(")");
+
+            keys.addAll(queryBuilder.keys);
         } else {
             sqlBuilder.append(value);
         }

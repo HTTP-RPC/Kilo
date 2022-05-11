@@ -56,10 +56,10 @@ public class QueryBuilderTest {
             entry("c", "hello"),
             entry("d", ":d"),
             entry("e", "?"),
-            entry("f", QueryBuilder.select("f").from("F"))
+            entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
         )).toString();
 
-        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F))", sql);
+        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", sql);
     }
 
     @Test
@@ -70,10 +70,10 @@ public class QueryBuilderTest {
             entry("c", "hello"),
             entry("d", ":d"),
             entry("e", "?"),
-            entry("f", QueryBuilder.select("f").from("F"))
+            entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
         )).where("a is not null").toString();
 
-        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F) where a is not null", sql);
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", sql);
     }
 
     @Test
