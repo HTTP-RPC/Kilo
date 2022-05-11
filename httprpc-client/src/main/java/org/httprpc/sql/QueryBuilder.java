@@ -722,8 +722,14 @@ public class QueryBuilder {
             char c = sqlBuilder.charAt(i);
 
             if (c == '?') {
-                stringBuilder.append(':');
-                stringBuilder.append(keyIterator.next());
+                String key = keyIterator.next();
+
+                if (key == null) {
+                    stringBuilder.append(c);
+                } else {
+                    stringBuilder.append(':');
+                    stringBuilder.append(key);
+                }
             } else {
                 stringBuilder.append(c);
             }

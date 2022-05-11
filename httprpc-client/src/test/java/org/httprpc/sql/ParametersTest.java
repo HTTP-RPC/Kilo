@@ -28,12 +28,13 @@ public class ParametersTest {
         String sql = QueryBuilder.insertInto("xyz").values(mapOf(
             entry("foo", ":foo"),
             entry("bar", ":bar"),
-            entry("baz", QueryBuilder.select("x").from("y").where("z = :z"))
+            entry("baz", QueryBuilder.select("x").from("y").where("z = :z")),
+            entry("quux", "?")
         )).toString();
 
         Parameters parameters = Parameters.parse(sql);
 
-        assertEquals("insert into xyz (foo, bar, baz) values (?, ?, (select x from y where z = ?))", parameters.getSQL());
+        assertEquals("insert into xyz (foo, bar, baz, quux) values (?, ?, (select x from y where z = ?), ?)", parameters.getSQL());
     }
 
     @Test
