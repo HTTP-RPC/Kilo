@@ -623,6 +623,18 @@ TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("ex
 templateEncoder.write(map, System.out);
 ```
 
+If _example.txt_ was written as follows:
+
+```
+{{a}}, {{b}}, {{c}}
+```
+
+the resulting output would look like this:
+
+```
+hello, 123, true
+```
+
 ### Custom Modifiers
 Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
 
@@ -853,7 +865,7 @@ If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it i
 See the [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
-The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a strongly typed interface proxy, as described earlier. 
+The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a typed proxy, as described [earlier](#type-coercion). 
 
 For example, the following markup might be used to represent the status of a bank account:
 
