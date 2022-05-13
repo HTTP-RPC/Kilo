@@ -33,20 +33,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
     @Test
-    public void testElementAdapter() throws ParserConfigurationException, SAXException, IOException {
+    public void testElementAdapter() throws Exception {
+        testElementAdapter(false, "test.xml");
+    }
+
+    @Test
+    public void testElementAdapterNamespaceAware() throws Exception {
+        testElementAdapter(true, "test-ns.xml");
+    }
+
+    private void testElementAdapter(boolean namespaceAware, String fileName) throws Exception {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         documentBuilderFactory.setExpandEntityReferences(false);
         documentBuilderFactory.setIgnoringComments(true);
+        documentBuilderFactory.setNamespaceAware(namespaceAware);
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
         Document document;
-        try (InputStream inputStream = getClass().getResourceAsStream("test.xml")) {
+        try (InputStream inputStream = getClass().getResourceAsStream(fileName)) {
             document = documentBuilder.parse(inputStream);
         }
 
-        ElementAdapter elementAdapter = new ElementAdapter(document.getDocumentElement());
+        ElementAdapter elementAdapter = new ElementAdapter(document.getDocumentElement(), namespaceAware);
 
         testUntypedAccess(elementAdapter);
         testTypedAccess(elementAdapter);

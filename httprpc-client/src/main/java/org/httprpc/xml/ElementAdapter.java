@@ -28,14 +28,16 @@ import java.util.Set;
 public class ElementAdapter extends AbstractMap<String, Object> {
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {
         NodeList nodeList;
+        boolean namespaceAware;
 
-        NodeListAdapter(NodeList nodeList) {
+        NodeListAdapter(NodeList nodeList, boolean namespaceAware) {
             this.nodeList = nodeList;
+            this.namespaceAware = namespaceAware;
         }
 
         @Override
         public ElementAdapter get(int i) {
-            return new ElementAdapter((Element)nodeList.item(i));
+            return new ElementAdapter((Element)nodeList.item(i), namespaceAware);
         }
 
         @Override
@@ -45,6 +47,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     private Element element;
+    private boolean namespaceAware;
 
     private static final String ATTRIBUTE_PREFIX = "@";
     private static final String LIST_SUFFIX = "*";
@@ -56,11 +59,26 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * The source element.
      */
     public ElementAdapter(Element element) {
+        this(element, false);
+    }
+
+    /**
+     * Constructs a new element adapter.
+     *
+     * @param element
+     * The source element.
+     *
+     * @param namespaceAware
+     * Indicates that the element has been parsed by a namespace-aware document
+     * builder.
+     */
+    public ElementAdapter(Element element, boolean namespaceAware) {
         if (element == null) {
             throw new IllegalArgumentException();
         }
 
         this.element = element;
+        this.namespaceAware = namespaceAware;
     }
 
     @Override
@@ -82,12 +100,21 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             }
         } else {
             if (isList(name)) {
-                value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)));
+                if (namespaceAware) {
+                    value = new NodeListAdapter(element.getElementsByTagNameNS("*", getListTagName(name)), namespaceAware);
+                } else {
+                    value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)), namespaceAware);
+                }
             } else {
-                NodeList nodeList = element.getElementsByTagName(name);
+                NodeList nodeList;
+                if (namespaceAware) {
+                    nodeList = element.getElementsByTagNameNS("*", name);
+                } else {
+                    nodeList = element.getElementsByTagName(name);
+                }
 
                 if (nodeList.getLength() > 0) {
-                    value = new ElementAdapter((Element)nodeList.item(0));
+                    value = new ElementAdapter((Element)nodeList.item(0), namespaceAware);
                 } else {
                     value = null;
                 }
@@ -111,7 +138,14 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             if (isList(name)) {
                 return true;
             } else {
-                return element.getElementsByTagName(name).getLength() > 0;
+                NodeList nodeList;
+                if (namespaceAware) {
+                    nodeList = element.getElementsByTagNameNS("*", name);
+                } else {
+                    nodeList = element.getElementsByTagName(name);
+                }
+
+                return nodeList.getLength() > 0;
             }
         }
     }
