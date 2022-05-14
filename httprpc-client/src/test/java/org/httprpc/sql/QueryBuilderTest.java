@@ -105,12 +105,12 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testMissingPredicateKey() {
+    public void testMissingPredicateParameter() {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select("*").from("xyz").where("foo = :"));
     }
 
     @Test
-    public void testMissingValueKey() {
+    public void testMissingValueParameter() {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
             entry("foo", ":")
         )));
