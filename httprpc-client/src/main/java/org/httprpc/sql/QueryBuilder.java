@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
 
-    private Deque<String> keys = new LinkedList<>();
+    private List<String> keys = new LinkedList<>();
 
     private List<Map<String, Object>> results = null;
     private int updateCount = -1;
@@ -712,11 +711,23 @@ public class QueryBuilder {
         }
     }
 
-    List<String> getKeys() {
-        return new ArrayList<>(keys);
+    /**
+     * Returns the keys parsed by the query builder.
+     *
+     * @return
+     * The list of keys parsed by the query builder.
+     */
+    public Iterable<String> getKeys() {
+        return Collections.unmodifiableList(keys);
     }
 
-    String getSQL() {
+    /**
+     * Returns the generated SQL.
+     *
+     * @return
+     * The generated SQL.
+     */
+    public String getSQL() {
         return sqlBuilder.toString();
     }
 

@@ -115,4 +115,11 @@ public class QueryBuilderTest {
             entry("foo", ":")
         )));
     }
+
+    @Test
+    public void testToString() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a and bar = :b");
+
+        assertEquals("select * from xyz where foo = :a and bar = :b", queryBuilder.toString());
+    }
 }
