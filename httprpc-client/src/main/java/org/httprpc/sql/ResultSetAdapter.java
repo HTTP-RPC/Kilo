@@ -90,37 +90,15 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Returns the result set's fetch size.
-     *
-     * @return
-     * The result set's fetch size.
-     *
-     * @throws SQLException
-     * If an error occurs while retrieving the fetch size.
-     */
-    public int getFetchSize() throws SQLException {
-        return resultSet.getFetchSize();
-    }
-
-    /**
-     * Sets the result set's fetch size.
-     *
-     * @param fetchSize
-     * The result set's fetch size.
-     *
-     * @throws SQLException
-     * If an error occurs while setting the fetch size.
-     */
-    public void setFetchSize(int fetchSize) throws SQLException {
-        resultSet.setFetchSize(fetchSize);
-    }
-
-    /**
      * Returns the next result.
      *
      * @return
      * The next result, or <code>null</code> if there are no more results.
+     *
+     * @deprecated
+     * Use {@link QueryBuilder#getResult()} instead.
      */
+    @Deprecated
     public Map<String, Object> next() {
         return iterator.hasNext() ? iterator.next() : null;
     }
