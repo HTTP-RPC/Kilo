@@ -797,7 +797,7 @@ To select only rows associated with a particular owner, the following query coul
 QueryBuilder.select("*").from("pet").where("owner = :owner");
 ```
 
-The colon character identifies "owner" as a variable. The resulting SQL would look like this:
+The colon character identifies "owner" as a variable, or parameter. The resulting SQL would look like this:
 
 ```sql
 select * from pet where owner = ?

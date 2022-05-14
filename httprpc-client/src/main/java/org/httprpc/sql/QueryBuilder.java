@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
 
-    private List<String> keys = new LinkedList<>();
+    private List<String> parameters = new LinkedList<>();
 
     private List<Map<String, Object>> results = null;
     private int updateCount = -1;
@@ -216,11 +216,11 @@ public class QueryBuilder {
                     throw new IllegalArgumentException("Missing key.");
                 }
 
-                keys.add(keyBuilder.toString());
+                parameters.add(keyBuilder.toString());
 
                 sqlBuilder.append("?");
             } else if (c == '?') {
-                keys.add(null);
+                parameters.add(null);
 
                 sqlBuilder.append(c);
             } else {
@@ -450,7 +450,7 @@ public class QueryBuilder {
             String string = (String)value;
 
             if (string.equals("?")) {
-                keys.add(null);
+                parameters.add(null);
 
                 sqlBuilder.append(string);
             } else if (string.startsWith(":")) {
@@ -460,7 +460,7 @@ public class QueryBuilder {
                     throw new IllegalArgumentException("Missing key.");
                 }
 
-                keys.add(key);
+                parameters.add(key);
 
                 sqlBuilder.append("?");
             } else {
@@ -485,7 +485,7 @@ public class QueryBuilder {
             sqlBuilder.append(queryBuilder.getSQL());
             sqlBuilder.append(")");
 
-            keys.addAll(queryBuilder.keys);
+            parameters.addAll(queryBuilder.parameters);
         } else {
             sqlBuilder.append(value);
         }
@@ -696,13 +696,13 @@ public class QueryBuilder {
     }
 
     private void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
-        if (keys == null) {
+        if (parameters == null) {
             throw new IllegalStateException();
         }
 
         int i = 1;
 
-        for (String key : keys) {
+        for (String key : parameters) {
             if (key == null) {
                 continue;
             }
@@ -712,13 +712,13 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the keys parsed by the query builder.
+     * Returns the parameters parsed by the query builder.
      *
      * @return
-     * The keys parsed by the query builder.
+     * The parameters parsed by the query builder.
      */
-    public Iterable<String> getKeys() {
-        return Collections.unmodifiableList(keys);
+    public Iterable<String> getParameters() {
+        return Collections.unmodifiableList(parameters);
     }
 
     /**
@@ -735,7 +735,7 @@ public class QueryBuilder {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        Iterator<String> keyIterator = keys.iterator();
+        Iterator<String> keyIterator = parameters.iterator();
 
         for (int i = 0, n = sqlBuilder.length(); i < n; i++) {
             char c = sqlBuilder.charAt(i);

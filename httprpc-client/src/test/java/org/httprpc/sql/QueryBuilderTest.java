@@ -37,7 +37,7 @@ public class QueryBuilderTest {
             .union(QueryBuilder.select("a", "b", "c")
                 .from("C"));
 
-        assertEquals(listOf("b", "c", null), queryBuilder.getKeys());
+        assertEquals(listOf("b", "c", null), queryBuilder.getParameters());
 
         assertEquals("select a, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
@@ -62,7 +62,7 @@ public class QueryBuilderTest {
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
         ));
 
-        assertEquals(listOf("d", null, "g"), queryBuilder.getKeys());
+        assertEquals(listOf("d", null, "g"), queryBuilder.getParameters());
 
         assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", queryBuilder.getSQL());
     }
@@ -78,7 +78,7 @@ public class QueryBuilderTest {
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
         )).where("a is not null");
 
-        assertEquals(listOf("d", null, "g"), queryBuilder.getKeys());
+        assertEquals(listOf("d", null, "g"), queryBuilder.getParameters());
 
         assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", queryBuilder.getSQL());
     }
