@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<root a="A" xmlns:x="x" xmlns:y="y">
+<root a="A" xmlns:x="x" xmlns:y="y" xmlns:z="z">
     <x:map b="B">
         <b>two</b>
         <y:list c="C">
-            <item d="1">abc</item>
-            <item d="2">déf</item>
-            <item d="3">ghi</item>
+            <z:item d="1">abc</z:item>
+            <z:item d="2">déf</z:item>
+            <z:item d="3">ghi</z:item>
         </y:list>
     </x:map>
 </root>

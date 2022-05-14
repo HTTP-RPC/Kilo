@@ -49,6 +49,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     private Element element;
     private boolean namespaceAware;
 
+    private static final String NAMESPACE_KEY = ":";
+
     private static final String ATTRIBUTE_PREFIX = "@";
     private static final String LIST_SUFFIX = "*";
 
@@ -90,7 +92,9 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         String name = key.toString();
 
         Object value;
-        if (isAttribute(name)) {
+        if (name.equals(NAMESPACE_KEY)) {
+            value = element.getNamespaceURI();
+        } else if (isAttribute(name)) {
             name = getAttributeName(name);
 
             if (element.hasAttribute(name)) {
@@ -98,26 +102,24 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             } else {
                 value = null;
             }
-        } else {
-            if (isList(name)) {
-                if (namespaceAware) {
-                    value = new NodeListAdapter(element.getElementsByTagNameNS("*", getListTagName(name)), namespaceAware);
-                } else {
-                    value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)), namespaceAware);
-                }
+        } else if (isList(name)) {
+            if (namespaceAware) {
+                value = new NodeListAdapter(element.getElementsByTagNameNS("*", getListTagName(name)), namespaceAware);
             } else {
-                NodeList nodeList;
-                if (namespaceAware) {
-                    nodeList = element.getElementsByTagNameNS("*", name);
-                } else {
-                    nodeList = element.getElementsByTagName(name);
-                }
+                value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)), namespaceAware);
+            }
+        } else {
+            NodeList nodeList;
+            if (namespaceAware) {
+                nodeList = element.getElementsByTagNameNS("*", name);
+            } else {
+                nodeList = element.getElementsByTagName(name);
+            }
 
-                if (nodeList.getLength() > 0) {
-                    value = new ElementAdapter((Element)nodeList.item(0), namespaceAware);
-                } else {
-                    value = null;
-                }
+            if (nodeList.getLength() > 0) {
+                value = new ElementAdapter((Element)nodeList.item(0), namespaceAware);
+            } else {
+                value = null;
             }
         }
 
@@ -134,19 +136,17 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
         if (isAttribute(name)) {
             return element.hasAttribute(getAttributeName(name));
+        } else if (isList(name)) {
+            return true;
         } else {
-            if (isList(name)) {
-                return true;
+            NodeList nodeList;
+            if (namespaceAware) {
+                nodeList = element.getElementsByTagNameNS("*", name);
             } else {
-                NodeList nodeList;
-                if (namespaceAware) {
-                    nodeList = element.getElementsByTagNameNS("*", name);
-                } else {
-                    nodeList = element.getElementsByTagName(name);
-                }
-
-                return nodeList.getLength() > 0;
+                nodeList = element.getElementsByTagName(name);
             }
+
+            return nodeList.getLength() > 0;
         }
     }
 

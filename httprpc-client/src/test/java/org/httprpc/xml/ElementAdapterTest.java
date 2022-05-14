@@ -17,18 +17,16 @@ package org.httprpc.xml;
 import org.httprpc.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
@@ -58,12 +56,12 @@ public class ElementAdapterTest {
 
         ElementAdapter elementAdapter = new ElementAdapter(document.getDocumentElement(), namespaceAware);
 
-        testUntypedAccess(elementAdapter);
-        testTypedAccess(elementAdapter);
+        testUntypedAccess(elementAdapter, namespaceAware);
+        testTypedAccess(elementAdapter, namespaceAware);
     }
 
     @SuppressWarnings("unchecked")
-    private void testUntypedAccess(ElementAdapter elementAdapter) {
+    private void testUntypedAccess(ElementAdapter elementAdapter, boolean namespaceAware) {
         assertTrue(elementAdapter.containsKey("@a"));
         assertFalse(elementAdapter.containsKey("@b"));
 
@@ -72,6 +70,12 @@ public class ElementAdapterTest {
         assertTrue(elementAdapter.containsKey("map"));
 
         Map<String, ?> map = (Map<String, ?>)elementAdapter.get("map");
+
+        if (namespaceAware) {
+            assertEquals("x", map.get(":"));
+        } else {
+            assertNull(map.get(":"));
+        }
 
         assertTrue(map.containsKey("@b"));
         assertFalse(map.containsKey("@c"));
@@ -83,6 +87,12 @@ public class ElementAdapterTest {
 
         Map<String, ?> list = (Map<String, ?>)map.get("list");
 
+        if (namespaceAware) {
+            assertEquals("y", list.get(":"));
+        } else {
+            assertNull(list.get(":"));
+        }
+
         assertEquals("C", list.get("@c"));
 
         assertTrue(list.containsKey("item*"));
@@ -92,6 +102,12 @@ public class ElementAdapterTest {
         assertEquals(3, items.size());
 
         Map<String, ?> item1 = (Map<String, ?>)items.get(0);
+
+        if (namespaceAware) {
+            assertEquals("z", item1.get(":"));
+        } else {
+            assertNull(item1.get(":"));
+        }
 
         assertEquals("1", item1.get("@d"));
         assertEquals("abc", item1.toString());
@@ -113,17 +129,29 @@ public class ElementAdapterTest {
         assertTrue(xyz.isEmpty());
     }
 
-    private void testTypedAccess(ElementAdapter elementAdapter) {
+    private void testTypedAccess(ElementAdapter elementAdapter, boolean namespaceAware) {
         TestInterface testInterface = BeanAdapter.coerce(elementAdapter, TestInterface.class);
 
         assertEquals("A", testInterface.getA());
 
         TestInterface.MapInterface map = testInterface.getMap();
 
+        if (namespaceAware) {
+            assertEquals("x", map.getNamespaceURI());
+        } else {
+            assertNull(map.getNamespaceURI());
+        }
+
         assertEquals("B", map.getB1());
         assertEquals("two", map.getB2());
 
         TestInterface.ListInterface list = map.getList();
+
+        if (namespaceAware) {
+            assertEquals("y", list.getNamespaceURI());
+        } else {
+            assertNull(map.getNamespaceURI());
+        }
 
         assertEquals("C", list.getC());
 

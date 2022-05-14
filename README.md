@@ -906,6 +906,8 @@ Map<String, Object> holder = (Map<String, Object>)accountAdapter.get("holder");
 System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName")));
 ```
 
+Namespaces are ignored when identifying elements by tag name. However, the namespace URI for an element (when applicable) can be obtained by requesting the value associated with the ":" key.
+
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
 
 ```java
