@@ -198,7 +198,7 @@ public class QueryBuilder {
             char c = predicate.charAt(i++);
 
             if (c == ':' && !quoted) {
-                StringBuilder keyBuilder = new StringBuilder();
+                StringBuilder parameterBuilder = new StringBuilder();
 
                 while (i < n) {
                     c = predicate.charAt(i);
@@ -207,16 +207,16 @@ public class QueryBuilder {
                         break;
                     }
 
-                    keyBuilder.append(c);
+                    parameterBuilder.append(c);
 
                     i++;
                 }
 
-                if (keyBuilder.length() == 0) {
-                    throw new IllegalArgumentException("Missing key.");
+                if (parameterBuilder.length() == 0) {
+                    throw new IllegalArgumentException("Missing parameter.");
                 }
 
-                parameters.add(keyBuilder.toString());
+                parameters.add(parameterBuilder.toString());
 
                 sqlBuilder.append("?");
             } else if (c == '?') {
@@ -454,13 +454,13 @@ public class QueryBuilder {
 
                 sqlBuilder.append(string);
             } else if (string.startsWith(":")) {
-                String key = string.substring(1);
+                String parameter = string.substring(1);
 
-                if (key.isEmpty()) {
-                    throw new IllegalArgumentException("Missing key.");
+                if (parameter.isEmpty()) {
+                    throw new IllegalArgumentException("Missing parameter.");
                 }
 
-                parameters.add(key);
+                parameters.add(parameter);
 
                 sqlBuilder.append("?");
             } else {
@@ -702,12 +702,12 @@ public class QueryBuilder {
 
         int i = 1;
 
-        for (String key : parameters) {
-            if (key == null) {
+        for (String parameter : parameters) {
+            if (parameter == null) {
                 continue;
             }
 
-            statement.setObject(i++, arguments.get(key));
+            statement.setObject(i++, arguments.get(parameter));
         }
     }
 
@@ -735,19 +735,19 @@ public class QueryBuilder {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        Iterator<String> keyIterator = parameters.iterator();
+        Iterator<String> parameterIterator = parameters.iterator();
 
         for (int i = 0, n = sqlBuilder.length(); i < n; i++) {
             char c = sqlBuilder.charAt(i);
 
             if (c == '?') {
-                String key = keyIterator.next();
+                String parameter = parameterIterator.next();
 
-                if (key == null) {
+                if (parameter == null) {
                     stringBuilder.append(c);
                 } else {
                     stringBuilder.append(':');
-                    stringBuilder.append(key);
+                    stringBuilder.append(parameter);
                 }
             } else {
                 stringBuilder.append(c);
