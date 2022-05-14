@@ -715,7 +715,7 @@ public class QueryBuilder {
      * Returns the keys parsed by the query builder.
      *
      * @return
-     * The list of keys parsed by the query builder.
+     * The keys parsed by the query builder.
      */
     public Iterable<String> getKeys() {
         return Collections.unmodifiableList(keys);
