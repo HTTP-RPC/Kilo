@@ -71,6 +71,8 @@ public class ElementAdapterTest {
 
         Map<String, ?> map = (Map<String, ?>)elementAdapter.get("map");
 
+        assertEquals(namespaceAware, map.containsKey(":"));
+
         if (namespaceAware) {
             assertEquals("x", map.get(":"));
         } else {

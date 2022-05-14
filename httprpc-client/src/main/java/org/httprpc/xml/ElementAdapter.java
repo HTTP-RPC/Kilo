@@ -134,7 +134,9 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
         String name = key.toString();
 
-        if (isAttribute(name)) {
+        if (name.equals(NAMESPACE_KEY)) {
+            return namespaceAware;
+        } else if (isAttribute(name)) {
             return element.hasAttribute(getAttributeName(name));
         } else if (isList(name)) {
             return true;
