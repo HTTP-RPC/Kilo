@@ -21,6 +21,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -61,9 +62,18 @@ public class QueryBuilder {
         StringBuilder sqlBuilder = new StringBuilder();
 
         sqlBuilder.append("select ");
-        sqlBuilder.append(String.join(", ", columns));
 
-        return new QueryBuilder(sqlBuilder);
+        QueryBuilder queryBuilder = new QueryBuilder(sqlBuilder);
+
+        for (int i = 0; i < columns.length; i++) {
+            if (i > 0) {
+                queryBuilder.sqlBuilder.append(", ");
+            }
+
+            queryBuilder.append(columns[i]);
+        }
+
+        return queryBuilder;
     }
 
     /**
@@ -717,7 +727,7 @@ public class QueryBuilder {
      * @return
      * The parameters parsed by the query builder.
      */
-    public Iterable<String> getParameters() {
+    public Collection<String> getParameters() {
         return Collections.unmodifiableList(parameters);
     }
 

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class QueryBuilderTest {
     @Test
     public void testSelect() {
-        QueryBuilder queryBuilder = QueryBuilder.select("a", "b", "c", "d")
+        QueryBuilder queryBuilder = QueryBuilder.select(":a as a", "b", "c", "d")
             .from("A")
             .join("B").on("A.id = B.id and x = 50")
             .leftJoin("C").on("B.id = C.id and b = :b")
@@ -34,12 +34,11 @@ public class QueryBuilderTest {
             .orderBy("a", "b")
             .limit(10)
             .forUpdate()
-            .union(QueryBuilder.select("a", "b", "c")
-                .from("C"));
+            .union(QueryBuilder.select("a", "b", "c", "d").from("C"));
 
-        assertEquals(listOf("b", "c", null), queryBuilder.getParameters());
+        assertEquals(listOf("a", "b", "c", null), queryBuilder.getParameters());
 
-        assertEquals("select a, b, c, d from A "
+        assertEquals("select ? as a, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "
@@ -47,8 +46,7 @@ public class QueryBuilderTest {
             + "order by a, b "
             + "limit 10 "
             + "for update "
-            + "union "
-            + "select a, b, c from C", queryBuilder.getSQL());
+            + "union select a, b, c, d from C", queryBuilder.getSQL());
     }
 
     @Test
