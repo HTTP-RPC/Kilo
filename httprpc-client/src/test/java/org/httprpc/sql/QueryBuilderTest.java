@@ -89,6 +89,15 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testExistingSQL() {
+        QueryBuilder queryBuilder = new QueryBuilder("select * from foo where bar = :x");
+
+        assertEquals(listOf("x"), queryBuilder.getParameters());
+
+        assertEquals("select * from foo where bar = ?", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testQuotedColon() {
         QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
 

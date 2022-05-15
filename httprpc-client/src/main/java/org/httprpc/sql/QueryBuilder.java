@@ -41,6 +41,18 @@ public class QueryBuilder {
     private int updateCount = -1;
     private List<Object> generatedKeys = null;
 
+    /**
+     * Constructs a query builder from an existing SQL query.
+     *
+     * @param sql
+     * The existing SQL query.
+     */
+    public QueryBuilder(String sql) {
+        this(new StringBuilder());
+
+        append(sql);
+    }
+
     private QueryBuilder(StringBuilder sqlBuilder) {
         this.sqlBuilder = sqlBuilder;
     }
