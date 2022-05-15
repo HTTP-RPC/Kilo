@@ -325,6 +325,10 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder union(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
         sqlBuilder.append(" union ");
         sqlBuilder.append(queryBuilder.getSQL());
 
@@ -573,6 +577,10 @@ public class QueryBuilder {
      * If an error occurs while executing the query.
      */
     public QueryBuilder execute(Connection connection, Map<String, ?> arguments) throws SQLException {
+        if (connection == null || arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
         try (PreparedStatement statement = prepare(connection)) {
             apply(statement, arguments);
 
@@ -678,6 +686,10 @@ public class QueryBuilder {
      * If an error occurs while preparing the query.
      */
     public PreparedStatement prepare(Connection connection) throws SQLException {
+        if (connection == null) {
+            throw new IllegalArgumentException();
+        }
+
         return connection.prepareStatement(getSQL(), Statement.RETURN_GENERATED_KEYS);
     }
 
@@ -697,6 +709,10 @@ public class QueryBuilder {
      * If an error occurs while executing the query.
      */
     public ResultSet executeQuery(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        if (statement == null || arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
         apply(statement, arguments);
 
         return statement.executeQuery();
@@ -718,6 +734,10 @@ public class QueryBuilder {
      * If an error occurs while executing the query.
      */
     public int executeUpdate(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        if (statement == null || arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
         apply(statement, arguments);
 
         return statement.executeUpdate();
