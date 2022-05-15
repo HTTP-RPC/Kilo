@@ -18,7 +18,7 @@ This guide introduces the HTTP-RPC framework and provides an overview of its key
 # Getting HTTP-RPC
 HTTP-RPC is distributed via Maven Central: 
 
-* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services and interacting with common file formats and relational databases (Java 8 or later required)
+* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services, interacting with relational databases, and working with common file formats (Java 8 or later required)
 * [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
 
 # HTTP-RPC Classes
@@ -797,13 +797,13 @@ To select only rows associated with a particular owner, the following query coul
 QueryBuilder.select("*").from("pet").where("owner = :owner");
 ```
 
-The colon character identifies "owner" as a variable, or parameter. The resulting SQL would look like this:
+The colon character identifies "owner" as a parameter, or variable. The resulting SQL would look like this:
 
 ```sql
 select * from pet where owner = ?
 ```
 
-Variables can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
+Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
 
 ```java
 try (Connection connection = getConnection();
