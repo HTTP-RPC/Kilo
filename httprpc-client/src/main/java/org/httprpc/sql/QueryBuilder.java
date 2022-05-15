@@ -48,7 +48,11 @@ public class QueryBuilder {
      * The existing SQL query.
      */
     public QueryBuilder(String sql) {
-        this(new StringBuilder());
+        if (sql == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder = new StringBuilder();
 
         append(sql);
     }
