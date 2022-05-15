@@ -34,9 +34,9 @@ public class QueryBuilderTest {
             .orderBy("a", "b")
             .limit(10)
             .forUpdate()
-            .union(QueryBuilder.select("a", "b", "c", "d").from("C"));
+            .union(QueryBuilder.select("a", "b", "c", "d").from("C").where("c = :c"));
 
-        assertEquals(listOf("a", "b", "c", null), queryBuilder.getParameters());
+        assertEquals(listOf("a", "b", "c", null, "c"), queryBuilder.getParameters());
 
         assertEquals("select ? as a, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
@@ -46,7 +46,7 @@ public class QueryBuilderTest {
             + "order by a, b "
             + "limit 10 "
             + "for update "
-            + "union select a, b, c, d from C", queryBuilder.getSQL());
+            + "union select a, b, c, d from C where c = ?", queryBuilder.getSQL());
     }
 
     @Test

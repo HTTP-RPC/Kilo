@@ -310,7 +310,9 @@ public class QueryBuilder {
      */
     public QueryBuilder union(QueryBuilder queryBuilder) {
         sqlBuilder.append(" union ");
-        sqlBuilder.append(queryBuilder.toString());
+        sqlBuilder.append(queryBuilder.getSQL());
+
+        parameters.addAll(queryBuilder.parameters);
 
         return this;
     }
@@ -660,7 +662,7 @@ public class QueryBuilder {
      * If an error occurs while preparing the query.
      */
     public PreparedStatement prepare(Connection connection) throws SQLException {
-        return connection.prepareStatement(sqlBuilder.toString(), Statement.RETURN_GENERATED_KEYS);
+        return connection.prepareStatement(getSQL(), Statement.RETURN_GENERATED_KEYS);
     }
 
     /**
