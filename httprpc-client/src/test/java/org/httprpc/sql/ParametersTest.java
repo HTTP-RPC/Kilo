@@ -16,8 +16,6 @@ package org.httprpc.sql;
 
 import org.junit.jupiter.api.Test;
 
-import javax.management.Query;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;

@@ -17,6 +17,7 @@ package org.httprpc.sql;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Deque;
@@ -45,7 +46,10 @@ public class Parameters {
      *
      * @return
      * The parsed SQL.
+     *
+     * @deprecated Use {@link QueryBuilder#getSQL()} instead.
      */
+    @Deprecated
     public String getSQL() {
         return sql;
     }
@@ -61,7 +65,12 @@ public class Parameters {
      *
      * @throws SQLException
      * If an exception occurs while applying the argument values.
+     *
+     * @deprecated Use {@link QueryBuilder#prepare(Connection)} and either
+     * {@link QueryBuilder#executeQuery(PreparedStatement, Map)} or
+     * {@link QueryBuilder#executeUpdate(PreparedStatement, Map)} instead.
      */
+    @Deprecated
     public void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
         int i = 1;
 
@@ -78,7 +87,11 @@ public class Parameters {
      *
      * @return
      * A {@link Parameters} instance containing the parsed SQL.
+     *
+     * @deprecated
+     * Use {@link QueryBuilder#QueryBuilder(String)} instead.
      */
+    @Deprecated
     public static Parameters parse(String sql) {
         if (sql == null) {
             throw new IllegalArgumentException();
@@ -105,7 +118,11 @@ public class Parameters {
      *
      * @throws IOException
      * If an exception occurs while reading the SQL statement.
+     *
+     * @deprecated
+     * Use {@link QueryBuilder#QueryBuilder(String)} instead.
      */
+    @Deprecated
     public static Parameters parse(Reader sqlReader) throws IOException {
         if (sqlReader == null) {
             throw new IllegalArgumentException();

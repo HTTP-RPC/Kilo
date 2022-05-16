@@ -51,7 +51,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testInsertInto() {
-        QueryBuilder queryBuilder = QueryBuilder.insertInto("A", mapOf(
+        QueryBuilder queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
             entry("b", true),
             entry("c", "hello"),
