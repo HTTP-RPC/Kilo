@@ -90,25 +90,37 @@ public class QueryBuilderTest {
 
     @Test
     public void testExistingSQL() {
-        QueryBuilder queryBuilder = new QueryBuilder("select * from foo where bar = :x");
+        QueryBuilder queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
 
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
-        assertEquals("select * from foo where bar = ?", queryBuilder.getSQL());
+        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.getSQL());
     }
 
     @Test
     public void testQuotedColon() {
         QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
 
-        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.toString());
+        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testQuotedQuestionMark() {
+        QueryBuilder queryBuilder = QueryBuilder.select("'?' as q").from("xyz");
+
+        assertEquals("select '?' as q from xyz", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testDoubleColon() {
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select("'ab:c'::varchar(16) as abc"));
     }
 
     @Test
     public void testEscapedQuotes() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a''b'':c''' and bar = ''''");
+        QueryBuilder queryBuilder = QueryBuilder.select("xyz.*", "''':z' as z").from("xyz").where("foo = 'a''b'':c''' and bar = ''''");
 
-        assertEquals("select * from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.getSQL());
+        assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.getSQL());
     }
 
     @Test

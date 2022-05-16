@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Class for programmatically constructing and executing a SQL query.
+ * Class for programmatically constructing and executing SQL queries.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -245,17 +245,13 @@ public class QueryBuilder {
                 parameters.add(parameterBuilder.toString());
 
                 sqlBuilder.append("?");
-            } else if (c == '?') {
+            } else if (c == '?' && !quoted) {
                 parameters.add(null);
 
                 sqlBuilder.append(c);
             } else {
-                if (i < n && c == '\'') {
-                    sqlBuilder.append(c);
-
-                    c = predicate.charAt(i++);
-
-                    quoted = !quoted || c == '\'';
+                if (c == '\'') {
+                    quoted = !quoted;
                 }
 
                 sqlBuilder.append(c);
