@@ -20,6 +20,9 @@ import java.util.function.Function;
  * Class that provides static utility methods for working with optional values.
  */
 public class Optionals {
+    private Optionals() {
+    }
+
     /**
      * Returns the first non-<code>null</code> value in a sequence of values.
      *
@@ -65,6 +68,10 @@ public class Optionals {
      * <code>null</code>.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) {
+        if (mapper == null) {
+            throw new IllegalArgumentException();
+        }
+
         return (value == null) ? null : mapper.apply(value);
     }
 }

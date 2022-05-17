@@ -30,6 +30,10 @@ public class StreamAdapter<T> implements Iterable<T>, AutoCloseable {
      * The source stream.
      */
     public StreamAdapter(Stream<T> stream) {
+        if (stream == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.stream = stream;
     }
 

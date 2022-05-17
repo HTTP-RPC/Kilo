@@ -55,6 +55,8 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
             throw new IllegalArgumentException();
         }
 
+        reader = new BufferedReader(reader);
+
         List<String> keys = readValues(reader);
 
         if (keys.isEmpty()) {

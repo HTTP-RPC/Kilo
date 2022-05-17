@@ -35,6 +35,7 @@ import java.time.temporal.TemporalAmount;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,7 +77,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
          * @return
          * The property's mutators.
          */
-        public List<Method> getMutators() {
+        public Collection<Method> getMutators() {
             return Collections.unmodifiableList(mutators);
         }
     }
@@ -466,8 +467,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * constant whose string representation matches the value's string
      * representation.
      * <br/>
-     * If none of the previous apply, the target type is assumed to be a bean.
-     * The provided value is assumed to be a map and is converted as follows:
+     * If none of the previous conditions apply, the target type is assumed to
+     * be a bean. The provided value is assumed to be a map and is converted as
+     * follows:
      *
      * <ul>
      * <li>If the target type is an interface, the return value is a proxy
