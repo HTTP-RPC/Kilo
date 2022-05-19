@@ -25,9 +25,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-/**
- * File upload example service.
- */
 @WebServlet(urlPatterns = {"/upload/*"}, loadOnStartup = 1)
 @MultipartConfig
 @Description("File upload example service.")

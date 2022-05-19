@@ -6,6 +6,7 @@
 </head>
 <body>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen">Pets (JSON)</a><br/>
+<br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=csv">Pets (CSV)</a><br/>
 <a href="${pageContext.request.contextPath}/pets?owner=Gwen&format=html">Pets (HTML)</a><br/>
 <br/>

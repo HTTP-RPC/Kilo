@@ -16,21 +16,14 @@ package org.httprpc.test;
 
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.io.CSVEncoder;
-import org.httprpc.io.JSONEncoder;
 import org.httprpc.io.TemplateEncoder;
 import org.httprpc.sql.QueryBuilder;
 import org.httprpc.sql.ResultSetAdapter;
 import org.httprpc.util.ResourceBundleAdapter;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,6 +31,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static org.httprpc.util.Collections.entry;
@@ -45,43 +40,37 @@ import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
-public class PetService extends WebService {
-    private interface Pet {
+public class PetService extends AbstractDatabaseService {
+    public interface Pet {
+        String getName();
+        String getOwner();
+        String getSpecies();
+        String getSex();
         Date getBirth();
+        Date getDeath();
     }
 
-    private DataSource dataSource = null;
+    @RequestMethod("GET")
+    public List<Pet> getPets(String owner) throws SQLException {
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
+        List<Map<String, Object>> results = queryBuilder.execute(getConnection(), mapOf(
+            entry("owner", owner)
+        )).getResults();
 
-        try {
-            Context initialCtx = new InitialContext();
-            Context environmentContext = (Context)initialCtx.lookup("java:comp/env");
-
-            dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
-        } catch (NamingException exception) {
-            throw new ServletException(exception);
-        }
+        return BeanAdapter.coerceList(results, Pet.class);
     }
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
         QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
             PreparedStatement statement = queryBuilder.prepare(connection);
             ResultSetAdapter results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             )))) {
-            if (format == null || format.equals("json")) {
-                getResponse().setContentType("application/json");
-
-                JSONEncoder jsonEncoder = new JSONEncoder();
-
-                jsonEncoder.write(results, getResponse().getOutputStream());
-            } else if (format.equals("csv")) {
+            if (format.equals("csv")) {
                 getResponse().setContentType("text/csv");
 
                 CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
@@ -122,7 +111,7 @@ public class PetService extends WebService {
         String sql = QueryBuilder.select("birth").from("pet").toString();
 
         double averageAge;
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
             Statement statement = connection.createStatement();
             ResultSetAdapter results = new ResultSetAdapter(statement.executeQuery(sql))) {
             Date now = new Date();

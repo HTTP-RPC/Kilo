@@ -28,7 +28,7 @@ Classes provided by the HTTP-RPC framework include:
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
 * [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
-* [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes text content
+* [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes plain text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries; iterable adapter for JDBC result sets
@@ -46,7 +46,7 @@ Service operations are defined by adding public methods to a concrete service im
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
-Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple addition operations:
+Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple mathematical operations:
 
 ```java
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
@@ -71,13 +71,13 @@ public class MathService extends WebService {
 }
 ```
 
-The following HTTP request would cause the first method to be invoked:
+This request would cause the first method to be invoked:
 
 ```
 GET /math/sum?a=2&b=4
 ```
  
-This request would invoke the second method:
+while this request would invoke the second method:
 
 ```
 GET /math/sum?values=1&values=2&values=3
@@ -85,7 +85,7 @@ GET /math/sum?values=1&values=2&values=3
 
 In either case, the service would return the value 6 in response.
 
-At least one URL pattern is required, and it must be a path mapping (i.e. must begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be loaded automatically on startup so they will be immediately available to other services and included in the generated [documentation](#api-documentation).
+At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to other services and included in the generated [documentation](#api-documentation).
 
 ### Method Arguments
 Method arguments may be any of the following types:
@@ -137,7 +137,7 @@ public class FileUploadService extends WebService {
 }
 ```
 
-The methods could be invoked using this HTML form:
+The methods could be invoked using this HTML form, for example, or by HTTP-RPC's `WebServiceProxy` class:
 
 ```html
 <form action="/upload" method="post" enctype="multipart/form-data">
@@ -190,7 +190,7 @@ protected String getKey(String name) { ... }
 For example, given the preceding `GET` request, the value of the key named "contactID" would be "jsmith", and the value of "addressType" would be "home".
 
 #### Typed Access
-Although path components are always specified as strings, they can be easily converted to other types via one of the following overloads:
+Although key values are returned as strings by default, they can be easily converted to other types via one of the following overloads:
 
 ```java
 protected <T> T getKey(int index, Class<T> type) { ... }
@@ -241,7 +241,7 @@ By default, an HTTP 200 response is returned when a service method completes suc
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative encodings. See the method documentation for more information.
 
 ### Request and Repsonse Properties
-`WebService` provides the following methods to allow a service method to access the request and response objects associated with the current invocation:
+The following methods provide access the request and response objects associated with the current invocation:
 
 ```java
 protected HttpServletRequest getRequest() { ... }
@@ -336,7 +336,7 @@ public enum Size {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
-The `Keys` annotation can be used to provide additional information about an endpoint's keys. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
+The `Keys` annotation can be used to provide descriptions for an endpoint's keys. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
 
 #### IndexServlet
 An index of all active services can be enabled by declaring an instance of `org.httprpc.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
@@ -822,7 +822,33 @@ The `ResultSetAdapter` class provides access to the contents of a JDBC result se
 ```java
 List<Map<String, Object>> results = queryBuilder.execute(getConnection(), mapOf(
     entry("owner", owner)
-).getResults();
+)).getResults();
+```
+
+This list could then be mapped to a strongly-typed list of `Pet` instances and returned from a service method as follows:
+
+```java
+public interface Pet {
+    String getName();
+    String getOwner();
+    String getSpecies();
+    String getSex();
+    Date getBirth();
+    Date getDeath();
+}
+```
+
+```java
+@RequestMethod("GET")
+public List<Pet> getPets(String owner) throws SQLException {
+    QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
+
+    List<Map<String, Object>> results = queryBuilder.execute(getConnection(), mapOf(
+        entry("owner", owner)
+    )).getResults();
+
+    return BeanAdapter.coerceList(results, Pet.class);
+}
 ```
 
 Insert, update, and delete operations are also supported. For example:

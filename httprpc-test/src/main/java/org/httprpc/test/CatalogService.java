@@ -14,14 +14,11 @@
 
 package org.httprpc.test;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.Content;
 import org.httprpc.Description;
 import org.httprpc.Keys;
 import org.httprpc.RequestMethod;
 import org.httprpc.ResourcePath;
-import org.httprpc.WebService;
 import org.httprpc.beans.BeanAdapter;
 import org.httprpc.beans.Key;
 
@@ -29,12 +26,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.sql.QueryBuilder;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -44,8 +35,8 @@ import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
-@Description("Simulates a product catalog.")
-public class CatalogService extends WebService {
+@Description("Catalog example service.")
+public class CatalogService extends AbstractDatabaseService {
     @Description("Represents an item in the catalog.")
     public static class Item {
         private Integer id;
@@ -90,59 +81,6 @@ public class CatalogService extends WebService {
         MEDIUM,
         @Description("A large size.")
         LARGE
-    }
-
-    private DataSource dataSource = null;
-
-    private ThreadLocal<Connection> connection = new ThreadLocal<>();
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-
-        try {
-            Context initialCtx = new InitialContext();
-            Context environmentContext = (Context)initialCtx.lookup("java:comp/env");
-
-            dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
-        } catch (NamingException exception) {
-            throw new ServletException(exception);
-        }
-    }
-
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-
-            this.connection.set(connection);
-
-            try {
-                super.service(request, response);
-
-                if (response.getStatus() / 100 == 2) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
-            } catch (IOException | SQLException | RuntimeException exception) {
-                connection.rollback();
-
-                log(exception.getMessage(), exception);
-
-                throw exception;
-            } finally {
-                connection.setAutoCommit(true);
-
-                this.connection.remove();
-            }
-        } catch (SQLException exception) {
-            throw new ServletException(exception);
-        }
-    }
-
-    private Connection getConnection() {
-        return connection.get();
     }
 
     @RequestMethod("GET")
