@@ -85,7 +85,7 @@ GET /math/sum?values=1&values=2&values=3
 
 In either case, the service would return the value 6 in response.
 
-At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to other services and included in the generated [documentation](#api-documentation).
+At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the generated [documentation](#api-documentation).
 
 ### Method Arguments
 Method arguments may be any of the following types:
