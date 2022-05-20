@@ -631,7 +631,7 @@ public class QueryBuilder {
             }
 
             default: {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Unexpected result count.");
             }
         }
     }
