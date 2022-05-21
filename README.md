@@ -825,7 +825,7 @@ List<Map<String, Object>> results = queryBuilder.execute(getConnection(), mapOf(
 )).getResults();
 ```
 
-This list could then be mapped to a strongly-typed list of `Pet` instances and returned from a service method as follows:
+The results could be mapped to list of `Pet` instances and returned from a service method as follows:
 
 ```java
 public interface Pet {
