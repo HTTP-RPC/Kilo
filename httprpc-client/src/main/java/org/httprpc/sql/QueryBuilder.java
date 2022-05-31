@@ -214,51 +214,6 @@ public class QueryBuilder {
         return this;
     }
 
-    private void append(String predicate) {
-        boolean quoted = false;
-
-        int n = predicate.length();
-        int i = 0;
-
-        while (i < n) {
-            char c = predicate.charAt(i++);
-
-            if (c == ':' && !quoted) {
-                StringBuilder parameterBuilder = new StringBuilder();
-
-                while (i < n) {
-                    c = predicate.charAt(i);
-
-                    if (!Character.isJavaIdentifierPart(c)) {
-                        break;
-                    }
-
-                    parameterBuilder.append(c);
-
-                    i++;
-                }
-
-                if (parameterBuilder.length() == 0) {
-                    throw new IllegalArgumentException("Missing parameter.");
-                }
-
-                parameters.add(parameterBuilder.toString());
-
-                sqlBuilder.append("?");
-            } else if (c == '?' && !quoted) {
-                parameters.add(null);
-
-                sqlBuilder.append(c);
-            } else {
-                if (c == '\'') {
-                    quoted = !quoted;
-                }
-
-                sqlBuilder.append(c);
-            }
-        }
-    }
-
     /**
      * Appends an "order by" clause to a query.
      *
@@ -471,52 +426,6 @@ public class QueryBuilder {
         }
 
         return this;
-    }
-
-    private void encode(Object value) {
-        if (value instanceof String) {
-            String string = (String)value;
-
-            if (string.equals("?")) {
-                parameters.add(null);
-
-                sqlBuilder.append(string);
-            } else if (string.startsWith(":")) {
-                String parameter = string.substring(1);
-
-                if (parameter.isEmpty()) {
-                    throw new IllegalArgumentException("Missing parameter.");
-                }
-
-                parameters.add(parameter);
-
-                sqlBuilder.append("?");
-            } else {
-                sqlBuilder.append("'");
-
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    char c = string.charAt(i);
-
-                    if (c == '\'') {
-                        sqlBuilder.append(c);
-                    }
-
-                    sqlBuilder.append(c);
-                }
-
-                sqlBuilder.append("'");
-            }
-        } else if (value instanceof QueryBuilder) {
-            QueryBuilder queryBuilder = (QueryBuilder)value;
-
-            sqlBuilder.append("(");
-            sqlBuilder.append(queryBuilder.getSQL());
-            sqlBuilder.append(")");
-
-            parameters.addAll(queryBuilder.parameters);
-        } else {
-            sqlBuilder.append(value);
-        }
     }
 
     /**
@@ -773,6 +682,97 @@ public class QueryBuilder {
      */
     public String getSQL() {
         return sqlBuilder.toString();
+    }
+
+    private void append(String sql) {
+        boolean quoted = false;
+
+        int n = sql.length();
+        int i = 0;
+
+        while (i < n) {
+            char c = sql.charAt(i++);
+
+            if (c == ':' && !quoted) {
+                StringBuilder parameterBuilder = new StringBuilder();
+
+                while (i < n) {
+                    c = sql.charAt(i);
+
+                    if (!Character.isJavaIdentifierPart(c)) {
+                        break;
+                    }
+
+                    parameterBuilder.append(c);
+
+                    i++;
+                }
+
+                if (parameterBuilder.length() == 0) {
+                    throw new IllegalArgumentException("Missing parameter.");
+                }
+
+                parameters.add(parameterBuilder.toString());
+
+                sqlBuilder.append("?");
+            } else if (c == '?' && !quoted) {
+                parameters.add(null);
+
+                sqlBuilder.append(c);
+            } else {
+                if (c == '\'') {
+                    quoted = !quoted;
+                }
+
+                sqlBuilder.append(c);
+            }
+        }
+    }
+
+    private void encode(Object value) {
+        if (value instanceof String) {
+            String string = (String)value;
+
+            if (string.equals("?")) {
+                parameters.add(null);
+
+                sqlBuilder.append(string);
+            } else if (string.startsWith(":")) {
+                String parameter = string.substring(1);
+
+                if (parameter.isEmpty()) {
+                    throw new IllegalArgumentException("Missing parameter.");
+                }
+
+                parameters.add(parameter);
+
+                sqlBuilder.append("?");
+            } else {
+                sqlBuilder.append("'");
+
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    char c = string.charAt(i);
+
+                    if (c == '\'') {
+                        sqlBuilder.append(c);
+                    }
+
+                    sqlBuilder.append(c);
+                }
+
+                sqlBuilder.append("'");
+            }
+        } else if (value instanceof QueryBuilder) {
+            QueryBuilder queryBuilder = (QueryBuilder)value;
+
+            sqlBuilder.append("(");
+            sqlBuilder.append(queryBuilder.getSQL());
+            sqlBuilder.append(")");
+
+            parameters.addAll(queryBuilder.parameters);
+        } else {
+            sqlBuilder.append(value);
+        }
     }
 
     @Override
