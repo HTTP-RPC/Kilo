@@ -709,7 +709,7 @@ public class QueryBuilder {
                 }
 
                 if (parameterBuilder.length() == 0) {
-                    throw new IllegalArgumentException("Missing parameter.");
+                    throw new IllegalArgumentException("Missing parameter name.");
                 }
 
                 parameters.add(parameterBuilder.toString());
@@ -738,13 +738,25 @@ public class QueryBuilder {
 
                 sqlBuilder.append(string);
             } else if (string.startsWith(":")) {
-                String parameter = string.substring(1);
+                int n = string.length();
 
-                if (parameter.isEmpty()) {
-                    throw new IllegalArgumentException("Missing parameter.");
+                if (n == 1) {
+                    throw new IllegalArgumentException("Missing parameter name.");
                 }
 
-                parameters.add(parameter);
+                StringBuilder parameterBuilder = new StringBuilder(n - 1);
+
+                for (int i = 1; i < n; i++) {
+                    char c = string.charAt(i);
+
+                    if (!Character.isJavaIdentifierPart(c)) {
+                        throw new IllegalArgumentException("Invalid parameter name.");
+                    }
+
+                    parameterBuilder.append(c);
+                }
+
+                parameters.add(parameterBuilder.toString());
 
                 sqlBuilder.append("?");
             } else {
