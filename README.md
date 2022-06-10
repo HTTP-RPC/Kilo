@@ -34,7 +34,6 @@ Classes provided by the HTTP-RPC framework include:
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries; iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
-* [StreamAdapter](#streamadapter) - iterable adapter for streams
 * [Collections and Optionals](#collections-and-optionals) - utility methods for working with collections and optional values, respectively
 
 Each is discussed in more detail in the following sections.
@@ -992,19 +991,6 @@ templateEncoder.write(mapOf(
     entry("items", items)
 ), System.out);
 ```
-
-## StreamAdapter
-The `StreamAdapter` class provides access to the contents of a stream via the `Iterable` interface. For example, it can be used to serialize the result of a stream operation without needing to first collect the results, which could be expensive if the stream is large:
-
-```java
-  List<Integer> values = listOf(1, 2, 3);
-
-  JSONEncoder jsonEncoder = new JSONEncoder(true);
-
-  jsonEncoder.write(new StreamAdapter<>(values.stream().map(element -> element * 2)), System.out);
-```
-
-`StreamAdapter` also implements `AutoCloseable` and ensures that the underlying stream is closed when the adapter is closed.
 
 ## Collections and Optionals
 The `Collections` class provides a set of static utility methods for instantiating immutable list and map values:

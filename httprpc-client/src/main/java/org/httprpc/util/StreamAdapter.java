@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 /**
  * {@link Iterable} adapter for streams.
  */
+@Deprecated
 public class StreamAdapter<T> implements Iterable<T>, AutoCloseable {
     private Stream<T> stream;
 
