@@ -45,6 +45,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -947,6 +948,14 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
+        Object[] arguments;
+        try {
+            arguments = getArguments(handler.method, parameterMap);
+        } catch (IllegalArgumentException | DateTimeParseException exception) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         Content content = handler.method.getAnnotation(Content.class);
 
         Object body;
@@ -971,7 +980,7 @@ public abstract class WebService extends HttpServlet {
 
         Object result;
         try {
-            result = handler.method.invoke(this, getArguments(handler.method, parameterMap));
+            result = handler.method.invoke(this, arguments);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             if (response.isCommitted()) {
                 throw new ServletException(exception);
@@ -984,9 +993,7 @@ public abstract class WebService extends HttpServlet {
             }
 
             int status;
-            if (cause instanceof IllegalArgumentException
-                || cause instanceof NumberFormatException
-                || cause instanceof UnsupportedOperationException) {
+            if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
                 status = HttpServletResponse.SC_FORBIDDEN;
             } else if (cause instanceof NoSuchElementException) {
                 status = HttpServletResponse.SC_NOT_FOUND;

@@ -427,7 +427,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testError() throws IOException {
+    public void testException() throws IOException {
         try {
             WebServiceProxy.get(baseURL, "test/error").setMonitorStream(System.out).invoke();
 
@@ -435,6 +435,45 @@ public class WebServiceProxyTest {
         } catch (WebServiceException exception) {
             assertNotNull(exception.getMessage());
             assertEquals(500, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testInvalidNumberArgument() throws IOException {
+        try {
+            WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("number", "x")
+            )).invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(400, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testInvalidDayOfWeekArgument() throws IOException {
+        try {
+            WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("dayOfWeek", "y")
+            )).invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(400, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testInvalidLocalDateArgument() throws IOException {
+        try {
+            WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("localDate", "z")
+            )).invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(400, exception.getStatusCode());
         }
     }
 

@@ -146,7 +146,7 @@ The methods could be invoked using this HTML form, for example, or by HTTP-RPC's
 </form>
 ```
 
-If no method is found that matches the provided arguments, an HTTP 405 response is returned.
+If an argument value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, an HTTP 405 (method not allowed) response is returned.
 
 ### Path Variables
 Path variables may be specified by a "?" character in the resource path. For example:
@@ -263,7 +263,7 @@ The first argument contains the current request, and the second the service meth
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status will be returned as shown below:
 
-* `IllegalArgumentException`, `NumberFormatException`, or `UnsupportedOperationException` - HTTP 403 (forbidden)
+* `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
 * `NoSuchElementException` - HTTP 404 (not found)
 * `IllegalStateException` - HTTP 409 (conflict)
 * Any other exception - HTTP 500 (internal server error)
