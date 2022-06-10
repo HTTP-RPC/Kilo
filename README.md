@@ -264,10 +264,10 @@ The first argument contains the current request, and the second the service meth
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status will be returned as shown below:
 
-* `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
+* `IllegalArgumentException`, `NumberFormatException`, or `UnsupportedOperationException` - HTTP 403 (forbidden)
 * `NoSuchElementException` - HTTP 404 (not found)
 * `IllegalStateException` - HTTP 409 (conflict)
-* Any other exception type - HTTP 500 (internal server error)
+* Any other exception - HTTP 500 (internal server error)
 
 ### Inter-Service Communication
 A reference to any service annotated with `jakarta.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.

@@ -984,7 +984,9 @@ public abstract class WebService extends HttpServlet {
             }
 
             int status;
-            if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
+            if (cause instanceof IllegalArgumentException
+                || cause instanceof NumberFormatException
+                || cause instanceof UnsupportedOperationException) {
                 status = HttpServletResponse.SC_FORBIDDEN;
             } else if (cause instanceof NoSuchElementException) {
                 status = HttpServletResponse.SC_NOT_FOUND;
