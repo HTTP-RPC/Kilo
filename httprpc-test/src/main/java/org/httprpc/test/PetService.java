@@ -25,7 +25,6 @@ import org.httprpc.util.ResourceBundleAdapter;
 
 import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -65,8 +64,7 @@ public class PetService extends AbstractDatabaseService {
     public void getPets(String owner, String format) throws SQLException, IOException {
         QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-        try (Connection connection = getConnection();
-            PreparedStatement statement = queryBuilder.prepare(connection);
+        try (PreparedStatement statement = queryBuilder.prepare(getConnection());
             ResultSetAdapter results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             )))) {
@@ -111,8 +109,7 @@ public class PetService extends AbstractDatabaseService {
         String sql = QueryBuilder.select("birth").from("pet").toString();
 
         double averageAge;
-        try (Connection connection = getConnection();
-            Statement statement = connection.createStatement();
+        try (Statement statement = getConnection().createStatement();
             ResultSetAdapter results = new ResultSetAdapter(statement.executeQuery(sql))) {
             Date now = new Date();
 

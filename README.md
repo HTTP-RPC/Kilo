@@ -805,8 +805,7 @@ select * from pet where owner = ?
 Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
 
 ```java
-try (Connection connection = getConnection();
-    PreparedStatement statement = queryBuilder.prepare(connection);
+try (PreparedStatement statement = queryBuilder.prepare(getConnection());
     ResultSetAdapter results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
         entry("owner", owner)
     )))) { 
