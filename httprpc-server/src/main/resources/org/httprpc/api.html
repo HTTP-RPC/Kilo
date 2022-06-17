@@ -217,24 +217,20 @@
       <p>{{.}}</p>
       <!-- {{/description}} -->
       <!-- {{?keys}} -->
-      <p>
       <table>
-        <tr><th colspan="3">{{labels/keys}}</th></tr>
+        <tr><th style="width: 100%">{{labels/keys}}</th></tr>
         <!-- {{#.}} -->
-        <tr><td colspan="3"><code>{{.}}</code></td></tr>
+        <tr><td style="width: 100%"><code>{{.}}</code></td></tr>
         <!-- {{/.}} -->
       </table>
-      </p>
       <!-- {{/keys}} -->
       <!-- {{?parameters}} -->
-      <p>
       <table>
         <tr><th>{{labels/parameter}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
         <!-- {{#.}} -->
         <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
         <!-- {{/.}} -->
       </table>
-      </p>
       <!-- {{/parameters}} -->
       <!-- {{/operations}} -->
     </section>
@@ -251,9 +247,9 @@
       <p>{{.}}</p>
       <!-- {{/description}} -->
       <table>
-        <tr><th>{{labels/name}}</th><th>{{labels/description}}</th><th></th></tr>
+        <tr><th>{{labels/name}}</th><th style="width: 84%">{{labels/description}}</th></tr>
         <!-- {{#values}} -->
-        <tr><td><code>{{name}}</code></td><td>{{description}}</td><td></td></tr>
+        <tr><td><code>{{name}}</code></td><td style="width: 84%">{{description}}</td></tr>
         <!-- {{/values}} -->
       </table>
     </section>
