@@ -31,7 +31,7 @@ Classes provided by the HTTP-RPC framework include:
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes plain text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
-* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries; iterable adapter for JDBC result sets
+* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [Collections and Optionals](#collections-and-optionals) - utility methods for working with collections and optional values, respectively
