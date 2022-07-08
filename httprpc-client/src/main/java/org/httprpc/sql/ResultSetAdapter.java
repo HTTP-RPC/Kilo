@@ -89,20 +89,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         }
     }
 
-    /**
-     * Returns the next result.
-     *
-     * @return
-     * The next result, or <code>null</code> if there are no more results.
-     *
-     * @deprecated
-     * Use {@link QueryBuilder#getResult()} instead.
-     */
-    @Deprecated
-    public Map<String, Object> next() {
-        return iterator.hasNext() ? iterator.next() : null;
-    }
-
     @Override
     public Iterator<Map<String, Object>> iterator() {
         return iterator;

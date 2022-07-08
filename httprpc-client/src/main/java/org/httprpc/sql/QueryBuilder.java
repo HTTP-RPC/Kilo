@@ -290,28 +290,6 @@ public class QueryBuilder {
         return String.format("in (%s)", queryBuilder);
     }
 
-    public static String in(String... values) {
-        if (values == null || values.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("in (");
-
-        for (int i = 0; i < values.length; i++) {
-            if (i > 0) {
-                stringBuilder.append(", ");
-            }
-
-            stringBuilder.append(values[i]);
-        }
-
-        stringBuilder.append(")");
-
-        return stringBuilder.toString();
-    }
-
     /**
      * Creates an "exists" conditional.
      *
@@ -401,25 +379,6 @@ public class QueryBuilder {
         parameters.addAll(queryBuilder.parameters);
 
         return this;
-    }
-
-    /**
-     * Creates an "insert into" query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @param values
-     * The values to insert.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
-     *
-     * @deprecated Use {@link #insertInto(String)} and {@link #values(Map)} instead.
-     */
-    @Deprecated
-    public static QueryBuilder insertInto(String table, Map<String, ?> values) {
-        return insertInto(table).values(values);
     }
 
     /**

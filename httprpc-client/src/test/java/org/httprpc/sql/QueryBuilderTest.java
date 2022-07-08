@@ -17,6 +17,8 @@ package org.httprpc.sql;
 import org.junit.jupiter.api.Test;
 
 import static org.httprpc.sql.QueryBuilder.and;
+import static org.httprpc.sql.QueryBuilder.exists;
+import static org.httprpc.sql.QueryBuilder.in;
 import static org.httprpc.sql.QueryBuilder.or;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -29,10 +31,10 @@ public class QueryBuilderTest {
     public void testSelect() {
         QueryBuilder queryBuilder = QueryBuilder.select(":a as a", "b", "c", "d")
             .from("A")
-            .join("B").on("A.id = B.id and x = 50")
-            .leftJoin("C").on("B.id = C.id and b = :b")
-            .rightJoin("D").on("C.id = D.id and c = :c")
-            .where("(a > 10 or b < 200) and d != ?")
+            .join("B").on("A.id = B.id", and("x = 50"))
+            .leftJoin("C").on("B.id = C.id", and("b = :b"))
+            .rightJoin("D").on("C.id = D.id", and("c = :c"))
+            .where("a > 10", or("b < 200", and("d != ?")))
             .orderBy("a", "b")
             .limit(10)
             .forUpdate()
@@ -44,7 +46,7 @@ public class QueryBuilderTest {
             + "join B on A.id = B.id and x = 50 "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "
-            + "where (a > 10 or b < 200) and d != ? "
+            + "where a > 10 or (b < 200 and d != ?) "
             + "order by a, b "
             + "limit 10 "
             + "for update "
@@ -91,6 +93,28 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testInConditional() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*")
+            .from("B")
+            .where("c", in(
+                QueryBuilder.select("c").from("C").where("d = :d")
+            ));
+
+        assertEquals("select * from B where c in (select c from C where d = ?)", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testExistsConditional() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*")
+            .from("B")
+            .where(exists(
+                QueryBuilder.select("c").from("C").where("d = :d")
+            ));
+
+        assertEquals("select * from B where exists (select c from C where d = ?)", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testExistingSQL() {
         QueryBuilder queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
 
@@ -120,7 +144,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testEscapedQuotes() {
-        QueryBuilder queryBuilder = QueryBuilder.select("xyz.*", "''':z' as z").from("xyz").where("foo = 'a''b'':c''' and bar = ''''");
+        QueryBuilder queryBuilder = QueryBuilder.select("xyz.*", "''':z' as z").from("xyz").where("foo = 'a''b'':c'''", and("bar = ''''"));
 
         assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.getSQL());
     }
