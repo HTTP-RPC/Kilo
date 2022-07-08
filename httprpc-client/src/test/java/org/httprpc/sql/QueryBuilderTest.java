@@ -16,6 +16,8 @@ package org.httprpc.sql;
 
 import org.junit.jupiter.api.Test;
 
+import static org.httprpc.sql.QueryBuilder.and;
+import static org.httprpc.sql.QueryBuilder.or;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
 import static org.httprpc.util.Collections.mapOf;
@@ -144,8 +146,8 @@ public class QueryBuilderTest {
 
     @Test
     public void testToString() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a and bar = :b");
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a", and("bar = :b", or("bar = :c")));
 
-        assertEquals("select * from xyz where foo = :a and bar = :b", queryBuilder.toString());
+        assertEquals("select * from xyz where foo = :a and (bar = :b or bar = :c)", queryBuilder.toString());
     }
 }

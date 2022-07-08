@@ -71,7 +71,7 @@ public class QueryBuilder {
      * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder select(String... columns) {
-        if (columns == null) {
+        if (columns == null || columns.length == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -102,7 +102,7 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder from(String... tables) {
-        if (tables == null) {
+        if (tables == null || tables.length == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -175,43 +175,158 @@ public class QueryBuilder {
     /**
      * Appends an "on" clause to a query.
      *
-     * @param predicate
-     * The predicate.
+     * @param predicates
+     * The clause predicates.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder on(String predicate) {
-        if (predicate == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" on ");
-
-        append(predicate);
-
-        return this;
+    public QueryBuilder on(String... predicates) {
+        return filter("on", predicates);
     }
 
     /**
      * Appends a "where" clause to a query.
      *
-     * @param predicate
-     * The predicate.
+     * @param predicates
+     * The clause predicates.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder where(String predicate) {
-        if (predicate == null) {
+    public QueryBuilder where(String... predicates) {
+        return filter("where", predicates);
+    }
+
+    private QueryBuilder filter(String clause, String... predicates) {
+        if (predicates == null) {
             throw new IllegalArgumentException();
         }
 
-        sqlBuilder.append(" where ");
+        sqlBuilder.append(" ");
+        sqlBuilder.append(clause);
+        sqlBuilder.append(" ");
 
-        append(predicate);
+        for (int i = 0; i < predicates.length; i++) {
+            if (i > 0) {
+                sqlBuilder.append(" ");
+            }
+
+            append(predicates[i]);
+        }
 
         return this;
+    }
+
+    /**
+     * Creates an "and" conditional.
+     *
+     * @param predicates
+     * The conditional's predicates.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String and(String... predicates) {
+        return conditional("and", predicates);
+    }
+
+    /**
+     * Creates an "or" conditional.
+     *
+     * @param predicates
+     * The conditional's predicates.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String or(String... predicates) {
+        return conditional("or", predicates);
+    }
+
+    private static String conditional(String operator, String... predicates) {
+        if (predicates == null || predicates.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(operator);
+        stringBuilder.append(" ");
+
+        if (predicates.length > 1) {
+            stringBuilder.append("(");
+        }
+
+        for (int i = 0; i < predicates.length; i++) {
+            if (i > 0) {
+                stringBuilder.append(" ");
+            }
+
+            stringBuilder.append(predicates[i]);
+        }
+
+        if (predicates.length > 1) {
+            stringBuilder.append(")");
+        }
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Creates an "in" conditional.
+     *
+     * @param queryBuilder
+     * The conditional's subquery.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String in(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("in (%s)", queryBuilder);
+    }
+
+    public static String in(String... values) {
+        if (values == null || values.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("in (");
+
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                stringBuilder.append(", ");
+            }
+
+            stringBuilder.append(values[i]);
+        }
+
+        stringBuilder.append(")");
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Creates an "exists" conditional.
+     *
+     * @param queryBuilder
+     * The conditional's subquery.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String exists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("exists (%s)", queryBuilder);
     }
 
     /**
@@ -224,7 +339,7 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder orderBy(String... columns) {
-        if (columns == null) {
+        if (columns == null || columns.length == 0) {
             throw new IllegalArgumentException();
         }
 
