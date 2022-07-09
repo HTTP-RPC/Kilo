@@ -113,7 +113,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public Iterator<Object> iterator() {
-            return new Iterator<Object>() {
+            return new Iterator<>() {
                 private Iterator<?> iterator = iterable.iterator();
 
                 @Override
@@ -146,7 +146,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public Set<Entry<Object, Object>> entrySet() {
-            return new AbstractSet<Entry<Object, Object>>() {
+            return new AbstractSet<>() {
                 @Override
                 public int size() {
                     return map.size();
@@ -154,7 +154,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 @Override
                 public Iterator<Entry<Object, Object>> iterator() {
-                    return new Iterator<Entry<Object, Object>>() {
+                    return new Iterator<>() {
                         private Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
                         @Override
@@ -164,7 +164,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                         @Override
                         public Entry<Object, Object> next() {
-                            return new Entry<Object, Object>() {
+                            return new Entry<>() {
                                 private Entry<?, ?> entry = iterator.next();
 
                                 @Override
@@ -335,7 +335,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        return new AbstractSet<Entry<String, Object>>() {
+        return new AbstractSet<>() {
             @Override
             public int size() {
                 return properties.size();
@@ -343,7 +343,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             @Override
             public Iterator<Entry<String, Object>> iterator() {
-                return new Iterator<Entry<String, Object>>() {
+                return new Iterator<>() {
                     private Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
 
                     @Override
@@ -722,7 +722,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        return new AbstractList<E>() {
+        return new AbstractList<>() {
             @Override
             public E get(int index) {
                 return coerce(list.get(index), elementType);
@@ -735,7 +735,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             @Override
             public Iterator<E> iterator() {
-                return new Iterator<E>() {
+                return new Iterator<>() {
                     private Iterator<?> iterator = list.iterator();
 
                     @Override
@@ -780,7 +780,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        return new AbstractMap<K, V>() {
+        return new AbstractMap<>() {
             @Override
             public V get(Object key) {
                 return coerce(map.get(key), valueType);
@@ -788,7 +788,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             @Override
             public Set<Entry<K, V>> entrySet() {
-                return new AbstractSet<Entry<K, V>>() {
+                return new AbstractSet<>() {
                     @Override
                     public int size() {
                         return map.size();
@@ -796,7 +796,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     @Override
                     public Iterator<Entry<K, V>> iterator() {
-                        return new Iterator<Entry<K, V>>() {
+                        return new Iterator<>() {
                             private Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
 
                             @Override
@@ -806,7 +806,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                             @Override
                             public Entry<K, V> next() {
-                                return new Entry<K, V>() {
+                                return new Entry<>() {
                                     private Entry<K, ?> entry = iterator.next();
 
                                     @Override

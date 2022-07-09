@@ -18,7 +18,7 @@ This guide introduces the Kilo framework and provides an overview of its key fea
 # Getting Kilo
 Kilo is distributed via Maven Central: 
 
-* [org.httprpc:kilo-client](https://repo1.maven.org/maven2/org/httprpc/kilo-client/) - provides support for consuming web services, interacting with relational databases, and working with common file formats (Java 8 or later required)
+* [org.httprpc:kilo-client](https://repo1.maven.org/maven2/org/httprpc/kilo-client/) - provides support for consuming web services, interacting with relational databases, and working with common file formats (Java 11 or later required)
 * [org.httprpc:kilo-server](https://repo1.maven.org/maven2/org/httprpc/kilo-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
 
 # Kilo Classes

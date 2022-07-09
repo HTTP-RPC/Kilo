@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -225,8 +224,6 @@ public class WebServiceProxy {
     private PrintStream monitorStream = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
-
-    private static final String UTF_8 = "UTF-8";
 
     private static final int EOF = -1;
 
@@ -782,7 +779,7 @@ public class WebServiceProxy {
         return result;
     }
 
-    private String encodeQuery() throws UnsupportedEncodingException {
+    private String encodeQuery() {
         StringBuilder queryBuilder = new StringBuilder(256);
 
         int i = 0;
@@ -803,9 +800,9 @@ public class WebServiceProxy {
                     queryBuilder.append("&");
                 }
 
-                queryBuilder.append(URLEncoder.encode(key, UTF_8));
+                queryBuilder.append(URLEncoder.encode(key, StandardCharsets.UTF_8));
                 queryBuilder.append("=");
-                queryBuilder.append(URLEncoder.encode(value.toString(), UTF_8));
+                queryBuilder.append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
 
                 i++;
             }

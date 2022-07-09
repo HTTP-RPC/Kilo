@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -208,9 +209,9 @@ public class WebServiceProxyTest {
     public void testGetKeys() throws IOException {
         Map<String, ?> result = WebServiceProxy.get(baseURL, "test/a/%d/b/%s/c/%d/d/%s",
             123,
-            URLEncoder.encode("héllo", "UTF-8"),
+            URLEncoder.encode("héllo", StandardCharsets.UTF_8),
             456,
-            URLEncoder.encode("göodbye", "UTF-8")
+            URLEncoder.encode("göodbye", StandardCharsets.UTF_8)
         ).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(

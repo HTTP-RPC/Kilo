@@ -237,7 +237,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testObjectMethodDelegation() {
-        Map<String, Object> map1 = new HashMap<String, Object>() {
+        Map<String, Object> map1 = new HashMap<>() {
             @Override
             public String toString() {
                 return "abc";

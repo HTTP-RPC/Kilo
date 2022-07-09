@@ -171,7 +171,7 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
     public Iterable<BigInteger> testGetFibonacci(int count) {
-        return () -> new Iterator<BigInteger>() {
+        return () -> new Iterator<>() {
             private int i = 0;
 
             private BigInteger a = BigInteger.valueOf(0);

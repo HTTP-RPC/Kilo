@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -238,11 +237,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class URLEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            try {
-                return URLEncoder.encode(value.toString(), "UTF-8");
-            } catch (UnsupportedEncodingException exception) {
-                throw new RuntimeException(exception);
-            }
+            return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
         }
     }
 
@@ -370,7 +365,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
         @Override
         public Map<Object, Object> next() {
-            return new AbstractMap<Object, Object>() {
+            return new AbstractMap<>() {
                 private Entry<?, ?> entry = iterator.next();
 
                 @Override
@@ -385,7 +380,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         Object value = entry.getValue();
 
                         if (value instanceof Map<?, ?>) {
-                            return ((Map<?, ?>)value).get(key);
+                            return ((Map<?, ?>) value).get(key);
                         } else if (key.equals(SELF_REFERENCE)) {
                             return value;
                         } else {
@@ -406,7 +401,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         Object value = entry.getValue();
 
                         if (value instanceof Map<?, ?>) {
-                            return ((Map<?, ?>)value).containsKey(key);
+                            return ((Map<?, ?>) value).containsKey(key);
                         } else {
                             return key.equals(SELF_REFERENCE);
                         }
