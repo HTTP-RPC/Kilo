@@ -23,7 +23,7 @@ dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
     compileOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
 
-    implementation project(':httprpc-server')
+    implementation project(':kilo-server')
 }
 
 compileJava {

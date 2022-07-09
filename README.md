@@ -1,28 +1,28 @@
-[![Releases](https://img.shields.io/github/release/HTTP-RPC/HTTP-RPC.svg)](https://github.com/HTTP-RPC/HTTP-RPC/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/httprpc-server.svg)](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/)
+[![Releases](https://img.shields.io/github/release/Kilo/Kilo.svg)](https://github.com/Kilo/Kilo/releases)
+[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/kilo-server.svg)](https://repo1.maven.org/maven2/org/httprpc/kilo-server/)
 
 # Introduction
-HTTP-RPC is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 125KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 125KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
 
-This guide introduces the HTTP-RPC framework and provides an overview of its key features.
-
-**NOTE** HTTP-RPC will be renamed to Kilo in an upcoming release. This name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
 ![](kilo.png)
 
+This guide introduces the Kilo framework and provides an overview of its key features.
+
 # Contents
-* [Getting HTTP-RPC](#getting-http-rpc)
-* [HTTP-RPC Classes](#http-rpc-classes)
+* [Getting Kilo](#getting-kilo)
+* [Kilo Classes](#kilo-classes)
 * [Additional Information](#additional-information)
 
-# Getting HTTP-RPC
-HTTP-RPC is distributed via Maven Central: 
+# Getting Kilo
+Kilo is distributed via Maven Central: 
 
-* [org.httprpc:httprpc-client](https://repo1.maven.org/maven2/org/httprpc/httprpc-client/) - provides support for consuming web services, interacting with relational databases, and working with common file formats (Java 8 or later required)
-* [org.httprpc:httprpc-server](https://repo1.maven.org/maven2/org/httprpc/httprpc-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
+* [org.httprpc:kilo-client](https://repo1.maven.org/maven2/org/httprpc/kilo-client/) - provides support for consuming web services, interacting with relational databases, and working with common file formats (Java 8 or later required)
+* [org.httprpc:kilo-server](https://repo1.maven.org/maven2/org/httprpc/kilo-server/) - depends on client; provides support for implementing web services (Java Servlet specification 5.0 or later required)
 
-# HTTP-RPC Classes
-Classes provided by the HTTP-RPC framework include:
+# Kilo Classes
+Classes provided by the Kilo framework include:
 
 * [WebService](#webservice) - abstract base class for web services
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
@@ -136,7 +136,7 @@ public class FileUploadService extends WebService {
 }
 ```
 
-The methods could be invoked using this HTML form, for example, or by HTTP-RPC's `WebServiceProxy` class:
+The methods could be invoked using this HTML form, for example, or by Kilo's `WebServiceProxy` class:
 
 ```html
 <form action="/upload" method="post" enctype="multipart/form-data">
@@ -335,15 +335,15 @@ public enum Size {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
-The `Keys` annotation can be used to provide descriptions for an endpoint's keys. See the [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) example for more information.
+The `Keys` annotation can be used to provide descriptions for an endpoint's keys. See the [catalog](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) example for more information.
 
 #### IndexServlet
-An index of all active services can be enabled by declaring an instance of `org.httprpc.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
+An index of all active services can be enabled by declaring an instance of `org.httprpc.kilo.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
 
 ```xml
 <servlet>
     <servlet-name>index-servlet</servlet-name>
-    <servlet-class>org.httprpc.IndexServlet</servlet-class>
+    <servlet-class>org.httprpc.kilo.IndexServlet</servlet-class>
 </servlet>
 
 <servlet-mapping>
@@ -435,7 +435,7 @@ List<Integer> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArgumen
 This code would produce the following output:
 
 ```
-GET http://localhost:8080/httprpc-test-1.0/test/fibonacci?count=8
+GET http://localhost:8080/kilo-test-1.0/test/fibonacci?count=8
 HTTP 200
 [
   0,
@@ -886,7 +886,7 @@ QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), m
 
 If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses.
 
-See the [pet](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test/CatalogService.java) service examples for more information.
+See the [pet](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a typed proxy, as described [earlier](#type-coercion). 
@@ -1037,4 +1037,4 @@ public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { .
 These methods are provided as a less verbose alternative to similar methods defined by the `Optional`class.
 
 # Additional Information
-This guide introduced the HTTP-RPC framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/HTTP-RPC/tree/master/httprpc-test/src/main/java/org/httprpc/test).
+This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).

@@ -15,5 +15,5 @@
 dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
-    api project(':httprpc-client')
+    api project(':kilo-client')
 }

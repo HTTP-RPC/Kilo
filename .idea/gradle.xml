@@ -12,9 +12,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/httprpc-client" />
-            <option value="$PROJECT_DIR$/httprpc-server" />
-            <option value="$PROJECT_DIR$/httprpc-test" />
+            <option value="$PROJECT_DIR$/kilo-client" />
+            <option value="$PROJECT_DIR$/kilo-server" />
+            <option value="$PROJECT_DIR$/kilo-test" />
           </set>
         </option>
       </GradleProjectSettings>

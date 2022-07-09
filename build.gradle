@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'
-    version = '9.5'
+    version = '1.0'
 
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
@@ -96,8 +96,8 @@ subprojects {
                             }
                         }
                         scm {
-                            connection = 'scm:git:git://github.com/HTTP-RPC/HTTP-RPC.git'
-                            url = 'https://github.com/HTTP-RPC/HTTP-RPC'
+                            connection = 'scm:git:git://github.com/Kilo/Kilo.git'
+                            url = 'https://github.com/Kilo/Kilo'
                         }
                     }
                 }

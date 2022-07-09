@@ -1,3 +1,3 @@
-rootProject.name = 'HTTP-RPC'
+rootProject.name = 'Kilo'
 
-include  'httprpc-client', 'httprpc-server', 'httprpc-test'
+include  'kilo-client', 'kilo-server', 'kilo-test'
