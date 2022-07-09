@@ -193,7 +193,7 @@ public class TestService extends WebService {
                     next = a;
                 } else {
                     if (i > 1) {
-                        BigInteger c = a.add(b);
+                        var c = a.add(b);
 
                         a = b;
                         b = c;
@@ -241,7 +241,7 @@ public class TestService extends WebService {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
+        var writer = response.getWriter();
 
         writer.append("Unsupported operation.");
         writer.flush();
@@ -254,11 +254,11 @@ public class TestService extends WebService {
         UUID uuid, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-        for (URL attachment : attachments) {
+        for (var attachment : attachments) {
             long bytes = 0;
             long checksum = 0;
 
-            try (InputStream inputStream = attachment.openStream()) {
+            try (var inputStream = attachment.openStream()) {
                 int b;
                 while ((b = inputStream.read()) != -1) {
                     bytes++;
@@ -327,7 +327,7 @@ public class TestService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("headers")
     public Map<String, String> testHeaders() {
-        HttpServletRequest request = getRequest();
+        var request = getRequest();
 
         return mapOf(
             entry("X-Header-A", request.getHeader("X-Header-A")),
@@ -375,7 +375,7 @@ public class TestService extends WebService {
 
     @Override
     protected boolean isAuthorized(HttpServletRequest request, Method method) {
-        String pathInfo = request.getPathInfo();
+        var pathInfo = request.getPathInfo();
 
         return (pathInfo == null || !pathInfo.endsWith("unauthorized"));
     }

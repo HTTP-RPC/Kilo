@@ -132,7 +132,7 @@ public class WebServiceProxyTest {
                 return false;
             }
 
-            Item item = (Item)object;
+            var item = (Item)object;
 
             return id != null && id.equals(item.id)
                 && description != null && description.equals(item.description)
@@ -274,8 +274,8 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMultipartPost() throws IOException {
-        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
-        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
         Response response = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -333,9 +333,9 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomImagePost() throws IOException {
-        URL imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        BufferedImage image = WebServiceProxy.post(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
+        var image = WebServiceProxy.post(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
@@ -343,7 +343,7 @@ public class WebServiceProxyTest {
 
             @Override
             public void encodeRequest(OutputStream outputStream) throws IOException {
-                try (InputStream inputStream = imageTestURL.openStream()) {
+                try (var inputStream = imageTestURL.openStream()) {
                     int b;
                     while ((b = inputStream.read()) != EOF) {
                         outputStream.write(b);
@@ -359,9 +359,9 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPut() throws IOException {
-        URL textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
 
-        String text = WebServiceProxy.put(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
+        var text = WebServiceProxy.put(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
@@ -369,7 +369,7 @@ public class WebServiceProxyTest {
 
             @Override
             public void encodeRequest(OutputStream outputStream) throws IOException {
-                try (InputStream inputStream = textTestURL.openStream()) {
+                try (var inputStream = textTestURL.openStream()) {
                     int b;
                     while ((b = inputStream.read()) != EOF) {
                         outputStream.write(b);
@@ -379,9 +379,9 @@ public class WebServiceProxyTest {
         }).setArguments(mapOf(
             entry("id", 101)
         )).setMonitorStream(System.out).invoke((inputStream, contentType) -> {
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            var inputStreamReader = new InputStreamReader(inputStream);
 
-            StringBuilder textBuilder = new StringBuilder();
+            var textBuilder = new StringBuilder();
 
             int c;
             while ((c = inputStreamReader.read()) != EOF) {
@@ -511,12 +511,12 @@ public class WebServiceProxyTest {
         assertNotNull(seasons);
         assertEquals("Seasons", seasons.getName());
 
-        TreeNode winter = seasons.getChildren().get(0);
+        var winter = seasons.getChildren().get(0);
 
         assertNotNull(winter);
         assertEquals("Winter", winter.getName());
 
-        TreeNode january = winter.getChildren().get(0);
+        var january = winter.getChildren().get(0);
 
         assertNotNull(january);
         assertEquals("January", january.getName());
@@ -560,10 +560,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomException() throws IOException {
-        WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
+        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
-            TextDecoder textDecoder = new TextDecoder();
+            var textDecoder = new TextDecoder();
 
             throw new CustomException(textDecoder.read(errorStream));
         });

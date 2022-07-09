@@ -57,7 +57,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
         reader = new BufferedReader(reader);
 
-        List<String> keys = readValues(reader);
+        var keys = readValues(reader);
 
         if (keys.isEmpty()) {
             throw new IOException("Missing header row.");
@@ -65,19 +65,19 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
         List<Map<String, String>> rows = new ArrayList<>();
 
-        List<String> values = readValues(reader);
+        var values = readValues(reader);
 
         while (!values.isEmpty()) {
             Map<String, String> row = new LinkedHashMap<>();
 
             for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
-                String key = keys.get(i);
+                var key = keys.get(i);
 
                 if (key.isEmpty()) {
                     continue;
                 }
 
-                String value = values.get(i);
+                var value = values.get(i);
 
                 if (value.isEmpty()) {
                     continue;
@@ -97,14 +97,14 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
     private List<String> readValues(Reader reader) throws IOException {
         List<String> values = new LinkedList<>();
 
-        StringBuilder valueBuilder = new StringBuilder();
+        var valueBuilder = new StringBuilder();
 
-        int c = reader.read();
+        var c = reader.read();
 
         while (c != '\r' && c != '\n' && c != EOF) {
             valueBuilder.setLength(0);
 
-            boolean quoted = false;
+            var quoted = false;
 
             if (c == '"') {
                 quoted = true;

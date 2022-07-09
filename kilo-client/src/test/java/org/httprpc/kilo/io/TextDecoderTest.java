@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TextDecoderTest {
     @Test
     public void testRead() throws IOException {
-        StringReader reader = new StringReader("héllo/r/nwørld");
+        var reader = new StringReader("héllo/r/nwørld");
 
-        TextDecoder textDecoder = new TextDecoder();
+        var textDecoder = new TextDecoder();
 
         assertEquals("héllo/r/nwørld", textDecoder.read(reader));
     }

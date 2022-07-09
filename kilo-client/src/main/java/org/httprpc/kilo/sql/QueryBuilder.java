@@ -75,13 +75,13 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        StringBuilder sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder();
 
         sqlBuilder.append("select ");
 
-        QueryBuilder queryBuilder = new QueryBuilder(sqlBuilder);
+        var queryBuilder = new QueryBuilder(sqlBuilder);
 
-        for (int i = 0; i < columns.length; i++) {
+        for (var i = 0; i < columns.length; i++) {
             if (i > 0) {
                 queryBuilder.sqlBuilder.append(", ");
             }
@@ -207,7 +207,7 @@ public class QueryBuilder {
         sqlBuilder.append(clause);
         sqlBuilder.append(" ");
 
-        for (int i = 0; i < predicates.length; i++) {
+        for (var i = 0; i < predicates.length; i++) {
             if (i > 0) {
                 sqlBuilder.append(" ");
             }
@@ -249,7 +249,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
 
         stringBuilder.append(operator);
         stringBuilder.append(" ");
@@ -258,7 +258,7 @@ public class QueryBuilder {
             stringBuilder.append("(");
         }
 
-        for (int i = 0; i < predicates.length; i++) {
+        for (var i = 0; i < predicates.length; i++) {
             if (i > 0) {
                 stringBuilder.append(" ");
             }
@@ -429,7 +429,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        StringBuilder sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder();
 
         sqlBuilder.append("insert into ");
         sqlBuilder.append(table);
@@ -455,9 +455,9 @@ public class QueryBuilder {
 
         List<String> columns = new ArrayList<>(values.keySet());
 
-        int n = columns.size();
+        var n = columns.size();
 
-        for (int i = 0; i < n; i++) {
+        for (var i = 0; i < n; i++) {
             if (i > 0) {
                 sqlBuilder.append(", ");
             }
@@ -467,7 +467,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(") values (");
 
-        for (int i = 0; i < n; i++) {
+        for (var i = 0; i < n; i++) {
             if (i > 0) {
                 sqlBuilder.append(", ");
             }
@@ -494,7 +494,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        StringBuilder sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder();
 
         sqlBuilder.append("update ");
         sqlBuilder.append(table);
@@ -518,7 +518,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(" set ");
 
-        int i = 0;
+        var i = 0;
 
         for (Map.Entry<String, ?> entry : values.entrySet()) {
             if (i > 0) {
@@ -550,7 +550,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        StringBuilder sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder();
 
         sqlBuilder.append("delete from ");
         sqlBuilder.append(table);
@@ -594,25 +594,25 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        try (PreparedStatement statement = prepare(connection)) {
+        try (var statement = prepare(connection)) {
             apply(statement, arguments);
 
             if (statement.execute()) {
-                try (ResultSetAdapter resultSetAdapter = new ResultSetAdapter(statement.getResultSet())) {
+                try (var resultSetAdapter = new ResultSetAdapter(statement.getResultSet())) {
                     results = resultSetAdapter.stream().collect(Collectors.toList());
                 }
             } else {
                 updateCount = statement.getUpdateCount();
 
-                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                try (var generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        ResultSetMetaData generatedKeysMetaData = generatedKeys.getMetaData();
+                        var generatedKeysMetaData = generatedKeys.getMetaData();
 
-                        int n = generatedKeysMetaData.getColumnCount();
+                        var n = generatedKeysMetaData.getColumnCount();
 
                         this.generatedKeys = new ArrayList<>(n);
 
-                        for (int i = 0; i < n; i++) {
+                        for (var i = 0; i < n; i++) {
                             this.generatedKeys.add(generatedKeys.getObject(i + 1));
                         }
                     } else {
@@ -761,9 +761,9 @@ public class QueryBuilder {
             throw new IllegalStateException();
         }
 
-        int i = 1;
+        var i = 1;
 
-        for (String parameter : parameters) {
+        for (var parameter : parameters) {
             if (parameter == null) {
                 continue;
             }
@@ -793,16 +793,16 @@ public class QueryBuilder {
     }
 
     private void append(String sql) {
-        boolean quoted = false;
+        var quoted = false;
 
-        int n = sql.length();
-        int i = 0;
+        var n = sql.length();
+        var i = 0;
 
         while (i < n) {
-            char c = sql.charAt(i++);
+            var c = sql.charAt(i++);
 
             if (c == ':' && !quoted) {
-                StringBuilder parameterBuilder = new StringBuilder();
+                var parameterBuilder = new StringBuilder();
 
                 while (i < n) {
                     c = sql.charAt(i);
@@ -839,23 +839,23 @@ public class QueryBuilder {
 
     private void encode(Object value) {
         if (value instanceof String) {
-            String string = (String)value;
+            var string = (String)value;
 
             if (string.equals("?")) {
                 parameters.add(null);
 
                 sqlBuilder.append(string);
             } else if (string.startsWith(":")) {
-                int n = string.length();
+                var n = string.length();
 
                 if (n == 1) {
                     throw new IllegalArgumentException("Missing parameter name.");
                 }
 
-                StringBuilder parameterBuilder = new StringBuilder(n - 1);
+                var parameterBuilder = new StringBuilder(n - 1);
 
-                for (int i = 1; i < n; i++) {
-                    char c = string.charAt(i);
+                for (var i = 1; i < n; i++) {
+                    var c = string.charAt(i);
 
                     if (!Character.isJavaIdentifierPart(c)) {
                         throw new IllegalArgumentException("Invalid parameter name.");
@@ -871,7 +871,7 @@ public class QueryBuilder {
                 sqlBuilder.append("'");
 
                 for (int i = 0, n = string.length(); i < n; i++) {
-                    char c = string.charAt(i);
+                    var c = string.charAt(i);
 
                     if (c == '\'') {
                         sqlBuilder.append(c);
@@ -883,7 +883,7 @@ public class QueryBuilder {
                 sqlBuilder.append("'");
             }
         } else if (value instanceof QueryBuilder) {
-            QueryBuilder queryBuilder = (QueryBuilder)value;
+            var queryBuilder = (QueryBuilder)value;
 
             sqlBuilder.append("(");
             sqlBuilder.append(queryBuilder.getSQL());
@@ -897,15 +897,15 @@ public class QueryBuilder {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
 
-        Iterator<String> parameterIterator = parameters.iterator();
+        var parameterIterator = parameters.iterator();
 
         for (int i = 0, n = sqlBuilder.length(); i < n; i++) {
-            char c = sqlBuilder.charAt(i);
+            var c = sqlBuilder.charAt(i);
 
             if (c == '?') {
-                String parameter = parameterIterator.next();
+                var parameter = parameterIterator.next();
 
                 if (parameter == null) {
                     stringBuilder.append(c);

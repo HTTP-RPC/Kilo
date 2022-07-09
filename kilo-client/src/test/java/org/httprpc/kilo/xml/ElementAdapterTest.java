@@ -41,20 +41,20 @@ public class ElementAdapterTest {
     }
 
     private void testElementAdapter(boolean namespaceAware, String fileName) throws Exception {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         documentBuilderFactory.setExpandEntityReferences(false);
         documentBuilderFactory.setIgnoringComments(true);
         documentBuilderFactory.setNamespaceAware(namespaceAware);
 
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
         Document document;
-        try (InputStream inputStream = getClass().getResourceAsStream(fileName)) {
+        try (var inputStream = getClass().getResourceAsStream(fileName)) {
             document = documentBuilder.parse(inputStream);
         }
 
-        ElementAdapter elementAdapter = new ElementAdapter(document.getDocumentElement(), namespaceAware);
+        var elementAdapter = new ElementAdapter(document.getDocumentElement(), namespaceAware);
 
         testUntypedAccess(elementAdapter, namespaceAware);
         testTypedAccess(elementAdapter, namespaceAware);
@@ -69,7 +69,7 @@ public class ElementAdapterTest {
 
         assertTrue(elementAdapter.containsKey("map"));
 
-        Map<String, ?> map = (Map<String, ?>)elementAdapter.get("map");
+        var map = (Map<String, ?>)elementAdapter.get("map");
 
         assertEquals(namespaceAware, map.containsKey(":"));
 
@@ -87,7 +87,7 @@ public class ElementAdapterTest {
 
         assertTrue(map.containsKey("list"));
 
-        Map<String, ?> list = (Map<String, ?>)map.get("list");
+        var list = (Map<String, ?>)map.get("list");
 
         if (namespaceAware) {
             assertEquals("y", list.get(":"));
@@ -99,11 +99,11 @@ public class ElementAdapterTest {
 
         assertTrue(list.containsKey("item*"));
 
-        List<?> items = (List<?>)list.get("item*");
+        var items = (List<?>)list.get("item*");
 
         assertEquals(3, items.size());
 
-        Map<String, ?> item1 = (Map<String, ?>)items.get(0);
+        var item1 = (Map<String, ?>)items.get(0);
 
         if (namespaceAware) {
             assertEquals("z", item1.get(":"));
@@ -114,19 +114,19 @@ public class ElementAdapterTest {
         assertEquals("1", item1.get("@d"));
         assertEquals("abc", item1.toString());
 
-        Map<String, ?> item2 = (Map<String, ?>)items.get(1);
+        var item2 = (Map<String, ?>)items.get(1);
 
         assertEquals("2", item2.get("@d"));
         assertEquals("déf", item2.toString());
 
-        Map<String, ?> item3 = (Map<String, ?>)items.get(2);
+        var item3 = (Map<String, ?>)items.get(2);
 
         assertEquals("3", item3.get("@d"));
         assertEquals("ghi", item3.toString());
 
         assertTrue(list.containsKey("xyz*"));
 
-        List<?> xyz = (List<?>)list.get("xyz*");
+        var xyz = (List<?>)list.get("xyz*");
 
         assertTrue(xyz.isEmpty());
     }
@@ -136,7 +136,7 @@ public class ElementAdapterTest {
 
         assertEquals("A", testInterface.getA());
 
-        TestInterface.MapInterface map = testInterface.getMap();
+        var map = testInterface.getMap();
 
         if (namespaceAware) {
             assertEquals("x", map.getNamespaceURI());
@@ -147,7 +147,7 @@ public class ElementAdapterTest {
         assertEquals("B", map.getB1());
         assertEquals("two", map.getB2());
 
-        TestInterface.ListInterface list = map.getList();
+        var list = map.getList();
 
         if (namespaceAware) {
             assertEquals("y", list.getNamespaceURI());
@@ -157,7 +157,7 @@ public class ElementAdapterTest {
 
         assertEquals("C", list.getC());
 
-        List<String> stringItems = list.getStringItems();
+        var stringItems = list.getStringItems();
 
         assertEquals(3, stringItems.size());
 
@@ -165,7 +165,7 @@ public class ElementAdapterTest {
         assertEquals("déf", stringItems.get(1));
         assertEquals("ghi", stringItems.get(2));
 
-        List<Map<String, Object>> mapItems = list.getMapItems();
+        var mapItems = list.getMapItems();
 
         assertEquals(3, mapItems.size());
 

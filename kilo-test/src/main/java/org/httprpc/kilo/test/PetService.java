@@ -51,9 +51,9 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     public List<Pet> getPets(String owner) throws SQLException {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
+        var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-        List<Map<String, Object>> results = queryBuilder.execute(getConnection(), mapOf(
+        var results = queryBuilder.execute(getConnection(), mapOf(
             entry("owner", owner)
         )).getResults();
 
@@ -62,16 +62,16 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     public void getPets(String owner, String format) throws SQLException, IOException {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
+        var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-        try (PreparedStatement statement = queryBuilder.prepare(getConnection());
-            ResultSetAdapter results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+        try (var statement = queryBuilder.prepare(getConnection());
+             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             )))) {
             if (format.equals("csv")) {
                 getResponse().setContentType("text/csv");
 
-                CSVEncoder csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
+                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
                 csvEncoder.setLabels(mapOf(
                     entry("name", "Name"),
@@ -89,9 +89,9 @@ public class PetService extends AbstractDatabaseService {
             } else if (format.equals("html")) {
                 getResponse().setContentType("text/html");
 
-                TemplateEncoder templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
+                var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
 
                 templateEncoder.write(mapOf(
                     entry("headings", new ResourceBundleAdapter(resourceBundle)),
@@ -106,12 +106,12 @@ public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
-        String sql = QueryBuilder.select("birth").from("pet").toString();
+        var sql = QueryBuilder.select("birth").from("pet").toString();
 
         double averageAge;
-        try (Statement statement = getConnection().createStatement();
-            ResultSetAdapter results = new ResultSetAdapter(statement.executeQuery(sql))) {
-            Date now = new Date();
+        try (var statement = getConnection().createStatement();
+             var results = new ResultSetAdapter(statement.executeQuery(sql))) {
+            var now = new Date();
 
             averageAge = results.stream()
                 .map(result -> (Pet)BeanAdapter.coerce(result, Pet.class))

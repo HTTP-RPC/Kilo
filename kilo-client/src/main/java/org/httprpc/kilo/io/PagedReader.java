@@ -81,10 +81,10 @@ class PagedReader extends Reader {
     @Override
     @SuppressWarnings("java:S1994")
     public int read(char[] cbuf, int off, int len) throws IOException {
-        int c = 0;
-        int n = 0;
+        var c = 0;
+        var n = 0;
 
-        for (int i = off; i < cbuf.length && n < len; i++) {
+        for (var i = off; i < cbuf.length && n < len; i++) {
             c = read();
 
             if (c == EOF) {

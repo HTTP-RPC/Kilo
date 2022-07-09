@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class QueryBuilderTest {
     @Test
     public void testSelect() {
-        QueryBuilder queryBuilder = QueryBuilder.select(":a as a", "b", "c", "d")
+        var queryBuilder = QueryBuilder.select(":a as a", "b", "c", "d")
             .from("A")
             .join("B").on("A.id = B.id", and("x = 50"))
             .leftJoin("C").on("B.id = C.id", and("b = :b"))
@@ -57,7 +57,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testInsertInto() {
-        QueryBuilder queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
+        var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
             entry("b", true),
             entry("c", "hello"),
@@ -73,7 +73,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdate() {
-        QueryBuilder queryBuilder = QueryBuilder.update("A").set(mapOf(
+        var queryBuilder = QueryBuilder.update("A").set(mapOf(
             entry("a", 1),
             entry("b", true),
             entry("c", "hello"),
@@ -89,14 +89,14 @@ public class QueryBuilderTest {
 
     @Test
     public void testDelete() {
-        QueryBuilder queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
+        var queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
 
         assertEquals("delete from A where a < 150", queryBuilder.getSQL());
     }
 
     @Test
     public void testInConditional() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*")
+        var queryBuilder = QueryBuilder.select("*")
             .from("B")
             .where("c", in(
                 QueryBuilder.select("c").from("C").where("d = :d")
@@ -107,7 +107,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testNotInConditional() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("D").where("e", notIn(
+        var queryBuilder = QueryBuilder.select("*").from("D").where("e", notIn(
                 QueryBuilder.select("e").from("E")
             ));
 
@@ -116,7 +116,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testExistsConditional() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*")
+        var queryBuilder = QueryBuilder.select("*")
             .from("B")
             .where(exists(
                 QueryBuilder.select("c").from("C").where("d = :d")
@@ -127,7 +127,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testNotExistsConditional() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("D").where("e", notExists(
+        var queryBuilder = QueryBuilder.select("*").from("D").where("e", notExists(
             QueryBuilder.select("e").from("E")
         ));
 
@@ -136,7 +136,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testExistingSQL() {
-        QueryBuilder queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
+        var queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
 
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
@@ -145,14 +145,14 @@ public class QueryBuilderTest {
 
     @Test
     public void testQuotedColon() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
+        var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
 
         assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.getSQL());
     }
 
     @Test
     public void testQuotedQuestionMark() {
-        QueryBuilder queryBuilder = QueryBuilder.select("'?' as q").from("xyz");
+        var queryBuilder = QueryBuilder.select("'?' as q").from("xyz");
 
         assertEquals("select '?' as q from xyz", queryBuilder.getSQL());
     }
@@ -164,7 +164,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testEscapedQuotes() {
-        QueryBuilder queryBuilder = QueryBuilder.select("xyz.*", "''':z' as z").from("xyz").where("foo = 'a''b'':c'''", and("bar = ''''"));
+        var queryBuilder = QueryBuilder.select("xyz.*", "''':z' as z").from("xyz").where("foo = 'a''b'':c'''", and("bar = ''''"));
 
         assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.getSQL());
     }
@@ -190,7 +190,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testToString() {
-        QueryBuilder queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a", and("bar = :b", or("bar = :c")));
+        var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a", and("bar = :b", or("bar = :c")));
 
         assertEquals("select * from xyz where foo = :a and (bar = :b or bar = :c)", queryBuilder.toString());
     }

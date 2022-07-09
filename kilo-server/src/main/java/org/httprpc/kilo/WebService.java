@@ -614,8 +614,8 @@ public abstract class WebService extends HttpServlet {
         static List<String> order = listOf("get", "post", "put", "delete");
 
         final Map<String, List<Handler>> handlerMap = new TreeMap<>((verb1, verb2) -> {
-            int i1 = order.indexOf(verb1);
-            int i2 = order.indexOf(verb2);
+            var i1 = order.indexOf(verb1);
+            var i2 = order.indexOf(verb2);
 
             return Integer.compare((i1 == -1) ? order.size() : i1, (i2 == -1) ? order.size() : i2);
         });
@@ -715,17 +715,17 @@ public abstract class WebService extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        Class<? extends WebService> type = getClass();
+        var type = getClass();
 
-        WebServlet webServlet = type.getAnnotation(WebServlet.class);
+        var webServlet = type.getAnnotation(WebServlet.class);
 
-        String[] urlPatterns = webServlet.urlPatterns();
+        var urlPatterns = webServlet.urlPatterns();
 
         if (urlPatterns.length == 0) {
             throw new ServletException("At least one URL pattern is required.");
         }
 
-        String path = urlPatterns[0];
+        var path = urlPatterns[0];
 
         if (!path.startsWith("/") && (path.length() == 1 || path.endsWith("/*"))) {
             throw new ServletException("Invalid URL pattern.");
@@ -735,32 +735,32 @@ public abstract class WebService extends HttpServlet {
 
         root = new Resource();
 
-        Method[] methods = getClass().getMethods();
+        var methods = getClass().getMethods();
 
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+        for (var i = 0; i < methods.length; i++) {
+            var method = methods[i];
 
-            RequestMethod requestMethod = method.getAnnotation(RequestMethod.class);
+            var requestMethod = method.getAnnotation(RequestMethod.class);
 
             if (requestMethod != null) {
-                Handler handler = new Handler(method);
+                var handler = new Handler(method);
 
-                Resource resource = root;
+                var resource = root;
 
-                ResourcePath resourcePath = method.getAnnotation(ResourcePath.class);
+                var resourcePath = method.getAnnotation(ResourcePath.class);
 
                 if (resourcePath != null) {
-                    String[] components = resourcePath.value().split("/");
+                    var components = resourcePath.value().split("/");
 
-                    for (int j = 0; j < components.length; j++) {
-                        String component = components[j];
+                    for (var j = 0; j < components.length; j++) {
+                        var component = components[j];
 
                         if (component.length() == 0) {
                             continue;
                         }
 
                         if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
-                            int k = ResourcePath.PATH_VARIABLE_PREFIX.length();
+                            var k = ResourcePath.PATH_VARIABLE_PREFIX.length();
 
                             String key;
                             if (component.length() > k) {
@@ -778,7 +778,7 @@ public abstract class WebService extends HttpServlet {
                             handler.keys.add(key);
                         }
 
-                        Resource child = resource.resources.get(component);
+                        var child = resource.resources.get(component);
 
                         if (child == null) {
                             child = new Resource();
@@ -790,9 +790,9 @@ public abstract class WebService extends HttpServlet {
                     }
                 }
 
-                String verb = requestMethod.value().toLowerCase();
+                var verb = requestMethod.value().toLowerCase();
 
-                List<Handler> handlerList = resource.handlerMap.get(verb);
+                var handlerList = resource.handlerMap.get(verb);
 
                 if (handlerList == null) {
                     handlerList = new LinkedList<>();
@@ -818,11 +818,11 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static void sort(Resource root) {
-        for (List<Handler> handlers : root.handlerMap.values()) {
+        for (var handlers : root.handlerMap.values()) {
             handlers.sort(Comparator.comparing(handler -> handler.method.getName()));
         }
 
-        for (Resource resource : root.resources.values()) {
+        for (var resource : root.resources.values()) {
             sort(resource);
         }
     }
@@ -830,18 +830,18 @@ public abstract class WebService extends HttpServlet {
     @Override
     @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String verb = request.getMethod().toLowerCase();
-        String pathInfo = request.getPathInfo();
+        var verb = request.getMethod().toLowerCase();
+        var pathInfo = request.getPathInfo();
 
         if (verb.equals("get") && pathInfo == null) {
-            String api = request.getParameter("api");
+            var api = request.getParameter("api");
 
             if (api != null) {
                 response.setContentType(String.format("text/html;charset=%s", UTF_8));
 
-                TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+                var templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
 
-                ResourceBundle resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
+                var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
 
                 templateEncoder.write(mapOf(
                     entry("labels", new ResourceBundleAdapter(resourceBundle)),
@@ -850,21 +850,21 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        Resource resource = root;
+        var resource = root;
 
         List<String> keyList = new ArrayList<>();
 
         if (pathInfo != null) {
-            String[] components = pathInfo.split("/");
+            var components = pathInfo.split("/");
 
-            for (int i = 0; i < components.length; i++) {
-                String component = components[i];
+            for (var i = 0; i < components.length; i++) {
+                var component = components[i];
 
                 if (component.length() == 0) {
                     continue;
                 }
 
-                Resource child = resource.resources.get(component);
+                var child = resource.resources.get(component);
 
                 if (child == null) {
                     child = resource.resources.get(ResourcePath.PATH_VARIABLE_PREFIX);
@@ -881,7 +881,7 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        List<Handler> handlerList = resource.handlerMap.get(verb);
+        var handlerList = resource.handlerMap.get(verb);
 
         if (handlerList == null) {
             super.service(request, response);
@@ -894,27 +894,27 @@ public abstract class WebService extends HttpServlet {
 
         Map<String, List<?>> parameterMap = new HashMap<>();
 
-        Enumeration<String> parameterNames = request.getParameterNames();
+        var parameterNames = request.getParameterNames();
 
         while (parameterNames.hasMoreElements()) {
-            String name = parameterNames.nextElement();
+            var name = parameterNames.nextElement();
 
             parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
         }
 
-        String contentType = request.getContentType();
+        var contentType = request.getContentType();
 
         if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            for (Part part : request.getParts()) {
-                String submittedFileName = part.getSubmittedFileName();
+            for (var part : request.getParts()) {
+                var submittedFileName = part.getSubmittedFileName();
 
                 if (submittedFileName == null || submittedFileName.length() == 0) {
                     continue;
                 }
 
-                String name = part.getName();
+                var name = part.getName();
 
-                List<URL> values = (List<URL>)parameterMap.get(name);
+                var values = (List<URL>)parameterMap.get(name);
 
                 if (values == null) {
                     values = new ArrayList<>();
@@ -926,7 +926,7 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        Handler handler = getHandler(handlerList, parameterMap);
+        var handler = getHandler(handlerList, parameterMap);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -941,7 +941,7 @@ public abstract class WebService extends HttpServlet {
         Map<String, String> keyMap = new HashMap<>();
 
         for (int i = 0, n = keyList.size(); i < n; i++) {
-            String key = handler.keys.get(i);
+            var key = handler.keys.get(i);
 
             if (key != null) {
                 keyMap.put(key, keyList.get(i));
@@ -956,7 +956,7 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        Content content = handler.method.getAnnotation(Content.class);
+        var content = handler.method.getAnnotation(Content.class);
 
         Object body;
         if (content != null) {
@@ -986,7 +986,7 @@ public abstract class WebService extends HttpServlet {
                 throw new ServletException(exception);
             }
 
-            Throwable cause = exception.getCause();
+            var cause = exception.getCause();
 
             if (cause == null) {
                 throw new ServletException(exception);
@@ -1005,12 +1005,12 @@ public abstract class WebService extends HttpServlet {
 
             response.setStatus(status);
 
-            String message = cause.getMessage();
+            var message = cause.getMessage();
 
             if (message != null) {
                 response.setContentType(String.format("text/plain;charset=%s", UTF_8));
 
-                PrintWriter writer = response.getWriter();
+                var writer = response.getWriter();
 
                 writer.append(message);
 
@@ -1032,7 +1032,7 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        Class<?> returnType = handler.method.getReturnType();
+        var returnType = handler.method.getReturnType();
 
         if (returnType == Void.TYPE || returnType == Void.class) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -1046,18 +1046,18 @@ public abstract class WebService extends HttpServlet {
     private static Handler getHandler(List<Handler> handlerList, Map<String, List<?>> parameterMap) {
         Handler handler = null;
 
-        int n = parameterMap.size();
+        var n = parameterMap.size();
 
-        int i = Integer.MAX_VALUE;
+        var i = Integer.MAX_VALUE;
 
-        for (Handler option : handlerList) {
-            Parameter[] parameters = option.method.getParameters();
+        for (var option : handlerList) {
+            var parameters = option.method.getParameters();
 
             if (parameters.length >= n) {
-                int j = 0;
+                var j = 0;
 
-                for (int k = 0; k < parameters.length; k++) {
-                    String name = parameters[k].getName();
+                for (var k = 0; k < parameters.length; k++) {
+                    var name = parameters[k].getName();
 
                     if (!(parameterMap.containsKey(name))) {
                         j++;
@@ -1076,20 +1076,20 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static Object[] getArguments(Method method, Map<String, List<?>> parameterMap) {
-        Parameter[] parameters = method.getParameters();
+        var parameters = method.getParameters();
 
-        Object[] arguments = new Object[parameters.length];
+        var arguments = new Object[parameters.length];
 
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
+        for (var i = 0; i < parameters.length; i++) {
+            var parameter = parameters[i];
 
-            List<?> values = parameterMap.get(parameter.getName());
+            var values = parameterMap.get(parameter.getName());
 
-            Class<?> type = parameter.getType();
+            var type = parameter.getType();
 
             Object argument;
             if (type == List.class) {
-                Type elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
                 List<Object> list;
                 if (values != null) {
@@ -1251,13 +1251,13 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
-        String contentType = request.getContentType();
+        var contentType = request.getContentType();
 
         if (contentType != null && !contentType.startsWith("application/json")) {
             throw new UnsupportedOperationException();
         }
 
-        JSONDecoder jsonDecoder = new JSONDecoder();
+        var jsonDecoder = new JSONDecoder();
 
         return BeanAdapter.coerce(jsonDecoder.read(request.getInputStream()), type);
     }
@@ -1277,7 +1277,7 @@ public abstract class WebService extends HttpServlet {
     protected void encodeResult(HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format("application/json;charset=%s", UTF_8));
 
-        JSONEncoder jsonEncoder = new JSONEncoder(isCompact());
+        var jsonEncoder = new JSONEncoder(isCompact());
 
         jsonEncoder.write(BeanAdapter.adapt(result), response.getOutputStream());
     }
@@ -1305,13 +1305,13 @@ public abstract class WebService extends HttpServlet {
 
     private void describeResource(String path, Resource resource) {
         if (!resource.handlerMap.isEmpty()) {
-            EndpointDescriptor endpoint = new EndpointDescriptor(path);
+            var endpoint = new EndpointDescriptor(path);
 
-            for (Map.Entry<String, List<Handler>> entry : resource.handlerMap.entrySet()) {
-                for (Handler handler : entry.getValue()) {
-                    OperationDescriptor operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
+            for (var entry : resource.handlerMap.entrySet()) {
+                for (var handler : entry.getValue()) {
+                    var operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
 
-                    Content content = handler.method.getAnnotation(Content.class);
+                    var content = handler.method.getAnnotation(Content.class);
 
                     if (content != null) {
                         operation.consumes = describeType(content.value());
@@ -1319,12 +1319,12 @@ public abstract class WebService extends HttpServlet {
 
                     operation.produces = describeType(handler.method.getGenericReturnType());
 
-                    Parameter[] parameters = handler.method.getParameters();
+                    var parameters = handler.method.getParameters();
 
-                    for (int i = 0; i < parameters.length; i++) {
-                        Parameter parameter = parameters[i];
+                    for (var i = 0; i < parameters.length; i++) {
+                        var parameter = parameters[i];
 
-                        VariableDescriptor parameterDescriptor = new VariableDescriptor(parameter);
+                        var parameterDescriptor = new VariableDescriptor(parameter);
 
                         parameterDescriptor.type = describeType(parameter.getParameterizedType());
 
@@ -1338,7 +1338,7 @@ public abstract class WebService extends HttpServlet {
             serviceDescriptor.endpoints.add(endpoint);
         }
 
-        for (Map.Entry<String, Resource> entry : resource.resources.entrySet()) {
+        for (var entry : resource.resources.entrySet()) {
             describeResource(path + "/" + entry.getKey(), entry.getValue());
         }
     }
@@ -1347,10 +1347,10 @@ public abstract class WebService extends HttpServlet {
         if (type instanceof Class<?>) {
             return describeType((Class<?>)type);
         } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType)type;
+            var parameterizedType = (ParameterizedType)type;
 
-            Type rawType = parameterizedType.getRawType();
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            var rawType = parameterizedType.getRawType();
+            var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType instanceof Class<?> && Iterable.class.isAssignableFrom((Class<?>)rawType)) {
                 return new IterableTypeDescriptor(describeType(actualTypeArguments[0]));
@@ -1391,17 +1391,17 @@ public abstract class WebService extends HttpServlet {
             return describeType(BeanAdapter.typeOf(Map.class, Object.class, Object.class));
         } else {
             if (type.isEnum()) {
-                EnumerationDescriptor enumeration = serviceDescriptor.enumerations.get(type);
+                var enumeration = serviceDescriptor.enumerations.get(type);
 
                 if (enumeration == null) {
                     enumeration = new EnumerationDescriptor(type);
 
                     serviceDescriptor.enumerations.put(type, enumeration);
 
-                    Field[] fields = type.getDeclaredFields();
+                    var fields = type.getDeclaredFields();
 
-                    for (int i = 0; i < fields.length; i++) {
-                        Field field = fields[i];
+                    for (var i = 0; i < fields.length; i++) {
+                        var field = fields[i];
 
                         if (!field.isEnumConstant()) {
                             continue;
@@ -1411,7 +1411,7 @@ public abstract class WebService extends HttpServlet {
                     }
                 }
             } else {
-                StructureDescriptor structure = serviceDescriptor.structures.get(type);
+                var structure = serviceDescriptor.structures.get(type);
 
                 if (structure == null) {
                     structure = new StructureDescriptor(type);
@@ -1419,27 +1419,27 @@ public abstract class WebService extends HttpServlet {
                     serviceDescriptor.structures.put(type, structure);
 
                     if (type.isInterface()) {
-                        Class<?>[] interfaces = type.getInterfaces();
+                        var interfaces = type.getInterfaces();
 
-                        for (int i = 0; i < interfaces.length; i++) {
+                        for (var i = 0; i < interfaces.length; i++) {
                             structure.supertypes.add(describeType(interfaces[i]));
                         }
                     } else {
-                        Class<?> baseType = type.getSuperclass();
+                        var baseType = type.getSuperclass();
 
                         if (baseType != Object.class) {
                             structure.supertypes.add(describeType(baseType));
                         }
                     }
 
-                    for (Map.Entry<String, BeanAdapter.Property> entry : BeanAdapter.getProperties(type).entrySet()) {
-                        Method accessor = entry.getValue().getAccessor();
+                    for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+                        var accessor = entry.getValue().getAccessor();
 
                         if (accessor == null || accessor.getDeclaringClass() != type) {
                             continue;
                         }
 
-                        VariableDescriptor propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
+                        var propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
 
                         propertyDescriptor.type = describeType(accessor.getGenericReturnType());
 

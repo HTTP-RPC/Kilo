@@ -37,8 +37,8 @@ public class Optionals {
      */
     @SafeVarargs
     public static <T> T coalesce(T... values) {
-        for (int i = 0; i < values.length; i++) {
-            T value = values[i];
+        for (var i = 0; i < values.length; i++) {
+            var value = values[i];
 
             if (value != null) {
                 return value;

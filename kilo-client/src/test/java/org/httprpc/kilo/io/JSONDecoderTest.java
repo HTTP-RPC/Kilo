@@ -94,7 +94,7 @@ public class JSONDecoderTest {
     }
 
     private static <T> T decode(String text) throws IOException {
-        JSONDecoder jsonDecoder = new JSONDecoder();
+        var jsonDecoder = new JSONDecoder();
 
         return jsonDecoder.read(new StringReader(text));
     }

@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TextEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        StringWriter writer = new StringWriter();
+        var writer = new StringWriter();
 
-        TextEncoder textEncoder = new TextEncoder();
+        var textEncoder = new TextEncoder();
 
         textEncoder.write("héllo/r/nwørld", writer);
 

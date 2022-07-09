@@ -33,7 +33,8 @@ public abstract class AbstractDatabaseService extends WebService {
     static {
         try {
             Context initialCtx = new InitialContext();
-            Context environmentContext = (Context)initialCtx.lookup("java:comp/env");
+
+            var environmentContext = (Context)initialCtx.lookup("java:comp/env");
 
             dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
         } catch (NamingException exception) {

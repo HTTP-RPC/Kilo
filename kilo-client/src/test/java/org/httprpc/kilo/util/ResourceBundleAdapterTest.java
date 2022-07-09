@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ResourceBundleAdapterTest {
     @Test
     public void testResourceBundleAdapter() {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".test");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".test");
 
-        ResourceBundleAdapter resourceBundleAdapter = new ResourceBundleAdapter(resourceBundle);
+        var resourceBundleAdapter = new ResourceBundleAdapter(resourceBundle);
 
         assertTrue(resourceBundleAdapter.containsKey("a"));
 

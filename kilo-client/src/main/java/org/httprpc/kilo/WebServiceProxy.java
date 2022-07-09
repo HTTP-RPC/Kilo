@@ -161,7 +161,7 @@ public class WebServiceProxy {
 
         @Override
         public int read() throws IOException {
-            int b = inputStream.read();
+            var b = inputStream.read();
 
             if (monitorStream != null && b != -1) {
                 monitorStream.write(b);
@@ -230,7 +230,7 @@ public class WebServiceProxy {
     private static final ErrorHandler defaultErrorHandler = (errorStream, contentType, statusCode) -> {
         String message;
         if (contentType != null && contentType.startsWith("text/")) {
-            TextDecoder textDecoder = new TextDecoder();
+            var textDecoder = new TextDecoder();
 
             message = textDecoder.read(errorStream);
         } else {
@@ -574,7 +574,7 @@ public class WebServiceProxy {
      */
     public <T> T invoke(Type type) throws IOException {
         return invoke((inputStream, contentType) -> {
-            JSONDecoder jsonDecoder = new JSONDecoder();
+            var jsonDecoder = new JSONDecoder();
 
             return BeanAdapter.coerce(jsonDecoder.read(inputStream), type);
         });
@@ -648,7 +648,7 @@ public class WebServiceProxy {
                 }
             };
         } else {
-            String query = encodeQuery();
+            var query = encodeQuery();
 
             if (query.length() == 0) {
                 url = this.url;
@@ -665,7 +665,7 @@ public class WebServiceProxy {
 
                     @Override
                     public void encodeRequest(OutputStream outputStream) throws IOException {
-                        JSONEncoder jsonEncoder = new JSONEncoder();
+                        var jsonEncoder = new JSONEncoder();
 
                         jsonEncoder.write(BeanAdapter.adapt(body), outputStream);
                     }
@@ -680,7 +680,7 @@ public class WebServiceProxy {
         }
 
         // Open URL connection
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        var connection = (HttpURLConnection)url.openConnection();
 
         connection.setRequestMethod(method);
 
@@ -690,7 +690,7 @@ public class WebServiceProxy {
         // Set standard headers
         connection.setRequestProperty("Accept", "*/*");
 
-        Locale locale = Locale.getDefault();
+        var locale = Locale.getDefault();
 
         connection.setRequestProperty("Accept-Language", String.format("%s-%s",
             locale.getLanguage().toLowerCase(),
@@ -698,8 +698,8 @@ public class WebServiceProxy {
 
         // Apply custom headers
         for (Map.Entry<String, ?> entry : headers.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
+            var key = entry.getKey();
+            var value = entry.getValue();
 
             if (key == null || value == null) {
                 continue;
@@ -712,7 +712,7 @@ public class WebServiceProxy {
         if (requestHandler != null) {
             connection.setDoOutput(true);
 
-            String contentType = requestHandler.getContentType();
+            var contentType = requestHandler.getContentType();
 
             if (contentType == null) {
                 contentType = "application/octet-stream";
@@ -731,13 +731,13 @@ public class WebServiceProxy {
         }
 
         // Read response
-        int statusCode = connection.getResponseCode();
+        var statusCode = connection.getResponseCode();
 
         if (monitorStream != null) {
             monitorStream.println(String.format("HTTP %d", statusCode));
         }
 
-        String contentType = connection.getContentType();
+        var contentType = connection.getContentType();
 
         T result;
         if (statusCode / 100 == 2) {
@@ -758,13 +758,13 @@ public class WebServiceProxy {
                 result = null;
             }
         } else {
-            ErrorHandler errorHandler = this.errorHandler;
+            var errorHandler = this.errorHandler;
 
             if (errorHandler == null) {
                 errorHandler = defaultErrorHandler;
             }
 
-            try (InputStream errorStream = connection.getErrorStream()) {
+            try (var errorStream = connection.getErrorStream()) {
                 errorHandler.handleResponse((errorStream == null) ? null : new MonitoredInputStream(errorStream), contentType, statusCode);
             } finally {
                 if (monitorStream != null) {
@@ -780,18 +780,18 @@ public class WebServiceProxy {
     }
 
     private String encodeQuery() {
-        StringBuilder queryBuilder = new StringBuilder(256);
+        var queryBuilder = new StringBuilder(256);
 
-        int i = 0;
+        var i = 0;
 
         for (Map.Entry<String, ?> entry : arguments.entrySet()) {
-            String key = entry.getKey();
+            var key = entry.getKey();
 
             if (key == null) {
                 continue;
             }
 
-            for (Object value : getParameterValues(entry.getValue())) {
+            for (var value : getParameterValues(entry.getValue())) {
                 if (value == null) {
                     continue;
                 }
@@ -812,7 +812,7 @@ public class WebServiceProxy {
     }
 
     private void encodeApplicationXWWWFormURLEncodedRequest(OutputStream outputStream) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
 
         writer.append(encodeQuery());
 
@@ -820,16 +820,16 @@ public class WebServiceProxy {
     }
 
     private void encodeMultipartFormDataRequest(OutputStream outputStream) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
 
         for (Map.Entry<String, ?> entry : arguments.entrySet()) {
-            String name = entry.getKey();
+            var name = entry.getKey();
 
             if (name == null) {
                 continue;
             }
 
-            for (Object value : getParameterValues(entry.getValue())) {
+            for (var value : getParameterValues(entry.getValue())) {
                 if (value == null) {
                     continue;
                 }
@@ -838,15 +838,15 @@ public class WebServiceProxy {
                 writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
 
                 if (value instanceof URL) {
-                    String path = ((URL)value).getPath();
-                    String filename = path.substring(path.lastIndexOf('/') + 1);
+                    var path = ((URL)value).getPath();
+                    var filename = path.substring(path.lastIndexOf('/') + 1);
 
                     writer.append(String.format("; filename=\"%s\"\r\n", filename));
                     writer.append("Content-Type: application/octet-stream\r\n\r\n");
 
                     writer.flush();
 
-                    try (InputStream inputStream = ((URL)value).openStream()) {
+                    try (var inputStream = ((URL)value).openStream()) {
                         int b;
                         while ((b = inputStream.read()) != EOF) {
                             outputStream.write(b);

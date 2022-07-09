@@ -45,12 +45,12 @@ class BufferedWriter extends Writer {
 
     @Override
     public void write(String str) throws IOException {
-        int n = str.length();
-        int j = 0;
+        var n = str.length();
+        var j = 0;
 
         while (j < n) {
-            int c = Math.min(n - j, buffer.length - i);
-            int k = j + c;
+            var c = Math.min(n - j, buffer.length - i);
+            var k = j + c;
 
             str.getChars(j, k, buffer, i);
 

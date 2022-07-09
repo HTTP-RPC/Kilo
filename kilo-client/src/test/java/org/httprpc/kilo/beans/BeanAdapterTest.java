@@ -105,14 +105,14 @@ public class BeanAdapterTest {
 
     @Test
     public void testInvalidGet() {
-        BeanAdapter beanAdapter = new BeanAdapter(new TestBean());
+        var beanAdapter = new BeanAdapter(new TestBean());
 
         assertNull(beanAdapter.get("foo"));
     }
 
     @Test
     public void testInvalidPut() {
-        BeanAdapter beanAdapter = new BeanAdapter(new TestBean());
+        var beanAdapter = new BeanAdapter(new TestBean());
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("dayOfWeek", "abc"));
@@ -176,7 +176,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testUUIDCoercion() {
-        UUID uuid = UUID.randomUUID();
+        var uuid = UUID.randomUUID();
 
         assertEquals(uuid, BeanAdapter.coerce(uuid.toString(), UUID.class));
     }
@@ -277,7 +277,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testGetProperties() {
-        Map<String, Type> properties = BeanAdapter.getProperties(TestBean.class).entrySet().stream()
+        var properties = BeanAdapter.getProperties(TestBean.class).entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));
 
         assertEquals(Integer.TYPE, properties.get("i"));
@@ -298,25 +298,25 @@ public class BeanAdapterTest {
 
         assertTrue(properties.get("integerList") instanceof ParameterizedType);
 
-        Type[] integerListTypeArguments = ((ParameterizedType)properties.get("integerList")).getActualTypeArguments();
+        var integerListTypeArguments = ((ParameterizedType)properties.get("integerList")).getActualTypeArguments();
 
         assertEquals(1, integerListTypeArguments.length);
         assertEquals(Integer.class, integerListTypeArguments[0]);
 
-        Type[] nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
+        var nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
 
         assertEquals(1, nestedBeanListTypeArguments.length);
         assertEquals(TestInterface.NestedInterface.class, nestedBeanListTypeArguments[0]);
 
         assertTrue(properties.get("doubleMap") instanceof ParameterizedType);
 
-        Type[] doubleMapTypeArguments = ((ParameterizedType)properties.get("doubleMap")).getActualTypeArguments();
+        var doubleMapTypeArguments = ((ParameterizedType)properties.get("doubleMap")).getActualTypeArguments();
 
         assertEquals(2, doubleMapTypeArguments.length);
         assertEquals(String.class, doubleMapTypeArguments[0]);
         assertEquals(Double.class, doubleMapTypeArguments[1]);
 
-        Type[] nestedBeanMapTypeArguments = ((ParameterizedType)properties.get("nestedBeanMap")).getActualTypeArguments();
+        var nestedBeanMapTypeArguments = ((ParameterizedType)properties.get("nestedBeanMap")).getActualTypeArguments();
 
         assertEquals(2, nestedBeanMapTypeArguments.length);
         assertEquals(String.class, nestedBeanMapTypeArguments[0]);

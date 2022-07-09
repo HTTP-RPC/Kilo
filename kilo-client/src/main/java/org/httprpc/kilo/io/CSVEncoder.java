@@ -120,9 +120,9 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         writer = new BufferedWriter(writer);
 
-        int i = 0;
+        var i = 0;
 
-        for (String key : keys) {
+        for (var key : keys) {
             if (key == null) {
                 continue;
             }
@@ -131,7 +131,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                 writer.write(delimiter);
             }
 
-            String label = labels.get(key);
+            var label = labels.get(key);
 
             if (label == null) {
                 label = key;
@@ -147,7 +147,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         for (Map<String, ?> map : values) {
             i = 0;
 
-            for (String key : keys) {
+            for (var key : keys) {
                 if (key == null) {
                     continue;
                 }
@@ -156,10 +156,10 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                     writer.write(delimiter);
                 }
 
-                Object value = map.get(key);
+                var value = map.get(key);
 
                 if (value != null) {
-                    Format format = formats.get(key);
+                    var format = formats.get(key);
 
                     if (format != null) {
                         value = format.format(value);
@@ -181,10 +181,10 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         if (value instanceof CharSequence) {
             writer.write('"');
 
-            String text = value.toString();
+            var text = value.toString();
 
             for (int i = 0, n = text.length(); i < n; i++) {
-                char c = text.charAt(i);
+                var c = text.charAt(i);
 
                 if (c == '"') {
                     writer.append("\"\"");

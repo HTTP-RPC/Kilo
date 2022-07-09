@@ -87,7 +87,7 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() throws SQLException {
-        List<Map<String, Object>> results = QueryBuilder.select("*").from("item").execute(getConnection()).getResults();
+        var results = QueryBuilder.select("*").from("item").execute(getConnection()).getResults();
 
         return BeanAdapter.coerceList(results, Item.class);
     }
@@ -107,7 +107,7 @@ public class CatalogService extends AbstractDatabaseService {
             entry("price", item.getPrice())
         )).getGeneratedKeys().get(0), Integer.class);
 
-        Map<String, Object> result = QueryBuilder.select("*").from("item").where("id = :itemID").execute(getConnection(), mapOf(
+        var result = QueryBuilder.select("*").from("item").where("id = :itemID").execute(getConnection(), mapOf(
             entry("itemID", itemID)
         )).getResult();
 
@@ -122,7 +122,7 @@ public class CatalogService extends AbstractDatabaseService {
     @Keys({"The item ID."})
     @Content(Item.class)
     public void updateItem() throws SQLException {
-        Integer itemID = getKey("itemID", Integer.class);
+        var itemID = getKey("itemID", Integer.class);
 
         Item item = getBody();
 
@@ -141,7 +141,7 @@ public class CatalogService extends AbstractDatabaseService {
     @Description("Deletes an item.")
     @Keys({"The item ID."})
     public void deleteItem() throws SQLException {
-        Integer itemID = getKey("itemID", Integer.class);
+        var itemID = getKey("itemID", Integer.class);
 
         QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), mapOf(
             entry("itemID", itemID)

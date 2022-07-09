@@ -37,7 +37,7 @@ public class FileUploadService extends WebService {
         long bytes = 0;
 
         if (file != null) {
-            try (InputStream inputStream = file.openStream()) {
+            try (var inputStream = file.openStream()) {
                 while (inputStream.read() != -1) {
                     bytes++;
                 }
@@ -54,8 +54,8 @@ public class FileUploadService extends WebService {
     ) throws IOException {
         long bytes = 0;
 
-        for (URL file : files) {
-            try (InputStream inputStream = file.openStream()) {
+        for (var file : files) {
+            try (var inputStream = file.openStream()) {
                 while (inputStream.read() != -1) {
                     bytes++;
                 }

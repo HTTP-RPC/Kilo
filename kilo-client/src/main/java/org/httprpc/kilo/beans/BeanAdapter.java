@@ -202,7 +202,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (method.getDeclaringClass() == Object.class) {
                 return method.invoke(this, arguments);
             } else {
-                String key = getKey(method);
+                var key = getKey(method);
 
                 if (key == null || method.getParameterCount() > 0) {
                     throw new UnsupportedOperationException();
@@ -264,10 +264,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         this.bean = bean;
         this.propertyCache = propertyCache;
 
-        Class<?> type = bean.getClass();
+        var type = bean.getClass();
 
         if (Proxy.class.isAssignableFrom(type)) {
-            Class<?>[] interfaces = type.getInterfaces();
+            var interfaces = type.getInterfaces();
 
             if (interfaces.length == 0) {
                 throw new IllegalArgumentException();
@@ -291,7 +291,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        Property property = properties.get(key);
+        var property = properties.get(key);
 
         Object value;
         if (property != null && property.accessor != null) {
@@ -310,15 +310,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @Override
     @SuppressWarnings("java:S1905")
     public Object put(String key, Object value) {
-        Property property = properties.get(key);
+        var property = properties.get(key);
 
         if (property == null) {
             throw new UnsupportedOperationException();
         }
 
-        int i = 0;
+        var i = 0;
 
-        for (Method mutator : property.mutators) {
+        for (var mutator : property.mutators) {
             try {
                 mutator.invoke(bean, (Object)coerce(value, mutator.getGenericParameterTypes()[0]));
             } catch (Exception exception) {
@@ -353,11 +353,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     @Override
                     public Entry<String, Object> next() {
-                        Entry<String, Property> entry = iterator.next();
+                        var entry = iterator.next();
 
                         Object value;
                         try {
-                            Property property = entry.getValue();
+                            var property = entry.getValue();
 
                             if (property.accessor != null) {
                                 value = adapt(property.accessor.invoke(bean), propertyCache);
@@ -509,10 +509,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (type instanceof Class<?>) {
             return (T)coerce(value, (Class<?>)type);
         } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType)type;
+            var parameterizedType = (ParameterizedType)type;
 
-            Type rawType = parameterizedType.getRawType();
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            var rawType = parameterizedType.getRawType();
+            var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class && (value == null || value instanceof List<?>)) {
                 return (T)coerceList((List<?>)value, actualTypeArguments[0]);
@@ -633,12 +633,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new IllegalArgumentException(exception);
                 }
             } else if (type.isEnum()) {
-                String name = value.toString();
+                var name = value.toString();
 
-                Field[] fields = type.getDeclaredFields();
+                var fields = type.getDeclaredFields();
 
-                for (int i = 0; i < fields.length; i++) {
-                    Field field = fields[i];
+                for (var i = 0; i < fields.length; i++) {
+                    var field = fields[i];
 
                     if (!field.isEnumConstant()) {
                         continue;
@@ -662,7 +662,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new IllegalArgumentException();
                 }
 
-                Map<?, ?> map = (Map<?, ?>)value;
+                var map = (Map<?, ?>)value;
 
                 if (type.isInterface()) {
                     return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map)));
@@ -681,7 +681,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         throw new RuntimeException(exception);
                     }
 
-                    BeanAdapter beanAdapter = new BeanAdapter(bean);
+                    var beanAdapter = new BeanAdapter(bean);
 
                     for (Map.Entry<?, ?> entry : map.entrySet()) {
                         try {
@@ -888,19 +888,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     public static Map<String, Property> getProperties(Class<?> type) {
         Map<String, Property> properties = new TreeMap<>();
 
-        Method[] methods = type.getMethods();
+        var methods = type.getMethods();
 
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+        for (var i = 0; i < methods.length; i++) {
+            var method = methods[i];
 
             if (method.getDeclaringClass() == Object.class) {
                 continue;
             }
 
-            String key = getKey(method);
+            var key = getKey(method);
 
             if (key != null) {
-                Property property = properties.get(key);
+                var property = properties.get(key);
 
                 if (property == null) {
                     property = new Property();
@@ -924,9 +924,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return null;
         }
 
-        String methodName = method.getName();
-        Class<?> returnType = method.getReturnType();
-        int parameterCount = method.getParameterCount();
+        var methodName = method.getName();
+        var returnType = method.getReturnType();
+        var parameterCount = method.getParameterCount();
 
         String prefix;
         if (methodName.startsWith(GET_PREFIX)
@@ -945,17 +945,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return null;
         }
 
-        Key key = method.getAnnotation(Key.class);
+        var key = method.getAnnotation(Key.class);
 
         if (key == null) {
-            int j = prefix.length();
-            int n = methodName.length();
+            var j = prefix.length();
+            var n = methodName.length();
 
             if (j == n) {
                 return null;
             }
 
-            char c = methodName.charAt(j++);
+            var c = methodName.charAt(j++);
 
             if (j == n || Character.isLowerCase(methodName.charAt(j))) {
                 c = Character.toLowerCase(c);

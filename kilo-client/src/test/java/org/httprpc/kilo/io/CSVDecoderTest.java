@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        String text = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
+        var text = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
             + "\" D\rÉ\nF\r\n\",2,4.0,false\r\n"
             + ",3,6.0\n";
@@ -53,9 +53,9 @@ public class CSVDecoderTest {
             )
         );
 
-        StringReader reader = new StringReader(text);
+        var reader = new StringReader(text);
 
-        CSVDecoder csvDecoder = new CSVDecoder();
+        var csvDecoder = new CSVDecoder();
 
         assertEquals(expected, csvDecoder.read(reader));
     }

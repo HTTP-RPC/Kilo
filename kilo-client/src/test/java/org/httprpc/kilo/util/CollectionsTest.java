@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CollectionsTest {
     @Test
     public void testListOf() {
-        ArrayList<Integer> list = new ArrayList<>(3);
+        var list = new ArrayList<Integer>(3);
 
         list.add(1);
         list.add(2);
@@ -45,7 +45,7 @@ public class CollectionsTest {
 
     @Test
     public void testMapOf() {
-        HashMap<String, Integer> map = new HashMap<>();
+        var map = new HashMap<String, Integer>();
 
         map.put("a", 1);
         map.put("b", 2);

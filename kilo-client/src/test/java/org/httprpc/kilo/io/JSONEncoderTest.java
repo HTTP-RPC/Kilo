@@ -85,7 +85,7 @@ public class JSONEncoderTest {
 
     @Test
     public void testUUID() throws IOException {
-        UUID uuid = UUID.randomUUID();
+        var uuid = UUID.randomUUID();
 
         assertEquals(String.format("\"%s\"", uuid), encode(uuid));
     }
@@ -97,7 +97,7 @@ public class JSONEncoderTest {
 
     @Test
     public void testArray() throws IOException {
-        String expected = "[\n"
+        var expected = "[\n"
             + "  \"abc\",\n"
             + "  123,\n"
             + "  true,\n"
@@ -126,7 +126,7 @@ public class JSONEncoderTest {
 
     @Test
     public void testObject() throws IOException {
-        String expected = "{\n"
+        var expected = "{\n"
             + "  \"a\": \"abc\",\n"
             + "  \"b\": 123,\n"
             + "  \"c\": true,\n"
@@ -155,7 +155,7 @@ public class JSONEncoderTest {
 
     @Test
     public void testCompact() throws IOException {
-        String expected = "{\"a\":1,\"b\":2,\"c\":3}";
+        var expected = "{\"a\":1,\"b\":2,\"c\":3}";
 
         Map<String, ?> map = mapOf(
             entry("a", 1),
@@ -171,9 +171,9 @@ public class JSONEncoderTest {
     }
 
     private static String encode(Object value, boolean compact) throws IOException {
-        StringWriter writer = new StringWriter();
+        var writer = new StringWriter();
 
-        JSONEncoder jsonEncoder = new JSONEncoder(compact);
+        var jsonEncoder = new JSONEncoder(compact);
 
         jsonEncoder.write(value, writer);
 

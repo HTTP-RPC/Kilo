@@ -64,7 +64,7 @@ public class Collections {
     public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
         Map<K, V> map = new LinkedHashMap<>();
 
-        for (Map.Entry<K, V> entry : entries) {
+        for (var entry : entries) {
             map.put(entry.getKey(), entry.getValue());
         }
 
@@ -165,7 +165,7 @@ public class Collections {
         } else if (path.isEmpty()) {
             return (T)root;
         } else {
-            Object component = path.remove(0);
+            var component = path.remove(0);
 
             Object value;
             if (root instanceof List<?> && component instanceof Number) {

@@ -67,12 +67,12 @@ public class JSONEncoder extends Encoder<Object> {
 
     private void encode(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence) {
-            CharSequence text = (CharSequence)value;
+            var text = (CharSequence)value;
 
             writer.write("\"");
 
             for (int i = 0, n = text.length(); i < n; i++) {
-                char c = text.charAt(i);
+                var c = text.charAt(i);
 
                 if (c == '"' || c == '\\') {
                     writer.write("\\" + c);
@@ -105,7 +105,7 @@ public class JSONEncoder extends Encoder<Object> {
 
             depth++;
 
-            int i = 0;
+            var i = 0;
 
             for (Object element : (Iterable<?>)value) {
                 if (i > 0) {
@@ -137,10 +137,10 @@ public class JSONEncoder extends Encoder<Object> {
 
             depth++;
 
-            int i = 0;
+            var i = 0;
 
             for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
-                Object key = entry.getKey();
+                var key = entry.getKey();
 
                 if (key == null) {
                     continue;
@@ -184,7 +184,7 @@ public class JSONEncoder extends Encoder<Object> {
     }
 
     private void indent(Writer writer) throws IOException {
-        for (int i = 0; i < depth; i++) {
+        for (var i = 0; i < depth; i++) {
             writer.write("  ");
         }
     }

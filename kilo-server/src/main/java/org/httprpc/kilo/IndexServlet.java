@@ -35,9 +35,9 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        TemplateEncoder templateEncoder = new TemplateEncoder(WebService.class.getResource("index.html"));
+        var templateEncoder = new TemplateEncoder(WebService.class.getResource("index.html"));
 
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".index", request.getLocale());
+        var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".index", request.getLocale());
 
         templateEncoder.write(mapOf(
             entry("labels", new ResourceBundleAdapter(resourceBundle)),

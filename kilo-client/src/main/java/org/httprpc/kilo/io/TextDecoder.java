@@ -49,7 +49,7 @@ public class TextDecoder extends Decoder<String> {
 
         reader = new BufferedReader(reader);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
 
         int c;
         while ((c = reader.read()) != EOF) {

@@ -199,7 +199,7 @@ public class TemplateEncoder extends Encoder<Object> {
                 value = ZonedDateTime.ofInstant((Instant)value, timeZone.toZoneId());
             }
 
-            TemporalAccessor temporalAccessor = (TemporalAccessor)value;
+            var temporalAccessor = (TemporalAccessor)value;
 
             switch (dateTimeType) {
                 case DATE: {
@@ -246,12 +246,12 @@ public class TemplateEncoder extends Encoder<Object> {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             if (value instanceof CharSequence) {
-                CharSequence string = (CharSequence)value;
+                var string = (CharSequence)value;
 
-                StringBuilder resultBuilder = new StringBuilder();
+                var resultBuilder = new StringBuilder();
 
                 for (int i = 0, n = string.length(); i < n; i++) {
-                    char c = string.charAt(i);
+                    var c = string.charAt(i);
 
                     if (c == '"' || c == '\\') {
                         resultBuilder.append("\\" + c);
@@ -282,14 +282,14 @@ public class TemplateEncoder extends Encoder<Object> {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             if (value instanceof CharSequence) {
-                CharSequence string = (CharSequence)value;
+                var string = (CharSequence)value;
 
-                StringBuilder resultBuilder = new StringBuilder();
+                var resultBuilder = new StringBuilder();
 
                 resultBuilder.append('"');
 
                 for (int i = 0, n = string.length(); i < n; i++) {
-                    char c = string.charAt(i);
+                    var c = string.charAt(i);
 
                     if (c == '"') {
                         resultBuilder.append(c);
@@ -312,12 +312,12 @@ public class TemplateEncoder extends Encoder<Object> {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             if (value instanceof CharSequence) {
-                CharSequence string = (CharSequence)value;
+                var string = (CharSequence)value;
 
-                StringBuilder resultBuilder = new StringBuilder();
+                var resultBuilder = new StringBuilder();
 
                 for (int i = 0, n = string.length(); i < n; i++) {
-                    char c = string.charAt(i);
+                    var c = string.charAt(i);
 
                     if (c == '<') {
                         resultBuilder.append("&lt;");
@@ -377,7 +377,7 @@ public class TemplateEncoder extends Encoder<Object> {
                     if (key.equals(KEY_REFERENCE)) {
                         return entry.getKey();
                     } else {
-                        Object value = entry.getValue();
+                        var value = entry.getValue();
 
                         if (value instanceof Map<?, ?>) {
                             return ((Map<?, ?>) value).get(key);
@@ -398,7 +398,7 @@ public class TemplateEncoder extends Encoder<Object> {
                     if (key.equals(KEY_REFERENCE)) {
                         return true;
                     } else {
-                        Object value = entry.getValue();
+                        var value = entry.getValue();
 
                         if (value instanceof Map<?, ?>) {
                             return ((Map<?, ?>) value).containsKey(key);
@@ -439,7 +439,7 @@ public class TemplateEncoder extends Encoder<Object> {
         defaultModifiers.put("json", new JSONEscapeModifier());
         defaultModifiers.put("csv", new CSVEscapeModifier());
 
-        MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
+        var markupEscapeModifier = new MarkupEscapeModifier();
 
         defaultModifiers.put("xml", markupEscapeModifier);
         defaultModifiers.put("html", markupEscapeModifier);
@@ -476,9 +476,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
         modifiers = new HashMap<>(defaultModifiers);
 
-        String path = url.getPath();
+        var path = url.getPath();
 
-        int i = path.lastIndexOf('.');
+        var i = path.lastIndexOf('.');
 
         if (i != -1) {
             defaultEscapeModifier = modifiers.get(path.substring(i + 1));
@@ -605,7 +605,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         if (value != null) {
-            try (InputStream inputStream = url.openStream()) {
+            try (var inputStream = url.openStream()) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
                 writer = new BufferedWriter(writer);
@@ -628,7 +628,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
         dictionaries.push(dictionary);
 
-        int c = reader.read();
+        var c = reader.read();
 
         while (c != EOF) {
             if (c == '{') {
@@ -662,7 +662,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         c = reader.read();
                     }
 
-                    StringBuilder markerBuilder = new StringBuilder();
+                    var markerBuilder = new StringBuilder();
 
                     while (c != ':' && c != '}' && c != EOF) {
                         markerBuilder.append((char)c);
@@ -674,16 +674,16 @@ public class TemplateEncoder extends Encoder<Object> {
                         throw new IOException("Invalid marker.");
                     }
 
-                    String marker = markerBuilder.toString();
+                    var marker = markerBuilder.toString();
 
                     Deque<String> modifierNames = new LinkedList<>();
                     Map<String, String> modifierArguments = new HashMap<>();
 
                     if (c == ':') {
-                        StringBuilder modifierNameBuilder = new StringBuilder();
-                        StringBuilder modifierArgumentBuilder = new StringBuilder();
+                        var modifierNameBuilder = new StringBuilder();
+                        var modifierArgumentBuilder = new StringBuilder();
 
-                        boolean argument = false;
+                        var argument = false;
 
                         while (c != EOF) {
                             c = reader.read();
@@ -697,7 +697,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     throw new IOException("Invalid modifier name.");
                                 }
 
-                                String modifierName = modifierNameBuilder.toString();
+                                var modifierName = modifierNameBuilder.toString();
 
                                 modifierNames.add(modifierName);
                                 modifierArguments.put(modifierName, modifierArgumentBuilder.toString());
@@ -734,7 +734,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         case CONDITIONAL_SECTION_START: {
                             sectionNames.push(marker);
 
-                            Object value = getMarkerValue(marker);
+                            var value = getMarkerValue(marker);
 
                             if (value != null
                                 && (!(value instanceof Boolean) || ((Boolean)value))
@@ -752,10 +752,10 @@ public class TemplateEncoder extends Encoder<Object> {
                         case REPEATING_SECTION_START: {
                             String separator = null;
 
-                            int n = marker.length();
+                            var n = marker.length();
 
                             if (marker.charAt(n - 1) == ']') {
-                                int i = marker.lastIndexOf('[');
+                                var i = marker.lastIndexOf('[');
 
                                 if (i != -1) {
                                     separator = marker.substring(i + 1, n - 1);
@@ -766,7 +766,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             sectionNames.push(marker);
 
-                            Object value = getMarkerValue(marker);
+                            var value = getMarkerValue(marker);
 
                             Iterator<?> iterator;
                             if (value == null) {
@@ -780,10 +780,10 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             if (iterator.hasNext()) {
-                                int i = 0;
+                                var i = 0;
 
                                 while (iterator.hasNext()) {
-                                    Object element = iterator.next();
+                                    var element = iterator.next();
 
                                     if (iterator.hasNext()) {
                                         reader.mark(0);
@@ -813,7 +813,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         case INVERTED_SECTION_START: {
                             sectionNames.push(marker);
 
-                            Object value = getMarkerValue(marker);
+                            var value = getMarkerValue(marker);
 
                             if (value == null
                                 || (value instanceof Boolean && !((Boolean)value))
@@ -840,9 +840,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
                         case INCLUDE: {
                             if (root != null) {
-                                URL url = new URL(this.url, marker);
+                                var url = new URL(this.url, marker);
 
-                                try (InputStream inputStream = url.openStream()) {
+                                try (var inputStream = url.openStream()) {
                                     writeRoot(dictionary, writer, locale, timeZone, new PagedReader(new InputStreamReader(inputStream)));
                                 }
                             }
@@ -856,11 +856,11 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
 
                         case VARIABLE: {
-                            Object value = getMarkerValue(marker);
+                            var value = getMarkerValue(marker);
 
                             if (value != null) {
-                                for (String modifierName : modifierNames) {
-                                    Modifier modifier = modifiers.get(modifierName);
+                                for (var modifierName : modifierNames) {
+                                    var modifier = modifiers.get(modifierName);
 
                                     if (modifier != null) {
                                         value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
@@ -898,7 +898,7 @@ public class TemplateEncoder extends Encoder<Object> {
     private Object getMarkerValue(String name) {
         List<String> path = new LinkedList<>(Arrays.asList(name.split("/")));
 
-        for (Map<?, ?> dictionary : dictionaries) {
+        for (var dictionary : dictionaries) {
             if (!dictionary.containsKey(path.get(0))) {
                 continue;
             }
@@ -910,7 +910,7 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private static Object valueAt(Map<?, ?> root, List<?> path) {
-        Object value = root.get(path.remove(0));
+        var value = root.get(path.remove(0));
 
         if (path.isEmpty()) {
             return value;

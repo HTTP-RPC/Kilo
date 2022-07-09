@@ -89,7 +89,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        String name = key.toString();
+        var name = key.toString();
 
         Object value;
         if (name.equals(NAMESPACE_KEY)) {
@@ -132,7 +132,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        String name = key.toString();
+        var name = key.toString();
 
         if (name.equals(NAMESPACE_KEY)) {
             return namespaceAware;

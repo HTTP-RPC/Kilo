@@ -84,7 +84,7 @@ public class JSONDecoder extends Decoder<Object> {
             } else if (c == ',') {
                 c = reader.read();
             } else {
-                Object collection = collections.peek();
+                var collection = collections.peek();
 
                 // If the current collection is a map, read the key
                 String key;
@@ -214,7 +214,7 @@ public class JSONDecoder extends Decoder<Object> {
                     }
 
                     case 'u': {
-                        StringBuilder characterBuilder = new StringBuilder();
+                        var characterBuilder = new StringBuilder();
 
                         while (c != EOF && characterBuilder.length() < 4) {
                             c = reader.read();
@@ -226,7 +226,7 @@ public class JSONDecoder extends Decoder<Object> {
                             throw new IOException("Incomplete Unicode escape sequence.");
                         }
 
-                        String unicodeValue = characterBuilder.toString();
+                        var unicodeValue = characterBuilder.toString();
 
                         c = (char)Integer.parseInt(unicodeValue, 16);
 
@@ -267,7 +267,7 @@ public class JSONDecoder extends Decoder<Object> {
     private Number readNumber(Reader reader) throws IOException {
         valueBuilder.setLength(0);
 
-        boolean decimal = false;
+        var decimal = false;
 
         while (c != EOF && (Character.isDigit(c) || c == '.' || c == 'e' || c == 'E' || c == '-')) {
             valueBuilder.append((char)c);
@@ -281,7 +281,7 @@ public class JSONDecoder extends Decoder<Object> {
         if (decimal) {
             number = Double.parseDouble(valueBuilder.toString());
         } else {
-            long value = Long.parseLong(valueBuilder.toString());
+            var value = Long.parseLong(valueBuilder.toString());
 
             if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
                 number = value;
@@ -294,8 +294,8 @@ public class JSONDecoder extends Decoder<Object> {
     }
 
     private boolean readKeyword(Reader reader, String keyword) throws IOException {
-        int n = keyword.length();
-        int i = 0;
+        var n = keyword.length();
+        var i = 0;
 
         while (c != EOF && i < n) {
             if (keyword.charAt(i) != c) {
