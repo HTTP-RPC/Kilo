@@ -1,4 +1,4 @@
-[![Releases](https://img.shields.io/github/release/Kilo/Kilo.svg)](https://github.com/Kilo/Kilo/releases)
+[![Releases](https://img.shields.io/github/release/HTTP-RPC/Kilo.svg)](https://github.com/HTTP-RPC/Kilo/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/kilo-server.svg)](https://repo1.maven.org/maven2/org/httprpc/kilo-server/)
 
 # Introduction
@@ -335,7 +335,7 @@ public enum Size {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
-The `Keys` annotation can be used to provide descriptions for an endpoint's keys. See the [catalog](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) example for more information.
+The `Keys` annotation can be used to provide descriptions for an endpoint's keys. See the [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) example for more information.
 
 #### IndexServlet
 An index of all active services can be enabled by declaring an instance of `org.httprpc.kilo.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
@@ -886,7 +886,7 @@ QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), m
 
 If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses.
 
-See the [pet](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
+See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a typed proxy, as described [earlier](#type-coercion). 
@@ -1037,4 +1037,4 @@ public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { .
 These methods are provided as a less verbose alternative to similar methods defined by the `Optional`class.
 
 # Additional Information
-This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/Kilo/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).
+This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).

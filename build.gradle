@@ -96,8 +96,8 @@ subprojects {
                             }
                         }
                         scm {
-                            connection = 'scm:git:git://github.com/Kilo/Kilo.git'
-                            url = 'https://github.com/Kilo/Kilo'
+                            connection = 'scm:git:git://github.com/HTTP-RPC/Kilo.git'
+                            url = 'https://github.com/HTTP-RPC/Kilo'
                         }
                     }
                 }
