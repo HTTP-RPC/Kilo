@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import static org.httprpc.sql.QueryBuilder.and;
 import static org.httprpc.sql.QueryBuilder.exists;
 import static org.httprpc.sql.QueryBuilder.in;
+import static org.httprpc.sql.QueryBuilder.notExists;
+import static org.httprpc.sql.QueryBuilder.notIn;
 import static org.httprpc.sql.QueryBuilder.or;
 import static org.httprpc.util.Collections.entry;
 import static org.httprpc.util.Collections.listOf;
@@ -104,6 +106,15 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testNotInConditional() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("D").where("e", notIn(
+                QueryBuilder.select("e").from("E")
+            ));
+
+        assertEquals("select * from D where e not in (select e from E)", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testExistsConditional() {
         QueryBuilder queryBuilder = QueryBuilder.select("*")
             .from("B")
@@ -112,6 +123,15 @@ public class QueryBuilderTest {
             ));
 
         assertEquals("select * from B where exists (select c from C where d = ?)", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testNotExistsConditional() {
+        QueryBuilder queryBuilder = QueryBuilder.select("*").from("D").where("e", notExists(
+            QueryBuilder.select("e").from("E")
+        ));
+
+        assertEquals("select * from D where e not exists (select e from E)", queryBuilder.getSQL());
     }
 
     @Test

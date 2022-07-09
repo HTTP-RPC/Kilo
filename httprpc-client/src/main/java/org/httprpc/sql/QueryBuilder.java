@@ -291,6 +291,23 @@ public class QueryBuilder {
     }
 
     /**
+     * Creates a "not in" conditional.
+     *
+     * @param queryBuilder
+     * The conditional's subquery.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String notIn(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("not in (%s)", queryBuilder);
+    }
+
+    /**
      * Creates an "exists" conditional.
      *
      * @param queryBuilder
@@ -305,6 +322,23 @@ public class QueryBuilder {
         }
 
         return String.format("exists (%s)", queryBuilder);
+    }
+
+    /**
+     * Creates a "not exists" conditional.
+     *
+     * @param queryBuilder
+     * The conditional's subquery.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String notExists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("not exists (%s)", queryBuilder);
     }
 
     /**
