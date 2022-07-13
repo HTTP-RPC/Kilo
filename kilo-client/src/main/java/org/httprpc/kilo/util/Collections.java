@@ -42,7 +42,17 @@ public class Collections {
      */
     @SafeVarargs
     public static <E> List<E> listOf(E... elements) {
-        return java.util.Collections.unmodifiableList(Arrays.asList(elements));
+        if (elements == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (elements.length == 0) {
+            return java.util.Collections.emptyList();
+        } else if (elements.length == 1) {
+            return java.util.Collections.singletonList(elements[0]);
+        } else {
+            return java.util.Collections.unmodifiableList(Arrays.asList(elements));
+        }
     }
 
     /**
@@ -62,13 +72,25 @@ public class Collections {
      */
     @SafeVarargs
     public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
-        Map<K, V> map = new LinkedHashMap<>();
-
-        for (var entry : entries) {
-            map.put(entry.getKey(), entry.getValue());
+        if (entries == null) {
+            throw new IllegalArgumentException();
         }
 
-        return java.util.Collections.unmodifiableMap(map);
+        if (entries.length == 0) {
+            return java.util.Collections.emptyMap();
+        } else if (entries.length == 1) {
+            var entry = entries[0];
+
+            return java.util.Collections.singletonMap(entry.getKey(), entry.getValue());
+        } else {
+            Map<K, V> map = new LinkedHashMap<>();
+
+            for (var entry : entries) {
+                map.put(entry.getKey(), entry.getValue());
+            }
+
+            return java.util.Collections.unmodifiableMap(map);
+        }
     }
 
     /**

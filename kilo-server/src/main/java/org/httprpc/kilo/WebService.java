@@ -29,7 +29,6 @@ import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -50,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -1093,11 +1091,9 @@ public abstract class WebService extends HttpServlet {
 
                 List<Object> list;
                 if (values != null) {
-                    list = new ArrayList<>(values.size());
-
-                    for (Object value : values) {
-                        list.add(BeanAdapter.coerce(value, elementType));
-                    }
+                    list = values.stream()
+                        .map(value -> BeanAdapter.coerce(value, elementType))
+                        .collect(Collectors.toList());
                 } else {
                     list = emptyList();
                 }

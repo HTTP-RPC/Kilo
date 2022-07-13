@@ -37,6 +37,10 @@ public class Optionals {
      */
     @SafeVarargs
     public static <T> T coalesce(T... values) {
+        if (values == null) {
+            throw new IllegalArgumentException();
+        }
+
         for (var i = 0; i < values.length; i++) {
             var value = values[i];
 
@@ -68,10 +72,14 @@ public class Optionals {
      * <code>null</code>.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) {
+        if (value == null) {
+            return null;
+        }
+
         if (mapper == null) {
             throw new IllegalArgumentException();
         }
 
-        return (value == null) ? null : mapper.apply(value);
+        return mapper.apply(value);
     }
 }
