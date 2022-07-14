@@ -1034,7 +1034,7 @@ public static <T> T coalesce(T... values) { ... }
 public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { ... }
 ```
 
-These methods are provided as a less verbose alternative to similar methods defined by the `Optional`class. For example:
+These methods are provided as a less verbose alternative to similar methods defined by the `Optional` class. For example:
 
 ```java
 String a = null;
