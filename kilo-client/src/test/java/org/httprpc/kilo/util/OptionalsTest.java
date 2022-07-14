@@ -16,16 +16,26 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class OptionalsTest {
     @Test
     public void testCoalesce() {
-        assertEquals("abc", Optionals.coalesce(null, null, "abc"));
+        String a = null;
+        String b = null;
+
+        assertEquals(Optional.ofNullable(a).orElse(Optional.ofNullable(b).orElse("xyz")), Optionals.coalesce(a, b, "xyz"));
     }
 
     @Test
     public void testMap() {
-        assertEquals(5, Optionals.map("hello", String::length));
+        var text = "hello";
+
+        assertEquals(Optional.ofNullable(text).map(String::length).orElse(null), Optionals.map(text, String::length));
+
+        assertNull(Optionals.map(null, String::length));
     }
 }

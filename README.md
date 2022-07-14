@@ -1034,7 +1034,22 @@ public static <T> T coalesce(T... values) { ... }
 public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { ... }
 ```
 
-These methods are provided as a less verbose alternative to similar methods defined by the `Optional`class.
+These methods are provided as a less verbose alternative to similar methods defined by the `Optional`class. For example:
+
+```java
+String a = null;
+String b = null;
+
+var c = Optional.ofNullable(a).orElse(Optional.ofNullable(b).orElse("xyz")); // xyz
+var d = Optionals.coalesce(a, b, "xyz"); // xyz
+```
+
+```java
+var text = "hello";
+
+var i = Optional.ofNullable(text).map(String::length).orElse(null); // 5
+var j = Optionals.map(text, String::length); // 5
+```
 
 # Additional Information
 This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).
