@@ -385,7 +385,7 @@ If a service returns an error response, the default error handler will throw a `
 The following code snippet demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
-WebServiceProxy webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
 
 // GET /math/sum?a=2&b=4
 webServiceProxy.setArguments(mapOf(
@@ -558,7 +558,7 @@ var csvDecoder = new CSVDecoder();
 
 List<Map<String, String>> months = csvDecoder.read(inputStream);
 
-for (Map<String, String> month : months) {
+for (var month : months) {
     System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));
 }
 ```
