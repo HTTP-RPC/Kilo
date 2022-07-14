@@ -1004,10 +1004,10 @@ These methods offer an alternative to similar methods defined by the `List` and 
 
 Additionally, `Collections` includes the following methods for creating empty lists and maps:
 
- ```java
- public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
- public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
- ```
+```java
+public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
+public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
+```
 
 These provide a slightly more readable alternative to `java.util.Collections.<Integer>emptyList()` and `java.util.Collections.<String, Integer>emptyMap()`, respectively.
 
