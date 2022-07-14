@@ -29,8 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -107,7 +105,7 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        encoder.write(mapOf(entry("a", emptyList())), writer);
+        encoder.write(mapOf(entry("a", listOf())), writer);
 
         assertEquals("", writer.toString());
     }
@@ -151,7 +149,7 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        encoder.write(mapOf(entry("list", emptyList())), writer);
+        encoder.write(mapOf(entry("list", listOf())), writer);
 
         assertEquals("[]", writer.toString());
     }
@@ -248,7 +246,7 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        encoder.write(emptyList(), writer);
+        encoder.write(listOf(), writer);
 
         assertEquals("[]", writer.toString());
     }
@@ -334,7 +332,7 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        encoder.write(mapOf(entry("a", emptyList())), writer);
+        encoder.write(mapOf(entry("a", listOf())), writer);
 
         assertEquals("not found", writer.toString());
     }
@@ -407,7 +405,7 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        encoder.write(emptyMap(), writer);
+        encoder.write(mapOf(), writer);
 
         assertEquals("><", writer.toString());
     }
@@ -562,7 +560,7 @@ public class TemplateEncoderTest {
     public void testEmptyRecursion() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("recursion.txt"));
 
-        List<?> list = emptyList();
+        List<?> list = listOf();
 
         var writer = new StringWriter();
 

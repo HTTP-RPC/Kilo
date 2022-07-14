@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -257,12 +255,12 @@ public class BeanAdapterTest {
 
     @Test
     public void testReifiedList() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(emptyList(), TestList.class));
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(listOf(), TestList.class));
     }
 
     @Test
     public void testReifiedMap() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(emptyMap(), TestMap.class));
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestMap.class));
     }
 
     @Test

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.httprpc.kilo.util.Collections.mapOf;
+
 /**
  * Class for programmatically constructing and executing SQL queries.
  */
@@ -569,7 +571,7 @@ public class QueryBuilder {
      * If an error occurs while executing the query.
      */
     public QueryBuilder execute(Connection connection) throws SQLException {
-        return execute(connection, Collections.emptyMap());
+        return execute(connection, mapOf());
     }
 
     /**

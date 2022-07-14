@@ -60,7 +60,6 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -1095,7 +1094,7 @@ public abstract class WebService extends HttpServlet {
                         .map(value -> BeanAdapter.coerce(value, elementType))
                         .collect(Collectors.toList());
                 } else {
-                    list = emptyList();
+                    list = listOf();
                 }
 
                 argument = list;
