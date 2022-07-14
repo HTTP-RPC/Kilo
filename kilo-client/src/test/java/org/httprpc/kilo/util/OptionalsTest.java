@@ -16,18 +16,16 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.httprpc.kilo.util.Optionals.coalesce;
-import static org.httprpc.kilo.util.Optionals.map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OptionalsTest {
     @Test
     public void testCoalesce() {
-        assertEquals("abc", coalesce(null, null, "abc"));
+        assertEquals("abc", Optionals.coalesce(null, null, "abc"));
     }
 
     @Test
     public void testMap() {
-        assertEquals(5, map("hello", String::length));
+        assertEquals(5, Optionals.map("hello", String::length));
     }
 }

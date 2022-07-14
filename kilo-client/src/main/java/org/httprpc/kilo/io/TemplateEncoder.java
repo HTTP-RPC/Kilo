@@ -15,7 +15,6 @@
 package org.httprpc.kilo.io;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -45,7 +44,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static java.util.Collections.singletonMap;
+import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Template encoder.
@@ -623,7 +623,9 @@ public class TemplateEncoder extends Encoder<Object> {
         if (root instanceof Map<?, ?>) {
             dictionary = (Map<String, ?>)root;
         } else {
-            dictionary = singletonMap(SELF_REFERENCE, root);
+            dictionary = mapOf(
+                entry(SELF_REFERENCE, root)
+            );
         }
 
         dictionaries.push(dictionary);

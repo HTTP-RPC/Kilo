@@ -46,7 +46,7 @@ public abstract class AbstractDatabaseService extends WebService {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (Connection connection = dataSource.getConnection()) {
+        try (var connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
             AbstractDatabaseService.connection.set(connection);

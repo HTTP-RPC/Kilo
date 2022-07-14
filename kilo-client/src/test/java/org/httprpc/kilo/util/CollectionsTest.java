@@ -25,7 +25,6 @@ import static org.httprpc.kilo.util.Collections.emptyMapOf;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.httprpc.kilo.util.Collections.valueAt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -86,17 +85,17 @@ public class CollectionsTest {
             entry(true, "def")
         );
 
-        assertEquals(Integer.valueOf(2), valueAt(map, "a", "b", "c", 1));
+        assertEquals(Integer.valueOf(2), Collections.valueAt(map, "a", "b", "c", 1));
 
-        assertEquals("abc", valueAt(map, 4));
-        assertEquals("def", valueAt(map, true));
+        assertEquals("abc", Collections.valueAt(map, 4));
+        assertEquals("def", Collections.valueAt(map, true));
 
-        assertEquals(map, valueAt(map));
+        assertEquals(map, Collections.valueAt(map));
 
-        assertNull(valueAt(map, "a", "b", "d", 1));
-        assertNull(valueAt(map, "e"));
-        assertNull(valueAt(null));
+        assertNull(Collections.valueAt(map, "a", "b", "d", 1));
+        assertNull(Collections.valueAt(map, "e"));
+        assertNull(Collections.valueAt(null));
 
-        assertThrows(IndexOutOfBoundsException.class, () -> valueAt(map, "a", "b", "c", 4));
+        assertThrows(IndexOutOfBoundsException.class, () -> Collections.valueAt(map, "a", "b", "c", 4));
     }
 }

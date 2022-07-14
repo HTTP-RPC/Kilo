@@ -18,9 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 

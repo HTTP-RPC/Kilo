@@ -113,6 +113,7 @@ public class Collections {
      * @return
      * An empty list.
      */
+    @Deprecated
     public static <E> List<E> emptyListOf(Class<E> elementType) {
         if (elementType == null) {
             throw new IllegalArgumentException();
@@ -139,6 +140,7 @@ public class Collections {
      * @return
      * An empty map.
      */
+    @Deprecated
     public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) {
         if (keyType == null || valueType == null) {
             throw new IllegalArgumentException();

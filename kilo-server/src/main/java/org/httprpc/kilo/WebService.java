@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.httprpc.kilo.io.TemplateEncoder;
+import org.httprpc.kilo.util.Optionals;
 import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
@@ -63,7 +64,6 @@ import static java.util.Collections.emptyList;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.httprpc.kilo.util.Optionals.map;
 
 /**
  * Abstract base class for web services.
@@ -84,7 +84,7 @@ public abstract class WebService extends HttpServlet {
         private ServiceDescriptor(String path, Class<? extends WebService> type) {
             this.path = path;
 
-            description = map(type.getAnnotation(Description.class), Description::value);
+            description = Optionals.map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -189,8 +189,8 @@ public abstract class WebService extends HttpServlet {
         private OperationDescriptor(String method, Handler handler) {
             this.method = method;
 
-            description = map(handler.method.getAnnotation(Description.class), Description::value);
-            keys = map(handler.method.getAnnotation(Keys.class), keys -> Arrays.asList(keys.value()));
+            description = Optionals.map(handler.method.getAnnotation(Description.class), Description::value);
+            keys = Optionals.map(handler.method.getAnnotation(Keys.class), keys -> Arrays.asList(keys.value()));
 
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
@@ -281,13 +281,13 @@ public abstract class WebService extends HttpServlet {
         private VariableDescriptor(Parameter parameter) {
             name = parameter.getName();
 
-            description = map(parameter.getAnnotation(Description.class), Description::value);
+            description = Optionals.map(parameter.getAnnotation(Description.class), Description::value);
         }
 
         private VariableDescriptor(String name, Method accessor) {
             this.name = name;
 
-            description = map(accessor.getAnnotation(Description.class), Description::value);
+            description = Optionals.map(accessor.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -333,7 +333,7 @@ public abstract class WebService extends HttpServlet {
         private EnumerationDescriptor(Class<?> type) {
             name = type.getSimpleName();
 
-            description = map(type.getAnnotation(Description.class), Description::value);
+            description = Optionals.map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -384,7 +384,7 @@ public abstract class WebService extends HttpServlet {
 
             name = constant.toString();
 
-            description = map(field.getAnnotation(Description.class), Description::value);
+            description = Optionals.map(field.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -421,7 +421,7 @@ public abstract class WebService extends HttpServlet {
         private StructureDescriptor(Class<?> type) {
             name = type.getSimpleName();
 
-            description = map(type.getAnnotation(Description.class), Description::value);
+            description = Optionals.map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**

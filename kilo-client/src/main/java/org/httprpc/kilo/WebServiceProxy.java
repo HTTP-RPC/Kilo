@@ -35,8 +35,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonList;
+import static org.httprpc.kilo.util.Collections.listOf;
+import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Web service proxy class.
@@ -208,8 +208,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
 
-    private Map<String, Object> headers = emptyMap();
-    private Map<String, Object> arguments = emptyMap();
+    private Map<String, Object> headers = mapOf();
+    private Map<String, Object> arguments = mapOf();
 
     private Object body;
 
@@ -872,7 +872,7 @@ public class WebServiceProxy {
         if (argument instanceof Iterable<?>) {
             values = (Iterable<Object>)getParameterValue(argument);
         } else {
-            values = singletonList(getParameterValue(argument));
+            values = listOf(getParameterValue(argument));
         }
 
         return values;
