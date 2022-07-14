@@ -958,7 +958,7 @@ System.out.println(credit.get("date").toString());
 ```
 
 ## ResourceBundleAdapter
-The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the contents of a template document, for example:
+The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. For example, it can be used to localize the contents of a template document:
 
 ```html
 <table>
