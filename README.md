@@ -1000,7 +1000,7 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
-These methods offer an alternative to similar methods defined by the `List` and `Map` classes, which do not permit `null` values.
+These methods offer an alternative to similar methods defined by the `List` and `Map` interfaces, which do not permit `null` values.
 
 Additionally, `Collections` includes the following methods for creating empty lists and maps:
 
