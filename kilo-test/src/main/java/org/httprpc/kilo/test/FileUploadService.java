@@ -33,13 +33,15 @@ public class FileUploadService extends WebService {
     public long upload(
         @Description("The file to upload.") URL file
     ) throws IOException {
+        if (file == null) {
+            throw new IllegalArgumentException();
+        }
+
         long bytes = 0;
 
-        if (file != null) {
-            try (var inputStream = file.openStream()) {
-                while (inputStream.read() != -1) {
-                    bytes++;
-                }
+        try (var inputStream = file.openStream()) {
+            while (inputStream.read() != -1) {
+                bytes++;
             }
         }
 

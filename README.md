@@ -486,7 +486,7 @@ var jsonDecoder = new JSONDecoder();
 List<Map<String, Object>> months = jsonDecoder.read(inputStream);
 
 for (var month : months) {
-    System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));
+    System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
 }
 ```
 
@@ -516,10 +516,10 @@ String values are automatically wrapped in double-quotes and escaped. Instances 
 ```java
 var csvDecoder = new CSVDecoder();
 
-List<Map<String, String>> months = csvDecoder.read(inputStream);
+var months = csvDecoder.read(inputStream);
 
 for (var month : months) {
-    System.out.println(String.format("%s has %d days", month.get("name"), month.get("days")));
+    System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
 }
 ```
 
@@ -529,18 +529,20 @@ Columns with empty headings are ignored. Empty field values are treated as null.
 The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
 
 ```java
-var textEncoder = new TextEncoder();
-
 try (var outputStream = new FileOutputStream(file)) {
+    var textEncoder = new TextEncoder();
+    
     textEncoder.write("Hello, World!", outputStream);
 }
 
-var textDecoder = new TextDecoder();
-
 String text;
 try (var inputStream = new FileInputStream(file)) {
-    text = textDecoder.read(inputStream); // Hello, World!
+    var textDecoder = new TextDecoder();
+
+    text = textDecoder.read(inputStream);
 }
+
+System.out.println(text); // Hello, World!
 ```
 
 ## TemplateEncoder
@@ -606,8 +608,16 @@ The first argument to this method represents the value to be modified, and the s
 Custom modifiers are added to a template encoder instance via the `getModifiers()` method. For example, the following code creates a modifier that converts values to uppercase:
 
 ```java
+var templateEncoder = new TemplateEncoder(getClass().getResource("modifier.txt"));
+
 templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
+
+templateEncoder.write(mapOf(
+    entry("text", "hello")
+), System.out);
 ```
+
+The output of this code would be "HELLO".
 
 Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
 
