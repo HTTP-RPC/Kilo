@@ -55,16 +55,16 @@ public class MathService extends WebService {
     public double getSum(double a, double b) {
         return a + b;
     }
-    
+
     @RequestMethod("GET")
     @ResourcePath("sum")
     public double getSum(List<Double> values) {
         double total = 0;
-    
+
         for (double value : values) {
             total += value;
         }
-    
+
         return total;
     }
 }
@@ -110,41 +110,9 @@ Method arguments may be any of the following types:
 
 Unspecified values are automatically converted to `0` or `false` for primitive types.
 
-`List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
+`List` arguments represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
-`URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. For example:
-
-```java
-@WebServlet(urlPatterns = {"/upload/*"}, loadOnStartup = 1)
-@MultipartConfig
-public class FileUploadService extends WebService {
-    @RequestMethod("POST")
-    public void upload(URL file) throws IOException {
-        try (var inputStream = file.openStream()) {
-            ...
-        }
-    }
-
-    @RequestMethod("POST")
-    public void upload(List<URL> files) throws IOException {
-        for (var file : files) {
-            try (var inputStream = file.openStream()) {
-                ...
-            }
-        }
-    }
-}
-```
-
-The methods could be invoked using this HTML form, for example, or by Kilo's `WebServiceProxy` class:
-
-```html
-<form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"/><br/>
-    <input type="file" name="files" multiple/><br/>
-    <input type="submit"/><br/>
-</form>
-```
+`URL` and `List<URL>` arguments represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
 
 If an argument value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, an HTTP 405 (method not allowed) response is returned.
 
@@ -290,12 +258,12 @@ public class MathService extends WebService {
     @ResourcePath("sum")
     @Description("Calculates the sum of two numbers.")
     public double getSum(
-        @Description("The first number.") double a, 
+        @Description("The first number.") double a,
         @Description("The second number.") double b
     ) {
         return a + b;
     }
-    
+
     ...
 }
 ```
