@@ -21,14 +21,21 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.util.ResourceBundleAdapter;
+import org.httprpc.kilo.xml.ElementAdapter;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -140,6 +147,65 @@ public class ExamplesTest {
 
         templateEncoder.write(mapOf(
             entry("text", "hello")
+        ), System.out);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testElementAdapter() throws ParserConfigurationException, SAXException, IOException {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setIgnoringComments(true);
+
+        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+        Document document;
+        try (var inputStream = getClass().getResourceAsStream("account.xml")) {
+            document = documentBuilder.parse(inputStream);
+        }
+
+        var accountAdapter = new ElementAdapter(document.getDocumentElement());
+
+        var holder = (Map<String, Object>)accountAdapter.get("holder");
+
+        System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName")));
+        System.out.println(accountAdapter.get("@id"));
+
+        var transactions = (Map<String, Object>)accountAdapter.get("transactions");
+        var credits = (List<Map<String, Object>>)transactions.get("credit*");
+
+        for (var credit : credits) {
+            System.out.println(credit.get("amount").toString());
+            System.out.println(credit.get("date").toString());
+        }
+    }
+
+    @Test
+    public void testResourceBundleAdapter() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass().getResource("list.html"));
+
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".headings");
+
+        templateEncoder.write(mapOf(
+            entry("headings", new ResourceBundleAdapter(resourceBundle)),
+            entry("items", listOf(
+                mapOf(
+                    entry("name", "Item 1"),
+                    entry("description", "Item number 1"),
+                    entry("quantity", 3)
+                ),
+                mapOf(
+                    entry("name", "Item 2"),
+                    entry("description", "Item number 2"),
+                    entry("quantity", 5)
+                ),
+                mapOf(
+                    entry("name", "Item 3"),
+                    entry("description", "Item number 3"),
+                    entry("quantity", 7)
+                )
+            ))
         ), System.out);
     }
 }

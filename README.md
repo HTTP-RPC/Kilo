@@ -112,7 +112,7 @@ Unspecified values are automatically converted to `0` or `false` for primitive t
 
 `List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
-`URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
+`URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) service example for more information.
 
 If an argument value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, an HTTP 405 (method not allowed) response is returned.
 
@@ -708,12 +708,10 @@ Map<String, Object> map = jsonDecoder.read(inputStream);
 
 TreeNode root = BeanAdapter.coerce(map, TreeNode.class);
 
-System.out.println(root.getName()); // "Seasons"
-System.out.println(root.getChildren().get(0).getName()); // "Winter"
-System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // "January"
+System.out.println(root.getName()); // Seasons
+System.out.println(root.getChildren().get(0).getName()); // Winter
+System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
-
-See the class documentation for more information. 
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when reading or writing property values. For example:
@@ -897,7 +895,7 @@ var accountAdapter = new ElementAdapter(document.getDocumentElement());
 
 var holder = (Map<String, Object>)accountAdapter.get("holder");
 
-System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName")));
+System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName"))); // Smith, John
 ```
 
 Namespaces are ignored when identifying elements by tag name. However, the namespace URI for an element (when applicable) can be obtained by requesting the value associated with the ":" key.
@@ -905,14 +903,13 @@ Namespaces are ignored when identifying elements by tag name. However, the names
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
 
 ```java
-System.out.println(accountAdapter.get("@id")); // "101"
+System.out.println(accountAdapter.get("@id")); // 101
 ```
 
 A list of sub-elements can be obtained by appending an asterisk to the element name:
 
 ```java
 var transactions = (Map<String, Object>)accountAdapter.get("transactions");
-
 var credits = (List<Map<String, Object>>)transactions.get("credit*");
 
 for (var credit : credits) {
@@ -934,9 +931,9 @@ The `ResourceBundleAdapter` class provides access to the contents of a resource 
 <table>
     <!-- {{?headings}} -->
     <tr>
-        <td>{{name}}</td>
-        <td>{{description}}</td>
-        <td>{{quantity}}</td>
+        <th>{{name}}</th>
+        <th>{{description}}</th>
+        <th>{{quantity}}</th>
     </tr>
     <!-- {{/headings}} -->
 
@@ -950,6 +947,16 @@ The `ResourceBundleAdapter` class provides access to the contents of a resource 
 </table>
 ```
 
+If _headings.properties_ is defined as follows:
+
+```
+name = Name
+description = Description
+quantity = Quantity
+```
+
+this code will produce an HTML table containing the localized headings:
+
 ```java
 var templateEncoder = new TemplateEncoder(getClass().getResource("list.html"));
 
@@ -957,7 +964,9 @@ var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() 
 
 templateEncoder.write(mapOf(
     entry("headings", new ResourceBundleAdapter(resourceBundle)),
-    entry("items", items)
+    entry("items", listOf(
+        ...
+    ))
 ), System.out);
 ```
 

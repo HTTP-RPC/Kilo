@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<account id="101">
+    <holder>
+        <firstName>John</firstName>
+        <lastName>Smith</lastName>
+    </holder>
+    <transactions>
+        <credit>
+            <amount>100.00</amount>
+            <date>10/5/2020</date>
+        </credit>
+        <credit>
+            <amount>50.00</amount>
+            <date>10/12/2020</date>
+        </credit>
+        <debit>
+            <amount>25.00</amount>
+            <date>10/14/2020</date>
+        </debit>
+        <credit>
+            <amount>75.00</amount>
+            <date>10/19/2020</date>
+        </credit>
+    </transactions>
+</account>
