@@ -110,9 +110,9 @@ Method arguments may be any of the following types:
 
 Unspecified values are automatically converted to `0` or `false` for primitive types.
 
-`List` arguments represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. List values are automatically converted to their declared types (e.g. `List<Double>`).
+`List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
 
-`URL` and `List<URL>` arguments represent file uploads and behave similarly to `<input type="file">` tags in HTML forms. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
+`URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
 
 If an argument value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, an HTTP 405 (method not allowed) response is returned.
 
@@ -280,9 +280,22 @@ public enum Size {
 }
 ```  
 
-If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
+The `Keys` annotation can be used to provide descriptions for an endpoint's keys. For example:
 
-The `Keys` annotation can be used to provide descriptions for an endpoint's keys. See the [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) example for more information.
+```java
+@RequestMethod("PUT")
+@ResourcePath("items/?:itemID")
+@Description("Updates an item.")
+@Keys({"The item ID."})
+@Content(Item.class)
+public void updateItem() throws SQLException {
+    Item item = getBody();
+     
+    ... 
+}
+```
+
+If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
 #### IndexServlet
 An index of all active services can be enabled by declaring an instance of `org.httprpc.kilo.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
