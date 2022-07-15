@@ -117,57 +117,36 @@ Unspecified values are automatically converted to `0` or `false` for primitive t
 If an argument value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, an HTTP 405 (method not allowed) response is returned.
 
 ### Path Variables
-Path variables may be specified by a "?" character in the resource path. For example:
+Path variables are specified by a "?" character in an endpoint's resource path:
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("contacts/?/addresses/?")
-public List<Address> getContactAddresses() { ... }
+@ResourcePath("contacts/?")
+public Contact getContactDetail() { ... }
 ```
 
-The `getKey()` method returns the value of a path variable associated with the current request:
+They may optionally be associated with a name or "key", as shown below:
+
+```java
+@RequestMethod("GET")
+@ResourcePath("contacts/?:contactID")
+public Contact getContactDetail() { ... }
+```
+
+The value of a key can be obtained via one of the following methods:
 
 ```java
 protected String getKey(int index) { ... }
-```
- 
-For example, given the following request:
-
-```
-GET /contacts/jsmith/addresses/home
-```
-
-the value of the key at index 0 would be "jsmith", and the value at index 1 would be "home".
-
-#### Named Variables
-Path variables can optionally be assigned a name by appending a colon and key name to the "?" character:
-
-```java
-@RequestMethod("GET")
-@ResourcePath("contacts/?:contactID/addresses/?:addressType")
-public List<Address> getContactAddresses() { ... }
-```
-
-A named variable can be retrieved via this `getKey()` overload:
-
-```java
-protected String getKey(String name) { ... }
-```
- 
-For example, given the preceding `GET` request, the value of the key named "contactID" would be "jsmith", and the value of "addressType" would be "home".
-
-#### Typed Access
-Although key values are returned as strings by default, they can be easily converted to other types via one of the following overloads:
-
-```java
 protected <T> T getKey(int index, Class<T> type) { ... }
+
+protected String getKey(String name) { ... }
 protected <T> T getKey(String name, Class<T> type) { ... }
 ```
 
-For example, this code would return the value of the first path variable as an integer:
+For example:
 
 ```java
-int id = getKey(0, Integer.class);
+var contactID = getKey("contactID", Integer.class);
 ```
 
 ### Custom Body Content
