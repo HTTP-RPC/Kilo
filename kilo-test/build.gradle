@@ -37,3 +37,7 @@ compileTestJava {
         '-parameters'
     ]
 }
+
+war {
+    archiveFileName = "${project.name}.war"
+}
