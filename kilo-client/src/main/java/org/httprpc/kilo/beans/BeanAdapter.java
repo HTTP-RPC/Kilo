@@ -51,7 +51,7 @@ import java.util.UUID;
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     /**
-     * Class representing a bean property.
+     * Represents a bean property.
      */
     public static class Property {
         private Method accessor = null;
