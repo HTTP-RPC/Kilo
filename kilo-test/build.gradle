@@ -16,9 +16,6 @@ plugins {
     id 'war'
 }
 
-group = 'org.httprpc'
-version = '1.0'
-
 dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
     compileOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
