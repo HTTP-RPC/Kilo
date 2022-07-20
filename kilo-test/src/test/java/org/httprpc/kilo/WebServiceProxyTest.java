@@ -165,7 +165,7 @@ public class WebServiceProxyTest {
     private static final int EOF = -1;
 
     public WebServiceProxyTest() throws IOException {
-        baseURL = new URL("http://localhost:8080/kilo-test-1.0/");
+        baseURL = new URL("http://localhost:8080/kilo-test/");
     }
 
     @Test
