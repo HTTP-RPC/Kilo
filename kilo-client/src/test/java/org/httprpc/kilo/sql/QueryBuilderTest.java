@@ -88,6 +88,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testUpdateWithExpression() {
+        var queryBuilder = QueryBuilder.update("xyz").set(mapOf(
+            entry("foo", ":a + b")
+        )).where("c = :d");
+
+        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+
+        assertEquals("update xyz set foo = ? + b where c = ?", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testDelete() {
         var queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
 
@@ -178,13 +189,6 @@ public class QueryBuilderTest {
     public void testMissingValueParameterName() {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
             entry("foo", ":")
-        )));
-    }
-
-    @Test
-    public void testInvalidValueParameterName() {
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
-            entry("foo", ":a + b")
         )));
     }
 

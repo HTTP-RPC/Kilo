@@ -841,32 +841,8 @@ public class QueryBuilder {
         if (value instanceof String) {
             var string = (String)value;
 
-            if (string.equals("?")) {
-                parameters.add(null);
-
-                sqlBuilder.append(string);
-            } else if (string.startsWith(":")) {
-                var n = string.length();
-
-                if (n == 1) {
-                    throw new IllegalArgumentException("Missing parameter name.");
-                }
-
-                var parameterBuilder = new StringBuilder(n - 1);
-
-                for (var i = 1; i < n; i++) {
-                    var c = string.charAt(i);
-
-                    if (!Character.isJavaIdentifierPart(c)) {
-                        throw new IllegalArgumentException("Invalid parameter name.");
-                    }
-
-                    parameterBuilder.append(c);
-                }
-
-                parameters.add(parameterBuilder.toString());
-
-                sqlBuilder.append("?");
+            if (string.startsWith(":") || string.equals("?")) {
+                append(string);
             } else {
                 sqlBuilder.append("'");
 
