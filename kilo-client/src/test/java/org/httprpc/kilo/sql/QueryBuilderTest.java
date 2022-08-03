@@ -17,8 +17,10 @@ package org.httprpc.kilo.sql;
 import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.sql.QueryBuilder.and;
+import static org.httprpc.kilo.sql.QueryBuilder.equalTo;
 import static org.httprpc.kilo.sql.QueryBuilder.exists;
 import static org.httprpc.kilo.sql.QueryBuilder.in;
+import static org.httprpc.kilo.sql.QueryBuilder.notEqualTo;
 import static org.httprpc.kilo.sql.QueryBuilder.notExists;
 import static org.httprpc.kilo.sql.QueryBuilder.notIn;
 import static org.httprpc.kilo.sql.QueryBuilder.or;
@@ -103,6 +105,28 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
 
         assertEquals("delete from A where a < 150", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testEqualToConditional() {
+        var queryBuilder = QueryBuilder.select("*")
+            .from("A")
+            .where("b", equalTo(
+                QueryBuilder.select("b").from("B").where("c = :c")
+            ));
+
+        assertEquals("select * from A where b = (select b from B where c = ?)", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testNotEqualToConditional() {
+        var queryBuilder = QueryBuilder.select("*")
+            .from("A")
+            .where("b", notEqualTo(
+                QueryBuilder.select("b").from("B").where("c = :c")
+            ));
+
+        assertEquals("select * from A where b != (select b from B where c = ?)", queryBuilder.getSQL());
     }
 
     @Test

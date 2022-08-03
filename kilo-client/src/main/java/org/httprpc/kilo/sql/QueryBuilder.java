@@ -274,6 +274,40 @@ public class QueryBuilder {
     }
 
     /**
+     * Creates an "equal to" conditional.
+     *
+     * @param queryBuilder
+     * The conditional's subquery.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String equalTo(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("= (%s)", queryBuilder);
+    }
+
+    /**
+     * Creates a "not equal to" conditional.
+     *
+     * @param queryBuilder
+     * The conditional's subquery.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String notEqualTo(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("!= (%s)", queryBuilder);
+    }
+
+    /**
      * Creates an "in" conditional.
      *
      * @param queryBuilder
