@@ -16,7 +16,9 @@ package org.httprpc.kilo.sql;
 
 import org.junit.jupiter.api.Test;
 
+import static org.httprpc.kilo.sql.QueryBuilder.allOf;
 import static org.httprpc.kilo.sql.QueryBuilder.and;
+import static org.httprpc.kilo.sql.QueryBuilder.anyOf;
 import static org.httprpc.kilo.sql.QueryBuilder.equalTo;
 import static org.httprpc.kilo.sql.QueryBuilder.exists;
 import static org.httprpc.kilo.sql.QueryBuilder.in;
@@ -167,6 +169,13 @@ public class QueryBuilderTest {
         ));
 
         assertEquals("select * from D where e not exists (select e from E)", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testConditionalGroups() {
+        var queryBuilder = QueryBuilder.select("*").from("xyz").where(allOf("a = 1", "b = 2", "c = 3"), and(anyOf("d = 4", "e = 5")));
+
+        assertEquals("select * from xyz where (a = 1 and b = 2 and c = 3) and (d = 4 or e = 5)", queryBuilder.getSQL());
     }
 
     @Test

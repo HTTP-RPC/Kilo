@@ -274,6 +274,64 @@ public class QueryBuilder {
     }
 
     /**
+     * Creates an "and" conditional group.
+     *
+     * @param predicates
+     * The group's predicates.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String allOf(String... predicates) {
+        if (predicates == null || predicates.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return conditionalGroup("and", predicates);
+    }
+
+    /**
+     * Creates an "or" conditional group.
+     *
+     * @param predicates
+     * The group's predicates.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String anyOf(String... predicates) {
+        if (predicates == null || predicates.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return conditionalGroup("or", predicates);
+    }
+
+    private static String conditionalGroup(String operator, String... predicates) {
+        if (predicates == null || predicates.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        var stringBuilder = new StringBuilder();
+
+        stringBuilder.append("(");
+
+        for (var i = 0; i < predicates.length; i++) {
+            if (i > 0) {
+                stringBuilder.append(" ");
+                stringBuilder.append(operator);
+                stringBuilder.append(" ");
+            }
+
+            stringBuilder.append(predicates[i]);
+        }
+
+        stringBuilder.append(")");
+
+        return stringBuilder.toString();
+    }
+
+    /**
      * Creates an "equal to" conditional.
      *
      * @param queryBuilder
