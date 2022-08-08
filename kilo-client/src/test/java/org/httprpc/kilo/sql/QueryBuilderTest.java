@@ -60,6 +60,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectWithSubquery() {
+        var queryBuilder = QueryBuilder.select("*")
+            .from(QueryBuilder.select("a, b, c").from("A"), "a")
+            .where("d = :d");
+
+        assertEquals(listOf("d"), queryBuilder.getParameters());
+
+        assertEquals("select * from (select a, b, c from A) a where d = ?", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testInsertInto() {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
