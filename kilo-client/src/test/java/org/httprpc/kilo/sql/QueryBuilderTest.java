@@ -110,6 +110,13 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testConditionalGroups() {
+        var queryBuilder = QueryBuilder.select("*").from("xyz").where(allOf("a = 1", "b = 2", "c = 3"), and(anyOf("d = 4", "e = 5")));
+
+        assertEquals("select * from xyz where (a = 1 and b = 2 and c = 3) and (d = 4 or e = 5)", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testEqualToConditional() {
         var queryBuilder = QueryBuilder.select("*")
             .from("A")
@@ -172,22 +179,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testConditionalGroups() {
-        var queryBuilder = QueryBuilder.select("*").from("xyz").where(allOf("a = 1", "b = 2", "c = 3"), and(anyOf("d = 4", "e = 5")));
-
-        assertEquals("select * from xyz where (a = 1 and b = 2 and c = 3) and (d = 4 or e = 5)", queryBuilder.getSQL());
-    }
-
-    @Test
-    public void testExistingSQL() {
-        var queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
-
-        assertEquals(listOf("x"), queryBuilder.getParameters());
-
-        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.getSQL());
-    }
-
-    @Test
     public void testQuotedColon() {
         var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
 
@@ -223,6 +214,15 @@ public class QueryBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
             entry("foo", ":")
         )));
+    }
+
+    @Test
+    public void testExistingSQL() {
+        var queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
+
+        assertEquals(listOf("x"), queryBuilder.getParameters());
+
+        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.getSQL());
     }
 
     @Test
