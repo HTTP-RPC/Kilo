@@ -167,6 +167,11 @@ public class BeanAdapterTest {
 
     @Test
     public void testTemporalAmountCoercion() {
+        Duration duration = BeanAdapter.coerce(12345, Duration.class);
+
+        assertEquals(12, duration.getSeconds());
+        assertEquals(345, duration.getNano() / 1000000);
+
         assertEquals(Duration.parse("PT2H30M"), BeanAdapter.coerce("PT2H30M", Duration.class));
         assertEquals(Period.parse("P3Y2M"), BeanAdapter.coerce("P3Y2M", Period.class));
     }

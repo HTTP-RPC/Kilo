@@ -620,7 +620,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
             } else if (type == Duration.class) {
-                return Duration.parse(value.toString());
+                if (value instanceof Number) {
+                    return Duration.ofMillis(((Number)value).longValue());
+                } else {
+                    return Duration.parse(value.toString());
+                }
             } else if (type == Period.class) {
                 return Period.parse(value.toString());
             } else if (type == UUID.class) {
