@@ -46,57 +46,62 @@ public class PetService extends AbstractDatabaseService {
         Date getDeath();
     }
 
-    @RequestMethod("GET")
-    public List<Pet> getPets(String owner) throws SQLException {
-        var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
-
-        var results = queryBuilder.execute(getConnection(), mapOf(
-            entry("owner", owner)
-        )).getResults();
-
-        return BeanAdapter.coerceList(results, Pet.class);
-    }
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String TEXT_CSV = "text/csv";
+    private static final String TEXT_HTML = "text/html";
 
     @RequestMethod("GET")
-    public void getPets(String owner, String format) throws SQLException, IOException {
+    public List<Pet> getPets(String owner) throws SQLException, IOException {
         var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-        try (var statement = queryBuilder.prepare(getConnection());
-             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+        var accept = getRequest().getHeader("Accept");
+
+        if (accept == null || accept.equals("*/*") || accept.equalsIgnoreCase(APPLICATION_JSON)) {
+            var results = queryBuilder.execute(getConnection(), mapOf(
                 entry("owner", owner)
-            )))) {
-            if (format.equals("csv")) {
-                getResponse().setContentType("text/csv");
+            )).getResults();
 
-                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
+            return BeanAdapter.coerceList(results, Pet.class);
+        } else {
+            try (var statement = queryBuilder.prepare(getConnection());
+                var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+                    entry("owner", owner)
+                )))) {
+                if (accept.equalsIgnoreCase(TEXT_CSV)) {
+                    getResponse().setContentType(TEXT_CSV);
 
-                csvEncoder.setLabels(mapOf(
-                    entry("name", "Name"),
-                    entry("species", "Species"),
-                    entry("sex", "Sex"),
-                    entry("birth", "Birth"),
-                    entry("death", "Death")
-                ));
+                    var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-                csvEncoder.setFormats(mapOf(
-                    entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
-                ));
+                    csvEncoder.setLabels(mapOf(
+                        entry("name", "Name"),
+                        entry("species", "Species"),
+                        entry("sex", "Sex"),
+                        entry("birth", "Birth"),
+                        entry("death", "Death")
+                    ));
 
-                csvEncoder.write(results, getResponse().getOutputStream());
-            } else if (format.equals("html")) {
-                getResponse().setContentType("text/html");
+                    csvEncoder.setFormats(mapOf(
+                        entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
+                    ));
 
-                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+                    csvEncoder.write(results, getResponse().getOutputStream());
+                } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
+                    getResponse().setContentType(TEXT_HTML);
 
-                var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
+                    var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                templateEncoder.write(mapOf(
-                    entry("headings", new ResourceBundleAdapter(resourceBundle)),
-                    entry("data", results)
-                ), getResponse().getOutputStream());
-            } else {
-                throw new IllegalArgumentException();
+                    var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
+
+                    templateEncoder.write(mapOf(
+                        entry("headings", new ResourceBundleAdapter(resourceBundle)),
+                        entry("data", results)
+                    ), getResponse().getOutputStream());
+                } else {
+                    throw new IllegalArgumentException();
+                }
             }
+
+            return null;
         }
     }
 

@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -377,16 +376,9 @@ public class WebServiceProxyTest {
         }).setArguments(mapOf(
             entry("id", 101)
         )).setMonitorStream(System.out).invoke((inputStream, contentType) -> {
-            var inputStreamReader = new InputStreamReader(inputStream);
+            var textDecoder = new TextDecoder();
 
-            var textBuilder = new StringBuilder();
-
-            int c;
-            while ((c = inputStreamReader.read()) != EOF) {
-                textBuilder.append((char)c);
-            }
-
-            return textBuilder.toString();
+            return textDecoder.read(inputStream);
         });
 
         assertNotNull(text);
@@ -491,6 +483,21 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testCustomException() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
+
+        webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
+            var textDecoder = new TextDecoder();
+
+            throw new CustomException(textDecoder.read(errorStream));
+        });
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        assertThrows(CustomException.class, webServiceProxy::invoke);
+    }
+
+    @Test
     public void testMath() throws IOException {
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("a", 4),
@@ -557,17 +564,35 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomException() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
+    public void testPets() throws IOException {
+        testPets("pets.json", null);
+        testPets("pets.json", "application/json");
+        testPets("pets.csv", "text/csv");
+        testPets("pets.html", "text/html");
 
-        webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
+        Number averageAge = WebServiceProxy.get(baseURL, "pets/average-age").invoke();
+
+        assertNotNull(averageAge);
+    }
+
+    private void testPets(String name, String accept) throws IOException {
+        String expected;
+        try (var inputStream = getClass().getResourceAsStream(name)) {
             var textDecoder = new TextDecoder();
 
-            throw new CustomException(textDecoder.read(errorStream));
+            expected = textDecoder.read(inputStream);
+        }
+
+        var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
+            entry("Accept", accept)
+        )).setArguments(mapOf(
+            entry("owner", "Gwen")
+        )).invoke((inputStream, contentType) -> {
+            var textDecoder = new TextDecoder();
+
+            return textDecoder.read(inputStream);
         });
 
-        webServiceProxy.setMonitorStream(System.out);
-
-        assertThrows(CustomException.class, webServiceProxy::invoke);
+        assertEquals(expected, actual);
     }
 }
