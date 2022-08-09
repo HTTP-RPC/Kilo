@@ -566,8 +566,11 @@ public class WebServiceProxyTest {
     @Test
     public void testPets() throws IOException {
         testPets("pets.json", null);
+        testPets("pets.json", "*/*");
         testPets("pets.json", "application/json");
+
         testPets("pets.csv", "text/csv");
+
         testPets("pets.html", "text/html");
 
         Number averageAge = WebServiceProxy.get(baseURL, "pets/average-age").invoke();

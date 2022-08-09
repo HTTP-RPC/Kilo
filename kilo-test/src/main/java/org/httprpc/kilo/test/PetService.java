@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -63,12 +64,14 @@ public class PetService extends AbstractDatabaseService {
 
             return BeanAdapter.coerceList(results, Pet.class);
         } else {
+            var response = getResponse();
+
             try (var statement = queryBuilder.prepare(getConnection());
                 var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                     entry("owner", owner)
                 )))) {
                 if (accept.equalsIgnoreCase(TEXT_CSV)) {
-                    getResponse().setContentType(TEXT_CSV);
+                    response.setContentType(TEXT_CSV);
 
                     var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
@@ -84,9 +87,9 @@ public class PetService extends AbstractDatabaseService {
                         entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
                     ));
 
-                    csvEncoder.write(results, getResponse().getOutputStream());
+                    csvEncoder.write(results, response.getOutputStream());
                 } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
-                    getResponse().setContentType(TEXT_HTML);
+                    response.setContentType(TEXT_HTML);
 
                     var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
@@ -95,9 +98,9 @@ public class PetService extends AbstractDatabaseService {
                     templateEncoder.write(mapOf(
                         entry("headings", new ResourceBundleAdapter(resourceBundle)),
                         entry("data", results)
-                    ), getResponse().getOutputStream());
+                    ), response.getOutputStream());
                 } else {
-                    throw new IllegalArgumentException();
+                    throw new UnsupportedOperationException();
                 }
             }
 
