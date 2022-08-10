@@ -31,6 +31,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -867,10 +868,10 @@ public class WebServiceProxy {
     }
 
     @SuppressWarnings("unchecked")
-    private static Iterable<Object> getParameterValues(Object argument) {
-        Iterable<Object> values;
-        if (argument instanceof Iterable<?>) {
-            values = (Iterable<Object>)getParameterValue(argument);
+    private static List<Object> getParameterValues(Object argument) {
+        List<Object> values;
+        if (argument instanceof List<?>) {
+            values = (List<Object>)argument;
         } else {
             values = listOf(getParameterValue(argument));
         }

@@ -27,7 +27,7 @@ Classes provided by the Kilo framework include:
 * [WebService](#webservice) - abstract base class for web services
 * [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes an iterable sequence of values to/from CSV
+* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes a sequence of map values to/from CSV
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes plain text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
@@ -187,7 +187,7 @@ By default, an HTTP 200 response is returned when a service method completes suc
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative encodings. See the method documentation for more information.
 
 ### Request and Repsonse Properties
-The following methods provide access the request and response objects associated with the current invocation:
+The following methods provide access to the request and response objects associated with the current invocation:
 
 ```java
 protected HttpServletRequest getRequest() { ... }
@@ -208,7 +208,7 @@ protected boolean isAuthorized(HttpServletRequest request, Method method) { ... 
 The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
 
 ### Exceptions
-If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status will be returned as shown below:
+If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is returned as shown below:
 
 * `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
 * `NoSuchElementException` - HTTP 404 (not found)
@@ -322,7 +322,7 @@ Request headers and arguments are specified via the `setHeaders()` and `setArgum
 
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if a custom body is provided either via `setBody()` or by a custom request handler, `POST` arguments will be sent in the query string.
 
-Any value may be used as an argument. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `Iterable` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 Service operations are invoked via one of the following methods:
 
