@@ -93,21 +93,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public Object get(int index) {
-            return adapt(getList().get(index), propertyCache);
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public int size() {
-            return getList().size();
-        }
-
-        @SuppressWarnings("unchecked")
-        private List<Object> getList() {
-            if (!(iterable instanceof List<?>)) {
-                throw new UnsupportedOperationException();
-            }
-
-            return (List<Object>)iterable;
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -125,6 +116,27 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     return adapt(iterator.next(), propertyCache);
                 }
             };
+        }
+    }
+
+    // List adapter
+    private static class ListAdapter extends IterableAdapter {
+        List<?> list;
+
+        ListAdapter(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
+            super(list, propertyCache);
+
+            this.list = list;
+        }
+
+        @Override
+        public Object get(int index) {
+            return adapt(list.get(index), propertyCache);
+        }
+
+        @Override
+        public int size() {
+            return list.size();
         }
     }
 
@@ -423,7 +435,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof URL) {
             return value;
         } else if (value instanceof Iterable<?>) {
-            return new IterableAdapter((Iterable<?>)value, propertyCache);
+            if (value instanceof List<?>) {
+                return new ListAdapter((List<?>)value, propertyCache);
+            } else {
+                return new IterableAdapter((Iterable<?>)value, propertyCache);
+            }
         } else if (value instanceof Map<?, ?>) {
             return new MapAdapter((Map<?, ?>)value, propertyCache);
         } else {
