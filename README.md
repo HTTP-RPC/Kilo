@@ -179,7 +179,7 @@ Return values are converted to their JSON equivalents as follows:
 * `java.util.UUID`: string
 * `java.net.URL`: string
 * `Iterable`: array
-* `java.util.Map` or Java bean: object
+* `java.util.Map`: object
 
 By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
 

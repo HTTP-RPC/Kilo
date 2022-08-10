@@ -179,7 +179,7 @@ public class JSONEncoder extends Encoder<Object> {
 
             writer.write("}");
         } else {
-            writer.append(null);
+            throw new IllegalArgumentException("Unsupported type.");
         }
     }
 
