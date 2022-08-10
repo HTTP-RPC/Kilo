@@ -916,11 +916,13 @@ public class TemplateEncoder extends Encoder<Object> {
 
         if (path.isEmpty()) {
             return value;
-        } else if (value instanceof Map<?, ?>){
-            return valueAt((Map<?, ?>)value, path);
-        } else {
-            return null;
         }
+
+        if (!(value instanceof Map<?, ?>)) {
+            throw new IllegalArgumentException("Value is not a map.");
+        }
+
+        return valueAt((Map<?, ?>)value, path);
     }
 
     /**

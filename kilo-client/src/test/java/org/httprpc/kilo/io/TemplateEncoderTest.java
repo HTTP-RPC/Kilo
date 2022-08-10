@@ -33,6 +33,7 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TemplateEncoderTest {
     @Test
@@ -567,6 +568,17 @@ public class TemplateEncoderTest {
         encoder.write(list, writer);
 
         assertEquals("[]", writer.toString());
+    }
+
+    @Test
+    public void testInvalidMapValue() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
+
+        Map<String, ?> root = mapOf(
+            entry("a", "xyz")
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> encoder.write(root, new StringWriter()));
     }
 
     @Test
