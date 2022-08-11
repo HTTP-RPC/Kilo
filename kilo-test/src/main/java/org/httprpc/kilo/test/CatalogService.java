@@ -98,7 +98,7 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         Item item = getBody();
 
-        Integer itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
+        var itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
         )).execute(getConnection(), mapOf(

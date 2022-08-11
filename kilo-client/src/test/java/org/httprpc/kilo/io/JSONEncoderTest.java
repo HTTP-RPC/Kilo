@@ -35,8 +35,14 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JSONEncoderTest {
+    @Test
+    public void testNull() throws IOException {
+        assertEquals("null", encode(null));
+    }
+
     @Test
     public void testString() throws IOException {
         assertEquals("\"abcdéfg\"", encode("abcdéfg"));
@@ -151,6 +157,11 @@ public class JSONEncoderTest {
         );
 
         assertEquals(expected, encode(map));
+    }
+
+    @Test
+    public void testInvalidValue() {
+        assertThrows(IllegalArgumentException.class, () -> encode(new Object()));
     }
 
     @Test

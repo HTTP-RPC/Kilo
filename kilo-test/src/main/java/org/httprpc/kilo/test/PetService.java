@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -119,7 +118,7 @@ public class PetService extends AbstractDatabaseService {
             var now = new Date();
 
             averageAge = results.stream()
-                .map(result -> (Pet)BeanAdapter.coerce(result, Pet.class))
+                .map(result -> BeanAdapter.coerce(result, Pet.class))
                 .mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
         }
 

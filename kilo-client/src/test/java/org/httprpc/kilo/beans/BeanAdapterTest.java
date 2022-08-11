@@ -93,10 +93,7 @@ public class BeanAdapterTest {
             ))
         );
 
-        TestInterface x = BeanAdapter.coerce(map, TestInterface.class);
-        Map<String, ?> y =  new BeanAdapter(x);
-
-        assertEquals(map, y);
+        assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestInterface.class)));
         assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestBean.class)));
     }
 
@@ -167,7 +164,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testTemporalAmountCoercion() {
-        Duration duration = BeanAdapter.coerce(12345, Duration.class);
+        var duration = BeanAdapter.coerce(12345, Duration.class);
 
         assertEquals(12, duration.getSeconds());
         assertEquals(345, duration.getNano() / 1000000);
@@ -195,9 +192,6 @@ public class BeanAdapterTest {
         assertEquals(listOf(1, 2, 3), list);
 
         assertNull(BeanAdapter.coerceList(null, Object.class));
-        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(List.class, Object.class)));
-
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce("abc", BeanAdapter.typeOf(List.class, Integer.class)));
     }
 
     @Test
@@ -208,33 +202,13 @@ public class BeanAdapterTest {
             entry("c", "3.0")
         ), Double.class);
 
-        assertNull(BeanAdapter.coerceMap(null, Object.class));
-        assertNull(BeanAdapter.coerce(null, BeanAdapter.typeOf(Map.class, String.class, Object.class)));
-
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce("abc", BeanAdapter.typeOf(Map.class, String.class, Integer.class)));
-    }
-
-    @Test
-    public void testTypeOf() {
-        List<Integer> list = BeanAdapter.coerce(listOf("1", "2", "3"), BeanAdapter.typeOf(List.class, Integer.class));
-
-        assertEquals(listOf(1, 2, 3), list);
-
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(List.class));
-
-        Map<String, Double> map = BeanAdapter.coerce(mapOf(
-            entry("a", "1.0"),
-            entry("b", "2.0"),
-            entry("c", "3.0")
-        ), BeanAdapter.typeOf(Map.class, String.class, Double.class));
-
         assertEquals(mapOf(
             entry("a", 1.0),
             entry("b", 2.0),
             entry("c", 3.0)
         ), map);
 
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(Map.class, String.class));
+        assertNull(BeanAdapter.coerceMap(null, Object.class));
     }
 
     @Test
@@ -250,8 +224,8 @@ public class BeanAdapterTest {
 
         Map<String, Object> map2 = mapOf(entry("flag", true));
 
-        TestInterface.NestedInterface nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
-        TestInterface.NestedInterface nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
+        var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
+        var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
 
         assertEquals(nestedBean1, nestedBean2);
         assertEquals(map1.hashCode(), nestedBean1.hashCode());
@@ -270,7 +244,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testMissingProperty() {
-        TestBean testBean = BeanAdapter.coerce(mapOf(
+        var testBean = BeanAdapter.coerce(mapOf(
             entry("foo", "bar")
         ), TestBean.class);
 

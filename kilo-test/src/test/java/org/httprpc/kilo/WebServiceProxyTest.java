@@ -274,7 +274,7 @@ public class WebServiceProxyTest {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        Response response = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
+        var response = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -314,14 +314,14 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomBodyPost() throws IOException {
-        Body body = BeanAdapter.coerce(mapOf(
+        var body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true)
         ), Body.class);
 
-        Body result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
         )).setBody(body).setMonitorStream(System.out).invoke(Body.class);
 
@@ -511,7 +511,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testTree() throws IOException {
-        TreeNode seasons = WebServiceProxy.get(baseURL, "tree").setMonitorStream(System.out).invoke(TreeNode.class);
+        var seasons = WebServiceProxy.get(baseURL, "tree").setMonitorStream(System.out).invoke(TreeNode.class);
 
         assertNotNull(seasons);
         assertEquals("Seasons", seasons.getName());
@@ -529,7 +529,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCatalog() throws IOException {
-        Item item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
+        var item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
             entry("description", "abc"),
             entry("price", 150.00)
         )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(Item.class);
@@ -555,12 +555,14 @@ public class WebServiceProxyTest {
         assertEquals(Arrays.asList(Size.values()), getCatalogSizes());
     }
 
+    @SuppressWarnings("unchecked")
     private List<Item> getCatalogItems() throws IOException {
-        return WebServiceProxy.get(baseURL, "catalog/items").invoke(BeanAdapter.typeOf(List.class, Item.class));
+        return WebServiceProxy.get(baseURL, "catalog/items").invoke(List.class, Item.class);
     }
 
+    @SuppressWarnings("unchecked")
     private List<Size> getCatalogSizes() throws IOException {
-        return WebServiceProxy.get(baseURL, "catalog/sizes").invoke(BeanAdapter.typeOf(List.class, Size.class));
+        return WebServiceProxy.get(baseURL, "catalog/sizes").invoke(List.class, Size.class);
     }
 
     @Test

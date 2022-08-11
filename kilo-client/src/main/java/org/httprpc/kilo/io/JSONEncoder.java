@@ -66,7 +66,9 @@ public class JSONEncoder extends Encoder<Object> {
     }
 
     private void encode(Object value, Writer writer) throws IOException {
-        if (value instanceof CharSequence) {
+        if (value == null) {
+            writer.append(null);
+        } else if (value instanceof CharSequence) {
             var text = (CharSequence)value;
 
             writer.write("\"");

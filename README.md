@@ -328,7 +328,7 @@ Service operations are invoked via one of the following methods:
 
 ```java
 public <T> T invoke() throws IOException { ... }
-public <T> T invoke(Type type) throws IOException { ... }
+public <T> T invoke(Class<T> rawType, Type... actualTypeArguments) throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
@@ -687,7 +687,7 @@ templateEncoder.write(new BeanAdapter(root), System.out);
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures, such as decoded JSON objects:
 
 ```java
-public static <T> T coerce(Object value, Type type) { ... }
+public static <T> T coerce(Object value, Class<T> rawType, Type... actualTypeArguments) { ... }
 ```
 
 For example, given this interface:

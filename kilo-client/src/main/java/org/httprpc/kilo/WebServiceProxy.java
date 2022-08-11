@@ -554,8 +554,9 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
+    @SuppressWarnings("unchecked")
     public <T> T invoke() throws IOException {
-        return invoke(Object.class);
+        return (T)invoke(Object.class);
     }
 
     /**
@@ -564,8 +565,11 @@ public class WebServiceProxy {
      * @param <T>
      * The result type.
      *
-     * @param type
-     * The result type.
+     * @param rawType
+     * The raw result type.
+     *
+     * @param actualTypeArguments
+     * The actual result type arguments.
      *
      * @return
      * The result of the operation.
@@ -573,11 +577,11 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(Type type) throws IOException {
+    public <T> T invoke(Class<T> rawType, Type... actualTypeArguments) throws IOException {
         return invoke((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return BeanAdapter.coerce(jsonDecoder.read(inputStream), type);
+            return BeanAdapter.coerce(jsonDecoder.read(inputStream), rawType, actualTypeArguments);
         });
     }
 

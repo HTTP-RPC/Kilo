@@ -571,7 +571,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvalidMapValue() throws IOException {
+    public void testInvalidMapValue() {
         var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
 
         Map<String, ?> root = mapOf(

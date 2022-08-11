@@ -130,7 +130,7 @@ public class ElementAdapterTest {
     }
 
     private void testTypedAccess(ElementAdapter elementAdapter, boolean namespaceAware) {
-        TestInterface testInterface = BeanAdapter.coerce(elementAdapter, TestInterface.class);
+        var testInterface = BeanAdapter.coerce(elementAdapter, TestInterface.class);
 
         assertEquals("A", testInterface.getA());
 

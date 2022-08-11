@@ -319,7 +319,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     @Override
-    @SuppressWarnings("java:S1905")
     public Object put(String key, Object value) {
         var property = properties.get(key);
 
@@ -331,7 +330,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         for (var mutator : property.mutators) {
             try {
-                mutator.invoke(bean, (Object)coerce(value, mutator.getGenericParameterTypes()[0]));
+                mutator.invoke(bean, coerce(value, mutator.getGenericParameterTypes()[0]));
             } catch (Exception exception) {
                 i++;
             }
@@ -450,8 +449,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Coerces a value to a given type.
      * <br/>
-     * For class types, if the value is already an instance of the requested
-     * type, it is returned as is.
+     * For unparamterized types, if the value is already an instance of the
+     * requested type, it is returned as is.
      * <br/>
      * Otherwise, if the requested type is one of the following, the return
      * value is obtained via an appropriate conversion method; for example,
@@ -509,20 +508,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @param value
      * The value to coerce.
      *
-     * @param type
-     * The target type.
+     * @param rawType
+     * The raw result type.
+     *
+     * @param actualTypeArguments
+     * The actual result type arguments.
      *
      * @return
      * The coerced value.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T coerce(Object value, Type type) {
-        if (type == null) {
-            throw new IllegalArgumentException();
-        }
+    public static <T> T coerce(Object value, Class<T> rawType, Type... actualTypeArguments) {
+        return (T)coerce(value, typeOf(rawType, actualTypeArguments));
+    }
 
+    private static Object coerce(Object value, Type type) {
         if (type instanceof Class<?>) {
-            return (T)coerce(value, (Class<?>)type);
+            return coerceValue(value, (Class<?>)type);
         } else if (type instanceof ParameterizedType) {
             var parameterizedType = (ParameterizedType)type;
 
@@ -530,9 +532,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class && (value == null || value instanceof List<?>)) {
-                return (T)coerceList((List<?>)value, actualTypeArguments[0]);
+                return coerceList((List<?>)value, actualTypeArguments[0]);
             } else if (rawType == Map.class && (value == null || value instanceof Map<?, ?>)) {
-                return (T)coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
+                return coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -541,7 +543,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object coerce(Object value, Class<?> type) {
+    private static Object coerceValue(Object value, Class<?> type) {
         if (List.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
             throw new IllegalArgumentException();
         }
@@ -743,8 +745,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         return new AbstractList<>() {
             @Override
+            @SuppressWarnings("unchecked")
             public E get(int index) {
-                return coerce(list.get(index), elementType);
+                return (E)coerce(list.get(index), elementType);
             }
 
             @Override
@@ -763,8 +766,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
+                    @SuppressWarnings("unchecked")
                     public E next() {
-                        return coerce(iterator.next(), elementType);
+                        return (E)coerce(iterator.next(), elementType);
                     }
                 };
             }
@@ -801,8 +805,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         return new AbstractMap<>() {
             @Override
+            @SuppressWarnings("unchecked")
             public V get(Object key) {
-                return coerce(map.get(key), valueType);
+                return (V)coerce(map.get(key), valueType);
             }
 
             @Override
@@ -834,8 +839,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                                     }
 
                                     @Override
+                                    @SuppressWarnings("unchecked")
                                     public V getValue() {
-                                        return coerce(entry.getValue(), valueType);
+                                        return (V)coerce(entry.getValue(), valueType);
                                     }
 
                                     @Override
@@ -852,7 +858,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Generates a parameterized type descriptor.
+     * Generates a type descriptor.
      *
      * @param rawType
      * The raw type.
@@ -861,15 +867,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The actual type arguments.
      *
      * @return
-     * A parameterized type that describes the given raw type and actual type
-     * arguments.
+     * A type that describes the given raw type and actual type arguments.
      */
-    public static ParameterizedType typeOf(Class<?> rawType, Type... actualTypeArguments) {
-        if (rawType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (actualTypeArguments == null) {
+    public static Type typeOf(Class<?> rawType, Type... actualTypeArguments) {
+        if (rawType == null || actualTypeArguments == null) {
             throw new IllegalArgumentException();
         }
 
@@ -877,22 +878,26 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        return new ParameterizedType() {
-            @Override
-            public Type[] getActualTypeArguments() {
-                return actualTypeArguments;
-            }
+        if (actualTypeArguments.length == 0) {
+            return rawType;
+        } else {
+            return new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return actualTypeArguments;
+                }
 
-            @Override
-            public Type getRawType() {
-                return rawType;
-            }
+                @Override
+                public Type getRawType() {
+                    return rawType;
+                }
 
-            @Override
-            public Type getOwnerType() {
-                return null;
-            }
-        };
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            };
+        }
     }
 
     /**
