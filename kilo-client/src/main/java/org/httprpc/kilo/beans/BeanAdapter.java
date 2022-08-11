@@ -874,11 +874,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        if (rawType.getTypeParameters().length != actualTypeArguments.length) {
+        var typeParameters = rawType.getTypeParameters();
+
+        if (typeParameters.length != actualTypeArguments.length) {
             throw new IllegalArgumentException();
         }
 
-        if (actualTypeArguments.length == 0) {
+        if (typeParameters.length == 0) {
             return rawType;
         } else {
             return new ParameterizedType() {
