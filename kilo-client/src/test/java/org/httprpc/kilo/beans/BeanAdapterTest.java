@@ -191,13 +191,13 @@ public class BeanAdapterTest {
             1,
             2,
             3
-        ), BeanAdapter.coerce(listOf(
+        ), BeanAdapter.coerceList(listOf(
             "1",
             "2",
             "3"
-        ), List.class, Integer.class));
+        ), Integer.class));
 
-        assertNull(BeanAdapter.coerce(null, List.class, Object.class));
+        assertNull(BeanAdapter.coerceList(null, Object.class));
     }
 
     @Test
@@ -206,13 +206,62 @@ public class BeanAdapterTest {
             entry("a", 1.0),
             entry("b", 2.0),
             entry("c", 3.0)
-        ), BeanAdapter.coerce(mapOf(
+        ), BeanAdapter.coerceMap(mapOf(
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
-        ), Map.class, null, Double.class));
+        ), Double.class));
 
-        assertNull(BeanAdapter.coerce(null, Map.class, null, Object.class));
+        assertNull(BeanAdapter.coerceMap(null, Object.class));
+    }
+
+    @Test
+    public void testMapKeyCoercion() {
+        assertEquals(mapOf(
+            entry(1, 1.0),
+            entry(2, 2.0),
+            entry(3, 3.0)
+        ), BeanAdapter.coerce(mapOf(
+            entry("1", "1.0"),
+            entry("2", "2.0"),
+            entry("3", "3.0")
+        ), Map.class, Integer.class, Double.class));
+    }
+
+    @Test
+    public void testNestedCoercion() {
+        assertEquals(listOf(
+            listOf(
+                1,
+                2,
+                3
+            )
+        ), BeanAdapter.coerce(listOf(
+            listOf(
+                "1",
+                "2",
+                "3"
+            )
+        ), List.class, BeanAdapter.typeOf(List.class, Integer.class)));
+
+        assertEquals(listOf(
+            mapOf(
+                entry(1, 1.0),
+                entry(2, 2.0),
+                entry(3, 3.0)
+            )
+        ), BeanAdapter.coerce(listOf(
+            mapOf(
+                entry("1", "1.0"),
+                entry("2", "2.0"),
+                entry("3", "3.0")
+            )
+        ), List.class, BeanAdapter.typeOf(Map.class, Integer.class, Double.class)));
+    }
+
+    @Test
+    public void testInvalidTypeOf() {
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(List.class));
     }
 
     @Test

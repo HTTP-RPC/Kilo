@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * {@link Map} adapter for Java bean types.
@@ -531,10 +532,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var rawType = parameterizedType.getRawType();
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (rawType == List.class && (value == null || value instanceof List<?>)) {
-                return coerceList((List<?>)value, actualTypeArguments[0]);
-            } else if (rawType == Map.class && (value == null || value instanceof Map<?, ?>)) {
-                return coerceMap((Map<?, ?>)value, actualTypeArguments[1]);
+            if (rawType == List.class) {
+                if (value == null) {
+                    return null;
+                } else if (value instanceof List<?>) {
+                    return coerceListElements((List<?>) value, actualTypeArguments[0]);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            } else if (rawType == Map.class) {
+                if (value == null) {
+                    return null;
+                } else if (value instanceof Map<?, ?>) {
+                    return coerceMapValues(((Map<?, ?>)value).entrySet().stream()
+                        .collect(Collectors.toMap(entry -> coerce(entry.getKey(), actualTypeArguments[0]), Map.Entry::getValue)), actualTypeArguments[1]);
+                } else {
+                    throw new IllegalArgumentException();
+                }
             } else {
                 throw new IllegalArgumentException();
             }
@@ -733,10 +747,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * An list implementation that will coerce the list's elements to the
      * requested type.
-     *
-     * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
      */
-    @Deprecated
+    @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(List<?> list, Type elementType) {
         if (list == null) {
             return null;
@@ -746,11 +758,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
+        return (List<E>)coerceListElements(list, elementType);
+    }
+
+    private static List<?> coerceListElements(List<?> list, Type elementType) {
         return new AbstractList<>() {
             @Override
-            @SuppressWarnings("unchecked")
-            public E get(int index) {
-                return (E)coerce(list.get(index), elementType);
+            public Object get(int index) {
+                return coerce(list.get(index), elementType);
             }
 
             @Override
@@ -759,7 +774,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             @Override
-            public Iterator<E> iterator() {
+            public Iterator<Object> iterator() {
                 return new Iterator<>() {
                     Iterator<?> iterator = list.iterator();
 
@@ -769,9 +784,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
-                    @SuppressWarnings("unchecked")
-                    public E next() {
-                        return (E)coerce(iterator.next(), elementType);
+                    public Object next() {
+                        return coerce(iterator.next(), elementType);
                     }
                 };
             }
@@ -796,10 +810,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * A map implementation that will coerce the map's values to the requested
      * type.
-     *
-     * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
      */
-    @Deprecated
+    @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Type valueType) {
         if (map == null) {
             return null;
@@ -809,15 +821,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
+        return (Map<K, V>)coerceMapValues(map, valueType);
+    }
+
+    private static Map<?, ?> coerceMapValues(Map<?, ?> map, Type valueType) {
         return new AbstractMap<>() {
             @Override
-            @SuppressWarnings("unchecked")
-            public V get(Object key) {
-                return (V)coerce(map.get(key), valueType);
+            public Object get(Object key) {
+                return coerce(map.get(key), valueType);
             }
 
             @Override
-            public Set<Entry<K, V>> entrySet() {
+            public Set<Entry<Object, Object>> entrySet() {
                 return new AbstractSet<>() {
                     @Override
                     public int size() {
@@ -825,9 +840,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
-                    public Iterator<Entry<K, V>> iterator() {
+                    public Iterator<Entry<Object, Object>> iterator() {
                         return new Iterator<>() {
-                            Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
+                            Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
                             @Override
                             public boolean hasNext() {
@@ -835,23 +850,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             }
 
                             @Override
-                            public Entry<K, V> next() {
+                            public Entry<Object, Object> next() {
                                 return new Entry<>() {
-                                    Entry<K, ?> entry = iterator.next();
+                                    Entry<?, ?> entry = iterator.next();
 
                                     @Override
-                                    public K getKey() {
+                                    public Object getKey() {
                                         return entry.getKey();
                                     }
 
                                     @Override
-                                    @SuppressWarnings("unchecked")
-                                    public V getValue() {
-                                        return (V)coerce(entry.getValue(), valueType);
+                                    public Object getValue() {
+                                        return coerce(entry.getValue(), valueType);
                                     }
 
                                     @Override
-                                    public V setValue(Object value) {
+                                    public Object setValue(Object value) {
                                         throw new UnsupportedOperationException();
                                     }
                                 };
@@ -889,6 +903,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (typeParameters.length == 0) {
             return rawType;
         } else {
+            for (var i = 0; i < actualTypeArguments.length; i++) {
+                if (actualTypeArguments[i] == null) {
+                    throw new IllegalArgumentException();
+                }
+            }
+
             return new ParameterizedType() {
                 @Override
                 public Type[] getActualTypeArguments() {
