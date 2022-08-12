@@ -171,10 +171,10 @@ public class TestService extends WebService {
     @ResourcePath("fibonacci")
     public Iterable<BigInteger> testGetFibonacci(int count) {
         return () -> new Iterator<>() {
-            private int i = 0;
+            int i = 0;
 
-            private BigInteger a = BigInteger.valueOf(0);
-            private BigInteger b = BigInteger.valueOf(1);
+            BigInteger a = BigInteger.valueOf(0);
+            BigInteger b = BigInteger.valueOf(1);
 
             @Override
             public boolean hasNext() {
