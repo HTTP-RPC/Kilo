@@ -536,7 +536,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof List<?>) {
-                    return coerceListElements((List<?>) value, actualTypeArguments[0]);
+                    return coerceList((List<?>) value, actualTypeArguments[0]);
                 } else {
                     throw new IllegalArgumentException();
                 }
@@ -544,8 +544,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof Map<?, ?>) {
-                    return coerceMapValues(((Map<?, ?>)value).entrySet().stream()
-                        .collect(Collectors.toMap(entry -> coerce(entry.getKey(), actualTypeArguments[0]), Map.Entry::getValue)), actualTypeArguments[1]);
+                    return coerceMap((Map<?, ?>)value, actualTypeArguments[0], actualTypeArguments[1]);
                 } else {
                     throw new IllegalArgumentException();
                 }
@@ -733,7 +732,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces list elements to a given type.
+     * Coerces list contents.
      *
      * @param <E>
      * The target element type.
@@ -745,8 +744,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The target element type.
      *
      * @return
-     * An list implementation that will coerce the list's elements to the
-     * requested type.
+     * A list implementation that coerces source elements to the requested
+     * type.
      */
     @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(List<?> list, Type elementType) {
@@ -758,14 +757,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        return (List<E>)coerceListElements(list, elementType);
-    }
-
-    private static List<?> coerceListElements(List<?> list, Type elementType) {
         return new AbstractList<>() {
             @Override
-            public Object get(int index) {
-                return coerce(list.get(index), elementType);
+            public E get(int index) {
+                return (E)coerce(list.get(index), elementType);
             }
 
             @Override
@@ -774,7 +769,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             @Override
-            public Iterator<Object> iterator() {
+            public Iterator<E> iterator() {
                 return new Iterator<>() {
                     Iterator<?> iterator = list.iterator();
 
@@ -784,8 +779,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
-                    public Object next() {
-                        return coerce(iterator.next(), elementType);
+                    public E next() {
+                        return (E)coerce(iterator.next(), elementType);
                     }
                 };
             }
@@ -793,7 +788,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces map values to a given type.
+     * Coerces map contents.
      *
      * @param <K>
      * The key type.
@@ -804,35 +799,36 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @param map
      * The source map.
      *
+     * @param keyType
+     * The target key type.
+     *
      * @param valueType
      * The target value type.
      *
      * @return
-     * A map implementation that will coerce the map's values to the requested
-     * type.
+     * A map implementation that associates coerced keys with source keys and
+     * coerces source values to the requested type.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Type valueType) {
+    public static <K, V> Map<K, V> coerceMap(Map<?, ?> map, Type keyType, Type valueType) {
         if (map == null) {
             return null;
         }
 
-        if (valueType == null) {
+        if (keyType == null || valueType == null) {
             throw new IllegalArgumentException();
         }
 
-        return (Map<K, V>)coerceMapValues(map, valueType);
-    }
+        var keys = map.keySet().stream().collect(Collectors.toMap(key -> (K)coerce(key, keyType), key -> key));
 
-    private static Map<?, ?> coerceMapValues(Map<?, ?> map, Type valueType) {
         return new AbstractMap<>() {
             @Override
-            public Object get(Object key) {
-                return coerce(map.get(key), valueType);
+            public V get(Object key) {
+                return (V)coerce(map.get(keys.get(key)), valueType);
             }
 
             @Override
-            public Set<Entry<Object, Object>> entrySet() {
+            public Set<Entry<K, V>> entrySet() {
                 return new AbstractSet<>() {
                     @Override
                     public int size() {
@@ -840,7 +836,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     }
 
                     @Override
-                    public Iterator<Entry<Object, Object>> iterator() {
+                    public Iterator<Entry<K, V>> iterator() {
                         return new Iterator<>() {
                             Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
@@ -850,22 +846,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             }
 
                             @Override
-                            public Entry<Object, Object> next() {
+                            public Entry<K, V> next() {
                                 return new Entry<>() {
                                     Entry<?, ?> entry = iterator.next();
 
                                     @Override
-                                    public Object getKey() {
-                                        return entry.getKey();
+                                    public K getKey() {
+                                        return (K)coerce(entry.getKey(), keyType);
                                     }
 
                                     @Override
-                                    public Object getValue() {
-                                        return coerce(entry.getValue(), valueType);
+                                    public V getValue() {
+                                        return (V)coerce(entry.getValue(), valueType);
                                     }
 
                                     @Override
-                                    public Object setValue(Object value) {
+                                    public V setValue(Object value) {
                                         throw new UnsupportedOperationException();
                                     }
                                 };

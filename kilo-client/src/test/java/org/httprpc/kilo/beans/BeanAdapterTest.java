@@ -210,22 +210,19 @@ public class BeanAdapterTest {
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
-        ), Double.class));
+        ), String.class, Double.class));
 
-        assertNull(BeanAdapter.coerceMap(null, Object.class));
-    }
-
-    @Test
-    public void testMapKeyCoercion() {
         assertEquals(mapOf(
             entry(1, 1.0),
             entry(2, 2.0),
             entry(3, 3.0)
-        ), BeanAdapter.coerce(mapOf(
+        ), BeanAdapter.coerceMap(mapOf(
             entry("1", "1.0"),
             entry("2", "2.0"),
             entry("3", "3.0")
-        ), Map.class, Integer.class, Double.class));
+        ), Integer.class, Double.class));
+
+        assertNull(BeanAdapter.coerceMap(null, Object.class, Object.class));
     }
 
     @Test
