@@ -1086,17 +1086,11 @@ public abstract class WebService extends HttpServlet {
 
             Object argument;
             if (type == List.class) {
-                var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
-
-                if (!(elementType instanceof Class<?>)) {
-                    throw new IllegalStateException("Unsupported argument type.");
-                }
-
                 List<Object> list;
                 if (values != null) {
-                    list = values.stream()
-                        .map(value -> BeanAdapter.coerce(value, (Class<?>)elementType))
-                        .collect(Collectors.toList());
+                    var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+
+                    list = BeanAdapter.coerceList(values, elementType);
                 } else {
                     list = listOf();
                 }

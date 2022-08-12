@@ -62,7 +62,7 @@ public class PetService extends AbstractDatabaseService {
                 entry("owner", owner)
             )).getResults();
 
-            return BeanAdapter.coerce(results, List.class, Pet.class);
+            return BeanAdapter.coerceList(results, Pet.class);
         } else {
             var response = getResponse();
 
