@@ -51,7 +51,6 @@ public class PetService extends AbstractDatabaseService {
     private static final String TEXT_HTML = "text/html";
 
     @RequestMethod("GET")
-    @SuppressWarnings("unchecked")
     public List<Pet> getPets(String owner) throws SQLException, IOException {
         var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
