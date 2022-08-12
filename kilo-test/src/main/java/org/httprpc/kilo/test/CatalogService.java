@@ -85,10 +85,11 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
+    @SuppressWarnings("unchecked")
     public List<Item> getItems() throws SQLException {
         var results = QueryBuilder.select("*").from("item").execute(getConnection()).getResults();
 
-        return BeanAdapter.coerceList(results, Item.class);
+        return BeanAdapter.coerce(results, List.class, Item.class);
     }
 
     @RequestMethod("POST")

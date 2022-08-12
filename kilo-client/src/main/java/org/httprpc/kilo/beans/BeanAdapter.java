@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * {@link Map} adapter for Java bean types.
@@ -495,8 +496,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * For parameterized types, if the target type is {@link List} or
      * {@link Map}, the value is wrapped in an instance of the same type that
-     * automatically coerces its elements or values, respectively, to the
-     * appropriate type. Other parameterized types are not supported.
+     * automatically coerces its contents. Other parameterized types are not
+     * supported.
      * <br/>
      * For reference types, <code>null</code> values are returned as is. For
      * numeric or boolean primitives, they are converted to 0 or
@@ -733,7 +734,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * An list implementation that will coerce the list's elements to the
      * requested type.
+     *
+     * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
      */
+    @Deprecated
     public static <E> List<E> coerceList(List<?> list, Type elementType) {
         if (list == null) {
             return null;
@@ -793,7 +797,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * A map implementation that will coerce the map's values to the requested
      * type.
+     *
+     * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
      */
+    @Deprecated
     public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Type valueType) {
         if (map == null) {
             return null;
@@ -877,7 +884,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         var typeParameters = rawType.getTypeParameters();
 
         if (typeParameters.length != actualTypeArguments.length) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Type parameter mismatch.");
         }
 
         if (typeParameters.length == 0) {

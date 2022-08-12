@@ -813,7 +813,7 @@ public List<Pet> getPets(String owner) throws SQLException {
         entry("owner", owner)
     )).getResults();
 
-    return BeanAdapter.coerceList(results, Pet.class);
+    return BeanAdapter.coerce(results, List.class, Pet.class);
 }
 ```
 
