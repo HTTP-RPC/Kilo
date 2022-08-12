@@ -22,6 +22,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.List;
 import java.util.Map;
 
+import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.listOf;
+import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -163,12 +166,10 @@ public class ElementAdapterTest {
         assertEquals("déf", stringItems.get(1));
         assertEquals("ghi", stringItems.get(2));
 
-        var mapItems = list.getMapItems();
-
-        assertEquals(3, mapItems.size());
-
-        assertEquals("1", mapItems.get(0).get("@d"));
-        assertEquals("2", mapItems.get(1).get("@d"));
-        assertEquals("3", mapItems.get(2).get("@d"));
+        assertEquals(listOf(
+            mapOf(entry("@d", "1")),
+            mapOf(entry("@d", "2")),
+            mapOf(entry("@d", "3"))
+        ), list.getMapItems());
     }
 }

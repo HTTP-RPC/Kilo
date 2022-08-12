@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * {@link Map} adapter for Java bean types.
@@ -105,7 +104,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public Iterator<Object> iterator() {
             return new Iterator<>() {
-                private Iterator<?> iterator = iterable.iterator();
+                Iterator<?> iterator = iterable.iterator();
 
                 @Override
                 public boolean hasNext() {
@@ -167,7 +166,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 @Override
                 public Iterator<Entry<Object, Object>> iterator() {
                     return new Iterator<>() {
-                        private Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
+                        Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
                         @Override
                         public boolean hasNext() {
@@ -177,7 +176,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         @Override
                         public Entry<Object, Object> next() {
                             return new Entry<>() {
-                                private Entry<?, ?> entry = iterator.next();
+                                Entry<?, ?> entry = iterator.next();
 
                                 @Override
                                 public Object getKey() {
@@ -355,7 +354,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             @Override
             public Iterator<Entry<String, Object>> iterator() {
                 return new Iterator<>() {
-                    private Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
+                    Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
 
                     @Override
                     public boolean hasNext() {
@@ -762,7 +761,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             @Override
             public Iterator<E> iterator() {
                 return new Iterator<>() {
-                    private Iterator<?> iterator = list.iterator();
+                    Iterator<?> iterator = list.iterator();
 
                     @Override
                     public boolean hasNext() {
@@ -828,7 +827,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     @Override
                     public Iterator<Entry<K, V>> iterator() {
                         return new Iterator<>() {
-                            private Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
+                            Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
 
                             @Override
                             public boolean hasNext() {
@@ -838,7 +837,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             @Override
                             public Entry<K, V> next() {
                                 return new Entry<>() {
-                                    private Entry<K, ?> entry = iterator.next();
+                                    Entry<K, ?> entry = iterator.next();
 
                                     @Override
                                     public K getKey() {

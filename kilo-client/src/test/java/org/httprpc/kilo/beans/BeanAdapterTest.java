@@ -187,7 +187,15 @@ public class BeanAdapterTest {
 
     @Test
     public void testListCoercion() {
-        assertEquals(listOf(1, 2, 3), BeanAdapter.coerce(listOf("1", "2", "3"), List.class, Integer.class));
+        assertEquals(listOf(
+            1,
+            2,
+            3
+        ), BeanAdapter.coerce(listOf(
+            "1",
+            "2",
+            "3"
+        ), List.class, Integer.class));
 
         assertNull(BeanAdapter.coerce(null, List.class, Object.class));
     }

@@ -15,11 +15,16 @@
 package org.httprpc.kilo.xml;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.AbstractList;
 import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -154,7 +159,52 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        throw new UnsupportedOperationException();
+        return new AbstractSet<>() {
+            NamedNodeMap attributes = element.getAttributes();
+
+            @Override
+            public int size() {
+                return attributes.getLength();
+            }
+
+            @Override
+            public Iterator<Entry<String, Object>> iterator() {
+                return new Iterator<>() {
+                    int i = 0;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i < size();
+                    }
+
+                    @Override
+                    public Entry<String, Object> next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
+
+                        return new Entry<>() {
+                            Node node = attributes.item(i++);
+
+                            @Override
+                            public String getKey() {
+                                return String.format("%s%s", ATTRIBUTE_PREFIX, node.getNodeName());
+                            }
+
+                            @Override
+                            public Object getValue() {
+                                return node.getNodeValue();
+                            }
+
+                            @Override
+                            public Object setValue(Object value) {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+                };
+            }
+        };
     }
 
     @Override

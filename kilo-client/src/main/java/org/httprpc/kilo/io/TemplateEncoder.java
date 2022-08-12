@@ -366,7 +366,7 @@ public class TemplateEncoder extends Encoder<Object> {
         @Override
         public Map<Object, Object> next() {
             return new AbstractMap<>() {
-                private Entry<?, ?> entry = iterator.next();
+                Entry<?, ?> entry = iterator.next();
 
                 @Override
                 public Object get(Object key) {
