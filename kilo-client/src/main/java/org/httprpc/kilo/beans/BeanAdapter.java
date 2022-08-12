@@ -510,10 +510,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The value to coerce.
      *
      * @param rawType
-     * The raw result type.
+     * The raw target type.
      *
      * @param actualTypeArguments
-     * The actual result type arguments.
+     * The actual target type arguments.
      *
      * @return
      * The coerced value.
