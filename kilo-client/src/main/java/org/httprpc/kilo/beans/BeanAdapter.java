@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.util.Optionals;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -214,7 +216,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (method.getDeclaringClass() == Object.class) {
                 return method.invoke(this, arguments);
             } else {
-                var key = getKey(method);
+                var key = Optionals.coalesce(Optionals.map(method.getAnnotation(Key.class), Key::value), getPropertyName(method));
 
                 if (key == null || method.getParameterCount() > 0) {
                     throw new UnsupportedOperationException();
@@ -955,29 +957,36 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 continue;
             }
 
-            var key = getKey(method);
+            var propertyName = getPropertyName(method);
 
-            if (key != null) {
-                var property = properties.get(key);
+            if (propertyName == null) {
+                continue;
+            }
 
-                if (property == null) {
-                    property = new Property();
+            var property = properties.get(propertyName);
 
-                    properties.put(key, property);
-                }
+            if (property == null) {
+                property = new Property();
 
-                if (method.getParameterCount() == 0) {
-                    property.accessor = method;
-                } else {
-                    property.mutators.add(method);
-                }
+                properties.put(propertyName, property);
+            }
+
+            if (method.getParameterCount() == 0) {
+                property.accessor = method;
+            } else {
+                property.mutators.add(method);
             }
         }
 
-        return properties;
+        return properties.entrySet().stream()
+            .collect(Collectors.toMap(entry -> {
+                var key = entry.getValue().getAccessor().getAnnotation(Key.class);
+
+                return Optionals.coalesce(Optionals.map(key, Key::value), entry.getKey());
+            }, Map.Entry::getValue));
     }
 
-    private static String getKey(Method method) {
+    private static String getPropertyName(Method method) {
         if (method.isBridge()) {
             return null;
         }
@@ -1000,28 +1009,26 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             && parameterCount == 1) {
             prefix = SET_PREFIX;
         } else {
+            prefix = null;
+        }
+
+        if (prefix == null) {
             return null;
         }
 
-        var key = method.getAnnotation(Key.class);
+        var j = prefix.length();
+        var n = methodName.length();
 
-        if (key == null) {
-            var j = prefix.length();
-            var n = methodName.length();
-
-            if (j == n) {
-                return null;
-            }
-
-            var c = methodName.charAt(j++);
-
-            if (j == n || Character.isLowerCase(methodName.charAt(j))) {
-                c = Character.toLowerCase(c);
-            }
-
-            return c + methodName.substring(j);
-        } else {
-            return key.value();
+        if (j == n) {
+            return null;
         }
+
+        var c = methodName.charAt(j++);
+
+        if (j == n || Character.isLowerCase(methodName.charAt(j))) {
+            c = Character.toLowerCase(c);
+        }
+
+        return c + methodName.substring(j);
     }
 }

@@ -97,7 +97,6 @@ public class WebServiceProxyTest {
             return id;
         }
 
-        @Key("id")
         public void setID(int id) {
             this.id = id;
         }

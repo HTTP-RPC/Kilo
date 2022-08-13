@@ -48,7 +48,6 @@ public class CatalogService extends AbstractDatabaseService {
             return id;
         }
 
-        @Key("id")
         public void setID(int id) {
             this.id = id;
         }

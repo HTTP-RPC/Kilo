@@ -738,7 +738,7 @@ System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); //
 Coercion to concrete bean types is also supported.
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when reading or writing property values. For example:
+The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:
 
 ```java
 public class Person {
@@ -749,10 +749,25 @@ public class Person {
         return firstName;
     }
     
-    @Key("first_name")
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+}
+```
+
+The preceding class would be serialized to JSON like this:
+
+```json
+{
+  "first_name": "..." 
+}
+```
+
+rather than this:
+
+```json
+{
+  "firstName": "...",
 }
 ```
 
@@ -929,6 +944,8 @@ Attribute values can be obtained by prepending an "@" symbol to the attribute na
 ```java
 System.out.println(accountAdapter.get("@id")); // 101
 ```
+
+Attributes can also be accessed by traversing the adapter's entry set.
 
 A list of sub-elements can be obtained by appending an asterisk to the element name:
 

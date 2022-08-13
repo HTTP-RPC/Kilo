@@ -72,7 +72,6 @@ public class TestBean implements TestInterface {
         return i;
     }
 
-    @Key("i")
     public void setInteger(int i) {
         this.i = i;
     }
