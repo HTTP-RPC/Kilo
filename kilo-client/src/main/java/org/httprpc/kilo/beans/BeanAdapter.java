@@ -536,7 +536,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof List<?>) {
-                    return coerceList((List<?>) value, actualTypeArguments[0]);
+                    return coerceList((List<?>)value, actualTypeArguments[0]);
                 } else {
                     throw new IllegalArgumentException();
                 }
