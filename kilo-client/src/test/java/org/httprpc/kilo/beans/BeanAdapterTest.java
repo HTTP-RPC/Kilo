@@ -191,13 +191,13 @@ public class BeanAdapterTest {
             1,
             2,
             3
-        ), BeanAdapter.coerceList(listOf(
+        ), BeanAdapter.coerce(listOf(
             "1",
             "2",
             "3"
-        ), Integer.class));
+        ), List.class, Integer.class));
 
-        assertNull(BeanAdapter.coerceList(null, Object.class));
+        assertNull(BeanAdapter.coerce(null, List.class, Object.class));
     }
 
     @Test
@@ -206,23 +206,23 @@ public class BeanAdapterTest {
             entry("a", 1.0),
             entry("b", 2.0),
             entry("c", 3.0)
-        ), BeanAdapter.coerceMap(mapOf(
+        ), BeanAdapter.coerce(mapOf(
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
-        ), String.class, Double.class));
+        ), Map.class, String.class, Double.class));
 
         assertEquals(mapOf(
             entry(1, 1.0),
             entry(2, 2.0),
             entry(3, 3.0)
-        ), BeanAdapter.coerceMap(mapOf(
+        ), BeanAdapter.coerce(mapOf(
             entry("1", "1.0"),
             entry("2", "2.0"),
             entry("3", "3.0")
-        ), Integer.class, Double.class));
+        ), Map.class, Integer.class, Double.class));
 
-        assertNull(BeanAdapter.coerceMap(null, Object.class, Object.class));
+        assertNull(BeanAdapter.coerce(null, Map.class, Object.class, Object.class));
     }
 
     @Test

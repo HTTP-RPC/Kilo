@@ -1086,11 +1086,11 @@ public abstract class WebService extends HttpServlet {
 
             Object argument;
             if (type == List.class) {
-                List<Object> list;
+                List<?> list;
                 if (values != null) {
                     var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
-                    list = BeanAdapter.coerceList(values, elementType);
+                    list = BeanAdapter.coerce(values, List.class, elementType);
                 } else {
                     list = listOf();
                 }
