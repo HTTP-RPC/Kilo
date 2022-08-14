@@ -485,7 +485,7 @@ For example, given the following document:
 ```java
 var jsonDecoder = new JSONDecoder();
 
-List<Map<String, Object>> months = jsonDecoder.read(inputStream);
+var months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
 
 for (var month : months) {
     System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));

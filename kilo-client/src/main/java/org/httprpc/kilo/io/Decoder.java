@@ -59,9 +59,6 @@ public abstract class Decoder<T> {
     /**
      * Reads a value from an input stream.
      *
-     * @param <U>
-     * The decoded value type.
-     *
      * @param inputStream
      * The input stream to read from.
      *
@@ -71,7 +68,7 @@ public abstract class Decoder<T> {
      * @throws IOException
      * If an exception occurs.
      */
-    public <U extends T> U read(InputStream inputStream) throws IOException {
+    public T read(InputStream inputStream) throws IOException {
         if (inputStream == null) {
             throw new IllegalArgumentException();
         }
@@ -82,9 +79,6 @@ public abstract class Decoder<T> {
     /**
      * Reads a value from a character stream.
      *
-     * @param <U>
-     * The decoded value type.
-     *
      * @param reader
      * The character stream to read from.
      *
@@ -94,5 +88,5 @@ public abstract class Decoder<T> {
      * @throws IOException
      * If an exception occurs.
      */
-    public abstract <U extends T> U read(Reader reader) throws IOException;
+    public abstract T read(Reader reader) throws IOException;
 }

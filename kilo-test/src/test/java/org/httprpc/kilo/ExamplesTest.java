@@ -88,11 +88,12 @@ public class ExamplesTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testJSONDecoder() throws IOException {
         try (var inputStream = getClass().getResourceAsStream("months.json")) {
             var jsonDecoder = new JSONDecoder();
 
-            List<Map<String, Object>> months = jsonDecoder.read(inputStream);
+            var months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
 
             for (var month : months) {
                 System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
@@ -101,17 +102,18 @@ public class ExamplesTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCSVEncoder() throws IOException {
         List<Map<String, Object>> months;
         try (var inputStream = getClass().getResourceAsStream("months.json")) {
             var jsonDecoder = new JSONDecoder();
 
-            months = jsonDecoder.read(inputStream);
-
-            var csvEncoder = new CSVEncoder(listOf("name", "days"));
-
-            csvEncoder.write(months, System.out);
+            months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
         }
+
+        var csvEncoder = new CSVEncoder(listOf("name", "days"));
+
+        csvEncoder.write(months, System.out);
     }
 
     @Test

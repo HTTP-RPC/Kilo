@@ -14,10 +14,12 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -31,31 +33,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class JSONDecoderTest {
     @Test
     public void testString() throws IOException {
-        assertEquals("abcdéfg", decode("\"abcdéfg\""));
-        assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
-        assertEquals("é", decode("\"\\u00E9\""));
+        assertEquals("abcdéfg", decode("\"abcdéfg\"", String.class));
+        assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\"", String.class));
+        assertEquals("é", decode("\"\\u00E9\"", String.class));
     }
 
     @Test
     public void testNumber() throws IOException {
-        assertEquals(42, (int)decode("42"));
-        assertEquals((long)Integer.MAX_VALUE + 1, (long)decode(String.valueOf((long)Integer.MAX_VALUE + 1)));
-        assertEquals(42.5, decode("42.5"), 0);
+        assertEquals(42, (int)decode("42", Integer.class));
+        assertEquals((long)Integer.MAX_VALUE + 1, (long)decode(String.valueOf((long)Integer.MAX_VALUE + 1), Long.class));
+        assertEquals(42.5, decode("42.5", Double.class), 0);
 
-        assertEquals(-789, (int)decode("-789"));
-        assertEquals((long)Integer.MIN_VALUE - 1, (long)decode(String.valueOf((long)Integer.MIN_VALUE - 1)));
-        assertEquals(-789.10, decode("-789.10"), 0);
+        assertEquals(-789, (int)decode("-789", Integer.class));
+        assertEquals((long)Integer.MIN_VALUE - 1, (long)decode(String.valueOf((long)Integer.MIN_VALUE - 1), Long.class));
+        assertEquals(-789.10, decode("-789.10", Double.class), 0);
     }
 
     @Test
     public void testBoolean() throws IOException {
-        assertEquals(true, decode("true"));
-        assertEquals(false, decode("false"));
+        assertEquals(true, decode("true", Boolean.class));
+        assertEquals(false, decode("false", Boolean.class));
     }
 
     @Test
     public void testNull() throws IOException {
-        assertNull(decode("null"));
+        assertNull(decode("null", Object.class));
     }
 
     @Test
@@ -68,14 +70,15 @@ public class JSONDecoderTest {
             mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
         );
 
-        List<?> list = decode("[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]");
+        List<?> list = decode("[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]",
+            List.class, Object.class);
 
         assertEquals(expected, list);
     }
 
     @Test
     public void testObject() throws IOException {
-        Map<String, ?> expected = mapOf(
+        Map<?, ?> expected = mapOf(
             entry("a", "abc"),
             entry("b", 123),
             entry("c", true),
@@ -83,19 +86,20 @@ public class JSONDecoderTest {
             entry("e", mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0)))
         );
 
-        Map<String, ?> map = decode("{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}");
+        Map<?, ?> map = decode("{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}",
+            Map.class, String.class, Object.class);
 
         assertEquals(expected, map);
     }
 
     @Test
     public void testInvalidCharacters() {
-        assertThrows(IOException.class, () -> decode("xyz"));
+        assertThrows(IOException.class, () -> decode("xyz", Object.class));
     }
 
-    private static <T> T decode(String text) throws IOException {
+    private static <T> T decode(String text, Class<T> rawType, Type... actualTypeArguments) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
-        return jsonDecoder.read(new StringReader(text));
+        return BeanAdapter.coerce(jsonDecoder.read(new StringReader(text)), rawType, actualTypeArguments);
     }
 }

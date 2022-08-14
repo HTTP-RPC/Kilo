@@ -583,7 +583,7 @@ public class WebServiceProxyTest {
         try (var inputStream = getClass().getResourceAsStream("pets.json")) {
             var jsonDecoder = new JSONDecoder();
 
-            expected = jsonDecoder.read(inputStream);
+            expected = BeanAdapter.coerce(jsonDecoder.read(inputStream), List.class, Object.class);
         }
 
         var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(

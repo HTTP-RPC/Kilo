@@ -20,7 +20,6 @@ import java.io.Reader;
 /**
  * Text decoder.
  */
-@SuppressWarnings("unchecked")
 public class TextDecoder extends Decoder<String> {
     @Override
     public String read(Reader reader) throws IOException {

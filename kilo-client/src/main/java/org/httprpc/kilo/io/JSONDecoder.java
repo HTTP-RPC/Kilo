@@ -27,13 +27,12 @@ import java.util.TreeMap;
 /**
  * JSON decoder.
  */
-@SuppressWarnings("unchecked")
 public class JSONDecoder extends Decoder<Object> {
     private boolean sorted;
 
     private int c = EOF;
 
-    private Deque<Object> collections = new LinkedList<>();
+    private Deque<Object> ancestors = new LinkedList<>();
 
     private StringBuilder valueBuilder = new StringBuilder();
 
@@ -60,7 +59,8 @@ public class JSONDecoder extends Decoder<Object> {
     }
 
     @Override
-    public <U> U read(Reader reader) throws IOException {
+    @SuppressWarnings("unchecked")
+    public Object read(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException();
         }
@@ -75,17 +75,17 @@ public class JSONDecoder extends Decoder<Object> {
 
         while (c != EOF) {
             if (c == ']' || c == '}') {
-                value = collections.pop();
+                value = ancestors.pop();
 
                 c = reader.read();
             } else if (c == ',') {
                 c = reader.read();
             } else {
-                var collection = collections.peek();
+                var ancestor = ancestors.peek();
 
-                // If the current collection is a map, read the key
+                // If the current ancestor is a map, read the key
                 String key;
-                if (collection instanceof Map<?, ?>) {
+                if (ancestor instanceof Map<?, ?>) {
                     if (c != '"') {
                         throw new IOException("Invalid key.");
                     }
@@ -131,7 +131,7 @@ public class JSONDecoder extends Decoder<Object> {
                 } else if (c == '[') {
                     value = new ArrayList<>();
 
-                    collections.push(value);
+                    ancestors.push(value);
 
                     c = reader.read();
                 } else if (c == '{') {
@@ -141,19 +141,19 @@ public class JSONDecoder extends Decoder<Object> {
                         value = new LinkedHashMap<>();
                     }
 
-                    collections.push(value);
+                    ancestors.push(value);
 
                     c = reader.read();
                 } else {
                     throw new IOException("Unexpected character.");
                 }
 
-                // Add the value to the current collection
-                if (collection != null) {
+                // Add the value to the current ancestor
+                if (ancestor != null) {
                     if (key != null) {
-                        ((Map<String, Object>)collection).put(key, value);
+                        ((Map<String, Object>)ancestor).put(key, value);
                     } else {
-                        ((List<Object>)collection).add(value);
+                        ((List<Object>)ancestor).add(value);
                     }
                 }
             }
@@ -161,7 +161,7 @@ public class JSONDecoder extends Decoder<Object> {
             skipWhitespace(reader);
         }
 
-        return (U)value;
+        return value;
     }
 
     private void skipWhitespace(Reader reader) throws IOException {

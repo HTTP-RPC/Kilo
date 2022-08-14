@@ -25,7 +25,6 @@ import java.util.Map;
 /**
  * CSV decoder.
  */
-@SuppressWarnings("unchecked")
 public class CSVDecoder extends Decoder<List<Map<String, String>>> {
     private char delimiter;
 
