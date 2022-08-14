@@ -51,6 +51,26 @@ public class BeanAdapterTest {
     public static class TestMap extends HashMap<String, Double> {
     }
 
+    public static class MissingAccessor {
+        private int value;
+
+        public void setValue(int value) {
+            this.value = value;
+        }
+    }
+
+    public static class DuplicateKey {
+        @Key("x")
+        public String getFoo() {
+            return "foo";
+        }
+
+        @Key("x")
+        public String getBar() {
+            return "bar";
+        }
+    }
+
     @Test
     public void testBeanAdapter() throws MalformedURLException {
         Map<String, ?> map = mapOf(
@@ -351,5 +371,15 @@ public class BeanAdapterTest {
         assertNull(properties.get("x"));
         assertNull(properties.get("y"));
         assertNull(properties.get("z"));
+    }
+
+    @Test
+    public void testMissingAccessor() {
+        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new MissingAccessor()));
+    }
+
+    @Test
+    public void testDuplicateKey() {
+        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateKey()));
     }
 }

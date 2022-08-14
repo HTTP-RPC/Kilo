@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.beans.Key;
 import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONDecoder;
@@ -42,6 +44,29 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 public class ExamplesTest {
+    public static class Person {
+        private String firstName = null;
+        private String lastName = null;
+
+        @Key("first_name")
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        @Key("last_name")
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+    }
+
     @Test
     public void testJSONEncoder() throws IOException {
         Map<String, Object> map = mapOf(
@@ -148,6 +173,18 @@ public class ExamplesTest {
         templateEncoder.write(mapOf(
             entry("text", "hello")
         ), System.out);
+    }
+
+    @Test
+    public void testCustomPropertyKeys() throws IOException {
+        var person = new Person();
+
+        person.setFirstName("first");
+        person.setLastName("last");
+
+        var jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.write(new BeanAdapter(person), System.out);
     }
 
     @Test

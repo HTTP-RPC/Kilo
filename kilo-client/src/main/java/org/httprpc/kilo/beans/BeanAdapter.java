@@ -946,7 +946,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
-        Map<String, Property> properties = new TreeMap<>();
+        Map<String, Property> properties = new HashMap<>();
 
         var methods = type.getMethods();
 
@@ -980,10 +980,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         return properties.entrySet().stream()
             .collect(Collectors.toMap(entry -> {
-                var key = entry.getValue().getAccessor().getAnnotation(Key.class);
+                var accessor = entry.getValue().getAccessor();
+
+                if (accessor == null) {
+                    throw new UnsupportedOperationException("Missing accessor.");
+                }
+
+                var key = accessor.getAnnotation(Key.class);
 
                 return Optionals.coalesce(Optionals.map(key, Key::value), entry.getKey());
-            }, Map.Entry::getValue));
+            }, Map.Entry::getValue, (v1, v2) -> {
+                throw new UnsupportedOperationException("Duplicate key.");
+            }, TreeMap::new));
     }
 
     private static String getPropertyName(Method method) {

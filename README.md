@@ -741,25 +741,36 @@ Coercion to concrete bean types is also supported.
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:
 
 ```java
-public class Person {
-    private String firstName = null;
-    
-    @Key("first_name")
-    public String getFirstName() {
-        return firstName;
+    public static class Person {
+        private String firstName = null;
+        private String lastName = null;
+
+        @Key("first_name")
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        @Key("last_name")
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
     }
-    
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-}
 ```
 
 The preceding class would be serialized to JSON like this:
 
 ```json
 {
-  "first_name": "..." 
+  "first_name": "first",
+  "last_name": "last"
 }
 ```
 
@@ -767,7 +778,8 @@ rather than this:
 
 ```json
 {
-  "firstName": "...",
+  "firstName": "first",
+  "lastName": "last"
 }
 ```
 
@@ -830,7 +842,7 @@ var results = queryBuilder.execute(getConnection(), mapOf(
 )).getResults();
 ```
 
-The results could be mapped to a list of `Pet` instances and returned from a service method as follows:
+The results could then be mapped to a list of `Pet` instances and returned from a service method as follows:
 
 ```java
 public interface Pet {
@@ -844,16 +856,7 @@ public interface Pet {
 ```
 
 ```java
-@RequestMethod("GET")
-public List<Pet> getPets(String owner) throws SQLException {
-    var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
-
-    var results = queryBuilder.execute(getConnection(), mapOf(
-        entry("owner", owner)
-    )).getResults();
-
-    return BeanAdapter.coerce(results, List.class, Pet.class);
-}
+return BeanAdapter.coerce(results, List.class, Pet.class);
 ```
 
 Insert, update, and delete operations are also supported. For example:
