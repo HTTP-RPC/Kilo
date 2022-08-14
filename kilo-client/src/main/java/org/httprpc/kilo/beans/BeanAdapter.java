@@ -389,8 +389,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Adapts a value for loose typing. If the value is <code>null</code>
-     * or an instance of one of the following types, it is returned as is:
+     * <p>Adapts a value for loose typing. If the value is <code>null</code>
+     * or an instance of one of the following types, it is returned as is:</p>
      *
      * <ul>
      * <li>{@link CharSequence}</li>
@@ -404,11 +404,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * If the value is an {@link Iterable}, it is wrapped in an adapter that will
+     * <p>If the value is an {@link Iterable}, it is wrapped in an adapter that will
      * recursively adapt the iterable's elements. If the value is a {@link Map},
      * it is wrapped in an adapter that will recursively adapt the map's values.
      * Otherwise, the value is assumed to be a bean and is wrapped in a
-     * {@link BeanAdapter}.
+     * {@link BeanAdapter}.</p>
      *
      * @param value
      * The value to adapt.
@@ -446,15 +446,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a value to a given type.
-     * <br/>
-     * For unparamterized types, if the value is already an instance of the
-     * requested type, it is returned as is.
-     * <br/>
-     * Otherwise, if the requested type is one of the following, the return
-     * value is obtained via an appropriate conversion method; for example,
-     * {@link Number#intValue()}, {@link Object#toString()}, or
-     * {@link LocalDate#parse(CharSequence)}:
+     * <p>Coerces a value to a given type.</p>
+     *
+     * <p>For unparamterized types, if the value is already an instance of the
+     * requested type, it is returned as is. Otherwise, if the requested type
+     * is one of the following, the return value is obtained via an appropriate
+     * conversion method; for example, {@link Number#intValue()},
+     * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:</p>
      *
      * <ul>
      * <li>{@link Byte} or <code>byte</code></li>
@@ -476,13 +474,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * If the target type is an {@link Enum}, the resulting value is the first
+     * <p>If the target type is an {@link Enum}, the resulting value is the first
      * constant whose string representation matches the value's string
-     * representation.
-     * <br/>
-     * If none of the previous conditions apply, the target type is assumed to
+     * representation.</p>
+     *
+     * <p>If none of the previous conditions apply, the target type is assumed to
      * be a bean. The provided value is assumed to be a map and is converted as
-     * follows:
+     * follows:</p>
      *
      * <ul>
      * <li>If the target type is an interface, the return value is a proxy
@@ -492,14 +490,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
      *
-     * For parameterized types, if the target type is {@link List} or
+     * <p>For parameterized types, if the target type is {@link List} or
      * {@link Map}, the value is wrapped in an instance of the same type that
      * automatically coerces its contents. Other parameterized types are not
-     * supported.
-     * <br/>
-     * For reference types, <code>null</code> values are returned as is. For
+     * supported.</p>
+     *
+     * <p>For reference types, <code>null</code> values are returned as is. For
      * numeric or boolean primitives, they are converted to 0 or
-     * <code>false</code>, respectively.
+     * <code>false</code>, respectively.</p>
      *
      * @param <T>
      * The target type.
@@ -748,7 +746,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
      */
     @SuppressWarnings("unchecked")
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <E> List<E> coerceList(List<?> list, Type elementType) {
         return (List<E>)coerceListContents(list, elementType);
     }
@@ -817,7 +815,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
      */
     @SuppressWarnings("unchecked")
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <K, V> Map<K, V> coerceMap(Map<?, ?> map, Type keyType, Type valueType) {
         return (Map<K, V>)coerceMapContents(map, keyType, valueType);
     }
