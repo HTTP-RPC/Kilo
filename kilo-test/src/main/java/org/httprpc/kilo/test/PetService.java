@@ -18,6 +18,7 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
+import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.sql.ResultSetAdapter;
@@ -53,11 +54,15 @@ public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @SuppressWarnings("unchecked")
     public List<Pet> getPets(String owner) throws SQLException, IOException {
+        if (owner == null) {
+            throw new IllegalArgumentException();
+        }
+
         var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
         var accept = getRequest().getHeader("Accept");
 
-        if (accept == null || accept.equals("*/*") || accept.equalsIgnoreCase(APPLICATION_JSON)) {
+        if (accept == null || accept.equals("*/*")) {
             var results = queryBuilder.execute(getConnection(), mapOf(
                 entry("owner", owner)
             )).getResults();
@@ -70,7 +75,13 @@ public class PetService extends AbstractDatabaseService {
                 var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                     entry("owner", owner)
                 )))) {
-                if (accept.equalsIgnoreCase(TEXT_CSV)) {
+                if (accept.equalsIgnoreCase(APPLICATION_JSON)) {
+                    response.setContentType(APPLICATION_JSON);
+
+                    var jsonEncoder = new JSONEncoder();
+
+                    jsonEncoder.write(results, response.getOutputStream());
+                } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
                     response.setContentType(TEXT_CSV);
 
                     var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));

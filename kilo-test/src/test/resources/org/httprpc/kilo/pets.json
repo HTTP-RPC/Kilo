@@ -1,26 +1,26 @@
 [
   {
-    "birth": 763880400000,
-    "death": null,
     "name": "Claws",
     "owner": "Gwen",
+    "species": "cat",
     "sex": "m",
-    "species": "cat"
+    "birth": 763880400000,
+    "death": null
   },
   {
-    "birth": 905486400000,
-    "death": null,
     "name": "Chirpy",
     "owner": "Gwen",
+    "species": "bird",
     "sex": "f",
-    "species": "bird"
+    "birth": 905486400000,
+    "death": null
   },
   {
-    "birth": 881643600000,
-    "death": null,
     "name": "Whistler",
     "owner": "Gwen",
+    "species": "bird",
     "sex": null,
-    "species": "bird"
+    "birth": 881643600000,
+    "death": null
   }
 ]

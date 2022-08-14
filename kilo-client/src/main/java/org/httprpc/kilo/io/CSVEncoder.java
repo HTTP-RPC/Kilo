@@ -16,7 +16,6 @@ package org.httprpc.kilo.io;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.text.Format;
 import java.util.Date;
 import java.util.List;

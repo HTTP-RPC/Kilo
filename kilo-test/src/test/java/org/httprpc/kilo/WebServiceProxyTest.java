@@ -16,6 +16,8 @@ package org.httprpc.kilo;
 
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.beans.Key;
+import org.httprpc.kilo.io.CSVDecoder;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.junit.jupiter.api.Test;
 
@@ -566,29 +568,65 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPets() throws IOException {
-        testPets("pets.json", null);
-        testPets("pets.json", "*/*");
-        testPets("pets.json", "application/json");
-
-        testPets("pets.csv", "text/csv");
-
-        testPets("pets.html", "text/html");
+        testPetsJSON("*/*");
+        testPetsJSON("application/json");
+        testPetsCSV();
+        testPetsHTML();
 
         Number averageAge = WebServiceProxy.get(baseURL, "pets/average-age").invoke();
 
         assertNotNull(averageAge);
     }
 
-    private void testPets(String name, String accept) throws IOException {
+    private void testPetsJSON(String accept) throws IOException {
+        List<?> expected;
+        try (var inputStream = getClass().getResourceAsStream("pets.json")) {
+            var jsonDecoder = new JSONDecoder();
+
+            expected = jsonDecoder.read(inputStream);
+        }
+
+        var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
+            entry("Accept", accept)
+        )).setArguments(mapOf(
+            entry("owner", "Gwen")
+        )).invoke();
+
+        assertEquals(expected, actual);
+    }
+
+    private void testPetsCSV() throws IOException {
+        List<?> expected;
+        try (var inputStream = getClass().getResourceAsStream("pets.csv")) {
+            var csvDecoder = new CSVDecoder();
+
+            expected = csvDecoder.read(inputStream);
+        }
+
+        var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
+            entry("Accept", "text/csv")
+        )).setArguments(mapOf(
+            entry("owner", "Gwen")
+        )).invoke((inputStream, contentType) -> {
+            var csvDecoder = new CSVDecoder();
+
+            return csvDecoder.read(inputStream);
+        });
+
+        assertEquals(expected, actual);
+
+    }
+
+    private void testPetsHTML() throws IOException {
         String expected;
-        try (var inputStream = getClass().getResourceAsStream(name)) {
+        try (var inputStream = getClass().getResourceAsStream("pets.html")) {
             var textDecoder = new TextDecoder();
 
             expected = textDecoder.read(inputStream);
         }
 
         var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
-            entry("Accept", accept)
+            entry("Accept", "text/html")
         )).setArguments(mapOf(
             entry("owner", "Gwen")
         )).invoke((inputStream, contentType) -> {
