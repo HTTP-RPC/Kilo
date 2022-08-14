@@ -550,14 +550,13 @@ System.out.println(text); // Hello, World!
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) format and supports most Mustache features. 
 
-`TemplateEncoder` provides the following constructors:
+`TemplateEncoder` provides the following constructor:
 
 ```java
 public TemplateEncoder(URL url) { ... }
-public TemplateEncoder(URL url, Charset charset) { ... }
 ```
 
-The first argument specifies the URL of the template document (typically as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default. The optional second argument represents the character encoding used by the template document. If unspecified, UTF-8 is assumed.
+The single argument specifies the URL of the template document (typically as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default.
  
 Templates are applied using one of the following methods:
 

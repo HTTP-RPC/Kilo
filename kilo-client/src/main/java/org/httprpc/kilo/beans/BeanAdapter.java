@@ -733,30 +733,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    /**
-     * Coerces list contents.
-     *
-     * @param <E>
-     * The target element type.
-     *
-     * @param list
-     * The source list.
-     *
-     * @param elementType
-     * The target element type.
-     *
-     * @return
-     * A list implementation that coerces source elements to the requested
-     * type.
-     *
-     * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated(forRemoval = true)
-    public static <E> List<E> coerceList(List<?> list, Type elementType) {
-        return (List<E>)coerceListContents(list, elementType);
-    }
-
     private static List<Object> coerceListContents(List<?> list, Type elementType) {
         if (list == null) {
             return null;
@@ -794,36 +770,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 };
             }
         };
-    }
-
-    /**
-     * Coerces map contents.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <V>
-     * The target value type.
-     *
-     * @param map
-     * The source map.
-     *
-     * @param keyType
-     * The target key type.
-     *
-     * @param valueType
-     * The target value type.
-     *
-     * @return
-     * A map implementation that associates coerced keys with source keys and
-     * coerces source values to the requested type.
-     *
-     * @deprecated Use {@link #coerce(Object, Class, Type...)} instead.
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated(forRemoval = true)
-    public static <K, V> Map<K, V> coerceMap(Map<?, ?> map, Type keyType, Type valueType) {
-        return (Map<K, V>)coerceMapContents(map, keyType, valueType);
     }
 
     private static Map<Object, Object> coerceMapContents(Map<?, ?> map, Type keyType, Type valueType) {

@@ -16,31 +16,12 @@ package org.httprpc.kilo.io;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Text decoder.
  */
 @SuppressWarnings("unchecked")
 public class TextDecoder extends Decoder<String> {
-    /**
-     * Constructs a new text decoder.
-     */
-    public TextDecoder() {
-        this(StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Constructs a new text decoder.
-     *
-     * @param charset
-     * The character set to use when decoding the text.
-     */
-    public TextDecoder(Charset charset) {
-        super(charset);
-    }
-
     @Override
     public String read(Reader reader) throws IOException {
         if (reader == null) {

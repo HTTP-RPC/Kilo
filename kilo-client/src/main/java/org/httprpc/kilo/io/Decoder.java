@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Abstract base class for decoders.
@@ -27,23 +28,9 @@ import java.nio.charset.Charset;
  * The type of value produced by the decoder.
  */
 public abstract class Decoder<T> {
-    private Charset charset;
+    private Charset charset = StandardCharsets.UTF_8;
 
     protected static final int EOF = -1;
-
-    /**
-     * Constructs a new decoder.
-     *
-     * @param charset
-     * The character set to use when decoding an input stream.
-     */
-    protected Decoder(Charset charset) {
-        if (charset == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.charset = charset;
-    }
 
     /**
      * Returns the character set to use when decoding an input stream.
@@ -53,6 +40,20 @@ public abstract class Decoder<T> {
      */
     public Charset getCharset() {
         return charset;
+    }
+
+    /**
+     * Sets the character set to use when decoding an input stream.
+     *
+     * @param charset
+     * The input stream's character set.
+     */
+    public void setCharset(Charset charset) {
+        if (charset == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.charset = charset;
     }
 
     /**

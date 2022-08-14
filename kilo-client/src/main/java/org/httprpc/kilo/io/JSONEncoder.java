@@ -47,8 +47,6 @@ public class JSONEncoder extends Encoder<Object> {
      * <code>false</code>, otherwise.
      */
     public JSONEncoder(boolean compact) {
-        super(StandardCharsets.UTF_8);
-
         this.compact = compact;
     }
 

@@ -54,8 +54,6 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * The character to use as a field delimiter.
      */
     public CSVEncoder(List<String> keys, char delimiter) {
-        super(StandardCharsets.ISO_8859_1);
-
         if (keys == null) {
             throw new IllegalArgumentException();
         }

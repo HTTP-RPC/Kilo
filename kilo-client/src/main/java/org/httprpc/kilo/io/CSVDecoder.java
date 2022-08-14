@@ -44,8 +44,6 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
      * The character to use as a field delimiter.
      */
     public CSVDecoder(char delimiter) {
-        super(StandardCharsets.ISO_8859_1);
-
         this.delimiter = delimiter;
     }
 

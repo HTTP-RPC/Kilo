@@ -22,7 +22,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -417,7 +416,6 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private URL url;
-    private Charset charset;
     private Map<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
@@ -452,27 +450,11 @@ public class TemplateEncoder extends Encoder<Object> {
      * The URL of the template.
      */
     public TemplateEncoder(URL url) {
-        this(url, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Constructs a new template encoder.
-     *
-     * @param url
-     * The URL of the template.
-     *
-     * @param charset
-     * The character encoding used by the template.
-     */
-    public TemplateEncoder(URL url, Charset charset) {
-        super(charset);
-
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
         this.url = url;
-        this.charset = charset;
 
         modifiers = new HashMap<>(defaultModifiers);
 

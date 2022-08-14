@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Abstract base class for encoders.
@@ -27,21 +28,7 @@ import java.nio.charset.Charset;
  * The type of value consumed by the encoder.
  */
 public abstract class Encoder<T> {
-    private Charset charset;
-
-    /**
-     * Constructs a new encoder.
-     *
-     * @param charset
-     * The character set to use when encoding an output stream.
-     */
-    protected Encoder(Charset charset) {
-        if (charset == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.charset = charset;
-    }
+    private Charset charset = StandardCharsets.UTF_8;
 
     /**
      * Returns the character set to use when encoding an output stream.
@@ -51,6 +38,20 @@ public abstract class Encoder<T> {
      */
     public Charset getCharset() {
         return charset;
+    }
+
+    /**
+     * Sets the character set to use when encoding an output stream.
+     *
+     * @param charset
+     * The output stream's character set.
+     */
+    public void setCharset(Charset charset) {
+        if (charset == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.charset = charset;
     }
 
     /**

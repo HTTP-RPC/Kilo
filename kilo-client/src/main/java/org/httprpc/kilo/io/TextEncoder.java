@@ -16,30 +16,11 @@ package org.httprpc.kilo.io;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Text encoder.
  */
 public class TextEncoder extends Encoder<String> {
-    /**
-     * Constructs a new text encoder.
-     */
-    public TextEncoder() {
-        this(StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Constructs a new text encoder.
-     *
-     * @param charset
-     * The character set to use when encoding the text.
-     */
-    public TextEncoder(Charset charset) {
-        super(charset);
-    }
-
     @Override
     public void write(String value, Writer writer) throws IOException {
         writer = new BufferedWriter(writer);

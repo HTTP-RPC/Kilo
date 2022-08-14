@@ -57,8 +57,6 @@ public class JSONDecoder extends Decoder<Object> {
      * <code>false</code>, otherwise.
      */
     public JSONDecoder(boolean sorted) {
-        super(StandardCharsets.UTF_8);
-
         this.sorted = sorted;
     }
 
