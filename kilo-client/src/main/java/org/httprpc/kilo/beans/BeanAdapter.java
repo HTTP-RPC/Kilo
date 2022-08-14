@@ -216,11 +216,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (method.getDeclaringClass() == Object.class) {
                 return method.invoke(this, arguments);
             } else {
-                var key = Optionals.coalesce(Optionals.map(method.getAnnotation(Key.class), Key::value), getPropertyName(method));
-
-                if (key == null || method.getParameterCount() > 0) {
+                if (method.getParameterCount() > 0) {
                     throw new UnsupportedOperationException();
                 }
+
+                var propertyName = getPropertyName(method);
+
+                if (propertyName == null) {
+                    throw new UnsupportedOperationException();
+                }
+
+                var key = Optionals.coalesce(Optionals.map(method.getAnnotation(Key.class), Key::value), propertyName);
 
                 return coerce(map.get(key), method.getGenericReturnType());
             }
