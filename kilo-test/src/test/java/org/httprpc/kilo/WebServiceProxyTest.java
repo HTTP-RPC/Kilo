@@ -568,8 +568,8 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPets() throws IOException {
-        testPetsJSON("*/*");
-        testPetsJSON("application/json");
+        testPetsJSON(false);
+        testPetsJSON(true);
         testPetsCSV();
         testPetsHTML();
 
@@ -578,7 +578,7 @@ public class WebServiceProxyTest {
         assertNotNull(averageAge);
     }
 
-    private void testPetsJSON(String accept) throws IOException {
+    private void testPetsJSON(boolean stream) throws IOException {
         List<?> expected;
         try (var inputStream = getClass().getResourceAsStream("pets.json")) {
             var jsonDecoder = new JSONDecoder();
@@ -587,9 +587,10 @@ public class WebServiceProxyTest {
         }
 
         var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
-            entry("Accept", accept)
+            entry("Accept", stream ? "application/json" : "*/*")
         )).setArguments(mapOf(
-            entry("owner", "Gwen")
+            entry("owner", "Gwen"),
+            entry("stream", stream)
         )).invoke();
 
         assertEquals(expected, actual);
@@ -606,7 +607,8 @@ public class WebServiceProxyTest {
         var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
             entry("Accept", "text/csv")
         )).setArguments(mapOf(
-            entry("owner", "Gwen")
+            entry("owner", "Gwen"),
+            entry("stream", true)
         )).invoke((inputStream, contentType) -> {
             var csvDecoder = new CSVDecoder();
 
@@ -628,7 +630,8 @@ public class WebServiceProxyTest {
         var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
             entry("Accept", "text/html")
         )).setArguments(mapOf(
-            entry("owner", "Gwen")
+            entry("owner", "Gwen"),
+            entry("stream", true)
         )).invoke((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();
 

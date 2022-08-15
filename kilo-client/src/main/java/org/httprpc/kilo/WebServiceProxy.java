@@ -692,9 +692,6 @@ public class WebServiceProxy {
         connection.setConnectTimeout(connectTimeout);
         connection.setReadTimeout(readTimeout);
 
-        // Set standard headers
-        connection.setRequestProperty("Accept", "*/*");
-
         var locale = Locale.getDefault();
 
         connection.setRequestProperty("Accept-Language", String.format("%s-%s",

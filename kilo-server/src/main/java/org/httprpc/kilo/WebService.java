@@ -1244,10 +1244,14 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
+        if (type.getTypeParameters().length > 0) {
+            throw new UnsupportedOperationException("Unsupported body type.");
+        }
+
         var contentType = request.getContentType();
 
         if (contentType != null && !contentType.startsWith("application/json")) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Unsupported content type.");
         }
 
         var jsonDecoder = new JSONDecoder();

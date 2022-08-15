@@ -53,23 +53,17 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     @SuppressWarnings("unchecked")
-    public List<Pet> getPets(String owner) throws SQLException, IOException {
+    public List<Pet> getPets(String owner, boolean stream) throws SQLException, IOException {
         if (owner == null) {
             throw new IllegalArgumentException();
         }
 
         var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
-        var accept = getRequest().getHeader("Accept");
-
-        if (accept == null || accept.equals("*/*")) {
-            var results = queryBuilder.execute(getConnection(), mapOf(
-                entry("owner", owner)
-            )).getResults();
-
-            return BeanAdapter.coerce(results, List.class, Pet.class);
-        } else {
+        if (stream) {
             var response = getResponse();
+
+            var accept = getRequest().getHeader("Accept");
 
             try (var statement = queryBuilder.prepare(getConnection());
                 var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -116,6 +110,12 @@ public class PetService extends AbstractDatabaseService {
             }
 
             return null;
+        } else {
+            var results = queryBuilder.execute(getConnection(), mapOf(
+                entry("owner", owner)
+            )).getResults();
+
+            return BeanAdapter.coerce(results, List.class, Pet.class);
         }
     }
 

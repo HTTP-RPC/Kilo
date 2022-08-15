@@ -876,10 +876,6 @@ public class QueryBuilder {
     }
 
     private void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
-        if (parameters == null) {
-            throw new IllegalStateException();
-        }
-
         var i = 1;
 
         for (var parameter : parameters) {
