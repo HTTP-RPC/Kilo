@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that describes an endpoint's keys.
+ * Describes an endpoint's keys.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

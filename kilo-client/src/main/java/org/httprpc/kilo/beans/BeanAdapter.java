@@ -313,18 +313,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        Object value;
-        if (property != null && property.accessor != null) {
-            try {
-                value = adapt(property.accessor.invoke(bean), propertyCache);
-            } catch (IllegalAccessException | InvocationTargetException exception) {
-                throw new RuntimeException(exception);
-            }
-        } else {
-            value = null;
+        if (property == null || property.accessor == null) {
+            return null;
         }
 
-        return value;
+        try {
+            return adapt(property.accessor.invoke(bean), propertyCache);
+        } catch (IllegalAccessException | InvocationTargetException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override
@@ -374,20 +371,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     public Entry<String, Object> next() {
                         var entry = iterator.next();
 
+                        var key = entry.getKey();
+
                         Object value;
                         try {
                             var property = entry.getValue();
 
-                            if (property.accessor != null) {
-                                value = adapt(property.accessor.invoke(bean), propertyCache);
-                            } else {
-                                value = null;
-                            }
+                            value = adapt(property.accessor.invoke(bean), propertyCache);
                         } catch (IllegalAccessException | InvocationTargetException exception) {
                             throw new RuntimeException(exception);
                         }
 
-                        return new SimpleImmutableEntry<>(entry.getKey(), value);
+                        return new SimpleImmutableEntry<>(key, value);
                     }
                 };
             }
@@ -734,14 +729,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static List<Object> coerceListContents(List<?> list, Type elementType) {
-        if (list == null) {
-            return null;
-        }
-
-        if (elementType == null) {
-            throw new IllegalArgumentException();
-        }
-
         return new AbstractList<>() {
             @Override
             public Object get(int index) {
@@ -773,14 +760,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Map<Object, Object> coerceMapContents(Map<?, ?> map, Type keyType, Type valueType) {
-        if (map == null) {
-            return null;
-        }
-
-        if (keyType == null || valueType == null) {
-            throw new IllegalArgumentException();
-        }
-
         var keys = map.keySet().stream().collect(Collectors.toMap(key -> coerce(key, keyType), key -> key));
 
         return new AbstractMap<>() {
