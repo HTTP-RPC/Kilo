@@ -158,7 +158,7 @@ For example, the following service method might be used to create a new account 
 @RequestMethod("POST")
 @Content(Account.class)
 public createAccount() {
-    Account account = getBody();
+    var account = getBody(Account.class);
 
     ...
 }
@@ -291,7 +291,7 @@ The `Keys` annotation can be used to provide descriptions for an endpoint's keys
 public void updateItem() throws SQLException {
     var itemID = getKey("itemID", Integer.class);
 
-    Item item = getBody();
+    var item = getBody(Item.class);
      
     ... 
 }

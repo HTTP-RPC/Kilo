@@ -150,9 +150,6 @@ public class Collections {
     /**
      * Returns the value at a given path.
      *
-     * @param <T>
-     * The type of the value to return.
-     *
      * @param root
      * The root object.
      *
@@ -162,16 +159,15 @@ public class Collections {
      * @return
      * The value at the given path, or <code>null</code> if the value does not exist.
      */
-    public static <T> T valueAt(Object root, Object... path) {
+    public static Object valueAt(Object root, Object... path) {
         return valueAt(root, new LinkedList<>(Arrays.asList(path)));
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T valueAt(Object root, List<?> path) {
+    private static Object valueAt(Object root, List<?> path) {
         if (root == null) {
             return null;
         } else if (path.isEmpty()) {
-            return (T)root;
+            return root;
         } else {
             var component = path.remove(0);
 

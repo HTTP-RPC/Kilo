@@ -85,7 +85,9 @@ public class CollectionsTest {
             entry(true, "def")
         );
 
-        assertEquals(Integer.valueOf(2), Collections.valueAt(map, "a", "b", "c", 1));
+        var value = Collections.valueAt(map, "a", "b", "c", 1);
+
+        assertEquals(2, value);
 
         assertEquals("abc", Collections.valueAt(map, 4));
         assertEquals("def", Collections.valueAt(map, true));

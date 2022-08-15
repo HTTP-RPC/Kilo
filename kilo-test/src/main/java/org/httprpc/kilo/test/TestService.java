@@ -293,7 +293,7 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     @Content(Body.class)
     public Body testPost(int id) {
-        return getBody();
+        return getBody(Body.class);
     }
 
     @RequestMethod("POST")

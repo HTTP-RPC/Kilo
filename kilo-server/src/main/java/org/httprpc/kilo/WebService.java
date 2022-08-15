@@ -1206,9 +1206,8 @@ public abstract class WebService extends HttpServlet {
      * @return
      * The decoded body content.
      */
-    @SuppressWarnings("unchecked")
-    protected <T> T getBody() {
-        return (T)body.get();
+    protected <T> T getBody(Class<T> type) {
+        return BeanAdapter.coerce(body.get(), type);
     }
 
     /**
