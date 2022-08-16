@@ -324,6 +324,8 @@ GET /math?api=json
 
 This can be used to process an API definition programatically; for example, to generate client-side stub code.
 
+If `IndexServlet` is deployed, a JSON description of all services can be obtained by submitting a `GET` request with an "Accept" type of "application/json".
+
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
 

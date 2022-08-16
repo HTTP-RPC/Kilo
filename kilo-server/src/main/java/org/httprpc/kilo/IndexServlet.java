@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.util.ResourceBundleAdapter;
 
@@ -33,16 +34,28 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 public class IndexServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        var serviceDescriptors = BeanAdapter.adapt(WebService.getServiceDescriptors());
 
-        var templateEncoder = new TemplateEncoder(WebService.class.getResource("index.html"));
+        var accept = request.getHeader("Accept");
 
-        var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".index", request.getLocale());
+        if (accept != null && accept.equalsIgnoreCase("application/json")) {
+            response.setContentType("application/json;charset=UTF-8");
 
-        templateEncoder.write(mapOf(
-            entry("labels", new ResourceBundleAdapter(resourceBundle)),
-            entry("contextPath", request.getContextPath()),
-            entry("services", BeanAdapter.adapt(WebService.getServiceDescriptors()))
-        ), response.getOutputStream());
+            var jsonEncoder = new JSONEncoder();
+
+            jsonEncoder.write(serviceDescriptors, response.getOutputStream());
+        } else {
+            response.setContentType("text/html;charset=UTF-8");
+
+            var templateEncoder = new TemplateEncoder(WebService.class.getResource("index.html"));
+
+            var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".index", request.getLocale());
+
+            templateEncoder.write(mapOf(
+                entry("labels", new ResourceBundleAdapter(resourceBundle)),
+                entry("contextPath", request.getContextPath()),
+                entry("services", serviceDescriptors)
+            ), response.getOutputStream());
+        }
     }
 }
