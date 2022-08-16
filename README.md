@@ -1,5 +1,6 @@
 [![Releases](https://img.shields.io/github/release/HTTP-RPC/Kilo.svg)](https://github.com/HTTP-RPC/Kilo/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/kilo-server.svg)](https://repo1.maven.org/maven2/org/httprpc/kilo-server/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/kilo-client.svg)](https://repo1.maven.org/maven2/org/httprpc/kilo-client/)
+[![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
 Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 130KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
