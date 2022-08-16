@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that provides static utility methods for working with collections.
+ * Provides static utility methods for working with collections.
  */
 public class Collections {
     private Collections() {

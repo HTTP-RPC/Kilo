@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
- * Class for programmatically constructing and executing SQL queries.
+ * Provides a fluent API for programmatically constructing and executing SQL
+ * queries.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;

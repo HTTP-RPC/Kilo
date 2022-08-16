@@ -51,7 +51,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  */
 public class TemplateEncoder extends Encoder<Object> {
     /**
-     * Interface representing a modifier.
+     * Represents a modifier.
      */
     public interface Modifier {
         /**

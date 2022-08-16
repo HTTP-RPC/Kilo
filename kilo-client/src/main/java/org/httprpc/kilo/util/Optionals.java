@@ -17,7 +17,7 @@ package org.httprpc.kilo.util;
 import java.util.function.Function;
 
 /**
- * Class that provides static utility methods for working with optional values.
+ * Provides static utility methods for working with optional values.
  */
 public class Optionals {
     private Optionals() {

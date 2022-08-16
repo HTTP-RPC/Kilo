@@ -40,7 +40,7 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
- * Web service proxy class.
+ * Client-side invocation proxy for web services.
  */
 public class WebServiceProxy {
     /**
@@ -85,7 +85,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Interface representing a request handler.
+     * Represents a request handler.
      */
     public interface RequestHandler {
         /**
@@ -109,7 +109,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Interface representing a response handler.
+     * Represents a response handler.
      */
     public interface ResponseHandler<T> {
         /**
@@ -131,7 +131,7 @@ public class WebServiceProxy {
     }
 
     /**
-     * Interface representing an error handler.
+     * Represents an error handler.
      */
     public interface ErrorHandler {
         /**
