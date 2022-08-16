@@ -1,0 +1,98 @@
+{
+  "description": "Math example service.",
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "consumes": null,
+          "deprecated": false,
+          "description": "Calculates the sum of two numbers.",
+          "keys": null,
+          "method": "GET",
+          "parameters": [
+            {
+              "description": "The first number.",
+              "name": "a",
+              "type": {
+                "elementType": null,
+                "intrinsic": true,
+                "iterable": false,
+                "keyType": null,
+                "map": false,
+                "name": "double",
+                "valueType": null
+              }
+            },
+            {
+              "description": "The second number.",
+              "name": "b",
+              "type": {
+                "elementType": null,
+                "intrinsic": true,
+                "iterable": false,
+                "keyType": null,
+                "map": false,
+                "name": "double",
+                "valueType": null
+              }
+            }
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "iterable": false,
+            "keyType": null,
+            "map": false,
+            "name": "double",
+            "valueType": null
+          }
+        },
+        {
+          "consumes": null,
+          "deprecated": false,
+          "description": "Calculates the sum of a list of numbers.",
+          "keys": null,
+          "method": "GET",
+          "parameters": [
+            {
+              "description": "The numbers to add.",
+              "name": "values",
+              "type": {
+                "elementType": {
+                  "elementType": null,
+                  "intrinsic": true,
+                  "iterable": false,
+                  "keyType": null,
+                  "map": false,
+                  "name": "Double",
+                  "valueType": null
+                },
+                "intrinsic": true,
+                "iterable": true,
+                "keyType": null,
+                "map": false,
+                "name": "Iterable",
+                "valueType": null
+              }
+            }
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "iterable": false,
+            "keyType": null,
+            "map": false,
+            "name": "double",
+            "valueType": null
+          }
+        }
+      ],
+      "path": "/math/sum"
+    }
+  ],
+  "enumerations": [
+  ],
+  "path": "/math",
+  "structures": [
+  ]
+}

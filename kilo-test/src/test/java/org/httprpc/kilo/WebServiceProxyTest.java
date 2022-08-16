@@ -583,7 +583,7 @@ public class WebServiceProxyTest {
         try (var inputStream = getClass().getResourceAsStream("pets.json")) {
             var jsonDecoder = new JSONDecoder();
 
-            expected = BeanAdapter.coerce(jsonDecoder.read(inputStream), List.class, Object.class);
+            expected = (List<?>)jsonDecoder.read(inputStream);
         }
 
         var actual = WebServiceProxy.get(baseURL, "pets").setHeaders(mapOf(
@@ -637,6 +637,22 @@ public class WebServiceProxyTest {
 
             return textDecoder.read(inputStream);
         });
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testAPIDocumentation() throws IOException {
+        Map<?, ?> expected;
+        try (var inputStream = getClass().getResourceAsStream("math.json")) {
+            var jsonDecoder = new JSONDecoder();
+
+            expected = (Map<?, ?>)jsonDecoder.read(inputStream);
+        }
+
+        var actual = WebServiceProxy.get(baseURL, "math").setArguments(mapOf(
+            entry("api", "json")
+        )).setMonitorStream(System.out).invoke();
 
         assertEquals(expected, actual);
     }

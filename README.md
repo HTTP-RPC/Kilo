@@ -300,7 +300,7 @@ public void updateItem() throws SQLException {
 
 If a method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
 
-#### IndexServlet
+#### Service Index
 An index of all active services can be enabled by declaring an instance of `org.httprpc.kilo.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
 
 ```xml
@@ -314,6 +314,15 @@ An index of all active services can be enabled by declaring an instance of `org.
     <url-pattern/>
 </servlet-mapping>
 ```
+
+#### JSON Documentation
+A JSON version of the generated documentation can be obtained by appending "?api=json" to a service URL; for example:
+
+```
+GET /math?api=json
+```
+
+This can be used to process an API definition programatically; for example, to generate client-side stub code.
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:

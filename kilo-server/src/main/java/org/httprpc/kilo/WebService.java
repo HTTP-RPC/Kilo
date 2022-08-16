@@ -834,16 +834,30 @@ public abstract class WebService extends HttpServlet {
             var api = request.getParameter("api");
 
             if (api != null) {
-                response.setContentType(String.format("text/html;charset=%s", UTF_8));
+                if (api.isEmpty()) {
+                    response.setContentType(String.format("text/html;charset=%s", UTF_8));
 
-                var templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+                    var templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
 
-                var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
+                    var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
 
-                templateEncoder.write(mapOf(
-                    entry("labels", new ResourceBundleAdapter(resourceBundle)),
-                    entry("service", new BeanAdapter(serviceDescriptor))
-                ), response.getOutputStream());
+                    templateEncoder.write(mapOf(
+                        entry("labels", new ResourceBundleAdapter(resourceBundle)),
+                        entry("service", new BeanAdapter(serviceDescriptor))
+                    ), response.getOutputStream());
+                } else if (api.equalsIgnoreCase("json")) {
+                    response.setContentType(String.format("application/json;charset=%s", UTF_8));
+
+                    var jsonEncoder = new JSONEncoder();
+
+                    jsonEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
+                } else {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                }
+
+                response.flushBuffer();
+
+                return;
             }
         }
 
