@@ -574,15 +574,7 @@ public class TemplateEncoder extends Encoder<Object> {
      * If an exception occurs.
      */
     public void write(Object value, Writer writer, Locale locale, TimeZone timeZone) throws IOException {
-        if (writer == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (locale == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (timeZone == null) {
+        if (writer == null || locale == null || timeZone == null) {
             throw new IllegalArgumentException();
         }
 

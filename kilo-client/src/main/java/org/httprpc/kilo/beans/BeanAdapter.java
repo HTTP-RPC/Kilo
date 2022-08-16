@@ -289,8 +289,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (Proxy.class.isAssignableFrom(type)) {
             var interfaces = type.getInterfaces();
 
-            if (interfaces.length == 0) {
-                throw new IllegalArgumentException();
+            if (interfaces.length != 1) {
+                throw new UnsupportedOperationException();
             }
 
             type = interfaces[0];

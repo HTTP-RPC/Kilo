@@ -251,11 +251,7 @@ public class WebServiceProxy {
      * The resource URL.
      */
     public WebServiceProxy(String method, URL url) {
-        if (method == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (url == null) {
+        if (method == null || url == null) {
             throw new IllegalArgumentException();
         }
 
