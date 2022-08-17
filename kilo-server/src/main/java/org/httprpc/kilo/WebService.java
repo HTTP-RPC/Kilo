@@ -834,7 +834,15 @@ public abstract class WebService extends HttpServlet {
             var api = request.getParameter("api");
 
             if (api != null) {
-                if (api.isEmpty()) {
+                var accept = request.getHeader("Accept");
+
+                if (accept != null && accept.equalsIgnoreCase("application/json")) {
+                    response.setContentType(String.format("application/json;charset=%s", UTF_8));
+
+                    var jsonEncoder = new JSONEncoder();
+
+                    jsonEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
+                } else {
                     response.setContentType(String.format("text/html;charset=%s", UTF_8));
 
                     var templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
@@ -845,14 +853,6 @@ public abstract class WebService extends HttpServlet {
                         entry("labels", new ResourceBundleAdapter(resourceBundle)),
                         entry("service", new BeanAdapter(serviceDescriptor))
                     ), response.getOutputStream());
-                } else if (api.equalsIgnoreCase("json")) {
-                    response.setContentType(String.format("application/json;charset=%s", UTF_8));
-
-                    var jsonEncoder = new JSONEncoder();
-
-                    jsonEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
-                } else {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 }
 
                 response.flushBuffer();

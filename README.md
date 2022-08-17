@@ -316,15 +316,9 @@ An index of all active services can be enabled by declaring an instance of `org.
 ```
 
 #### JSON Documentation
-A JSON version of the generated documentation can be obtained by appending "?api=json" to a service URL; for example:
+A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
-```
-GET /math?api=json
-```
-
-This can be used to process an API definition programatically; for example, to generate client-side stub code.
-
-If `IndexServlet` is deployed, a JSON description of all services can be obtained by submitting a `GET` request with an "Accept" type of "application/json".
+This header is supported by to both `WebService` and `IndexServlet`. The latter will return a JSON description of all active services.
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:

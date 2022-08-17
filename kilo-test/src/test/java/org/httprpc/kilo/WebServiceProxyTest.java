@@ -650,7 +650,11 @@ public class WebServiceProxyTest {
             expected = (Map<?, ?>)jsonDecoder.read(inputStream);
         }
 
-        var actual = WebServiceProxy.get(baseURL, "math").setArguments(mapOf(
+        var actual = WebServiceProxy.get(baseURL, "math").setHeaders(
+            mapOf(
+                entry("Accept", "application/json")
+            )
+        ).setArguments(mapOf(
             entry("api", "json")
         )).setMonitorStream(System.out).invoke();
 
