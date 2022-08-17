@@ -32,7 +32,7 @@ public class JSONDecoder extends Decoder<Object> {
 
     private int c = EOF;
 
-    private Deque<Object> ancestors = new LinkedList<>();
+    private Deque<Object> containers = new LinkedList<>();
 
     private StringBuilder valueBuilder = new StringBuilder();
 
@@ -75,17 +75,17 @@ public class JSONDecoder extends Decoder<Object> {
 
         while (c != EOF) {
             if (c == ']' || c == '}') {
-                value = ancestors.pop();
+                value = containers.pop();
 
                 c = reader.read();
             } else if (c == ',') {
                 c = reader.read();
             } else {
-                var ancestor = ancestors.peek();
+                var container = containers.peek();
 
-                // If the current ancestor is a map, read the key
+                // If the current container is a map, read the key
                 String key;
-                if (ancestor instanceof Map<?, ?>) {
+                if (container instanceof Map<?, ?>) {
                     if (c != '"') {
                         throw new IOException("Invalid key.");
                     }
@@ -131,7 +131,7 @@ public class JSONDecoder extends Decoder<Object> {
                 } else if (c == '[') {
                     value = new ArrayList<>();
 
-                    ancestors.push(value);
+                    containers.push(value);
 
                     c = reader.read();
                 } else if (c == '{') {
@@ -141,19 +141,19 @@ public class JSONDecoder extends Decoder<Object> {
                         value = new LinkedHashMap<>();
                     }
 
-                    ancestors.push(value);
+                    containers.push(value);
 
                     c = reader.read();
                 } else {
                     throw new IOException("Unexpected character.");
                 }
 
-                // Add the value to the current ancestor
-                if (ancestor != null) {
+                // Add the value to the current container
+                if (container != null) {
                     if (key != null) {
-                        ((Map<String, Object>)ancestor).put(key, value);
+                        ((Map<String, Object>)container).put(key, value);
                     } else {
-                        ((List<Object>)ancestor).add(value);
+                        ((List<Object>)container).add(value);
                     }
                 }
             }
