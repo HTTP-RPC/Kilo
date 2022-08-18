@@ -35,6 +35,7 @@ public interface TestInterface {
 
     @Key("i")
     int getInteger();
+
     long getLong();
     double getDouble();
     String getString();
@@ -49,6 +50,9 @@ public interface TestInterface {
     Period getPeriod();
     UUID getUUID();
     URL getURL();
+
+    @Ignore
+    Object getIgnored();
 
     NestedInterface getNestedBean();
 

@@ -20,14 +20,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Associates a custom name with a property.
+ * Excludes a property from the map.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Key {
-    /**
-     * @return
-     * The custom property name.
-     */
-    String value();
+public @interface Ignore {
 }

@@ -203,6 +203,12 @@ public class TestBean implements TestInterface {
     }
 
     @Override
+    @Ignore
+    public Object getIgnored() {
+        return null;
+    }
+
+    @Override
     public NestedInterface getNestedBean() {
         return nestedBean;
     }

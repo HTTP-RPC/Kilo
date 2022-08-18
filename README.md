@@ -746,28 +746,28 @@ Coercion to concrete bean types is also supported.
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:
 
 ```java
-    public static class Person {
-        private String firstName = null;
-        private String lastName = null;
+public static class Person {
+    private String firstName = null;
+    private String lastName = null;
 
-        @Key("first_name")
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        @Key("last_name")
-        public String getLastName() {
-            return lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
+    @Key("first_name")
+    public String getFirstName() {
+        return firstName;
     }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Key("last_name")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+}
 ```
 
 The preceding class would be serialized to JSON like this:
@@ -787,6 +787,18 @@ rather than this:
   "lastName": "last"
 }
 ```
+
+### Ignoring Properties
+Properties can be excluded from the map using the `Ignore` annotation. For example, given the following code:
+
+```java
+@Ignore
+public Object getIgnored() {
+    ...
+}
+```
+
+a call to `get()` with a key of "ignored" would return `null`. The value would also be omitted when traversing the map's contents. 
 
 ## QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:

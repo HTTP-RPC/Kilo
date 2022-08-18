@@ -908,14 +908,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         return properties.entrySet().stream()
-            .collect(Collectors.toMap(entry -> {
+            .filter(entry -> {
                 var accessor = entry.getValue().getAccessor();
 
                 if (accessor == null) {
                     throw new UnsupportedOperationException("Missing accessor.");
                 }
 
-                var key = accessor.getAnnotation(Key.class);
+                return (accessor.getAnnotation(Ignore.class) == null);
+            }).collect(Collectors.toMap(entry -> {
+                var key = entry.getValue().getAccessor().getAnnotation(Key.class);
 
                 return Optionals.coalesce(Optionals.map(key, Key::value), entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
