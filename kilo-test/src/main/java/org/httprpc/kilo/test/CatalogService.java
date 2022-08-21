@@ -37,38 +37,16 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @Description("Catalog example service.")
 public class CatalogService extends AbstractDatabaseService {
     @Description("Represents an item in the catalog.")
-    public static class Item {
-        private Integer id;
-        private String description;
-        private Double price;
-
+    public interface Item {
         @Key("id")
         @Description("The item's ID.")
-        public Integer getID() {
-            return id;
-        }
-
-        public void setID(int id) {
-            this.id = id;
-        }
+        Integer getID();
 
         @Description("The item's description.")
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
+        String getDescription();
 
         @Description("The item's price.")
-        public Double getPrice() {
-            return price;
-        }
-
-        public void setPrice(Double price) {
-            this.price = price;
-        }
+        Double getPrice();
     }
 
     @Description("Represents a size option.")
@@ -98,6 +76,10 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         var item = getBody(Item.class);
 
+        if (item == null) {
+            throw new UnsupportedOperationException();
+        }
+
         var itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
@@ -124,6 +106,10 @@ public class CatalogService extends AbstractDatabaseService {
         var itemID = getKey("itemID", Integer.class);
 
         var item = getBody(Item.class);
+
+        if (item == null) {
+            throw new UnsupportedOperationException();
+        }
 
         QueryBuilder.update("item").set(mapOf(
             entry("description", ":description"),

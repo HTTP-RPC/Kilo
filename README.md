@@ -153,19 +153,28 @@ var contactID = getKey("contactID", Integer.class);
 ### Custom Body Content
 The `Content` annotation can be used to associate custom body content with a service method. It defines a single `value()` attribute representing the expected body type. Annotated methods can access the decoded content via the `getBody()` method. 
 
-For example, the following service method might be used to create a new account record using data passed in the request body:
+For example, the following method might be used to create a new listing in a product catalog:
 
 ```java
+public interface Item {
+    Integer getID();
+    String getDescription();
+    Double getPrice();
+}
+
 @RequestMethod("POST")
-@Content(Account.class)
-public createAccount() {
-    var account = getBody(Account.class);
+@ResourcePath("items")
+@Content(Item.class)
+public Item addItem() throws SQLException {
+    var item = getBody(Item.class);
 
     ...
 }
 ```
 
-By default, body data is assumed to be JSON. However, subclasses can override the `decodeBody()` method to support other representations. If the provided data cannot be deserialized to the specified type, an HTTP 415 response will be returned.
+By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions. 
+
+If the provided content cannot be deserialized to the requested type, an HTTP 415 response will be returned.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -228,7 +237,7 @@ GET /math?api
 
 <img src="README/api.png" width="640px"/>
 
-Methods are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
+Endpoints are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
@@ -248,26 +257,24 @@ public class MathService extends WebService {
 }
 ```
 
-The `Description` annotation can also be applied to bean types and properties:
+Descriptions can also be associated with data types and properties:
 
 ```java
-@Description("Represents an item in a product catalog.")
-public class Item {
-    ...
+@Description("Represents an item in the catalog.")
+public interface Item {
+    @Key("id")
+    @Description("The item's ID.")
+    Integer getID();
 
     @Description("The item's description.")
-    public String getDescription() {
-        return description;
-    }
+    String getDescription();
 
     @Description("The item's price.")
-    public double getPrice() {
-        return price;
-    }
+    Double getPrice();
 }
 ```
 
-as well as enumerated types:
+as well as enumerations and their values:
 
 ```java
 @Description("Represents a size option.")
