@@ -76,10 +76,6 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         var item = getBody(Item.class);
 
-        if (item == null) {
-            throw new UnsupportedOperationException();
-        }
-
         var itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
@@ -106,10 +102,6 @@ public class CatalogService extends AbstractDatabaseService {
         var itemID = getKey("itemID", Integer.class);
 
         var item = getBody(Item.class);
-
-        if (item == null) {
-            throw new UnsupportedOperationException();
-        }
 
         QueryBuilder.update("item").set(mapOf(
             entry("description", ":description"),

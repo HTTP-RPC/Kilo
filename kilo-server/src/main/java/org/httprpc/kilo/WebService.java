@@ -971,10 +971,19 @@ public abstract class WebService extends HttpServlet {
 
         Object body;
         if (content != null) {
+            var type = content.value();
+
+            if (type.getTypeParameters().length > 0) {
+                throw new ServletException("Unsupported body type.");
+            }
+
             try {
-                body = decodeBody(request, content.value());
-            } catch (Exception exception) {
-                response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
+                body = decodeBody(request, type);
+            } catch (IOException exception) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            } catch (IllegalArgumentException | UnsupportedOperationException exception) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
         } else {
@@ -1221,7 +1230,13 @@ public abstract class WebService extends HttpServlet {
      * The decoded body content.
      */
     protected <T> T getBody(Class<T> type) {
-        return BeanAdapter.coerce(body.get(), type);
+        var body = this.body.get();
+
+        if (body == null) {
+            throw new UnsupportedOperationException("Body is not defined.");
+        }
+
+        return BeanAdapter.coerce(body, type);
     }
 
     /**
@@ -1257,16 +1272,6 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
-        if (type.getTypeParameters().length > 0) {
-            throw new UnsupportedOperationException("Unsupported body type.");
-        }
-
-        var contentType = request.getContentType();
-
-        if (contentType != null && !contentType.startsWith("application/json")) {
-            throw new UnsupportedOperationException("Unsupported content type.");
-        }
-
         var jsonDecoder = new JSONDecoder();
 
         return BeanAdapter.coerce(jsonDecoder.read(request.getInputStream()), type);

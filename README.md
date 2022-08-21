@@ -174,8 +174,6 @@ public Item addItem() throws SQLException {
 
 By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions. 
 
-If the provided content cannot be deserialized to the requested type, an HTTP 415 response will be returned.
-
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
 
