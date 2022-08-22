@@ -26,11 +26,11 @@ public class Optionals {
     /**
      * Returns the first non-<code>null</code> value in a sequence of values.
      *
-     * @param values
-     * The sequence of values.
-     *
      * @param <T>
      * The type of the values in the sequence.
+     *
+     * @param values
+     * The sequence of values.
      *
      * @return
      * The first non-<code>null</code> value in the sequence.
@@ -55,17 +55,17 @@ public class Optionals {
     /**
      * Maps a non-<code>null</code> value to another value.
      *
-     * @param value
-     * The value to map.
-     *
-     * @param mapper
-     * The mapping function.
-     *
      * @param <T>
      * The original value type.
      *
      * @param <U>
      * The mapped value type.
+     *
+     * @param value
+     * The value to map.
+     *
+     * @param mapper
+     * The mapping function.
      *
      * @return
      * The mapped value, or <code>null</code> if the original value is

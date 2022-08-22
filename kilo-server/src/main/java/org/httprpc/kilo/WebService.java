@@ -682,10 +682,10 @@ public abstract class WebService extends HttpServlet {
     /**
      * Returns a service instance.
      *
-     * @param type
+     * @param <T>
      * The service type.
      *
-     * @param <T>
+     * @param type
      * The service type.
      *
      * @return
@@ -1226,8 +1226,11 @@ public abstract class WebService extends HttpServlet {
      * @param <T>
      * The body type.
      *
+     * @param type
+     * The body type.
+     *
      * @return
-     * The decoded body content.
+     * The decoded request body.
      */
     protected <T> T getBody(Class<T> type) {
         var body = this.body.get();

@@ -31,11 +31,11 @@ public class Collections {
     /**
      * Creates an immutable list of elements.
      *
-     * @param elements
-     * The list elements.
-     *
      * @param <E>
      * The element type.
+     *
+     * @param elements
+     * The list elements.
      *
      * @return
      * An immutable list containing the provided elements.
@@ -52,14 +52,14 @@ public class Collections {
     /**
      * Creates an immutable map of entries.
      *
-     * @param entries
-     * The map entries.
-     *
      * @param <K>
      * The key type.
      *
      * @param <V>
      * The value type.
+     *
+     * @param entries
+     * The map entries.
      *
      * @return
      * An immutable map containing the provided entries.
@@ -82,17 +82,17 @@ public class Collections {
     /**
      * Creates an immutable map entry.
      *
-     * @param key
-     * The entry key.
-     *
-     * @param value
-     * The entry value.
-     *
      * @param <K>
      * The key type.
      *
      * @param <V>
      * The value type.
+     *
+     * @param key
+     * The entry key.
+     *
+     * @param value
+     * The entry value.
      *
      * @return
      * An immutable map entry containing the provided key/value pair.
@@ -104,10 +104,10 @@ public class Collections {
     /**
      * Returns an empty list.
      *
-     * @param elementType
+     * @param <E>
      * The element type.
      *
-     * @param <E>
+     * @param elementType
      * The element type.
      *
      * @return
@@ -124,16 +124,16 @@ public class Collections {
     /**
      * Returns an empty map.
      *
-     * @param keyType
-     * The key type.
-     *
-     * @param valueType
-     * The value type.
-     *
      * @param <K>
      * The key type.
      *
      * @param <V>
+     * The value type.
+     *
+     * @param keyType
+     * The key type.
+     *
+     * @param valueType
      * The value type.
      *
      * @return
