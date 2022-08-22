@@ -108,7 +108,7 @@ the content of the "name" section in this template would be included in the gene
 <!-- {{/name}} -->
 
 <!-- {{?age}} -->
-<p>Age: {{.}}
+<p>Age: {{.}}</p>
 <!-- {{/age}} -->
 ```
 
@@ -166,7 +166,7 @@ For example, the elements of the "names" section specified below will be separat
 ### Key and Value References
 In most cases, variable names are used to refer to properties of the `Map` instance representing the current data dictionary. However, when traversing the contents of a `Map` sequence, the reserved "~" variable can be used to refer to the key associated with the current element. 
 
-Additionally, when traversing any type of sequence (`Iterable` or `Map`), if the current element is not a `Map` (for example, a `Number`, `String`, or `Iterable`), the reserved "." variable can be used to refer to the value of the element itself.
+Additionally, when traversing any type of sequence (whether `Iterable` or `Map`), if the current element is not a `Map` (for example, a `Number`, `String`, or `Iterable`), the reserved "." variable can be used to refer to the value of the element itself.
 
 For example, the following data dictionary associates a set of number names with their corresponding numeric values:
 
@@ -203,7 +203,7 @@ this template would produce the text "no addresses":
 ``` 
 
 ## Includes
-Include markers import content defined by another template. They can be used to create reusable content modules; for example, document headers and footers. 
+Include markers import content defined by another template. They can be used to create reusable content modules, such as document headers or footers. 
 
 For example, the following template, _hello.txt_, includes another document named _world.txt_: 
 

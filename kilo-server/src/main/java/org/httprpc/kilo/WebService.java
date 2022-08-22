@@ -701,7 +701,7 @@ public abstract class WebService extends HttpServlet {
      * Returns a list of descriptors for all active services.
      *
      * @return
-     * A list of descriptors for all active services.
+     * A list of active service descriptors.
      */
     public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
         return instances.values().stream()
