@@ -172,7 +172,9 @@ public Item addItem() throws SQLException {
 }
 ```
 
-By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions. 
+By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+
+If an error occurs while parsing the body content, an HTTP 400 response will be returned. If the decoded content cannot be converted to the requested type, HTTP 403 will be returned.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -323,7 +325,7 @@ An index of all active services can be enabled by declaring an instance of `org.
 #### JSON Documentation
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
-This header is supported by to both `WebService` and `IndexServlet`. The latter will return a JSON description of all active services.
+This header is supported by both `WebService` and `IndexServlet`. A request to the latter will produce a JSON description of all active services.
 
 ## WebServiceProxy
 The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
@@ -331,11 +333,11 @@ The `WebServiceProxy` class is used to issue API requests to a server. It provid
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
 
-Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Custom body content can be provided via the `setBody()` method. When specified, body content is serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom request encodings.
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Custom body content can be provided via the `setBody()` method. When specified, body content is typically serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom request encodings.
 
 Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if a custom body is provided either via `setBody()` or by a custom request handler, `POST` arguments will be sent in the query string.
 
-Any value may be used as an argument. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 Service operations are invoked via one of the following methods:
 
@@ -353,7 +355,13 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via the `setErrorHandler()` method.
+If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via the `setErrorHandler()` method, which accepts an argument of the following type:
+
+```java
+public interface ErrorHandler {
+    void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
+}
+```
 
 The following code demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
@@ -377,7 +385,7 @@ System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
 ```
 
 ### Fluent Invocation
-`WebServiceProxy` supports a fluent (i.e. chained) invocation model. For example, the following code is equivalent to the previous example:
+`WebServiceProxy` supports a fluent (i.e. "chained") invocation model. For example, the following code is equivalent to the previous example:
 
 ```java
 // GET /math/sum?a=2&b=4
@@ -398,11 +406,11 @@ POST, PUT, and DELETE operations are also supported.
 Service request and response data can be captured by setting the monitor stream on a proxy instance. For example:
 
 ```java
-List<Integer> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+List<Number> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
     mapOf(
         entry("count", 8)
     )
-).setMonitorStream(System.out).invoke(BeanAdapter.typeOf(List.class, Integer.class));
+).setMonitorStream(System.out).invoke();
 ```
 
 This code would produce the following output:

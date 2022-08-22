@@ -596,7 +596,7 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(ResponseHandler<? extends T> responseHandler) throws IOException {
+    public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
         if (responseHandler == null) {
             throw new IllegalArgumentException();
         }
