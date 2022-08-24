@@ -337,7 +337,16 @@ Request headers and arguments are specified via the `setHeaders()` and `setArgum
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
-Custom body content can be provided via the `setBody()` method. By default, body data is serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom encodings. Any arguments provided when either a custom body or a request handler is specified will be sent in the query string.
+Custom body content can be provided via the `setBody()` method. By default, body data is serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom encodings:
+
+```java
+public interface RequestHandler {
+    String getContentType();
+    void encodeRequest(OutputStream outputStream) throws IOException;
+}
+```
+
+Any arguments provided when either body data or a custom request handler is specified will be sent in the query string.
 
 Service operations are invoked via one of the following methods:
 
@@ -355,7 +364,7 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via `setErrorHandler()`, which accepts an argument of the following type:
+If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via `setErrorHandler()`:
 
 ```java
 public interface ErrorHandler {
