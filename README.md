@@ -174,14 +174,14 @@ public Item addItem() throws SQLException {
 
 By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-If an error occurs while parsing the body content, an HTTP 400 response will be returned. If the decoded content cannot be converted to the requested type, HTTP 403 will be returned.
+If an error occurs while parsing the body content, an HTTP 400 response will be returned. If the decoded content cannot be coerced to the requested type, HTTP 403 will be returned.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
 
 * `CharSequence`: string
-* `Number`: number
-* `Boolean`: true/false
+* `Number` or numeric primitive: number
+* `Boolean` or boolean primitive: true/false
 * `Enum`: string
 * `java.util.Date`: number representing epoch time in milliseconds
 * `java.time.TemporalAccessor`: string
@@ -194,7 +194,7 @@ Return values are converted to their JSON equivalents as follows:
 By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
 
 #### Custom Result Encodings
-Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative encodings. See the method documentation for more information.
+Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative representations. See the method documentation for more information.
 
 ### Request and Repsonse Properties
 The following methods provide access to the request and response objects associated with the current invocation:
@@ -333,11 +333,11 @@ The `WebServiceProxy` class is used to issue API requests to a server. It provid
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
 
-Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Custom body content can be provided via the `setBody()` method. When specified, body content is typically serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom request encodings.
-
-Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). However, if a custom body is provided either via `setBody()` or by a custom request handler, `POST` arguments will be sent in the query string.
+Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+
+Custom body content can be provided via the `setBody()` method. By default, body data is serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom encodings. Any arguments provided when either a custom body or a request handler is specified will be sent in the query string.
 
 Service operations are invoked via one of the following methods:
 
@@ -355,7 +355,7 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via the `setErrorHandler()` method, which accepts an argument of the following type:
+If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via `setErrorHandler()`, which accepts an argument of the following type:
 
 ```java
 public interface ErrorHandler {
@@ -1070,9 +1070,7 @@ Finally, `Collections` provides the `valueAt()` method, which can be used to acc
 Map<String, Object> map = mapOf(
     entry("a", mapOf(
         entry("b", mapOf(
-            entry("c", listOf(
-                1, 2, 3
-            ))
+            entry("c", listOf(1, 2, 3))
         ))
     ))
 );

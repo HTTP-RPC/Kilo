@@ -76,9 +76,7 @@ public class CollectionsTest {
         Map<?, ?> map = mapOf(
             entry("a", mapOf(
                 entry("b", mapOf(
-                    entry("c", listOf(
-                        1, 2, 3
-                    ))
+                    entry("c", listOf(1, 2, 3))
                 ))
             )),
             entry(4, "abc"),
