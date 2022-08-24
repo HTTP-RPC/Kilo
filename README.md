@@ -346,7 +346,7 @@ public interface RequestHandler {
 }
 ```
 
-Any arguments provided when either body data or a custom request handler is specified will be sent in the query string.
+If either a custom body or request handler is specified, `POST` arguments will be sent in the query string.
 
 Service operations are invoked via one of the following methods:
 
