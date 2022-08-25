@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BeanAdapterTest {
-    public static class TestList extends ArrayList<Integer> {
-    }
-
-    public static class TestMap extends HashMap<String, Double> {
-    }
-
     public static class MissingAccessor {
         private int value;
 
@@ -300,16 +293,6 @@ public class BeanAdapterTest {
         assertEquals(nestedBean1, nestedBean2);
         assertEquals(map1.hashCode(), nestedBean1.hashCode());
         assertEquals(map1.toString(), nestedBean1.toString());
-    }
-
-    @Test
-    public void testReifiedList() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(listOf(), TestList.class));
-    }
-
-    @Test
-    public void testReifiedMap() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestMap.class));
     }
 
     @Test

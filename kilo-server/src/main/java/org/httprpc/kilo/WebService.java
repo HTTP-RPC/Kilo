@@ -982,7 +982,7 @@ public abstract class WebService extends HttpServlet {
             } catch (IOException exception) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
-            } catch (IllegalArgumentException | UnsupportedOperationException exception) {
+            } catch (IllegalArgumentException exception) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }

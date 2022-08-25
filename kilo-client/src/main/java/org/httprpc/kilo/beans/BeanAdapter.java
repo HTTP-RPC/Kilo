@@ -554,10 +554,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object coerceValue(Object value, Class<?> type) {
-        if (List.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
-            throw new IllegalArgumentException();
-        }
-
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
