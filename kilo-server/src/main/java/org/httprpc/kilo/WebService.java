@@ -1223,23 +1223,11 @@ public abstract class WebService extends HttpServlet {
     /**
      * Returns the decoded body content associated with the current request.
      *
-     * @param <T>
-     * The body type.
-     *
-     * @param type
-     * The body type.
-     *
      * @return
      * The decoded request body.
      */
-    protected <T> T getBody(Class<T> type) {
-        var body = this.body.get();
-
-        if (body == null) {
-            throw new UnsupportedOperationException("Body is not defined.");
-        }
-
-        return BeanAdapter.coerce(body, type);
+    protected Object getBody() {
+        return this.body.get();
     }
 
     /**

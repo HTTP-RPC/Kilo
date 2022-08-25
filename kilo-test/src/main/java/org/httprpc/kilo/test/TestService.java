@@ -238,14 +238,6 @@ public class TestService extends WebService {
         return null;
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var writer = response.getWriter();
-
-        writer.append("Unsupported operation.");
-        writer.flush();
-    }
-
     @RequestMethod("POST")
     public Response testPost(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
@@ -293,7 +285,7 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     @Content(Body.class)
     public Body testPost(int id) {
-        return getBody(Body.class);
+        return (Body)getBody();
     }
 
     @RequestMethod("POST")

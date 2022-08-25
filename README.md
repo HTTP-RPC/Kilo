@@ -166,7 +166,7 @@ public interface Item {
 @ResourcePath("items")
 @Content(Item.class)
 public Item addItem() throws SQLException {
-    var item = getBody(Item.class);
+    var item = (Item)getBody();
 
     ...
 }

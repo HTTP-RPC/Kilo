@@ -330,7 +330,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomImagePost() throws IOException {
+    public void testImagePost() throws IOException {
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
         var image = WebServiceProxy.post(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {

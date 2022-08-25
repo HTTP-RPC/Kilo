@@ -74,7 +74,7 @@ public class CatalogService extends AbstractDatabaseService {
     @Description("Adds an item to the catalog.")
     @Content(Item.class)
     public Item addItem() throws SQLException {
-        var item = getBody(Item.class);
+        var item = (Item)getBody();
 
         var itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
@@ -101,7 +101,7 @@ public class CatalogService extends AbstractDatabaseService {
     public void updateItem() throws SQLException {
         var itemID = getKey("itemID", Integer.class);
 
-        var item = getBody(Item.class);
+        var item = (Item)getBody();
 
         QueryBuilder.update("item").set(mapOf(
             entry("description", ":description"),
