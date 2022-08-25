@@ -15,5 +15,13 @@ public @interface Content {
      * @return
      * The content type.
      */
-    Class<?> value();
+    Class<?> type();
+
+    /**
+     * @return
+     * <code>true</code> if the body is expected to contain a list of values of
+     * the given type; <code>false</code>, if the body will contain a single
+     * value.
+     */
+    boolean multiple() default false;
 }

@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
@@ -48,5 +49,14 @@ public class MathService extends WebService {
         }
 
         return total;
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("sum")
+    @Description("Calculates the sum of a list of numbers.")
+    @Content(type = Double.class, multiple = true)
+    @SuppressWarnings("unchecked")
+    public double getSum() {
+        return getSum((List<Double>)getBody());
     }
 }

@@ -283,7 +283,14 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    @Content(Body.class)
+    @Content(type = String.class, multiple = true)
+    @SuppressWarnings("unchecked")
+    public List<String> testPost() {
+        return (List<String>)getBody();
+    }
+
+    @RequestMethod("POST")
+    @Content(type = Body.class)
     public Body testPost(int id) {
         return (Body)getBody();
     }

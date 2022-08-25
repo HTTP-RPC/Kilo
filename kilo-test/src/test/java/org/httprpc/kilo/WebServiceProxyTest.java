@@ -314,6 +314,15 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testListPost() throws IOException {
+        var body = listOf(1, 2, 3);
+
+        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke();
+
+        assertEquals(BeanAdapter.coerce(body, List.class, String.class), result);
+    }
+
+    @Test
     public void testCustomBodyPost() throws IOException {
         var body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -499,7 +508,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMath() throws IOException {
+    public void testMathDelegation() throws IOException {
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
@@ -508,6 +517,11 @@ public class WebServiceProxyTest {
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         )).setMonitorStream(System.out).invoke(Double.class));
+    }
+
+    @Test
+    public void testMathPost() throws IOException {
+        assertEquals(6.0, WebServiceProxy.post(baseURL, "math/sum").setBody(listOf(1, 2, 3)).setMonitorStream(System.out).invoke(Double.class));
     }
 
     @Test

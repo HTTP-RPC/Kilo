@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -65,6 +66,39 @@ public class ExamplesTest {
         public void setLastName(String lastName) {
             this.lastName = lastName;
         }
+    }
+
+    @Test
+    public void testMathService() throws IOException {
+        var baseURL = new URL("http://localhost:8080/kilo-test/");
+
+        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+
+        // GET /math/sum?a=2&b=4
+        webServiceProxy.setArguments(mapOf(
+            entry("a", 4),
+            entry("b", 2)
+        ));
+
+        System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
+
+        // GET /math/sum?values=1&values=2&values=3
+        webServiceProxy.setArguments(mapOf(
+            entry("values", listOf(1, 2, 3))
+        ));
+
+        System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
+
+        // GET /math/sum?a=2&b=4
+        System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+            entry("a", 4),
+            entry("b", 2)
+        )).invoke(Double.class)); // 6.0
+
+        // GET /math/sum?values=1&values=2&values=3
+        System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+            entry("values", listOf(1, 2, 3))
+        )).invoke(Double.class)); // 6.0
     }
 
     @Test

@@ -151,7 +151,7 @@ var contactID = getKey("contactID", Integer.class);
 ```
 
 ### Custom Body Content
-The `Content` annotation can be used to associate custom body content with a service method. It defines a single `value()` attribute representing the expected body type. Annotated methods can access the decoded content via the `getBody()` method. 
+The `Content` annotation can be used to associate custom body content with a service method. Annotated methods can access decoded content via the `getBody()` method. 
 
 For example, the following method might be used to create a new listing in a product catalog:
 
@@ -164,7 +164,7 @@ public interface Item {
 
 @RequestMethod("POST")
 @ResourcePath("items")
-@Content(Item.class)
+@Content(type = Item.class)
 public Item addItem() throws SQLException {
     var item = (Item)getBody();
 
@@ -172,9 +172,22 @@ public Item addItem() throws SQLException {
 }
 ```
 
+The `multiple` attribute of the `Content` annotation can be used to specify that the body is expected to contain a list of values of the given type. For example, this overload of the `getSum()` method from the math service example takes input from the body instead of the query string: 
+:
+
+```java
+@RequestMethod("POST")
+@ResourcePath("sum")
+@Content(type = Double.class, multiple = true)
+@SuppressWarnings("unchecked")
+public double getSum() {
+    return getSum((List<Double>)getBody());
+}
+```
+
 By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-If an error occurs while parsing the body content, an HTTP 400 response will be returned. If the decoded content cannot be coerced to the requested type, HTTP 403 will be returned.
+If an error occurs while parsing the body content, an HTTP 400 response will be returned. If the decoded content is `null` or cannot be coerced to the requested type, HTTP 403 will be returned.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -295,7 +308,7 @@ The `Keys` annotation can be used to provide descriptions for an endpoint's keys
 @ResourcePath("items/?:itemID")
 @Description("Updates an item.")
 @Keys({"The item ID."})
-@Content(Item.class)
+@Content(type = Item.class)
 public void updateItem() throws SQLException {
     var itemID = getKey("itemID", Integer.class);
 

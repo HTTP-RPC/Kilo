@@ -971,18 +971,24 @@ public abstract class WebService extends HttpServlet {
 
         Object body;
         if (content != null) {
-            var type = content.value();
+            var type = content.type();
 
             if (type.getTypeParameters().length > 0) {
-                throw new ServletException("Unsupported body type.");
+                throw new ServletException("Unsupported content type.");
             }
 
             try {
-                body = decodeBody(request, type);
+                try {
+                    body = decodeBody(request, type, content.multiple());
+                } catch (IllegalArgumentException exception) {
+                    body = null;
+                }
             } catch (IOException exception) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
-            } catch (IllegalArgumentException exception) {
+            }
+
+            if (body == null) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
@@ -1262,10 +1268,16 @@ public abstract class WebService extends HttpServlet {
      * @throws IOException
      * If an exception occurs while decoding the content.
      */
-    protected Object decodeBody(HttpServletRequest request, Class<?> type) throws IOException {
+    protected Object decodeBody(HttpServletRequest request, Class<?> type, boolean multiple) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
-        return BeanAdapter.coerce(jsonDecoder.read(request.getInputStream()), type);
+        var body = jsonDecoder.read(request.getInputStream());
+
+        if (multiple) {
+            return BeanAdapter.coerce(body, List.class, type);
+        } else {
+            return BeanAdapter.coerce(body, type);
+        }
     }
 
     /**
@@ -1320,7 +1332,11 @@ public abstract class WebService extends HttpServlet {
                     var content = handler.method.getAnnotation(Content.class);
 
                     if (content != null) {
-                        operation.consumes = describeType(content.value());
+                        if (content.multiple()) {
+                            operation.consumes = describeType(BeanAdapter.typeOf(List.class, content.type()));
+                        } else {
+                            operation.consumes = describeType(content.type());
+                        }
                     }
 
                     operation.produces = describeType(handler.method.getGenericReturnType());

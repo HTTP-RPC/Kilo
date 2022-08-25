@@ -72,7 +72,7 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("items")
     @Description("Adds an item to the catalog.")
-    @Content(Item.class)
+    @Content(type = Item.class)
     public Item addItem() throws SQLException {
         var item = (Item)getBody();
 
@@ -97,7 +97,7 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items/?:itemID")
     @Description("Updates an item.")
     @Keys({"The item ID."})
-    @Content(Item.class)
+    @Content(type = Item.class)
     public void updateItem() throws SQLException {
         var itemID = getKey("itemID", Integer.class);
 
