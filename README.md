@@ -132,7 +132,7 @@ public long uploadFile(
 }
 ```
 
-`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other required parameters, if a value is not provided, HTTP 400 will be returned. 
+`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 400 will be returned if a value is not provided.
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:
@@ -189,7 +189,7 @@ public Item addItem() throws SQLException {
 }
 ```
 
-The `multiple` attribute of the `Content` annotation can be used to specify that the body is expected to contain a list of values of the given type. For example, this overload of the `getSum()` method from the math service example takes input from the body instead of the query string: 
+The `multiple` attribute of the `Content` annotation can be used to specify that the body is expected to contain a list of values of the given type. For example, this version of the `getSum()` method from the math service example takes input from the request body instead of the query string: 
 :
 
 ```java
@@ -703,7 +703,7 @@ public class TreeNode {
 }
 ```
 
-A simple tree structure could be created and serialized to JSON like this:
+A simple tree structure could be created and serialized to JSON as shown below:
 
 ```java
 var root = TreeNode("Seasons", listOf(
@@ -734,7 +734,7 @@ var jsonEncoder = new JSONEncoder();
 jsonEncoder.write(new BeanAdapter(root), System.out);
 ```
 
-The resulting JSON would look something like this (`BeanAdapter` traverses properties in alphabetical order):
+The resulting output would look something like this (`BeanAdapter` traverses properties in alphabetical order):
 
 ```json
 {
@@ -792,7 +792,29 @@ System.out.println(root.getChildren().get(0).getName()); // Winter
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
 
-Coercion to concrete bean types is also supported.
+Coercion to simple types and concrete bean types is also supported, as is coercion to parameterized collections. For example, this code converts a list of strings to a list of integers and writes the results to the console as JSON:
+
+```java
+var list = BeanAdapter.coerce(listOf(
+    "1",
+    "2",
+    "3"
+), List.class, Integer.class);
+
+var jsonEncoder = new JSONEncoder();
+
+jsonEncoder.write(list, System.out);
+```
+
+producing the following output:
+
+```json
+[
+  1,
+  2,
+  3
+]
+```
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:

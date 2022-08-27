@@ -43,6 +43,8 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ExamplesTest {
     public static class Person {
@@ -234,6 +236,19 @@ public class ExamplesTest {
         templateEncoder.write(mapOf(
             entry("text", "hello")
         ), System.out);
+    }
+
+    @Test
+    public void testListCoercion() throws IOException {
+        var list = BeanAdapter.coerce(listOf(
+            "1",
+            "2",
+            "3"
+        ), List.class, Integer.class);
+
+        var jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.write(list, System.out);
     }
 
     @Test
