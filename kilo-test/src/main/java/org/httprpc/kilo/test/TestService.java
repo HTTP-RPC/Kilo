@@ -126,9 +126,9 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     public Map<String, Object> testGet(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-                                       Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
-                                       Duration duration, Period period,
-                                       UUID uuid) {
+        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        Duration duration, Period period,
+        UUID uuid) {
         return mapOf(
             entry("string", string),
             entry("strings", strings),
@@ -242,9 +242,9 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     public Response testPost(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-                             Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
-                             Duration duration, Period period,
-                             UUID uuid, List<URL> attachments) throws IOException {
+        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+        Duration duration, Period period,
+        UUID uuid, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (var attachment : attachments) {
