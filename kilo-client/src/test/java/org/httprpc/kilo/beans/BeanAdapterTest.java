@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
@@ -270,6 +271,17 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testMissingProperty() {
+        var testBean = BeanAdapter.coerce(mapOf(
+            entry("long", 10),
+            entry("string", "xyz"),
+            entry("foo", "bar")
+        ), TestBean.class);
+
+        assertNotNull(testBean);
+    }
+
+    @Test
     public void testInvalidTypeOf() {
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(List.class));
     }
@@ -296,12 +308,39 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testMissingProperty() {
-        var testBean = BeanAdapter.coerce(mapOf(
-            entry("foo", "bar")
-        ), TestBean.class);
+    public void testRequiredProperties() {
+        var testBean = new TestBean();
 
-        assertNotNull(testBean);
+        testBean.setNestedBean(new TestBean.NestedBean());
+
+        var beanAdapter = new BeanAdapter(testBean);
+
+        assertEquals(0L, Collections.valueAt(beanAdapter, "long"));
+        assertEquals(false, Collections.valueAt(beanAdapter, "nestedBean", "flag"));
+
+        assertThrows(IllegalStateException.class, () -> beanAdapter.get("string"));
+
+        assertThrows(IllegalStateException.class, () -> {
+            var iterator = beanAdapter.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                iterator.next();
+            }
+        });
+
+        var map = mapOf(
+            entry("long", null),
+            entry("string", "xyz"),
+            entry("nestedBean", mapOf(
+                entry("flag", null)
+            ))
+        );
+
+        var testInterface = BeanAdapter.coerce(map, TestInterface.class);
+
+        assertThrows(UnsupportedOperationException.class, testInterface::getLong);
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(map, TestBean.class));
     }
 
     @Test
@@ -351,9 +390,7 @@ public class BeanAdapterTest {
         assertEquals(String.class, nestedBeanMapTypeArguments[0]);
         assertEquals(TestInterface.NestedInterface.class, nestedBeanMapTypeArguments[1]);
 
-        assertNull(properties.get("x"));
-        assertNull(properties.get("y"));
-        assertNull(properties.get("z"));
+        assertNull(properties.get("xyz"));
     }
 
     @Test

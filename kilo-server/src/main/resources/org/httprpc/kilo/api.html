@@ -231,7 +231,7 @@
       <table>
         <tr><th>{{labels/parameter}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
         <!-- {{#.}} -->
-        <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
+        <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}{{?required}} *{{/required}}</code></td><td>{{description}}</td></tr>
         <!-- {{/.}} -->
       </table>
       <!-- {{/parameters}} -->
@@ -272,7 +272,7 @@
       <table>
         <tr><th>{{labels/property}}</th><th>{{labels/type}}</th><th>{{labels/description}}</th></tr>
         <!-- {{#properties}} -->
-        <tr><td><code>{{name}}</code></td><td><code class="type">{{?type}}{{>type.html}}{{/type}}</code></td><td>{{description}}</td></tr>
+        <tr><td><code>{{name}}</code></td><td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}} *{{/required}}</code></td><td>{{description}}</td></tr>
         <!-- {{/properties}} -->
       </table>
     </section>

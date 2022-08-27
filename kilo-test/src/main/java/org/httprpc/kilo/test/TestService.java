@@ -18,6 +18,7 @@ import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Keys;
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -26,7 +27,6 @@ import org.httprpc.kilo.beans.Key;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -58,6 +58,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @MultipartConfig
 public class TestService extends WebService {
     public interface Response {
+        @Required
         String getString();
         List<String> getStrings();
         int getNumber();
@@ -116,6 +117,7 @@ public class TestService extends WebService {
     }
 
     public interface Body {
+        @Required
         String getString();
         List<String> getStrings();
         int getNumber();
@@ -123,10 +125,10 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    public Map<String, Object> testGet(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
-        Duration duration, Period period,
-        UUID uuid) {
+    public Map<String, Object> testGet(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
+                                       Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+                                       Duration duration, Period period,
+                                       UUID uuid) {
         return mapOf(
             entry("string", string),
             entry("strings", strings),
@@ -239,10 +241,10 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    public Response testPost(String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
-        Duration duration, Period period,
-        UUID uuid, List<URL> attachments) throws IOException {
+    public Response testPost(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
+                             Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+                             Duration duration, Period period,
+                             UUID uuid, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
         for (var attachment : attachments) {
@@ -292,7 +294,11 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     @Content(type = Body.class)
     public Body testPost(int id) {
-        return (Body)getBody();
+        var body = (Body)getBody();
+
+        body.getString();
+
+        return body;
     }
 
     @RequestMethod("POST")

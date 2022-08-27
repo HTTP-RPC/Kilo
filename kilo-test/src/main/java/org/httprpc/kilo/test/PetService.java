@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -53,11 +54,7 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     @SuppressWarnings("unchecked")
-    public List<Pet> getPets(String owner, boolean stream) throws SQLException, IOException {
-        if (owner == null) {
-            throw new IllegalArgumentException();
-        }
-
+    public List<Pet> getPets(@Required String owner, boolean stream) throws SQLException, IOException {
         var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
         if (stream) {

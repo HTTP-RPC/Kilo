@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.util.Optionals;
 
 import java.lang.reflect.Constructor;
@@ -223,12 +224,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 var propertyName = getPropertyName(method);
 
                 if (propertyName == null) {
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Method is not an accessor.");
                 }
 
                 var key = Optionals.coalesce(Optionals.map(method.getAnnotation(Key.class), Key::value), propertyName);
 
-                return coerce(map.get(key), method.getGenericReturnType());
+                var value = map.get(key);
+
+                if (method.getAnnotation(Required.class) != null && value == null) {
+                    throw new UnsupportedOperationException(String.format("Property \"%s\" is not defined.", key));
+                }
+
+                return coerce(value, method.getGenericReturnType());
             }
         }
 
@@ -318,7 +325,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         try {
-            return adapt(property.accessor.invoke(bean), propertyCache);
+            var value = property.accessor.invoke(bean);
+
+            if (property.accessor.getAnnotation(Required.class) != null && value == null) {
+                throw new IllegalStateException(String.format("Property \"%s\" cannot be null.", key));
+            }
+
+            return adapt(value, propertyCache);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException(exception);
         }
@@ -330,6 +343,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         if (property == null) {
             throw new UnsupportedOperationException();
+        }
+
+        if (property.accessor.getAnnotation(Required.class) != null && value == null) {
+            throw new IllegalArgumentException(String.format("Property \"%s\" is required.", key));
         }
 
         var i = 0;
@@ -373,16 +390,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                         var key = entry.getKey();
 
-                        Object value;
                         try {
                             var property = entry.getValue();
 
-                            value = adapt(property.accessor.invoke(bean), propertyCache);
+                            var value = property.accessor.invoke(bean);
+
+                            if (property.accessor.getAnnotation(Required.class) != null && value == null) {
+                                throw new IllegalStateException(String.format("Property \"%s\" cannot be null.", key));
+                            }
+
+                            return new SimpleImmutableEntry<>(key, adapt(value, propertyCache));
                         } catch (IllegalAccessException | InvocationTargetException exception) {
                             throw new RuntimeException(exception);
                         }
-
-                        return new SimpleImmutableEntry<>(key, value);
                     }
                 };
             }
@@ -535,7 +555,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else if (value instanceof List<?>) {
                     return coerceListContents((List<?>)value, actualTypeArguments[0]);
                 } else {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Value is not a list.");
                 }
             } else if (rawType == Map.class) {
                 if (value == null) {
@@ -543,13 +563,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else if (value instanceof Map<?, ?>) {
                     return coerceMapContents((Map<?, ?>)value, actualTypeArguments[0], actualTypeArguments[1]);
                 } else {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Value is not a map.");
                 }
             } else {
-                throw new IllegalArgumentException();
+                throw new UnsupportedOperationException("Unsupported parameterized type.");
             }
         } else {
-            throw new IllegalArgumentException();
+            throw new UnsupportedOperationException("Unsupported type.");
         }
     }
 
@@ -710,12 +730,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     var beanAdapter = new BeanAdapter(bean);
 
-                    for (Map.Entry<?, ?> entry : map.entrySet()) {
-                        try {
-                            beanAdapter.put(entry.getKey().toString(), entry.getValue());
-                        } catch (UnsupportedOperationException exception) {
-                            // No-op
-                        }
+                    for (var entry : beanAdapter.properties.entrySet()) {
+                        var key = entry.getKey();
+
+                        beanAdapter.put(key, map.get(key));
                     }
 
                     return bean;

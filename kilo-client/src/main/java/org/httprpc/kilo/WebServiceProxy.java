@@ -531,6 +531,9 @@ public class WebServiceProxy {
      *
      * @param monitorStream
      * The monitor stream, or <code>null</code> for no monitor.
+     *
+     * @return
+     * The web service proxy.
      */
     public WebServiceProxy setMonitorStream(PrintStream monitorStream) {
         this.monitorStream = monitorStream;

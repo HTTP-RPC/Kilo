@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Required;
+
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -32,6 +34,7 @@ public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {
         private boolean flag = false;
 
+        @Required
         @Override
         public boolean getFlag() {
             return flag;
@@ -76,6 +79,7 @@ public class TestBean implements TestInterface {
         this.i = i;
     }
 
+    @Required
     @Override
     public long getLong() {
         return l;
@@ -94,6 +98,7 @@ public class TestBean implements TestInterface {
         this.d = d;
     }
 
+    @Required
     @Override
     public String getString() {
         return string;

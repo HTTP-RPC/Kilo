@@ -13,6 +13,7 @@
             {
               "description": "The numbers to add.",
               "name": "values",
+              "required": true,
               "type": {
                 "elementType": {
                   "elementType": null,
@@ -52,6 +53,7 @@
             {
               "description": "The first number.",
               "name": "a",
+              "required": false,
               "type": {
                 "elementType": null,
                 "intrinsic": true,
@@ -65,6 +67,7 @@
             {
               "description": "The second number.",
               "name": "b",
+              "required": false,
               "type": {
                 "elementType": null,
                 "intrinsic": true,

@@ -3,12 +3,12 @@ Templates are documents that describe an output format such as HTML. They allow 
 
 Template documents include "markers" that are replaced with values provided by the data dictionary when the template is processed:
 
-* {{_variable_}} - injects a value from the data dictionary into the output
-* {{?_section_}}...{{/_section_}} - defines a conditional section
-* {{#_section_}}...{{/_section_}} - defines a repeating section
-* {{^_section_}}...{{/_section_}} - defines an inverted section
-* {{>_include_}} - imports content from another template
-* {{!_comment_}} - provides non-rendered informational content
+* {{_variable_}} - injects a [value](#variables) from the data dictionary into the output
+* {{?_section_}}...{{/_section_}} - defines a [conditional](#conditional-sections) section
+* {{#_section_}}...{{/_section_}} - defines a [repeating](#repeating-sections) section
+* {{^_section_}}...{{/_section_}} - defines an [inverted](#inverted-sections) section
+* {{>_include_}} - [imports](#includes) content from another template
+* {{!_comment_}} - provides non-rendered [informational](#comments) content
 
 Each of these marker types is discussed in more detail below.
 
@@ -87,7 +87,7 @@ Date/time values may be represented by one of the following:
 * an instance of `java.util.time.TemporalAccessor`
 
 ## Conditional Sections
-Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section.
+Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. Additionally, for `Iterable` content, the named sequence must contain at least one value. For booleans, the named value must be `true`.
 
 For example, given the following data dictionary:
 
@@ -113,7 +113,7 @@ the content of the "name" section in this template would be included in the gene
 ```
 
 ## Repeating Sections
-Repeating section markers define a section of content that is repeated once for every element in a sequence of values. The marker name must refer to an instance of either `java.lang.Iterable` or `java.util.Map` in the data dictionary. The elements of the sequence provide the data dictionaries for successive iterations through the section.
+Repeating section markers define a section of content that is repeated once for every element in a sequence of values. The marker name must refer to an instance of either `Iterable` or `java.util.Map` in the data dictionary. The elements of the sequence provide the data dictionaries for successive iterations through the section.
 
 For example, a data dictionary that contains information about homes for sale might look like this:
 
@@ -187,7 +187,9 @@ This template could be used to generate a comma-separated list of name/value pai
 ``` 
 
 ## Inverted Sections
-Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary. For example, given the following data dictionary:
+Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary. Additionally, for `Iterable` content, the named sequence must be empty. For booleans, the named value must be `false`.
+
+For example, given the following data dictionary:
 
 ```json
 {

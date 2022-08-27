@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 130KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 130KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
 
 The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
@@ -42,7 +42,7 @@ Each is discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the request parameters to the expected argument types, invokes the method, and writes the return value to the output stream as JSON. Service classes must be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. 
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value to the output stream as JSON. Service classes must be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
@@ -87,8 +87,8 @@ In either case, the service would return the value 6 in response.
 
 At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the generated [documentation](#api-documentation).
 
-### Method Arguments
-Method arguments may be any of the following types:
+### Method Parameters
+Method parameters may be any of the following types:
 
 * `String`
 * `Byte`/`byte`
@@ -106,16 +106,31 @@ Method arguments may be any of the following types:
 * `java.time.Duration`: ISO-8601 duration
 * `java.time.Period`: ISO-8601 period
 * `java.util.UUID`
-* `java.net.URL`
 * `java.util.List`
+* `java.net.URL`
 
 Unspecified values are automatically converted to `0` or `false` for primitive types.
 
-`List` arguments represent multi-value parameters. List values are automatically converted to their declared types (e.g. `List<Double>`).
+`List` values are automatically converted to their declared types (e.g. `List<Double>`). If no arguments are provided for a list parameter, an empty list (not `null`) will be passed to the method.
 
-`URL` and `List<URL>` arguments represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) service example for more information.
+`URL` and `List<URL>` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) service example for more information.
 
-If an argument value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, an HTTP 405 (method not allowed) response is returned.
+If a provided value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
+
+#### Required Parameters
+Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
+
+```java
+@RequestMethod("POST")
+@Description("Uploads a single file.")
+public long uploadFile(
+    @Description("The file to upload.") @Required URL file
+) throws IOException {
+    ...
+}
+```
+
+`List` parameters are implicitly "required", since a list argument will never be `null` (although it may be empty). For all other required parameters, if a value is not provided, HTTP 400 will be returned. 
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:
@@ -187,7 +202,7 @@ public double getSum() {
 
 By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-If an error occurs while parsing the body content, an HTTP 400 response will be returned. If the decoded content is `null` or cannot be coerced to the requested type, HTTP 403 will be returned.
+If an error occurs while parsing the body content, an HTTP 400 response will be returned.
 
 ### Return Values
 Return values are converted to their JSON equivalents as follows:
@@ -821,6 +836,56 @@ rather than this:
   "firstName": "first",
   "lastName": "last"
 }
+```
+
+### Required Properties
+The `Required` annotation mentioned [previously](#required-parameters) can also be used to indicate required bean properties. For example, the following class defines two such properties:
+
+```java
+public static class Vehicle {
+    private String manufacturer;
+    private Integer year;
+
+    @Required
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    @Required
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+}
+```
+
+An attempt to coerce an empty map to a `Vehicle` instance would produce an `IllegalArgumentException`:
+
+```java
+var vehicle = BeanAdapter.coerce(mapOf(), Vehicle.class); // throws
+```
+
+Additionally, although the annotation will not prevent a caller from programmatically assigning a `null` value to either property, attempting to dynamically set an invalid value will produce an `IllegalArgumentException`:
+
+```java
+var vehicle = new Vehicle();
+
+var vehicleAdapter = new BeanAdapter(vehicle);
+
+vehicleAdapter.put("manufacturer", null); // throws
+```
+
+Similarly, attempting to dynamically access an invalid value will generate an `IllegalStateException`:
+
+```java
+vehicleAdapter.get("manufacturer"); // throws
 ```
 
 ### Ignoring Properties

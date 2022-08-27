@@ -54,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class WebServiceProxyTest {
     public interface Response {
+        @Required
         String getString();
         List<String> getStrings();
         int getNumber();
@@ -78,6 +79,7 @@ public class WebServiceProxyTest {
     }
 
     public interface Body {
+        @Required
         String getString();
         List<String> getStrings();
         int getNumber();
@@ -103,6 +105,7 @@ public class WebServiceProxyTest {
             this.id = id;
         }
 
+        @Required
         public String getDescription() {
             return description;
         }
@@ -111,6 +114,7 @@ public class WebServiceProxyTest {
             this.description = description;
         }
 
+        @Required
         public Double getPrice() {
             return price;
         }
@@ -323,6 +327,17 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testInvalidListPost() throws IOException {
+        try {
+            WebServiceProxy.post(baseURL, "test").setBody("xyz").setMonitorStream(System.out).invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(400, exception.getStatusCode());
+        }
+    }
+
+    @Test
     public void testCustomBodyPost() throws IOException {
         var body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -479,6 +494,34 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testMissingRequiredParameter() throws IOException {
+        try {
+            WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("number", 5)
+            )).setMonitorStream(System.out).invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertNotNull(exception.getMessage());
+            assertEquals(400, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testMissingRequiredProperty() throws IOException {
+        try {
+            WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+                entry("id", 101)
+            )).setBody(mapOf()).setMonitorStream(System.out).invoke(Body.class);
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertNotNull(exception.getMessage());
+            assertEquals(403, exception.getStatusCode());
+        }
+    }
+
+    @Test
     public void testTimeout() {
         try {
             WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
@@ -522,6 +565,20 @@ public class WebServiceProxyTest {
     @Test
     public void testMathPost() throws IOException {
         assertEquals(6.0, WebServiceProxy.post(baseURL, "math/sum").setBody(listOf(1, 2, 3)).setMonitorStream(System.out).invoke(Double.class));
+    }
+
+    @Test
+    public void testFileUpload() throws IOException {
+        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
+        assertEquals(26L, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
+            entry("file", textTestURL)
+        )).invoke(Long.class));
+
+        assertEquals(10418L, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
+            entry("files", listOf(textTestURL, imageTestURL))
+        )).invoke(Long.class));
     }
 
     @Test

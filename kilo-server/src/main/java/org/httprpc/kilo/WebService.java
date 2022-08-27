@@ -45,7 +45,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -273,6 +272,8 @@ public abstract class WebService extends HttpServlet {
      */
     public static class VariableDescriptor {
         private String name;
+        private boolean required;
+
         private String description;
 
         private TypeDescriptor type = null;
@@ -280,11 +281,19 @@ public abstract class WebService extends HttpServlet {
         private VariableDescriptor(Parameter parameter) {
             name = parameter.getName();
 
+            if (parameter.getType() == List.class) {
+                required = true;
+            } else {
+                required = parameter.getAnnotation(Required.class) != null;
+            }
+
             description = Optionals.map(parameter.getAnnotation(Description.class), Description::value);
         }
 
         private VariableDescriptor(String name, Method accessor) {
             this.name = name;
+
+            required = accessor.getAnnotation(Required.class) != null;
 
             description = Optionals.map(accessor.getAnnotation(Description.class), Description::value);
         }
@@ -297,6 +306,17 @@ public abstract class WebService extends HttpServlet {
          */
         public String getName() {
             return name;
+        }
+
+        /**
+         * Indicates that the variable is required.
+         *
+         * @return
+         * <code>true</code> if the variable is required; <code>false</code>,
+         * otherwise.
+         */
+        public boolean isRequired() {
+            return required;
         }
 
         /**
@@ -962,8 +982,8 @@ public abstract class WebService extends HttpServlet {
         Object[] arguments;
         try {
             arguments = getArguments(handler.method, parameterMap);
-        } catch (IllegalArgumentException | DateTimeParseException exception) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } catch (Exception exception) {
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST, exception);
             return;
         }
 
@@ -978,13 +998,9 @@ public abstract class WebService extends HttpServlet {
             }
 
             try {
-                try {
-                    body = decodeBody(request, type, content.multiple());
-                } catch (IllegalArgumentException exception) {
-                    body = null;
-                }
-            } catch (IOException exception) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                body = decodeBody(request, type, content.multiple());
+            } catch (Exception exception) {
+                sendError(response, HttpServletResponse.SC_BAD_REQUEST, exception);
                 return;
             }
 
@@ -1029,19 +1045,7 @@ public abstract class WebService extends HttpServlet {
                 status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             }
 
-            response.setStatus(status);
-
-            var message = cause.getMessage();
-
-            if (message != null) {
-                response.setContentType(String.format("text/plain;charset=%s", UTF_8));
-
-                var writer = response.getWriter();
-
-                writer.append(message);
-
-                writer.flush();
-            }
+            sendError(response, status, cause);
 
             return;
         } finally {
@@ -1065,7 +1069,7 @@ public abstract class WebService extends HttpServlet {
         } else if (result == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
-            encodeResult(response, result);
+            encodeResult(request, response, result);
         }
     }
 
@@ -1109,9 +1113,10 @@ public abstract class WebService extends HttpServlet {
         for (var i = 0; i < parameters.length; i++) {
             var parameter = parameters[i];
 
-            var values = parameterMap.get(parameter.getName());
-
+            var name = parameter.getName();
             var type = parameter.getType();
+
+            var values = parameterMap.get(name);
 
             Object argument;
             if (type == List.class) {
@@ -1133,6 +1138,10 @@ public abstract class WebService extends HttpServlet {
                     value = null;
                 }
 
+                if (parameter.getAnnotation(Required.class) != null && value == null) {
+                    throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", name));
+                }
+
                 argument = BeanAdapter.coerce(value, type);
             }
 
@@ -1140,6 +1149,18 @@ public abstract class WebService extends HttpServlet {
         }
 
         return arguments;
+    }
+
+    private void sendError(HttpServletResponse response, int status, Throwable cause) throws IOException {
+        response.setStatus(status);
+
+        var message = cause.getMessage();
+
+        if (message != null) {
+            response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+            response.getWriter().append(message);
+            response.flushBuffer();
+        }
     }
 
     /**
@@ -1283,6 +1304,9 @@ public abstract class WebService extends HttpServlet {
     /**
      * Encodes the result of a service operation.
      *
+     * @param request
+     * The servlet request.
+     *
      * @param response
      * The servlet response.
      *
@@ -1292,7 +1316,7 @@ public abstract class WebService extends HttpServlet {
      * @throws IOException
      * If an exception occurs while encoding the result.
      */
-    protected void encodeResult(HttpServletResponse response, Object result) throws IOException {
+    protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format("application/json;charset=%s", UTF_8));
 
         var jsonEncoder = new JSONEncoder(isCompact());

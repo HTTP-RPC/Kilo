@@ -15,6 +15,7 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.WebService;
 
@@ -30,13 +31,9 @@ import java.util.List;
 public class FileUploadService extends WebService {
     @RequestMethod("POST")
     @Description("Uploads a single file.")
-    public long upload(
-        @Description("The file to upload.") URL file
+    public long uploadFile(
+        @Description("The file to upload.") @Required URL file
     ) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException();
-        }
-
         long bytes = 0;
 
         try (var inputStream = file.openStream()) {
@@ -50,7 +47,7 @@ public class FileUploadService extends WebService {
 
     @RequestMethod("POST")
     @Description("Uploads a list of files.")
-    public long upload(
+    public long uploadFiles(
         @Description("The files to upload.") List<URL> files
     ) throws IOException {
         long bytes = 0;

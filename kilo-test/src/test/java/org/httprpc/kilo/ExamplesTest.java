@@ -50,6 +50,7 @@ public class ExamplesTest {
         private String lastName = null;
 
         @Key("first_name")
+        @Required
         public String getFirstName() {
             return firstName;
         }
@@ -59,12 +60,36 @@ public class ExamplesTest {
         }
 
         @Key("last_name")
+        @Required
         public String getLastName() {
             return lastName;
         }
 
         public void setLastName(String lastName) {
             this.lastName = lastName;
+        }
+    }
+
+    public static class Vehicle {
+        private String manufacturer;
+        private Integer year;
+
+        @Required
+        public String getManufacturer() {
+            return manufacturer;
+        }
+
+        public void setManufacturer(String manufacturer) {
+            this.manufacturer = manufacturer;
+        }
+
+        @Required
+        public Integer getYear() {
+            return year;
+        }
+
+        public void setYear(Integer year) {
+            this.year = year;
         }
     }
 
@@ -221,6 +246,34 @@ public class ExamplesTest {
         var jsonEncoder = new JSONEncoder();
 
         jsonEncoder.write(new BeanAdapter(person), System.out);
+    }
+
+    @Test
+    public void testRequiredProperty1() {
+        try {
+            var vehicle = BeanAdapter.coerce(mapOf(), Vehicle.class);
+        } catch (IllegalArgumentException exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+    @Test
+    public void testRequiredProperty2() {
+        var vehicle = new Vehicle();
+
+        var vehicleAdapter = new BeanAdapter(vehicle);
+
+        try {
+            vehicleAdapter.put("manufacturer", null);
+        } catch (IllegalArgumentException exception) {
+            System.out.println(exception.getMessage());
+        }
+
+        try {
+            vehicleAdapter.get("manufacturer");
+        } catch (IllegalStateException exception) {
+            System.out.println(exception.getMessage());
+        }
     }
 
     @Test

@@ -17,6 +17,7 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Keys;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -43,9 +44,11 @@ public class CatalogService extends AbstractDatabaseService {
         Integer getID();
 
         @Description("The item's description.")
+        @Required
         String getDescription();
 
         @Description("The item's price.")
+        @Required
         Double getPrice();
     }
 

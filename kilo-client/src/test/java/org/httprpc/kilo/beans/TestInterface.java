@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Required;
+
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -30,14 +32,18 @@ import java.util.UUID;
 
 public interface TestInterface {
     interface NestedInterface {
+        @Required
         boolean getFlag();
     }
 
     @Key("i")
     int getInteger();
 
+    @Required
     long getLong();
     double getDouble();
+
+    @Required
     String getString();
     BigInteger getBigInteger();
     DayOfWeek getDayOfWeek();
