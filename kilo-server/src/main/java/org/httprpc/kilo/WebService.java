@@ -836,7 +836,10 @@ public abstract class WebService extends HttpServlet {
 
     private static void sort(Resource root) {
         for (var handlers : root.handlerMap.values()) {
-            handlers.sort(Comparator.comparing(handler -> handler.method.getName()));
+            Comparator<Handler> mathodNameComparator = Comparator.comparing(handler -> handler.method.getName());
+            Comparator<Handler> methodParameterCountComparator = Comparator.comparing(handler -> handler.method.getParameterCount());
+
+            handlers.sort(mathodNameComparator.thenComparing(methodParameterCountComparator.reversed()));
         }
 
         for (var resource : root.resources.values()) {

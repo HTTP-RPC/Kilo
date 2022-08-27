@@ -6,46 +6,6 @@
         {
           "consumes": null,
           "deprecated": false,
-          "description": "Calculates the sum of a list of numbers.",
-          "keys": null,
-          "method": "GET",
-          "parameters": [
-            {
-              "description": "The numbers to add.",
-              "name": "values",
-              "required": true,
-              "type": {
-                "elementType": {
-                  "elementType": null,
-                  "intrinsic": true,
-                  "iterable": false,
-                  "keyType": null,
-                  "map": false,
-                  "name": "Double",
-                  "valueType": null
-                },
-                "intrinsic": true,
-                "iterable": true,
-                "keyType": null,
-                "map": false,
-                "name": "Iterable",
-                "valueType": null
-              }
-            }
-          ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          }
-        },
-        {
-          "consumes": null,
-          "deprecated": false,
           "description": "Calculates the sum of two numbers.",
           "keys": null,
           "method": "GET",
@@ -90,6 +50,46 @@
           }
         },
         {
+          "consumes": null,
+          "deprecated": false,
+          "description": "Calculates the sum of a list of numbers.",
+          "keys": null,
+          "method": "GET",
+          "parameters": [
+            {
+              "description": "The numbers to add.",
+              "name": "values",
+              "required": true,
+              "type": {
+                "elementType": {
+                  "elementType": null,
+                  "intrinsic": true,
+                  "iterable": false,
+                  "keyType": null,
+                  "map": false,
+                  "name": "Double",
+                  "valueType": null
+                },
+                "intrinsic": true,
+                "iterable": true,
+                "keyType": null,
+                "map": false,
+                "name": "Iterable",
+                "valueType": null
+              }
+            }
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "iterable": false,
+            "keyType": null,
+            "map": false,
+            "name": "double",
+            "valueType": null
+          }
+        },
+        {
           "consumes": {
             "elementType": {
               "elementType": null,
@@ -111,7 +111,8 @@
           "description": "Calculates the sum of a list of numbers.",
           "keys": null,
           "method": "POST",
-          "parameters": [],
+          "parameters": [
+          ],
           "produces": {
             "elementType": null,
             "intrinsic": true,
@@ -126,7 +127,9 @@
       "path": "/math/sum"
     }
   ],
-  "enumerations": [],
+  "enumerations": [
+  ],
   "path": "/math",
-  "structures": []
+  "structures": [
+  ]
 }

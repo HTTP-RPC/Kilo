@@ -42,7 +42,7 @@ Each is discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class provided by the servlet API. 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value to the output stream as JSON. Service classes must be compiled with the `-parameters` flag so the names of their method parameters are available at runtime. 
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
 
@@ -117,6 +117,8 @@ Unspecified values are automatically converted to `0` or `false` for primitive t
 
 If a provided value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
+Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
+
 #### Required Parameters
 Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
 
@@ -130,7 +132,7 @@ public long uploadFile(
 }
 ```
 
-`List` parameters are implicitly "required", since a list argument will never be `null` (although it may be empty). For all other required parameters, if a value is not provided, HTTP 400 will be returned. 
+`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other required parameters, if a value is not provided, HTTP 400 will be returned. 
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:
