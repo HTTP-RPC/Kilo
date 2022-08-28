@@ -469,39 +469,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testJSONEscapeModifier() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("json.txt"));
-
-        var writer = new StringWriter();
-
-        encoder.write("\"\\\b\f\n\r\t", writer);
-
-        assertEquals("\\\"\\\\\\b\\f\\n\\r\\t", writer.toString());
-    }
-
-    @Test
-    public void testCSVEscapeModifierNumber() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
-
-        var writer = new StringWriter();
-
-        encoder.write(10, writer);
-
-        assertEquals("10", writer.toString());
-    }
-
-    @Test
-    public void testCSVEscapeModifierString() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("csv.txt"));
-
-        var writer = new StringWriter();
-
-        encoder.write("a\"b\"c", writer);
-
-        assertEquals("\"a\"\"b\"\"c\"", writer.toString());
-    }
-
-    @Test
     public void testMarkupEscapeModifier() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("html.txt"));
 
@@ -510,6 +477,17 @@ public class TemplateEncoderTest {
         encoder.write("a<b>c&d\"e", writer);
 
         assertEquals("a&lt;b&gt;c&amp;d&quot;e", writer.toString());
+    }
+
+    @Test
+    public void testDefaultMarkupEscapeModifier() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("example.xml"));
+
+        var writer = new StringWriter();
+
+        encoder.write("a<b>c&d\"e", writer);
+
+        assertEquals("<?xml version=\"1.0\"?><foo bar=\"a&lt;b&gt;c&amp;d&quot;e\"/>", writer.toString());
     }
 
     @Test

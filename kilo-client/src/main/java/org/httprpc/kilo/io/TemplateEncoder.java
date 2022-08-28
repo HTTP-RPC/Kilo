@@ -240,72 +240,6 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // JSON escape modifier
-    private static class JSONEscapeModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (value instanceof CharSequence) {
-                var string = (CharSequence)value;
-
-                var resultBuilder = new StringBuilder();
-
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    var c = string.charAt(i);
-
-                    if (c == '"' || c == '\\') {
-                        resultBuilder.append("\\" + c);
-                    } else if (c == '\b') {
-                        resultBuilder.append("\\b");
-                    } else if (c == '\f') {
-                        resultBuilder.append("\\f");
-                    } else if (c == '\n') {
-                        resultBuilder.append("\\n");
-                    } else if (c == '\r') {
-                        resultBuilder.append("\\r");
-                    } else if (c == '\t') {
-                        resultBuilder.append("\\t");
-                    } else {
-                        resultBuilder.append(c);
-                    }
-                }
-
-                return resultBuilder.toString();
-            } else {
-                return value;
-            }
-        }
-    }
-
-    // CSV escape modifier
-    private static class CSVEscapeModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (value instanceof CharSequence) {
-                var string = (CharSequence)value;
-
-                var resultBuilder = new StringBuilder();
-
-                resultBuilder.append('"');
-
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    var c = string.charAt(i);
-
-                    if (c == '"') {
-                        resultBuilder.append(c);
-                    }
-
-                    resultBuilder.append(c);
-                }
-
-                resultBuilder.append('"');
-
-                return resultBuilder.toString();
-            } else {
-                return value;
-            }
-        }
-    }
-
     // Markup escape modifier
     private static class MarkupEscapeModifier implements Modifier {
         @Override
@@ -434,13 +368,11 @@ public class TemplateEncoder extends Encoder<Object> {
         defaultModifiers.put("format", new FormatModifier());
 
         defaultModifiers.put("url", new URLEscapeModifier());
-        defaultModifiers.put("json", new JSONEscapeModifier());
-        defaultModifiers.put("csv", new CSVEscapeModifier());
 
         var markupEscapeModifier = new MarkupEscapeModifier();
 
-        defaultModifiers.put("xml", markupEscapeModifier);
         defaultModifiers.put("html", markupEscapeModifier);
+        defaultModifiers.put("xml", markupEscapeModifier);
     }
 
     /**
