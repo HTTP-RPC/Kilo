@@ -239,6 +239,13 @@ public class ExamplesTest {
     }
 
     @Test
+    public void testDoubleCoercion() {
+        var value = BeanAdapter.coerce("2.5", Double.class);
+
+        System.out.println(value + 10); // 12.5
+    }
+
+    @Test
     public void testListCoercion() throws IOException {
         var list = BeanAdapter.coerce(listOf(
             "1",

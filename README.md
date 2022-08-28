@@ -44,7 +44,7 @@ Each is discussed in more detail in the following sections.
 
 Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
 
-The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself. If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) is called.
+The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself.
 
 Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple mathematical operations:
 
@@ -83,7 +83,9 @@ while this request would invoke the second method:
 GET /math/sum?values=1&values=2&values=3
 ```
 
-In either case, the service would return the value 6 in response.
+In either case, the service would return the value 6 in response. 
+
+If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) will be called.
 
 At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the generated [documentation](#api-documentation).
 
@@ -132,7 +134,7 @@ public long uploadFile(
 }
 ```
 
-`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 400 will be returned if a value is not provided.
+`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 400 will be returned if a required value is not provided.
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:
@@ -173,12 +175,6 @@ The `Content` annotation can be used to associate custom body content with a ser
 For example, the following method might be used to create a new listing in a product catalog:
 
 ```java
-public interface Item {
-    Integer getID();
-    String getDescription();
-    Double getPrice();
-}
-
 @RequestMethod("POST")
 @ResourcePath("items")
 @Content(type = Item.class)
@@ -207,7 +203,7 @@ By default, body data is assumed to be JSON and is automatically [converted](#ty
 If an error occurs while parsing the body content, an HTTP 400 response will be returned.
 
 ### Return Values
-Return values are converted to their JSON equivalents as follows:
+Return values are converted to JSON as follows:
 
 * `CharSequence`: string
 * `Number` or numeric primitive: number
@@ -219,7 +215,7 @@ Return values are converted to their JSON equivalents as follows:
 * `java.util.UUID`: string
 * `java.net.URL`: string
 * `Iterable`: array
-* `java.util.Map`: object
+* `java.util.Map` or Java bean type: object
 
 By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
 
@@ -508,9 +504,9 @@ This code would produce the following output:
 }
 ``` 
 
-Values are converted to their JSON equivalents as described [earlier](#return-values).
+Values are converted to their JSON equivalents as described [earlier](#return-values), with the exception of Java bean types. Bean instances must first be wrapped in an instance of `BeanAdapter`, which is discussed in more detail [later](#beanadapter).
 
-`JSONDecoder` deserializes a JSON document into a Java object hierarchy. JSON values are mapped to their Java equivalents as follows:
+`JSONDecoder` deserializes a JSON document into an object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
 * string: `String`
 * number: `Number`
@@ -571,7 +567,7 @@ This code would produce the following output:
 
 String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
-`CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding CSV as input, the following code would produce the same output as the earlier `JSONDecoder` example:
+`CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding document as input, this code would produce the same output as the earlier `JSONDecoder` example:
 
 ```java
 var csvDecoder = new CSVDecoder();
@@ -614,9 +610,9 @@ The `TemplateEncoder` class transforms an object hierarchy into an output format
 public TemplateEncoder(URL url) { ... }
 ```
 
-The single argument specifies the URL of the template document (typically as a resource on the application's classpath). The escape modifier corresponding to the document's extension (if any) will be applied by default.
+The single argument specifies the location of the template document (typically as a resource on the application's classpath). An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied if available ("json", "csv", "xml", and "html" are currently supported).
  
-Templates are applied using one of the following methods:
+Templates are applied via one of the following methods:
 
 ```java
 public void write(Object value, OutputStream outputStream) { ... }
@@ -629,7 +625,7 @@ public void write(Object value, Writer writer, Locale locale, TimeZone timeZone)
 
 The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
 
-For example, the following code applies a template named _example.txt_ to a map instance:
+For example, this code applies a template named "example.txt" to a map instance:
 
 ```java
 Map<String, Object> map = mapOf(
@@ -643,7 +639,7 @@ var templateEncoder = new TemplateEncoder(getClass().getResource("example.txt"))
 templateEncoder.write(map, System.out);
 ```
 
-If _example.txt_ was written as follows:
+If "example.txt" was written as follows:
 
 ```
 {{a}}, {{b}}, {{c}}
@@ -656,13 +652,15 @@ hello, 123, true
 ```
 
 ### Custom Modifiers
-Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines the following method:
+[Modifiers](template-reference.md#modifiers) are created by implementing the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
 
 ```java
-Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
+public interface Modifier {
+    Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
+}
 ```
  
-The first argument to this method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
+The first argument to the method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
 Custom modifiers are added to a template encoder instance via the `getModifiers()` method. For example, the following code creates a modifier that converts values to uppercase:
 
@@ -792,7 +790,15 @@ System.out.println(root.getChildren().get(0).getName()); // Winter
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
 
-Coercion to simple types and concrete bean types is also supported, as is coercion to parameterized collections. For example, this code converts a list of strings to a list of integers and writes the results to the console as JSON:
+Concrete bean types are also supported, as are simple types and parameterized collections. For example:
+
+```java
+var value = BeanAdapter.coerce("2.5", Double.class);
+
+System.out.println(value + 10); // 12.5
+```
+
+This code converts a list of strings (`List<String>`) to a list of integer values (`List<Integer>`) and writes the results to the console as JSON:
 
 ```java
 var list = BeanAdapter.coerce(listOf(
@@ -863,7 +869,7 @@ rather than this:
 ```
 
 ### Required Properties
-The `Required` annotation mentioned [previously](#required-parameters) can also be used to indicate required bean properties. For example, the following class defines two such properties:
+The `Required` annotation discussed [previously](#required-parameters) can also be used to indicate required bean properties. For example, the following class defines two such properties:
 
 ```java
 public static class Vehicle {
@@ -1132,7 +1138,7 @@ The `ResourceBundleAdapter` class provides access to the contents of a resource 
 </table>
 ```
 
-If _headings.properties_ is defined as follows:
+If "headings.properties" is defined as follows:
 
 ```
 name = Name
