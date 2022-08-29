@@ -24,7 +24,7 @@ public class Optionals {
     }
 
     /**
-     * Returns the first non-<code>null</code> value in a sequence of values.
+     * Returns the first non-{@code null} value in a sequence of values.
      *
      * @param <T>
      * The type of the values in the sequence.
@@ -33,7 +33,7 @@ public class Optionals {
      * The sequence of values.
      *
      * @return
-     * The first non-<code>null</code> value in the sequence.
+     * The first non-{@code null} value in the sequence.
      */
     @SafeVarargs
     public static <T> T coalesce(T... values) {
@@ -53,7 +53,7 @@ public class Optionals {
     }
 
     /**
-     * Maps a non-<code>null</code> value to another value.
+     * Maps a non-{@code null} value to another value.
      *
      * @param <T>
      * The original value type.
@@ -68,8 +68,8 @@ public class Optionals {
      * The mapping function.
      *
      * @return
-     * The mapped value, or <code>null</code> if the original value is
-     * <code>null</code>.
+     * The mapped value, or {@code null} if the original value is
+     * {@code null}.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) {
         if (value == null) {

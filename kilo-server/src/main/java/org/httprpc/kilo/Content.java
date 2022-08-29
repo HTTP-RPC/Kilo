@@ -33,8 +33,8 @@ public @interface Content {
 
     /**
      * @return
-     * <code>true</code> if the body is expected to contain a list of values of
-     * the given type; <code>false</code>, if the body will contain a single
+     * {@code true} if the body is expected to contain a list of values of
+     * the given type; {@code false}, if the body will contain a single
      * value.
      */
     boolean multiple() default false;

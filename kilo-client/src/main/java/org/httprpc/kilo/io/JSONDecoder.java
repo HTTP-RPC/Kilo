@@ -51,8 +51,8 @@ public class JSONDecoder extends Decoder<Object> {
      * Constructs a new JSON decoder.
      *
      * @param sorted
-     * <code>true</code> if the decoded output should be sorted by key;
-     * <code>false</code>, otherwise.
+     * {@code true} if the decoded output should be sorted by key;
+     * {@code false}, otherwise.
      */
     public JSONDecoder(boolean sorted) {
         this.sorted = sorted;

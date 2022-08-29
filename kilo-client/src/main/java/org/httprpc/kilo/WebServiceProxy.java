@@ -119,7 +119,7 @@ public class WebServiceProxy {
          * The input stream to read from.
          *
          * @param contentType
-         * The content type, or <code>null</code> if the content type is not known.
+         * The content type, or {@code null} if the content type is not known.
          *
          * @throws IOException
          * If an exception occurs.
@@ -141,7 +141,7 @@ public class WebServiceProxy {
          * The error stream.
          *
          * @param contentType
-         * The content type, or <code>null</code> if the content type is not known.
+         * The content type, or {@code null} if the content type is not known.
          *
          * @param statusCode
          * The status code.
@@ -370,7 +370,7 @@ public class WebServiceProxy {
      * Returns the request body.
      *
      * @return
-     * A value representing the body content, or <code>null</code> if no body has been set.
+     * A value representing the body content, or {@code null} if no body has been set.
      */
     public Object getBody() {
         return body;
@@ -380,7 +380,7 @@ public class WebServiceProxy {
      * Sets the request body.
      *
      * @param body
-     * A value representing the body content, or <code>null</code> for no body.
+     * A value representing the body content, or {@code null} for no body.
      *
      * @return
      * The web service proxy.
@@ -395,7 +395,7 @@ public class WebServiceProxy {
      * Returns the request handler.
      *
      * @return
-     * The request handler, or <code>null</code> if no request handler has been set.
+     * The request handler, or {@code null} if no request handler has been set.
      */
     public RequestHandler getRequestHandler() {
         return requestHandler;
@@ -405,7 +405,7 @@ public class WebServiceProxy {
      * Sets the request handler.
      *
      * @param requestHandler
-     * The request handler, or <code>null</code> for the default request handler.
+     * The request handler, or {@code null} for the default request handler.
      *
      * @return
      * The web service proxy.
@@ -420,7 +420,7 @@ public class WebServiceProxy {
      * Returns the error handler.
      *
      * @return
-     * The error handler, or <code>null</code> if no error handler has been set.
+     * The error handler, or {@code null} if no error handler has been set.
      */
     public ErrorHandler getErrorHandler() {
         return errorHandler;
@@ -430,7 +430,7 @@ public class WebServiceProxy {
      * Sets the error handler.
      *
      * @param errorHandler
-     * The error handler, or <code>null</code> for the default error handler.
+     * The error handler, or {@code null} for the default error handler.
      *
      * @return
      * The web service proxy.
@@ -520,7 +520,7 @@ public class WebServiceProxy {
      * Returns the monitor stream.
      *
      * @return
-     * The monitor stream, or <code>null</code> if no monitor stream is set.
+     * The monitor stream, or {@code null} if no monitor stream is set.
      */
     public PrintStream getMonitorStream() {
         return monitorStream;
@@ -530,7 +530,7 @@ public class WebServiceProxy {
      * Sets the monitor stream.
      *
      * @param monitorStream
-     * The monitor stream, or <code>null</code> for no monitor.
+     * The monitor stream, or {@code null} for no monitor.
      *
      * @return
      * The web service proxy.

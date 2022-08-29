@@ -68,7 +68,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
          * Returns the property's accessor.
          *
          * @return
-         * The property's accessor, or <code>null</code> if no accessor is defined.
+         * The property's accessor, or {@code null} if no accessor is defined.
          */
         public Method getAccessor() {
             return accessor;
@@ -410,7 +410,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Adapts a value for loose typing. If the value is <code>null</code>
+     * <p>Adapts a value for loose typing. If the value is {@code null}
      * or an instance of one of the following types, it is returned as is:</p>
      *
      * <ul>
@@ -476,13 +476,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:</p>
      *
      * <ul>
-     * <li>{@link Byte} or <code>byte</code></li>
-     * <li>{@link Short} or <code>short</code></li>
-     * <li>{@link Integer} or <code>int</code></li>
-     * <li>{@link Long} or <code>long</code></li>
-     * <li>{@link Float} or <code>float</code></li>
-     * <li>{@link Double} or <code>double</code></li>
-     * <li>{@link Boolean} or <code>boolean</code></li>
+     * <li>{@link Byte} or {@code byte}</li>
+     * <li>{@link Short} or {@code short}</li>
+     * <li>{@link Integer} or {@code int}</li>
+     * <li>{@link Long} or {@code long}</li>
+     * <li>{@link Float} or {@code float}</li>
+     * <li>{@link Double} or {@code double}</li>
+     * <li>{@link Boolean} or {@code boolean}</li>
      * <li>{@link String}</li>
      * <li>{@link Date}</li>
      * <li>{@link Instant}</li>
@@ -516,9 +516,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * automatically coerces its contents. Other parameterized types are not
      * supported.</p>
      *
-     * <p>For reference types, <code>null</code> values are returned as is. For
+     * <p>For reference types, {@code null} values are returned as is. For
      * numeric or boolean primitives, they are converted to 0 or
-     * <code>false</code>, respectively.</p>
+     * {@code false}, respectively.</p>
      *
      * @param <T>
      * The target type.

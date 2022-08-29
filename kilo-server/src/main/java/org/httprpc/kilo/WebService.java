@@ -99,7 +99,7 @@ public abstract class WebService extends HttpServlet {
          * Returns a description of the service.
          *
          * @return
-         * The service description, or <code>null</code> for no description.
+         * The service description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -207,7 +207,7 @@ public abstract class WebService extends HttpServlet {
          * Returns a description of the operation.
          *
          * @return
-         * The operation's description, or <code>null</code> for no description.
+         * The operation's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -227,7 +227,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the operation is deprecated.
          *
          * @return
-         * <code>true</code> if the operation is deprecated; <code>false</code>,
+         * {@code true} if the operation is deprecated; {@code false},
          * otherwise.
          */
         public boolean isDeprecated() {
@@ -238,7 +238,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the type of content consumed by the operation.
          *
          * @return
-         * The type of content consumed by the operation, or <code>null</code>
+         * The type of content consumed by the operation, or {@code null}
          * if the operation does not accept request content.
          */
         public TypeDescriptor getConsumes() {
@@ -249,7 +249,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the type of content produced by the operation.
          *
          * @return
-         * The type of content produced by the operation, or <code>null</code>
+         * The type of content produced by the operation, or {@code null}
          * if the operation does not return response content.
          */
         public TypeDescriptor getProduces() {
@@ -312,7 +312,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the variable is required.
          *
          * @return
-         * <code>true</code> if the variable is required; <code>false</code>,
+         * {@code true} if the variable is required; {@code false},
          * otherwise.
          */
         public boolean isRequired() {
@@ -323,7 +323,7 @@ public abstract class WebService extends HttpServlet {
          * Returns a description of the variable.
          *
          * @return
-         * The variable's description, or <code>null</code> for no description.
+         * The variable's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -369,7 +369,7 @@ public abstract class WebService extends HttpServlet {
          * Returns a description of the enumeration.
          *
          * @return
-         * The enumeration's description, or <code>null</code> for no description.
+         * The enumeration's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -420,7 +420,7 @@ public abstract class WebService extends HttpServlet {
          * Returns a description of the constant.
          *
          * @return
-         * The constant's description, or <code>null</code> for no description.
+         * The constant's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -457,7 +457,7 @@ public abstract class WebService extends HttpServlet {
          * Returns a description of the structure.
          *
          * @return
-         * The structure's description, or <code>null</code> for no description.
+         * The structure's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
@@ -514,7 +514,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the type is intrinsic.
          *
          * @return
-         * <code>true</code> if the type is intrinsic; <code>false</code>,
+         * {@code true} if the type is intrinsic; {@code false},
          * otherwise.
          */
         public boolean isIntrinsic() {
@@ -525,7 +525,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the type is an iterable.
          *
          * @return
-         * <code>true</code> if the type is an iterable; <code>false</code>,
+         * {@code true} if the type is an iterable; {@code false},
          * otherwise.
          */
         public boolean isIterable() {
@@ -536,7 +536,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the element type.
          *
          * @return
-         * The element type, or <code>null</code> if the type is not an
+         * The element type, or {@code null} if the type is not an
          * iterable.
          */
         public TypeDescriptor getElementType() {
@@ -547,7 +547,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the type is a map.
          *
          * @return
-         * <code>true</code> if the type is a map; <code>false</code>, otherwise.
+         * {@code true} if the type is a map; {@code false}, otherwise.
          */
         public boolean isMap() {
             return false;
@@ -557,7 +557,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the key type.
          *
          * @return
-         * The key type, or <code>null</code> if the type is not a map.
+         * The key type, or {@code null} if the type is not a map.
          */
         public TypeDescriptor getKeyType() {
             return null;
@@ -567,7 +567,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the value type.
          *
          * @return
-         * The value type, or <code>null</code> if the type is not a map.
+         * The value type, or {@code null} if the type is not a map.
          */
         public TypeDescriptor getValueType() {
             return null;
@@ -709,7 +709,7 @@ public abstract class WebService extends HttpServlet {
      * The service type.
      *
      * @return
-     * The service instance, or <code>null</code> if no service of the given type
+     * The service instance, or {@code null} if no service of the given type
      * exists.
      */
     @SuppressWarnings("unchecked")
@@ -1270,7 +1270,7 @@ public abstract class WebService extends HttpServlet {
      * The method to be invoked.
      *
      * @return
-     * <code>true</code> if the method should be invoked; <code>false</code>,
+     * {@code true} if the method should be invoked; {@code false},
      * otherwise.
      */
     protected boolean isAuthorized(HttpServletRequest request, Method method) {
@@ -1335,7 +1335,7 @@ public abstract class WebService extends HttpServlet {
      * Enables or disables compact output.
      *
      * @return
-     * <code>true</code> if the encoded output should be compact; <code>false</code>,
+     * {@code true} if the encoded output should be compact; {@code false},
      * otherwise.
      */
     protected boolean isCompact() {

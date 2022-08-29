@@ -157,7 +157,7 @@ public class Collections {
      * The path to the value.
      *
      * @return
-     * The value at the given path, or <code>null</code> if the value does not exist.
+     * The value at the given path, or {@code null} if the value does not exist.
      */
     public static Object valueAt(Object root, Object... path) {
         return valueAt(root, new LinkedList<>(Arrays.asList(path)));

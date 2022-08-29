@@ -61,7 +61,7 @@ public class TemplateEncoder extends Encoder<Object> {
          * The value to which the modifier is being be applied.
          *
          * @param argument
-         * The modifier argument, or <code>null</code> if no argument was provided.
+         * The modifier argument, or {@code null} if no argument was provided.
          *
          * @param locale
          * The locale for which the modifier is being applied.
