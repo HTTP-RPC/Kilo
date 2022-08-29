@@ -466,7 +466,7 @@ HTTP 200
 ```
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used by application code. For example: 
+The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used directly by application logic. For example: 
 
 ```java
 Map<String, Object> map = mapOf(
