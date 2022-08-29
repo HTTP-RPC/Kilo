@@ -504,7 +504,7 @@ This code would produce the following output:
 }
 ``` 
 
-Values are converted to their JSON equivalents as described [earlier](#return-values), with the exception of Java bean types. Bean instances must first be wrapped in an instance of `BeanAdapter`, which is discussed in more detail [later](#beanadapter).
+Values are converted to their JSON equivalents as described [earlier](#return-values). Note that Java bean values must first be wrapped in an instance of `BeanAdapter`, which is discussed in more detail [later](#beanadapter). `BeanAdapter` implements the `Map` interface, which allows `JSONEncoder` to serialize the values as JSON objects. `ResultSetAdapter` provides a similar capability for JDBC result sets, and is also discussed [later](#querybuilder-and-resultsetadapter). 
 
 `JSONDecoder` deserializes a JSON document into an object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
