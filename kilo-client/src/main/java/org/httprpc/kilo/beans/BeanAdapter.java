@@ -312,6 +312,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    /**
+     * Gets a bean property value.
+     * {@inheritDoc}
+     */
     @Override
     public Object get(Object key) {
         if (key == null) {
@@ -337,6 +341,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    /**
+     * Sets a bean property value.
+     * {@inheritDoc}
+     */
     @Override
     public Object put(String key, Object value) {
         var property = properties.get(key);
@@ -366,6 +374,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return null;
     }
 
+    /**
+     * Enumerates bean property values.
+     * {@inheritDoc}
+     */
     @Override
     public Set<Entry<String, Object>> entrySet() {
         return new AbstractSet<>() {

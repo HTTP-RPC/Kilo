@@ -88,6 +88,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         this.namespaceAware = namespaceAware;
     }
 
+    /**
+     * Retrieves a value associated with the source element.
+     * {@inheritDoc}
+     */
     @Override
     public Object get(Object key) {
         if (key == null) {
@@ -131,6 +135,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         return value;
     }
 
+    /**
+     * Determines if the source element contains a given key.
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsKey(Object key) {
         if (key == null) {
@@ -157,6 +165,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    /**
+     * Enumerates the source element's attribute values.
+     * {@inheritDoc}
+     */
     @Override
     public Set<Entry<String, Object>> entrySet() {
         return new AbstractSet<>() {
@@ -207,6 +219,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         };
     }
 
+    /**
+     * Returns the text content of the element.
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return element.getTextContent();

@@ -40,6 +40,10 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
         this.resourceBundle = resourceBundle;
     }
 
+    /**
+     * Retrieves a localized resource value.
+     * {@inheritDoc}
+     */
     @Override
     public String get(Object key) {
         if (key == null) {
@@ -53,6 +57,10 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
         }
     }
 
+    /**
+     * Determines if the source resource bundle contains a given key.
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsKey(Object key) {
         if (key == null) {
@@ -62,6 +70,10 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
         return resourceBundle.containsKey(key.toString());
     }
 
+    /**
+     * Enumerates the source resource bundle's localized values.
+     * {@inheritDoc}
+     */
     @Override
     public Set<Entry<String, String>> entrySet() {
         throw new UnsupportedOperationException();

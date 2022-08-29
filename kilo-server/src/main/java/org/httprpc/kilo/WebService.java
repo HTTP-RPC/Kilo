@@ -730,6 +730,10 @@ public abstract class WebService extends HttpServlet {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Initializes the web service instance.
+     * {@inheritDoc}
+     */
     @Override
     public void init() throws ServletException {
         var type = getClass();
@@ -847,6 +851,10 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
+    /**
+     * Processes a web service request.
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

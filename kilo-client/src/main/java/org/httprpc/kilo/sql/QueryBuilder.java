@@ -987,6 +987,10 @@ public class QueryBuilder {
         }
     }
 
+    /**
+     * Returns the query as a string.
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         var stringBuilder = new StringBuilder();
