@@ -1286,6 +1286,10 @@ public abstract class WebService extends HttpServlet {
      * @param type
      * The content type.
      *
+     * @param multiple
+     * Indicates that the body is expected to contain a list of values of the
+     * given type.
+     *
      * @return
      * The decoded body content.
      *
