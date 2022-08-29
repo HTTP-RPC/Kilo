@@ -61,6 +61,8 @@ public class TestBean implements TestInterface {
     private UUID uuid = null;
     private URL url = null;
 
+    private String ignored = null;
+
     private NestedInterface nestedBean = null;
 
     private List<Integer> integerList = null;
@@ -209,8 +211,12 @@ public class TestBean implements TestInterface {
 
     @Override
     @Ignore
-    public Object getIgnored() {
-        return null;
+    public String getIgnored() {
+        return ignored;
+    }
+
+    public void setIgnored(String ignored) {
+        this.ignored = ignored;
     }
 
     @Override

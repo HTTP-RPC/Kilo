@@ -344,6 +344,19 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testIgnored() {
+        var testBean = new TestBean();
+
+        testBean.setIgnored("abc");
+
+        var beanAdapter = new BeanAdapter(testBean);
+
+        assertNull(beanAdapter.get("ignored"));
+
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("ignored", "xyz"));
+    }
+
+    @Test
     public void testGetProperties() {
         var properties = BeanAdapter.getProperties(TestBean.class).entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));

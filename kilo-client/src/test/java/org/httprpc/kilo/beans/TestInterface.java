@@ -58,7 +58,7 @@ public interface TestInterface {
     URL getURL();
 
     @Ignore
-    Object getIgnored();
+    String getIgnored();
 
     NestedInterface getNestedBean();
 

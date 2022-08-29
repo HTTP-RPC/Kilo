@@ -420,7 +420,7 @@ System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
 ```
 
 ### Fluent Invocation
-`WebServiceProxy` supports a fluent (i.e. "chained") invocation model. For example, the following code is equivalent to the previous example:
+`WebServiceProxy` supports a fluent (i.e. "chained") invocation model. For example, the following code is functionally equivalent to the previous version:
 
 ```java
 // GET /math/sum?a=2&b=4
@@ -547,7 +547,7 @@ for (var month : months) {
 ```
 
 ## CSVEncoder and CSVDecoder
-The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the following code could be used to export the month/day list from the previous example as CSV. The string values passed to the constructor represent the columns in the output document and the map keys to which those columns correspond:
+The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the following code could be used to export the month/day list from the previous example as CSV. The string values passed to the constructor represent both the columns in the output document and the map keys to which those columns correspond:
 
 ```java
 var csvEncoder = new CSVEncoder(listOf("name", "days"));
@@ -930,6 +930,8 @@ public Object getIgnored() {
 
 a call to `get()` with a key of "ignored" would return `null`. The value would also be omitted when traversing the map's contents. 
 
+Attempting to `put()` an ignored value will result in an `UnsupportedOperationException`. 
+
 ## QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:
 
@@ -981,7 +983,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has very low latency. However, for smaller data sets, the following more concise alternative can be used:
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has low latency. However, for smaller data sets, the following more concise alternative can be used:
 
 ```java
 var results = queryBuilder.execute(getConnection(), mapOf(
