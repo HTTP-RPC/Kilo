@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--suppress ALL -->
 <root a="A" xmlns:x="x" xmlns:y="y" xmlns:z="z">
     <x:map b="B">
         <b>two</b>
