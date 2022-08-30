@@ -422,8 +422,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Adapts a value for loose typing. If the value is {@code null}
-     * or an instance of one of the following types, it is returned as is:</p>
+     * <p>Adapts a value for loose typing. If the value is {@code null} or an
+     * instance of one of the following types, it is returned as is:</p>
      *
      * <ul>
      * <li>{@link CharSequence}</li>

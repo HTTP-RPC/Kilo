@@ -370,7 +370,8 @@ public class WebServiceProxy {
      * Returns the request body.
      *
      * @return
-     * A value representing the body content, or {@code null} if no body has been set.
+     * A value representing the body content, or {@code null} if no body has
+     * been set.
      */
     public Object getBody() {
         return body;

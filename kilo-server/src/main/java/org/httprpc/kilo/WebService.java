@@ -238,8 +238,8 @@ public abstract class WebService extends HttpServlet {
          * Returns the type of content consumed by the operation.
          *
          * @return
-         * The type of content consumed by the operation, or {@code null}
-         * if the operation does not accept request content.
+         * The type of content consumed by the operation, or {@code null} if
+         * the operation does not accept request content.
          */
         public TypeDescriptor getConsumes() {
             return consumes;
@@ -249,8 +249,8 @@ public abstract class WebService extends HttpServlet {
          * Returns the type of content produced by the operation.
          *
          * @return
-         * The type of content produced by the operation, or {@code null}
-         * if the operation does not return response content.
+         * The type of content produced by the operation, or {@code null} if
+         * the operation does not return response content.
          */
         public TypeDescriptor getProduces() {
             return produces;
@@ -312,8 +312,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the variable is required.
          *
          * @return
-         * {@code true} if the variable is required; {@code false},
-         * otherwise.
+         * {@code true} if the variable is required; {@code false}, otherwise.
          */
         public boolean isRequired() {
             return required;
@@ -514,8 +513,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the type is intrinsic.
          *
          * @return
-         * {@code true} if the type is intrinsic; {@code false},
-         * otherwise.
+         * {@code true} if the type is intrinsic; {@code false}, otherwise.
          */
         public boolean isIntrinsic() {
             return intrinsic;
@@ -525,8 +523,7 @@ public abstract class WebService extends HttpServlet {
          * Indicates that the type is an iterable.
          *
          * @return
-         * {@code true} if the type is an iterable; {@code false},
-         * otherwise.
+         * {@code true} if the type is an iterable; {@code false}, otherwise.
          */
         public boolean isIterable() {
             return false;
@@ -536,8 +533,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the element type.
          *
          * @return
-         * The element type, or {@code null} if the type is not an
-         * iterable.
+         * The element type, or {@code null} if the type is not an iterable.
          */
         public TypeDescriptor getElementType() {
             return null;
@@ -1278,8 +1274,7 @@ public abstract class WebService extends HttpServlet {
      * The method to be invoked.
      *
      * @return
-     * {@code true} if the method should be invoked; {@code false},
-     * otherwise.
+     * {@code true} if the method should be invoked; {@code false}, otherwise.
      */
     protected boolean isAuthorized(HttpServletRequest request, Method method) {
         return true;

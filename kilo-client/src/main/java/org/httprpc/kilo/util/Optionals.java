@@ -68,8 +68,7 @@ public class Optionals {
      * The mapping function.
      *
      * @return
-     * The mapped value, or {@code null} if the original value is
-     * {@code null}.
+     * The mapped value, or {@code null} if the original value is {@code null}.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) {
         if (value == null) {
