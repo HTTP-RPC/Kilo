@@ -30,6 +30,9 @@ import java.nio.charset.StandardCharsets;
 public abstract class Decoder<T> {
     private Charset charset = StandardCharsets.UTF_8;
 
+    /**
+     * Represents an "end of file" character.
+     */
     protected static final int EOF = -1;
 
     /**
