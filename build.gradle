@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'
-    version = '1.2.3'
+    version = '1.2.4'
 
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'

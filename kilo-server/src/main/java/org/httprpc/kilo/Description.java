@@ -26,9 +26,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 public @interface Description {
     /**
+     * Provides a description of the element.
+     *
      * @return
-     * The description of the service class, method, parameter, enumeration,
-     * or data type.
+     * The element description.
      */
     String value();
 }

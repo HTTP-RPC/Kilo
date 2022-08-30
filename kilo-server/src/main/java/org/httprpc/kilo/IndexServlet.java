@@ -32,6 +32,10 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  * Generates an index of all active services.
  */
 public class IndexServlet extends HttpServlet {
+    /**
+     * Generates the service index.
+     * {@inheritDoc}
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var serviceDescriptors = BeanAdapter.adapt(WebService.getServiceDescriptors());

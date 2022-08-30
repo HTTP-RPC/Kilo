@@ -20,15 +20,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Describes an endpoint's keys.
+ * Associates descriptions with an endpoint's keys.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Keys {
     /**
+     * Provides descriptions of the endpoint's keys.
+     *
      * @return
-     * The descriptions of the endpoint's keys, in the order in which they
-     * are declared.
+     * The endpoint's key descriptions, in the order in which the keys are
+     * declared.
      */
     String[] value() default {};
 }
