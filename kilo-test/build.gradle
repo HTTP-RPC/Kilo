@@ -18,18 +18,11 @@ plugins {
 
 dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
-    compileOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
 
     implementation project(':kilo-server')
 }
 
 compileJava {
-    options.compilerArgs = [
-        '-parameters'
-    ]
-}
-
-compileTestJava {
     options.compilerArgs = [
         '-parameters'
     ]
