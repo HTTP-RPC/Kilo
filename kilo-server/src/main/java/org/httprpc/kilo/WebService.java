@@ -727,7 +727,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Initializes the web service instance.
+     * Initializes the service instance.
      * {@inheritDoc}
      */
     @Override
@@ -848,7 +848,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Processes a web service request.
+     * Processes a service request.
      * {@inheritDoc}
      */
     @Override
