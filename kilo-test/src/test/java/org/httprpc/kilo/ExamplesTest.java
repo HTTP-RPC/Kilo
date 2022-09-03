@@ -315,15 +315,21 @@ public class ExamplesTest {
 
         var holder = (Map<String, Object>)accountAdapter.get("holder");
 
-        System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName")));
-        System.out.println(accountAdapter.get("@id"));
+        var firstName = holder.get("firstName");
+        var lastName = holder.get("lastName");
+
+        System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
+
+        var id = accountAdapter.get("@id");
+
+        System.out.println(id); // 101
 
         var transactions = (Map<String, Object>)accountAdapter.get("transactions");
         var credits = (List<Map<String, Object>>)transactions.get("credit*");
 
         for (var credit : credits) {
-            System.out.println(credit.get("amount").toString());
-            System.out.println(credit.get("date").toString());
+            System.out.println(credit.get("amount"));
+            System.out.println(credit.get("date"));
         }
     }
 

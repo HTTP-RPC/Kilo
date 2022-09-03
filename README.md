@@ -1100,7 +1100,10 @@ var accountAdapter = new ElementAdapter(document.getDocumentElement());
 
 var holder = (Map<String, Object>)accountAdapter.get("holder");
 
-System.out.println(String.format("%s, %s", holder.get("lastName"), holder.get("firstName"))); // Smith, John
+var firstName = holder.get("firstName");
+var lastName = holder.get("lastName");
+
+System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
 ```
 
 Namespaces are ignored when identifying elements by tag name. However, the namespace URI for an element (when applicable) can be obtained by requesting the value associated with the ":" key.
@@ -1108,7 +1111,9 @@ Namespaces are ignored when identifying elements by tag name. However, the names
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
 
 ```java
-System.out.println(accountAdapter.get("@id")); // 101
+var id = accountAdapter.get("@id");
+
+System.out.println(id); // 101
 ```
 
 Attributes can also be accessed by traversing the adapter's entry set.
@@ -1127,8 +1132,8 @@ for (var credit : credits) {
 Finally, the text content of an element can be obtained by calling `toString()` on the adapter instance:
 
 ```java
-System.out.println(credit.get("amount").toString());
-System.out.println(credit.get("date").toString());
+System.out.println(credit.get("amount"));
+System.out.println(credit.get("date"));
 ```
 
 ## ResourceBundleAdapter
