@@ -713,6 +713,11 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testEmbeddedImage() {
+        // TODO
+    }
+
+    @Test
     public void testAPIDocumentation() throws IOException {
         Map<?, ?> expected;
         try (var inputStream = getClass().getResourceAsStream("math.json")) {
