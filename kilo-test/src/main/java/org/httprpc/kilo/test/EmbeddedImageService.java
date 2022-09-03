@@ -43,10 +43,14 @@ public class EmbeddedImageService extends WebService {
             data = byteArrayOutputStream.toByteArray();
         }
 
+        var response = getResponse();
+
+        response.setContentType("text/html");
+
         var templateEncoder = new TemplateEncoder(getClass().getResource("image.html"));
 
         templateEncoder.write(mapOf(
             entry("data", data)
-        ), getResponse().getOutputStream());
+        ), response.getOutputStream());
     }
 }
