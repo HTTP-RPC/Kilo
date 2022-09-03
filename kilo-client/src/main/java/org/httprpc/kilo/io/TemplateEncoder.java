@@ -31,6 +31,7 @@ import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
@@ -232,43 +233,51 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // URL escape modifier
-    private static class URLEscapeModifier implements Modifier {
+    // Markup escape modifier
+    private static class MarkupEscapeModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            var string = value.toString();
+
+            var resultBuilder = new StringBuilder();
+
+            for (int i = 0, n = string.length(); i < n; i++) {
+                var c = string.charAt(i);
+
+                if (c == '<') {
+                    resultBuilder.append("&lt;");
+                } else if (c == '>') {
+                    resultBuilder.append("&gt;");
+                } else if (c == '&') {
+                    resultBuilder.append("&amp;");
+                } else if (c == '"') {
+                    resultBuilder.append("&quot;");
+                } else {
+                    resultBuilder.append(c);
+                }
+            }
+
+            return resultBuilder.toString();
+        }
+    }
+
+    // URL-encoding modifier
+    private static class URLEncodingModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
             return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
         }
     }
 
-    // Markup escape modifier
-    private static class MarkupEscapeModifier implements Modifier {
+    // Base64-encoding modifier
+    private static class Base64EncodingModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (value instanceof CharSequence) {
-                var string = (CharSequence)value;
-
-                var resultBuilder = new StringBuilder();
-
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    var c = string.charAt(i);
-
-                    if (c == '<') {
-                        resultBuilder.append("&lt;");
-                    } else if (c == '>') {
-                        resultBuilder.append("&gt;");
-                    } else if (c == '&') {
-                        resultBuilder.append("&amp;");
-                    } else if (c == '"') {
-                        resultBuilder.append("&quot;");
-                    } else {
-                        resultBuilder.append(c);
-                    }
-                }
-
-                return resultBuilder.toString();
-            } else {
-                return value;
+            if (!(value instanceof byte[])) {
+                throw new UnsupportedOperationException();
             }
+
+            return Base64.getEncoder().encodeToString((byte[])value);
         }
     }
 
@@ -367,12 +376,13 @@ public class TemplateEncoder extends Encoder<Object> {
     static {
         defaultModifiers.put("format", new FormatModifier());
 
-        defaultModifiers.put("url", new URLEscapeModifier());
-
         var markupEscapeModifier = new MarkupEscapeModifier();
 
         defaultModifiers.put("html", markupEscapeModifier);
         defaultModifiers.put("xml", markupEscapeModifier);
+
+        defaultModifiers.put("url", new URLEncodingModifier());
+        defaultModifiers.put("base64", new Base64EncodingModifier());
     }
 
     /**

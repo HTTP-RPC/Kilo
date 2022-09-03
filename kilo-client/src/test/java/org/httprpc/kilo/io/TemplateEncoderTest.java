@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -458,17 +459,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testURLEscapeModifier() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("url.txt"));
-
-        var writer = new StringWriter();
-
-        encoder.write("abc:def&xyz", writer);
-
-        assertEquals("abc%3Adef%26xyz", writer.toString());
-    }
-
-    @Test
     public void testMarkupEscapeModifier() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("html.txt"));
 
@@ -488,6 +478,30 @@ public class TemplateEncoderTest {
         encoder.write("a<b>c&d\"e", writer);
 
         assertEquals("<?xml version=\"1.0\"?><foo bar=\"a&lt;b&gt;c&amp;d&quot;e\"/>", writer.toString());
+    }
+
+    @Test
+    public void testURLEncodingModifier() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("url.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write("abc:def&xyz", writer);
+
+        assertEquals("abc%3Adef%26xyz", writer.toString());
+    }
+
+    @Test
+    public void testBase64EncodingModifier() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("base64.txt"));
+
+        var text = "hello world";
+
+        var writer = new StringWriter();
+
+        encoder.write(text.getBytes(StandardCharsets.UTF_8), writer);
+
+        assertEquals("aGVsbG8gd29ybGQ=", writer.toString());
     }
 
     @Test

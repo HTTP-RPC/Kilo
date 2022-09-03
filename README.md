@@ -624,7 +624,7 @@ The `TemplateEncoder` class transforms an object hierarchy into an output format
 public TemplateEncoder(URL url) { ... }
 ```
 
-The single argument specifies the location of the template document (typically as a resource on the application's classpath). An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied if available ("html" and "xml" are supported by default).
+The single argument specifies the location of the template document (typically as a resource on the application's classpath). An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied to injected variables if available ("html" and "xml" are supported by default).
  
 Templates are applied via one of the following methods:
 
