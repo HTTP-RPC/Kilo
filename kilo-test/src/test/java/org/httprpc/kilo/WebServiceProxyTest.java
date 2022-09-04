@@ -713,24 +713,6 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testEmbeddedImage() throws IOException {
-        String expected;
-        try (var inputStream = getClass().getResourceAsStream("image.html")) {
-            var textDecoder = new TextDecoder();
-
-            expected = textDecoder.read(inputStream);
-        }
-
-        var actual = WebServiceProxy.get(baseURL, "embedded-image").invoke((inputStream, contentType) -> {
-            var textDecoder = new TextDecoder();
-
-            return textDecoder.read(inputStream);
-        });
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void testAPIDocumentation() throws IOException {
         Map<?, ?> expected;
         try (var inputStream = getClass().getResourceAsStream("math.json")) {

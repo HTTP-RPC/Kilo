@@ -41,7 +41,6 @@ All templates support the following set of standard modifiers:
 * `format` - applies a [format string](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Formatter.html#syntax)
 * `html`/`xml` - escapes reserved HTML/XML characters
 * `url` - URL-encodes a value
-* `base64` - Base64-encodes a byte array
 
 For example, the following marker applies a format string to a value and then URL-encodes the result:
 

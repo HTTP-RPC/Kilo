@@ -31,7 +31,6 @@ import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
@@ -269,18 +268,6 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // Base64-encoding modifier
-    private static class Base64EncodingModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (!(value instanceof byte[])) {
-                throw new UnsupportedOperationException();
-            }
-
-            return Base64.getEncoder().encodeToString((byte[])value);
-        }
-    }
-
     // Marker type enumeration
     private enum MarkerType {
         CONDITIONAL_SECTION_START,
@@ -382,7 +369,6 @@ public class TemplateEncoder extends Encoder<Object> {
         defaultModifiers.put("xml", markupEscapeModifier);
 
         defaultModifiers.put("url", new URLEncodingModifier());
-        defaultModifiers.put("base64", new Base64EncodingModifier());
     }
 
     /**

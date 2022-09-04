@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -489,19 +488,6 @@ public class TemplateEncoderTest {
         encoder.write("abc:def&xyz", writer);
 
         assertEquals("abc%3Adef%26xyz", writer.toString());
-    }
-
-    @Test
-    public void testBase64EncodingModifier() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("base64.txt"));
-
-        var text = "hello world";
-
-        var writer = new StringWriter();
-
-        encoder.write(text.getBytes(StandardCharsets.UTF_8), writer);
-
-        assertEquals("aGVsbG8gd29ybGQ=", writer.toString());
     }
 
     @Test
