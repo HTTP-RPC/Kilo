@@ -161,6 +161,33 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "join" clause to a query.
+     *
+     * @param queryBuilder
+     * A "select" subquery.
+     *
+     * @param alias
+     * The subquery's alias.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder join(QueryBuilder queryBuilder, String alias) {
+        if (queryBuilder == null || alias == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" join (");
+        sqlBuilder.append(queryBuilder.getSQL());
+        sqlBuilder.append(") ");
+        sqlBuilder.append(alias);
+
+        parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
      * Appends a "left join" clause to a query.
      *
      * @param table
