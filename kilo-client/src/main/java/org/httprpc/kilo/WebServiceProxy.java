@@ -230,7 +230,7 @@ public class WebServiceProxy {
 
     private static final ErrorHandler defaultErrorHandler = (errorStream, contentType, statusCode) -> {
         String message;
-        if (contentType != null && contentType.startsWith("text/")) {
+        if (contentType != null && contentType.toLowerCase().startsWith("text/plain")) {
             var textDecoder = new TextDecoder();
 
             message = textDecoder.read(errorStream);
