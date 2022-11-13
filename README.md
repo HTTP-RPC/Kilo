@@ -932,6 +932,8 @@ Similarly, attempting to dynamically access an invalid value will generate an `I
 vehicleAdapter.get("manufacturer"); // throws
 ```
 
+Note that, unlike [list parameters](#required-parameters), list properties are not guaranteed to contain a non-`null` value and must be explicitly annotated when required.
+
 ### Ignoring Properties
 Properties can be excluded from the map using the `Ignore` annotation. For example, given the following code:
 

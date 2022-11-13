@@ -228,6 +228,7 @@ public class TestBean implements TestInterface {
         this.nestedBean = nestedBean;
     }
 
+    @Required
     @Override
     public List<Integer> getIntegerList() {
         return integerList;

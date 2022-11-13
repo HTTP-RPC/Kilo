@@ -62,6 +62,7 @@ public interface TestInterface {
 
     NestedInterface getNestedBean();
 
+    @Required
     List<Integer> getIntegerList();
     List<NestedInterface> getNestedBeanList();
 
