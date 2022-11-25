@@ -1204,7 +1204,14 @@ public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) 
 
 These provide a slightly more readable alternative to `java.util.Collections.<Integer>emptyList()` and `java.util.Collections.<String, Integer>emptyMap()`, respectively.
 
-Finally, `Collections` provides the `valueAt()` method, which can be used to access nested values in an object hierarchy. For example:
+The following methods can be used to identify the index of the first or last element in a list that matches a given predicate:
+
+```
+public static <E> int firstIndexWhere(List<E> list, Predicate<E> predicate) { ... }
+public static <E> int lastIndexWhere(List<E> list, Predicate<E> predicate) { ... }
+```
+
+Finally, the `valueAt()` method can be used to access nested values in an object hierarchy. For example:
 
 ```java
 Map<String, Object> map = mapOf(
@@ -1216,7 +1223,7 @@ Map<String, Object> map = mapOf(
 );
 
 var value = Collections.valueAt(map, "a", "b", "c", 1); // 2
-``` 
+```
 
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 

@@ -72,6 +72,26 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testFirstIndexWhere() {
+        var list = listOf("a", "b", "c", "b", "d");
+
+        assertEquals(1, Collections.firstIndexWhere(list, element -> element.equals("b")));
+        assertEquals(4, Collections.firstIndexWhere(list, element -> element.equals("d")));
+
+        assertEquals(-1, Collections.firstIndexWhere(list, element -> element.equals("e")));
+    }
+
+    @Test
+    public void testLastIndexWhere() {
+        var list = listOf("a", "b", "c", "b", "d");
+
+        assertEquals(3, Collections.lastIndexWhere(list, element -> element.equals("b")));
+        assertEquals(0, Collections.lastIndexWhere(list, element -> element.equals("a")));
+
+        assertEquals(-1, Collections.lastIndexWhere(list, element -> element.equals("e")));
+    }
+
+    @Test
     public void testValueAt() {
         Map<?, ?> map = mapOf(
             entry("a", mapOf(
