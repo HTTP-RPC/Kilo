@@ -582,15 +582,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof Map<?, ?>) {
-                    var map = (Map<?, ?>)value;
-
                     var keyType = actualTypeArguments[0];
                     var valueType = actualTypeArguments[1];
 
-                    return map.entrySet().stream().collect(Collectors.toMap(entry -> coerce(entry.getKey(), keyType),
-                        entry -> coerce(entry.getValue(), valueType), (v1, v2) -> {
-                            throw new UnsupportedOperationException("Duplicate key.");
-                        }, LinkedHashMap::new));
+                    var map = new LinkedHashMap<>();
+
+                    for (var entry : ((Map<?, ?>)value).entrySet()) {
+                        map.put(coerce(entry.getKey(), keyType), coerce(entry.getValue(), valueType));
+                    }
+
+                    return map;
                 } else {
                     throw new IllegalArgumentException("Value is not a map.");
                 }

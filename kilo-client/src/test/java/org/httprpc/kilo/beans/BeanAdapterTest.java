@@ -279,18 +279,19 @@ public class BeanAdapterTest {
         strings.add("1");
         strings.add("2");
         strings.add("3");
+        strings.add(null);
 
         var integers = (List<Integer>)BeanAdapter.coerce(strings, List.class, Integer.class);
 
-        assertEquals(listOf(1, 2, 3), integers);
+        assertEquals(listOf(1, 2, 3, null), integers);
 
         integers.set(1, 4);
 
-        assertEquals(listOf(1, 4, 3), integers);
+        assertEquals(listOf(1, 4, 3, null), integers);
 
         integers.remove(1);
 
-        assertEquals(listOf(1, 3), integers);
+        assertEquals(listOf(1, 3, null), integers);
     }
 
     @Test
@@ -301,13 +302,15 @@ public class BeanAdapterTest {
         strings.put(1, "1.0");
         strings.put(2, "2.0");
         strings.put(3, "3.0");
+        strings.put(4, null);
 
         var doubles = (Map<Integer, Double>)BeanAdapter.coerce(strings, Map.class, Integer.class, Double.class);
 
         assertEquals(mapOf(
             entry(1, 1.0),
             entry(2, 2.0),
-            entry(3, 3.0)
+            entry(3, 3.0),
+            entry(4, null)
         ), doubles);
 
         doubles.put(2, 4.0);
@@ -315,14 +318,16 @@ public class BeanAdapterTest {
         assertEquals(mapOf(
             entry(1, 1.0),
             entry(2, 4.0),
-            entry(3, 3.0)
+            entry(3, 3.0),
+            entry(4, null)
         ), doubles);
 
         doubles.remove(2);
 
         assertEquals(mapOf(
             entry(1, 1.0),
-            entry(3, 3.0)
+            entry(3, 3.0),
+            entry(4, null)
         ), doubles);
     }
 
