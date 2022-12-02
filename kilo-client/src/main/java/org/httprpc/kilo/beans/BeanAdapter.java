@@ -204,6 +204,140 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    // Typed list
+    private static class TypedList extends AbstractList<Object> {
+        List<Object> list;
+        Type elementType;
+
+        TypedList(List<Object> list, Type elementType) {
+            this.list = list;
+            this.elementType = elementType;
+        }
+
+        @Override
+        public Object get(int index) {
+            return coerce(list.get(index), elementType);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object set(int index, Object element) {
+            return list.set(index, element);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void add(int index, Object element) {
+            list.add(index, element);
+        }
+
+        @Override
+        public Object remove(int index) {
+            return list.remove(index);
+        }
+
+        @Override
+        public int size() {
+            return list.size();
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<>() {
+                Iterator<?> iterator = list.iterator();
+
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public Object next() {
+                    return coerce(iterator.next(), elementType);
+                }
+            };
+        }
+    }
+
+    // Typed map
+    private static class TypedMap extends AbstractMap<Object, Object> {
+        Map<Object, Object> map;
+        Type keyType;
+        Type valueType;
+
+        Map<Object, Object> keys;
+
+        TypedMap(Map<Object, Object> map, Type keyType, Type valueType) {
+            this.map = map;
+            this.keyType = keyType;
+            this.valueType = valueType;
+
+            keys = map.keySet().stream().collect(Collectors.toMap(key -> coerce(key, keyType), key -> key));
+        }
+
+        @Override
+        public Object get(Object key) {
+            return coerce(map.get(keys.get(key)), valueType);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object put(Object key, Object value) {
+            keys.put(key, key);
+
+            return map.put(key, value);
+        }
+
+        @Override
+        public Object remove(Object key) {
+            return map.remove(keys.remove(key));
+        }
+
+        @Override
+        public Set<Entry<Object, Object>> entrySet() {
+            return new AbstractSet<>() {
+                @Override
+                public int size() {
+                    return map.size();
+                }
+
+                @Override
+                public Iterator<Entry<Object, Object>> iterator() {
+                    return new Iterator<>() {
+                        Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
+
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Entry<Object, Object> next() {
+                            return new Entry<>() {
+                                Entry<?, ?> entry = iterator.next();
+
+                                @Override
+                                public Object getKey() {
+                                    return coerce(entry.getKey(), keyType);
+                                }
+
+                                @Override
+                                public Object getValue() {
+                                    return coerce(entry.getValue(), valueType);
+                                }
+
+                                @Override
+                                public Object setValue(Object value) {
+                                    throw new UnsupportedOperationException();
+                                }
+                            };
+                        }
+                    };
+                }
+            };
+        }
+    }
+
     // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
         Map<?, ?> map;
@@ -552,6 +686,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return (T)coerce(value, typeOf(rawType, actualTypeArguments));
     }
 
+    @SuppressWarnings("unchecked")
     private static Object coerce(Object value, Type type) {
         if (type instanceof Class<?>) {
             return coerceValue(value, (Class<?>)type);
@@ -565,7 +700,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof List<?>) {
-                    return coerceListContents((List<?>)value, actualTypeArguments[0]);
+                    return new TypedList((List<Object>)value, actualTypeArguments[0]);
                 } else {
                     throw new IllegalArgumentException("Value is not a list.");
                 }
@@ -573,7 +708,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof Map<?, ?>) {
-                    return coerceMapContents((Map<?, ?>)value, actualTypeArguments[0], actualTypeArguments[1]);
+                    return new TypedMap((Map<Object, Object>)value, actualTypeArguments[0], actualTypeArguments[1]);
                 } else {
                     throw new IllegalArgumentException("Value is not a map.");
                 }
@@ -752,122 +887,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
             }
         }
-    }
-
-    private static List<Object> coerceListContents(List<?> list, Type elementType) {
-        return new AbstractList<>() {
-            @Override
-            public Object get(int index) {
-                return coerce(list.get(index), elementType);
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Object set(int index, Object element) {
-                return ((List<Object>)list).set(index, element);
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public void add(int index, Object element) {
-                ((List<Object>)list).add(index, element);
-            }
-
-            @Override
-            public Object remove(int index) {
-                return list.remove(index);
-            }
-
-            @Override
-            public int size() {
-                return list.size();
-            }
-
-            @Override
-            public Iterator<Object> iterator() {
-                return new Iterator<>() {
-                    Iterator<?> iterator = list.iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
-
-                    @Override
-                    public Object next() {
-                        return coerce(iterator.next(), elementType);
-                    }
-                };
-            }
-        };
-    }
-
-    private static Map<Object, Object> coerceMapContents(Map<?, ?> map, Type keyType, Type valueType) {
-        var keys = map.keySet().stream().collect(Collectors.toMap(key -> coerce(key, keyType), key -> key));
-
-        return new AbstractMap<>() {
-            @Override
-            public Object get(Object key) {
-                return coerce(map.get(keys.get(key)), valueType);
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Object put(Object key, Object value) {
-                ((Map<Object, Object>)keys).put(key, key);
-
-                return ((Map<Object, Object>)map).put(key, value);
-            }
-
-            @Override
-            public Object remove(Object key) {
-                return map.remove(keys.remove(key));
-            }
-
-            @Override
-            public Set<Entry<Object, Object>> entrySet() {
-                return new AbstractSet<>() {
-                    @Override
-                    public int size() {
-                        return map.size();
-                    }
-
-                    @Override
-                    public Iterator<Entry<Object, Object>> iterator() {
-                        return new Iterator<>() {
-                            Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
-
-                            @Override
-                            public boolean hasNext() {
-                                return iterator.hasNext();
-                            }
-
-                            @Override
-                            public Entry<Object, Object> next() {
-                                return new Entry<>() {
-                                    Entry<?, ?> entry = iterator.next();
-
-                                    @Override
-                                    public Object getKey() {
-                                        return coerce(entry.getKey(), keyType);
-                                    }
-
-                                    @Override
-                                    public Object getValue() {
-                                        return coerce(entry.getValue(), valueType);
-                                    }
-
-                                    @Override
-                                    public Object setValue(Object value) {
-                                        throw new UnsupportedOperationException();
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
-            }
-        };
     }
 
     /**
