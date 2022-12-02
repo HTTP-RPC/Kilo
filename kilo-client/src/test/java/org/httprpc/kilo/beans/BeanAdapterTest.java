@@ -46,6 +46,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BeanAdapterTest {
+    public static class ReadOnly {
+        private int x;
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public int getY() {
+            return 100;
+        }
+    }
+
     public static class MissingAccessor {
         private int value;
 
@@ -470,6 +486,17 @@ public class BeanAdapterTest {
         assertEquals(TestInterface.NestedInterface.class, nestedBeanMapTypeArguments[1]);
 
         assertNull(properties.get("xyz"));
+    }
+
+    @Test
+    public void testReadOnly() {
+        var readOnly = BeanAdapter.coerce(mapOf(
+            entry("x", 10),
+            entry("y", 200)
+        ), ReadOnly.class);
+
+        assertEquals(10, readOnly.getX());
+        assertEquals(100, readOnly.getY());
     }
 
     @Test

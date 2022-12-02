@@ -85,6 +85,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         public Collection<Method> getMutators() {
             return Collections.unmodifiableList(mutators);
         }
+
+        /**
+         * Indicates that the property is read-only.
+         *
+         * @return
+         * {@code true} if the property is read-only; {@code false}, otherwise.
+         */
+        public boolean isReadOnly() {
+            return mutators.isEmpty();
+        }
     }
 
     // Iterable adapter
@@ -761,6 +771,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var beanAdapter = new BeanAdapter(bean);
 
                     for (var entry : beanAdapter.properties.entrySet()) {
+                        if (entry.getValue().isReadOnly()) {
+                            continue;
+                        }
+
                         var key = entry.getKey();
 
                         beanAdapter.put(key, map.get(key));
