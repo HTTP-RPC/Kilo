@@ -37,11 +37,13 @@ import java.time.temporal.TemporalAmount;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -190,140 +192,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                                 @Override
                                 public Object getValue() {
                                     return adapt(entry.getValue(), propertyCache);
-                                }
-
-                                @Override
-                                public Object setValue(Object value) {
-                                    throw new UnsupportedOperationException();
-                                }
-                            };
-                        }
-                    };
-                }
-            };
-        }
-    }
-
-    // Typed list
-    private static class TypedList extends AbstractList<Object> {
-        List<Object> list;
-        Type elementType;
-
-        TypedList(List<Object> list, Type elementType) {
-            this.list = list;
-            this.elementType = elementType;
-        }
-
-        @Override
-        public Object get(int index) {
-            return coerce(list.get(index), elementType);
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object set(int index, Object element) {
-            return list.set(index, element);
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void add(int index, Object element) {
-            list.add(index, element);
-        }
-
-        @Override
-        public Object remove(int index) {
-            return list.remove(index);
-        }
-
-        @Override
-        public int size() {
-            return list.size();
-        }
-
-        @Override
-        public Iterator<Object> iterator() {
-            return new Iterator<>() {
-                Iterator<?> iterator = list.iterator();
-
-                @Override
-                public boolean hasNext() {
-                    return iterator.hasNext();
-                }
-
-                @Override
-                public Object next() {
-                    return coerce(iterator.next(), elementType);
-                }
-            };
-        }
-    }
-
-    // Typed map
-    private static class TypedMap extends AbstractMap<Object, Object> {
-        Map<Object, Object> map;
-        Type keyType;
-        Type valueType;
-
-        Map<Object, Object> keys;
-
-        TypedMap(Map<Object, Object> map, Type keyType, Type valueType) {
-            this.map = map;
-            this.keyType = keyType;
-            this.valueType = valueType;
-
-            keys = map.keySet().stream().collect(Collectors.toMap(key -> coerce(key, keyType), key -> key));
-        }
-
-        @Override
-        public Object get(Object key) {
-            return coerce(map.get(keys.get(key)), valueType);
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object put(Object key, Object value) {
-            keys.put(key, key);
-
-            return map.put(key, value);
-        }
-
-        @Override
-        public Object remove(Object key) {
-            return map.remove(keys.remove(key));
-        }
-
-        @Override
-        public Set<Entry<Object, Object>> entrySet() {
-            return new AbstractSet<>() {
-                @Override
-                public int size() {
-                    return map.size();
-                }
-
-                @Override
-                public Iterator<Entry<Object, Object>> iterator() {
-                    return new Iterator<>() {
-                        Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
-
-                        @Override
-                        public boolean hasNext() {
-                            return iterator.hasNext();
-                        }
-
-                        @Override
-                        public Entry<Object, Object> next() {
-                            return new Entry<>() {
-                                Entry<?, ?> entry = iterator.next();
-
-                                @Override
-                                public Object getKey() {
-                                    return coerce(entry.getKey(), keyType);
-                                }
-
-                                @Override
-                                public Object getValue() {
-                                    return coerce(entry.getValue(), valueType);
                                 }
 
                                 @Override
@@ -700,7 +568,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof List<?>) {
-                    return new TypedList((List<Object>)value, actualTypeArguments[0]);
+                    var list = (List<?>)value;
+
+                    var elementType = actualTypeArguments[0];
+
+                    return list.stream()
+                        .map(element -> coerce(element, elementType))
+                        .collect(Collectors.toCollection(() -> new ArrayList<>(list.size())));
                 } else {
                     throw new IllegalArgumentException("Value is not a list.");
                 }
@@ -708,7 +582,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof Map<?, ?>) {
-                    return new TypedMap((Map<Object, Object>)value, actualTypeArguments[0], actualTypeArguments[1]);
+                    var map = (Map<?, ?>)value;
+
+                    var keyType = actualTypeArguments[0];
+                    var valueType = actualTypeArguments[1];
+
+                    return map.entrySet().stream().collect(Collectors.toMap(entry -> coerce(entry.getKey(), keyType),
+                        entry -> coerce(entry.getValue(), valueType), (v1, v2) -> {
+                            throw new UnsupportedOperationException("Duplicate key.");
+                        }, LinkedHashMap::new));
                 } else {
                     throw new IllegalArgumentException("Value is not a map.");
                 }
