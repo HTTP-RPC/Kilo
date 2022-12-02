@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -268,6 +269,61 @@ public class BeanAdapterTest {
                 entry("3", "3.0")
             )
         ), List.class, BeanAdapter.typeOf(Map.class, Integer.class, Double.class)));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testMutableListCoercion() {
+        var strings = new ArrayList<String>();
+
+        strings.add("1");
+        strings.add("2");
+        strings.add("3");
+
+        var integers = (List<Integer>)BeanAdapter.coerce(strings, List.class, Integer.class);
+
+        assertEquals(listOf(1, 2, 3), integers);
+
+        integers.set(1, 4);
+
+        assertEquals(listOf(1, 4, 3), integers);
+
+        integers.remove(1);
+
+        assertEquals(listOf(1, 3), integers);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testMutableMapCoercion() {
+        var strings = new HashMap<Integer, String>();
+
+        strings.put(1, "1.0");
+        strings.put(2, "2.0");
+        strings.put(3, "3.0");
+
+        var doubles = (Map<Integer, Double>)BeanAdapter.coerce(strings, Map.class, Integer.class, Double.class);
+
+        assertEquals(mapOf(
+            entry(1, 1.0),
+            entry(2, 2.0),
+            entry(3, 3.0)
+        ), doubles);
+
+        doubles.put(2, 4.0);
+
+        assertEquals(mapOf(
+            entry(1, 1.0),
+            entry(2, 4.0),
+            entry(3, 3.0)
+        ), doubles);
+
+        doubles.remove(2);
+
+        assertEquals(mapOf(
+            entry(1, 1.0),
+            entry(3, 3.0)
+        ), doubles);
     }
 
     @Test

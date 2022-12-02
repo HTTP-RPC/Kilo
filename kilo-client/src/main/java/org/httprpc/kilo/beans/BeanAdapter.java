@@ -762,6 +762,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
+            public Object set(int index, Object element) {
+                return ((List<Object>)list).set(index, element);
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public void add(int index, Object element) {
+                ((List<Object>)list).add(index, element);
+            }
+
+            @Override
+            public Object remove(int index) {
+                return list.remove(index);
+            }
+
+            @Override
             public int size() {
                 return list.size();
             }
@@ -792,6 +809,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             @Override
             public Object get(Object key) {
                 return coerce(map.get(keys.get(key)), valueType);
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object put(Object key, Object value) {
+                ((Map<Object, Object>)keys).put(key, key);
+
+                return ((Map<Object, Object>)map).put(key, value);
+            }
+
+            @Override
+            public Object remove(Object key) {
+                return map.remove(keys.get(key));
             }
 
             @Override
