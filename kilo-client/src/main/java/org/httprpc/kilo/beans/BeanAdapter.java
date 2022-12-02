@@ -821,7 +821,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             @Override
             public Object remove(Object key) {
-                return map.remove(keys.get(key));
+                return map.remove(keys.remove(key));
             }
 
             @Override
