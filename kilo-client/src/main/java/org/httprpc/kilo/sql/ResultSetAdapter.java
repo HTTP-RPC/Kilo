@@ -90,16 +90,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Returns the source result set.
-     *
-     * @return
-     * The source result set.
-     */
-    public ResultSet getResultSet() {
-        return resultSet;
-    }
-
-    /**
      * Returns an iterator over the results.
      * {@inheritDoc}
      */

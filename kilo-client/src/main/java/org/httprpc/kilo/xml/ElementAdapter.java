@@ -89,16 +89,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the source element.
-     *
-     * @return
-     * The source element.
-     */
-    public Element getElement() {
-        return element;
-    }
-
-    /**
      * Retrieves a value associated with the source element.
      * {@inheritDoc}
      */

@@ -41,16 +41,6 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
     }
 
     /**
-     * Returns the source resource bundle.
-     *
-     * @return
-     * The source resource bundle.
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    /**
      * Retrieves a localized resource value.
      * {@inheritDoc}
      */

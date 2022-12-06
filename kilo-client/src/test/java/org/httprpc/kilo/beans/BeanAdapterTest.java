@@ -42,7 +42,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -127,11 +126,6 @@ public class BeanAdapterTest {
 
         assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestInterface.class)));
         assertEquals(map, new BeanAdapter(BeanAdapter.coerce(map, TestBean.class)));
-
-        var testBean = new TestBean();
-        var beanAdapter = new BeanAdapter(testBean);
-
-        assertSame(testBean, beanAdapter.getBean());
     }
 
     @Test
