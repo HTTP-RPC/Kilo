@@ -1,3 +1,3 @@
 rootProject.name = 'Kilo'
 
-include  'kilo-client', 'kilo-server', 'kilo-test'
+include 'kilo-client', 'kilo-server', 'kilo-test'
