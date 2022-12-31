@@ -67,8 +67,8 @@ subprojects {
                     url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
 
                     credentials {
-                        username nexusUsername
-                        password nexusPassword
+                        username project.properties['nexusUsername'] ?: ''
+                        password project.properties['nexusPassword'] ?: ''
                     }
                 }
             }

@@ -100,7 +100,7 @@ class PagedReader extends Reader {
 
     @Override
     public boolean ready() throws IOException {
-        return (position < count) || reader.ready();
+        return (position < count || reader.ready());
     }
 
     @Override
