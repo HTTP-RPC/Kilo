@@ -545,18 +545,11 @@ public class WebServiceProxy {
     /**
      * Invokes the service operation.
      *
-     * @param <T>
-     * The result type.
-     *
-     * @return
-     * The result of the operation.
-     *
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    @SuppressWarnings("unchecked")
-    public <T> T invoke() throws IOException {
-        return (T)invoke(Object.class);
+    public Object invoke() throws IOException {
+        return invoke(Object.class);
     }
 
     /**

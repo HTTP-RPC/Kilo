@@ -391,7 +391,7 @@ If either a custom body or request handler is specified, `POST` arguments will b
 Service operations are invoked via one of the following methods:
 
 ```java
-public <T> T invoke() throws IOException { ... }
+public Object invoke() throws IOException { ... }
 public <T> T invoke(Class<T> rawType, Type... actualTypeArguments) throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```

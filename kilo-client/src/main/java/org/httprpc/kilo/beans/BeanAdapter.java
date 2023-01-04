@@ -234,7 +234,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new UnsupportedOperationException(String.format("Property \"%s\" is not defined.", key));
                 }
 
-                return coerce(value, method.getGenericReturnType());
+                return toGenericType(value, method.getGenericReturnType());
             }
         }
 
@@ -364,7 +364,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         for (var mutator : property.mutators) {
             try {
-                mutator.invoke(bean, coerce(value, mutator.getGenericParameterTypes()[0]));
+                mutator.invoke(bean, toGenericType(value, mutator.getGenericParameterTypes()[0]));
             } catch (Exception exception) {
                 i++;
             }
@@ -548,13 +548,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <T> T coerce(Object value, Class<T> rawType, Type... actualTypeArguments) {
-        return (T)coerce(value, typeOf(rawType, actualTypeArguments));
+        return (T)toGenericType(value, typeOf(rawType, actualTypeArguments));
     }
 
     @SuppressWarnings("unchecked")
-    private static Object coerce(Object value, Type type) {
+    private static Object toGenericType(Object value, Type type) {
         if (type instanceof Class<?>) {
-            return coerceValue(value, (Class<?>)type);
+            return toRawType(value, (Class<?>)type);
         } else if (type instanceof ParameterizedType) {
             var parameterizedType = (ParameterizedType)type;
 
@@ -570,7 +570,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var elementType = actualTypeArguments[0];
 
                     return list.stream()
-                        .map(element -> coerce(element, elementType))
+                        .map(element -> toGenericType(element, elementType))
                         .collect(Collectors.toCollection(() -> new ArrayList<>(list.size())));
                 } else {
                     throw new IllegalArgumentException("Value is not a list.");
@@ -585,7 +585,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var map = new LinkedHashMap<>();
 
                     for (var entry : ((Map<?, ?>)value).entrySet()) {
-                        map.put(coerce(entry.getKey(), keyType), coerce(entry.getValue(), valueType));
+                        map.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
                     }
 
                     return map;
@@ -600,7 +600,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object coerceValue(Object value, Class<?> type) {
+    private static Object toRawType(Object value, Class<?> type) {
         if (type.isInstance(value)) {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
