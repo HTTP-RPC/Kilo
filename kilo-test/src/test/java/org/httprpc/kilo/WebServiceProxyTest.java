@@ -173,8 +173,9 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGet() throws IOException {
-        var result = WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+        var result = (Map<String, ?>)WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -188,7 +189,7 @@ public class WebServiceProxyTest {
             entry("duration", duration),
             entry("period", period),
             entry("uuid", uuid)
-        )).setMonitorStream(System.out).invoke(Map.class, String.class, Object.class);
+        )).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -208,13 +209,14 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetKeys() throws IOException {
-        var result = WebServiceProxy.get(baseURL, "test/a/%d/b/%s/c/%d/d/%s",
+        var result = (Map<String, ?>)WebServiceProxy.get(baseURL, "test/a/%d/b/%s/c/%d/d/%s",
             123,
             URLEncoder.encode("héllo", StandardCharsets.UTF_8),
             456,
             URLEncoder.encode("göodbye", StandardCharsets.UTF_8)
-        ).setMonitorStream(System.out).invoke(Map.class, String.class, Object.class);
+        ).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("list", listOf("123", "héllo", "456", "göodbye")),
@@ -228,19 +230,21 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetFibonacci() throws IOException {
-        var result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+        var result = (List<Number>)WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
             mapOf(
                 entry("count", 8)
             )
-        ).setMonitorStream(System.out).invoke(List.class, Number.class);
+        ).setMonitorStream(System.out).invoke();
 
         assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.coerce(result, List.class, Integer.class));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testURLEncodedPost() throws IOException {
-        var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        var result = (Map<String, ?>)WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -254,7 +258,7 @@ public class WebServiceProxyTest {
             entry("duration", duration),
             entry("period", period),
             entry("uuid", uuid)
-        )).invoke(Map.class, String.class, Object.class);
+        )).invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -321,7 +325,7 @@ public class WebServiceProxyTest {
     public void testListPost() throws IOException {
         var body = listOf(1, 2, 3);
 
-        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke(Object.class);
+        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke();
 
         assertEquals(BeanAdapter.coerce(body, List.class, String.class), result);
     }
@@ -419,11 +423,12 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHeaders() throws IOException {
-        var result = WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
+        var result = (Map<String, ?>)WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
             entry("X-Header-A", "abc"),
             entry("X-Header-B", 123)
-        )).invoke(Map.class, String.class, Object.class);
+        )).invoke();
 
         assertEquals(mapOf(
             entry("X-Header-A", "abc"),
@@ -662,7 +667,7 @@ public class WebServiceProxyTest {
         )).setArguments(mapOf(
             entry("owner", "Gwen"),
             entry("stream", stream)
-        )).invoke(Object.class);
+        )).invoke();
 
         assertEquals(expected, actual);
     }
@@ -727,7 +732,7 @@ public class WebServiceProxyTest {
             )
         ).setArguments(mapOf(
             entry("api", "json")
-        )).setMonitorStream(System.out).invoke(Object.class);
+        )).setMonitorStream(System.out).invoke();
 
         assertEquals(expected, actual);
     }
