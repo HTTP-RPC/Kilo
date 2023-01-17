@@ -98,6 +98,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testOnDuplicateKeyUpdate() {
+        var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
+            entry("a", 1),
+            entry("b", true),
+            entry("c", "hello")
+        )).onDuplicateKeyUpdate("b", "c");
+
+        assertEquals("insert into A (a, b, c) values (1, true, 'hello') on duplicate key update b = value(b), c = value(c)", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update("A").set(mapOf(
             entry("a", 1),

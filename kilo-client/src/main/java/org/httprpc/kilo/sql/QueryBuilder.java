@@ -628,6 +628,38 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends an "on duplicate key update" clause to a query.
+     *
+     * @param columns
+     * The columns to update.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder onDuplicateKeyUpdate(String... columns) {
+        if (columns == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" on duplicate key update ");
+
+        for (var i = 0; i < columns.length; i++) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            var column = columns[i];
+
+            sqlBuilder.append(column);
+            sqlBuilder.append(" = value(");
+            sqlBuilder.append(column);
+            sqlBuilder.append(")");
+        }
+
+        return this;
+    }
+
+    /**
      * Creates an "update" query.
      *
      * @param table
