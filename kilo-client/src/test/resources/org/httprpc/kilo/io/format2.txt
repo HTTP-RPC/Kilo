@@ -6,4 +6,7 @@
 {{instant:format=isoDateTime}},
 {{localDate:format=shortDate}},
 {{localTime:format=shortTime}},
-{{localDateTime:format=shortDateTime}}
+{{localDateTime:format=shortDateTime}},
+{{localDate:format=longDate}},
+{{localTime:format=longTime}},
+{{localDateTime:format=longDateTime}}

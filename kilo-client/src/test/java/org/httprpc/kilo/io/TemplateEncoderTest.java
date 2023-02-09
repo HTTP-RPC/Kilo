@@ -432,6 +432,11 @@ public class TemplateEncoderTest {
         var localTime = LocalTime.now();
         var localDateTime = LocalDateTime.now();
 
+        var zoneId = ZoneId.systemDefault();
+
+        var zonedLocalDate = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
+        var zonedLocalTime = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
+        var zonedLocalDateTime = ZonedDateTime.of(localDateTime, zoneId);
 
         var writer = new StringWriter();
 
@@ -452,9 +457,12 @@ public class TemplateEncoderTest {
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
             + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + ",\n"
             + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + ",\n"
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(localDate) + ",\n"
-            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(localTime) + ",\n"
-            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime), writer.toString());
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDateTime.of(localDate, LocalTime.MIDNIGHT)) + ",\n"
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(LocalDateTime.of(LocalDate.now(), localTime)) + ",\n"
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime) + ",\n"
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(zonedLocalDate) + ",\n"
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).format(zonedLocalTime) + ",\n"
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(zonedLocalDateTime), writer.toString());
     }
 
     @Test

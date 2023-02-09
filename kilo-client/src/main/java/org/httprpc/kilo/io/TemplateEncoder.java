@@ -25,6 +25,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -194,11 +197,23 @@ public class TemplateEncoder extends Encoder<Object> {
                 value = ((Date)value).toInstant();
             }
 
+            TemporalAccessor temporalAccessor;
             if (value instanceof Instant) {
-                value = ZonedDateTime.ofInstant((Instant)value, timeZone.toZoneId());
-            }
+                temporalAccessor = ZonedDateTime.ofInstant((Instant)value, timeZone.toZoneId());
+            } else {
+                LocalDateTime localDateTime;
+                if (value instanceof LocalDate) {
+                    localDateTime = LocalDateTime.of((LocalDate)value, LocalTime.MIDNIGHT);
+                } else if (value instanceof LocalTime) {
+                    localDateTime = LocalDateTime.of(LocalDate.now(), (LocalTime)value);
+                } else if (value instanceof LocalDateTime) {
+                    localDateTime = (LocalDateTime)value;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
 
-            var temporalAccessor = (TemporalAccessor)value;
+                temporalAccessor = ZonedDateTime.of(localDateTime, timeZone.toZoneId());
+            }
 
             switch (dateTimeType) {
                 case DATE: {
