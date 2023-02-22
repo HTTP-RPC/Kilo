@@ -1013,7 +1013,15 @@ public class QueryBuilder {
     }
 
     private void encode(Object value) {
-        if (value instanceof String) {
+        if (value instanceof QueryBuilder) {
+            var queryBuilder = (QueryBuilder)value;
+
+            sqlBuilder.append("(");
+            sqlBuilder.append(queryBuilder.getSQL());
+            sqlBuilder.append(")");
+
+            parameters.addAll(queryBuilder.parameters);
+        } else if (value instanceof String) {
             var string = (String)value;
 
             if (string.startsWith(":") || string.equals("?")) {
@@ -1033,14 +1041,6 @@ public class QueryBuilder {
 
                 sqlBuilder.append("'");
             }
-        } else if (value instanceof QueryBuilder) {
-            var queryBuilder = (QueryBuilder)value;
-
-            sqlBuilder.append("(");
-            sqlBuilder.append(queryBuilder.getSQL());
-            sqlBuilder.append(")");
-
-            parameters.addAll(queryBuilder.parameters);
         } else {
             sqlBuilder.append(value);
         }
