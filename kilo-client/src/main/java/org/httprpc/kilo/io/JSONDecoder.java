@@ -145,7 +145,7 @@ public class JSONDecoder extends Decoder<Object> {
 
                     c = reader.read();
                 } else {
-                    throw new IOException("Unexpected character.");
+                    throw new IOException(String.format("Unexpected character (0x%04X).", c));
                 }
 
                 // Add the value to the current container
