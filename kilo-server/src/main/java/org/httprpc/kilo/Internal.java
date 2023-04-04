@@ -20,9 +20,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a value is required.
+ * Indicates that a service type or method is for internal use only.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.PARAMETER})
-public @interface Required {
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Internal {
 }

@@ -14,8 +14,12 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Internal;
 import org.httprpc.kilo.Keys;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -24,9 +28,6 @@ import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.beans.Key;
 
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -337,6 +338,13 @@ public class TestService extends WebService {
             entry("X-Header-A", request.getHeader("X-Header-A")),
             entry("X-Header-B", request.getHeader("X-Header-B"))
         );
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("internal")
+    @Internal
+    public void testInternal() {
+        // No-op
     }
 
     @RequestMethod("GET")
