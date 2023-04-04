@@ -131,7 +131,7 @@ Unspecified values are automatically converted to `0` or `false` for primitive t
 
 `URL` and `List<URL>` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) service example for more information.
 
-If a provided value cannot be coerced to the expected type, an HTTP 400 (bad request) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
+If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
@@ -148,7 +148,7 @@ public long uploadFile(
 }
 ```
 
-`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 400 will be returned if a required value is not provided.
+`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 403 will be returned if a required parameter is not provided.
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:

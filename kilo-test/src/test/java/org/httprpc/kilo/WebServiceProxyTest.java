@@ -258,7 +258,7 @@ public class WebServiceProxyTest {
             entry("duration", duration),
             entry("period", period),
             entry("uuid", uuid)
-        )).invoke();
+        )).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -428,7 +428,7 @@ public class WebServiceProxyTest {
         var result = (Map<String, ?>)WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
             entry("X-Header-A", "abc"),
             entry("X-Header-B", 123)
-        )).invoke();
+        )).setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("X-Header-A", "abc"),
@@ -463,12 +463,13 @@ public class WebServiceProxyTest {
     public void testInvalidNumberArgument() throws IOException {
         try {
             WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("string", "abc"),
                 entry("number", "x")
-            )).invoke();
+            )).setMonitorStream(System.out).invoke();
 
             fail();
         } catch (WebServiceException exception) {
-            assertEquals(400, exception.getStatusCode());
+            assertEquals(403, exception.getStatusCode());
         }
     }
 
@@ -476,12 +477,13 @@ public class WebServiceProxyTest {
     public void testInvalidDayOfWeekArgument() throws IOException {
         try {
             WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("string", "abc"),
                 entry("dayOfWeek", "y")
-            )).invoke();
+            )).setMonitorStream(System.out).invoke();
 
             fail();
         } catch (WebServiceException exception) {
-            assertEquals(400, exception.getStatusCode());
+            assertEquals(403, exception.getStatusCode());
         }
     }
 
@@ -489,12 +491,13 @@ public class WebServiceProxyTest {
     public void testInvalidLocalDateArgument() throws IOException {
         try {
             WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+                entry("string", "abc"),
                 entry("localDate", "z")
-            )).invoke();
+            )).setMonitorStream(System.out).invoke();
 
             fail();
         } catch (WebServiceException exception) {
-            assertEquals(400, exception.getStatusCode());
+            assertEquals(403, exception.getStatusCode());
         }
     }
 
@@ -508,7 +511,7 @@ public class WebServiceProxyTest {
             fail();
         } catch (WebServiceException exception) {
             assertNotNull(exception.getMessage());
-            assertEquals(400, exception.getStatusCode());
+            assertEquals(403, exception.getStatusCode());
         }
     }
 

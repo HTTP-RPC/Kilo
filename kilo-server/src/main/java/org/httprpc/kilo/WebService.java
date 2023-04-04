@@ -14,16 +14,15 @@
 
 package org.httprpc.kilo;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.JSONDecoder;
-import org.httprpc.kilo.io.JSONEncoder;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONDecoder;
+import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.util.Optionals;
 import org.httprpc.kilo.util.ResourceBundleAdapter;
@@ -990,7 +989,7 @@ public abstract class WebService extends HttpServlet {
         try {
             arguments = getArguments(handler.method, parameterMap);
         } catch (Exception exception) {
-            sendError(response, HttpServletResponse.SC_BAD_REQUEST, exception);
+            sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
         }
 
