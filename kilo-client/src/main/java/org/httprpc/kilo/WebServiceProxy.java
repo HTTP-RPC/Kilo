@@ -704,6 +704,12 @@ public class WebServiceProxy {
             connection.setRequestProperty(key, value.toString());
         }
 
+        if (monitorStream != null) {
+            for (var entry : connection.getRequestProperties().entrySet()) {
+                monitorStream.println(String.format("%s: %s", entry.getKey(), String.join(", ", entry.getValue())));
+            }
+        }
+
         // Write request body
         if (requestHandler != null) {
             connection.setDoOutput(true);
@@ -731,6 +737,16 @@ public class WebServiceProxy {
 
         if (monitorStream != null) {
             monitorStream.println(String.format("HTTP %d", statusCode));
+
+            for (var entry : connection.getHeaderFields().entrySet()) {
+                var key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                monitorStream.println(String.format("%s: %s", key, String.join(", ", entry.getValue())));
+            }
         }
 
         var contentType = connection.getContentType();

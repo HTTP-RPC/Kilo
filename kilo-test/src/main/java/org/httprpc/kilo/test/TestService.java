@@ -80,7 +80,6 @@ public class TestService extends WebService {
     public interface AttachmentInfo {
         int getBytes();
         int getChecksum();
-        URL getAttachment();
     }
 
     public interface A {
@@ -262,8 +261,7 @@ public class TestService extends WebService {
 
             attachmentInfo.add(mapOf(
                 entry("bytes", bytes),
-                entry("checksum", checksum),
-                entry("attachment", attachment)
+                entry("checksum", checksum)
             ));
         }
 
