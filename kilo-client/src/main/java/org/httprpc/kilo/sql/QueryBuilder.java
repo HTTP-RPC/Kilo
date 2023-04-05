@@ -84,7 +84,7 @@ public class QueryBuilder {
 
         for (var i = 0; i < columns.length; i++) {
             if (i > 0) {
-                queryBuilder.sqlBuilder.append(", ");
+                sqlBuilder.append(", ");
             }
 
             queryBuilder.append(columns[i]);
@@ -735,6 +735,51 @@ public class QueryBuilder {
         sqlBuilder.append(table);
 
         return new QueryBuilder(sqlBuilder);
+    }
+
+    /**
+     * Prepends a "with" clause.
+     *
+     * @param queryBuilders
+     * The subclauses.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder with(Map<String, QueryBuilder> queryBuilders) {
+        if (queryBuilders == null || queryBuilders.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        var sqlBuilder = new StringBuilder();
+
+        sqlBuilder.append("with ");
+
+        var i = 0;
+
+        for (var entry : queryBuilders.entrySet()) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(entry.getKey());
+            sqlBuilder.append(" as (");
+
+            var queryBuilder = entry.getValue();
+
+            sqlBuilder.append(queryBuilder.getSQL());
+            sqlBuilder.append(")");
+
+            parameters.addAll(queryBuilder.parameters);
+
+            i++;
+        }
+
+        sqlBuilder.append(" ");
+
+        this.sqlBuilder.insert(0, sqlBuilder);
+
+        return this;
     }
 
     /**

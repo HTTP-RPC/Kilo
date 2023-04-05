@@ -136,10 +136,27 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testDelete() {
+    public void testDeleteFrom() {
         var queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
 
         assertEquals("delete from A where a < 150", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testWith() {
+        var queryBuilder = QueryBuilder.select("b", "d").from("cte1").join("cte2")
+            .where("cte1.a = cte2.c")
+            .with(mapOf(
+                entry("cte1", QueryBuilder.select("a", ":b as b").from("table1")),
+                entry("cte2", QueryBuilder.select("c", ":d as d").from("table2"))
+            ));
+
+        assertEquals(listOf("b", "d"), queryBuilder.getParameters());
+
+        assertEquals("with cte1 as (select a, ? as b from table1), "
+            + "cte2 as (select c, ? as d from table2) "
+            + "select b, d from cte1 join cte2 "
+            + "where cte1.a = cte2.c", queryBuilder.getSQL());
     }
 
     @Test
