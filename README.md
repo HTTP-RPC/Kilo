@@ -346,9 +346,7 @@ public void updateItem() throws SQLException {
 ```
 
 #### Internal/Deprecated Methods
-Service types or methods that are not considered public can be tagged with the `Internal` annotation. This designation will be reflected in the generated documentation.
-
-Additionally, if a service type or method is tagged with the `Deprecated` annotation, it will be identified as such in the output.
+Service types or methods that are not considered public can be tagged with the `Internal` annotation. This designation will be reflected in the generated documentation. Service types or methods tagged with the `Deprecated` annotation will also be identified as such in the output.
 
 #### Service Index
 An index of all active services can be enabled by declaring an instance of `org.httprpc.kilo.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
