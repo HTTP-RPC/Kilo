@@ -1060,7 +1060,7 @@ QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), m
 ));
 ```
 
-If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses.
+If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses. List values provided to these methods are considered "options" and are reduced to a single value via `coalesce()`.
 
 See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 

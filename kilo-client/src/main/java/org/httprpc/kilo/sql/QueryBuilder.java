@@ -660,6 +660,40 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends an "on duplicate key update" clause to a query.
+     *
+     * @param values
+     * The values to update.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder onDuplicateKeyUpdate(Map<String, ?> values) {
+        if (values == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" on duplicate key update ");
+
+        var i = 0;
+
+        for (var entry : values.entrySet()) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(entry.getKey());
+            sqlBuilder.append(" = ");
+
+            encode(entry.getValue());
+
+            i++;
+        }
+
+        return this;
+    }
+
+    /**
      * Creates an "update" query.
      *
      * @param table
@@ -1058,7 +1092,27 @@ public class QueryBuilder {
     }
 
     private void encode(Object value) {
-        if (value instanceof QueryBuilder) {
+        if (value instanceof String) {
+            append((String)value);
+        } else if (value instanceof List<?>) {
+            var list = (List<?>)value;
+
+            sqlBuilder.append("coalesce(");
+
+            var i = 0;
+
+            for (var element : list) {
+                if (i > 0) {
+                    sqlBuilder.append(", ");
+                }
+
+                encode(element);
+
+                i++;
+            }
+
+            sqlBuilder.append(")");
+        } else if (value instanceof QueryBuilder) {
             var queryBuilder = (QueryBuilder)value;
 
             sqlBuilder.append("(");
@@ -1066,26 +1120,6 @@ public class QueryBuilder {
             sqlBuilder.append(")");
 
             parameters.addAll(queryBuilder.parameters);
-        } else if (value instanceof String) {
-            var string = (String)value;
-
-            if (string.startsWith(":") || string.equals("?")) {
-                append(string);
-            } else {
-                sqlBuilder.append("'");
-
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    var c = string.charAt(i);
-
-                    if (c == '\'') {
-                        sqlBuilder.append(c);
-                    }
-
-                    sqlBuilder.append(c);
-                }
-
-                sqlBuilder.append("'");
-            }
         } else {
             sqlBuilder.append(value);
         }

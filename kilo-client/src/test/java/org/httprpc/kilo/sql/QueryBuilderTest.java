@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class QueryBuilderTest {
     @Test
     public void testSelect() {
-        var queryBuilder = QueryBuilder.select(":a as a", "b", "c", "d")
+        var queryBuilder = QueryBuilder.select(":a as a", "'b' as b", "c", "d")
             .from("A")
             .join("B").on("A.id = B.id", and("x = 50"))
             .leftJoin("C").on("B.id = C.id", and("b = :b"))
@@ -48,7 +48,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("a", "b", "c", null, "c"), queryBuilder.getParameters());
 
-        assertEquals("select ? as a, b, c, d from A "
+        assertEquals("select ? as a, 'b' as b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "
@@ -86,7 +86,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
             entry("b", true),
-            entry("c", "hello"),
+            entry("c", "'hello'"),
             entry("d", ":d"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
@@ -98,14 +98,32 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testOnDuplicateKeyUpdate() {
+    public void testOnDuplicateKeyUpdate1() {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
             entry("b", true),
-            entry("c", "hello")
+            entry("c", ":c")
         )).onDuplicateKeyUpdate("b", "c");
 
-        assertEquals("insert into A (a, b, c) values (1, true, 'hello') on duplicate key update b = value(b), c = value(c)", queryBuilder.getSQL());
+        assertEquals(listOf("c"), queryBuilder.getParameters());
+
+        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = value(b), c = value(c)", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testOnDuplicateKeyUpdate2() {
+        var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
+            entry("a", 1),
+            entry("b", true),
+            entry("c", ":c")
+        )).onDuplicateKeyUpdate(mapOf(
+            entry("b", false),
+            entry("c", ":d")
+        ));
+
+        assertEquals(listOf("c", "d"), queryBuilder.getParameters());
+
+        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = false, c = ?", queryBuilder.getSQL());
     }
 
     @Test
@@ -113,7 +131,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.update("A").set(mapOf(
             entry("a", 1),
             entry("b", true),
-            entry("c", "hello"),
+            entry("c", "'hello'"),
             entry("d", ":d"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
@@ -157,6 +175,32 @@ public class QueryBuilderTest {
             + "cte2 as (select c, ? as d from table2) "
             + "select b, d from cte1 join cte2 "
             + "where cte1.a = cte2.c", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testCoalesceWithInsert() {
+        var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
+            entry("a", 1),
+            entry("b", listOf(":b", 0)),
+            entry("c", listOf(":c", "c"))
+        ));
+
+        assertEquals(listOf("b", "c"), queryBuilder.getParameters());
+
+        assertEquals("insert into A (a, b, c) values (1, coalesce(?, 0), coalesce(?, c))", queryBuilder.getSQL());
+    }
+
+    @Test
+    public void testCoalesceWithUpdate() {
+        var queryBuilder = QueryBuilder.update("A").set(mapOf(
+            entry("a", 1),
+            entry("b", listOf(":b", 0)),
+            entry("c", listOf(":c", "c"))
+        ));
+
+        assertEquals(listOf("b", "c"), queryBuilder.getParameters());
+
+        assertEquals("update A set a = 1, b = coalesce(?, 0), c = coalesce(?, c)", queryBuilder.getSQL());
     }
 
     @Test
