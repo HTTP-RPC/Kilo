@@ -42,6 +42,8 @@ public class QueryBuilder {
     private int updateCount = -1;
     private List<Object> generatedKeys = null;
 
+    private static final int CAPACITY = 1024;
+
     /**
      * Constructs a query builder from an existing SQL query.
      *
@@ -53,7 +55,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        sqlBuilder = new StringBuilder();
+        sqlBuilder = new StringBuilder(CAPACITY);
 
         append(sql);
     }
@@ -76,7 +78,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder(CAPACITY);
 
         sqlBuilder.append("select ");
 
@@ -576,7 +578,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder(CAPACITY);
 
         sqlBuilder.append("insert into ");
         sqlBuilder.append(table);
@@ -707,7 +709,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder(CAPACITY);
 
         sqlBuilder.append("update ");
         sqlBuilder.append(table);
@@ -763,7 +765,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder(CAPACITY);
 
         sqlBuilder.append("delete from ");
         sqlBuilder.append(table);
@@ -785,7 +787,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder();
+        var sqlBuilder = new StringBuilder(CAPACITY);
 
         sqlBuilder.append("with ");
 
@@ -1131,7 +1133,7 @@ public class QueryBuilder {
      */
     @Override
     public String toString() {
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(CAPACITY);
 
         var parameterIterator = parameters.iterator();
 
