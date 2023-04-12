@@ -14,8 +14,9 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Required;
+import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
@@ -25,7 +26,6 @@ import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.sql.ResultSetAdapter;
 import org.httprpc.kilo.util.ResourceBundleAdapter;
 
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -39,15 +39,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends AbstractDatabaseService {
-    public interface Pet {
-        String getName();
-        String getOwner();
-        String getSpecies();
-        String getSex();
-        Date getBirth();
-        Date getDeath();
-    }
-
     private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_CSV = "text/csv";
     private static final String TEXT_HTML = "text/html";

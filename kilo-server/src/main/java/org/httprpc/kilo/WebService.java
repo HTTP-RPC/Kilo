@@ -78,8 +78,8 @@ public abstract class WebService extends HttpServlet {
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
 
-        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
-        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(Class::getSimpleName));
+        private Map<Class<?>, EnumerationDescriptor> enumerations = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
+        private Map<Class<?>, StructureDescriptor> structures = new TreeMap<>(Comparator.comparing(WebService::getTypeName));
 
         private ServiceDescriptor(String path, Class<? extends WebService> type) {
             this.path = path;
@@ -367,7 +367,7 @@ public abstract class WebService extends HttpServlet {
         private List<ConstantDescriptor> values = new LinkedList<>();
 
         private EnumerationDescriptor(Class<?> type) {
-            name = type.getSimpleName();
+            name = getTypeName(type);
 
             description = Optionals.map(type.getAnnotation(Description.class), Description::value);
         }
@@ -455,7 +455,7 @@ public abstract class WebService extends HttpServlet {
         private List<VariableDescriptor> properties = new LinkedList<>();
 
         private StructureDescriptor(Class<?> type) {
-            name = type.getSimpleName();
+            name = getTypeName(type);
 
             description = Optionals.map(type.getAnnotation(Description.class), Description::value);
         }
@@ -523,7 +523,7 @@ public abstract class WebService extends HttpServlet {
             if (type.isPrimitive()) {
                 return type.getName();
             } else {
-                return type.getSimpleName();
+                return getTypeName(type);
             }
         }
 
@@ -1527,5 +1527,9 @@ public abstract class WebService extends HttpServlet {
 
             return new TypeDescriptor(type, false);
         }
+    }
+
+    private static String getTypeName(Class<?> type) {
+        return type.getCanonicalName().substring(type.getPackageName().length() + 1);
     }
 }

@@ -14,13 +14,10 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.WebService;
-
-import jakarta.servlet.annotation.WebServlet;
-
-import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.listOf;
 
@@ -30,27 +27,6 @@ import static org.httprpc.kilo.util.Collections.listOf;
 @WebServlet(urlPatterns = {"/tree/*"}, loadOnStartup = 1)
 @Description("Tree example service.")
 public class TreeService extends WebService {
-    @Description("Represents a node in the tree.")
-    public static class TreeNode {
-        private String name;
-        private List<TreeNode> children;
-
-        public TreeNode(String name, List<TreeNode> children) {
-            this.name = name;
-            this.children = children;
-        }
-
-        @Description("The tree node's name.")
-        public String getName() {
-            return name;
-        }
-
-        @Description("The tree node's children.")
-        public List<TreeNode> getChildren() {
-            return children;
-        }
-    }
-
     @RequestMethod("GET")
     @Description("Returns an example tree structure.")
     public TreeNode getTree() {

@@ -14,17 +14,14 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Keys;
-import org.httprpc.kilo.Required;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.beans.Key;
-
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.sql.SQLException;
@@ -37,31 +34,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
 @Description("Catalog example service.")
 public class CatalogService extends AbstractDatabaseService {
-    @Description("Represents an item in the catalog.")
-    public interface Item {
-        @Key("id")
-        @Description("The item's ID.")
-        Integer getID();
-
-        @Description("The item's description.")
-        @Required
-        String getDescription();
-
-        @Description("The item's price.")
-        @Required
-        Double getPrice();
-    }
-
-    @Description("Represents a size option.")
-    public enum Size {
-        @Description("A small size.")
-        SMALL,
-        @Description("A medium size.")
-        MEDIUM,
-        @Description("A large size.")
-        LARGE
-    }
-
     @RequestMethod("GET")
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
