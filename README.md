@@ -1205,7 +1205,7 @@ public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) 
 
 These provide a slightly more readable alternative to `java.util.Collections.<Integer>emptyList()` and `java.util.Collections.<String, Integer>emptyMap()`, respectively.
 
-The following methods can be used to identify the index of the first or last element in a list that matches a given predicate:
+The following `Collections` methods can be used to identify the index of the first or last element in a list that matches a given predicate:
 
 ```
 public static <E> int firstIndexWhere(List<E> list, Predicate<E> predicate) { ... }
@@ -1233,7 +1233,7 @@ public static <T> T coalesce(T... values) { ... }
 public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { ... }
 ```
 
-These methods are provided as a less verbose alternative to similar methods defined by the `Optional` class. For example:
+These methods are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class. For example:
 
 ```java
 String a = null;
