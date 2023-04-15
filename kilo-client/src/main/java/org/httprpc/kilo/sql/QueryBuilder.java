@@ -1059,6 +1059,28 @@ public class QueryBuilder {
         return statement.executeUpdate();
     }
 
+    /**
+     * Appends a set of arguments to a prepared statement.
+     *
+     * @param statement
+     * The prepared statement.
+     *
+     * @param arguments
+     * The batch arguments.
+     *
+     * @throws SQLException
+     * If an error occurs while adding the batch.
+     */
+    public void addBatch(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+        if (statement == null || arguments == null) {
+            throw new IllegalArgumentException();
+        }
+
+        apply(statement, arguments);
+
+        statement.addBatch();
+    }
+
     private void apply(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
         var i = 1;
 
