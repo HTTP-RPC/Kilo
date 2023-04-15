@@ -96,7 +96,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "from" clause to a query.
+     * Appends a "from" clause to a "select" query.
      *
      * @param tables
      * The table names.
@@ -116,7 +116,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "from" clause to a query.
+     * Appends a "from" clause to a "select" query.
      *
      * @param queryBuilder
      * A "select" subquery.
@@ -138,6 +138,49 @@ public class QueryBuilder {
         sqlBuilder.append(alias);
 
         parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
+     * Prepends an "insert into" statement to a "select" query.
+     *
+     * @param table
+     * The table name.
+     *
+     * @param columns
+     * The column names.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder into(String table, String... columns) {
+        if (table == null || columns == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var stringBuilder = new StringBuilder();
+
+        stringBuilder.append("insert into ");
+        stringBuilder.append(table);
+
+        if (columns.length > 0) {
+            stringBuilder.append(" (");
+
+            for (var i = 0; i < columns.length; i++) {
+                if (i > 0) {
+                    stringBuilder.append(", ");
+                }
+
+                stringBuilder.append(columns[i]);
+            }
+
+            stringBuilder.append(")");
+        }
+
+        stringBuilder.append(" ");
+
+        sqlBuilder.insert(0, stringBuilder);
 
         return this;
     }

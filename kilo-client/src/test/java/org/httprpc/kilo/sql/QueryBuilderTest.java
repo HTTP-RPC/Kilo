@@ -98,6 +98,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectInto() {
+        var queryBuilder = QueryBuilder.select("a, b").from("A")
+            .where("a = :a", and("b = :b"))
+            .into("B", "c", "d");
+
+        assertEquals(listOf("a", "b"), queryBuilder.getParameters());
+
+        assertEquals("insert into B (c, d) select a, b from A where a = ? and b = ?", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testOnDuplicateKeyUpdate1() {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
