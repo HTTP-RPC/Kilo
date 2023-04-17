@@ -26,9 +26,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Key {
     /**
-     * Specifies the name of the custom property.
-     *
-     * @return
      * The custom property name.
      */
     String value();

@@ -31,9 +31,6 @@ public @interface ResourcePath {
     String PATH_VARIABLE_PREFIX = "?";
 
     /**
-     * Specifies the resource path associated with the method.
-     *
-     * @return
      * The method's resource path.
      */
     String value();

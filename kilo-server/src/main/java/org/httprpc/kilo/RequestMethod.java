@@ -26,9 +26,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RequestMethod {
     /**
-     * Specifies the HTTP verb associated with the method.
-     *
-     * @return
      * The method's HTTP verb.
      */
     String value();

@@ -26,20 +26,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Content {
     /**
-     * Specifies the type of the content.
-     *
-     * @return
-     * The content type.
+     * The body content type.
      */
     Class<?> type();
 
     /**
-     * Indicates that the body is expected to contain a list of values of the
-     * given type.
-     *
-     * @return
-     * {@code true} if the body will contain a list of values of the given
-     * type; {@code false}, if the body will contain a single value.
+     * Indicates that the body will contain a list of values of the given type.
      */
     boolean multiple() default false;
 }

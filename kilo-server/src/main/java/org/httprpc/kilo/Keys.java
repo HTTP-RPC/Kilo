@@ -26,11 +26,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Keys {
     /**
-     * Provides descriptions of the endpoint's keys.
-     *
-     * @return
-     * The endpoint's key descriptions, in the order in which the keys are
-     * declared.
+     * The key descriptions, in declaration order.
      */
     String[] value() default {};
 }
