@@ -82,6 +82,15 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testGroupBy() {
+        var queryBuilder = QueryBuilder.select("a", "avg(b) as c").from("A").groupBy("b").having("d > 10", and("e like :e"));
+
+        assertEquals(listOf("e"), queryBuilder.getParameters());
+
+        assertEquals("select a, avg(b) as c from A group by b having d > 10 and e like ?", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testInsertInto() {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),

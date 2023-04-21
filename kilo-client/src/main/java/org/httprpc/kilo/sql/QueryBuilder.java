@@ -298,6 +298,39 @@ public class QueryBuilder {
         return filter("where", predicates);
     }
 
+    /**
+     * Appends a "group by" clause to a query.
+     *
+     * @param columns
+     * The column names.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder groupBy(String... columns) {
+        if (columns == null || columns.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" group by ");
+        sqlBuilder.append(String.join(", ", columns));
+
+        return this;
+    }
+
+    /**
+     * Appends a "having" clause to a query.
+     *
+     * @param predicates
+     * The clause predicates.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder having(String... predicates) {
+        return filter("having", predicates);
+    }
+
     private QueryBuilder filter(String clause, String... predicates) {
         if (predicates == null) {
             throw new IllegalArgumentException();
