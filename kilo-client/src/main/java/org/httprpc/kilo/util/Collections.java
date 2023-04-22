@@ -231,24 +231,43 @@ public class Collections {
         return valueAt(root, new LinkedList<>(Arrays.asList(path)));
     }
 
-    private static Object valueAt(Object root, List<?> path) {
+    /**
+     * Returns the value at a given path.
+     *
+     * @param root
+     * The root object.
+     *
+     * @param path
+     * The path to the value.
+     *
+     * @return
+     * The value at the given path, or {@code null} if the value does not
+     * exist.
+     */
+    public static Object valueAt(Object root, List<?> path) {
         if (root == null) {
             return null;
-        } else if (path.isEmpty()) {
-            return root;
         } else {
-            var component = path.remove(0);
-
-            Object value;
-            if (root instanceof List<?> && component instanceof Number) {
-                value = ((List<?>)root).get(((Number)component).intValue());
-            } else if (root instanceof Map<?, ?>) {
-                value = ((Map<?, ?>)root).get(component);
-            } else {
+            if (path == null) {
                 throw new IllegalArgumentException();
             }
 
-            return valueAt(value, path);
+            if (path.isEmpty()) {
+                return root;
+            } else {
+                var component = path.remove(0);
+
+                Object value;
+                if (root instanceof List<?> && component instanceof Number) {
+                    value = ((List<?>)root).get(((Number)component).intValue());
+                } else if (root instanceof Map<?, ?>) {
+                    value = ((Map<?, ?>)root).get(component);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+
+                return valueAt(value, path);
+            }
         }
     }
 }
