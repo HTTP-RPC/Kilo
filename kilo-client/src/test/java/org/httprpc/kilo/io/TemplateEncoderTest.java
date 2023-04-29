@@ -101,7 +101,18 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testConditionalSection2() throws IOException {
+    public void testConditionalSection2a() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write(mapOf(entry("a", listOf(1))), writer);
+
+        assertEquals("found", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSection2b() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 
         var writer = new StringWriter();
@@ -112,7 +123,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testConditionalSection3() throws IOException {
+    public void testConditionalSection3a() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 
         var writer = new StringWriter();
@@ -123,7 +134,29 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testConditionalSection4() throws IOException {
+    public void testConditionalSection3b() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write(mapOf(entry("a", "")), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSection4a() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write(mapOf(entry("a", true)), writer);
+
+        assertEquals("found", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSection4b() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
 
         var writer = new StringWriter();

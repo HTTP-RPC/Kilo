@@ -657,6 +657,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             if (value != null
                                 && (!(value instanceof Boolean) || ((Boolean)value))
+                                && (!(value instanceof String) || !((String)value).isEmpty())
                                 && (!(value instanceof Iterable<?>) || ((Iterable<?>)value).iterator().hasNext())) {
                                 writeRoot(value, writer, locale, timeZone, reader);
                             } else {
