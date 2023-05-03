@@ -836,11 +836,13 @@ public class TemplateEncoder extends Encoder<Object> {
             return value;
         }
 
-        if (!(value instanceof Map<?, ?>)) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof Map<?, ?>) {
+            return valueAt((Map<?, ?>)value, path);
+        } else {
             throw new IllegalArgumentException("Value is not a map.");
         }
-
-        return valueAt((Map<?, ?>)value, path);
     }
 
     /**

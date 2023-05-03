@@ -590,7 +590,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvalidMapValue() {
+    public void testInvalidMapValue1() {
         var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
 
         Map<String, ?> root = mapOf(
@@ -598,6 +598,21 @@ public class TemplateEncoderTest {
         );
 
         assertThrows(IllegalArgumentException.class, () -> encoder.write(root, new StringWriter()));
+    }
+
+    @Test
+    public void testInvalidMapValue2() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
+
+        Map<String, ?> root = mapOf(
+            entry("a", null)
+        );
+
+        var writer = new StringWriter();
+
+        encoder.write(root, writer);
+
+        assertEquals("", writer.toString());
     }
 
     @Test
