@@ -361,7 +361,18 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvertedSection2() throws IOException {
+    public void testInvertedSection2a() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write(mapOf(entry("a", listOf(1))), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testInvertedSection2b() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
         var writer = new StringWriter();
@@ -372,7 +383,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvertedSection3() throws IOException {
+    public void testInvertedSection3a() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
         var writer = new StringWriter();
@@ -383,7 +394,18 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvertedSection4() throws IOException {
+    public void testInvertedSection3b() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write(mapOf(entry("a", "")), writer);
+
+        assertEquals("not found", writer.toString());
+    }
+
+    @Test
+    public void testInvertedSection4a() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
         var writer = new StringWriter();
@@ -394,7 +416,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvertedSection5() throws IOException {
+    public void testInvertedSection4b() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
 
         var writer = new StringWriter();
