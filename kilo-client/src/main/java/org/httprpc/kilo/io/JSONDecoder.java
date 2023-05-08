@@ -184,64 +184,60 @@ public class JSONDecoder extends Decoder<Object> {
             if (c == '\\') {
                 c = reader.read();
 
-                switch (c) {
-                    case 'b': {
-                        c = '\b';
-                        break;
-                    }
-
-                    case 'f': {
-                        c = '\f';
-                        break;
-                    }
-
-                    case 'r': {
-                        c = '\r';
-                        break;
-                    }
-
-                    case 'n': {
-                        c = '\n';
-                        break;
-                    }
-
-                    case 't': {
-                        c = '\t';
-                        break;
-                    }
-
-                    case 'u': {
-                        var characterBuilder = new StringBuilder();
-
-                        while (c != EOF && characterBuilder.length() < 4) {
-                            c = reader.read();
-
-                            characterBuilder.append((char)c);
+                if (c != '"' && c != '\\' && c != '/') {
+                    switch (c) {
+                        case 'b': {
+                            c = '\b';
+                            break;
                         }
 
-                        if (c == EOF) {
-                            throw new IOException("Incomplete Unicode escape sequence.");
+                        case 'f': {
+                            c = '\f';
+                            break;
                         }
 
-                        var unicodeValue = characterBuilder.toString();
+                        case 'r': {
+                            c = '\r';
+                            break;
+                        }
 
-                        c = (char)Integer.parseInt(unicodeValue, 16);
+                        case 'n': {
+                            c = '\n';
+                            break;
+                        }
 
-                        break;
-                    }
+                        case 't': {
+                            c = '\t';
+                            break;
+                        }
 
-                    case '"':
-                    case '\\':
-                    case '/': {
-                        break;
-                    }
+                        case 'u': {
+                            var characterBuilder = new StringBuilder();
 
-                    case EOF: {
-                        throw new IOException("Unterminated escape sequence.");
-                    }
+                            while (c != EOF && characterBuilder.length() < 4) {
+                                c = reader.read();
 
-                    default: {
-                        throw new IOException("Invalid escape sequence.");
+                                characterBuilder.append((char)c);
+                            }
+
+                            if (c == EOF) {
+                                throw new IOException("Incomplete Unicode escape sequence.");
+                            }
+
+                            var unicodeValue = characterBuilder.toString();
+
+                            c = (char)Integer.parseInt(unicodeValue, 16);
+
+                            break;
+                        }
+
+                        case EOF: {
+                            throw new IOException("Unterminated escape sequence.");
+                        }
+
+                        default: {
+                            throw new IOException("Invalid escape sequence.");
+                        }
                     }
                 }
             }
