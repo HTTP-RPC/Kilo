@@ -185,59 +185,36 @@ public class JSONDecoder extends Decoder<Object> {
                 c = reader.read();
 
                 if (c != '"' && c != '\\' && c != '/') {
-                    switch (c) {
-                        case 'b': {
-                            c = '\b';
-                            break;
+                    if (c == 'b') {
+                        c = '\b';
+                    } else if (c == 'f') {
+                        c = '\f';
+                    } else if (c == 'n') {
+                        c = '\n';
+                    } else if (c == 'r') {
+                        c = '\r';
+                    } else if (c == 't') {
+                        c = '\t';
+                    } else if (c == 'u') {
+                        var characterBuilder = new StringBuilder();
+
+                        while (c != EOF && characterBuilder.length() < 4) {
+                            c = reader.read();
+
+                            characterBuilder.append((char)c);
                         }
 
-                        case 'f': {
-                            c = '\f';
-                            break;
+                        if (c == EOF) {
+                            throw new IOException("Incomplete Unicode escape sequence.");
                         }
 
-                        case 'r': {
-                            c = '\r';
-                            break;
-                        }
+                        var unicodeValue = characterBuilder.toString();
 
-                        case 'n': {
-                            c = '\n';
-                            break;
-                        }
-
-                        case 't': {
-                            c = '\t';
-                            break;
-                        }
-
-                        case 'u': {
-                            var characterBuilder = new StringBuilder();
-
-                            while (c != EOF && characterBuilder.length() < 4) {
-                                c = reader.read();
-
-                                characterBuilder.append((char)c);
-                            }
-
-                            if (c == EOF) {
-                                throw new IOException("Incomplete Unicode escape sequence.");
-                            }
-
-                            var unicodeValue = characterBuilder.toString();
-
-                            c = (char)Integer.parseInt(unicodeValue, 16);
-
-                            break;
-                        }
-
-                        case EOF: {
-                            throw new IOException("Unterminated escape sequence.");
-                        }
-
-                        default: {
-                            throw new IOException("Invalid escape sequence.");
-                        }
+                        c = (char)Integer.parseInt(unicodeValue, 16);
+                    } else if (c == EOF) {
+                        throw new IOException("Unterminated escape sequence.");
+                    } else {
+                        throw new IOException("Invalid escape sequence.");
                     }
                 }
             }
