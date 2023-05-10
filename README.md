@@ -56,7 +56,7 @@ Each is discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard servlet API.
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a servlet instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself.
 
@@ -369,7 +369,7 @@ A JSON version of the generated documentation can be obtained by specifying an "
 This header is supported by both `WebService` and `IndexServlet`. A request to the latter will produce a JSON description of all active services.
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to issue API requests to a server. It provides a single constructor that accepts the following arguments:
+The `WebServiceProxy` class is used to submit API requests to a server. It provides a single constructor that accepts the following arguments:
 
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
@@ -463,11 +463,18 @@ List<Number> result = WebServiceProxy.get(baseURL, "test/fibonacci").setArgument
 ).setMonitorStream(System.out).invoke();
 ```
 
-This code would produce the following output:
+This code would produce output similar to the following:
 
 ```
-GET http://localhost:8080/kilo-test-1.0/test/fibonacci?count=8
+GET http://localhost:8080/kilo-test/test/fibonacci?count=8
+Accept-Language: en-us
 HTTP 200
+Keep-Alive: timeout=20
+Transfer-Encoding: chunked
+vary: accept-encoding
+Connection: keep-alive
+Date: Wed, 10 May 2023 15:52:55 GMT
+Content-Type: application/json;charset=UTF-8
 [
   0,
   1,
