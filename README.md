@@ -369,7 +369,7 @@ A JSON version of the generated documentation can be obtained by specifying an "
 This header is supported by both `WebService` and `IndexServlet`. A request to the latter will produce a JSON description of all active services.
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to submit API requests to a server. It provides a single constructor that accepts the following arguments:
+The `WebServiceProxy` class submits API requests. It provides a single constructor that accepts the following arguments:
 
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
