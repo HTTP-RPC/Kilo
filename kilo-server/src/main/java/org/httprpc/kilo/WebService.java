@@ -895,6 +895,7 @@ public abstract class WebService extends HttpServlet {
                     var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
 
                     templateEncoder.write(mapOf(
+                        entry("contextPath", request.getContextPath()),
                         entry("labels", new ResourceBundleAdapter(resourceBundle)),
                         entry("service", new BeanAdapter(serviceDescriptor))
                     ), response.getOutputStream());
