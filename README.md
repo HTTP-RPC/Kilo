@@ -358,7 +358,7 @@ Service types or methods that are not considered public can be tagged with the `
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
 ## WebServiceProxy
-The `WebServiceProxy` class submits API requests. It provides a single constructor that accepts the following arguments:
+The `WebServiceProxy` class is used to submit API requests to a server. It provides a single constructor that accepts the following arguments:
 
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
