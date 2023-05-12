@@ -269,10 +269,16 @@ If an exception is thrown by a service method and the response has not yet been 
 A reference to any service annotated with `jakarta.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
 ### API Documentation
-API documentation can be viewed by appending "?api" to a service URL; for example:
+An index of all active services can be found at the application's context root; for example:
 
 ```
-GET /math?api
+GET http://localhost:8080/kilo-test
+```
+
+Documentation for a specific service can be viewed by appending "?api" to the service's base URL:
+
+```
+GET http://localhost:8080/kilo-test/math?api
 ```
 
 <img src="README/api.png" width="640px"/>
@@ -348,25 +354,8 @@ public void updateItem() throws SQLException {
 #### Internal/Deprecated Methods
 Service types or methods that are not considered public can be tagged with the `Internal` annotation. This designation will be reflected in the generated documentation. Service types or methods tagged with the `Deprecated` annotation will also be identified as such in the output.
 
-#### Service Index
-An index of all active services can be enabled by declaring an instance of `org.httprpc.kilo.IndexServlet` in an application's deployment descriptor and mapping it to an appropriate path. For example, the following configuration would make the index available at the application's context root:
-
-```xml
-<servlet>
-    <servlet-name>index-servlet</servlet-name>
-    <servlet-class>org.httprpc.kilo.IndexServlet</servlet-class>
-</servlet>
-
-<servlet-mapping>
-    <servlet-name>index-servlet</servlet-name>
-    <url-pattern/>
-</servlet-mapping>
-```
-
 #### JSON Documentation
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
-
-This header is supported by both `WebService` and `IndexServlet`. A request to the latter will produce a JSON description of all active services.
 
 ## WebServiceProxy
 The `WebServiceProxy` class submits API requests. It provides a single constructor that accepts the following arguments:

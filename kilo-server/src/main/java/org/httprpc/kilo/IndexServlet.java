@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo;
 
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 /**
  * Generates an index of all active services.
  */
+@WebServlet(urlPatterns = {""}, loadOnStartup = 1)
 public class IndexServlet extends HttpServlet {
     /**
      * Generates the service index.
