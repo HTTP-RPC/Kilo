@@ -560,7 +560,7 @@ for (var month : months) {
 ```
 
 ## CSVEncoder and CSVDecoder
-The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the following code could be used to export the month/day list from the previous example as CSV. The string values passed to the constructor represent both the columns in the output document and the map keys to which those columns correspond:
+The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the month/day list from the previous section could be exported to CSV as shown below. The string values passed to the constructor represent both the columns in the output document and the map keys to which those columns correspond:
 
 ```java
 var csvEncoder = new CSVEncoder(listOf("name", "days"));
@@ -1058,7 +1058,7 @@ QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), m
 ));
 ```
 
-If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses. List values provided to these methods are considered "options" and are reduced to a single value via `coalesce()`.
+If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses. List values provided to these methods are considered "options" and are reduced to a single value via the SQL `coalesce()` function.
 
 See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
