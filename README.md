@@ -1138,7 +1138,7 @@ System.out.println(credit.get("date"));
 ```
 
 ## ResourceBundleAdapter
-The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. For example, it can be used to localize the contents of a template document:
+The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the contents of a template document, for example:
 
 ```html
 <table>
@@ -1201,7 +1201,15 @@ public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
 public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
 ```
 
-These provide a slightly more readable alternative to `java.util.Collections.<Integer>emptyList()` and `java.util.Collections.<String, Integer>emptyMap()`, respectively.
+These provide a slightly more readable alternative to `java.util.Collections#emptyList()` and `java.util.Collections#emptyMap()`, respectively:
+
+```java
+var list1 = emptyListOf(Integer.class);
+var list2 = java.util.Collections.<Integer>emptyList();
+
+var map1 = emptyMapOf(String.class, Integer.class);
+var map2 = java.util.Collections.<String, Integer>emptyMap();
+```
 
 The following methods can be used to identify the index of the first or last element in a list that matches a given predicate:
 
