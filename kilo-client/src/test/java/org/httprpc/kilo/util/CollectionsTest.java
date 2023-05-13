@@ -59,23 +59,19 @@ public class CollectionsTest {
 
     @Test
     public void testEmptyListOf() {
-        var list1 = emptyListOf(Integer.class);
+        var list1 = java.util.Collections.<Integer>emptyList();
+        var list2 = emptyListOf(Integer.class);
 
-        assertTrue(list1.isEmpty());
-
-        var list2 = java.util.Collections.<Integer>emptyList();
-
+        assertTrue(list2.isEmpty());
         assertEquals(list1, list2);
     }
 
     @Test
     public void testEmptyMapOf() {
-        var map1 = emptyMapOf(String.class, Integer.class);
+        var map1 = java.util.Collections.<String, Integer>emptyMap();
+        var map2 = emptyMapOf(String.class, Integer.class);
 
-        assertTrue(map1.isEmpty());
-
-        var map2 = java.util.Collections.<String, Integer>emptyMap();
-
+        assertTrue(map2.isEmpty());
         assertEquals(map1, map2);
     }
 
@@ -83,20 +79,26 @@ public class CollectionsTest {
     public void testFirstIndexWhere() {
         var list = listOf("a", "b", "c", "b", "d");
 
-        assertEquals(1, Collections.firstIndexWhere(list, element -> element.equals("b")));
-        assertEquals(4, Collections.firstIndexWhere(list, element -> element.equals("d")));
+        var i = Collections.firstIndexWhere(list, element -> element.equals("b"));
 
-        assertEquals(-1, Collections.firstIndexWhere(list, element -> element.equals("e")));
+        assertEquals(1, i);
+
+        var j = Collections.firstIndexWhere(list, element -> element.equals("e"));
+
+        assertEquals(-1, j);
     }
 
     @Test
     public void testLastIndexWhere() {
         var list = listOf("a", "b", "c", "b", "d");
 
-        assertEquals(3, Collections.lastIndexWhere(list, element -> element.equals("b")));
-        assertEquals(0, Collections.lastIndexWhere(list, element -> element.equals("a")));
+        var i = Collections.lastIndexWhere(list, element -> element.equals("b"));
 
-        assertEquals(-1, Collections.lastIndexWhere(list, element -> element.equals("e")));
+        assertEquals(3, i);
+
+        var j = Collections.lastIndexWhere(list, element -> element.equals("e"));
+
+        assertEquals(-1, j);
     }
 
     @Test

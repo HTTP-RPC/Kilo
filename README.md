@@ -1204,18 +1204,27 @@ public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) 
 These provide a slightly more readable alternative to `java.util.Collections#emptyList()` and `java.util.Collections#emptyMap()`, respectively:
 
 ```java
-var list1 = emptyListOf(Integer.class);
-var list2 = java.util.Collections.<Integer>emptyList();
+var list1 = java.util.Collections.<Integer>emptyList();
+var list2 = emptyListOf(Integer.class);
 
-var map1 = emptyMapOf(String.class, Integer.class);
-var map2 = java.util.Collections.<String, Integer>emptyMap();
+var map1 = java.util.Collections.<String, Integer>emptyMap();
+var map2 = emptyMapOf(String.class, Integer.class);
 ```
 
 The following methods can be used to identify the index of the first or last element in a list that matches a given predicate:
 
-```
+```java
 public static <E> int firstIndexWhere(List<E> list, Predicate<E> predicate) { ... }
 public static <E> int lastIndexWhere(List<E> list, Predicate<E> predicate) { ... }
+```
+
+For example:
+
+```java
+var list = listOf("a", "b", "c", "b", "d");
+
+var i = Collections.firstIndexWhere(list, element -> element.equals("b")); // 1
+var j = Collections.lastIndexWhere(list, element -> element.equals("e")); // -1
 ```
 
 Finally, the `valueAt()` method can be used to access nested values in an object hierarchy. For example:
