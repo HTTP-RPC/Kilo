@@ -275,13 +275,15 @@ An index of all active services can be found at the application's context root; 
 GET http://localhost:8080/kilo-test
 ```
 
+<img src="README/api-index.png" width="640px"/>
+
 Documentation for a specific service can be viewed by appending "?api" to the service's base URL:
 
 ```
 GET http://localhost:8080/kilo-test/math?api
 ```
 
-<img src="README/api.png" width="640px"/>
+<img src="README/math-api.png" width="640px"/>
 
 Endpoints are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
