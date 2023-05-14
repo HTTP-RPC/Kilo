@@ -25,7 +25,6 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.util.Optionals;
-import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -890,13 +889,13 @@ public abstract class WebService extends HttpServlet {
                 } else {
                     response.setContentType(String.format("text/html;charset=%s", UTF_8));
 
-                    var templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
-
+                    var url = WebService.class.getResource("api.html");
                     var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".api", request.getLocale());
+
+                    var templateEncoder = new TemplateEncoder(url, resourceBundle);
 
                     templateEncoder.write(mapOf(
                         entry("contextPath", request.getContextPath()),
-                        entry("labels", new ResourceBundleAdapter(resourceBundle)),
                         entry("service", new BeanAdapter(serviceDescriptor))
                     ), response.getOutputStream());
                 }

@@ -7,6 +7,7 @@ Template documents include "markers" that are replaced with values provided by t
 * {{?_section_}}...{{/_section_}} - defines a [conditional](#conditional-sections) section
 * {{#_section_}}...{{/_section_}} - defines a [repeating](#repeating-sections) section
 * {{^_section_}}...{{/_section_}} - defines an [inverted](#inverted-sections) section
+* {{@_resource_}} - injects a value from the [resource bundle](#resources) into the output
 * {{>_include_}} - [imports](#includes) content from another template
 * {{!_comment_}} - provides non-rendered [informational](#comments) content
 
@@ -200,6 +201,23 @@ this template would produce the text "no addresses":
 ```
 {{^addresses}}no addresses{{/addresses}}
 ``` 
+
+## Resources
+Resource markers inject a named value from the resource bundle into the output. For example:
+
+```html
+<p>{{@count}}: {{count}}</p>
+<p>{{@sum}}: {{sum}}</p>
+<p>{{@average}}: {{average}}</p> 
+```
+
+When the template is processed, the markers are replaced with the corresponding values from the resource bundle; for example:
+
+```
+count = Count
+sum = Sum
+average = Average
+```
 
 ## Includes
 Include markers import content defined by another template. They can be used to create reusable content modules, such as document headers or footers. 

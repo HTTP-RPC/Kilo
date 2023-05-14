@@ -22,7 +22,12 @@ import java.util.Set;
 
 /**
  * {@link Map} adapter for resource bundles.
+ *
+ * @deprecated
+ * Pass a resource bundle to the {@link org.httprpc.kilo.io.TemplateEncoder}
+ * constructor instead.
  */
+@Deprecated
 public class ResourceBundleAdapter extends AbstractMap<String, String> {
     private ResourceBundle resourceBundle;
 

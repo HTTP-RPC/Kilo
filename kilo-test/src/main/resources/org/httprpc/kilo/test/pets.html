@@ -1,17 +1,15 @@
 <html>
 <body>
 <table>
-  <!-- {{?headings}} -->
   <tr>
-    <td>{{name}}</td>
-    <td>{{species}}</td>
-    <td>{{sex}}</td>
-    <td>{{birth}}</td>
-    <td>{{death}}</td>
+    <td>{{@name}}</td>
+    <td>{{@species}}</td>
+    <td>{{@sex}}</td>
+    <td>{{@birth}}</td>
+    <td>{{@death}}</td>
   </tr>
-  <!-- {{/headings}} -->
 
-  <!-- {{#data}} -->
+  <!-- {{#.}} -->
   <tr>
     <td>{{name}}</td>
     <td>{{species}}</td>
@@ -19,7 +17,7 @@
     <td>{{birth}}</td>
     <td>{{death}}</td>
   </tr>
-  <!-- {{/data}} -->
+  <!-- {{/.}} -->
 </table>
 </body>
 </html>

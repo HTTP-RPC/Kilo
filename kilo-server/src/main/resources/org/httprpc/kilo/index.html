@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>{{labels/title}}</title>
+  <title>{{@title}}</title>
   <style>
     :root {
       font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -41,7 +41,7 @@
 </head>
 <body>
 <div id="toc">
-  <h1>{{labels/services}}</h1>
+  <h1>{{@services}}</h1>
   <ol>
     <!-- {{#services}} -->
     <li><a href="{{contextPath}}{{path}}?api">{{path}}</a><span>{{description}}</span></li>

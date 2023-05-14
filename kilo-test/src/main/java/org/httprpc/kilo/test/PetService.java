@@ -24,7 +24,6 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.sql.ResultSetAdapter;
-import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -84,14 +83,12 @@ public class PetService extends AbstractDatabaseService {
                 } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
                     response.setContentType(TEXT_HTML);
 
-                    var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
-
+                    var url = getClass().getResource("pets.html");
                     var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
 
-                    templateEncoder.write(mapOf(
-                        entry("headings", new ResourceBundleAdapter(resourceBundle)),
-                        entry("data", results)
-                    ), response.getOutputStream());
+                    var templateEncoder = new TemplateEncoder(url, resourceBundle);
+
+                    templateEncoder.write(results, response.getOutputStream());
                 } else {
                     throw new UnsupportedOperationException();
                 }

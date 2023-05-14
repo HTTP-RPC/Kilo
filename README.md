@@ -48,7 +48,6 @@ Classes provided by the Kilo framework include:
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
-* [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [Collections and Optionals](#collections-and-optionals) - utility methods for working with collections and optional values, respectively
 
 Each is discussed in more detail in the following sections.
@@ -617,14 +616,17 @@ System.out.println(text); // Hello, World!
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) format and supports most Mustache features. 
 
-`TemplateEncoder` provides the following constructor:
+`TemplateEncoder` provides the following constructors:
 
 ```java
 public TemplateEncoder(URL url) { ... }
+public TemplateEncoder(URL url, ResourceBundle resourceBundle) { ... }
 ```
 
-The single argument specifies the location of the template document (typically as a resource on the application's classpath). An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied to injected variables if available ("html" and "xml" are supported by default).
- 
+Both versions accept an argument specifying the location of the template document (typically as a resource on the application's classpath). The second version additionally accepts an optional resource bundle that, when present, is used to resolve resource markers. 
+
+An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied to injected variables, if available. HTML and XML are supported by default.
+
 Templates are applied via one of the following methods:
 
 ```java
@@ -688,8 +690,6 @@ templateEncoder.write(mapOf(
 ```
 
 The output of this code would be "HELLO".
-
-Note that modifiers must be thread-safe, since they are shared and may be invoked concurrently by multiple encoder instances.
 
 ## BeanAdapter
 The `BeanAdapter` class provides access to the properties of a Java bean instance via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
@@ -1135,52 +1135,6 @@ Finally, the text content of an element can be obtained by calling `toString()` 
 ```java
 System.out.println(credit.get("amount"));
 System.out.println(credit.get("date"));
-```
-
-## ResourceBundleAdapter
-The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the contents of a template document, for example:
-
-```html
-<table>
-    <!-- {{?headings}} -->
-    <tr>
-        <th>{{name}}</th>
-        <th>{{description}}</th>
-        <th>{{quantity}}</th>
-    </tr>
-    <!-- {{/headings}} -->
-
-    <!-- {{#items}} -->
-    <tr>
-        <td>{{name}}</td>
-        <td>{{description}}</td>
-        <td>{{quantity}}</td>
-    </tr>
-    <!-- {{/items}} -->
-</table>
-```
-
-If "headings.properties" is defined as follows:
-
-```
-name = Name
-description = Description
-quantity = Quantity
-```
-
-this code will produce an HTML table containing the localized headings:
-
-```java
-var templateEncoder = new TemplateEncoder(getClass().getResource("list.html"));
-
-var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".headings");
-
-templateEncoder.write(mapOf(
-    entry("headings", new ResourceBundleAdapter(resourceBundle)),
-    entry("items", listOf(
-        ...
-    ))
-), System.out);
 ```
 
 ## Collections and Optionals

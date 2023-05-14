@@ -21,7 +21,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
-import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -53,12 +52,11 @@ public class IndexServlet extends HttpServlet {
         } else {
             response.setContentType("text/html;charset=UTF-8");
 
-            var templateEncoder = new TemplateEncoder(WebService.class.getResource("index.html"));
-
+            var url = WebService.class.getResource("index.html");
             var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".index", request.getLocale());
+            var templateEncoder = new TemplateEncoder(url, resourceBundle);
 
             templateEncoder.write(mapOf(
-                entry("labels", new ResourceBundleAdapter(resourceBundle)),
                 entry("contextPath", request.getContextPath()),
                 entry("services", serviceDescriptors)
             ), response.getOutputStream());

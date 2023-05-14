@@ -28,6 +28,7 @@ import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -424,6 +425,20 @@ public class TemplateEncoderTest {
         encoder.write(mapOf(entry("a", false)), writer);
 
         assertEquals("not found", writer.toString());
+    }
+
+    @Test
+    public void testResources() throws IOException {
+        var url = getClass().getResource("resource1.txt");
+        var resourceBundle = ResourceBundle.getBundle(TemplateEncoderTest.class.getPackage().getName() + ".resource");
+
+        var encoder = new TemplateEncoder(url, resourceBundle);
+
+        var writer = new StringWriter();
+
+        encoder.write(mapOf(), writer);
+
+        assertEquals("A1B2", writer.toString());
     }
 
     @Test

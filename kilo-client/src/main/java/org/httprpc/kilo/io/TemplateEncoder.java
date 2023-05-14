@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -289,6 +290,7 @@ public class TemplateEncoder extends Encoder<Object> {
         REPEATING_SECTION_START,
         INVERTED_SECTION_START,
         SECTION_END,
+        RESOURCE,
         INCLUDE,
         COMMENT,
         VARIABLE
@@ -361,6 +363,7 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private URL url;
+    private ResourceBundle resourceBundle;
     private Map<String, Modifier> modifiers;
     private Modifier defaultEscapeModifier;
 
@@ -368,23 +371,14 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private Deque<String> sectionNames = new LinkedList<>();
 
-    private static Map<String, Modifier> defaultModifiers = new HashMap<>();
+    private static final FormatModifier formatModifier = new FormatModifier();
+    private static final MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
+    private static final URLEncodingModifier urlEncodingModifier = new URLEncodingModifier();
 
     private static final int EOF = -1;
 
     private static final String KEY_REFERENCE = "~";
     private static final String SELF_REFERENCE = ".";
-
-    static {
-        defaultModifiers.put("format", new FormatModifier());
-
-        var markupEscapeModifier = new MarkupEscapeModifier();
-
-        defaultModifiers.put("html", markupEscapeModifier);
-        defaultModifiers.put("xml", markupEscapeModifier);
-
-        defaultModifiers.put("url", new URLEncodingModifier());
-    }
 
     /**
      * Constructs a new template encoder.
@@ -393,13 +387,32 @@ public class TemplateEncoder extends Encoder<Object> {
      * The URL of the template.
      */
     public TemplateEncoder(URL url) {
+        this(url, null);
+    }
+
+    /**
+     * Constructs a new template encoder.
+     *
+     * @param url
+     * The URL of the template.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public TemplateEncoder(URL url, ResourceBundle resourceBundle) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
         this.url = url;
+        this.resourceBundle = resourceBundle;
 
-        modifiers = new HashMap<>(defaultModifiers);
+        modifiers = new HashMap<>();
+
+        modifiers.put("format", formatModifier);
+        modifiers.put("html", markupEscapeModifier);
+        modifiers.put("xml", markupEscapeModifier);
+        modifiers.put("url", urlEncodingModifier);
 
         var path = url.getPath();
 
@@ -569,6 +582,8 @@ public class TemplateEncoder extends Encoder<Object> {
                         markerType = MarkerType.INVERTED_SECTION_START;
                     } else if (c == '/') {
                         markerType = MarkerType.SECTION_END;
+                    } else if (c == '@') {
+                        markerType = MarkerType.RESOURCE;
                     } else if (c == '>') {
                         markerType = MarkerType.INCLUDE;
                     } else if (c == '!') {
@@ -759,6 +774,16 @@ public class TemplateEncoder extends Encoder<Object> {
                             return;
                         }
 
+                        case RESOURCE: {
+                            if (resourceBundle == null) {
+                                throw new IllegalStateException("Missing resource bundle.");
+                            }
+
+                            writer.append(resourceBundle.getString(marker));
+
+                            break;
+                        }
+
                         case INCLUDE: {
                             if (root != null) {
                                 var url = new URL(this.url, marker);
@@ -844,15 +869,5 @@ public class TemplateEncoder extends Encoder<Object> {
         } else {
             throw new IllegalArgumentException("Value is not a map.");
         }
-    }
-
-    /**
-     * Returns the default modifier map.
-     *
-     * @return
-     * The default modifier map.
-     */
-    public static Map<String, Modifier> getDefaultModifiers() {
-        return defaultModifiers;
     }
 }
