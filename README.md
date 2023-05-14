@@ -48,6 +48,7 @@ Classes provided by the Kilo framework include:
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
+* [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [Collections and Optionals](#collections-and-optionals) - utility methods for working with collections and optional values, respectively
 
 Each is discussed in more detail in the following sections.
@@ -1135,6 +1136,50 @@ Finally, the text content of an element can be obtained by calling `toString()` 
 ```java
 System.out.println(credit.get("amount"));
 System.out.println(credit.get("date"));
+```
+
+## ResourceBundleAdapter
+The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the headings in a CSV document, for example:
+
+```
+name = Name
+description = Description
+quantity = Quantity
+```
+
+```java
+var csvEncoder = new CSVEncoder(listOf("name", "description", "quantity"));
+
+var labels = new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getPackage().getName() + ".labels"));
+
+csvEncoder.setLabels(labels);
+
+csvEncoder.write(listOf(
+    mapOf(
+        entry("name", "Item 1"),
+        entry("description", "Item number 1"),
+        entry("quantity", 3)
+    ),
+    mapOf(
+        entry("name", "Item 2"),
+        entry("description", "Item number 2"),
+        entry("quantity", 5)
+    ),
+    mapOf(
+        entry("name", "Item 3"),
+        entry("description", "Item number 3"),
+        entry("quantity", 7)
+    )
+), System.out);
+```
+
+This code would produce the following output:
+
+```csv
+"Name","Description","Quantity"
+"Item 1","Item number 1",3
+"Item 2","Item number 2",5
+"Item 3","Item number 3",7
 ```
 
 ## Collections and Optionals
