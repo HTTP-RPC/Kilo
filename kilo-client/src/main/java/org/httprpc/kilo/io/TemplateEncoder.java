@@ -248,6 +248,14 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
+    // URL-encoding modifier
+    private static class URLEncodingModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
+        }
+    }
+
     // Markup escape modifier
     private static class MarkupEscapeModifier implements Modifier {
         @Override
@@ -273,14 +281,6 @@ public class TemplateEncoder extends Encoder<Object> {
             }
 
             return resultBuilder.toString();
-        }
-    }
-
-    // URL-encoding modifier
-    private static class URLEncodingModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
         }
     }
 
@@ -372,8 +372,8 @@ public class TemplateEncoder extends Encoder<Object> {
     private Deque<String> sectionNames = new LinkedList<>();
 
     private static final FormatModifier formatModifier = new FormatModifier();
-    private static final MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
     private static final URLEncodingModifier urlEncodingModifier = new URLEncodingModifier();
+    private static final MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
 
     private static final int EOF = -1;
 
@@ -410,9 +410,9 @@ public class TemplateEncoder extends Encoder<Object> {
         modifiers = new HashMap<>();
 
         modifiers.put("format", formatModifier);
+        modifiers.put("url", urlEncodingModifier);
         modifiers.put("html", markupEscapeModifier);
         modifiers.put("xml", markupEscapeModifier);
-        modifiers.put("url", urlEncodingModifier);
 
         var path = url.getPath();
 
