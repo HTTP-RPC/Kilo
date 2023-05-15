@@ -430,7 +430,7 @@ public class TemplateEncoderTest {
     @Test
     public void testResources() throws IOException {
         var url = getClass().getResource("resource1.txt");
-        var resourceBundle = ResourceBundle.getBundle(TemplateEncoderTest.class.getPackage().getName() + ".resource");
+        var resourceBundle = ResourceBundle.getBundle(String.format("%s.resource", getClass().getPackage().getName()));
 
         var encoder = new TemplateEncoder(url, resourceBundle);
 

@@ -1150,9 +1150,9 @@ quantity = Quantity
 ```java
 var csvEncoder = new CSVEncoder(listOf("name", "description", "quantity"));
 
-var labels = new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getPackage().getName() + ".labels"));
+var resourceBundle = ResourceBundle.getBundle(String.format("%s.labels", getClass().getPackage().getName()));
 
-csvEncoder.setLabels(labels);
+csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
 
 csvEncoder.write(listOf(
     mapOf(
