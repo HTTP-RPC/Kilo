@@ -52,8 +52,8 @@ public class IndexServlet extends HttpServlet {
         } else {
             response.setContentType("text/html;charset=UTF-8");
 
-            var url = WebService.class.getResource("index.html");
-            var resourceBundle = ResourceBundle.getBundle(WebService.class.getPackage().getName() + ".index", request.getLocale());
+            var url = IndexServlet.class.getResource("index.html");
+            var resourceBundle = ResourceBundle.getBundle(IndexServlet.class.getName(), request.getLocale());
 
             var templateEncoder = new TemplateEncoder(url, resourceBundle);
 

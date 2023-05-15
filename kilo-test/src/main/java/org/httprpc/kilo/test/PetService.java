@@ -24,6 +24,7 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.sql.ResultSetAdapter;
+import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -67,13 +68,9 @@ public class PetService extends AbstractDatabaseService {
 
                     var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-                    csvEncoder.setLabels(mapOf(
-                        entry("name", "Name"),
-                        entry("species", "Species"),
-                        entry("sex", "Sex"),
-                        entry("birth", "Birth"),
-                        entry("death", "Death")
-                    ));
+                    var labels = new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
+
+                    csvEncoder.setLabels(labels);
 
                     csvEncoder.setFormats(mapOf(
                         entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
@@ -84,7 +81,7 @@ public class PetService extends AbstractDatabaseService {
                     response.setContentType(TEXT_HTML);
 
                     var url = getClass().getResource("pets.html");
-                    var resourceBundle = ResourceBundle.getBundle(getClass().getPackage().getName() + ".pets", getRequest().getLocale());
+                    var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
 
                     var templateEncoder = new TemplateEncoder(url, resourceBundle);
 
