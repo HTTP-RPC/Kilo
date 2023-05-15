@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -63,31 +62,30 @@ public class PetService extends AbstractDatabaseService {
                     var jsonEncoder = new JSONEncoder();
 
                     jsonEncoder.write(results, response.getOutputStream());
-                } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
-                    response.setContentType(TEXT_CSV);
-
-                    var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
-
-                    var labels = new ResourceBundleAdapter(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
-
-                    csvEncoder.setLabels(labels);
-
-                    csvEncoder.setFormats(mapOf(
-                        entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
-                    ));
-
-                    csvEncoder.write(results, response.getOutputStream());
-                } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
-                    response.setContentType(TEXT_HTML);
-
-                    var url = getClass().getResource("pets.html");
-                    var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
-
-                    var templateEncoder = new TemplateEncoder(url, resourceBundle);
-
-                    templateEncoder.write(results, response.getOutputStream());
                 } else {
-                    throw new UnsupportedOperationException();
+                    var resourceBundle = ResourceBundleAdapter.getBundle(getClass(), getRequest().getLocale());
+
+                    if (accept.equalsIgnoreCase(TEXT_CSV)) {
+                        response.setContentType(TEXT_CSV);
+
+                        var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
+
+                        csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
+
+                        csvEncoder.setFormats(mapOf(
+                            entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
+                        ));
+
+                        csvEncoder.write(results, response.getOutputStream());
+                    } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
+                        response.setContentType(TEXT_HTML);
+
+                        var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
+
+                        templateEncoder.write(results, response.getOutputStream());
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
                 }
             }
 

@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.util.ResourceBundleAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -28,7 +29,6 @@ import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -430,7 +430,7 @@ public class TemplateEncoderTest {
     @Test
     public void testResources() throws IOException {
         var url = getClass().getResource("resource1.txt");
-        var resourceBundle = ResourceBundle.getBundle(String.format("%s.resource", getClass().getPackage().getName()));
+        var resourceBundle = ResourceBundleAdapter.getBundle(getClass(), "resource");
 
         var encoder = new TemplateEncoder(url, resourceBundle);
 

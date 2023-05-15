@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -337,7 +336,7 @@ public class ExamplesTest {
     public void testResourceBundleAdapter() throws IOException {
         var csvEncoder = new CSVEncoder(listOf("name", "description", "quantity"));
 
-        var resourceBundle = ResourceBundle.getBundle(String.format("%s.labels", getClass().getPackage().getName()));
+        var resourceBundle = ResourceBundleAdapter.getBundle(getClass(), "labels");
 
         csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
 
