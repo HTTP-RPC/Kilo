@@ -16,6 +16,8 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ResourceBundle;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -24,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ResourceBundleAdapterTest {
     @Test
     public void testResourceBundleAdapter() {
-        var resourceBundle = ResourceBundleAdapter.getBundle(getClass(), "test");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
         var resourceBundleAdapter = new ResourceBundleAdapter(resourceBundle);
 

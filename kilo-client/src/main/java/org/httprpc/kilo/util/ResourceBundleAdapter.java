@@ -15,7 +15,6 @@
 package org.httprpc.kilo.util;
 
 import java.util.AbstractMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -78,85 +77,5 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
     @Override
     public Set<Entry<String, String>> entrySet() {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Retrieves a resource bundle.
-     *
-     * @param type
-     * The type associated with the resource bundle.
-     *
-     * @return
-     * The resource bundle.
-     * 
-     * @see ResourceBundle#getBundle(String)
-     */
-    public static ResourceBundle getBundle(Class<?> type) {
-        return getBundle(type, Locale.getDefault());
-    }
-
-    /**
-     * Retrieves a resource bundle.
-     *
-     * @param type
-     * The type associated with the resource bundle.
-     *
-     * @param locale
-     * The resource bundle's locale.
-     *
-     * @return
-     * The resource bundle.
-     *
-     * @see ResourceBundle#getBundle(String)
-     */
-    public static ResourceBundle getBundle(Class<?> type, Locale locale) {
-        if (type == null || locale == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return ResourceBundle.getBundle(type.getName());
-    }
-
-    /**
-     * Retrieves a resource bundle.
-     *
-     * @param type
-     * The type associated with the resource bundle.
-     *
-     * @param name
-     * The name of the bundle, relative to the type's package.
-     *
-     * @return
-     * The resource bundle.
-     *
-     * @see ResourceBundle#getBundle(String)
-     */
-    public static ResourceBundle getBundle(Class<?> type, String name) {
-        return getBundle(type, name, Locale.getDefault());
-    }
-
-    /**
-     * Retrieves a resource bundle.
-     *
-     * @param type
-     * The type associated with the resource bundle.
-     *
-     * @param name
-     * The name of the bundle, relative to the type's package.
-     *
-     * @param locale
-     * The resource bundle's locale.
-     *
-     * @return
-     * The resource bundle.
-     *
-     * @see ResourceBundle#getBundle(String)
-     */
-    public static ResourceBundle getBundle(Class<?> type, String name, Locale locale) {
-        if (type == null || name == null || locale == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return ResourceBundle.getBundle(String.format("%s.%s", type.getPackage().getName(), name), locale);
     }
 }

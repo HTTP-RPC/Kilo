@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -63,7 +64,7 @@ public class PetService extends AbstractDatabaseService {
 
                     jsonEncoder.write(results, response.getOutputStream());
                 } else {
-                    var resourceBundle = ResourceBundleAdapter.getBundle(getClass(), getRequest().getLocale());
+                    var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
 
                     if (accept.equalsIgnoreCase(TEXT_CSV)) {
                         response.setContentType(TEXT_CSV);
