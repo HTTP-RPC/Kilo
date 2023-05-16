@@ -626,7 +626,7 @@ public TemplateEncoder(URL url, ResourceBundle resourceBundle) { ... }
 
 Both versions accept an argument specifying the location of the template document (typically as a resource on the application's classpath). The second version additionally accepts an optional resource bundle that, when present, is used to resolve resource markers. 
 
-An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied to injected variables, if available. HTML and XML are supported by default.
+An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied to injected values, if available. HTML and XML are supported by default.
 
 Templates are applied via one of the following methods:
 

@@ -779,7 +779,13 @@ public class TemplateEncoder extends Encoder<Object> {
                                 throw new IllegalStateException("Missing resource bundle.");
                             }
 
-                            writer.append(resourceBundle.getString(marker));
+                            var value = resourceBundle.getObject(marker);
+
+                            if (defaultEscapeModifier != null) {
+                                value = defaultEscapeModifier.apply(value, null, locale, timeZone);
+                            }
+
+                            writer.append(value.toString());
 
                             break;
                         }

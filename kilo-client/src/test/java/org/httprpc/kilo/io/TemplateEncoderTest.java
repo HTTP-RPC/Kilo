@@ -536,6 +536,17 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testURLEncodingModifier() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("url.txt"));
+
+        var writer = new StringWriter();
+
+        encoder.write("abc:def&xyz", writer);
+
+        assertEquals("abc%3Adef%26xyz", writer.toString());
+    }
+
+    @Test
     public void testMarkupEscapeModifier() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("html.txt"));
 
@@ -548,24 +559,18 @@ public class TemplateEncoderTest {
 
     @Test
     public void testDefaultMarkupEscapeModifier() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("example.xml"));
+        var url = getClass().getResource("example.xml");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
+
+        var encoder = new TemplateEncoder(url, resourceBundle);
 
         var writer = new StringWriter();
 
-        encoder.write("a<b>c&d\"e", writer);
+        encoder.write(mapOf(
+            entry("b", "a<b>c&d\"e")
+        ), writer);
 
-        assertEquals("<?xml version=\"1.0\"?><foo bar=\"a&lt;b&gt;c&amp;d&quot;e\"/>", writer.toString());
-    }
-
-    @Test
-    public void testURLEncodingModifier() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("url.txt"));
-
-        var writer = new StringWriter();
-
-        encoder.write("abc:def&xyz", writer);
-
-        assertEquals("abc%3Adef%26xyz", writer.toString());
+        assertEquals("<?xml version=\"1.0\"?><a b=\"a&lt;b&gt;c&amp;d&quot;e\">f&lt;g&gt;h&amp;i&quot;j</a>", writer.toString());
     }
 
     @Test
