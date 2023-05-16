@@ -53,6 +53,10 @@ public class PetService extends AbstractDatabaseService {
 
             var accept = getRequest().getHeader("Accept");
 
+            if (accept == null) {
+                throw new UnsupportedOperationException();
+            }
+
             try (var statement = queryBuilder.prepare(getConnection());
                 var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
                     entry("owner", owner)
