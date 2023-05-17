@@ -438,7 +438,7 @@ public class TemplateEncoderTest {
 
         encoder.write(mapOf(), writer);
 
-        assertEquals("A1B2", writer.toString());
+        assertEquals("A1B2c", writer.toString());
     }
 
     @Test

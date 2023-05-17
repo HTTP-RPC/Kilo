@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
@@ -779,7 +780,12 @@ public class TemplateEncoder extends Encoder<Object> {
                                 throw new IllegalStateException("Missing resource bundle.");
                             }
 
-                            var value = resourceBundle.getObject(marker);
+                            Object value;
+                            try {
+                                value = resourceBundle.getObject(marker);
+                            } catch (MissingResourceException exception) {
+                                value = marker;
+                            }
 
                             if (defaultEscapeModifier != null) {
                                 value = defaultEscapeModifier.apply(value, null, locale, timeZone);
