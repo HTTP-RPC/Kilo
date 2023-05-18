@@ -1244,24 +1244,26 @@ The `Optionals` class contains methods for working with optional (or "nullable")
 
 ```java
 public static <T> T coalesce(T... values) { ... }
+
 public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) { ... }
+public static <T, U> U map(T value, Function<? super T, ? extends U> mapper, U defaultValue) { ... }
 ```
 
 These methods are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class. For example:
 
 ```java
-String a = null;
-String b = null;
-
-var c = Optional.ofNullable(a).orElse(Optional.ofNullable(b).orElse("xyz")); // xyz
-var d = Optionals.coalesce(a, b, "xyz"); // xyz
+var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse("xyz")); // xyz
+var b = Optionals.coalesce(null, null, "xyz"); // xyz
 ```
 
 ```java
-var text = "hello";
+var a = Optional.ofNullable("hello").map(String::length).orElse(null); // 5
+var b = Optionals.map("hello", String::length); // 5
+```
 
-var i = Optional.ofNullable(text).map(String::length).orElse(null); // 5
-var j = Optionals.map(text, String::length); // 5
+```java
+var a = Optional.ofNullable((String)null).map(String::isEmpty).orElse(true); // true
+var b = Optionals.map(null, String::isEmpty, true); // true
 ```
 
 # Additional Information

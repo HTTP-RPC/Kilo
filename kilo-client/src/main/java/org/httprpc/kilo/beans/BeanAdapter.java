@@ -226,7 +226,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new UnsupportedOperationException("Method is not an accessor.");
                 }
 
-                var key = Optionals.coalesce(Optionals.map(method.getAnnotation(Key.class), Key::value), propertyName);
+                var key = Optionals.map(method.getAnnotation(Key.class), Key::value, propertyName);
 
                 var value = map.get(key);
 
@@ -878,7 +878,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }).collect(Collectors.toMap(entry -> {
                 var key = entry.getValue().getAccessor().getAnnotation(Key.class);
 
-                return Optionals.coalesce(Optionals.map(key, Key::value), entry.getKey());
+                return Optionals.map(key, Key::value, entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate key.");
             }, TreeMap::new));

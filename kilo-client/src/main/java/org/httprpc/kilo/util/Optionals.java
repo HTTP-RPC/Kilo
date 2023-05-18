@@ -53,32 +53,61 @@ public class Optionals {
     }
 
     /**
-     * Maps a non-{@code null} value to another value.
+     * Applies a mapping function to a value.
      *
      * @param <T>
-     * The original value type.
+     * The source type.
      *
      * @param <U>
-     * The mapped value type.
+     * The target type.
      *
      * @param value
-     * The value to map.
+     * The source value.
      *
      * @param mapper
      * The mapping function.
      *
      * @return
-     * The mapped value, or {@code null} if the original value is {@code null}.
+     * The result of applying the mapping function to the source value, or
+     * {@code null} if the source value was {@code null} or the mapping
+     * function did not produce a value.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) {
+        return map(value, mapper, null);
+    }
+
+    /**
+     * Applies a mapping function to a value.
+     *
+     * @param <T>
+     * The source type.
+     *
+     * @param <U>
+     * The target type.
+     *
+     * @param value
+     * The source value.
+     *
+     * @param mapper
+     * The mapping function.
+     *
+     * @param defaultValue
+     * The default value.
+     *
+     * @return
+     * The result of applying the mapping function to the source value, or
+     * the default value if the source value was {@code null} or the mapping
+     * function did not produce a value.
+     */
+    public static <T, U> U map(T value, Function<? super T, ? extends U> mapper, U defaultValue) {
         if (value == null) {
-            return null;
+            return defaultValue;
         }
 
         if (mapper == null) {
             throw new IllegalArgumentException();
         }
 
-        return mapper.apply(value);
+        return coalesce(mapper.apply(value), defaultValue);
     }
 }

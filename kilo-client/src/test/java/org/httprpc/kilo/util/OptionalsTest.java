@@ -20,22 +20,34 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OptionalsTest {
     @Test
     public void testCoalesce() {
-        String a = null;
-        String b = null;
+        var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse("xyz")); // xyz
+        var b = Optionals.coalesce(null, null, "xyz"); // xyz
 
-        assertEquals(Optional.ofNullable(a).orElse(Optional.ofNullable(b).orElse("xyz")), Optionals.coalesce(a, b, "xyz"));
+        assertEquals(a, b);
     }
 
     @Test
     public void testMap() {
-        var text = "hello";
+        var a = Optional.ofNullable("hello").map(String::length).orElse(null); // 5
+        var b = Optionals.map("hello", String::length); // 5
 
-        assertEquals(Optional.ofNullable(text).map(String::length).orElse(null), Optionals.map(text, String::length));
+        assertEquals(a, b);
 
         assertNull(Optionals.map(null, String::length));
+    }
+
+    @Test
+    public void testMapWithDefaultValue() {
+        var a = Optional.ofNullable((String)null).map(String::isEmpty).orElse(true); // true
+        var b = Optionals.map(null, String::isEmpty, true); // true
+
+        assertEquals(a, b);
+
+        assertTrue(Optionals.map("xyz", value -> null, true));
     }
 }
