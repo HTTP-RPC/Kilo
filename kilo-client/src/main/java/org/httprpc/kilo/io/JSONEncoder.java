@@ -65,9 +65,7 @@ public class JSONEncoder extends Encoder<Object> {
     private void encode(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
-        } else if (value instanceof CharSequence) {
-            var text = (CharSequence)value;
-
+        } else if (value instanceof CharSequence text) {
             writer.write("\"");
 
             for (int i = 0, n = text.length(); i < n; i++) {
@@ -95,18 +93,18 @@ public class JSONEncoder extends Encoder<Object> {
             writer.write(value.toString());
         } else if (value instanceof Enum<?>) {
             encode(value.toString(), writer);
-        } else if (value instanceof Date) {
-            encode(((Date)value).getTime(), writer);
+        } else if (value instanceof Date date) {
+            encode(date.getTime(), writer);
         } else if (value instanceof TemporalAccessor || value instanceof TemporalAmount || value instanceof UUID || value instanceof URL) {
             encode(value.toString(), writer);
-        } else if (value instanceof Iterable<?>) {
+        } else if (value instanceof Iterable<?> iterable) {
             writer.write("[");
 
             depth++;
 
             var i = 0;
 
-            for (Object element : (Iterable<?>)value) {
+            for (Object element : iterable) {
                 if (i > 0) {
                     writer.write(",");
                 }
@@ -131,14 +129,14 @@ public class JSONEncoder extends Encoder<Object> {
             }
 
             writer.write("]");
-        } else if (value instanceof Map<?, ?>) {
+        } else if (value instanceof Map<?, ?> map) {
             writer.write("{");
 
             depth++;
 
             var i = 0;
 
-            for (Map.Entry<?, ?> entry : ((Map<?, ?>)value).entrySet()) {
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
                 var key = entry.getKey();
 
                 if (key == null) {

@@ -258,10 +258,10 @@ public class Collections {
                 var component = path.remove(0);
 
                 Object value;
-                if (root instanceof List<?> && component instanceof Number) {
-                    value = ((List<?>)root).get(((Number)component).intValue());
-                } else if (root instanceof Map<?, ?>) {
-                    value = ((Map<?, ?>)root).get(component);
+                if (root instanceof List<?> list && component instanceof Number number) {
+                    value = list.get(number.intValue());
+                } else if (root instanceof Map<?, ?> map) {
+                    value = map.get(component);
                 } else {
                     throw new IllegalArgumentException();
                 }

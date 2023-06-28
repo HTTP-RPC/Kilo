@@ -468,10 +468,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof UUID
             || value instanceof URL) {
             return value;
-        } else if (value instanceof Iterable<?>) {
-            return new IterableAdapter((Iterable<?>)value, propertyCache);
-        } else if (value instanceof Map<?, ?>) {
-            return new MapAdapter((Map<?, ?>)value, propertyCache);
+        } else if (value instanceof Iterable<?> iterable) {
+            return new IterableAdapter(iterable, propertyCache);
+        } else if (value instanceof Map<?, ?> map) {
+            return new MapAdapter(map, propertyCache);
         } else {
             return new BeanAdapter(value, propertyCache);
         }
@@ -553,20 +553,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     @SuppressWarnings("unchecked")
     private static Object toGenericType(Object value, Type type) {
-        if (type instanceof Class<?>) {
-            return toRawType(value, (Class<?>)type);
-        } else if (type instanceof ParameterizedType) {
-            var parameterizedType = (ParameterizedType)type;
-
+        if (type instanceof Class<?> rawType) {
+            return toRawType(value, rawType);
+        } else if (type instanceof ParameterizedType parameterizedType) {
             var rawType = parameterizedType.getRawType();
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class) {
                 if (value == null) {
                     return null;
-                } else if (value instanceof List<?>) {
-                    var list = (List<?>)value;
-
+                } else if (value instanceof List<?> list) {
                     var elementType = actualTypeArguments[0];
 
                     var genericList = new ArrayList<>(list.size());
@@ -582,9 +578,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (rawType == Map.class) {
                 if (value == null) {
                     return null;
-                } else if (value instanceof Map<?, ?>) {
-                    var map = (Map<?, ?>)value;
-
+                } else if (value instanceof Map<?, ?> map) {
                     var keyType = actualTypeArguments[0];
                     var valueType = actualTypeArguments[1];
 
@@ -612,48 +606,48 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
                 return (type == Byte.TYPE) ? Byte.valueOf((byte)0) : null;
-            } else if (value instanceof Number) {
-                return ((Number)value).byteValue();
+            } else if (value instanceof Number number) {
+                return number.byteValue();
             } else {
                 return Byte.parseByte(value.toString());
             }
         } else if (type == Short.TYPE || type == Short.class) {
             if (value == null) {
                 return (type == Short.TYPE) ? Short.valueOf((short)0) : null;
-            } else if (value instanceof Number) {
-                return ((Number)value).shortValue();
+            } else if (value instanceof Number number) {
+                return number.shortValue();
             } else {
                 return Short.parseShort(value.toString());
             }
         } else if (type == Integer.TYPE || type == Integer.class) {
             if (value == null) {
                 return (type == Integer.TYPE) ? Integer.valueOf(0) : null;
-            } else if (value instanceof Number) {
-                return ((Number)value).intValue();
+            } else if (value instanceof Number number) {
+                return number.intValue();
             } else {
                 return Integer.parseInt(value.toString());
             }
         } else if (type == Long.TYPE || type == Long.class) {
             if (value == null) {
                 return (type == Long.TYPE) ? Long.valueOf(0) : null;
-            } else if (value instanceof Number) {
-                return ((Number)value).longValue();
+            } else if (value instanceof Number number) {
+                return number.longValue();
             } else {
                 return Long.parseLong(value.toString());
             }
         } else if (type == Float.TYPE || type == Float.class) {
             if (value == null) {
                 return (type == Float.TYPE) ? Float.valueOf(0) : null;
-            } else if (value instanceof Number) {
-                return ((Number)value).floatValue();
+            } else if (value instanceof Number number) {
+                return number.floatValue();
             } else {
                 return Float.parseFloat(value.toString());
             }
         } else if (type == Double.TYPE || type == Double.class) {
             if (value == null) {
                 return (type == Double.TYPE) ? Double.valueOf(0) : null;
-            } else if (value instanceof Number) {
-                return ((Number)value).doubleValue();
+            } else if (value instanceof Number number) {
+                return number.doubleValue();
             } else {
                 return Double.parseDouble(value.toString());
             }
@@ -679,14 +673,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (type == String.class) {
                 return value.toString();
             } else if (type == Date.class) {
-                if (value instanceof Number) {
-                    return new Date(((Number)value).longValue());
+                if (value instanceof Number number) {
+                    return new Date(number.longValue());
                 } else {
                     return new Date(Long.parseLong(value.toString()));
                 }
             } else if (type == Instant.class) {
-                if (value instanceof Date) {
-                    return ((Date)value).toInstant();
+                if (value instanceof Date date) {
+                    return date.toInstant();
                 } else {
                     return Instant.parse(value.toString());
                 }
@@ -697,8 +691,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type == LocalDateTime.class) {
                 return LocalDateTime.parse(value.toString());
             } else if (type == Duration.class) {
-                if (value instanceof Number) {
-                    return Duration.ofMillis(((Number)value).longValue());
+                if (value instanceof Number number) {
+                    return Duration.ofMillis(number.longValue());
                 } else {
                     return Duration.parse(value.toString());
                 }
@@ -738,11 +732,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 throw new IllegalArgumentException();
             } else {
-                if (!(value instanceof Map<?, ?>)) {
+                if (!(value instanceof Map<?, ?> map)) {
                     throw new IllegalArgumentException();
                 }
-
-                var map = (Map<?, ?>)value;
 
                 if (type.isInterface()) {
                     return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map)));

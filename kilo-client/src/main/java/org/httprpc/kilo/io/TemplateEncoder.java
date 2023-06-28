@@ -115,96 +115,43 @@ public class TemplateEncoder extends Encoder<Object> {
                 return value;
             }
 
-            switch (argument) {
-                case CURRENCY: {
-                    return NumberFormat.getCurrencyInstance(locale).format(value);
-                }
-
-                case PERCENT: {
-                    return NumberFormat.getPercentInstance(locale).format(value);
-                }
-
-                case SHORT_DATE: {
-                    return format(value, DateTimeType.DATE, FormatStyle.SHORT, locale, timeZone);
-                }
-
-                case MEDIUM_DATE: {
-                    return format(value, DateTimeType.DATE, FormatStyle.MEDIUM, locale, timeZone);
-                }
-
-                case LONG_DATE: {
-                    return format(value, DateTimeType.DATE, FormatStyle.LONG, locale, timeZone);
-                }
-
-                case FULL_DATE: {
-                    return format(value, DateTimeType.DATE, FormatStyle.FULL, locale, timeZone);
-                }
-
-                case ISO_DATE: {
-                    return format(value, DateTimeType.DATE, null, null, timeZone);
-                }
-
-                case SHORT_TIME: {
-                    return format(value, DateTimeType.TIME, FormatStyle.SHORT, locale, timeZone);
-                }
-
-                case MEDIUM_TIME: {
-                    return format(value, DateTimeType.TIME, FormatStyle.MEDIUM, locale, timeZone);
-                }
-
-                case LONG_TIME: {
-                    return format(value, DateTimeType.TIME, FormatStyle.LONG, locale, timeZone);
-                }
-
-                case FULL_TIME: {
-                    return format(value, DateTimeType.TIME, FormatStyle.FULL, locale, timeZone);
-                }
-
-                case ISO_TIME: {
-                    return format(value, DateTimeType.TIME, null, null, timeZone);
-                }
-
-                case SHORT_DATE_TIME: {
-                    return format(value, DateTimeType.DATE_TIME, FormatStyle.SHORT, locale, timeZone);
-                }
-
-                case MEDIUM_DATE_TIME: {
-                    return format(value, DateTimeType.DATE_TIME, FormatStyle.MEDIUM, locale, timeZone);
-                }
-
-                case LONG_DATE_TIME: {
-                    return format(value, DateTimeType.DATE_TIME, FormatStyle.LONG, locale, timeZone);
-                }
-
-                case FULL_DATE_TIME: {
-                    return format(value, DateTimeType.DATE_TIME, FormatStyle.FULL, locale, timeZone);
-                }
-
-                case ISO_DATE_TIME: {
-                    return format(value, DateTimeType.DATE_TIME, null, null, timeZone);
-                }
-
-                default: {
-                    return String.format(locale, argument, value);
-                }
-            }
+            return switch (argument) {
+                case CURRENCY -> NumberFormat.getCurrencyInstance(locale).format(value);
+                case PERCENT -> NumberFormat.getPercentInstance(locale).format(value);
+                case SHORT_DATE -> format(value, DateTimeType.DATE, FormatStyle.SHORT, locale, timeZone);
+                case MEDIUM_DATE -> format(value, DateTimeType.DATE, FormatStyle.MEDIUM, locale, timeZone);
+                case LONG_DATE -> format(value, DateTimeType.DATE, FormatStyle.LONG, locale, timeZone);
+                case FULL_DATE -> format(value, DateTimeType.DATE, FormatStyle.FULL, locale, timeZone);
+                case ISO_DATE -> format(value, DateTimeType.DATE, null, null, timeZone);
+                case SHORT_TIME -> format(value, DateTimeType.TIME, FormatStyle.SHORT, locale, timeZone);
+                case MEDIUM_TIME -> format(value, DateTimeType.TIME, FormatStyle.MEDIUM, locale, timeZone);
+                case LONG_TIME -> format(value, DateTimeType.TIME, FormatStyle.LONG, locale, timeZone);
+                case FULL_TIME -> format(value, DateTimeType.TIME, FormatStyle.FULL, locale, timeZone);
+                case ISO_TIME -> format(value, DateTimeType.TIME, null, null, timeZone);
+                case SHORT_DATE_TIME -> format(value, DateTimeType.DATE_TIME, FormatStyle.SHORT, locale, timeZone);
+                case MEDIUM_DATE_TIME -> format(value, DateTimeType.DATE_TIME, FormatStyle.MEDIUM, locale, timeZone);
+                case LONG_DATE_TIME -> format(value, DateTimeType.DATE_TIME, FormatStyle.LONG, locale, timeZone);
+                case FULL_DATE_TIME -> format(value, DateTimeType.DATE_TIME, FormatStyle.FULL, locale, timeZone);
+                case ISO_DATE_TIME -> format(value, DateTimeType.DATE_TIME, null, null, timeZone);
+                default -> String.format(locale, argument, value);
+            };
         }
 
         static String format(Object value, DateTimeType dateTimeType, FormatStyle formatStyle, Locale locale, TimeZone timeZone) {
-            if (value instanceof Number) {
-                value = new Date(((Number)value).longValue());
+            if (value instanceof Number number) {
+                value = new Date(number.longValue());
             }
 
-            if (value instanceof Date) {
-                value = ((Date)value).toInstant();
+            if (value instanceof Date date) {
+                value = date.toInstant();
             }
 
             TemporalAccessor temporalAccessor;
-            if (value instanceof Instant) {
-                temporalAccessor = ZonedDateTime.ofInstant((Instant)value, timeZone.toZoneId());
+            if (value instanceof Instant instant) {
+                temporalAccessor = ZonedDateTime.ofInstant(instant, timeZone.toZoneId());
             } else {
                 LocalDateTime localDateTime;
-                if (value instanceof LocalDate) {
+                if (value instanceof LocalDate localDate) {
                     localDateTime = LocalDateTime.of((LocalDate)value, LocalTime.MIDNIGHT);
                 } else if (value instanceof LocalTime) {
                     localDateTime = LocalDateTime.of(LocalDate.now(), (LocalTime)value);
@@ -217,35 +164,29 @@ public class TemplateEncoder extends Encoder<Object> {
                 temporalAccessor = ZonedDateTime.of(localDateTime, timeZone.toZoneId());
             }
 
-            switch (dateTimeType) {
-                case DATE: {
+            return switch (dateTimeType) {
+                case DATE -> {
                     if (formatStyle != null) {
-                        return DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
+                        yield DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
                     } else {
-                        return DateTimeFormatter.ISO_OFFSET_DATE.format(ZonedDateTime.from(temporalAccessor));
+                        yield DateTimeFormatter.ISO_OFFSET_DATE.format(ZonedDateTime.from(temporalAccessor));
                     }
                 }
-
-                case TIME: {
+                case TIME -> {
                     if (formatStyle != null) {
-                        return DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                        yield DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
                     } else {
-                        return DateTimeFormatter.ISO_OFFSET_TIME.format(ZonedDateTime.from(temporalAccessor));
+                        yield DateTimeFormatter.ISO_OFFSET_TIME.format(ZonedDateTime.from(temporalAccessor));
                     }
                 }
-
-                case DATE_TIME: {
+                case DATE_TIME -> {
                     if (formatStyle != null) {
-                        return DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
+                        yield DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
                     } else {
-                        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.from(temporalAccessor));
+                        yield DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.from(temporalAccessor));
                     }
                 }
-
-                default: {
-                    throw new UnsupportedOperationException();
-                }
-            }
+            };
         }
     }
 
@@ -326,8 +267,8 @@ public class TemplateEncoder extends Encoder<Object> {
                     } else {
                         var value = entry.getValue();
 
-                        if (value instanceof Map<?, ?>) {
-                            return ((Map<?, ?>) value).get(key);
+                        if (value instanceof Map<?, ?> map) {
+                            return map.get(key);
                         } else if (key.equals(SELF_REFERENCE)) {
                             return value;
                         } else {
@@ -347,8 +288,8 @@ public class TemplateEncoder extends Encoder<Object> {
                     } else {
                         var value = entry.getValue();
 
-                        if (value instanceof Map<?, ?>) {
-                            return ((Map<?, ?>) value).containsKey(key);
+                        if (value instanceof Map<?, ?> map) {
+                            return map.containsKey(key);
                         } else {
                             return key.equals(SELF_REFERENCE);
                         }
@@ -551,8 +492,8 @@ public class TemplateEncoder extends Encoder<Object> {
     @SuppressWarnings("unchecked")
     private void writeRoot(Object root, Writer writer, Locale locale, TimeZone timeZone, Reader reader) throws IOException {
         Map<String, ?> dictionary;
-        if (root instanceof Map<?, ?>) {
-            dictionary = (Map<String, ?>)root;
+        if (root instanceof Map<?, ?> map) {
+            dictionary = (Map<String, ?>)map;
         } else {
             dictionary = mapOf(
                 entry(SELF_REFERENCE, root)
@@ -666,15 +607,15 @@ public class TemplateEncoder extends Encoder<Object> {
                     }
 
                     switch (markerType) {
-                        case CONDITIONAL_SECTION_START: {
+                        case CONDITIONAL_SECTION_START -> {
                             sectionNames.push(marker);
 
                             var value = getMarkerValue(marker);
 
                             if (value != null
-                                && (!(value instanceof Boolean) || ((Boolean)value))
-                                && (!(value instanceof String) || !((String)value).isEmpty())
-                                && (!(value instanceof Iterable<?>) || ((Iterable<?>)value).iterator().hasNext())) {
+                                && (!(value instanceof Boolean flag) || flag)
+                                && (!(value instanceof String string) || !string.isEmpty())
+                                && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())) {
                                 writeRoot(value, writer, locale, timeZone, reader);
                             } else {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);
@@ -682,10 +623,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             sectionNames.pop();
 
-                            break;
                         }
-
-                        case REPEATING_SECTION_START: {
+                        case REPEATING_SECTION_START -> {
                             String separator = null;
 
                             var n = marker.length();
@@ -707,10 +646,10 @@ public class TemplateEncoder extends Encoder<Object> {
                             Iterator<?> iterator;
                             if (value == null) {
                                 iterator = Collections.emptyIterator();
-                            } else if (value instanceof Iterable<?>) {
-                                iterator = ((Iterable<?>)value).iterator();
-                            } else if (value instanceof Map<?, ?>) {
-                                iterator = new MapIterator((Map<?, ?>)value);
+                            } else if (value instanceof Iterable<?> iterable) {
+                                iterator = iterable.iterator();
+                            } else if (value instanceof Map<?, ?> map) {
+                                iterator = new MapIterator(map);
                             } else {
                                 throw new IOException("Invalid section element.");
                             }
@@ -743,18 +682,16 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             sectionNames.pop();
 
-                            break;
                         }
-
-                        case INVERTED_SECTION_START: {
+                        case INVERTED_SECTION_START -> {
                             sectionNames.push(marker);
 
                             var value = getMarkerValue(marker);
 
                             if (value == null
-                                || (value instanceof Boolean && !((Boolean)value))
-                                || (value instanceof String && ((String)value).isEmpty())
-                                || (value instanceof Iterable<?> && !((Iterable<?>)value).iterator().hasNext())) {
+                                || (value instanceof Boolean flag && !flag)
+                                || (value instanceof String string && string.isEmpty())
+                                || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())) {
                                 writeRoot(value, writer, locale, timeZone, reader);
                             } else {
                                 writeRoot(null, new NullWriter(), locale, timeZone, reader);
@@ -762,10 +699,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             sectionNames.pop();
 
-                            break;
                         }
-
-                        case SECTION_END: {
+                        case SECTION_END -> {
                             if (!sectionNames.peek().equals(marker)) {
                                 throw new IOException("Invalid closing section marker.");
                             }
@@ -774,8 +709,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             return;
                         }
-
-                        case RESOURCE: {
+                        case RESOURCE -> {
                             if (resourceBundle == null) {
                                 throw new IllegalStateException("Missing resource bundle.");
                             }
@@ -793,10 +727,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             writer.append(value.toString());
 
-                            break;
                         }
-
-                        case INCLUDE: {
+                        case INCLUDE -> {
                             if (root != null) {
                                 var url = new URL(this.url, marker);
 
@@ -805,15 +737,11 @@ public class TemplateEncoder extends Encoder<Object> {
                                 }
                             }
 
-                            break;
                         }
-
-                        case COMMENT: {
+                        case COMMENT -> {
                             // No-op
-                            break;
                         }
-
-                        case VARIABLE: {
+                        case VARIABLE -> {
                             var value = getMarkerValue(marker);
 
                             if (value != null) {
@@ -832,12 +760,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                 writer.append(value.toString());
                             }
 
-                            break;
                         }
-
-                        default: {
-                            throw new UnsupportedOperationException();
-                        }
+                        default -> throw new UnsupportedOperationException();
                     }
                 } else {
                     writer.append('{');
@@ -876,8 +800,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
         if (value == null) {
             return null;
-        } else if (value instanceof Map<?, ?>) {
-            return valueAt((Map<?, ?>)value, path);
+        } else if (value instanceof Map<?, ?> map) {
+            return valueAt(map, path);
         } else {
             throw new IllegalArgumentException("Value is not a map.");
         }

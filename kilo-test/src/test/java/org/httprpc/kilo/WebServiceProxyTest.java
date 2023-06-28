@@ -130,11 +130,9 @@ public class WebServiceProxyTest {
 
         @Override
         public boolean equals(Object object) {
-            if (!(object instanceof Item)) {
+            if (!(object instanceof Item item)) {
                 return false;
             }
-
-            var item = (Item)object;
 
             return id != null && id.equals(item.id)
                 && description != null && description.equals(item.description)

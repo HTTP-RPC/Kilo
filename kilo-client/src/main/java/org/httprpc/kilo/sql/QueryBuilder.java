@@ -974,19 +974,11 @@ public class QueryBuilder {
             return null;
         }
 
-        switch (results.size()) {
-            case 0: {
-                return null;
-            }
-
-            case 1: {
-                return results.get(0);
-            }
-
-            default: {
-                throw new IllegalStateException("Unexpected result count.");
-            }
-        }
+        return switch (results.size()) {
+            case 0 -> null;
+            case 1 -> results.get(0);
+            default -> throw new IllegalStateException("Unexpected result count.");
+        };
     }
 
     /**
@@ -1192,11 +1184,9 @@ public class QueryBuilder {
     }
 
     private void encode(Object value) {
-        if (value instanceof String) {
-            append((String)value);
-        } else if (value instanceof List<?>) {
-            var list = (List<?>)value;
-
+        if (value instanceof String string) {
+            append(string);
+        } else if (value instanceof List<?> list) {
             sqlBuilder.append("coalesce(");
 
             var i = 0;
@@ -1212,9 +1202,7 @@ public class QueryBuilder {
             }
 
             sqlBuilder.append(")");
-        } else if (value instanceof QueryBuilder) {
-            var queryBuilder = (QueryBuilder)value;
-
+        } else if (value instanceof QueryBuilder queryBuilder) {
             sqlBuilder.append("(");
             sqlBuilder.append(queryBuilder.getSQL());
             sqlBuilder.append(")");

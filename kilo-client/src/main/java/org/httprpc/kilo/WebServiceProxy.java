@@ -607,42 +607,18 @@ public class WebServiceProxy {
             requestHandler = new RequestHandler() {
                 @Override
                 public String getContentType() {
-                    String contentType;
-                    switch (encoding) {
-                        case APPLICATION_X_WWW_FORM_URLENCODED: {
-                            contentType = "application/x-www-form-urlencoded";
-                            break;
-                        }
-
-                        case MULTIPART_FORM_DATA: {
-                            contentType = String.format("multipart/form-data; boundary=%s", multipartBoundary);
-                            break;
-                        }
-
-                        default: {
-                            throw new UnsupportedOperationException();
-                        }
-                    }
-
-                    return contentType;
+                    return switch (encoding) {
+                        case APPLICATION_X_WWW_FORM_URLENCODED -> "application/x-www-form-urlencoded";
+                        case MULTIPART_FORM_DATA -> String.format("multipart/form-data; boundary=%s", multipartBoundary);
+                    };
                 }
 
                 @Override
                 public void encodeRequest(OutputStream outputStream) throws IOException {
                     switch (encoding) {
-                        case APPLICATION_X_WWW_FORM_URLENCODED: {
-                            encodeApplicationXWWWFormURLEncodedRequest(outputStream);
-                            break;
-                        }
-
-                        case MULTIPART_FORM_DATA: {
-                            encodeMultipartFormDataRequest(outputStream);
-                            break;
-                        }
-
-                        default: {
-                            throw new UnsupportedOperationException();
-                        }
+                        case APPLICATION_X_WWW_FORM_URLENCODED -> encodeApplicationXWWWFormURLEncodedRequest(outputStream);
+                        case MULTIPART_FORM_DATA -> encodeMultipartFormDataRequest(outputStream);
+                        default -> throw new UnsupportedOperationException();
                     }
                 }
             };
@@ -849,8 +825,8 @@ public class WebServiceProxy {
                 writer.append(String.format("--%s\r\n", multipartBoundary));
                 writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
 
-                if (value instanceof URL) {
-                    var path = ((URL)value).getPath();
+                if (value instanceof URL url) {
+                    var path = url.getPath();
                     var filename = path.substring(path.lastIndexOf('/') + 1);
 
                     writer.append(String.format("; filename=\"%s\"\r\n", filename));
@@ -880,19 +856,16 @@ public class WebServiceProxy {
 
     @SuppressWarnings("unchecked")
     private static List<Object> getParameterValues(Object argument) {
-        List<Object> values;
-        if (argument instanceof List<?>) {
-            values = (List<Object>)argument;
+        if (argument instanceof List<?> list) {
+            return (List<Object>)list;
         } else {
-            values = listOf(getParameterValue(argument));
+            return listOf(getParameterValue(argument));
         }
-
-        return values;
     }
 
     private static Object getParameterValue(Object argument) {
-        if (argument instanceof Date) {
-            return ((Date)argument).getTime();
+        if (argument instanceof Date date) {
+            return date.getTime();
         } else {
             return argument;
         }
