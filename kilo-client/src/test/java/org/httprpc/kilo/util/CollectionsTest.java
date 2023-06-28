@@ -40,6 +40,10 @@ public class CollectionsTest {
         list.add(3);
 
         assertEquals(list, listOf(1, 2, 3));
+
+        list.remove(2);
+
+        assertEquals(2, list.size());
     }
 
     @Test
@@ -55,6 +59,10 @@ public class CollectionsTest {
             entry("b", 2),
             entry("c", 3)
         ));
+
+        map.remove("c");
+
+        assertEquals(2, map.size());
     }
 
     @Test

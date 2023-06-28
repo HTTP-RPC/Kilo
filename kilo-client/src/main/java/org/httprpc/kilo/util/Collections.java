@@ -15,6 +15,7 @@
 package org.httprpc.kilo.util;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ public class Collections {
     }
 
     /**
-     * Creates an immutable list of elements.
+     * Creates a list of elements.
      *
      * @param <E>
      * The element type.
@@ -39,7 +40,8 @@ public class Collections {
      * The list elements.
      *
      * @return
-     * An immutable list containing the provided elements.
+     * A mutable, random-access list containing the provided elements in the
+     * order given.
      */
     @SafeVarargs
     public static <E> List<E> listOf(E... elements) {
@@ -47,11 +49,15 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return java.util.Collections.unmodifiableList(Arrays.asList(elements));
+        var list = new ArrayList<E>(elements.length);
+
+        java.util.Collections.addAll(list, elements);
+
+        return list;
     }
 
     /**
-     * Creates an immutable map of entries.
+     * Creates a map of entries.
      *
      * @param <K>
      * The key type.
@@ -63,7 +69,7 @@ public class Collections {
      * The map entries.
      *
      * @return
-     * An immutable map containing the provided entries.
+     * A mutable map containing the provided entries in the order given.
      */
     @SafeVarargs
     public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
@@ -71,13 +77,13 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        Map<K, V> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<K, V>();
 
         for (var entry : entries) {
             map.put(entry.getKey(), entry.getValue());
         }
 
-        return java.util.Collections.unmodifiableMap(map);
+        return map;
     }
 
     /**

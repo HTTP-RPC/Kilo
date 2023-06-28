@@ -1183,7 +1183,7 @@ This code would produce the following output:
 ```
 
 ## Collections and Optionals
-The `Collections` class provides a set of static utility methods for instantiating immutable list and map values:
+The `Collections` class provides a set of static utility methods for declaratively instantiating list and map values:
 
 ```java
 public static <E> List<E> listOf(E... elements) { ... }
@@ -1191,7 +1191,7 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
-These methods offer an alternative to similar methods defined by the `List` and `Map` interfaces, which do not permit `null` values.
+They offer an alternative to similar methods defined by the `List` and `Map` interfaces, which produce immutable instances and do not permit `null` values.
 
 Additionally, `Collections` includes the following methods for creating empty lists and maps:
 
