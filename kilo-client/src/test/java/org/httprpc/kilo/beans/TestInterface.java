@@ -68,4 +68,6 @@ public interface TestInterface {
 
     Map<String, Double> getDoubleMap();
     Map<String, NestedInterface> getNestedBeanMap();
+
+    TestRecord getTestRecord();
 }

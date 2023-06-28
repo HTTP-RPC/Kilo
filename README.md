@@ -804,7 +804,7 @@ System.out.println(root.getChildren().get(0).getName()); // Winter
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
 
-Concrete bean types are also supported, as are simple types and parameterized collections. For example:
+Concrete bean types are also supported, as are simple types, parameterized collections, and records. For example:
 
 ```java
 var value = BeanAdapter.coerce("2.5", Double.class);
@@ -835,6 +835,8 @@ producing the following output:
   3
 ]
 ```
+
+TODO Record example
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:

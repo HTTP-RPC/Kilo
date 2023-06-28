@@ -71,6 +71,8 @@ public class TestBean implements TestInterface {
     private Map<String, Double> doubleMap = null;
     private Map<String, NestedInterface> nestedBeanMap = null;
 
+    private TestRecord testRecord = null;
+
     @Key("i")
     @Override
     public int getInteger() {
@@ -287,5 +289,14 @@ public class TestBean implements TestInterface {
 
     public double setZ(double value) {
         return value;
+    }
+
+    @Override
+    public TestRecord getTestRecord() {
+        return testRecord;
+    }
+
+    public void setTestRecord(TestRecord testRecord) {
+        this.testRecord = testRecord;
     }
 }
