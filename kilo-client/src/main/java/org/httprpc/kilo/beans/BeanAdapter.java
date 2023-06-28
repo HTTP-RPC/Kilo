@@ -569,9 +569,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     var elementType = actualTypeArguments[0];
 
-                    return list.stream()
-                        .map(element -> toGenericType(element, elementType))
-                        .collect(Collectors.toCollection(() -> new ArrayList<>(list.size())));
+                    var genericList = new ArrayList<>(list.size());
+
+                    for (var element : list) {
+                        genericList.add(toGenericType(element, elementType));
+                    }
+
+                    return genericList;
                 } else {
                     throw new IllegalArgumentException("Value is not a list.");
                 }
@@ -579,16 +583,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (value == null) {
                     return null;
                 } else if (value instanceof Map<?, ?>) {
+                    var map = (Map<?, ?>)value;
+
                     var keyType = actualTypeArguments[0];
                     var valueType = actualTypeArguments[1];
 
-                    var map = new LinkedHashMap<>();
+                    var genericMap = new LinkedHashMap<>();
 
-                    for (var entry : ((Map<?, ?>)value).entrySet()) {
-                        map.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
+                    for (var entry : map.entrySet()) {
+                        genericMap.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
                     }
 
-                    return map;
+                    return genericMap;
                 } else {
                     throw new IllegalArgumentException("Value is not a map.");
                 }
