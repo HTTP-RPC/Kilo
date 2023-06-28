@@ -146,22 +146,19 @@ public class TemplateEncoder extends Encoder<Object> {
                 value = date.toInstant();
             }
 
+            var zoneId = timeZone.toZoneId();
+
             TemporalAccessor temporalAccessor;
             if (value instanceof Instant instant) {
-                temporalAccessor = ZonedDateTime.ofInstant(instant, timeZone.toZoneId());
+                temporalAccessor = ZonedDateTime.ofInstant(instant, zoneId);
+            } else if (value instanceof LocalDate localDate) {
+                temporalAccessor = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
+            } else if (value instanceof LocalTime localTime) {
+                temporalAccessor = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
+            } else if (value instanceof LocalDateTime localDateTime) {
+                temporalAccessor = ZonedDateTime.of(localDateTime, zoneId);
             } else {
-                LocalDateTime localDateTime;
-                if (value instanceof LocalDate localDate) {
-                    localDateTime = LocalDateTime.of((LocalDate)value, LocalTime.MIDNIGHT);
-                } else if (value instanceof LocalTime) {
-                    localDateTime = LocalDateTime.of(LocalDate.now(), (LocalTime)value);
-                } else if (value instanceof LocalDateTime) {
-                    localDateTime = (LocalDateTime)value;
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-
-                temporalAccessor = ZonedDateTime.of(localDateTime, timeZone.toZoneId());
+                throw new UnsupportedOperationException();
             }
 
             return switch (dateTimeType) {

@@ -55,7 +55,6 @@ import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -740,7 +739,7 @@ public abstract class WebService extends HttpServlet {
         return instances.values().stream()
             .map(WebService::getServiceDescriptor)
             .sorted(Comparator.comparing(WebService.ServiceDescriptor::getPath))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**

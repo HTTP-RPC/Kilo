@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -117,7 +118,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
     @Override
     public List<Map<String, String>> read(Reader reader) throws IOException {
-        return StreamSupport.stream(iterate(reader).spliterator(), false).collect(Collectors.toList());
+        return StreamSupport.stream(iterate(reader).spliterator(), false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

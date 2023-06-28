@@ -935,7 +935,7 @@ public class QueryBuilder {
 
             if (statement.execute()) {
                 try (var resultSetAdapter = new ResultSetAdapter(statement.getResultSet())) {
-                    results = resultSetAdapter.stream().collect(Collectors.toList());
+                    results = resultSetAdapter.stream().collect(Collectors.toCollection(ArrayList::new));
                 }
             } else {
                 updateCount = statement.getUpdateCount();
