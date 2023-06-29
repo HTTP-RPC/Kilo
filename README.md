@@ -836,8 +836,6 @@ producing the following output:
 ]
 ```
 
-TODO Record example
-
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:
 

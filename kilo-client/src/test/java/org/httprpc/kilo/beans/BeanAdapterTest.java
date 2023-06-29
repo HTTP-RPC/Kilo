@@ -121,6 +121,11 @@ public class BeanAdapterTest {
                 entry("nestedBean", mapOf(
                     entry("flag", true)
                 ))
+            )),
+            entry("testRecord", mapOf(
+                entry("i", 10),
+                entry("d", 123.0),
+                entry("string", "xyz")
             ))
         );
 
