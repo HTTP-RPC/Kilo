@@ -124,7 +124,11 @@ public class TestService extends WebService {
         boolean getFlag();
     }
 
-    public record Coordinate(int x, int y) {
+    @Description("Represents an x/y coordinate pair.")
+    public record Coordinates(
+        @Description("The x-coordinate.") int x,
+        @Description("The y-coordinate.") int y
+    ) {
     }
 
     @RequestMethod("GET")
@@ -305,10 +309,10 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     @ResourcePath("coordinates")
-    @Content(type = Coordinate.class, multiple = true)
+    @Content(type = Coordinates.class, multiple = true)
     @SuppressWarnings("unchecked")
-    public List<Coordinate> testPostCoordinates() {
-        return (List<Coordinate>)getBody();
+    public List<Coordinates> testPostCoordinates() {
+        return (List<Coordinates>)getBody();
     }
 
     @RequestMethod("POST")

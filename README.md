@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 130KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 150KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
 
 The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
@@ -149,6 +149,8 @@ public long uploadFile(
 ```
 
 `List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 403 will be returned if a required parameter is not provided.
+
+The `Description` annotation is discussed in more detail [later](#api-documentation).
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:
@@ -336,6 +338,18 @@ public enum Size {
 }
 ```  
 
+They can also be associated with record types:
+
+```
+@Description("Represents an x/y coordinate pair.")
+public record Coordinates(
+    @Description("The x-coordinate.") int x,
+    @Description("The y-coordinate.") int y
+) {
+}
+```
+
+#### Keys
 The `Keys` annotation can be used to provide descriptions for an endpoint's keys. For example:
 
 ```java
