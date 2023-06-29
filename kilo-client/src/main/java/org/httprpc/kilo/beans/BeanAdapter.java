@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,6 +39,7 @@ import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -98,36 +100,75 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     // Record adapter
-    private static class RecordAdapter extends AbstractMap<Object, Object> {
+    private static class RecordAdapter extends AbstractMap<String, Object> {
         Object value;
         Map<Class<?>, Map<String, Property>> propertyCache;
+
+        Map<String, Property> properties;
 
         RecordAdapter(Object value, Map<Class<?>, Map<String, Property>> propertyCache) {
             this.value = value;
             this.propertyCache = propertyCache;
 
-            // TODO Get properties
+            var type = value.getClass();
+
+            properties = propertyCache.get(type);
+
+            if (properties == null) {
+                properties = getProperties(type);
+
+                propertyCache.put(type, properties);
+            }
         }
 
         @Override
         public Object get(Object key) {
-            // TODO
-            return null;
+            var property = properties.get(key);
+
+            if (property == null) {
+                return null;
+            }
+
+            try {
+                return adapt(property.accessor.invoke(value), propertyCache);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                throw new RuntimeException(exception);
+            }
         }
 
         @Override
-        public Set<Entry<Object, Object>> entrySet() {
+        public Set<Entry<String, Object>> entrySet() {
             return new AbstractSet<>() {
                 @Override
                 public int size() {
-                    // TODO
-                    return 0;
+                    return properties.size();
                 }
 
                 @Override
-                public Iterator<Entry<Object, Object>> iterator() {
-                    // TODO
-                    return null;
+                public Iterator<Entry<String, Object>> iterator() {
+                    return new Iterator<>() {
+                        Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
+
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Entry<String, Object> next() {
+                            var entry = iterator.next();
+
+                            var key = entry.getKey();
+
+                            try {
+                                var property = entry.getValue();
+
+                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(value), propertyCache));
+                            } catch (IllegalAccessException | InvocationTargetException exception) {
+                                throw new RuntimeException(exception);
+                            }
+                        }
+                    };
                 }
             };
         }
@@ -359,7 +400,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null || property.accessor == null) {
+        if (property == null) {
             return null;
         }
 
@@ -552,8 +593,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <p>If the target type is a {@link Record}, the provided value is assumed
      * to be a map, and the resulting value is an instance of the record type
-     * instantiated via the constructor whose argument names match the provided
-     * map keys.</p>
+     * instantiated via the canonical constructor.</p>
      *
      * <p>If none of the previous conditions apply, the target type is assumed
      * to be a bean, and the provided value is assumed to be a map.</p>
@@ -795,8 +835,28 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        // TODO Coerce to record type
-        return null;
+        var recordComponents = type.getRecordComponents();
+
+        var parameterTypes = Arrays.stream(recordComponents)
+            .map(RecordComponent::getType)
+            .toArray(Class<?>[]::new);
+
+        Constructor<?> constructor;
+        try {
+            constructor = type.getDeclaredConstructor(parameterTypes);
+        } catch (NoSuchMethodException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var arguments = Arrays.stream(recordComponents)
+            .map(recordComponent -> map.get(recordComponent.getName()))
+            .toArray(Object[]::new);
+
+        try {
+            return constructor.newInstance(arguments);
+        } catch (InstantiationException | IllegalAccessException  | InvocationTargetException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private static Object toBean(Object value, Class<?> type) {
@@ -898,40 +958,56 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
-        Map<String, Property> properties = new HashMap<>();
+        if (type.isRecord()) {
+            var properties = new TreeMap<String, Property>();
 
-        var methods = type.getMethods();
+            var recordComponents = type.getRecordComponents();
 
-        for (var i = 0; i < methods.length; i++) {
-            var method = methods[i];
+            for (var i = 0; i < recordComponents.length; i++) {
+                var recordComponent = recordComponents[i];
 
-            if (method.getDeclaringClass() == Object.class) {
-                continue;
+                var property = new Property();
+
+                property.accessor = recordComponent.getAccessor();
+
+                properties.put(recordComponent.getName(), property);
             }
 
-            var propertyName = getPropertyName(method);
+            return properties;
+        } else {
+            var properties = new HashMap<String, Property>();
 
-            if (propertyName == null) {
-                continue;
+            var methods = type.getMethods();
+
+            for (var i = 0; i < methods.length; i++) {
+                var method = methods[i];
+
+                if (method.getDeclaringClass() == Object.class) {
+                    continue;
+                }
+
+                var propertyName = getPropertyName(method);
+
+                if (propertyName == null) {
+                    continue;
+                }
+
+                var property = properties.get(propertyName);
+
+                if (property == null) {
+                    property = new Property();
+
+                    properties.put(propertyName, property);
+                }
+
+                if (method.getParameterCount() == 0) {
+                    property.accessor = method;
+                } else {
+                    property.mutators.add(method);
+                }
             }
 
-            var property = properties.get(propertyName);
-
-            if (property == null) {
-                property = new Property();
-
-                properties.put(propertyName, property);
-            }
-
-            if (method.getParameterCount() == 0) {
-                property.accessor = method;
-            } else {
-                property.mutators.add(method);
-            }
-        }
-
-        return properties.entrySet().stream()
-            .filter(entry -> {
+            return properties.entrySet().stream().filter(entry -> {
                 var accessor = entry.getValue().getAccessor();
 
                 if (accessor == null) {
@@ -946,6 +1022,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate key.");
             }, TreeMap::new));
+        }
     }
 
     private static String getPropertyName(Method method) {

@@ -70,4 +70,5 @@ public interface TestInterface {
     Map<String, NestedInterface> getNestedBeanMap();
 
     TestRecord getTestRecord();
+    List<TestRecord> getTestRecordList();
 }

@@ -72,6 +72,7 @@ public class TestBean implements TestInterface {
     private Map<String, NestedInterface> nestedBeanMap = null;
 
     private TestRecord testRecord = null;
+    private List<TestRecord> testRecords = null;
 
     @Key("i")
     @Override
@@ -298,5 +299,14 @@ public class TestBean implements TestInterface {
 
     public void setTestRecord(TestRecord testRecord) {
         this.testRecord = testRecord;
+    }
+
+    @Override
+    public List<TestRecord> getTestRecordList() {
+        return testRecords;
+    }
+
+    public void setTestRecordList(List<TestRecord> testRecords) {
+        this.testRecords = testRecords;
     }
 }

@@ -356,6 +356,27 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testCoordinatesPost() throws IOException {
+        var coordinates = listOf(
+            mapOf(
+                entry("x", 1),
+                entry("y", 2)
+            ),
+            mapOf(
+                entry("x", 3),
+                entry("y", 4)
+            )
+        );
+
+        var result = WebServiceProxy.post(baseURL, "test/coordinates")
+            .setBody(coordinates)
+            .setMonitorStream(System.out)
+            .invoke(List.class, Object.class);
+
+        assertEquals(coordinates, result);
+    }
+
+    @Test
     public void testImagePost() throws IOException {
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 

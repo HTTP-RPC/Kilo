@@ -124,6 +124,9 @@ public class TestService extends WebService {
         boolean getFlag();
     }
 
+    public record Coordinate(int x, int y) {
+    }
+
     @RequestMethod("GET")
     public Map<String, Object> testGet(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
@@ -292,12 +295,20 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     @Content(type = Body.class)
-    public Body testPost(int id) {
+    public Body testPostBody(int id) {
         var body = (Body)getBody();
 
         body.getString();
 
         return body;
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("coordinates")
+    @Content(type = Coordinate.class, multiple = true)
+    @SuppressWarnings("unchecked")
+    public List<Coordinate> testPostCoordinates() {
+        return (List<Coordinate>)getBody();
     }
 
     @RequestMethod("POST")

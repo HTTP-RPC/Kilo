@@ -1501,7 +1501,7 @@ public abstract class WebService extends HttpServlet {
                     } else {
                         var baseType = type.getSuperclass();
 
-                        if (baseType != Object.class) {
+                        if (baseType != Object.class && baseType != Record.class) {
                             structure.supertypes.add(describeType(baseType));
                         }
                     }
@@ -1509,7 +1509,7 @@ public abstract class WebService extends HttpServlet {
                     for (var entry : BeanAdapter.getProperties(type).entrySet()) {
                         var accessor = entry.getValue().getAccessor();
 
-                        if (accessor == null || accessor.getDeclaringClass() != type) {
+                        if (accessor.getDeclaringClass() != type) {
                             continue;
                         }
 

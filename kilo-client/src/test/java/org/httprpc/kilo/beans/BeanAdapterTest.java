@@ -125,7 +125,14 @@ public class BeanAdapterTest {
             entry("testRecord", mapOf(
                 entry("i", 10),
                 entry("d", 123.0),
-                entry("string", "xyz")
+                entry("string", "abc")
+            )),
+            entry("testRecordList", listOf(
+                mapOf(
+                    entry("i", 20),
+                    entry("d", 456.0),
+                    entry("string", "xyz")
+                )
             ))
         );
 
