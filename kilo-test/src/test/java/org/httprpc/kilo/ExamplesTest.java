@@ -93,6 +93,9 @@ public class ExamplesTest {
         }
     }
 
+    public record Employee(String badgeNumber, String firstName, String lastName) {
+    }
+
     @Test
     public void testMathService() throws IOException {
         var baseURL = new URL("http://localhost:8080/kilo-test/");
@@ -294,6 +297,15 @@ public class ExamplesTest {
         } catch (IllegalStateException exception) {
             System.out.println(exception.getMessage());
         }
+    }
+
+    @Test
+    public void testRecord() throws IOException {
+        var employee = new Employee("123", "John", "Smith");
+
+        var jsonEncoder = new JSONEncoder();
+
+        jsonEncoder.write(BeanAdapter.adapt(employee), System.out);
     }
 
     @Test

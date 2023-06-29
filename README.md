@@ -788,6 +788,30 @@ The resulting output would look something like this (`BeanAdapter` traverses pro
 }
 ```
 
+### Records
+Record values are treated similarly to beans:
+
+```java
+public record Employee(String badgeNumber, String firstName, String lastName) {
+}
+```
+
+```java
+var employee = new Employee("123", "John", "Smith");
+
+var jsonEncoder = new JSONEncoder();
+
+jsonEncoder.write(BeanAdapter.adapt(employee), System.out);
+```
+
+```json
+{
+  "badgeNumber": "123",
+  "firstName": "John",
+  "lastName": "Smith"
+}
+```
+
 ### Type Coercion
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures, such as decoded JSON objects:
 
