@@ -440,9 +440,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * <p>If the value is an {@link Iterable}, it is wrapped in an adapter that will
-     * recursively adapt the iterable's elements. If the value is a {@link Map},
-     * it is wrapped in an adapter that will recursively adapt the map's values.
+     * <p>If the value is a {@link Record}, it is wrapped in an adapter that
+     * will recursively adapt the record's fields. If the value is an
+     * {@link Iterable}, it is wrapped in an adapter that will recursively
+     * adapt the iterable's elements. If the value is a {@link Map}, it is
+     * wrapped in an adapter that will recursively adapt the map's values.
      * Otherwise, the value is assumed to be a bean and is wrapped in a
      * {@link BeanAdapter}.</p>
      *
@@ -468,6 +470,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof UUID
             || value instanceof URL) {
             return value;
+        } else if (value instanceof Record) {
+            // TODO Return a record adapter
+            return null;
         } else if (value instanceof Iterable<?> iterable) {
             return new IterableAdapter(iterable, propertyCache);
         } else if (value instanceof Map<?, ?> map) {
@@ -506,12 +511,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * <p>If the target type is an {@link Enum}, the resulting value is the first
-     * constant whose string representation matches the value's string
+     * <p>If the target type is an {@link Enum}, the resulting value is the
+     * first constant whose string representation matches the value's string
      * representation.</p>
      *
-     * <p>If none of the previous conditions apply, the target type is assumed to
-     * be a bean. The provided value is assumed to be a map and is converted as
+     * <p>If the target type is a {@link Record}, the provided value is assumed
+     * to be a map, and the resulting value is an instance of the record type
+     * instantiated via the constructor whose argument names match the provided
+     * map keys.</p>
+     *
+     * <p>If none of the previous conditions apply, the target type is assumed
+     * to be a bean, and the provided value is assumed to be a map.</p>
+     *
+     * <p>For records and beans, field/property values are converted as
      * follows:</p>
      *
      * <ul>
@@ -707,67 +719,82 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new IllegalArgumentException(exception);
                 }
             } else if (type.isEnum()) {
-                var name = value.toString();
-
-                var fields = type.getDeclaredFields();
-
-                for (var i = 0; i < fields.length; i++) {
-                    var field = fields[i];
-
-                    if (!field.isEnumConstant()) {
-                        continue;
-                    }
-
-                    Object constant;
-                    try {
-                        constant = field.get(null);
-                    } catch (IllegalAccessException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    if (name.equals(constant.toString())) {
-                        return constant;
-                    }
-                }
-
-                throw new IllegalArgumentException();
+                return toEnum(value, type);
+            } else if (type.isRecord()) {
+                return toRecord(value, type);
             } else {
-                if (!(value instanceof Map<?, ?> map)) {
-                    throw new IllegalArgumentException();
-                }
-
-                if (type.isInterface()) {
-                    return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map)));
-                } else {
-                    Constructor<?> constructor;
-                    try {
-                        constructor = type.getConstructor();
-                    } catch (NoSuchMethodException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    Object bean;
-                    try {
-                        bean = constructor.newInstance();
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    var beanAdapter = new BeanAdapter(bean);
-
-                    for (var entry : beanAdapter.properties.entrySet()) {
-                        if (entry.getValue().isReadOnly()) {
-                            continue;
-                        }
-
-                        var key = entry.getKey();
-
-                        beanAdapter.put(key, map.get(key));
-                    }
-
-                    return bean;
-                }
+                return toBean(value, type);
             }
+        }
+    }
+
+    private static Object toEnum(Object value, Class<?> type) {
+        var name = value.toString();
+
+        var fields = type.getDeclaredFields();
+
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+
+            if (!field.isEnumConstant()) {
+                continue;
+            }
+
+            Object constant;
+            try {
+                constant = field.get(null);
+            } catch (IllegalAccessException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            if (name.equals(constant.toString())) {
+                return constant;
+            }
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    private static Object toRecord(Object value, Class<?> type) {
+        // TODO Coerce to record type
+        return null;
+    }
+
+    private static Object toBean(Object value, Class<?> type) {
+        if (!(value instanceof Map<?, ?> map)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (type.isInterface()) {
+            return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map)));
+        } else {
+            Constructor<?> constructor;
+            try {
+                constructor = type.getConstructor();
+            } catch (NoSuchMethodException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            Object bean;
+            try {
+                bean = constructor.newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            var beanAdapter = new BeanAdapter(bean);
+
+            for (var entry : beanAdapter.properties.entrySet()) {
+                if (entry.getValue().isReadOnly()) {
+                    continue;
+                }
+
+                var key = entry.getKey();
+
+                beanAdapter.put(key, map.get(key));
+            }
+
+            return bean;
         }
     }
 
