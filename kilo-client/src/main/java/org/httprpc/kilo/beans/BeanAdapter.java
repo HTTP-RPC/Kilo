@@ -97,6 +97,42 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    // Record adapter
+    private static class RecordAdapter extends AbstractMap<Object, Object> {
+        Object value;
+        Map<Class<?>, Map<String, Property>> propertyCache;
+
+        RecordAdapter(Object value, Map<Class<?>, Map<String, Property>> propertyCache) {
+            this.value = value;
+            this.propertyCache = propertyCache;
+
+            // TODO Get properties
+        }
+
+        @Override
+        public Object get(Object key) {
+            // TODO
+            return null;
+        }
+
+        @Override
+        public Set<Entry<Object, Object>> entrySet() {
+            return new AbstractSet<>() {
+                @Override
+                public int size() {
+                    // TODO
+                    return 0;
+                }
+
+                @Override
+                public Iterator<Entry<Object, Object>> iterator() {
+                    // TODO
+                    return null;
+                }
+            };
+        }
+    }
+
     // Iterable adapter
     private static class IterableAdapter extends AbstractList<Object> {
         Iterable<?> iterable;
@@ -471,8 +507,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof URL) {
             return value;
         } else if (value instanceof Record) {
-            // TODO Return a record adapter
-            return null;
+            return new RecordAdapter(value, propertyCache);
         } else if (value instanceof Iterable<?> iterable) {
             return new IterableAdapter(iterable, propertyCache);
         } else if (value instanceof Map<?, ?> map) {
@@ -756,6 +791,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Object toRecord(Object value, Class<?> type) {
+        if (!(value instanceof Map<?, ?> map)) {
+            throw new IllegalArgumentException();
+        }
+
         // TODO Coerce to record type
         return null;
     }
