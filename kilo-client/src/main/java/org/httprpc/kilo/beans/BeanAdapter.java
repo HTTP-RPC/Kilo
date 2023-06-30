@@ -589,21 +589,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * first constant whose string representation matches the value's string
      * representation.</p>
      *
-     * <p>If the target type is a {@link Record}, the provided value is assumed
-     * to be a map, and the resulting value is an instance of the record type
-     * instantiated via the canonical constructor.</p>
-     *
-     * <p>If none of the previous conditions apply, the target type is assumed
-     * to be a bean, and the provided value is assumed to be a map.</p>
-     *
-     * <p>For records and beans, field/property values are converted as
-     * follows:</p>
+     * <p>If none of the previous conditions apply, the provided value is
+     * assumed to be a map. If the if the target type is a {@link Record}, the
+     * resulting value is instantiated via the type's canonical constructor.
+     * Otherwise, the target type is assumed to be a bean:</p>
      *
      * <ul>
-     * <li>If the target type is an interface, the return value is a proxy
+     * <li>If the type is an interface, the return value is a proxy
      * implementation of the interface that maps accessor methods to entries in
      * the map. {@link Object} methods are delegated to the underlying map.</li>
-     * <li>If the target type is a concrete class, an instance of the type is
+     * <li>If the type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
      *
