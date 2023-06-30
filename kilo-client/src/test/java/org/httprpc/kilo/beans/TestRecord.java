@@ -14,5 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
-public record TestRecord(int i, double d, String string) {
+import org.httprpc.kilo.Required;
+
+public record TestRecord(int i, double d, @Required String string) {
 }

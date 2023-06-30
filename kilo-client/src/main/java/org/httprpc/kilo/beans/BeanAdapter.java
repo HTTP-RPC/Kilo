@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,7 +38,6 @@ import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -837,9 +835,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var recordComponents = type.getRecordComponents();
 
-        var parameterTypes = Arrays.stream(recordComponents)
-            .map(RecordComponent::getType)
-            .toArray(Class<?>[]::new);
+        var parameterTypes = new Class<?>[recordComponents.length];
+        var arguments = new Object[recordComponents.length];
+
+        for (var i = 0; i < recordComponents.length; i++) {
+            var recordComponent = recordComponents[i];
+
+            parameterTypes[i] = recordComponent.getType();
+
+            var name = recordComponent.getName();
+            var argument = map.get(name);
+
+            if (recordComponent.getAccessor().getAnnotation(Required.class) != null && argument == null) {
+                throw new IllegalArgumentException(String.format("Component \"%s\" cannot be null.", name));
+            }
+
+            arguments[i] = argument;
+        }
 
         Constructor<?> constructor;
         try {
@@ -847,10 +859,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         } catch (NoSuchMethodException exception) {
             throw new RuntimeException(exception);
         }
-
-        var arguments = Arrays.stream(recordComponents)
-            .map(recordComponent -> map.get(recordComponent.getName()))
-            .toArray(Object[]::new);
 
         try {
             return constructor.newInstance(arguments);

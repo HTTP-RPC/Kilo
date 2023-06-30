@@ -921,7 +921,7 @@ rather than this:
 ```
 
 ### Required Properties
-The `Required` annotation discussed [previously](#required-parameters) can also be used to indicate required bean properties. For example, the following class defines two such properties:
+The `Required` annotation discussed [previously](#required-parameters) can also be used to indicate required bean properties or record components. For example, the following class defines two required properties:
 
 ```java
 public static class Vehicle {

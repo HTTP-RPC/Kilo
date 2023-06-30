@@ -435,6 +435,8 @@ public class BeanAdapterTest {
         var nestedInterface = BeanAdapter.coerce(mapOf(), TestInterface.NestedInterface.class);
 
         assertThrows(UnsupportedOperationException.class, nestedInterface::getFlag);
+
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestRecord.class));
     }
 
     @Test
