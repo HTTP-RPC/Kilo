@@ -591,8 +591,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <p>If none of the previous conditions apply, the provided value is
      * assumed to be a map. If the if the target type is a {@link Record}, the
-     * resulting value is instantiated via the type's canonical constructor.
-     * Otherwise, the target type is assumed to be a bean:</p>
+     * resulting value is instantiated via the type's canonical constructor
+     * using the entries in the map. Otherwise, the target type is assumed to
+     * be a bean:</p>
      *
      * <ul>
      * <li>If the type is an interface, the return value is a proxy
