@@ -136,7 +136,9 @@ If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidd
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
 #### Required Parameters
-Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
+Parameters that must be provided by the caller can be indicated by the `Required` annotation. This annotation can also be applied to bean properties and record components, as discussed [later](#required-properties).
+
+For example, the following service method accepts a single required `file` argument:
 
 ```java
 @RequestMethod("POST")
@@ -150,7 +152,7 @@ public long uploadFile(
 
 `List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other types, HTTP 403 will be returned if a required parameter is not provided.
 
-The `Description` annotation is discussed in more detail [later](#api-documentation).
+The `Description` annotation is discussed in more detail in the [API Documentation](#api-documentation) section.
 
 ### Path Variables
 Path variables are specified by a "?" character in an endpoint's resource path:
@@ -343,8 +345,8 @@ They can also be associated with record types:
 ```
 @Description("Represents an x/y coordinate pair.")
 public record Coordinates(
-    @Description("The x-coordinate.") int x,
-    @Description("The y-coordinate.") int y
+    @Description("The x-coordinate.") @Required int x,
+    @Description("The y-coordinate.") @Required int y
 ) {
 }
 ```
@@ -921,7 +923,7 @@ rather than this:
 ```
 
 ### Required Properties
-The `Required` annotation discussed [previously](#required-parameters) can also be used to indicate required bean properties or record components. For example, the following class defines two required properties:
+The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate required bean properties or record components. For example, the following class defines two required properties:
 
 ```java
 public static class Vehicle {
