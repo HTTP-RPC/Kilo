@@ -342,7 +342,7 @@ public enum Size {
 
 They can also be associated with record types:
 
-```
+```java
 @Description("Represents an x/y coordinate pair.")
 public record Coordinates(
     @Description("The x-coordinate.") @Required int x,
