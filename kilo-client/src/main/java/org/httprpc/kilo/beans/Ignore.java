@@ -20,7 +20,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a property should be ignored by {@link BeanAdapter}.
+ * Indicates that a bean property or record component should be ignored by
+ * {@link BeanAdapter}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

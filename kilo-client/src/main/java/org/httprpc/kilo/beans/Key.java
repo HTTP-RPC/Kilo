@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Associates a custom name with a property.
+ * Associates a custom name with a bean property or record component.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

@@ -840,9 +840,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             parameterTypes[i] = recordComponent.getType();
 
             var name = recordComponent.getName();
-            var argument = map.get(name);
+            var accessor = recordComponent.getAccessor();
 
-            if (recordComponent.getAccessor().getAnnotation(Required.class) != null && argument == null) {
+            Object argument;
+            if (accessor.getAnnotation(Ignore.class) == null) {
+                var genericType = recordComponent.getGenericType();
+
+                argument = toGenericType(map.get(Optionals.map(accessor.getAnnotation(Key.class), Key::value, name)), genericType);
+            } else {
+                argument = null;
+            }
+
+            if (accessor.getAnnotation(Required.class) != null && argument == null) {
                 throw new IllegalArgumentException(String.format("Component \"%s\" cannot be null.", name));
             }
 
@@ -962,9 +971,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
-        if (type.isRecord()) {
-            var properties = new TreeMap<String, Property>();
+        var properties = new HashMap<String, Property>();
 
+        if (type.isRecord()) {
             var recordComponents = type.getRecordComponents();
 
             for (var i = 0; i < recordComponents.length; i++) {
@@ -976,11 +985,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 properties.put(recordComponent.getName(), property);
             }
-
-            return properties;
         } else {
-            var properties = new HashMap<String, Property>();
-
             var methods = type.getMethods();
 
             for (var i = 0; i < methods.length; i++) {
@@ -1010,23 +1015,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     property.mutators.add(method);
                 }
             }
-
-            return properties.entrySet().stream().filter(entry -> {
-                var accessor = entry.getValue().getAccessor();
-
-                if (accessor == null) {
-                    throw new UnsupportedOperationException("Missing accessor.");
-                }
-
-                return (accessor.getAnnotation(Ignore.class) == null);
-            }).collect(Collectors.toMap(entry -> {
-                var key = entry.getValue().getAccessor().getAnnotation(Key.class);
-
-                return Optionals.map(key, Key::value, entry.getKey());
-            }, Map.Entry::getValue, (v1, v2) -> {
-                throw new UnsupportedOperationException("Duplicate key.");
-            }, TreeMap::new));
         }
+
+        return properties.entrySet().stream().filter(entry -> {
+            var accessor = entry.getValue().getAccessor();
+
+            if (accessor == null) {
+                throw new UnsupportedOperationException("Missing accessor.");
+            }
+
+            return (accessor.getAnnotation(Ignore.class) == null);
+        }).collect(Collectors.toMap(entry -> {
+            var key = entry.getValue().getAccessor().getAnnotation(Key.class);
+
+            return Optionals.map(key, Key::value, entry.getKey());
+        }, Map.Entry::getValue, (v1, v2) -> {
+            throw new UnsupportedOperationException("Duplicate key.");
+        }, TreeMap::new));
     }
 
     private static String getPropertyName(Method method) {

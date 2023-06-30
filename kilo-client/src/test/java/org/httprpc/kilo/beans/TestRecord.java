@@ -16,5 +16,11 @@ package org.httprpc.kilo.beans;
 
 import org.httprpc.kilo.Required;
 
-public record TestRecord(int i, double d, @Required String string) {
+import java.time.LocalDate;
+
+public record TestRecord(
+    int i,
+    double d,
+    @Key("s") @Required String string,
+    @Ignore LocalDate localDate) {
 }

@@ -125,13 +125,13 @@ public class BeanAdapterTest {
             entry("testRecord", mapOf(
                 entry("i", 10),
                 entry("d", 123.0),
-                entry("string", "abc")
+                entry("s", "abc")
             )),
             entry("testRecordList", listOf(
                 mapOf(
                     entry("i", 20),
                     entry("d", 456.0),
-                    entry("string", "xyz")
+                    entry("s", "xyz")
                 )
             ))
         );
@@ -440,6 +440,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testIgnored() {
         var testBean = new TestBean();
 
@@ -450,6 +451,20 @@ public class BeanAdapterTest {
         assertNull(beanAdapter.get("ignored"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("ignored", "xyz"));
+
+        var testRecord = BeanAdapter.coerce(mapOf(
+            entry("s", "abc"),
+            entry("localDate", LocalDate.now())
+        ), TestRecord.class);
+
+        assertEquals(0, testRecord.i());
+        assertEquals(0.0, testRecord.d());
+
+        assertNull(testRecord.localDate());
+
+        var recordAdapter = (Map<String, ?>)BeanAdapter.adapt(new TestRecord(1, 2.0, "xyx", LocalDate.now()));
+
+        assertNull(recordAdapter.get("localDate"));
     }
 
     @Test

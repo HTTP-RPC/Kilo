@@ -877,7 +877,7 @@ producing the following output:
 ```
 
 ### Custom Property Keys
-The `Key` annotation can be used to associate a custom name with a bean property. The provided value will be used in place of the property name when getting or setting property values. For example:
+The `Key` annotation can be used to associate a custom name with a bean property or record component. For example:
 
 ```java
 public static class Person {
@@ -975,7 +975,7 @@ vehicleAdapter.get("manufacturer"); // throws
 Note that, unlike [list parameters](#required-parameters), list properties are not guaranteed to contain a non-`null` value and must be explicitly annotated when required.
 
 ### Ignoring Properties
-Properties can be excluded from the map using the `Ignore` annotation. For example, given the following code:
+Bean properties or record fields can be excluded from the map using the `Ignore` annotation. For example, given the following code:
 
 ```java
 @Ignore
