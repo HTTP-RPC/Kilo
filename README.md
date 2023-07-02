@@ -309,7 +309,7 @@ public class MathService extends WebService {
 }
 ```
 
-Descriptions can also be associated with data types and properties:
+Descriptions can also be associated with bean types, enumerations, and records:
 
 ```java
 @Description("Represents an item in the catalog.")
@@ -326,8 +326,6 @@ public interface Item {
 }
 ```
 
-as well as enumerations and their values:
-
 ```java
 @Description("Represents a size option.")
 public enum Size {
@@ -339,8 +337,6 @@ public enum Size {
     LARGE
 }
 ```  
-
-They can also be associated with record types:
 
 ```java
 @Description("Represents an x/y coordinate pair.")
@@ -791,7 +787,7 @@ The resulting output would look something like this (`BeanAdapter` traverses pro
 ```
 
 ### Records
-Record values are treated similarly to beans:
+Records are treated similarly to beans:
 
 ```java
 public record Employee(String badgeNumber, String firstName, String lastName) {
