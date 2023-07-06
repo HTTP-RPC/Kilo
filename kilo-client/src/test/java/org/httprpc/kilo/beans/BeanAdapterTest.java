@@ -398,7 +398,7 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testRequiredProperties() {
+    public void testRequired() {
         var testBean = new TestBean();
 
         testBean.setNestedBean(new TestBean.NestedBean());
@@ -441,7 +441,7 @@ public class BeanAdapterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testIgnored() {
+    public void testIgnore() {
         var testBean = new TestBean();
 
         testBean.setIgnored("abc");

@@ -184,20 +184,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public Object get(int index) {
-            if (!(iterable instanceof List<?>)) {
+            if (!(iterable instanceof List<?> list)) {
                 throw new UnsupportedOperationException();
             }
 
-            return adapt(((List<?>)iterable).get(index), propertyCache);
+            return adapt(list.get(index), propertyCache);
         }
 
         @Override
         public int size() {
-            if (!(iterable instanceof List<?>)) {
+            if (!(iterable instanceof List<?> list)) {
                 throw new UnsupportedOperationException();
             }
 
-            return ((List<?>)iterable).size();
+            return list.size();
         }
 
         @Override
@@ -324,11 +324,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 object = Proxy.getInvocationHandler(object);
             }
 
-            if (!(object instanceof TypedInvocationHandler)) {
+            if (!(object instanceof TypedInvocationHandler typedInvocationHandler)) {
                 return false;
             }
 
-            return map.equals(((TypedInvocationHandler)object).map);
+            return map.equals(typedInvocationHandler.map);
         }
 
         @Override
@@ -504,9 +504,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * instance of one of the following types, it is returned as is:</p>
      *
      * <ul>
-     * <li>{@link CharSequence}</li>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
+     * <li>{@link CharSequence}</li>
      * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link TemporalAccessor}</li>
@@ -516,12 +516,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * </ul>
      *
      * <p>If the value is a {@link Record}, it is wrapped in an adapter that
-     * will recursively adapt the record's fields. If the value is an
-     * {@link Iterable}, it is wrapped in an adapter that will recursively
-     * adapt the iterable's elements. If the value is a {@link Map}, it is
-     * wrapped in an adapter that will recursively adapt the map's values.
-     * Otherwise, the value is assumed to be a bean and is wrapped in a
-     * {@link BeanAdapter}.</p>
+     * will recursively adapt the record's fields.</p>
+     *
+     * <p>If the value is an {@link Iterable}, it is wrapped in an adapter that
+     * will recursively adapt the iterable's elements. If the iterable is also
+     * a {@link List}, the returned adapter will support random access to the
+     * adapted elements.</p>
+     *
+     * <p>If the value is a {@link Map}, it is wrapped in an adapter that will
+     * recursively adapt the map's values. Map keys are not adapted.</p>
+     *
+     * <p>If none of the previous conditions apply, the value is assumed to be
+     * a bean and is wrapped in a {@link BeanAdapter}.</p>
      *
      * @param value
      * The value to adapt.
@@ -535,9 +541,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static Object adapt(Object value, Map<Class<?>, Map<String, Property>> propertyCache) {
         if (value == null
-            || value instanceof CharSequence
             || value instanceof Number
             || value instanceof Boolean
+            || value instanceof CharSequence
             || value instanceof Enum<?>
             || value instanceof Date
             || value instanceof TemporalAccessor
@@ -557,13 +563,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Coerces a value to a given type.</p>
-     *
-     * <p>For unparamterized types, if the value is already an instance of the
-     * requested type, it is returned as is. Otherwise, if the requested type
-     * is one of the following, the return value is obtained via an appropriate
-     * conversion method; for example, {@link Number#intValue()},
-     * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:</p>
+     * <p>Coerces a value to a given type. For unparamterized types, if the
+     * value is already an instance of the requested type, it is returned as
+     * is. Otherwise, if the requested type is one of the following, the return
+     * value is obtained via an appropriate conversion method; for example,
+     * {@link Number#intValue()}, {@link Object#toString()}, or
+     * {@link LocalDate#parse(CharSequence)}:</p>
      *
      * <ul>
      * <li>{@link Byte} or {@code byte}</li>
