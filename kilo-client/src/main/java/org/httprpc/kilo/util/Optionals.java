@@ -102,12 +102,12 @@ public class Optionals {
     public static <T, U> U map(T value, Function<? super T, ? extends U> mapper, U defaultValue) {
         if (value == null) {
             return defaultValue;
-        }
+        } else {
+            if (mapper == null) {
+                throw new IllegalArgumentException();
+            }
 
-        if (mapper == null) {
-            throw new IllegalArgumentException();
+            return coalesce(mapper.apply(value), defaultValue);
         }
-
-        return coalesce(mapper.apply(value), defaultValue);
     }
 }
