@@ -25,7 +25,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * {@link Iterable} adapter for JDBC result sets.
+ * Provides access to the contents of a JDBC result set via the
+ * {@link Iterable} interface. Individual rows are represented by mutable map
+ * instances produced by the adapter's iterator.
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;

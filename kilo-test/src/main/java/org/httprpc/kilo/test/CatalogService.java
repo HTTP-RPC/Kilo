@@ -51,15 +51,17 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         var item = (Item)getBody();
 
+        var connection = getConnection();
+
         var itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
-        )).execute(getConnection(), mapOf(
+        )).execute(connection, mapOf(
             entry("description", item.getDescription()),
             entry("price", item.getPrice())
         )).getGeneratedKeys().get(0), Integer.class);
 
-        var result = QueryBuilder.select("*").from("item").where("id = :itemID").execute(getConnection(), mapOf(
+        var result = QueryBuilder.select("*").from("item").where("id = :itemID").execute(connection, mapOf(
             entry("itemID", itemID)
         )).getResult();
 

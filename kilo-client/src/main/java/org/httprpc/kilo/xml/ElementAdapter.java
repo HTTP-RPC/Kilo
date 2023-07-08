@@ -28,7 +28,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
- * {@link Map} adapter for XML elements.
+ * Provides read-only access to the contents of an XML DOM element via the
+ * {@link Map} interface.
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {

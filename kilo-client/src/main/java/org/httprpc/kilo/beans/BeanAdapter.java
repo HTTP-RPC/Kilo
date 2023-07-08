@@ -967,7 +967,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the properties for a given type.
+     * Returns the properties for a given type, sorted by key.
      *
      * @param type
      * The bean type.
@@ -1054,7 +1054,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             && parameterCount == 0) {
             prefix = GET_PREFIX;
         } else if (methodName.startsWith(IS_PREFIX)
-            && !(returnType == Void.TYPE || returnType == Void.class)
+            && (returnType == Boolean.TYPE || returnType == Boolean.class)
             && parameterCount == 0) {
             prefix = IS_PREFIX;
         } else if (methodName.startsWith(SET_PREFIX)
