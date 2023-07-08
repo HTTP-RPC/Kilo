@@ -90,7 +90,19 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Retrieves a value associated with the source element.
+     * <p>Retrieves a value associated with the source element.</p>
+     *
+     * <p>Attribute values can be obtained by prepending an "@" symbol to the
+     * attribute name. Adapters for individual sub-elements can be obtained via
+     * the element name. If there is more than one element with a given name,
+     * the first matching element will be returned. A list of all elements
+     * matching a given name can be obtained by appending an asterisk to the
+     * element name.</p>
+     *
+     * <p>Namespaces are ignored when identifying elements by name. However,
+     * the namespace URI for an element (when applicable) can be obtained by
+     * requesting the value associated with the ":" key.</p>
+     *
      * {@inheritDoc}
      */
     @Override

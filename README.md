@@ -1144,7 +1144,7 @@ var lastName = holder.get("lastName");
 System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
 ```
 
-Namespaces are ignored when identifying elements by tag name. However, the namespace URI for an element (when applicable) can be obtained by requesting the value associated with the ":" key.
+Namespaces are ignored when identifying elements by name. However, the namespace URI for an element (when applicable) can be obtained by requesting the value associated with the ":" key.
 
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
 
