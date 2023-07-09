@@ -672,7 +672,7 @@ public class QueryBuilder {
      * The values to insert. If a value is an instance of {@link QueryBuilder},
      * it is considered a subquery and is wrapped in parentheses. List values
      * are considered "options" and are reduced to a single value via the SQL
-     * `coalesce()` function. All other values are encoded as is.
+     * {@code coalesce()} function. All other values are encoded as is.
      *
      * @return
      * The {@link QueryBuilder} instance.
