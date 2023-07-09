@@ -32,15 +32,16 @@ import java.util.UUID;
 
 public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {
-        private boolean flag = false;
+        private Boolean flag = false;
 
         @Required
         @Override
-        public boolean getFlag() {
+        public Boolean getFlag() {
             return flag;
         }
 
-        public void setFlag(boolean flag) {
+        @Override
+        public void setFlag(Boolean flag) {
             this.flag = flag;
         }
     }
@@ -80,6 +81,7 @@ public class TestBean implements TestInterface {
         return i;
     }
 
+    @Override
     public void setInteger(int i) {
         this.i = i;
     }
@@ -109,6 +111,7 @@ public class TestBean implements TestInterface {
         return string;
     }
 
+    @Override
     public void setString(String string) {
         this.string = string;
     }

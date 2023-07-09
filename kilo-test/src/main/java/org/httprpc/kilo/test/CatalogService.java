@@ -53,16 +53,13 @@ public class CatalogService extends AbstractDatabaseService {
 
         var connection = getConnection();
 
-        var itemID = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
+        var id = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
-        )).execute(connection, mapOf(
-            entry("description", item.getDescription()),
-            entry("price", item.getPrice())
-        )).getGeneratedKeys().get(0), Integer.class);
+        )).execute(connection, new BeanAdapter(item)).getGeneratedKeys().get(0), Integer.class);
 
-        var result = QueryBuilder.select("*").from("item").where("id = :itemID").execute(connection, mapOf(
-            entry("itemID", itemID)
+        var result = QueryBuilder.select("*").from("item").where("id = :id").execute(connection, mapOf(
+            entry("id", id)
         )).getResult();
 
         getResponse().setStatus(HttpServletResponse.SC_CREATED);
@@ -71,34 +68,28 @@ public class CatalogService extends AbstractDatabaseService {
     }
 
     @RequestMethod("PUT")
-    @ResourcePath("items/?:itemID")
+    @ResourcePath("items/?:id")
     @Description("Updates an item.")
     @Keys({"The item ID."})
     @Content(type = Item.class)
     public void updateItem() throws SQLException {
-        var itemID = getKey("itemID", Integer.class);
-
         var item = (Item)getBody();
+
+        item.setID(getKey("id", Integer.class));
 
         QueryBuilder.update("item").set(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
-        )).where("id = :itemID").execute(getConnection(), mapOf(
-            entry("itemID", itemID),
-            entry("description", item.getDescription()),
-            entry("price", item.getPrice())
-        ));
+        )).where("id = :id").execute(getConnection(), new BeanAdapter(item));
     }
 
     @RequestMethod("DELETE")
-    @ResourcePath("items/?:itemID")
+    @ResourcePath("items/?:id")
     @Description("Deletes an item.")
     @Keys({"The item ID."})
     public void deleteItem() throws SQLException {
-        var itemID = getKey("itemID", Integer.class);
-
-        QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), mapOf(
-            entry("itemID", itemID)
+        QueryBuilder.deleteFrom("item").where("id = :id").execute(getConnection(), mapOf(
+            entry("id", getKey("id", Integer.class))
         ));
     }
 

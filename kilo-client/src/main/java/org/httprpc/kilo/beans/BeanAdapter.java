@@ -280,10 +280,33 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
-        Map<?, ?> map;
+        Map<Object, Object> map;
 
-        TypedInvocationHandler(Map<?, ?> map) {
-            this.map = map;
+        Map<String, Method> accessors = new HashMap<>();
+
+        @SuppressWarnings("unchecked")
+        TypedInvocationHandler(Map<?, ?> map, Class<?> type) {
+            this.map = (Map<Object, Object>)map;
+
+            var methods = type.getMethods();
+
+            for (var i = 0; i < methods.length; i++) {
+                var method = methods[i];
+
+                if (method.getDeclaringClass() == Object.class) {
+                    continue;
+                }
+
+                var propertyName = getPropertyName(method);
+
+                if (propertyName == null) {
+                    continue;
+                }
+
+                if (method.getParameterCount() == 0) {
+                    accessors.put(propertyName, method);
+                }
+            }
         }
 
         @Override
@@ -291,25 +314,41 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (method.getDeclaringClass() == Object.class) {
                 return method.invoke(this, arguments);
             } else {
-                if (method.getParameterCount() > 0) {
-                    throw new UnsupportedOperationException();
-                }
-
                 var propertyName = getPropertyName(method);
 
                 if (propertyName == null) {
-                    throw new UnsupportedOperationException("Method is not an accessor.");
+                    throw new UnsupportedOperationException("Unsupported method.");
                 }
 
-                var key = Optionals.map(method.getAnnotation(Key.class), Key::value, propertyName);
+                if (method.getParameterCount() == 0) {
+                    var key = getKey(method, propertyName);
 
-                var value = map.get(key);
+                    var value = map.get(key);
 
-                if (method.getAnnotation(Required.class) != null && value == null) {
-                    throw new UnsupportedOperationException(String.format("Property \"%s\" is not defined.", key));
+                    if (method.getAnnotation(Required.class) != null && value == null) {
+                        throw new UnsupportedOperationException(String.format("Property \"%s\" is not defined.", key));
+                    }
+
+                    return toGenericType(value, method.getGenericReturnType());
+                } else {
+                    var accessor = accessors.get(propertyName);
+
+                    if (accessor == null) {
+                        throw new UnsupportedOperationException("Missing accessor.");
+                    }
+
+                    var key = getKey(accessor, propertyName);
+
+                    var value = arguments[0];
+
+                    if (accessor.getAnnotation(Required.class) != null && value == null) {
+                        throw new UnsupportedOperationException(String.format("Property \"%s\" is required.", key));
+                    }
+
+                    map.put(key, value);
+
+                    return null;
                 }
-
-                return toGenericType(value, method.getGenericReturnType());
             }
         }
 
@@ -334,6 +373,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public String toString() {
             return map.toString();
+        }
+
+        static String getKey(Method accessor, String propertyName) {
+            return Optionals.map(accessor.getAnnotation(Key.class), Key::value, propertyName);
         }
     }
 
@@ -602,8 +645,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <ul>
      * <li>If the type is an interface, the return value is a proxy
-     * implementation of the interface that maps accessor methods to entries in
-     * the map. {@link Object} methods are delegated to the underlying map.</li>
+     * implementation of the interface that maps accessor and mutator methods
+     * to entries in the map. {@link Object} methods are delegated to the
+     * underlying map.</li>
      * <li>If the type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
@@ -857,7 +901,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             if (accessor.getAnnotation(Required.class) != null && argument == null) {
-                throw new IllegalArgumentException(String.format("Component \"%s\" cannot be null.", name));
+                throw new IllegalArgumentException(String.format("Component \"%s\" is required.", name));
             }
 
             arguments[i] = argument;
@@ -883,7 +927,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (type.isInterface()) {
-            return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map)));
+            return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map, type)));
         } else {
             Constructor<?> constructor;
             try {

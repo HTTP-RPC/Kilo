@@ -33,11 +33,13 @@ import java.util.UUID;
 public interface TestInterface {
     interface NestedInterface {
         @Required
-        boolean getFlag();
+        Boolean getFlag();
+        void setFlag(Boolean flag);
     }
 
     @Key("i")
     int getInteger();
+    void setInteger(int i);
 
     @Required
     long getLong();
@@ -45,6 +47,8 @@ public interface TestInterface {
 
     @Required
     String getString();
+    void setString(String string);
+
     BigInteger getBigInteger();
     DayOfWeek getDayOfWeek();
     Date getDate();

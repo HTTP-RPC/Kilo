@@ -23,6 +23,7 @@ public interface Item {
     @Key("id")
     @Description("The item's ID.")
     Integer getID();
+    void setID(int id);
 
     @Description("The item's description.")
     @Required

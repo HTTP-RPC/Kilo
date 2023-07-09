@@ -421,20 +421,30 @@ public class BeanAdapterTest {
 
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestBean.class));
 
-        var testInterface = BeanAdapter.coerce(mapOf(
-            entry("long", null),
-            entry("nestedBean", mapOf(
-                entry("flag", null)
-            ))
-        ), TestInterface.class);
+        var map = new HashMap<String, Object>();
+
+        map.put("long", null);
+        map.put("nestedBean", mapOf());
+
+        var testInterface = BeanAdapter.coerce(map, TestInterface.class);
 
         assertThrows(UnsupportedOperationException.class, testInterface::getLong);
         assertThrows(UnsupportedOperationException.class, testInterface::getString);
         assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
 
-        var nestedInterface = BeanAdapter.coerce(mapOf(), TestInterface.NestedInterface.class);
+        testInterface.setInteger(150);
+
+        assertEquals(150, Collections.valueAt(map, "i"));
+        assertThrows(UnsupportedOperationException.class, () -> testInterface.setString(null));
+
+        var nestedInterface = testInterface.getNestedBean();
 
         assertThrows(UnsupportedOperationException.class, nestedInterface::getFlag);
+
+        nestedInterface.setFlag(true);
+
+        assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
+        assertThrows(UnsupportedOperationException.class, () -> nestedInterface.setFlag(null));
 
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestRecord.class));
     }

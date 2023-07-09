@@ -317,6 +317,7 @@ public interface Item {
     @Key("id")
     @Description("The item's ID.")
     Integer getID();
+    void setID(int id);
 
     @Description("The item's description.")
     String getDescription();
@@ -352,15 +353,13 @@ The `Keys` annotation can be used to provide descriptions for an endpoint's keys
 
 ```java
 @RequestMethod("PUT")
-@ResourcePath("items/?:itemID")
+@ResourcePath("items/?:id")
 @Description("Updates an item.")
 @Keys({"The item ID."})
 @Content(type = Item.class)
 public void updateItem() throws SQLException {
-    var itemID = getKey("itemID", Integer.class);
+    var item = (Item)getBody();
 
-    var item = getBody(Item.class);
-     
     ... 
 }
 ```
@@ -1063,39 +1062,28 @@ return BeanAdapter.coerce(results, List.class, Pet.class);
 Insert, update, and delete operations are also supported. For example:
 
 ```java
-// insert into item (description, price) values (?, ?)
-
-QueryBuilder.insertInto("item").values(mapOf(
-    entry("description", ":description"),
-    entry("price", ":price")
-)).execute(getConnection(), mapOf(
-    entry("description", item.getDescription()),
-    entry("price", item.getPrice())
-));
+// TODO insert
 ```
 
 ```java
-// update item set description = ?, price = ? where id = ?
-
-QueryBuilder.update("item").set(mapOf(
-    entry("description", ":description"),
-    entry("price", ":price")
-)).where("id = :itemID").execute(getConnection(), mapOf(
-    entry("itemID", itemID),
-    entry("description", item.getDescription()),
-    entry("price", item.getPrice())
-));
+// TODO update
 ```
 
 ```java
-// delete from item where id = ?
-
-QueryBuilder.deleteFrom("item").where("id = :itemID").execute(getConnection(), mapOf(
-    entry("itemID", itemID)
-));
+// TODO delete
 ```
 
-If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses. List values provided to these methods are considered "options" and are reduced to a single value via the SQL `coalesce()` function.
+If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses:
+
+```java
+// TODO
+```
+
+List values provided to the `values()` or `set()` methods are considered "options" and are reduced to a single value via the SQL `coalesce()` function:
+
+```java
+// TODO
+```
 
 See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
