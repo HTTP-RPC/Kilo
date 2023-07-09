@@ -704,7 +704,7 @@ templateEncoder.write(mapOf(
 The output of this code would be "HELLO".
 
 ## BeanAdapter
-The `BeanAdapter` class provides access to the properties of a Java bean instance via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
+The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
 
 ```java
 public class TreeNode {

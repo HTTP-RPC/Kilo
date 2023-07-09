@@ -21,7 +21,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
- * {@link Map} adapter for resource bundles.
+ * Provides access to the contents of a resource bundle via the {@link Map}
+ * interface.
  */
 public class ResourceBundleAdapter extends AbstractMap<String, String> {
     private ResourceBundle resourceBundle;

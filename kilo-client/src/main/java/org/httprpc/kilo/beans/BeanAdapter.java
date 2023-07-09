@@ -53,7 +53,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * {@link Map} adapter for Java bean types.
+ * Provides access to Java bean properties via the {@link Map} interface.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     /**
