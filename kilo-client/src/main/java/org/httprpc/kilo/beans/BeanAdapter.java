@@ -280,13 +280,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
-        Map<Object, Object> map;
+        Map<?, ?> map;
 
         Map<String, Method> accessors = new HashMap<>();
 
-        @SuppressWarnings("unchecked")
         TypedInvocationHandler(Map<?, ?> map, Class<?> type) {
-            this.map = (Map<Object, Object>)map;
+            this.map = map;
 
             var methods = type.getMethods();
 
@@ -310,6 +309,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
             if (method.getDeclaringClass() == Object.class) {
                 return method.invoke(this, arguments);
@@ -345,7 +345,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         throw new IllegalArgumentException("Property is required.");
                     }
 
-                    map.put(key, value);
+                    ((Map<Object, Object>)map).put(key, value);
 
                     return null;
                 }
@@ -681,7 +681,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return (T)toGenericType(value, typeOf(rawType, actualTypeArguments));
     }
 
-    @SuppressWarnings("unchecked")
     private static Object toGenericType(Object value, Type type) {
         if (type instanceof Class<?> rawType) {
             return toRawType(value, rawType);
