@@ -326,7 +326,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = map.get(key);
 
                     if (method.getAnnotation(Required.class) != null && value == null) {
-                        throw new UnsupportedOperationException(String.format("Property \"%s\" is not defined.", key));
+                        throw new IllegalStateException("Property is not defined.");
                     }
 
                     return toGenericType(value, method.getGenericReturnType());
@@ -342,7 +342,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = arguments[0];
 
                     if (accessor.getAnnotation(Required.class) != null && value == null) {
-                        throw new UnsupportedOperationException(String.format("Property \"%s\" is required.", key));
+                        throw new IllegalArgumentException("Property is required.");
                     }
 
                     map.put(key, value);
@@ -449,7 +449,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var value = property.accessor.invoke(bean);
 
             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                throw new IllegalStateException(String.format("Property \"%s\" cannot be null.", key));
+                throw new IllegalStateException(String.format("Value for \"%s\" is null.", key));
             }
 
             return adapt(value, propertyCache);
@@ -475,7 +475,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-            throw new IllegalArgumentException(String.format("Property \"%s\" is required.", key));
+            throw new IllegalArgumentException(String.format("Value for \"%s\" is required.", key));
         }
 
         var i = 0;
@@ -529,7 +529,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             var value = property.accessor.invoke(bean);
 
                             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                                throw new IllegalStateException(String.format("Property \"%s\" cannot be null.", key));
+                                throw new IllegalStateException(String.format("Value for \"%s\" is null.", key));
                             }
 
                             return new SimpleImmutableEntry<>(key, adapt(value, propertyCache));

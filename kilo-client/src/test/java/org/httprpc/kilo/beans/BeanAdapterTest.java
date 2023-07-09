@@ -428,23 +428,23 @@ public class BeanAdapterTest {
 
         var testInterface = BeanAdapter.coerce(map, TestInterface.class);
 
-        assertThrows(UnsupportedOperationException.class, testInterface::getLong);
-        assertThrows(UnsupportedOperationException.class, testInterface::getString);
-        assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
+        assertThrows(IllegalStateException.class, testInterface::getLong);
+        assertThrows(IllegalStateException.class, testInterface::getString);
+        assertThrows(IllegalStateException.class, testInterface::getIntegerList);
 
         testInterface.setInteger(150);
 
         assertEquals(150, Collections.valueAt(map, "i"));
-        assertThrows(UnsupportedOperationException.class, () -> testInterface.setString(null));
+        assertThrows(IllegalArgumentException.class, () -> testInterface.setString(null));
 
         var nestedInterface = testInterface.getNestedBean();
 
-        assertThrows(UnsupportedOperationException.class, nestedInterface::getFlag);
+        assertThrows(IllegalStateException.class, nestedInterface::getFlag);
 
         nestedInterface.setFlag(true);
 
         assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
-        assertThrows(UnsupportedOperationException.class, () -> nestedInterface.setFlag(null));
+        assertThrows(IllegalArgumentException.class, () -> nestedInterface.setFlag(null));
 
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestRecord.class));
     }
