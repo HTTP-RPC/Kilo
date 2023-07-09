@@ -31,7 +31,9 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Provides a fluent API for programmatically constructing and executing SQL
- * queries.
+ * queries. Named parameters can be declared by prepending a colon to the
+ * argument name. Parameter values are specified via the arguments map passed
+ * to an execution method.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -663,10 +665,14 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends column values to an "insert into" query.
+     * Appends column values to an "insert into" query. Keys represent
+     * column names. Values are encoded as described below.
      *
      * @param values
-     * The values to insert.
+     * The values to insert. If a value is an instance of {@link QueryBuilder},
+     * it is considered a subquery and is wrapped in parentheses. List values
+     * are considered "options" and are reduced to a single value via the SQL
+     * `coalesce()` function. All other values are encoded as is.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -794,7 +800,8 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends column values to an "update" query.
+     * Appends column values to an "update" query. Keys represent column names.
+     * Values are encoded as described for {@link #values(Map)}.
      *
      * @param values
      * The values to update.
