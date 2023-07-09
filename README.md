@@ -167,7 +167,7 @@ They may optionally be associated with a name or "key", as shown below:
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("contacts/?:contactID")
+@ResourcePath("contacts/?:id")
 public Contact getContactDetail() { ... }
 ```
 
@@ -184,7 +184,7 @@ protected <T> T getKey(String name, Class<T> type) { ... }
 For example:
 
 ```java
-var contactID = getKey("contactID", Integer.class);
+var id = getKey("id", Integer.class);
 ```
 
 ### Custom Body Content
@@ -376,7 +376,7 @@ The `WebServiceProxy` class is used to submit API requests to a server. It provi
 * `method` - the HTTP method to execute
 * `url` - the URL of the requested resource
 
-Request headers and arguments are specified via the `setHeaders()` and `setArguments()` methods, respectively. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
+Request arguments are specified via the `setArguments()` method, which accepts a map of parameter values. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
