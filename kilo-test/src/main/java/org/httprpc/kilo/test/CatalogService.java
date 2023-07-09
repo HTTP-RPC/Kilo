@@ -73,9 +73,11 @@ public class CatalogService extends AbstractDatabaseService {
     @Keys({"The item ID."})
     @Content(type = Item.class)
     public void updateItem() throws SQLException {
+        var id = getKey("id", Integer.class);
+
         var item = (Item)getBody();
 
-        item.setID(getKey("id", Integer.class));
+        item.setID(id);
 
         QueryBuilder.update("item").set(mapOf(
             entry("description", ":description"),
@@ -88,8 +90,10 @@ public class CatalogService extends AbstractDatabaseService {
     @Description("Deletes an item.")
     @Keys({"The item ID."})
     public void deleteItem() throws SQLException {
+        var id = getKey("id", Integer.class);
+
         QueryBuilder.deleteFrom("item").where("id = :id").execute(getConnection(), mapOf(
-            entry("id", getKey("id", Integer.class))
+            entry("id", id)
         ));
     }
 

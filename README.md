@@ -1062,28 +1062,32 @@ return BeanAdapter.coerce(results, List.class, Pet.class);
 Insert, update, and delete operations are also supported. For example:
 
 ```java
-// TODO insert
+// insert into item (description, price) values (?, ?)
+
+var id = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
+    entry("description", ":description"),
+    entry("price", ":price")
+)).execute(connection, new BeanAdapter(item)).getGeneratedKeys().get(0), Integer.class);
 ```
 
 ```java
-// TODO update
+// update item set description = ?, price = ? where id = ?
+
+QueryBuilder.update("item").set(mapOf(
+    entry("description", ":description"),
+    entry("price", ":price")
+)).where("id = :id").execute(getConnection(), new BeanAdapter(item));
 ```
 
 ```java
-// TODO delete
+// delete from item where id = ?
+
+QueryBuilder.deleteFrom("item").where("id = :id").execute(getConnection(), mapOf(
+    entry("id", id)
+));
 ```
 
-If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses:
-
-```java
-// TODO
-```
-
-List values provided to the `values()` or `set()` methods are considered "options" and are reduced to a single value via the SQL `coalesce()` function:
-
-```java
-// TODO
-```
+If an instance of `QueryBuilder` is passed to either `values()` or `set()`, it is considered a subquery and is wrapped in parentheses. List values provided to these methods are considered "options" and are reduced to a single value via the SQL `coalesce()` function.
 
 See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
