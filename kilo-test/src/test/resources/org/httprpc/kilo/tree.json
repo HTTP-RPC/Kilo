@@ -1,0 +1,19 @@
+{
+  "name": "Seasons",
+  "children": [
+    {
+      "name": "Winter",
+      "children": [
+        {
+          "name": "January"
+        },
+        {
+          "name": "February"
+        },
+        {
+          "name": "March"
+        }
+      ]
+    }
+  ]
+}

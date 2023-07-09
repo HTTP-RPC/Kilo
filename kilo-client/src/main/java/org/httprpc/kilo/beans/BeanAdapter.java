@@ -430,7 +430,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Gets a bean property value.
+     * Gets a property value.
      * {@inheritDoc}
      */
     @Override
@@ -459,7 +459,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Sets a bean property value.
+     * Sets a property value.
      * {@inheritDoc}
      */
     @Override
@@ -496,7 +496,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Enumerates bean property values.
+     * Enumerates property values.
      * {@inheritDoc}
      */
     @Override

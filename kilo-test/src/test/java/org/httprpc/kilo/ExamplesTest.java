@@ -96,6 +96,11 @@ public class ExamplesTest {
     public record Employee(String badgeNumber, String firstName, String lastName) {
     }
 
+    public interface TreeNode {
+        String getName();
+        List<WebServiceProxyTest.TreeNode> getChildren();
+    }
+
     @Test
     public void testMathService() throws IOException {
         var baseURL = new URL("http://localhost:8080/kilo-test/");
@@ -306,6 +311,19 @@ public class ExamplesTest {
         var jsonEncoder = new JSONEncoder();
 
         jsonEncoder.write(BeanAdapter.adapt(employee), System.out);
+    }
+
+    @Test
+    public void testTreeNode() throws IOException {
+        try (var inputStream = getClass().getResourceAsStream("tree.json")) {
+            var jsonDecoder = new JSONDecoder();
+
+            var root = BeanAdapter.coerce(jsonDecoder.read(inputStream), TreeNode.class);
+
+            System.out.println(root.getName()); // Seasons
+            System.out.println(root.getChildren().get(0).getName()); // Winter
+            System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
+        }
     }
 
     @Test
