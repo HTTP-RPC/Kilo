@@ -299,7 +299,7 @@ public class ExamplesTest {
 
         try {
             vehicleAdapter.get("manufacturer");
-        } catch (IllegalStateException exception) {
+        } catch (UnsupportedOperationException exception) {
             System.out.println(exception.getMessage());
         }
     }
