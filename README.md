@@ -1023,14 +1023,20 @@ Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery(
 try (var statement = queryBuilder.prepare(getConnection());
     var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
         entry("owner", owner)
-    )))) { 
-    for (var result : results) {
-        ...
-    }
+    )))) {
+    ...
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has low latency. However, for smaller data sets, the following more concise alternative can be used:
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has low latency:
+
+```java
+var jsonEncoder = new JSONEncoder();
+
+jsonEncoder.write(results, response.getOutputStream());
+```
+
+However, for smaller data sets, the following more concise alternative can be used:
 
 ```java
 var results = queryBuilder.execute(getConnection(), mapOf(
