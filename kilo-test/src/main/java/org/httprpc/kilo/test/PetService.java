@@ -111,7 +111,7 @@ public class PetService extends AbstractDatabaseService {
 
         double averageAge;
         try (var statement = getConnection().createStatement();
-             var results = new ResultSetAdapter(statement.executeQuery(sql))) {
+            var results = new ResultSetAdapter(statement.executeQuery(sql))) {
             var now = new Date();
 
             averageAge = results.stream()

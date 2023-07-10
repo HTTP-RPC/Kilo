@@ -110,13 +110,19 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Returns a stream over the results. Closing the returned stream does not
-     * close the underlying result set.
+     * Returns a stream over the results. Closing the returned stream closes
+     * the adapter along with the underlying result set.
      *
      * @return
      * A stream over the results.
      */
     public Stream<Map<String, Object>> stream() {
-        return StreamSupport.stream(spliterator(), false);
+        return StreamSupport.stream(spliterator(), false).onClose(() -> {
+            try {
+                close();
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        });
     }
 }
