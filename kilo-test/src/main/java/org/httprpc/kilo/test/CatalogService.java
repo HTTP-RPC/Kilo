@@ -53,13 +53,13 @@ public class CatalogService extends AbstractDatabaseService {
 
         var connection = getConnection();
 
-        var id = BeanAdapter.coerce(QueryBuilder.insertInto("item").values(mapOf(
+        var keys = QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
-        )).execute(connection, new BeanAdapter(item)).getGeneratedKeys().get(0), Integer.class);
+        )).execute(connection, new BeanAdapter(item)).getGeneratedKeys();
 
         var result = QueryBuilder.select("*").from("item").where("id = :id").execute(connection, mapOf(
-            entry("id", id)
+            entry("id", keys.get(0))
         )).getResult();
 
         getResponse().setStatus(HttpServletResponse.SC_CREATED);
