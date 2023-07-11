@@ -315,7 +315,7 @@ public interface Item {
     @Key("id")
     @Description("The item's ID.")
     Integer getID();
-    void setID(int id);
+    void setID(Integer id);
 
     @Description("The item's description.")
     String getDescription();
