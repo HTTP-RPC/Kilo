@@ -167,7 +167,7 @@ They may optionally be associated with a name or "key", as shown below:
 
 ```java
 @RequestMethod("GET")
-@ResourcePath("contacts/?:id")
+@ResourcePath("contacts/?:contactID")
 public Contact getContact() { ... }
 ```
 
@@ -351,7 +351,7 @@ The `Keys` annotation can be used to provide descriptions for an endpoint's keys
 
 ```java
 @RequestMethod("PUT")
-@ResourcePath("items/?:id")
+@ResourcePath("items/?:itemID")
 @Description("Updates an item.")
 @Keys({"The item ID."})
 @Content(type = Item.class)

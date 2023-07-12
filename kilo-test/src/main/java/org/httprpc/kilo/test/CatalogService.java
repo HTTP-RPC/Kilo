@@ -68,12 +68,12 @@ public class CatalogService extends AbstractDatabaseService {
     }
 
     @RequestMethod("PUT")
-    @ResourcePath("items/?:id")
+    @ResourcePath("items/?:itemID")
     @Description("Updates an item.")
     @Keys({"The item ID."})
     @Content(type = Item.class)
     public void updateItem() throws SQLException {
-        var id = getKey("id", Integer.class);
+        var id = getKey("itemID", Integer.class);
 
         var item = (Item)getBody();
 
@@ -86,11 +86,11 @@ public class CatalogService extends AbstractDatabaseService {
     }
 
     @RequestMethod("DELETE")
-    @ResourcePath("items/?:id")
+    @ResourcePath("items/?:itemID")
     @Description("Deletes an item.")
     @Keys({"The item ID."})
     public void deleteItem() throws SQLException {
-        var id = getKey("id", Integer.class);
+        var id = getKey("itemID", Integer.class);
 
         QueryBuilder.deleteFrom("item").where("id = :id").execute(getConnection(), mapOf(
             entry("id", id)
