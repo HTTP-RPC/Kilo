@@ -16,8 +16,11 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -39,5 +42,11 @@ public class ResourceBundleAdapterTest {
         assertFalse(resourceBundleAdapter.containsKey("d"));
 
         assertNull(resourceBundleAdapter.get("d"));
+
+        assertEquals(mapOf(
+            entry("a", "A"),
+            entry("b", "B"),
+            entry("c", "C")
+        ), new LinkedHashMap<>(resourceBundleAdapter));
     }
 }

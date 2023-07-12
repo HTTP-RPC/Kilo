@@ -15,8 +15,11 @@
 package org.httprpc.kilo.util;
 
 import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -77,6 +80,37 @@ public class ResourceBundleAdapter extends AbstractMap<String, String> {
      */
     @Override
     public Set<Entry<String, String>> entrySet() {
-        throw new UnsupportedOperationException();
+        return new AbstractSet<>() {
+            Set<String> keySet = resourceBundle.keySet();
+
+            @Override
+            public int size() {
+                return keySet.size();
+            }
+
+            @Override
+            public Iterator<Entry<String, String>> iterator() {
+                return new Iterator<>() {
+                    Iterator<String> keyIterator = keySet.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return keyIterator.hasNext();
+                    }
+
+                    @Override
+                    public Entry<String, String> next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
+
+                        var key = keyIterator.next();
+                        var value = get(key);
+
+                        return new SimpleImmutableEntry<>(key, value);
+                    }
+                };
+            }
+        };
     }
 }
