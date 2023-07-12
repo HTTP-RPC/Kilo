@@ -1191,7 +1191,12 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
-They offer an alternative to similar methods defined by the `List` and `Map` interfaces, which produce immutable instances and do not permit `null` values.
+They offer an alternative to similar methods defined by the `List` and `Map` interfaces, which produce immutable instances and do not permit `null` values. The following immutable variants are also provided:
+
+```java
+public static <E> List<E> immutableListOf(E... elements) { ... }
+public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
+```
 
 Additionally, `Collections` includes the following methods for creating empty lists and maps:
 

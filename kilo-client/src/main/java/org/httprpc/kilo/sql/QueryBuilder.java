@@ -31,7 +31,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Provides a fluent API for programmatically constructing and executing SQL
- * queries. Named parameters can be declared by prepending a colon to the
+ * queries. Named parameters can be declared by prepending a colon to an
  * argument name. Parameter values are specified via the arguments map passed
  * to an execution method.
  */
@@ -857,7 +857,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Prepends a "with" clause.
+     * Prepends a "with" clause to a query.
      *
      * @param queryBuilders
      * The subclauses.
@@ -899,6 +899,92 @@ public class QueryBuilder {
         this.sqlBuilder.insert(0, sqlBuilder);
 
         return this;
+    }
+
+    /**
+     * Appends arbitrary SQL text to a query.
+     *
+     * @param sql
+     * The SQL text to append.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder append(String sql) {
+        var quoted = false;
+
+        var n = sql.length();
+        var i = 0;
+
+        while (i < n) {
+            var c = sql.charAt(i++);
+
+            if (c == ':' && !quoted) {
+                var parameterBuilder = new StringBuilder();
+
+                while (i < n) {
+                    c = sql.charAt(i);
+
+                    if (!Character.isJavaIdentifierPart(c)) {
+                        break;
+                    }
+
+                    parameterBuilder.append(c);
+
+                    i++;
+                }
+
+                if (parameterBuilder.length() == 0) {
+                    throw new IllegalArgumentException("Missing parameter name.");
+                }
+
+                parameters.add(parameterBuilder.toString());
+
+                sqlBuilder.append("?");
+            } else if (c == '?' && !quoted) {
+                parameters.add(null);
+
+                sqlBuilder.append(c);
+            } else {
+                if (c == '\'') {
+                    quoted = !quoted;
+                }
+
+                sqlBuilder.append(c);
+            }
+        }
+
+        return this;
+    }
+
+    private void encode(Object value) {
+        if (value instanceof String string) {
+            append(string);
+        } else if (value instanceof List<?> list) {
+            sqlBuilder.append("coalesce(");
+
+            var i = 0;
+
+            for (var element : list) {
+                if (i > 0) {
+                    sqlBuilder.append(", ");
+                }
+
+                encode(element);
+
+                i++;
+            }
+
+            sqlBuilder.append(")");
+        } else if (value instanceof QueryBuilder queryBuilder) {
+            sqlBuilder.append("(");
+            sqlBuilder.append(queryBuilder.getSQL());
+            sqlBuilder.append(")");
+
+            parameters.addAll(queryBuilder.parameters);
+        } else {
+            sqlBuilder.append(value);
+        }
     }
 
     /**
@@ -1143,81 +1229,6 @@ public class QueryBuilder {
      */
     public String getSQL() {
         return sqlBuilder.toString();
-    }
-
-    private void append(String sql) {
-        var quoted = false;
-
-        var n = sql.length();
-        var i = 0;
-
-        while (i < n) {
-            var c = sql.charAt(i++);
-
-            if (c == ':' && !quoted) {
-                var parameterBuilder = new StringBuilder();
-
-                while (i < n) {
-                    c = sql.charAt(i);
-
-                    if (!Character.isJavaIdentifierPart(c)) {
-                        break;
-                    }
-
-                    parameterBuilder.append(c);
-
-                    i++;
-                }
-
-                if (parameterBuilder.length() == 0) {
-                    throw new IllegalArgumentException("Missing parameter name.");
-                }
-
-                parameters.add(parameterBuilder.toString());
-
-                sqlBuilder.append("?");
-            } else if (c == '?' && !quoted) {
-                parameters.add(null);
-
-                sqlBuilder.append(c);
-            } else {
-                if (c == '\'') {
-                    quoted = !quoted;
-                }
-
-                sqlBuilder.append(c);
-            }
-        }
-    }
-
-    private void encode(Object value) {
-        if (value instanceof String string) {
-            append(string);
-        } else if (value instanceof List<?> list) {
-            sqlBuilder.append("coalesce(");
-
-            var i = 0;
-
-            for (var element : list) {
-                if (i > 0) {
-                    sqlBuilder.append(", ");
-                }
-
-                encode(element);
-
-                i++;
-            }
-
-            sqlBuilder.append(")");
-        } else if (value instanceof QueryBuilder queryBuilder) {
-            sqlBuilder.append("(");
-            sqlBuilder.append(queryBuilder.getSQL());
-            sqlBuilder.append(")");
-
-            parameters.addAll(queryBuilder.parameters);
-        } else {
-            sqlBuilder.append(value);
-        }
     }
 
     /**

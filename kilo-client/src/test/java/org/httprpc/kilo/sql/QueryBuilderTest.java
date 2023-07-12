@@ -198,6 +198,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testAppend() {
+        var queryBuilder = new QueryBuilder("select a, 'b''c:d' as b");
+
+        queryBuilder.append(" from foo where bar = :x");
+
+        assertEquals(listOf("x"), queryBuilder.getParameters());
+
+        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.getSQL());
+    }
+
+    @Test
     public void testCoalesceWithInsert() {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
@@ -328,15 +339,6 @@ public class QueryBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
             entry("foo", ":")
         )));
-    }
-
-    @Test
-    public void testExistingSQL() {
-        var queryBuilder = new QueryBuilder("select a, 'b''c:d' as b from foo where bar = :x");
-
-        assertEquals(listOf("x"), queryBuilder.getParameters());
-
-        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.getSQL());
     }
 
     @Test

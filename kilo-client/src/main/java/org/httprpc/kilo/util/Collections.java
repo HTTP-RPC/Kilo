@@ -57,6 +57,24 @@ public class Collections {
     }
 
     /**
+     * Creates an immutable list of elements.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The list elements.
+     *
+     * @return
+     * An immutable, random-access list containing the provided elements in the
+     * order given.
+     */
+    @SafeVarargs
+    public static <E> List<E> immutableListOf(E... elements) {
+        return java.util.Collections.unmodifiableList(listOf(elements));
+    }
+
+    /**
      * Creates a map of entries.
      *
      * @param <K>
@@ -84,6 +102,26 @@ public class Collections {
         }
 
         return map;
+    }
+
+    /**
+     * Creates an immutable map of entries.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param entries
+     * The map entries.
+     *
+     * @return
+     * An immutable map containing the provided entries in the order given.
+     */
+    @SafeVarargs
+    public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) {
+        return java.util.Collections.unmodifiableMap(mapOf(entries));
     }
 
     /**

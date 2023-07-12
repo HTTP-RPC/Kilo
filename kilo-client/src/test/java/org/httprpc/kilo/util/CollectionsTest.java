@@ -23,6 +23,8 @@ import java.util.Map;
 import static org.httprpc.kilo.util.Collections.emptyListOf;
 import static org.httprpc.kilo.util.Collections.emptyMapOf;
 import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.immutableListOf;
+import static org.httprpc.kilo.util.Collections.immutableMapOf;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,6 +49,13 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testImmutableListOf() {
+        var list = immutableListOf(1, 2, 3);
+
+        assertThrows(UnsupportedOperationException.class, () -> list.add(4));
+    }
+
+    @Test
     public void testMapOf() {
         var map = new HashMap<String, Integer>();
 
@@ -63,6 +72,17 @@ public class CollectionsTest {
         map.remove("c");
 
         assertEquals(2, map.size());
+    }
+
+    @Test
+    public void testImmutableMapOf() {
+        var map = immutableMapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        assertThrows(UnsupportedOperationException.class, () -> map.put("d", 4));
     }
 
     @Test
