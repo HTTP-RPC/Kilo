@@ -136,7 +136,7 @@ public class ExamplesTest {
 
     @Test
     public void testJSONEncoder() throws IOException {
-        Map<String, Object> map = mapOf(
+        var map = mapOf(
             entry("vegetables", listOf(
                 "carrots",
                 "peas",
@@ -222,7 +222,7 @@ public class ExamplesTest {
 
     @Test
     public void testTemplateEncoder() throws IOException {
-        Map<String, Object> map = mapOf(
+        var map = mapOf(
             entry("a", "hello"),
             entry("b", 123),
             entry("c", true)

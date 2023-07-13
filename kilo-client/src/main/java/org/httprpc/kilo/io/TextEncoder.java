@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Text encoder.
+ * Encodes plain text content.
  */
 public class TextEncoder extends Encoder<String> {
     @Override

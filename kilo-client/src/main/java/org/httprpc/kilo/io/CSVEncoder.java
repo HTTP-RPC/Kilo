@@ -24,7 +24,7 @@ import java.util.Map;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
- * CSV encoder.
+ * Encodes a sequence of map values to CSV.
  */
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;

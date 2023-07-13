@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * JSON decoder.
+ * Decodes an object hierarchy from JSON.
  */
 public class JSONDecoder extends Decoder<Object> {
     private boolean sorted;

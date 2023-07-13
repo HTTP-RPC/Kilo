@@ -135,7 +135,7 @@ public class CollectionsTest {
 
     @Test
     public void testValueAt() {
-        Map<?, ?> map = mapOf(
+        var map = mapOf(
             entry("a", mapOf(
                 entry("b", mapOf(
                     entry("c", listOf(1, 2, 3))

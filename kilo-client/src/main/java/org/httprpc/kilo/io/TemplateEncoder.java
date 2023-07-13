@@ -52,7 +52,7 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
- * Template encoder.
+ * Encodes an object hierarchy using a template document.
  */
 public class TemplateEncoder extends Encoder<Object> {
     /**

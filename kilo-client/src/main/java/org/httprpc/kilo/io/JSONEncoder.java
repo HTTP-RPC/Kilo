@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * JSON encoder.
+ * Encodes an object hierarchy to JSON.
  */
 public class JSONEncoder extends Encoder<Object> {
     private boolean compact;

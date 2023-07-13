@@ -491,7 +491,7 @@ Content-Type: application/json;charset=UTF-8
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used directly by application logic. For example: 
 
 ```java
-Map<String, Object> map = mapOf(
+var map = mapOf(
     entry("vegetables", listOf(
         "carrots", 
         "peas", 
@@ -526,7 +526,7 @@ This code would produce the following output:
 }
 ``` 
 
-Values are converted to their JSON equivalents as described [earlier](#return-values). Note that Java bean values must first be wrapped in an instance of `BeanAdapter`, which is discussed in more detail [later](#beanadapter). `BeanAdapter` implements the `Map` interface, which allows `JSONEncoder` to serialize the values as JSON objects. `ResultSetAdapter` provides a similar capability for JDBC result sets, and is also discussed [later](#querybuilder-and-resultsetadapter). 
+Values are converted to their JSON equivalents as described [earlier](#return-values). Note that Java bean values must first be wrapped in an instance of `BeanAdapter`, which is discussed in more detail [later](#beanadapter). `BeanAdapter` implements the `Map` interface, which allows `JSONEncoder` to serialize the values as JSON objects. `ResultSetAdapter` (also discussed [later](#querybuilder-and-resultsetadapter)) provides a similar capability for JDBC result sets. 
 
 `JSONDecoder` deserializes a JSON document into an object hierarchy. JSON values are mapped to their Java equivalents as follows:
 
@@ -569,7 +569,7 @@ for (var month : months) {
 ```
 
 ## CSVEncoder and CSVDecoder
-The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the month/day list from the previous section could be exported to CSV as shown below. The string values passed to the constructor represent both the columns in the output document and the map keys to which those columns correspond:
+The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the month/day count list from the previous section could be exported to CSV as shown below. The string values passed to the constructor represent both the columns in the output document and the map keys to which those columns correspond:
 
 ```java
 var csvEncoder = new CSVEncoder(listOf("name", "days"));
@@ -589,7 +589,7 @@ This code would produce the following output:
 
 String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
 
-`CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding document as input, this code would produce the same output as the earlier `JSONDecoder` example:
+`CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding document as input, this code would produce the same output as the `JSONDecoder` example:
 
 ```java
 var csvDecoder = new CSVDecoder();
@@ -600,8 +600,6 @@ for (var month : months) {
     System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
 }
 ```
-
-Columns with empty headings are ignored. Empty field values are treated as null.
 
 ## TextEncoder and TextDecoder
 The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
@@ -653,7 +651,7 @@ The first argument represents the value to write (i.e. the data dictionary), and
 For example, this code applies a template named "example.txt" to a map instance:
 
 ```java
-Map<String, Object> map = mapOf(
+var map = mapOf(
     entry("a", "hello"),
     entry("b", 123),
     entry("c", true)
@@ -1234,7 +1232,7 @@ var j = Collections.lastIndexWhere(list, element -> element.equals("e")); // -1
 Finally, the `valueAt()` method can be used to access nested values in an object hierarchy. For example:
 
 ```java
-Map<String, Object> map = mapOf(
+var map = mapOf(
     entry("a", mapOf(
         entry("b", mapOf(
             entry("c", listOf(1, 2, 3))

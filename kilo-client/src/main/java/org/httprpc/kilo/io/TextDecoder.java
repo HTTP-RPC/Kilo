@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Text decoder.
+ * Decodes plain text content.
  */
 public class TextDecoder extends Decoder<String> {
     @Override
