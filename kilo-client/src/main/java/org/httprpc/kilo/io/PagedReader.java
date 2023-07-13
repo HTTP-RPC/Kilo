@@ -36,11 +36,11 @@ class PagedReader extends Reader {
     private static final int DEFAULT_PAGE_SIZE = 1024;
     private static final int EOF = -1;
 
-    public PagedReader(Reader reader) {
+    PagedReader(Reader reader) {
         this(reader, DEFAULT_PAGE_SIZE);
     }
 
-    public PagedReader(Reader reader, int pageSize) {
+    PagedReader(Reader reader, int pageSize) {
         if (reader == null) {
             throw new IllegalArgumentException();
         }

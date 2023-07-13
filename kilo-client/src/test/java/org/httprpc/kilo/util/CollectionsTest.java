@@ -35,17 +35,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CollectionsTest {
     @Test
     public void testListOf() {
-        var list = new ArrayList<Integer>(3);
+        var expected = new ArrayList<Integer>(3);
 
-        list.add(1);
-        list.add(2);
-        list.add(3);
+        expected.add(1);
+        expected.add(2);
+        expected.add(3);
 
-        assertEquals(list, listOf(1, 2, 3));
+        var actual = listOf(1, 2, 3);
 
-        list.remove(2);
+        assertEquals(expected, actual);
 
-        assertEquals(2, list.size());
+        actual.remove(2);
+
+        assertEquals(2, actual.size());
     }
 
     @Test
@@ -57,21 +59,23 @@ public class CollectionsTest {
 
     @Test
     public void testMapOf() {
-        var map = new HashMap<String, Integer>();
+        var expected = new HashMap<String, Integer>();
 
-        map.put("a", 1);
-        map.put("b", 2);
-        map.put("c", 3);
+        expected.put("a", 1);
+        expected.put("b", 2);
+        expected.put("c", 3);
 
-        assertEquals(map, mapOf(
+        var actual = mapOf(
             entry("a", 1),
             entry("b", 2),
             entry("c", 3)
-        ));
+        );
 
-        map.remove("c");
+        assertEquals(expected, actual);
 
-        assertEquals(2, map.size());
+        actual.remove("c");
+
+        assertEquals(2, actual.size());
     }
 
     @Test

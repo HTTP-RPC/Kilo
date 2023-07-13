@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'
-    version = '2.2.2'
+    version = '2.2.3'
 
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
@@ -25,7 +25,7 @@ subprojects {
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     }
 
     java {

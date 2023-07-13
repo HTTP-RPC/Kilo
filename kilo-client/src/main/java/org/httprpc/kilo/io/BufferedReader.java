@@ -24,7 +24,7 @@ class BufferedReader extends Reader {
     private int i = 0;
     private int n = 0;
 
-    public BufferedReader(Reader reader) {
+    BufferedReader(Reader reader) {
         this.reader = reader;
 
         buffer = new char[8192];

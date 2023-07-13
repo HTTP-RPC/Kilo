@@ -23,7 +23,7 @@ class BufferedWriter extends Writer {
 
     private int i = 0;
 
-    public BufferedWriter(Writer writer) {
+    BufferedWriter(Writer writer) {
         this.writer = writer;
 
         buffer = new char[8192];
