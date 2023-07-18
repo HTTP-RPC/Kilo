@@ -564,7 +564,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomException() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
+        var webServiceProxy = WebServiceProxy.get(new URL(baseURL, "test/error"));
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
             var textDecoder = new TextDecoder();

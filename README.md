@@ -416,7 +416,7 @@ public interface ErrorHandler {
 The following code demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
-var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+var webServiceProxy = WebServiceProxy.get(new URL(baseURL, "math/sum"));
 
 // GET /math/sum?a=2&b=4
 webServiceProxy.setArguments(mapOf(

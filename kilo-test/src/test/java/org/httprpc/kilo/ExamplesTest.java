@@ -105,7 +105,7 @@ public class ExamplesTest {
     public void testMathService() throws IOException {
         var baseURL = new URL("http://localhost:8080/kilo-test/");
 
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+        var webServiceProxy = WebServiceProxy.get(new URL(baseURL, "math/sum"));
 
         // GET /math/sum?a=2&b=4
         webServiceProxy.setArguments(mapOf(
