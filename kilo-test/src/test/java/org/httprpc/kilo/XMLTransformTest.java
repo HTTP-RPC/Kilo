@@ -50,14 +50,14 @@ public class XMLTransformTest {
     }
 
     private void transformXML1() throws Exception {
-        var source = new StreamSource(getClass().getResourceAsStream("breakfast_menu.xslt"));
+        var source = new StreamSource(getClass().getResourceAsStream("breakfast-menu.xslt"));
 
         var transformer = TransformerFactory.newInstance().newTransformer(source);
 
-        var xmlSource = new StreamSource(getClass().getResourceAsStream("breakfast_menu.xml"));
+        var xmlSource = new StreamSource(getClass().getResourceAsStream("breakfast-menu.xml"));
 
         var homeDirectory = new File(System.getProperty("user.home"));
-        var outputFile = new File(homeDirectory, "breakfast_menu_1.html");
+        var outputFile = new File(homeDirectory, "breakfast-menu-1.html");
 
         try (var outputStream = new FileOutputStream(outputFile)) {
             transformer.transform(xmlSource, new StreamResult(outputStream));
@@ -68,14 +68,14 @@ public class XMLTransformTest {
         var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
         Document document;
-        try (var inputStream = getClass().getResourceAsStream("breakfast_menu.xml")) {
+        try (var inputStream = getClass().getResourceAsStream("breakfast-menu.xml")) {
             document = documentBuilder.parse(inputStream);
         }
 
-        var templateEncoder = new TemplateEncoder(getClass().getResource("breakfast_menu.html"));
+        var templateEncoder = new TemplateEncoder(getClass().getResource("breakfast-menu.html"));
 
         var homeDirectory = new File(System.getProperty("user.home"));
-        var outputFile = new File(homeDirectory, "breakfast_menu_2.html");
+        var outputFile = new File(homeDirectory, "breakfast-menu-2.html");
 
         try (var outputStream = new FileOutputStream(outputFile)) {
             templateEncoder.write(new ElementAdapter(document.getDocumentElement()), outputStream);
