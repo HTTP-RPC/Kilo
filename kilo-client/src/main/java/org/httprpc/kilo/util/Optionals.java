@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.util;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -53,7 +54,7 @@ public class Optionals {
     }
 
     /**
-     * Applies a mapping function to a value.
+     * Applies a mapping function to an optional value.
      *
      * @param <T>
      * The source type.
@@ -64,20 +65,20 @@ public class Optionals {
      * @param value
      * The source value.
      *
-     * @param mapper
-     * The mapping function.
+     * @param transform
+     * The mapping function to apply.
      *
      * @return
      * The result of applying the mapping function to the source value, or
      * {@code null} if the source value was {@code null} or the mapping
      * function did not produce a value.
      */
-    public static <T, U> U map(T value, Function<? super T, ? extends U> mapper) {
-        return map(value, mapper, null);
+    public static <T, U> U map(T value, Function<? super T, ? extends U> transform) {
+        return map(value, transform, null);
     }
 
     /**
-     * Applies a mapping function to a value.
+     * Applies a mapping function to an optional value.
      *
      * @param <T>
      * The source type.
@@ -88,7 +89,7 @@ public class Optionals {
      * @param value
      * The source value.
      *
-     * @param mapper
+     * @param transform
      * The mapping function.
      *
      * @param defaultValue
@@ -99,15 +100,60 @@ public class Optionals {
      * the default value if the source value was {@code null} or the mapping
      * function did not produce a value.
      */
-    public static <T, U> U map(T value, Function<? super T, ? extends U> mapper, U defaultValue) {
+    public static <T, U> U map(T value, Function<? super T, ? extends U> transform, U defaultValue) {
         if (value == null) {
             return defaultValue;
         } else {
-            if (mapper == null) {
+            if (transform == null) {
                 throw new IllegalArgumentException();
             }
 
-            return coalesce(mapper.apply(value), defaultValue);
+            return coalesce(transform.apply(value), defaultValue);
+        }
+    }
+
+    /**
+     * Performs an action on an optional value.
+     *
+     * @param <T>
+     * The source type.
+     *
+     * @param value
+     * The source value.
+     *
+     * @param action
+     * The action to perform if the source value is not {@code null}.
+     */
+    public static <T> void perform(T value, Consumer<? super T> action) {
+        perform(value, action, null);
+    }
+
+    /**
+     * Performs an action on an optional value.
+     *
+     * @param <T>
+     * The source type.
+     *
+     * @param value
+     * The source value.
+     *
+     * @param action
+     * The action to perform if the source value is not {@code null}.
+     *
+     * @param defaultAction
+     * The action to perform if the source value is {@code null}.
+     */
+    public static <T> void perform(T value, Consumer<? super T> action, Runnable defaultAction) {
+        if (value == null) {
+            if (defaultAction != null) {
+                defaultAction.run();
+            }
+        } else {
+            if (action == null) {
+                throw new IllegalArgumentException();
+            }
+
+            action.accept(value);
         }
     }
 }

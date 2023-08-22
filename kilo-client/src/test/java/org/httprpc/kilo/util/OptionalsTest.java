@@ -17,6 +17,7 @@ package org.httprpc.kilo.util;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -25,16 +26,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class OptionalsTest {
     @Test
     public void testCoalesce() {
-        var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse("xyz")); // xyz
-        var b = Optionals.coalesce(null, null, "xyz"); // xyz
+        var value = "xyz";
+
+        var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // xyz
+        var b = Optionals.coalesce(null, null, value); // xyz
 
         assertEquals(a, b);
     }
 
     @Test
     public void testMap() {
-        var a = Optional.ofNullable("hello").map(String::length).orElse(null); // 5
-        var b = Optionals.map("hello", String::length); // 5
+        var value = "hello";
+
+        var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
+        var b = Optionals.map(value, String::length); // 5
 
         assertEquals(a, b);
 
@@ -49,5 +54,29 @@ public class OptionalsTest {
         assertEquals(a, b);
 
         assertTrue(Optionals.map("xyz", value -> null, true));
+    }
+
+    @Test
+    public void testPerform() {
+        var value = new AtomicInteger(0);
+
+        Optional.ofNullable(value).ifPresent(AtomicInteger::incrementAndGet);
+        Optionals.perform(value, AtomicInteger::incrementAndGet);
+
+        Optionals.perform(null, AtomicInteger::incrementAndGet);
+
+        assertEquals(2, value.get());
+    }
+
+    @Test
+    public void testPerformWithDefaultAction() {
+        var value = new AtomicInteger(0);
+
+        Optional.ofNullable((AtomicInteger)null).ifPresentOrElse(AtomicInteger::incrementAndGet, value::decrementAndGet);
+        Optionals.perform(null, AtomicInteger::incrementAndGet, value::decrementAndGet);
+
+        Optionals.perform(null, AtomicInteger::incrementAndGet, null);
+
+        assertEquals(-2, value.get());
     }
 }
