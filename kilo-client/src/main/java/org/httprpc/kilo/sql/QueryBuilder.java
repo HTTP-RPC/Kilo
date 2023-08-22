@@ -32,8 +32,8 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 /**
  * Provides a fluent API for programmatically constructing and executing SQL
  * queries. Named parameters can be declared by prepending a colon to an
- * argument name. Parameter values are specified via the arguments map passed
- * to an execution method.
+ * argument name. Parameter values are provided via an argument map passed to
+ * an execution method.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
