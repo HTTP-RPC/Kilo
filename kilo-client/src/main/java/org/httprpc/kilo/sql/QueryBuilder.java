@@ -361,9 +361,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#and(String...)} instead.
      */
+    @Deprecated
     public static String and(String... predicates) {
-        return conditional("and", predicates);
+        return Conditionals.and(predicates);
     }
 
     /**
@@ -374,38 +378,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#or(String...)} instead.
      */
+    @Deprecated
     public static String or(String... predicates) {
-        return conditional("or", predicates);
-    }
-
-    private static String conditional(String operator, String... predicates) {
-        if (predicates == null || predicates.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        var stringBuilder = new StringBuilder();
-
-        stringBuilder.append(operator);
-        stringBuilder.append(" ");
-
-        if (predicates.length > 1) {
-            stringBuilder.append("(");
-        }
-
-        for (var i = 0; i < predicates.length; i++) {
-            if (i > 0) {
-                stringBuilder.append(" ");
-            }
-
-            stringBuilder.append(predicates[i]);
-        }
-
-        if (predicates.length > 1) {
-            stringBuilder.append(")");
-        }
-
-        return stringBuilder.toString();
+        return Conditionals.or(predicates);
     }
 
     /**
@@ -416,13 +395,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#allOf(String...)} instead.
      */
+    @Deprecated
     public static String allOf(String... predicates) {
-        if (predicates == null || predicates.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        return conditionalGroup("and", predicates);
+        return Conditionals.allOf(predicates);
     }
 
     /**
@@ -433,37 +412,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#anyOf(String...)} instead.
      */
+    @Deprecated
     public static String anyOf(String... predicates) {
-        if (predicates == null || predicates.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        return conditionalGroup("or", predicates);
-    }
-
-    private static String conditionalGroup(String operator, String... predicates) {
-        if (predicates == null || predicates.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        var stringBuilder = new StringBuilder();
-
-        stringBuilder.append("(");
-
-        for (var i = 0; i < predicates.length; i++) {
-            if (i > 0) {
-                stringBuilder.append(" ");
-                stringBuilder.append(operator);
-                stringBuilder.append(" ");
-            }
-
-            stringBuilder.append(predicates[i]);
-        }
-
-        stringBuilder.append(")");
-
-        return stringBuilder.toString();
+        return Conditionals.anyOf(predicates);
     }
 
     /**
@@ -474,13 +429,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#equalTo(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String equalTo(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("= (%s)", queryBuilder);
+        return Conditionals.equalTo(queryBuilder);
     }
 
     /**
@@ -491,13 +446,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#notEqualTo(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String notEqualTo(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("!= (%s)", queryBuilder);
+        return Conditionals.notEqualTo(queryBuilder);
     }
 
     /**
@@ -508,13 +463,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#in(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String in(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("in (%s)", queryBuilder);
+        return Conditionals.in(queryBuilder);
     }
 
     /**
@@ -525,13 +480,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#notIn(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String notIn(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("not in (%s)", queryBuilder);
+        return Conditionals.notIn(queryBuilder);
     }
 
     /**
@@ -542,13 +497,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#exists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String exists(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("exists (%s)", queryBuilder);
+        return Conditionals.exists(queryBuilder);
     }
 
     /**
@@ -559,13 +514,13 @@ public class QueryBuilder {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link Conditionals#notExists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String notExists(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("not exists (%s)", queryBuilder);
+        return Conditionals.notExists(queryBuilder);
     }
 
     /**

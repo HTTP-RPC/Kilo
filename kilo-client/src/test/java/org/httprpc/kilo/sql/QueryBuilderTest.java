@@ -16,16 +16,16 @@ package org.httprpc.kilo.sql;
 
 import org.junit.jupiter.api.Test;
 
-import static org.httprpc.kilo.sql.QueryBuilder.allOf;
-import static org.httprpc.kilo.sql.QueryBuilder.and;
-import static org.httprpc.kilo.sql.QueryBuilder.anyOf;
-import static org.httprpc.kilo.sql.QueryBuilder.equalTo;
-import static org.httprpc.kilo.sql.QueryBuilder.exists;
-import static org.httprpc.kilo.sql.QueryBuilder.in;
-import static org.httprpc.kilo.sql.QueryBuilder.notEqualTo;
-import static org.httprpc.kilo.sql.QueryBuilder.notExists;
-import static org.httprpc.kilo.sql.QueryBuilder.notIn;
-import static org.httprpc.kilo.sql.QueryBuilder.or;
+import static org.httprpc.kilo.sql.Conditionals.allOf;
+import static org.httprpc.kilo.sql.Conditionals.and;
+import static org.httprpc.kilo.sql.Conditionals.anyOf;
+import static org.httprpc.kilo.sql.Conditionals.equalTo;
+import static org.httprpc.kilo.sql.Conditionals.exists;
+import static org.httprpc.kilo.sql.Conditionals.in;
+import static org.httprpc.kilo.sql.Conditionals.notEqualTo;
+import static org.httprpc.kilo.sql.Conditionals.notExists;
+import static org.httprpc.kilo.sql.Conditionals.notIn;
+import static org.httprpc.kilo.sql.Conditionals.or;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
