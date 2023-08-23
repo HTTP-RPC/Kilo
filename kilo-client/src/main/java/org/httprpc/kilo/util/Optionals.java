@@ -70,8 +70,7 @@ public class Optionals {
      *
      * @return
      * The result of applying the mapping function to the source value, or
-     * {@code null} if the source value was {@code null} or the mapping
-     * function did not produce a value.
+     * {@code null} if the source value was {@code null}.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> transform) {
         return map(value, transform, null);
@@ -93,12 +92,12 @@ public class Optionals {
      * The mapping function.
      *
      * @param defaultValue
-     * The default value.
+     * The value to return if the source value is {@code null}, or {@code null}
+     * for no default value.
      *
      * @return
      * The result of applying the mapping function to the source value, or
-     * the default value if the source value was {@code null} or the mapping
-     * function did not produce a value.
+     * the default value if the source value was {@code null}.
      */
     public static <T, U> U map(T value, Function<? super T, ? extends U> transform, U defaultValue) {
         if (value == null) {
@@ -108,7 +107,7 @@ public class Optionals {
                 throw new IllegalArgumentException();
             }
 
-            return coalesce(transform.apply(value), defaultValue);
+            return transform.apply(value);
         }
     }
 
@@ -141,7 +140,8 @@ public class Optionals {
      * The action to perform if the source value is not {@code null}.
      *
      * @param defaultAction
-     * The action to perform if the source value is {@code null}.
+     * The action to perform if the source value is {@code null}, or
+     * {@code null} for no default action.
      */
     public static <T> void perform(T value, Consumer<? super T> action, Runnable defaultAction) {
         if (value == null) {
