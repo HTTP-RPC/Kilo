@@ -18,7 +18,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -272,7 +271,7 @@ public class Collections {
      * exist.
      */
     public static Object valueAt(Object root, Object... path) {
-        return valueAt(root, new LinkedList<>(Arrays.asList(path)));
+        return valueAt(root, Arrays.asList(path));
     }
 
     /**
@@ -299,7 +298,7 @@ public class Collections {
             if (path.isEmpty()) {
                 return root;
             } else {
-                var component = path.remove(0);
+                var component = path.get(0);
 
                 Object value;
                 if (root instanceof List<?> list && component instanceof Number number) {
@@ -310,7 +309,7 @@ public class Collections {
                     throw new IllegalArgumentException();
                 }
 
-                return valueAt(value, path);
+                return valueAt(value, path.subList(1, path.size()));
             }
         }
     }
