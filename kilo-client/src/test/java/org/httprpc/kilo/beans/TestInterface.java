@@ -65,6 +65,7 @@ public interface TestInterface {
     String getIgnored();
 
     NestedInterface getNestedBean();
+    void setNestedBean(NestedInterface nestedBean);
 
     @Required
     List<Integer> getIntegerList();

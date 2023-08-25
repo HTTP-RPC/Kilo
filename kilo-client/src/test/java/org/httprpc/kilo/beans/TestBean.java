@@ -230,6 +230,7 @@ public class TestBean implements TestInterface {
         return nestedBean;
     }
 
+    @Override
     public void setNestedBean(NestedInterface nestedBean) {
         this.nestedBean = nestedBean;
     }

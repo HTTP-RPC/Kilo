@@ -95,7 +95,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <p>Attribute values can be obtained by prepending an "@" symbol to the
      * attribute name. Adapters for individual sub-elements can be obtained via
      * the element name. If there is more than one element with a given name,
-     * the first matching element will be returned. A list of all elements
+     * the last matching element will be returned. A list of all elements
      * matching a given name can be obtained by appending an asterisk to the
      * element name.</p>
      *
@@ -138,8 +138,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
                 nodeList = element.getElementsByTagName(name);
             }
 
-            if (nodeList.getLength() > 0) {
-                value = new ElementAdapter((Element)nodeList.item(0), namespaceAware);
+            var n = nodeList.getLength();
+
+            if (n > 0) {
+                value = new ElementAdapter((Element)nodeList.item(n - 1), namespaceAware);
             } else {
                 value = null;
             }

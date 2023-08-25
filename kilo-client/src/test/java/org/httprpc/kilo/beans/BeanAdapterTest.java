@@ -360,6 +360,34 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testTypedInvocationProxy() {
+        var map = new HashMap<String, Object>();
+
+        map.put("nestedBean", mapOf());
+
+        var testInterface = BeanAdapter.coerce(map, TestInterface.class);
+
+        testInterface.setInteger(150);
+
+        assertEquals(150, Collections.valueAt(map, "i"));
+
+        var nestedInterface = testInterface.getNestedBean();
+
+        nestedInterface.setFlag(true);
+
+        assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
+
+        var nestedBean = new TestBean.NestedBean();
+
+        nestedBean.setFlag(true);
+
+        testInterface.setNestedBean(nestedBean);
+
+        assertTrue(map.get("nestedBean") instanceof Map<?, ?>);
+        assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
+    }
+
+    @Test
     public void testMissingProperty() {
         var testBean = BeanAdapter.coerce(mapOf(
             entry("long", 10),
@@ -429,21 +457,15 @@ public class BeanAdapterTest {
         var testInterface = BeanAdapter.coerce(map, TestInterface.class);
 
         assertThrows(UnsupportedOperationException.class, testInterface::getLong);
+
         assertThrows(UnsupportedOperationException.class, testInterface::getString);
-        assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
-
-        testInterface.setInteger(150);
-
-        assertEquals(150, Collections.valueAt(map, "i"));
         assertThrows(IllegalArgumentException.class, () -> testInterface.setString(null));
+
+        assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
 
         var nestedInterface = testInterface.getNestedBean();
 
         assertThrows(UnsupportedOperationException.class, nestedInterface::getFlag);
-
-        nestedInterface.setFlag(true);
-
-        assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
         assertThrows(IllegalArgumentException.class, () -> nestedInterface.setFlag(null));
 
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestRecord.class));

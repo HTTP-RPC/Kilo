@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.emptyListOf;
 import static org.httprpc.kilo.util.Collections.emptyMapOf;
@@ -145,19 +144,21 @@ public class CollectionsTest {
             entry(true, "def")
         );
 
-        var value = Collections.valueAt(map, "a", "b", "c", 1);
+        assertEquals(map, Collections.valueAt(map));
 
-        assertEquals(2, value);
+        assertEquals(2, Collections.valueAt(map, "a", "b", "c", 1));
 
         assertEquals("abc", Collections.valueAt(map, 4));
         assertEquals("def", Collections.valueAt(map, true));
-
-        assertEquals(map, Collections.valueAt(map));
 
         assertNull(Collections.valueAt(map, "a", "b", "d", 1));
         assertNull(Collections.valueAt(map, "e"));
         assertNull(Collections.valueAt(null));
 
+        var path = listOf("a", "b", "c", 4);
+
         assertThrows(IndexOutOfBoundsException.class, () -> Collections.valueAt(map, "a", "b", "c", 4));
+
+        assertEquals(4, path.size());
     }
 }

@@ -345,7 +345,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         throw new IllegalArgumentException("Property is required.");
                     }
 
-                    ((Map<Object, Object>)map).put(key, value);
+                    ((Map<Object, Object>)map).put(key, adapt(value));
 
                     return null;
                 }
