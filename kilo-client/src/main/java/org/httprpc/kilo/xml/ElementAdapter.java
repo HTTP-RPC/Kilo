@@ -34,16 +34,14 @@ import java.util.Set;
 public class ElementAdapter extends AbstractMap<String, Object> {
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {
         NodeList nodeList;
-        boolean namespaceAware;
 
-        NodeListAdapter(NodeList nodeList, boolean namespaceAware) {
+        NodeListAdapter(NodeList nodeList) {
             this.nodeList = nodeList;
-            this.namespaceAware = namespaceAware;
         }
 
         @Override
         public ElementAdapter get(int i) {
-            return new ElementAdapter((Element)nodeList.item(i), namespaceAware);
+            return new ElementAdapter((Element)nodeList.item(i));
         }
 
         @Override
@@ -53,9 +51,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     private Element element;
-    private boolean namespaceAware;
-
-    private static final String NAMESPACE_KEY = ":";
 
     private static final String ATTRIBUTE_PREFIX = "@";
     private static final String LIST_SUFFIX = "*";
@@ -67,26 +62,11 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * The source element.
      */
     public ElementAdapter(Element element) {
-        this(element, false);
-    }
-
-    /**
-     * Constructs a new element adapter.
-     *
-     * @param element
-     * The source element.
-     *
-     * @param namespaceAware
-     * Indicates that the element has been parsed by a namespace-aware document
-     * builder.
-     */
-    public ElementAdapter(Element element, boolean namespaceAware) {
         if (element == null) {
             throw new IllegalArgumentException();
         }
 
         this.element = element;
-        this.namespaceAware = namespaceAware;
     }
 
     /**
@@ -99,10 +79,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * matching a given name can be obtained by appending an asterisk to the
      * element name.</p>
      *
-     * <p>Namespaces are ignored when identifying elements by name. However,
-     * the namespace URI for an element (when applicable) can be obtained by
-     * requesting the value associated with the ":" key.</p>
-     *
      * {@inheritDoc}
      */
     @Override
@@ -114,9 +90,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         var name = key.toString();
 
         Object value;
-        if (name.equals(NAMESPACE_KEY)) {
-            value = element.getNamespaceURI();
-        } else if (isAttribute(name)) {
+        if (isAttribute(name)) {
             name = getAttributeName(name);
 
             if (element.hasAttribute(name)) {
@@ -125,23 +99,14 @@ public class ElementAdapter extends AbstractMap<String, Object> {
                 value = null;
             }
         } else if (isList(name)) {
-            if (namespaceAware) {
-                value = new NodeListAdapter(element.getElementsByTagNameNS("*", getListTagName(name)), namespaceAware);
-            } else {
-                value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)), namespaceAware);
-            }
+            value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)));
         } else {
-            NodeList nodeList;
-            if (namespaceAware) {
-                nodeList = element.getElementsByTagNameNS("*", name);
-            } else {
-                nodeList = element.getElementsByTagName(name);
-            }
+            var nodeList = element.getElementsByTagName(name);
 
             var n = nodeList.getLength();
 
             if (n > 0) {
-                value = new ElementAdapter((Element)nodeList.item(n - 1), namespaceAware);
+                value = new ElementAdapter((Element)nodeList.item(n - 1));
             } else {
                 value = null;
             }
@@ -162,21 +127,12 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
         var name = key.toString();
 
-        if (name.equals(NAMESPACE_KEY)) {
-            return namespaceAware;
-        } else if (isAttribute(name)) {
+        if (isAttribute(name)) {
             return element.hasAttribute(getAttributeName(name));
         } else if (isList(name)) {
             return true;
         } else {
-            NodeList nodeList;
-            if (namespaceAware) {
-                nodeList = element.getElementsByTagNameNS("*", name);
-            } else {
-                nodeList = element.getElementsByTagName(name);
-            }
-
-            return nodeList.getLength() > 0;
+            return element.getElementsByTagName(name).getLength() > 0;
         }
     }
 

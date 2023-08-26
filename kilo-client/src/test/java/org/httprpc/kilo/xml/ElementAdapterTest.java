@@ -27,42 +27,31 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
     @Test
     public void testElementAdapter() throws Exception {
-        testElementAdapter(false, "test.xml");
-    }
-
-    @Test
-    public void testElementAdapterNamespaceAware() throws Exception {
-        testElementAdapter(true, "test-ns.xml");
-    }
-
-    private void testElementAdapter(boolean namespaceAware, String fileName) throws Exception {
         var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         documentBuilderFactory.setExpandEntityReferences(false);
         documentBuilderFactory.setIgnoringComments(true);
-        documentBuilderFactory.setNamespaceAware(namespaceAware);
 
         var documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
         Document document;
-        try (var inputStream = getClass().getResourceAsStream(fileName)) {
+        try (var inputStream = getClass().getResourceAsStream("test.xml")) {
             document = documentBuilder.parse(inputStream);
         }
 
-        var elementAdapter = new ElementAdapter(document.getDocumentElement(), namespaceAware);
+        var elementAdapter = new ElementAdapter(document.getDocumentElement());
 
-        testUntypedAccess(elementAdapter, namespaceAware);
-        testTypedAccess(elementAdapter, namespaceAware);
+        testUntypedAccess(elementAdapter);
+        testTypedAccess(elementAdapter);
     }
 
     @SuppressWarnings("unchecked")
-    private void testUntypedAccess(ElementAdapter elementAdapter, boolean namespaceAware) {
+    private void testUntypedAccess(ElementAdapter elementAdapter) {
         assertTrue(elementAdapter.containsKey("@a"));
         assertFalse(elementAdapter.containsKey("@b"));
 
@@ -71,14 +60,6 @@ public class ElementAdapterTest {
         assertTrue(elementAdapter.containsKey("map"));
 
         var map = (Map<String, ?>)elementAdapter.get("map");
-
-        assertEquals(namespaceAware, map.containsKey(":"));
-
-        if (namespaceAware) {
-            assertEquals("x", map.get(":"));
-        } else {
-            assertNull(map.get(":"));
-        }
 
         assertTrue(map.containsKey("@b"));
         assertFalse(map.containsKey("@c"));
@@ -90,12 +71,6 @@ public class ElementAdapterTest {
 
         var list = (Map<String, ?>)map.get("list");
 
-        if (namespaceAware) {
-            assertEquals("y", list.get(":"));
-        } else {
-            assertNull(list.get(":"));
-        }
-
         assertEquals("C", list.get("@c"));
 
         assertTrue(list.containsKey("item*"));
@@ -105,12 +80,6 @@ public class ElementAdapterTest {
         assertEquals(3, items.size());
 
         var item1 = (Map<String, ?>)items.get(0);
-
-        if (namespaceAware) {
-            assertEquals("z", item1.get(":"));
-        } else {
-            assertNull(item1.get(":"));
-        }
 
         assertEquals("1", item1.get("@d"));
         assertEquals("abc", item1.toString());
@@ -132,29 +101,17 @@ public class ElementAdapterTest {
         assertTrue(xyz.isEmpty());
     }
 
-    private void testTypedAccess(ElementAdapter elementAdapter, boolean namespaceAware) {
+    private void testTypedAccess(ElementAdapter elementAdapter) {
         var testInterface = BeanAdapter.coerce(elementAdapter, TestInterface.class);
 
         assertEquals("A", testInterface.getA());
 
         var map = testInterface.getMap();
 
-        if (namespaceAware) {
-            assertEquals("x", map.getNamespaceURI());
-        } else {
-            assertNull(map.getNamespaceURI());
-        }
-
         assertEquals("B", map.getB1());
         assertEquals("two", map.getB2());
 
         var list = map.getList();
-
-        if (namespaceAware) {
-            assertEquals("y", list.getNamespaceURI());
-        } else {
-            assertNull(map.getNamespaceURI());
-        }
 
         assertEquals("C", list.getC());
 

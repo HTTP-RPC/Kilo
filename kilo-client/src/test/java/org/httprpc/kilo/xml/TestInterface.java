@@ -21,9 +21,6 @@ import java.util.Map;
 
 public interface TestInterface {
     interface MapInterface {
-        @Key(":")
-        String getNamespaceURI();
-
         @Key("@b")
         String getB1();
 
@@ -34,9 +31,6 @@ public interface TestInterface {
     }
 
     interface ListInterface {
-        @Key(":")
-        String getNamespaceURI();
-
         @Key("@c")
         String getC();
 
@@ -46,9 +40,6 @@ public interface TestInterface {
         @Key("item*")
         List<Map<String, Object>> getMapItems();
     }
-
-    @Key(":")
-    String getNamespaceURI();
 
     @Key("@a")
     String getA();
