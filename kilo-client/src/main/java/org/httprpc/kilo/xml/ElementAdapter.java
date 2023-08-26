@@ -32,6 +32,7 @@ import java.util.Set;
  * {@link Map} interface.
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
+    // Node list adapter
     private static class NodeListAdapter extends AbstractList<ElementAdapter> {
         NodeList nodeList;
 
