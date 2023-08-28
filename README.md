@@ -1062,9 +1062,7 @@ return BeanAdapter.coerce(results, List.class, Pet.class);
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
-The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. The resulting map can then be transformed to another representation via a template document or accessed via a typed proxy, as described [earlier](#type-coercion). 
-
-For example, the following markup might be used to represent the status of a bank account:
+The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
 
 ```xml
 <account id="101">
@@ -1093,17 +1091,22 @@ For example, the following markup might be used to represent the status of a ban
 </account>
 ```
 
-This code could be used to display the account holder's name:
+This code could be used to load the document and adapt the root element: 
 
 ```java
+var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+documentBuilderFactory.setExpandEntityReferences(false);
+documentBuilderFactory.setIgnoringComments(true);
+
+var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+Document document;
+try (var inputStream = getClass().getResourceAsStream("account.xml")) {
+    document = documentBuilder.parse(inputStream);
+}
+
 var accountAdapter = new ElementAdapter(document.getDocumentElement());
-
-var holder = (Map<String, Object>)accountAdapter.get("holder");
-
-var firstName = holder.get("firstName");
-var lastName = holder.get("lastName");
-
-System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
 ```
 
 Attribute values can be obtained by prepending an "@" symbol to the attribute name:
@@ -1114,25 +1117,30 @@ var id = accountAdapter.get("@id");
 System.out.println(id); // 101
 ```
 
-Attributes can also be accessed by traversing the adapter's entry set.
+Individual sub-elements can be accessed by name. The text content of an element can be obtained by calling `toString()` on the returned adapter instance; for example:
 
-A list of sub-elements can be obtained by appending an asterisk to the element name:
+```java
+var holder = (Map<String, Object>)accountAdapter.get("holder");
+
+var firstName = holder.get("firstName");
+var lastName = holder.get("lastName");
+
+System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
+```
+
+Multiple sub-elements can be obtained by appending an asterisk to the element name:
 
 ```java
 var transactions = (Map<String, Object>)accountAdapter.get("transactions");
 var credits = (List<Map<String, Object>>)transactions.get("credit*");
 
 for (var credit : credits) {
-    ...
+    System.out.println(credit.get("amount"));
+    System.out.println(credit.get("date"));
 }
 ```
 
-Finally, the text content of an element can be obtained by calling `toString()` on the adapter instance:
-
-```java
-System.out.println(credit.get("amount"));
-System.out.println(credit.get("date"));
-```
+As with any map, an `ElementAdapter`'s contents can be transformed to another representation via a [template document](#templateencoder) or accessed via a typed proxy, as described [earlier](#type-coercion).
 
 ## ResourceBundleAdapter
 The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the headings in a CSV document, for example:

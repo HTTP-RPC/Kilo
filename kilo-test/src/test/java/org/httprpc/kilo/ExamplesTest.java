@@ -343,16 +343,16 @@ public class ExamplesTest {
 
         var accountAdapter = new ElementAdapter(document.getDocumentElement());
 
+        var id = accountAdapter.get("@id");
+
+        System.out.println(id); // 101
+
         var holder = (Map<String, Object>)accountAdapter.get("holder");
 
         var firstName = holder.get("firstName");
         var lastName = holder.get("lastName");
 
         System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
-
-        var id = accountAdapter.get("@id");
-
-        System.out.println(id); // 101
 
         var transactions = (Map<String, Object>)accountAdapter.get("transactions");
         var credits = (List<Map<String, Object>>)transactions.get("credit*");

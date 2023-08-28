@@ -22,9 +22,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.List;
 import java.util.Map;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -115,18 +112,23 @@ public class ElementAdapterTest {
 
         assertEquals("C", list.getC());
 
-        var stringItems = list.getStringItems();
+        var items = list.getItems();
 
-        assertEquals(3, stringItems.size());
+        assertEquals(3, items.size());
 
-        assertEquals("abc", stringItems.get(0));
-        assertEquals("déf", stringItems.get(1));
-        assertEquals("ghi", stringItems.get(2));
+        var item1 = items.get(0);
 
-        assertEquals(listOf(
-            mapOf(entry("@d", "1")),
-            mapOf(entry("@d", "2")),
-            mapOf(entry("@d", "3"))
-        ), list.getMapItems());
+        assertEquals("1", item1.getD());
+        assertEquals("abc", item1.toString());
+
+        var item2 = items.get(1);
+
+        assertEquals("2", item2.getD());
+        assertEquals("déf", item2.toString());
+
+        var item3 = items.get(2);
+
+        assertEquals("3", item3.getD());
+        assertEquals("ghi", item3.toString());
     }
 }

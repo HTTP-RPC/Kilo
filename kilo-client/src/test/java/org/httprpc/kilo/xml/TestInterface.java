@@ -17,7 +17,6 @@ package org.httprpc.kilo.xml;
 import org.httprpc.kilo.beans.Key;
 
 import java.util.List;
-import java.util.Map;
 
 public interface TestInterface {
     interface MapInterface {
@@ -35,10 +34,12 @@ public interface TestInterface {
         String getC();
 
         @Key("item*")
-        List<String> getStringItems();
+        List<Item> getItems();
+    }
 
-        @Key("item*")
-        List<Map<String, Object>> getMapItems();
+    interface Item {
+        @Key("@d")
+        String getD();
     }
 
     @Key("@a")
