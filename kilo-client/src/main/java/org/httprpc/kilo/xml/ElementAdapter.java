@@ -19,12 +19,14 @@ import org.w3c.dom.NodeList;
 
 import java.util.AbstractList;
 import java.util.AbstractMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Provides read-only access to the contents of an XML DOM element via the
- * {@link Map} interface.
+ * Provides access to the contents of an XML DOM element via the {@link Map}
+ * interface. Keys begining with "@" represent attributes. Keys ending with "*"
+ * represent multiple elements. All other keys represent individual elements.
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
     // Node list adapter
@@ -66,14 +68,16 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Retrieves a value associated with the source element.</p>
+     * Retrieves a value associated with the source element.
      *
-     * <p>Attribute values can be obtained by prepending an "@" symbol to the
-     * attribute name. Adapters for individual sub-elements can be obtained via
-     * the element name. If there is more than one element with a given name,
-     * the last matching element will be returned. A list of all elements
-     * matching a given name can be obtained by appending an asterisk to the
-     * element name.</p>
+     * <ul>
+     * <li>If the key refers to an attribute, the attribute's string value (if
+     * any) will be returned.</li>
+     * <li>If the key refers to multiple elements, a list implementation that
+     * recursively adapts all matching sub-elements will be returned.</li>
+     * <li>Otherwise, an adapter for the last matching sub-element (if any)
+     * will be returned.</li>
+     * </ul>
      *
      * {@inheritDoc}
      */
@@ -83,32 +87,142 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        var name = key.toString();
+        return getValue(key.toString());
+    }
 
-        Object value;
-        if (isAttribute(name)) {
-            name = getAttributeName(name);
+    private Object getValue(String key) {
+        if (isAttribute(key)) {
+            key = getAttributeName(key);
 
-            if (element.hasAttribute(name)) {
-                value = element.getAttribute(name);
+            if (element.hasAttribute(key)) {
+                return element.getAttribute(key);
             } else {
-                value = null;
+                return null;
             }
-        } else if (isList(name)) {
-            value = new NodeListAdapter(element.getElementsByTagName(getListTagName(name)));
+        } else if (isList(key)) {
+            return new NodeListAdapter(element.getElementsByTagName(getListTagName(key)));
         } else {
-            var nodeList = element.getElementsByTagName(name);
+            var nodeList = element.getElementsByTagName(key);
 
             var n = nodeList.getLength();
 
             if (n > 0) {
-                value = new ElementAdapter((Element)nodeList.item(n - 1));
+                return new ElementAdapter((Element)nodeList.item(n - 1));
             } else {
-                value = null;
+                return null;
             }
         }
+    }
 
-        return value;
+    /**
+     * Updates a value associated with the source element.
+     *
+     * <ul>
+     * <li>If the key refers to an attribute, the attribute's value (if any)
+     * will be replaced with the string representation of the provided
+     * value.</li>
+     * <li>If the key refers to multiple elements, any matching sub-elements
+     * will be replaced with the contents of the provided list.</li>
+     * <li>Otherwise, a new sub-element will be appended. For {@link Map}
+     * values, the element will be recursively populated using the map's
+     * contents. For all other types, the element's text content will be set to
+     * the string representation of the provided value.</li>
+     * </ul>
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public Object put(String key, Object value) {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (isAttribute(key)) {
+            element.setAttribute(getAttributeName(key), value.toString());
+        } else if (isList(key)) {
+            if (!(value instanceof List<?> list)) {
+                throw new IllegalArgumentException();
+            }
+
+            removeValue(key);
+
+            var name = getListTagName(key);
+
+            for (var element : list) {
+                put(name, element);
+            }
+        } else {
+            var document = element.getOwnerDocument();
+
+            var child = document.createElement(key);
+
+            if (value instanceof Map<?, ?> map) {
+                var childAdapter = new ElementAdapter(child);
+
+                for (var entry : map.entrySet()) {
+                    var entryKey = entry.getKey();
+
+                    if (entryKey == null) {
+                        throw new IllegalArgumentException();
+                    }
+
+                    childAdapter.put(entryKey.toString(), entry.getValue());
+                }
+            } else {
+                child.setTextContent(value.toString());
+            }
+
+            element.appendChild(child);
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes a value associated with the source element.
+     *
+     * <ul>
+     * <li>If the key refers to an attribute, the attribute will be
+     * removed.</li>
+     * <li>If the key refers to multiple elements, all matching sub-elements
+     * will be removed.</li>
+     * <li>Otherwise, the last matching sub-element (if any) will be
+     * removed.</li>
+     * </ul>
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public Object remove(Object key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        removeValue(key.toString());
+
+        return null;
+    }
+
+    private void removeValue(String key) {
+        if (isAttribute(key)) {
+            element.removeAttribute(getAttributeName(key));
+        } else if (isList(key)) {
+            var nodeList = element.getElementsByTagName(getListTagName(key));
+
+            var n = nodeList.getLength();
+
+            for (var i = 0; i < n; i++) {
+                element.removeChild(nodeList.item(i));
+            }
+        } else {
+            var nodeList = element.getElementsByTagName(key);
+
+            var n = nodeList.getLength();
+
+            if (n > 0) {
+                element.removeChild(nodeList.item(n - 1));
+            }
+        }
     }
 
     /**
@@ -150,19 +264,19 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         return element.getTextContent();
     }
 
-    private static boolean isAttribute(String name) {
-        return name.startsWith(ATTRIBUTE_PREFIX);
+    private static boolean isAttribute(String key) {
+        return key.startsWith(ATTRIBUTE_PREFIX);
     }
 
-    private static String getAttributeName(String name) {
-        return name.substring(ATTRIBUTE_PREFIX.length());
+    private static String getAttributeName(String key) {
+        return key.substring(ATTRIBUTE_PREFIX.length());
     }
 
-    private static boolean isList(String name) {
-        return name.endsWith(LIST_SUFFIX);
+    private static boolean isList(String key) {
+        return key.endsWith(LIST_SUFFIX);
     }
 
-    private static String getListTagName(String name) {
-        return name.substring(0, name.length() - LIST_SUFFIX.length());
+    private static String getListTagName(String key) {
+        return key.substring(0, key.length() - LIST_SUFFIX.length());
     }
 }
