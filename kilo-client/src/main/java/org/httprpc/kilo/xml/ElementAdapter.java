@@ -68,7 +68,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Retrieves a value associated with the source element.
+     * <p>Retrieves a value associated with the source element.</p>
      *
      * <ul>
      * <li>If the key refers to an attribute, the attribute's string value (if
@@ -115,7 +115,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Updates a value associated with the source element.
+     * <p>Updates a value associated with the source element.</p>
      *
      * <ul>
      * <li>If the key refers to an attribute, the attribute's value (if any)
@@ -179,7 +179,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Removes a value associated with the source element.
+     * <p>Removes a value associated with the source element.</p>
      *
      * <ul>
      * <li>If the key refers to an attribute, the attribute will be

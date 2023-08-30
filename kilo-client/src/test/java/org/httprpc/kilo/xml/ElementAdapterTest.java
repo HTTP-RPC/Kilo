@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.xml;
 
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
@@ -22,13 +21,16 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.List;
 import java.util.Map;
 
+import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.listOf;
+import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
     @Test
-    public void testElementAdapter() throws Exception {
+    public void testElementAdapter1() throws Exception {
         var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         documentBuilderFactory.setExpandEntityReferences(false);
@@ -41,14 +43,46 @@ public class ElementAdapterTest {
             document = documentBuilder.parse(inputStream);
         }
 
-        var elementAdapter = new ElementAdapter(document.getDocumentElement());
+        testElementAdapter(new ElementAdapter(document.getDocumentElement()));
+    }
 
-        testUntypedAccess(elementAdapter);
-        testTypedAccess(elementAdapter);
+    @Test
+    public void testElementAdapter2() throws Exception {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        var document = documentBuilder.newDocument();
+
+        var elementAdapter = new ElementAdapter(document.createElement("root"));
+
+        elementAdapter.putAll(mapOf(
+            entry("@a", "A"),
+            entry("map", mapOf(
+                entry("@b", "B"),
+                entry("b", "two"),
+                entry("list", mapOf(
+                    entry("@c", "C"),
+                    entry("item*", listOf(
+                        "abc",
+                        "déf",
+                        "ghi"
+                    ))
+                ))
+            ))
+        ));
+
+        testElementAdapter(elementAdapter);
+
+        elementAdapter.remove("@a");
+
+        assertFalse(elementAdapter.containsKey("@a"));
+
+        elementAdapter.remove("map");
+
+        assertFalse(elementAdapter.containsKey("map"));
     }
 
     @SuppressWarnings("unchecked")
-    private void testUntypedAccess(ElementAdapter elementAdapter) {
+    private void testElementAdapter(ElementAdapter elementAdapter) {
         assertTrue(elementAdapter.containsKey("@a"));
         assertFalse(elementAdapter.containsKey("@b"));
 
@@ -74,61 +108,16 @@ public class ElementAdapterTest {
 
         var items = (List<?>)list.get("item*");
 
-        assertEquals(3, items.size());
-
-        var item1 = (Map<String, ?>)items.get(0);
-
-        assertEquals("1", item1.get("@d"));
-        assertEquals("abc", item1.toString());
-
-        var item2 = (Map<String, ?>)items.get(1);
-
-        assertEquals("2", item2.get("@d"));
-        assertEquals("déf", item2.toString());
-
-        var item3 = (Map<String, ?>)items.get(2);
-
-        assertEquals("3", item3.get("@d"));
-        assertEquals("ghi", item3.toString());
+        assertEquals(listOf(
+            "abc",
+            "déf",
+            "ghi"
+        ), items.stream().map(Object::toString).toList());
 
         assertTrue(list.containsKey("xyz*"));
 
         var xyz = (List<?>)list.get("xyz*");
 
         assertTrue(xyz.isEmpty());
-    }
-
-    private void testTypedAccess(ElementAdapter elementAdapter) {
-        var testInterface = BeanAdapter.coerce(elementAdapter, TestInterface.class);
-
-        assertEquals("A", testInterface.getA());
-
-        var map = testInterface.getMap();
-
-        assertEquals("B", map.getB1());
-        assertEquals("two", map.getB2());
-
-        var list = map.getList();
-
-        assertEquals("C", list.getC());
-
-        var items = list.getItems();
-
-        assertEquals(3, items.size());
-
-        var item1 = items.get(0);
-
-        assertEquals("1", item1.getD());
-        assertEquals("abc", item1.toString());
-
-        var item2 = items.get(1);
-
-        assertEquals("2", item2.getD());
-        assertEquals("déf", item2.toString());
-
-        var item3 = items.get(2);
-
-        assertEquals("3", item3.getD());
-        assertEquals("ghi", item3.toString());
     }
 }

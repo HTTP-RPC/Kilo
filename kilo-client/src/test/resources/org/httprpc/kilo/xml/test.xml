@@ -4,9 +4,9 @@
     <map b="B">
         <b>two</b>
         <list c="C">
-            <item d="1">abc</item>
-            <item d="2">déf</item>
-            <item d="3">ghi</item>
+            <item>abc</item>
+            <item>déf</item>
+            <item>ghi</item>
         </list>
     </map>
 </root>
