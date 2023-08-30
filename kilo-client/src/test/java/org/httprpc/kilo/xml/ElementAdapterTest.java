@@ -120,4 +120,32 @@ public class ElementAdapterTest {
 
         assertTrue(xyz.isEmpty());
     }
+
+    @Test
+    public void testReplace() throws Exception {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        var document = documentBuilder.newDocument();
+
+        var elementAdapter = new ElementAdapter(document.createElement("root"));
+
+        elementAdapter.put("@a", "A");
+        elementAdapter.put("@a", "B");
+
+        assertEquals("B", elementAdapter.get("@a"));
+
+        elementAdapter.put("item", 1);
+        elementAdapter.put("item", 2);
+        elementAdapter.put("item", 3);
+
+        var items1 = (List<?>)elementAdapter.get("item*");
+
+        assertEquals(listOf("1", "2", "3"), items1.stream().map(Object::toString).toList());
+
+        elementAdapter.put("item*", listOf(4, 5, 6));
+
+        var items2 = (List<?>)elementAdapter.get("item*");
+
+        assertEquals(listOf("4", "5", "6"), items2.stream().map(Object::toString).toList());
+    }
 }

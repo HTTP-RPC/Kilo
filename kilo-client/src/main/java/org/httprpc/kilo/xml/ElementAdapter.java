@@ -211,7 +211,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
             var n = nodeList.getLength();
 
-            for (var i = 0; i < n; i++) {
+            for (var i = n - 1; i >= 0; i--) {
                 element.removeChild(nodeList.item(i));
             }
         } else {
