@@ -138,9 +138,11 @@ public class ElementAdapterTest {
         elementAdapter.put("item", 2);
         elementAdapter.put("item", 3);
 
+        elementAdapter.remove("item");
+
         var items1 = (List<?>)elementAdapter.get("item*");
 
-        assertEquals(listOf("1", "2", "3"), items1.stream().map(Object::toString).toList());
+        assertEquals(listOf("1", "2"), items1.stream().map(Object::toString).toList());
 
         elementAdapter.put("item*", listOf(4, 5, 6));
 
