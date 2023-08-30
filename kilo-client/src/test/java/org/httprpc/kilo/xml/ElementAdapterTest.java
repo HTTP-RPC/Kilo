@@ -14,9 +14,11 @@
 
 package org.httprpc.kilo.xml;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.List;
 import java.util.Map;
@@ -29,15 +31,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
-    @Test
-    public void testElementAdapter1() throws Exception {
+    private DocumentBuilder documentBuilder;
+
+    @BeforeEach
+    public void setUp() throws Exception {
         var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         documentBuilderFactory.setExpandEntityReferences(false);
         documentBuilderFactory.setIgnoringComments(true);
 
-        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        documentBuilder = documentBuilderFactory.newDocumentBuilder();
+    }
 
+    @Test
+    public void testElementAdapter1() throws Exception {
         Document document;
         try (var inputStream = getClass().getResourceAsStream("test.xml")) {
             document = documentBuilder.parse(inputStream);
@@ -47,12 +54,8 @@ public class ElementAdapterTest {
     }
 
     @Test
-    public void testElementAdapter2() throws Exception {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        var document = documentBuilder.newDocument();
-
-        var elementAdapter = new ElementAdapter(document.createElement("root"));
+    public void testElementAdapter2() {
+        var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
 
         elementAdapter.putAll(mapOf(
             entry("@a", "A"),
@@ -122,12 +125,8 @@ public class ElementAdapterTest {
     }
 
     @Test
-    public void testReplace() throws Exception {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        var document = documentBuilder.newDocument();
-
-        var elementAdapter = new ElementAdapter(document.createElement("root"));
+    public void testReplace() {
+        var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
 
         elementAdapter.put("@a", "A");
         elementAdapter.put("@a", "B");
@@ -149,5 +148,18 @@ public class ElementAdapterTest {
         var items2 = (List<?>)elementAdapter.get("item*");
 
         assertEquals(listOf("4", "5", "6"), items2.stream().map(Object::toString).toList());
+    }
+
+    @Test
+    public void testHybridElement() {
+        var element = documentBuilder.newDocument().createElement("root");
+
+        element.setAttribute("a", "A");
+        element.setTextContent("abc");
+
+        var elementAdapter = new ElementAdapter(element);
+
+        assertEquals("A", elementAdapter.get("@a"));
+        assertEquals("abc", elementAdapter.toString());
     }
 }
