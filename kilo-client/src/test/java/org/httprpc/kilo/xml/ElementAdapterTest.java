@@ -28,6 +28,7 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ElementAdapterTest {
@@ -65,23 +66,24 @@ public class ElementAdapterTest {
                 entry("list", mapOf(
                     entry("@c", "C"),
                     entry("item*", listOf(
-                        "abc",
-                        "déf",
-                        "ghi"
+                        mapOf(
+                            entry("@d", 1),
+                            entry(".", "abc")
+                        ),
+                        mapOf(
+                            entry("@d", 2),
+                            entry(".", "déf")
+                        ),
+                        mapOf(
+                            entry("@d", 3),
+                            entry(".", "ghi")
+                        )
                     ))
                 ))
             ))
         ));
 
         testElementAdapter(elementAdapter);
-
-        elementAdapter.remove("@a");
-
-        assertFalse(elementAdapter.containsKey("@a"));
-
-        elementAdapter.remove("map");
-
-        assertFalse(elementAdapter.containsKey("map"));
     }
 
     @SuppressWarnings("unchecked")
@@ -111,11 +113,22 @@ public class ElementAdapterTest {
 
         var items = (List<?>)list.get("item*");
 
-        assertEquals(listOf(
-            "abc",
-            "déf",
-            "ghi"
-        ), items.stream().map(Object::toString).toList());
+        assertEquals(3, items.size());
+
+        var item1 = (Map<String, ?>)items.get(0);
+
+        assertEquals("1", item1.get("@d"));
+        assertEquals("abc", item1.get("."));
+
+        var item2 = (Map<String, ?>)items.get(1);
+
+        assertEquals("2", item2.get("@d"));
+        assertEquals("déf", item2.get("."));
+
+        var item3 = (Map<String, ?>)items.get(2);
+
+        assertEquals("3", item3.get("@d"));
+        assertEquals("ghi", item3.get("."));
 
         assertTrue(list.containsKey("xyz*"));
 
@@ -125,41 +138,65 @@ public class ElementAdapterTest {
     }
 
     @Test
-    public void testReplace() {
+    public void testSelfReference() {
         var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
 
-        elementAdapter.put("@a", "A");
-        elementAdapter.put("@a", "B");
+        assertTrue(elementAdapter.containsKey("."));
 
-        assertEquals("B", elementAdapter.get("@a"));
+        elementAdapter.put(".", "abc");
 
-        elementAdapter.put("item", 1);
-        elementAdapter.put("item", 2);
-        elementAdapter.put("item", 3);
+        assertEquals("abc", elementAdapter.toString());
 
-        elementAdapter.remove("item");
-
-        var items1 = (List<?>)elementAdapter.get("item*");
-
-        assertEquals(listOf("1", "2"), items1.stream().map(Object::toString).toList());
-
-        elementAdapter.put("item*", listOf(4, 5, 6));
-
-        var items2 = (List<?>)elementAdapter.get("item*");
-
-        assertEquals(listOf("4", "5", "6"), items2.stream().map(Object::toString).toList());
+        assertThrows(UnsupportedOperationException.class, () -> elementAdapter.remove("."));
     }
 
     @Test
-    public void testHybridElement() {
-        var element = documentBuilder.newDocument().createElement("root");
+    public void testAttribute() {
+        var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
 
-        element.setAttribute("a", "A");
-        element.setTextContent("abc");
+        elementAdapter.put("@e", "123");
+        elementAdapter.put("@e", "456");
 
-        var elementAdapter = new ElementAdapter(element);
+        assertEquals("456", elementAdapter.get("@e"));
 
-        assertEquals("A", elementAdapter.get("@a"));
-        assertEquals("abc", elementAdapter.toString());
+        elementAdapter.remove("@e");
+
+        assertFalse(elementAdapter.containsKey("@e"));
+    }
+
+    @Test
+    public void testMultipleElements() {
+        var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
+
+        elementAdapter.put("item*", listOf(1, 2, 3));
+        elementAdapter.put("item*", listOf(4, 5, 6));
+
+        var items = (List<?>)elementAdapter.get("item*");
+
+        assertEquals(listOf("4", "5", "6"), items.stream().map(Object::toString).toList());
+
+        elementAdapter.put("item*", listOf());
+
+        assertFalse(elementAdapter.containsKey("item"));
+
+        assertThrows(UnsupportedOperationException.class, () -> elementAdapter.remove("item*"));
+    }
+
+    @Test
+    public void testSingleElement() {
+        var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
+
+        elementAdapter.put("item", 1);
+        elementAdapter.put("item", 2);
+
+        assertEquals("2", elementAdapter.get("item").toString());
+
+        elementAdapter.remove("item");
+
+        assertFalse(elementAdapter.containsKey("item"));
+
+        elementAdapter.put("item*", listOf(1, 2, 3));
+
+        assertThrows(IllegalStateException.class, () -> elementAdapter.get("item"));
     }
 }

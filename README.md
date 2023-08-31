@@ -1128,6 +1128,8 @@ var lastName = holder.get("lastName");
 System.out.println(String.format("%s, %s", lastName, firstName)); // Smith, John
 ```
 
+An element's text content can also be accessed via the reserved "." key.
+
 Multiple sub-elements can be obtained by appending an asterisk to the element name:
 
 ```java

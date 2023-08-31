@@ -25,8 +25,9 @@ import java.util.Set;
 
 /**
  * Provides access to the contents of an XML DOM element via the {@link Map}
- * interface. Keys begining with "@" represent attributes. Keys ending with "*"
- * represent multiple elements. All other keys represent individual elements.
+ * interface. The reserved "." key refers to the element itself. Keys begining
+ * with "@" represent attributes. Keys ending with "*" represent multiple
+ * elements. All other keys represent individual elements.
  */
 public class ElementAdapter extends AbstractMap<String, Object> {
     // Node list adapter
@@ -50,6 +51,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     private Element element;
 
+    private static final String SELF_REFERENCE = ".";
+
     private static final String ATTRIBUTE_PREFIX = "@";
     private static final String LIST_SUFFIX = "*";
 
@@ -71,11 +74,14 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <p>Retrieves a value associated with the source element.</p>
      *
      * <ul>
-     * <li>If the key refers to an attribute, the attribute's string value (if
-     * any) will be returned.</li>
-     * <li>If the key refers to multiple elements, a list implementation that
-     * recursively adapts all matching sub-elements will be returned.</li>
-     * <li>Otherwise, an adapter for the last matching sub-element (if any)
+     * <li>If the key is equal to ".", the element's text content will be
+     * returned.</li>
+     * <li>If the key refers to an attribute, the attribute's value (if any)
+     * will be returned.</li>
+     * <li>If the key refers to multiple elements, a {@link List}
+     * implementation that recursively adapts all matching sub-elements will be
+     * returned.</li>
+     * <li>Otherwise, an adapter for the single matching sub-element (if any)
      * will be returned.</li>
      * </ul>
      *
@@ -87,11 +93,13 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        return getValue(key.toString());
+        return get(key.toString());
     }
 
-    private Object getValue(String key) {
-        if (isAttribute(key)) {
+    private Object get(String key) {
+        if (key.equals(SELF_REFERENCE)) {
+            return element.getTextContent();
+        } else if (isAttribute(key)) {
             key = getAttributeName(key);
 
             if (element.hasAttribute(key)) {
@@ -106,10 +114,12 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
             var n = nodeList.getLength();
 
-            if (n > 0) {
-                return new ElementAdapter((Element)nodeList.item(n - 1));
-            } else {
+            if (n == 0) {
                 return null;
+            } else if (n == 1) {
+                return new ElementAdapter((Element)nodeList.item(0));
+            } else {
+                throw new IllegalStateException();
             }
         }
     }
@@ -118,16 +128,22 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <p>Updates a value associated with the source element.</p>
      *
      * <ul>
+     * <li>If the key is equal to ".", the element's text content will be
+     * replaced with the string representation of the provided value.</li>
      * <li>If the key refers to an attribute, the attribute's value (if any)
      * will be replaced with the string representation of the provided
      * value.</li>
-     * <li>If the key refers to multiple elements, any matching sub-elements
-     * will be replaced with the contents of the provided list.</li>
-     * <li>Otherwise, a new sub-element will be appended. For {@link Map}
-     * values, the element will be recursively populated using the map's
-     * contents. For all other types, the element's text content will be set to
-     * the string representation of the provided value.</li>
+     * <li>If the key refers to multiple elements, the provided value must be
+     * an instance of {@link List}. Any matching sub-elements will be replaced
+     * with new elements corresponding to the contents of the list.</li>
+     * <li>Otherwise, any matching sub-elements will be replaced by a single
+     * new element corresponding to the provided value.</li>
      * </ul>
+     *
+     * <p>For {@link Map} values, new elements will be recursively populated
+     * based on the map's contents. For all other types, the element's text
+     * content will be set to the string representation of the provided
+     * value.</p>
      *
      * {@inheritDoc}
      */
@@ -137,58 +153,69 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        if (isAttribute(key)) {
+        if (key.equals(SELF_REFERENCE)) {
+            element.setTextContent(value.toString());
+        } else if (isAttribute(key)) {
             element.setAttribute(getAttributeName(key), value.toString());
         } else if (isList(key)) {
-            if (!(value instanceof List<?> list)) {
+            if (!(value instanceof List<?> values)) {
                 throw new IllegalArgumentException();
             }
 
-            removeValue(key);
+            var tagName = getListTagName(key);
 
-            var name = getListTagName(key);
+            remove(tagName);
 
-            for (var element : list) {
-                put(name, element);
-            }
+            addAll(tagName, values);
         } else {
-            var document = element.getOwnerDocument();
+            remove(key);
 
-            var child = document.createElement(key);
-
-            if (value instanceof Map<?, ?> map) {
-                var childAdapter = new ElementAdapter(child);
-
-                for (var entry : map.entrySet()) {
-                    var entryKey = entry.getKey();
-
-                    if (entryKey == null) {
-                        throw new IllegalArgumentException();
-                    }
-
-                    childAdapter.put(entryKey.toString(), entry.getValue());
-                }
-            } else {
-                child.setTextContent(value.toString());
-            }
-
-            element.appendChild(child);
+            add(key, value);
         }
 
         return null;
+    }
+
+    private void addAll(String tagName, List<?> values) {
+        for (var value : values) {
+            add(tagName, value);
+        }
+    }
+
+    private void add(String tagName, Object value) {
+        var document = element.getOwnerDocument();
+
+        var element = document.createElement(tagName);
+
+        if (value instanceof Map<?, ?> map) {
+            var elementAdapter = new ElementAdapter(element);
+
+            for (var entry : map.entrySet()) {
+                var key = entry.getKey();
+
+                if (key == null) {
+                    throw new IllegalArgumentException();
+                }
+
+                elementAdapter.put(key.toString(), entry.getValue());
+            }
+        } else {
+            element.setTextContent(value.toString());
+        }
+
+        this.element.appendChild(element);
     }
 
     /**
      * <p>Removes a value associated with the source element.</p>
      *
      * <ul>
-     * <li>If the key refers to an attribute, the attribute will be
+     * <li>If the key refers to an attribute, the attribute (if any) will be
      * removed.</li>
-     * <li>If the key refers to multiple elements, all matching sub-elements
-     * will be removed.</li>
-     * <li>Otherwise, the last matching sub-element (if any) will be
-     * removed.</li>
+     * <li>Otherwise, any matching sub-elements will be removed.</li>
      * </ul>
+     *
+     * <p>Self reference and multi-element keys are not supported.</p>
      *
      * {@inheritDoc}
      */
@@ -198,29 +225,25 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        removeValue(key.toString());
+        remove(key.toString());
 
         return null;
     }
 
-    private void removeValue(String key) {
+    private void remove(String key) {
+        if (key.equals(SELF_REFERENCE) || isList(key)) {
+            throw new UnsupportedOperationException();
+        }
+
         if (isAttribute(key)) {
             element.removeAttribute(getAttributeName(key));
-        } else if (isList(key)) {
-            var nodeList = element.getElementsByTagName(getListTagName(key));
-
-            var n = nodeList.getLength();
-
-            for (var i = n - 1; i >= 0; i--) {
-                element.removeChild(nodeList.item(i));
-            }
         } else {
             var nodeList = element.getElementsByTagName(key);
 
             var n = nodeList.getLength();
 
-            if (n > 0) {
-                element.removeChild(nodeList.item(n - 1));
+            for (var i = n - 1; i >= 0; i--) {
+                element.removeChild(nodeList.item(i));
             }
         }
     }
@@ -235,14 +258,16 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        var name = key.toString();
+        return containsKey(key.toString());
+    }
 
-        if (isAttribute(name)) {
-            return element.hasAttribute(getAttributeName(name));
-        } else if (isList(name)) {
+    private boolean containsKey(String key) {
+        if (key.equals(SELF_REFERENCE) || isList(key)) {
             return true;
+        } else if (isAttribute(key)) {
+            return element.hasAttribute(getAttributeName(key));
         } else {
-            return element.getElementsByTagName(name).getLength() > 0;
+            return element.getElementsByTagName(key).getLength() > 0;
         }
     }
 
