@@ -65,7 +65,12 @@ public class XMLTransformTest {
     }
 
     private void transformXML2() throws Exception {
-        var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setIgnoringComments(true);
+
+        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
         Document document;
         try (var inputStream = getClass().getResourceAsStream("breakfast-menu.xml")) {
