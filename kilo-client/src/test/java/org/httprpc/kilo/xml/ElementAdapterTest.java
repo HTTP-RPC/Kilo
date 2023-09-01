@@ -197,6 +197,6 @@ public class ElementAdapterTest {
 
         elementAdapter.put("item*", listOf(1, 2, 3));
 
-        assertThrows(IllegalStateException.class, () -> elementAdapter.get("item"));
+        assertEquals("3", elementAdapter.get("item").toString());
     }
 }

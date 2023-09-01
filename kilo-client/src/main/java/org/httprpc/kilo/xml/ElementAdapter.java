@@ -81,7 +81,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <li>If the key refers to multiple elements, a {@link List}
      * implementation that recursively adapts all matching sub-elements will be
      * returned.</li>
-     * <li>Otherwise, an adapter for the single matching sub-element (if any)
+     * <li>Otherwise, an adapter for the last matching sub-element (if any)
      * will be returned.</li>
      * </ul>
      *
@@ -114,12 +114,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
             var n = nodeList.getLength();
 
-            if (n == 0) {
-                return null;
-            } else if (n == 1) {
-                return new ElementAdapter((Element)nodeList.item(0));
+            if (n > 0) {
+                return new ElementAdapter((Element)nodeList.item(n - 1));
             } else {
-                throw new IllegalStateException();
+                return null;
             }
         }
     }
