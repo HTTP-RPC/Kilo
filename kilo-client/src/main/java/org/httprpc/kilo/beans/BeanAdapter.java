@@ -172,38 +172,30 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Iterable adapter
-    private static class IterableAdapter extends AbstractList<Object> {
-        Iterable<?> iterable;
+    // List adapter
+    private static class ListAdapter extends AbstractList<Object> {
+        List<?> list;
         Map<Class<?>, Map<String, Property>> propertyCache;
 
-        IterableAdapter(Iterable<?> iterable, Map<Class<?>, Map<String, Property>> propertyCache) {
-            this.iterable = iterable;
+        ListAdapter(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
+            this.list = list;
             this.propertyCache = propertyCache;
         }
 
         @Override
         public Object get(int index) {
-            if (!(iterable instanceof List<?> list)) {
-                throw new UnsupportedOperationException();
-            }
-
             return adapt(list.get(index), propertyCache);
         }
 
         @Override
         public int size() {
-            if (!(iterable instanceof List<?> list)) {
-                throw new UnsupportedOperationException();
-            }
-
             return list.size();
         }
 
         @Override
         public Iterator<Object> iterator() {
             return new Iterator<>() {
-                Iterator<?> iterator = iterable.iterator();
+                Iterator<?> iterator = list.iterator();
 
                 @Override
                 public boolean hasNext() {
@@ -561,10 +553,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <p>If the value is a {@link Record}, it is wrapped in an adapter that
      * will recursively adapt the record's fields.</p>
      *
-     * <p>If the value is an {@link Iterable}, it is wrapped in an adapter that
-     * will recursively adapt the iterable's elements. If the iterable is also
-     * a {@link List}, the returned adapter will support random access to the
-     * adapted elements.</p>
+     * <p>If the value is a {@link List}, it is wrapped in an adapter that
+     * will recursively adapt the list's elements.</p>
      *
      * <p>If the value is a {@link Map}, it is wrapped in an adapter that will
      * recursively adapt the map's values. Map keys are not adapted.</p>
@@ -596,8 +586,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return value;
         } else if (value instanceof Record) {
             return new RecordAdapter(value, propertyCache);
-        } else if (value instanceof Iterable<?> iterable) {
-            return new IterableAdapter(iterable, propertyCache);
+        } else if (value instanceof List<?> list) {
+            return new ListAdapter(list, propertyCache);
         } else if (value instanceof Map<?, ?> map) {
             return new MapAdapter(map, propertyCache);
         } else {

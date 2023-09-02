@@ -41,6 +41,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,28 +59,62 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
 public class TestService extends WebService {
-    public interface Response {
-        @Required
-        String getString();
-        List<String> getStrings();
-        int getNumber();
-        boolean getFlag();
-        DayOfWeek getDayOfWeek();
-        Date getDate();
-        Instant getInstant();
-        LocalDate getLocalDate();
-        LocalTime getLocalTime();
-        LocalDateTime getLocalDateTime();
-        Duration getDuration();
-        Period getPeriod();
-        @Key("uuid")
-        UUID getUUID();
-        List<AttachmentInfo> getAttachmentInfo();
-    }
+    public static class FibonacciList extends AbstractList<BigInteger> {
+        private int count;
 
-    public interface AttachmentInfo {
-        int getBytes();
-        int getChecksum();
+        public FibonacciList(int count) {
+            this.count = count;
+        }
+
+        @Override
+        public BigInteger get(int index) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int size() {
+            return count;
+        }
+
+        @Override
+        public Iterator<BigInteger> iterator() {
+            return new Iterator<>() {
+                int i = 0;
+
+                BigInteger a = BigInteger.valueOf(0);
+                BigInteger b = BigInteger.valueOf(1);
+
+                @Override
+                public boolean hasNext() {
+                    return i < count;
+                }
+
+                @Override
+                public BigInteger next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+
+                    BigInteger next;
+                    if (i == 0) {
+                        next = a;
+                    } else {
+                        if (i > 1) {
+                            var c = a.add(b);
+
+                            a = b;
+                            b = c;
+                        }
+
+                        next = b;
+                    }
+
+                    i++;
+
+                    return next;
+                }
+            };
+        }
     }
 
     public interface A {
@@ -114,6 +149,30 @@ public class TestService extends WebService {
     }
 
     public static class TestMap extends HashMap<String, Double> {
+    }
+
+    public interface Response {
+        @Required
+        String getString();
+        List<String> getStrings();
+        int getNumber();
+        boolean getFlag();
+        DayOfWeek getDayOfWeek();
+        Date getDate();
+        Instant getInstant();
+        LocalDate getLocalDate();
+        LocalTime getLocalTime();
+        LocalDateTime getLocalDateTime();
+        Duration getDuration();
+        Period getPeriod();
+        @Key("uuid")
+        UUID getUUID();
+        List<AttachmentInfo> getAttachmentInfo();
+    }
+
+    public interface AttachmentInfo {
+        int getBytes();
+        int getChecksum();
     }
 
     public interface Body {
@@ -178,43 +237,8 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
-    public Iterable<BigInteger> testGetFibonacci(int count) {
-        return () -> new Iterator<>() {
-            int i = 0;
-
-            BigInteger a = BigInteger.valueOf(0);
-            BigInteger b = BigInteger.valueOf(1);
-
-            @Override
-            public boolean hasNext() {
-                return i < count;
-            }
-
-            @Override
-            public BigInteger next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-
-                BigInteger next;
-                if (i == 0) {
-                    next = a;
-                } else {
-                    if (i > 1) {
-                        var c = a.add(b);
-
-                        a = b;
-                        b = c;
-                    }
-
-                    next = b;
-                }
-
-                i++;
-
-                return next;
-            }
-        };
+    public FibonacciList testGetFibonacci(int count) {
+        return new FibonacciList(count);
     }
 
     @RequestMethod("GET")
@@ -239,12 +263,6 @@ public class TestService extends WebService {
     @ResourcePath("map")
     public TestMap testGetMap() {
         return new TestMap();
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("generic")
-    public Iterable<List<Map<String, Double>>> testGetGeneric() {
-        return null;
     }
 
     @RequestMethod("POST")
