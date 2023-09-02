@@ -80,9 +80,8 @@ public class EmployeeService extends WebService {
             "hire_date as hireDate"
         ).from("employees");
 
-
         if (stream) {
-            var pipe = new Pipe<Employee>(16384, 5000);
+            var pipe = new Pipe<Employee>();
 
             executorService.submit(() -> {
                 try (var connection = dataSource.getConnection();

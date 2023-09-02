@@ -1190,9 +1190,51 @@ This code would produce the following output:
 ```
 
 ## Pipe
-The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for consumption by a consumer thread.
+The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for consumption by a consumer thread. For example, the following code constructs a SQL query that retrieves all rows from an `employees` table:
 
-TODO
+```java
+var queryBuilder = QueryBuilder.select(
+    "emp_no as employeeNumber",
+    "first_name as firstName",
+    "last_name as lastName",
+    "gender",
+    "birth_date as birthDate",
+    "hire_date as hireDate"
+).from("employees");
+```
+
+This code could be used to transform the results to a list of `Employee` instances and return them to the caller:
+
+```java
+try (var connection = dataSource.getConnection()) {
+    return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
+} catch (SQLException exception) {
+    throw new RuntimeException(exception);
+}
+```
+
+For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
+
+```java
+var pipe = new Pipe<Employee>();
+
+executorService.submit(() -> {
+    try (var connection = dataSource.getConnection();
+        var statement = queryBuilder.prepare(connection);
+        var resultSet = queryBuilder.executeQuery(statement, mapOf());
+        var resultSetAdapter = new ResultSetAdapter(resultSet)) {
+        pipe.accept(resultSetAdapter.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+    } catch (SQLException exception) {
+        throw new RuntimeException(exception);
+    }
+});
+
+return pipe;
+```
+
+This approach requires slightly more code than the first version. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
+
+For more information, see the [employee service](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
 ## Collections and Optionals
 The `Collections` class provides a set of static utility methods for declaratively instantiating list and map values:
