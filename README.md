@@ -1232,7 +1232,7 @@ executorService.submit(() -> {
 return pipe;
 ```
 
-This approach requires slightly more code than the first version. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
+This approach is slightly more verbose than the first version. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
 
 For more information, see the [employee service](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 

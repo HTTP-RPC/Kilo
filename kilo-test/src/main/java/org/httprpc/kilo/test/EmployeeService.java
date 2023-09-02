@@ -46,9 +46,9 @@ public class EmployeeService extends WebService {
         super.init();
 
         try {
-            Context initialCtx = new InitialContext();
+            var initialContext = new InitialContext();
 
-            var environmentContext = (Context)initialCtx.lookup("java:comp/env");
+            var environmentContext = (Context)initialContext.lookup("java:comp/env");
 
             dataSource = (DataSource)environmentContext.lookup("jdbc/EmployeeDB");
         } catch (NamingException exception) {
