@@ -14,26 +14,61 @@
 
 package org.httprpc.kilo.util.concurrent;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.httprpc.kilo.util.Collections.listOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class PipeTest {
+    private static ExecutorService executorService;
+
+    @BeforeAll
+    public static void setUpClass() {
+        executorService = Executors.newSingleThreadExecutor();
+    }
+
+    @AfterAll
+    public static void tearDownClass() {
+        executorService.shutdown();
+    }
+
     @Test
     public void testBoundedPipe() {
-        // TODO
+        testPipe(new Pipe<>(1));
     }
 
     @Test
     public void testBoundedPipeWithTimeout() {
-        // TODO
+        testPipe(new Pipe<>(1, 5000));
     }
 
     @Test
     public void testUnboundedPipe() {
-        // TODO
+        testPipe(new Pipe<>());
     }
 
     @Test
     public void testUnboundedPipeWithTimeout() {
-        // TODO
+        testPipe(new Pipe<>(Integer.MAX_VALUE, 5000));
+    }
+
+    private void testPipe(Pipe<Integer> pipe) {
+        var expectedValues = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
+
+        executorService.submit(() -> pipe.accept(expectedValues.stream()));
+
+        var actualValues = new ArrayList<>(expectedValues.size());
+
+        for (var element : pipe) {
+            actualValues.add(element);
+        }
+
+        assertEquals(expectedValues, actualValues);
     }
 }

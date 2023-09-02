@@ -35,6 +35,55 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
     private BlockingQueue<Object> queue;
     private int timeout;
 
+    private Iterator<E> iterator = new Iterator<>() {
+        Boolean hasNext = null;
+        E next = null;
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean hasNext() {
+            if (hasNext == null) {
+                Object next;
+                try {
+                    if (timeout == 0) {
+                        next = queue.take();
+                    } else {
+                        next = queue.poll(timeout, TimeUnit.MILLISECONDS);
+                    }
+                } catch (InterruptedException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                if (next == null) {
+                    throw new RuntimeException(new TimeoutException());
+                }
+
+                if (next == TERMINATOR) {
+                    hasNext = false;
+
+                    this.next = null;
+                } else {
+                    hasNext = true;
+
+                    this.next = (E)next;
+                }
+            }
+
+            return hasNext;
+        }
+
+        @Override
+        public E next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            hasNext = null;
+
+            return next;
+        }
+    };
+
     private static final Object TERMINATOR = new Object();
 
     /**
@@ -129,44 +178,6 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
      */
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<>() {
-            E next;
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public boolean hasNext() {
-                Object next;
-                try {
-                    if (timeout == 0) {
-                        next = queue.take();
-                    } else {
-                        next = queue.poll(timeout, TimeUnit.MILLISECONDS);
-                    }
-                } catch (InterruptedException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                if (next == null) {
-                    throw new RuntimeException(new TimeoutException());
-                }
-
-                if (next == TERMINATOR) {
-                    return false;
-                }
-
-                this.next = (E)next;
-
-                return true;
-            }
-
-            @Override
-            public E next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-
-                return next;
-            }
-        };
+        return iterator;
     }
 }
