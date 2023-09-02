@@ -25,7 +25,7 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PipeTest {
-    private static ExecutorService executorService;
+    private static ExecutorService executorService = null;
 
     @BeforeAll
     public static void setUpClass() {
