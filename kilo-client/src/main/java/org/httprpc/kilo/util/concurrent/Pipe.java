@@ -21,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Provides a vehicle by which a producer thread can submit a sequence of
@@ -29,7 +30,7 @@ import java.util.function.Consumer;
  * @param <E>
  * The element type.
  */
-public class Pipe<E> implements Consumer<Iterable<E>>, Iterable<E> {
+public class Pipe<E> implements Consumer<Stream<E>>, Iterable<E> {
     private BlockingQueue<Object> queue;
     private int timeout;
 
@@ -77,13 +78,15 @@ public class Pipe<E> implements Consumer<Iterable<E>>, Iterable<E> {
      * {@inheritDoc}
      */
     @Override
-    public void accept(Iterable<E> elements) {
-        if (elements == null) {
+    public void accept(Stream<E> stream) {
+        if (stream == null) {
             throw new IllegalArgumentException();
         }
 
-        for (var element : elements) {
-            submit(element);
+        var iterator = stream.iterator();
+
+        while (iterator.hasNext()) {
+            submit(iterator.next());
         }
 
         submit(TERMINATOR);
