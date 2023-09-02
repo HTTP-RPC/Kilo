@@ -49,7 +49,8 @@ Classes provided by the Kilo framework include:
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
-* [Collections and Optionals](#collections-and-optionals) - utility methods for working with collections and optional values, respectively
+* [Pipe](#pipe) - facilitates communication between producer and consumer threads
+* [Collections and Optionals](#collections-and-optionals) - provide utility methods for working with collections and optional values, respectively
 
 Each is discussed in more detail in the following sections.
 
@@ -1187,6 +1188,11 @@ This code would produce the following output:
 "Item 2","Item number 2",5
 "Item 3","Item number 3",7
 ```
+
+## Pipe
+The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for consumption by a consumer thread.
+
+TODO
 
 ## Collections and Optionals
 The `Collections` class provides a set of static utility methods for declaratively instantiating list and map values:
