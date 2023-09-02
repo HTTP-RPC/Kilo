@@ -1203,7 +1203,7 @@ var queryBuilder = QueryBuilder.select(
 ).from("employees");
 ```
 
-This code could be used to transform the results to a list of `Employee` instances and return them to the caller:
+This code could be used to transform the results to a list of `Employee` instances:
 
 ```java
 try (var connection = dataSource.getConnection()) {
@@ -1213,7 +1213,7 @@ try (var connection = dataSource.getConnection()) {
 }
 ```
 
-For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
+All rows are processed and added to the list before anything is returned to the caller. For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
 
 ```java
 var pipe = new Pipe<Employee>();
