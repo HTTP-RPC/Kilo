@@ -122,6 +122,7 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
             throw new RuntimeException(exception);
         }
     }
+
     /**
      * Returns an iterator over the elements submitted to the pipe.
      * {@inheritDoc}
