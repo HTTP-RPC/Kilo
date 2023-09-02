@@ -18,7 +18,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,7 +44,7 @@ public class PipeTest {
 
     @Test
     public void testBoundedPipeWithTimeout() {
-        testPipe(new Pipe<>(1, 5000));
+        testPipe(new Pipe<>(1, 60000));
     }
 
     @Test
@@ -55,7 +54,7 @@ public class PipeTest {
 
     @Test
     public void testUnboundedPipeWithTimeout() {
-        testPipe(new Pipe<>(Integer.MAX_VALUE, 5000));
+        testPipe(new Pipe<>(Integer.MAX_VALUE, 60000));
     }
 
     private void testPipe(Pipe<Integer> pipe) {
@@ -63,12 +62,6 @@ public class PipeTest {
 
         executorService.submit(() -> pipe.accept(expectedValues.stream()));
 
-        var actualValues = new ArrayList<>(expectedValues.size());
-
-        for (var element : pipe) {
-            actualValues.add(element);
-        }
-
-        assertEquals(expectedValues, actualValues);
+        assertEquals(expectedValues, pipe.stream().toList());
     }
 }

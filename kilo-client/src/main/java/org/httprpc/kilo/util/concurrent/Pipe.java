@@ -17,6 +17,8 @@ package org.httprpc.kilo.util.concurrent;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -173,11 +175,21 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
     }
 
     /**
-     * Returns an iterator over the elements submitted to the pipe.
+     * Returns an iterator over the contents of the pipe.
      * {@inheritDoc}
      */
     @Override
     public Iterator<E> iterator() {
         return iterator;
+    }
+
+    /**
+     * Returns an ordered, immutable spliterator of unknown size over the
+     * contents of the pipe.
+     * {@inheritDoc}
+     */
+    @Override
+    public Spliterator<E> spliterator() {
+        return Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 }
