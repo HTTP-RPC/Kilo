@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <root a="A">
+    <!-- A test map -->
     <map b="B">
         <b>two</b>
+        <!-- A test list -->
         <list c="C">
             <item d="1">abc</item>
             <item d="2">déf</item>

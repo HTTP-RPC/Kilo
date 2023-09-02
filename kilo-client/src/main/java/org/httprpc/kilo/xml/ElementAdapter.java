@@ -164,23 +164,23 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
             remove(tagName);
 
-            addAll(tagName, values);
+            addElements(tagName, values);
         } else {
             remove(key);
 
-            add(key, value);
+            addElement(key, value);
         }
 
         return null;
     }
 
-    private void addAll(String tagName, List<?> values) {
+    private void addElements(String tagName, List<?> values) {
         for (var value : values) {
-            add(tagName, value);
+            addElement(tagName, value);
         }
     }
 
-    private void add(String tagName, Object value) {
+    private void addElement(String tagName, Object value) {
         var document = element.getOwnerDocument();
 
         var element = document.createElement(tagName);
