@@ -114,7 +114,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The service endpoints.
          */
-        public Iterable<EndpointDescriptor> getEndpoints() {
+        public List<EndpointDescriptor> getEndpoints() {
             return endpoints;
         }
 
@@ -124,8 +124,8 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The service enumerations.
          */
-        public Iterable<EnumerationDescriptor> getEnumerations() {
-            return enumerations.values();
+        public List<EnumerationDescriptor> getEnumerations() {
+            return new ArrayList<>(enumerations.values());
         }
 
         /**
@@ -134,8 +134,8 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The service structures.
          */
-        public Iterable<StructureDescriptor> getStructures() {
-            return structures.values();
+        public List<StructureDescriptor> getStructures() {
+            return new ArrayList<>(structures.values());
         }
     }
 
@@ -167,7 +167,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The endpoint's operations.
          */
-        public Iterable<OperationDescriptor> getOperations() {
+        public List<OperationDescriptor> getOperations() {
             return operations;
         }
     }
@@ -178,7 +178,7 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
-        private Iterable<String> keys;
+        private List<String> keys;
 
         private boolean internal;
         private boolean deprecated;
@@ -224,7 +224,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The endpoint's keys.
          */
-        public Iterable<String> getKeys() {
+        public List<String> getKeys() {
             return keys;
         }
 
@@ -278,7 +278,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The operation's parameters.
          */
-        public Iterable<VariableDescriptor> getParameters() {
+        public List<VariableDescriptor> getParameters() {
             return parameters;
         }
     }
@@ -396,7 +396,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The enumeration's values.
          */
-        public Iterable<ConstantDescriptor> getValues() {
+        public List<ConstantDescriptor> getValues() {
             return values;
         }
     }
@@ -484,7 +484,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The structure's supertypes.
          */
-        public Iterable<TypeDescriptor> getSupertypes() {
+        public List<TypeDescriptor> getSupertypes() {
             return supertypes;
         }
 
@@ -494,7 +494,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The structure's properties.
          */
-        public Iterable<VariableDescriptor> getProperties() {
+        public List<VariableDescriptor> getProperties() {
             return properties;
         }
     }
