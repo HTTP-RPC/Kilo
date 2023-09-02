@@ -12,28 +12,15 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.util.concurrent;
+package org.httprpc.kilo.test;
 
-import org.junit.jupiter.api.Test;
+import java.time.LocalDate;
 
-public class PipeTest {
-    @Test
-    public void testBoundedPipe() {
-        // TODO
-    }
-
-    @Test
-    public void testBoundedPipeWithTimeout() {
-        // TODO
-    }
-
-    @Test
-    public void testUnboundedPipe() {
-        // TODO
-    }
-
-    @Test
-    public void testUnboundedPipeWithTimeout() {
-        // TODO
-    }
+public interface Employee {
+    Integer getEmployeeNumber();
+    String getFirstName();
+    String getLastName();
+    String getGender();
+    LocalDate getBirthDate();
+    LocalDate getHireDate();
 }

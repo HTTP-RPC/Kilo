@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.util.concurrent;
 
+import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
  * @param <E>
  * The element type.
  */
-public class Pipe<E> implements Consumer<Stream<E>>, Iterable<E> {
+public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extends E>> {
     private BlockingQueue<Object> queue;
     private int timeout;
 
@@ -74,11 +75,29 @@ public class Pipe<E> implements Consumer<Stream<E>>, Iterable<E> {
     }
 
     /**
+     * Throws {@link UnsupportedOperationException}.
+     * {@inheritDoc}
+     */
+    @Override
+    public E get(int index) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws {@link UnsupportedOperationException}.
+     * {@inheritDoc}
+     */
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Submits elements to the pipe.
      * {@inheritDoc}
      */
     @Override
-    public void accept(Stream<E> stream) {
+    public void accept(Stream<? extends E> stream) {
         if (stream == null) {
             throw new IllegalArgumentException();
         }
@@ -103,7 +122,6 @@ public class Pipe<E> implements Consumer<Stream<E>>, Iterable<E> {
             throw new RuntimeException(exception);
         }
     }
-
     /**
      * Returns an iterator over the elements submitted to the pipe.
      * {@inheritDoc}

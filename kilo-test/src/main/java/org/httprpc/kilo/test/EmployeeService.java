@@ -12,28 +12,22 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.util.concurrent;
+package org.httprpc.kilo.test;
 
-import org.junit.jupiter.api.Test;
+import jakarta.servlet.annotation.WebServlet;
+import org.httprpc.kilo.Description;
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.WebService;
 
-public class PipeTest {
-    @Test
-    public void testBoundedPipe() {
+import java.util.List;
+
+@WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
+@Description("Employee example service.")
+public class EmployeeService extends WebService {
+    @RequestMethod("GET")
+    @Description("Returns a list of all employees.")
+    public List<Employee> getEmployees(boolean piped) {
         // TODO
-    }
-
-    @Test
-    public void testBoundedPipeWithTimeout() {
-        // TODO
-    }
-
-    @Test
-    public void testUnboundedPipe() {
-        // TODO
-    }
-
-    @Test
-    public void testUnboundedPipeWithTimeout() {
-        // TODO
+        return null;
     }
 }
