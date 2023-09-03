@@ -23,6 +23,8 @@ import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PipeTest {
     private static ExecutorService executorService = null;
@@ -55,6 +57,34 @@ public class PipeTest {
     @Test
     public void testUnboundedPipeWithTimeout() {
         testPipe(new Pipe<>(Integer.MAX_VALUE, 60000));
+    }
+
+    @Test
+    public void testPollTimeout() {
+        var pipe = new Pipe<String>(1, 100);
+
+        executorService.submit(() -> {
+            // No-op
+        });
+
+        assertThrows(TimeoutException.class, () -> pipe.iterator().hasNext());
+    }
+
+    @Test
+    public void testOfferTimeout() throws Exception {
+        var pipe = new Pipe<String>(1, 100);
+
+        var future = executorService.submit(() -> {
+            try {
+                pipe.accept(listOf("abc").stream());
+            } catch (TimeoutException exception) {
+                return true;
+            }
+
+            return false;
+        });
+
+        assertTrue(future.get());
     }
 
     private void testPipe(Pipe<Integer> pipe) {

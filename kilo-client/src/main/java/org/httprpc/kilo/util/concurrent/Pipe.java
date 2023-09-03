@@ -22,7 +22,6 @@ import java.util.Spliterators;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -51,13 +50,13 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
                         next = queue.take();
                     } else {
                         next = queue.poll(timeout, TimeUnit.MILLISECONDS);
+
+                        if (next == null) {
+                            throw new TimeoutException("Poll timed out.");
+                        }
                     }
                 } catch (InterruptedException exception) {
                     throw new RuntimeException(exception);
-                }
-
-                if (next == null) {
-                    throw new RuntimeException(new TimeoutException());
                 }
 
                 if (next == TERMINATOR) {
@@ -167,7 +166,9 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
             if (timeout == 0) {
                 queue.put(value);
             } else {
-                queue.offer(value, timeout, TimeUnit.MILLISECONDS);
+                if (!queue.offer(value, timeout, TimeUnit.MILLISECONDS)) {
+                    throw new TimeoutException("Offer timed out.");
+                }
             }
         } catch (InterruptedException exception) {
             throw new RuntimeException(exception);
