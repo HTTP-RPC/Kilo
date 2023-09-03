@@ -61,11 +61,11 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
                 }
 
                 if (next == TERMINATOR) {
-                    hasNext = false;
+                    hasNext = Boolean.FALSE;
 
                     this.next = null;
                 } else {
-                    hasNext = true;
+                    hasNext = Boolean.TRUE;
 
                     this.next = (E)next;
                 }

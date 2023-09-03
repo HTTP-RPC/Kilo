@@ -59,10 +59,10 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
 public class TestService extends WebService {
-    public static class FibonacciList extends AbstractList<BigInteger> {
+    public static class FibonacciSequence extends AbstractList<BigInteger> {
         private int count;
 
-        public FibonacciList(int count) {
+        public FibonacciSequence(int count) {
             this.count = count;
         }
 
@@ -237,8 +237,8 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
-    public FibonacciList testGetFibonacci(int count) {
-        return new FibonacciList(count);
+    public FibonacciSequence testGetFibonacci(int count) {
+        return new FibonacciSequence(count);
     }
 
     @RequestMethod("GET")
