@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 /**
  * Provides a vehicle by which a producer thread can submit a sequence of
- * elements for consumption by a consumer thread.
+ * elements for retrieval by a consumer thread.
  *
  * @param <E>
  * The element type.
