@@ -1190,7 +1190,9 @@ This code would produce the following output:
 ```
 
 ## Pipe
-The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for consumption by a consumer thread. For example, the following code constructs a SQL query that retrieves all rows from an `employees` table:
+The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for consumption by a consumer thread. It implements `List` and produces an iterator that returns each element as it becomes available, blocking if necessary.
+
+For example, the following code constructs a SQL query that retrieves all rows from an `employees` table:
 
 ```java
 var queryBuilder = QueryBuilder.select(
@@ -1213,7 +1215,9 @@ try (var connection = dataSource.getConnection()) {
 }
 ```
 
-All rows are processed and added to the list before anything is returned to the caller. For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe. The pipe is configured with a capacity of 32K elements and a timeout of 15s:
+All rows are processed and added to the list before anything is returned to the caller. For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe.
+
+The pipe is configured with a capacity of 32K elements and a timeout of 15s. Limiting the capacity ensures that the producer does not do more work than necessary if the caller fails to consume all of the data. Similarly, specifying a timeout ensures that the caller does not wait indefinitely if the server stops producing data:
 
 ```java
 var pipe = new Pipe<Employee>(32768, 15000);
