@@ -536,12 +536,12 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Indicates that the type is an iterable.
+         * Indicates that the type is a list.
          *
          * @return
-         * {@code true} if the type is an iterable; {@code false}, otherwise.
+         * {@code true} if the type is a list; {@code false}, otherwise.
          */
-        public boolean isIterable() {
+        public boolean isList() {
             return false;
         }
 
@@ -549,7 +549,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the element type.
          *
          * @return
-         * The element type, or {@code null} if the type is not an iterable.
+         * The element type, or {@code null} if the type is not an list.
          */
         public TypeDescriptor getElementType() {
             return null;
@@ -587,19 +587,19 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Describes an iterable type.
+     * Describes a list type.
      */
-    public static class IterableTypeDescriptor extends TypeDescriptor {
+    public static class ListTypeDescriptor extends TypeDescriptor {
         private TypeDescriptor elementType;
 
-        private IterableTypeDescriptor(TypeDescriptor elementType) {
-            super(Iterable.class, true);
+        private ListTypeDescriptor(TypeDescriptor elementType) {
+            super(List.class, true);
 
             this.elementType = elementType;
         }
 
         @Override
-        public boolean isIterable() {
+        public boolean isList() {
             return true;
         }
 
@@ -1426,8 +1426,8 @@ public abstract class WebService extends HttpServlet {
             var rawType = parameterizedType.getRawType();
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (rawType instanceof Class<?> && Iterable.class.isAssignableFrom((Class<?>)rawType)) {
-                return new IterableTypeDescriptor(describeType(actualTypeArguments[0]));
+            if (rawType == List.class) {
+                return new ListTypeDescriptor(describeType(actualTypeArguments[0]));
             } else if (rawType == Map.class) {
                 return new MapTypeDescriptor(describeType(actualTypeArguments[0]), describeType(actualTypeArguments[1]));
             } else {
@@ -1459,8 +1459,8 @@ public abstract class WebService extends HttpServlet {
             || type == UUID.class
             || type == URL.class) {
             return new TypeDescriptor(type, true);
-        } else if (Iterable.class.isAssignableFrom(type)) {
-            return describeType(BeanAdapter.typeOf(Iterable.class, Object.class));
+        } else if (List.class.isAssignableFrom(type)) {
+            return describeType(BeanAdapter.typeOf(List.class, Object.class));
         } else if (Map.class.isAssignableFrom(type)) {
             return describeType(BeanAdapter.typeOf(Map.class, Object.class, Object.class));
         } else {

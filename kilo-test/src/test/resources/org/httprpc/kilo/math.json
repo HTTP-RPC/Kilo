@@ -18,8 +18,8 @@
               "type": {
                 "elementType": null,
                 "intrinsic": true,
-                "iterable": false,
                 "keyType": null,
+                "list": false,
                 "map": false,
                 "name": "double",
                 "valueType": null
@@ -32,8 +32,8 @@
               "type": {
                 "elementType": null,
                 "intrinsic": true,
-                "iterable": false,
                 "keyType": null,
+                "list": false,
                 "map": false,
                 "name": "double",
                 "valueType": null
@@ -43,8 +43,8 @@
           "produces": {
             "elementType": null,
             "intrinsic": true,
-            "iterable": false,
             "keyType": null,
+            "list": false,
             "map": false,
             "name": "double",
             "valueType": null
@@ -66,17 +66,17 @@
                 "elementType": {
                   "elementType": null,
                   "intrinsic": true,
-                  "iterable": false,
                   "keyType": null,
+                  "list": false,
                   "map": false,
                   "name": "Double",
                   "valueType": null
                 },
                 "intrinsic": true,
-                "iterable": true,
                 "keyType": null,
+                "list": true,
                 "map": false,
-                "name": "Iterable",
+                "name": "List",
                 "valueType": null
               }
             }
@@ -84,8 +84,8 @@
           "produces": {
             "elementType": null,
             "intrinsic": true,
-            "iterable": false,
             "keyType": null,
+            "list": false,
             "map": false,
             "name": "double",
             "valueType": null
@@ -96,17 +96,17 @@
             "elementType": {
               "elementType": null,
               "intrinsic": true,
-              "iterable": false,
               "keyType": null,
+              "list": false,
               "map": false,
               "name": "Double",
               "valueType": null
             },
             "intrinsic": true,
-            "iterable": true,
             "keyType": null,
+            "list": true,
             "map": false,
-            "name": "Iterable",
+            "name": "List",
             "valueType": null
           },
           "deprecated": false,
@@ -119,8 +119,8 @@
           "produces": {
             "elementType": null,
             "intrinsic": true,
-            "iterable": false,
             "keyType": null,
+            "list": false,
             "map": false,
             "name": "double",
             "valueType": null
