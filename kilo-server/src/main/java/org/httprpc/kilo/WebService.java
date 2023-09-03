@@ -549,7 +549,7 @@ public abstract class WebService extends HttpServlet {
          * Returns the element type.
          *
          * @return
-         * The element type, or {@code null} if the type is not an list.
+         * The element type, or {@code null} if the type is not a list.
          */
         public TypeDescriptor getElementType() {
             return null;

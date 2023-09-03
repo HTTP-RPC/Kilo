@@ -50,7 +50,7 @@ Classes provided by the Kilo framework include:
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [Pipe](#pipe) - facilitates communication between producer and consumer threads
-* [Collections and Optionals](#collections-and-optionals) - provide utility methods for working with collections and optional values, respectively
+* [Collections and Optionals](#collections-and-optionals) - static utility methods for working with collections and optional values, respectively
 
 Each is discussed in more detail in the following sections.
 
