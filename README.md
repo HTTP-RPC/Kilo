@@ -1213,10 +1213,10 @@ try (var connection = dataSource.getConnection()) {
 }
 ```
 
-All rows are processed and added to the list before anything is returned to the caller. For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
+All rows are processed and added to the list before anything is returned to the caller. For small result sets, the latency and memory overhead associated with this approach may be acceptable. However, for larger result sets the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe. The pipe is configured with a capacity of 32K elements and a timeout of 15s:
 
 ```java
-var pipe = new Pipe<Employee>();
+var pipe = new Pipe<Employee>(32768, 15000);
 
 executorService.submit(() -> {
     try (var connection = dataSource.getConnection();

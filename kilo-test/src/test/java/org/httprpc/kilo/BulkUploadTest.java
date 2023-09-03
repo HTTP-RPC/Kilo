@@ -67,7 +67,7 @@ public class BulkUploadTest {
 
         var t0 = System.currentTimeMillis();
 
-        var count = 25_000;
+        var count = 25000;
 
         WebServiceProxy.post(baseURL, "upload").setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
@@ -87,7 +87,7 @@ public class BulkUploadTest {
 
         System.out.println(String.format("Uploaded %d rows in %.1fs", count, (t1 - t0) / 1000.0));
 
-        var batchCount = 500_000;
+        var batchCount = 500000;
 
         WebServiceProxy.post(baseURL, "upload-batch").setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override

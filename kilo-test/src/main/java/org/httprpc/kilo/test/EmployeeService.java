@@ -81,7 +81,7 @@ public class EmployeeService extends WebService {
         ).from("employees");
 
         if (stream) {
-            var pipe = new Pipe<Employee>();
+            var pipe = new Pipe<Employee>(32768, 15000);
 
             executorService.submit(() -> {
                 try (var connection = dataSource.getConnection();
