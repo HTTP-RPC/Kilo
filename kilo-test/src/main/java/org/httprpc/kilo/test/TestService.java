@@ -59,64 +59,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
 public class TestService extends WebService {
-    public static class FibonacciSequence extends AbstractList<BigInteger> {
-        private int count;
-
-        public FibonacciSequence(int count) {
-            this.count = count;
-        }
-
-        @Override
-        public BigInteger get(int index) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int size() {
-            return count;
-        }
-
-        @Override
-        public Iterator<BigInteger> iterator() {
-            return new Iterator<>() {
-                int i = 0;
-
-                BigInteger a = BigInteger.valueOf(0);
-                BigInteger b = BigInteger.valueOf(1);
-
-                @Override
-                public boolean hasNext() {
-                    return i < count;
-                }
-
-                @Override
-                public BigInteger next() {
-                    if (!hasNext()) {
-                        throw new NoSuchElementException();
-                    }
-
-                    BigInteger next;
-                    if (i == 0) {
-                        next = a;
-                    } else {
-                        if (i > 1) {
-                            var c = a.add(b);
-
-                            a = b;
-                            b = c;
-                        }
-
-                        next = b;
-                    }
-
-                    i++;
-
-                    return next;
-                }
-            };
-        }
-    }
-
     public interface A {
         int getA();
     }
@@ -183,6 +125,64 @@ public class TestService extends WebService {
         boolean getFlag();
     }
 
+    private static class FibonacciSequence extends AbstractList<Number> {
+        private int count;
+
+        public FibonacciSequence(int count) {
+            this.count = count;
+        }
+
+        @Override
+        public BigInteger get(int index) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int size() {
+            return count;
+        }
+
+        @Override
+        public Iterator<Number> iterator() {
+            return new Iterator<>() {
+                int i = 0;
+
+                BigInteger a = BigInteger.valueOf(0);
+                BigInteger b = BigInteger.valueOf(1);
+
+                @Override
+                public boolean hasNext() {
+                    return i < count;
+                }
+
+                @Override
+                public BigInteger next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+
+                    BigInteger next;
+                    if (i == 0) {
+                        next = a;
+                    } else {
+                        if (i > 1) {
+                            var c = a.add(b);
+
+                            a = b;
+                            b = c;
+                        }
+
+                        next = b;
+                    }
+
+                    i++;
+
+                    return next;
+                }
+            };
+        }
+    }
+
     @Description("Represents an x/y coordinate pair.")
     public record Coordinates(
         @Description("The x-coordinate.") @Required int x,
@@ -237,7 +237,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
-    public FibonacciSequence testGetFibonacci(int count) {
+    public List<Number> testGetFibonacci(int count) {
         return new FibonacciSequence(count);
     }
 
