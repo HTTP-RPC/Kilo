@@ -20,9 +20,13 @@ import java.io.Writer;
 /**
  * Encodes plain text content.
  */
-public class TextEncoder extends Encoder<String> {
+public class TextEncoder extends Encoder<CharSequence> {
     @Override
-    public void write(String value, Writer writer) throws IOException {
+    public void write(CharSequence value, Writer writer) throws IOException {
+        if (value == null || writer == null) {
+            throw new IllegalArgumentException();
+        }
+
         writer = new BufferedWriter(writer);
 
         for (int i = 0, n = value.length(); i < n; i++) {

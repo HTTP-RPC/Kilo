@@ -541,7 +541,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <ul>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
-     * <li>{@link CharSequence}</li>
+     * <li>{@link String}</li>
      * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link TemporalAccessor}</li>
@@ -576,7 +576,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (value == null
             || value instanceof Number
             || value instanceof Boolean
-            || value instanceof CharSequence
+            || value instanceof String
             || value instanceof Enum<?>
             || value instanceof Date
             || value instanceof TemporalAccessor

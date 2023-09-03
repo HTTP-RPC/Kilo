@@ -222,7 +222,7 @@ If an error occurs while parsing the body content, an HTTP 400 response will be 
 ### Return Values
 Return values are converted to JSON as follows:
 
-* `CharSequence`: string
+* `String`: string
 * `Number` or numeric primitive: number
 * `Boolean` or boolean primitive: true/false
 * `Enum`: string
@@ -231,7 +231,7 @@ Return values are converted to JSON as follows:
 * `java.time.TemporalAmount`: string
 * `java.util.UUID`: string
 * `java.net.URL`: string
-* `Iterable`: array
+* `java.util.List`: array
 * `java.util.Map` or any other type: object
 
 By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
