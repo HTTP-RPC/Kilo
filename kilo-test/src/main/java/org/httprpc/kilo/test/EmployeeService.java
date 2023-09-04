@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -36,7 +35,6 @@ import java.util.concurrent.Executors;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
-@Description("Employee example service.")
 public class EmployeeService extends WebService {
     private DataSource dataSource = null;
     private ExecutorService executorService = null;
@@ -66,11 +64,8 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @Description("Returns a list of all employees.")
     @SuppressWarnings("unchecked")
-    public List<Employee> getEmployees(
-        @Description("Indicates that results should be streamed.") boolean stream
-    ) {
+    public List<Employee> getEmployees(boolean stream) throws SQLException {
         var queryBuilder = QueryBuilder.select(
             "emp_no as employeeNumber",
             "first_name as firstName",
@@ -98,8 +93,6 @@ public class EmployeeService extends WebService {
         } else {
             try (var connection = dataSource.getConnection()) {
                 return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
             }
         }
     }

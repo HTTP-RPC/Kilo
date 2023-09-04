@@ -1210,8 +1210,6 @@ This code could be used to transform the results to a list of `Employee` instanc
 ```java
 try (var connection = dataSource.getConnection()) {
     return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
-} catch (SQLException exception) {
-    throw new RuntimeException(exception);
 }
 ```
 
@@ -1236,7 +1234,7 @@ executorService.submit(() -> {
 return pipe;
 ```
 
-This approach is slightly more verbose than the first version. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
+This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
 
 For more information, see the [employee service](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
