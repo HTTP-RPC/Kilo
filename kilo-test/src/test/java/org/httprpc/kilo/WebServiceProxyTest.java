@@ -19,6 +19,7 @@ import org.httprpc.kilo.beans.Key;
 import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
+import org.httprpc.kilo.io.TextEncoder;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -335,7 +336,30 @@ public class WebServiceProxyTest {
 
             fail();
         } catch (WebServiceException exception) {
-            assertEquals(400, exception.getStatusCode());
+            assertEquals(403, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testMalformedListPost() throws IOException {
+        try {
+            WebServiceProxy.post(baseURL, "test").setRequestHandler(new WebServiceProxy.RequestHandler() {
+                @Override
+                public String getContentType() {
+                    return "application/json";
+                }
+
+                @Override
+                public void encodeRequest(OutputStream outputStream) throws IOException {
+                    var textEncoder = new TextEncoder();
+
+                    textEncoder.write("xyz", outputStream);
+                }
+            }).setMonitorStream(System.out).invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(403, exception.getStatusCode());
         }
     }
 

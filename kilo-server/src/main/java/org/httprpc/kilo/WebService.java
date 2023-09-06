@@ -703,7 +703,7 @@ public abstract class WebService extends HttpServlet {
     private ThreadLocal<List<String>> keyList = new ThreadLocal<>();
     private ThreadLocal<Map<String, String>> keyMap = new ThreadLocal<>();
 
-    private ThreadLocal<Object> body = new ThreadLocal<>();
+    private ThreadLocal<Content> content = new ThreadLocal<>();
 
     private ServiceDescriptor serviceDescriptor = null;
 
@@ -1011,38 +1011,13 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        var content = handler.method.getAnnotation(Content.class);
-
-        Object body;
-        if (content != null) {
-            var type = content.type();
-
-            if (type.getTypeParameters().length > 0) {
-                throw new ServletException("Unsupported content type.");
-            }
-
-            try {
-                body = decodeBody(request, type, content.multiple());
-            } catch (Exception exception) {
-                sendError(response, HttpServletResponse.SC_BAD_REQUEST, exception);
-                return;
-            }
-
-            if (body == null) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
-        } else {
-            body = null;
-        }
-
         this.request.set(request);
         this.response.set(response);
 
         this.keyList.set(keyList);
         this.keyMap.set(keyMap);
 
-        this.body.set(body);
+        this.content.set(handler.method.getAnnotation(Content.class));
 
         Object result;
         try {
@@ -1079,7 +1054,7 @@ public abstract class WebService extends HttpServlet {
             this.keyList.remove();
             this.keyMap.remove();
 
-            this.body.remove();
+            this.content.remove();
         }
 
         if (response.isCommitted()) {
@@ -1188,6 +1163,22 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
+     * Determines if the current request is authorized.
+     *
+     * @param request
+     * The servlet request.
+     *
+     * @param method
+     * The method to be invoked.
+     *
+     * @return
+     * {@code true} if the method should be invoked; {@code false}, otherwise.
+     */
+    protected boolean isAuthorized(HttpServletRequest request, Method method) {
+        return true;
+    }
+
+    /**
      * Returns the servlet request.
      *
      * @return
@@ -1272,29 +1263,23 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Returns the decoded body content associated with the current request.
+     * Returns the body content associated with the current request.
      *
      * @return
      * The decoded request body.
      */
     protected Object getBody() {
-        return this.body.get();
-    }
+        var content = this.content.get();
 
-    /**
-     * Determines if the current request is authorized.
-     *
-     * @param request
-     * The servlet request.
-     *
-     * @param method
-     * The method to be invoked.
-     *
-     * @return
-     * {@code true} if the method should be invoked; {@code false}, otherwise.
-     */
-    protected boolean isAuthorized(HttpServletRequest request, Method method) {
-        return true;
+        if (content == null) {
+            return null;
+        }
+
+        try {
+            return decodeBody(getRequest(), content.type(), content.multiple());
+        } catch (IOException exception) {
+            throw new UnsupportedOperationException(exception);
+        }
     }
 
     /**

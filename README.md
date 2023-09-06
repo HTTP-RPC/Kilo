@@ -217,8 +217,6 @@ public double getSum() {
 
 By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-If an error occurs while parsing the body content, an HTTP 400 response will be returned.
-
 ### Return Values
 Return values are converted to JSON as follows:
 
