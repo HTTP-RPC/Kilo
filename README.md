@@ -787,6 +787,8 @@ The resulting output would look something like this (`BeanAdapter` traverses pro
       "name": "Winter"
     },
     ...
+  ],
+  "name": "Seasons"
 }
 ```
 
