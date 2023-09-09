@@ -285,6 +285,27 @@ public class ExamplesTest {
     }
 
     @Test
+    public void testInterfaceProxy() {
+        var map = mapOf(
+            entry("employeeNumber", 10001),
+            entry("firstName", "Georgi"),
+            entry("lastName", "Facello"),
+            entry("gender", "M"),
+            entry("birthDate", "1953-09-02"),
+            entry("hireDate", "1986-06-26")
+        );
+
+        var employee = BeanAdapter.coerce(map, Employee.class);
+
+        System.out.println(employee.getEmployeeNumber()); // 10001
+        System.out.println(employee.getFirstName()); // Georgi
+        System.out.println(employee.getLastName()); // Facello
+        System.out.println(employee.getGender()); // M
+        System.out.println(employee.getBirthDate()); // 1953-09-02
+        System.out.println(employee.getHireDate()); // 1986-06-26
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void testElementAdapter() throws ParserConfigurationException, SAXException, IOException {
         var documentBuilderFactory = DocumentBuilderFactory.newInstance();

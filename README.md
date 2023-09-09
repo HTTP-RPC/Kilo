@@ -811,11 +811,40 @@ System.out.println(root.getChildren().get(0).getName()); // Winter
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
 
-Note that the requested type is not required to be a class. An interface can be used to provide a typed "view" of the underlying map data. For example:
+Note that the requested type is not required to be a class. An interface can be used to provide a "view" of the underlying map data. For example:
 
 ```java
-TODO
+public interface Employee {
+    Integer getEmployeeNumber();
+    String getFirstName();
+    String getLastName();
+    String getGender();
+    LocalDate getBirthDate();
+    LocalDate getHireDate();
+}
 ```
+
+```java
+var map = mapOf(
+    entry("employeeNumber", 10001),
+    entry("firstName", "Georgi"),
+    entry("lastName", "Facello"),
+    entry("gender", "M"),
+    entry("birthDate", "1953-09-02"),
+    entry("hireDate", "1986-06-26")
+);
+
+var employee = BeanAdapter.coerce(map, Employee.class);
+
+System.out.println(employee.getEmployeeNumber()); // 10001
+System.out.println(employee.getFirstName()); // Georgi
+System.out.println(employee.getLastName()); // Facello
+System.out.println(employee.getGender()); // M
+System.out.println(employee.getBirthDate()); // 1953-09-02
+System.out.println(employee.getHireDate()); // 1986-06-26
+```
+
+Mutator methods are also supported.
 
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property or record component. For example:
