@@ -40,7 +40,7 @@ public abstract class AbstractDatabaseService extends WebService {
 
             dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
         } catch (NamingException exception) {
-            throw new IllegalStateException(exception);
+            throw new ServletException(exception);
         }
 
         try (var connection = dataSource.getConnection()) {
