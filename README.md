@@ -699,7 +699,7 @@ templateEncoder.write(mapOf(
 The output of this code would be "HELLO".
 
 ## BeanAdapter
-The `BeanAdapter` class provides access to Java bean properties and record components via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
+The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
 
 ```java
 public class TreeNode {
@@ -811,6 +811,12 @@ System.out.println(root.getChildren().get(0).getName()); // Winter
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
 
+Note that the requested type is not required to be a class. An interface can be used to provide a typed "view" of the underlying map data. For example:
+
+```java
+TODO
+```
+
 ### Custom Property Keys
 The `Key` annotation can be used to associate a custom name with a bean property or record component. For example:
 
@@ -858,7 +864,7 @@ rather than this:
 ```
 
 ### Required Properties
-The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate required bean properties or record components. For example, the following class defines two required properties:
+The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a bean property or record component is required. For example, the following class defines two required properties:
 
 ```java
 public class Vehicle {
@@ -891,7 +897,7 @@ An attempt to coerce an empty map to a `Vehicle` instance would produce an `Ille
 var vehicle = BeanAdapter.coerce(mapOf(), Vehicle.class); // throws
 ```
 
-Additionally, although the annotation will not prevent a caller from programmatically assigning a `null` value to either property, attempting to dynamically set an invalid value will produce an `IllegalArgumentException`:
+Additionally, although the annotation will not prevent a caller from programmatically assigning a `null` value to either property, attempting to dynamically set an invalid value will generate an `IllegalArgumentException`:
 
 ```java
 var vehicle = new Vehicle();
@@ -901,7 +907,7 @@ var vehicleAdapter = new BeanAdapter(vehicle);
 vehicleAdapter.put("manufacturer", null); // throws
 ```
 
-Similarly, attempting to dynamically access an invalid value will generate an `UnsupportedOperationException`:
+Similarly, attempting to dynamically access an invalid value will result in an `UnsupportedOperationException`:
 
 ```java
 vehicleAdapter.get("manufacturer"); // throws
@@ -910,7 +916,7 @@ vehicleAdapter.get("manufacturer"); // throws
 Note that, unlike [list parameters](#required-parameters), list properties are not guaranteed to contain a non-`null` value and must be explicitly annotated when required.
 
 ### Ignoring Properties
-Bean properties or record fields can be excluded from the map using the `Ignore` annotation. For example, given the following code:
+The `Ignore` annotation can be used to indicate that a property should be ignored by `BeanAdapter`. For example, given the following code:
 
 ```java
 @Ignore
