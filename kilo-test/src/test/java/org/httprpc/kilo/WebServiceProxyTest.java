@@ -15,11 +15,13 @@
 package org.httprpc.kilo;
 
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.beans.Key;
 import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.test.Item;
+import org.httprpc.kilo.test.Size;
+import org.httprpc.kilo.test.TestService;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -54,99 +56,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class WebServiceProxyTest {
-    public interface Response {
-        @Required
-        String getString();
-        List<String> getStrings();
-        int getNumber();
-        boolean getFlag();
-        DayOfWeek getDayOfWeek();
-        Date getDate();
-        Instant getInstant();
-        LocalDate getLocalDate();
-        LocalTime getLocalTime();
-        LocalDateTime getLocalDateTime();
-        Duration getDuration();
-        Period getPeriod();
-        @Key("uuid")
-        UUID getUUID();
-        List<AttachmentInfo> getAttachmentInfo();
-    }
-
-    public interface AttachmentInfo {
-        int getBytes();
-        int getChecksum();
-        URL getAttachment();
-    }
-
-    public interface Body {
-        @Required
-        String getString();
-        List<String> getStrings();
-        int getNumber();
-        boolean getFlag();
-    }
-
-    public interface TreeNode {
-        String getName();
-        List<TreeNode> getChildren();
-    }
-
-    public static class Item {
-        private Integer id;
-        private String description;
-        private Double price;
-
-        @Key("id")
-        public Integer getID() {
-            return id;
-        }
-
-        public void setID(int id) {
-            this.id = id;
-        }
-
-        @Required
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        @Required
-        public Double getPrice() {
-            return price;
-        }
-
-        public void setPrice(Double price) {
-            this.price = price;
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            if (!(object instanceof Item item)) {
-                return false;
-            }
-
-            return id != null && id.equals(item.id)
-                && description != null && description.equals(item.description)
-                && price != null && price.equals(item.price);
-        }
-    }
-
-    public enum Size {
-        SMALL,
-        MEDIUM,
-        LARGE
-    }
-
     public static class CustomException extends IOException {
         public CustomException(String message) {
             super(message);
@@ -297,7 +206,7 @@ public class WebServiceProxyTest {
             entry("period", period),
             entry("uuid", uuid),
             entry("attachments", listOf(textTestURL, imageTestURL))
-        )).invoke(Response.class);
+        )).invoke(TestService.Response.class);
 
         assertNotNull(response);
 
@@ -370,11 +279,11 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true)
-        ), Body.class);
+        ), TestService.Body.class);
 
         var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        )).setBody(body).setMonitorStream(System.out).invoke(Body.class);
+        )).setBody(body).setMonitorStream(System.out).invoke(TestService.Body.class);
 
         assertEquals(body, result);
     }
@@ -563,7 +472,7 @@ public class WebServiceProxyTest {
         try {
             WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
                 entry("id", 101)
-            )).setBody(mapOf()).setMonitorStream(System.out).invoke(Body.class);
+            )).setBody(mapOf()).setMonitorStream(System.out).invoke(TestService.Body.class);
 
             fail();
         } catch (WebServiceException exception) {
@@ -630,24 +539,6 @@ public class WebServiceProxyTest {
         assertEquals(10418L, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
             entry("files", listOf(textTestURL, imageTestURL))
         )).invoke(Long.class));
-    }
-
-    @Test
-    public void testTree() throws IOException {
-        var seasons = WebServiceProxy.get(baseURL, "tree").setMonitorStream(System.out).invoke(TreeNode.class);
-
-        assertNotNull(seasons);
-        assertEquals("Seasons", seasons.getName());
-
-        var winter = seasons.getChildren().get(0);
-
-        assertNotNull(winter);
-        assertEquals("Winter", winter.getName());
-
-        var january = winter.getChildren().get(0);
-
-        assertNotNull(january);
-        assertEquals("January", january.getName());
     }
 
     @Test

@@ -12,29 +12,36 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
-
-import org.httprpc.kilo.Description;
+package org.httprpc.kilo;
 
 import java.util.List;
 
-@Description("Represents a node in the tree.")
 public class TreeNode {
     private String name;
     private List<TreeNode> children;
+
+    public TreeNode() {
+        this(null, null);
+    }
 
     public TreeNode(String name, List<TreeNode> children) {
         this.name = name;
         this.children = children;
     }
 
-    @Description("The tree node's name.")
     public String getName() {
         return name;
     }
 
-    @Description("The tree node's children.")
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<TreeNode> getChildren() {
         return children;
+    }
+
+    public void setChildren(List<TreeNode> children) {
+        this.children = children;
     }
 }

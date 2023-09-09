@@ -12,26 +12,31 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo;
 
-import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Required;
 import org.httprpc.kilo.beans.Key;
 
-@Description("Represents an item in the catalog.")
-public interface Item {
-    @Key("id")
-    @Description("The item's ID.")
-    Integer getID();
-    void setID(Integer id);
+public class Person {
+    private String firstName = null;
+    private String lastName = null;
 
-    @Description("The item's description.")
+    @Key("first_name")
     @Required
-    String getDescription();
-    void setDescription(String description);
+    public String getFirstName() {
+        return firstName;
+    }
 
-    @Description("The item's price.")
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Key("last_name")
     @Required
-    Double getPrice();
-    void setPrice(Double price);
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 }

@@ -16,22 +16,10 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.beans.Key;
 
-@Description("Represents an item in the catalog.")
-public interface Item {
-    @Key("id")
-    @Description("The item's ID.")
-    Integer getID();
-    void setID(Integer id);
-
-    @Description("The item's description.")
-    @Required
-    String getDescription();
-    void setDescription(String description);
-
-    @Description("The item's price.")
-    @Required
-    Double getPrice();
-    void setPrice(Double price);
+@Description("Represents an x/y coordinate pair.")
+public record Coordinates(
+    @Description("The x-coordinate.") @Required int x,
+    @Description("The y-coordinate.") @Required int y
+) {
 }

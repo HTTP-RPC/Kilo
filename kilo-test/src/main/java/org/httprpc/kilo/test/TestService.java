@@ -183,13 +183,6 @@ public class TestService extends WebService {
         }
     }
 
-    @Description("Represents an x/y coordinate pair.")
-    public record Coordinates(
-        @Description("The x-coordinate.") @Required int x,
-        @Description("The y-coordinate.") @Required int y
-    ) {
-    }
-
     @RequestMethod("GET")
     public Map<String, Object> testGet(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,

@@ -12,26 +12,27 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo;
 
-import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Required;
-import org.httprpc.kilo.beans.Key;
+public class Vehicle {
+    private String manufacturer;
+    private Integer year;
 
-@Description("Represents an item in the catalog.")
-public interface Item {
-    @Key("id")
-    @Description("The item's ID.")
-    Integer getID();
-    void setID(Integer id);
-
-    @Description("The item's description.")
     @Required
-    String getDescription();
-    void setDescription(String description);
+    public String getManufacturer() {
+        return manufacturer;
+    }
 
-    @Description("The item's price.")
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
     @Required
-    Double getPrice();
-    void setPrice(Double price);
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
 }

@@ -15,7 +15,6 @@
 package org.httprpc.kilo;
 
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.beans.Key;
 import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONDecoder;
@@ -35,6 +34,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -45,62 +48,6 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 public class ExamplesTest {
-    public static class Person {
-        private String firstName = null;
-        private String lastName = null;
-
-        @Key("first_name")
-        @Required
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        @Key("last_name")
-        @Required
-        public String getLastName() {
-            return lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-    }
-
-    public static class Vehicle {
-        private String manufacturer;
-        private Integer year;
-
-        @Required
-        public String getManufacturer() {
-            return manufacturer;
-        }
-
-        public void setManufacturer(String manufacturer) {
-            this.manufacturer = manufacturer;
-        }
-
-        @Required
-        public Integer getYear() {
-            return year;
-        }
-
-        public void setYear(Integer year) {
-            this.year = year;
-        }
-    }
-
-    public record Employee(String badgeNumber, String firstName, String lastName) {
-    }
-
-    public interface TreeNode {
-        String getName();
-        List<WebServiceProxyTest.TreeNode> getChildren();
-    }
-
     @Test
     public void testMathService() throws IOException {
         var baseURL = new URL("http://localhost:8080/kilo-test/");
@@ -245,26 +192,6 @@ public class ExamplesTest {
     }
 
     @Test
-    public void testDoubleCoercion() {
-        var value = BeanAdapter.coerce("2.5", Double.class);
-
-        System.out.println(value + 10); // 12.5
-    }
-
-    @Test
-    public void testListCoercion() throws IOException {
-        var list = BeanAdapter.coerce(listOf(
-            "1",
-            "2",
-            "3"
-        ), List.class, Integer.class);
-
-        var jsonEncoder = new JSONEncoder();
-
-        jsonEncoder.write(list, System.out);
-    }
-
-    @Test
     public void testCustomPropertyKeys() throws IOException {
         var person = new Person();
 
@@ -305,25 +232,55 @@ public class ExamplesTest {
     }
 
     @Test
-    public void testRecord() throws IOException {
-        var employee = new Employee("123", "John", "Smith");
+    public void testTreeNode() throws IOException {
+        var writer = new StringWriter();
+
+        testEncodeTreeNode(writer);
+
+        var text = writer.toString();
+
+        System.out.println(text);
+
+        testDecodeTreeNode(new StringReader(text));
+    }
+
+    private void testEncodeTreeNode(Writer writer) throws IOException {
+        var root = new TreeNode("Seasons", listOf(
+            new TreeNode("Winter", listOf(
+                new TreeNode("January", null),
+                new TreeNode("February", null),
+                new TreeNode("March", null)
+            )),
+            new TreeNode("Spring", listOf(
+                new TreeNode("April", null),
+                new TreeNode("May", null),
+                new TreeNode("June", null)
+            )),
+            new TreeNode("Summer", listOf(
+                new TreeNode("July", null),
+                new TreeNode("August", null),
+                new TreeNode("September", null)
+            )),
+            new TreeNode("Fall", listOf(
+                new TreeNode("October", null),
+                new TreeNode("November", null),
+                new TreeNode("December", null)
+            ))
+        ));
 
         var jsonEncoder = new JSONEncoder();
 
-        jsonEncoder.write(BeanAdapter.adapt(employee), System.out);
+        jsonEncoder.write(new BeanAdapter(root), writer);
     }
 
-    @Test
-    public void testTreeNode() throws IOException {
-        try (var inputStream = getClass().getResourceAsStream("tree.json")) {
-            var jsonDecoder = new JSONDecoder();
+    private void testDecodeTreeNode(Reader reader) throws IOException {
+        var jsonDecoder = new JSONDecoder();
 
-            var root = BeanAdapter.coerce(jsonDecoder.read(inputStream), TreeNode.class);
+        var root = BeanAdapter.coerce(jsonDecoder.read(reader), TreeNode.class);
 
-            System.out.println(root.getName()); // Seasons
-            System.out.println(root.getChildren().get(0).getName()); // Winter
-            System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
-        }
+        System.out.println(root.getName()); // Seasons
+        System.out.println(root.getChildren().get(0).getName()); // Winter
+        System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
     }
 
     @Test
