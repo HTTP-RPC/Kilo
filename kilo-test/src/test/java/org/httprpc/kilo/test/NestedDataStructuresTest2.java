@@ -12,8 +12,9 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONEncoder;
 
@@ -21,29 +22,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class NestedDataStructuresTest1 {
-    public static class User {
-        private Company company;
-
-        public Company getCompany() {
-            return company;
-        }
-
-        public void setCompany(Company company) {
-            this.company = company;
-        }
+public class NestedDataStructuresTest2 {
+    public interface User {
+        Company getCompany();
     }
 
-    public static class Company {
-        private String catchPhrase;
-
-        public String getCatchPhrase() {
-            return catchPhrase;
-        }
-
-        public void setCatchPhrase(String catchPhrase) {
-            this.catchPhrase = catchPhrase;
-        }
+    public interface Company {
+        String getCatchPhrase();
     }
 
     @SuppressWarnings("unchecked")

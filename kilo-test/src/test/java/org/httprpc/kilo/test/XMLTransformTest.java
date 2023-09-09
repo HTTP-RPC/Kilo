@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.xml.ElementAdapter;

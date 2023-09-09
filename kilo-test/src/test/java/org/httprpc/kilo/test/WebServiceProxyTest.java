@@ -12,16 +12,15 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.WebServiceException;
+import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
-import org.httprpc.kilo.test.Item;
-import org.httprpc.kilo.test.Size;
-import org.httprpc.kilo.test.TestService;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;

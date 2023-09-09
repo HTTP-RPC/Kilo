@@ -12,36 +12,29 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
 
-import java.util.List;
+import org.httprpc.kilo.Required;
 
-public class TreeNode {
-    private String name;
-    private List<TreeNode> children;
+public class Vehicle {
+    private String manufacturer;
+    private Integer year;
 
-    public TreeNode() {
-        this(null, null);
+    @Required
+    public String getManufacturer() {
+        return manufacturer;
     }
 
-    public TreeNode(String name, List<TreeNode> children) {
-        this.name = name;
-        this.children = children;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
-    public String getName() {
-        return name;
+    @Required
+    public Integer getYear() {
+        return year;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<TreeNode> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<TreeNode> children) {
-        this.children = children;
+    public void setYear(Integer year) {
+        this.year = year;
     }
 }

@@ -12,32 +12,25 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.io.JSONEncoder;
+import org.httprpc.kilo.util.Collections;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class NestedDataStructuresTest2 {
-    public interface User {
-        Company getCompany();
-    }
-
-    public interface Company {
-        String getCatchPhrase();
-    }
-
+public class NestedDataStructuresTest4 {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) throws IOException {
         var url = new URL("https://jsonplaceholder.typicode.com/users");
 
-        List<User> users = BeanAdapter.coerce(WebServiceProxy.get(url).invoke(), List.class, User.class);
+        var users = (List<Object>)WebServiceProxy.get(url).invoke();
 
         var catchPhrases = users.stream()
-            .map(user -> user.getCompany().getCatchPhrase())
+            .map(user -> (String)Collections.valueAt(user, "company", "catchPhrase"))
             .toList();
 
         var jsonEncoder = new JSONEncoder();

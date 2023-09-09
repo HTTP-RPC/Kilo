@@ -12,7 +12,9 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
+
+import org.httprpc.kilo.WebServiceProxy;
 
 import java.io.IOException;
 import java.net.URL;

@@ -12,27 +12,32 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo;
+package org.httprpc.kilo.test;
 
-public class Vehicle {
-    private String manufacturer;
-    private Integer year;
+import org.httprpc.kilo.Required;
+import org.httprpc.kilo.beans.Key;
 
+public class Person {
+    private String firstName = null;
+    private String lastName = null;
+
+    @Key("first_name")
     @Required
-    public String getManufacturer() {
-        return manufacturer;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
+    @Key("last_name")
     @Required
-    public Integer getYear() {
-        return year;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setYear(Integer year) {
-        this.year = year;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }
