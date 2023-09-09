@@ -28,9 +28,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public abstract class AbstractDatabaseService extends WebService {
-    private static DataSource dataSource;
+    private static ThreadLocal<Connection> connection = new ThreadLocal<>();
 
-    static {
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DataSource dataSource;
         try {
             var initialContext = new InitialContext();
 
@@ -40,12 +42,7 @@ public abstract class AbstractDatabaseService extends WebService {
         } catch (NamingException exception) {
             throw new IllegalStateException(exception);
         }
-    }
 
-    private static ThreadLocal<Connection> connection = new ThreadLocal<>();
-
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try (var connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
