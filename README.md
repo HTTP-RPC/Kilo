@@ -878,8 +878,8 @@ The preceding class would be serialized to JSON like this:
 
 ```json
 {
-  "first_name": "first",
-  "last_name": "last"
+  "first_name": "John",
+  "last_name": "Smith"
 }
 ```
 
@@ -887,8 +887,8 @@ rather than this:
 
 ```json
 {
-  "firstName": "first",
-  "lastName": "last"
+  "firstName": "John",
+  "lastName": "Smith"
 }
 ```
 
@@ -920,7 +920,7 @@ public class Vehicle {
 }
 ```
 
-An attempt to coerce an empty map to a `Vehicle` instance would produce an `IllegalArgumentException`:
+Because both "manufacturer" and "year" are required, an attempt to coerce an empty map to a `Vehicle` instance would produce an `IllegalArgumentException`:
 
 ```java
 var vehicle = BeanAdapter.coerce(mapOf(), Vehicle.class); // throws
@@ -936,7 +936,7 @@ var vehicleAdapter = new BeanAdapter(vehicle);
 vehicleAdapter.put("manufacturer", null); // throws
 ```
 
-Similarly, attempting to dynamically access an unspecified value will result in an `UnsupportedOperationException`:
+Similarly, attempting to dynamically access an invalid value will result in an `UnsupportedOperationException`:
 
 ```java
 vehicleAdapter.get("manufacturer"); // throws
