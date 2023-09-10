@@ -227,7 +227,7 @@ public class ExamplesTest {
 
         try {
             vehicleAdapter.get("manufacturer");
-        } catch (UnsupportedOperationException exception) {
+        } catch (IllegalStateException exception) {
             System.out.println(exception.getMessage());
         }
     }
