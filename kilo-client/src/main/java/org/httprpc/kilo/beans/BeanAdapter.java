@@ -309,7 +309,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 var propertyName = getPropertyName(method);
 
                 if (propertyName == null) {
-                    throw new UnsupportedOperationException("Unsupported method.");
+                    throw new UnsupportedOperationException("Invalid method.");
                 }
 
                 if (method.getParameterCount() == 0) {
@@ -318,7 +318,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = map.get(key);
 
                     if (method.getAnnotation(Required.class) != null && value == null) {
-                        throw new UnsupportedOperationException("Property is not defined.");
+                        throw new IllegalStateException("Value is not defined.");
                     }
 
                     return toGenericType(value, method.getGenericReturnType());
@@ -334,7 +334,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = arguments[0];
 
                     if (accessor.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalArgumentException("Property is required.");
+                        throw new IllegalArgumentException("Value is required.");
                     }
 
                     ((Map<Object, Object>)map).put(key, adapt(value));
@@ -441,7 +441,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var value = property.accessor.invoke(bean);
 
             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                throw new UnsupportedOperationException(String.format("Value for \"%s\" is null.", key));
+                throw new IllegalStateException("Value is not defined.");
             }
 
             return adapt(value, propertyCache);
@@ -467,7 +467,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-            throw new IllegalArgumentException(String.format("Value for \"%s\" is required.", key));
+            throw new IllegalArgumentException("Value is required.");
         }
 
         var i = 0;
@@ -521,7 +521,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             var value = property.accessor.invoke(bean);
 
                             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                                throw new UnsupportedOperationException(String.format("Value for \"%s\" is null.", key));
+                                throw new IllegalStateException("Value is not defined.");
                             }
 
                             return new SimpleImmutableEntry<>(key, adapt(value, propertyCache));

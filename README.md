@@ -811,7 +811,7 @@ System.out.println(root.getChildren().get(0).getName()); // Winter
 System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
 ```
 
-Note that the requested bean type is not required to be a class. An interface can be used to provide a strongly typed "view" of the underlying map data. For example:
+Note that an interface can be used to provide a strongly typed "view" of the underlying map data. For example:
 
 ```java
 public interface Employee {
@@ -936,7 +936,7 @@ var vehicleAdapter = new BeanAdapter(vehicle);
 vehicleAdapter.put("manufacturer", null); // throws
 ```
 
-Similarly, attempting to dynamically access an invalid value will result in an `UnsupportedOperationException`:
+Similarly, attempting to dynamically access an invalid value will result in an `IllegalStateException`:
 
 ```java
 vehicleAdapter.get("manufacturer"); // throws
