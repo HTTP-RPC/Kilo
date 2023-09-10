@@ -1188,7 +1188,7 @@ var queryBuilder = QueryBuilder.select(
 This code could be used to transform the results to a list of `Employee` instances:
 
 ```java
-try (var connection = dataSource.getConnection()) {
+try (var connection = getConnection()) {
     return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
 }
 ```
@@ -1201,7 +1201,7 @@ The pipe is configured with a capacity of 4K elements and a timeout of 15s. Limi
 var pipe = new Pipe<Employee>(4096, 15000);
 
 executorService.submit(() -> {
-    try (var connection = dataSource.getConnection();
+    try (var connection = getConnection();
         var statement = queryBuilder.prepare(connection);
         var resultSet = queryBuilder.executeQuery(statement, mapOf());
         var resultSetAdapter = new ResultSetAdapter(resultSet)) {

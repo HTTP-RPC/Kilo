@@ -16,14 +16,15 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import org.hibernate.cfg.Configuration;
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.sql.ResultSetAdapter;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -58,9 +59,7 @@ public class EmployeeService extends WebService {
         try {
             var initialContext = new InitialContext();
 
-            var environmentContext = (Context)initialContext.lookup("java:comp/env");
-
-            dataSource = (DataSource)environmentContext.lookup("jdbc/EmployeeDB");
+            dataSource = (DataSource)initialContext.lookup("java:comp/env/jdbc/EmployeeDB");
         } catch (NamingException exception) {
             throw new IllegalStateException(exception);
         }
@@ -70,7 +69,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @SuppressWarnings("unchecked")
-    public List<Employee> getEmployees(boolean stream) throws SQLException {
+    public List<Employee> getEmployees() throws SQLException {
         var queryBuilder = QueryBuilder.select(
             "emp_no as employeeNumber",
             "first_name as firstName",
@@ -80,25 +79,49 @@ public class EmployeeService extends WebService {
             "hire_date as hireDate"
         ).from("employees");
 
-        if (stream) {
-            var pipe = new Pipe<Employee>(4096, 15000);
+        try (var connection = getConnection()) {
+            return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
+        }
+    }
 
-            executorService.submit(() -> {
-                try (var connection = getConnection();
-                    var statement = queryBuilder.prepare(connection);
-                    var resultSet = queryBuilder.executeQuery(statement, mapOf());
-                    var resultSetAdapter = new ResultSetAdapter(resultSet)) {
-                    pipe.accept(resultSetAdapter.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
-                } catch (SQLException exception) {
-                    throw new RuntimeException(exception);
-                }
-            });
+    @RequestMethod("GET")
+    @ResourcePath("stream")
+    public List<Employee> getEmployeesStream() {
+        var queryBuilder = QueryBuilder.select(
+            "emp_no as employeeNumber",
+            "first_name as firstName",
+            "last_name as lastName",
+            "gender",
+            "birth_date as birthDate",
+            "hire_date as hireDate"
+        ).from("employees");
 
-            return pipe;
-        } else {
-            try (var connection = getConnection()) {
-                return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
+        var pipe = new Pipe<Employee>(4096, 15000);
+
+        executorService.submit(() -> {
+            try (var connection = getConnection();
+                var statement = queryBuilder.prepare(connection);
+                var resultSet = queryBuilder.executeQuery(statement, mapOf());
+                var resultSetAdapter = new ResultSetAdapter(resultSet)) {
+                pipe.accept(resultSetAdapter.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
             }
+        });
+
+        return pipe;
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("hibernate")
+    public List<HibernateEmployee> getEmployeesHibernate() throws SQLException {
+        var configuration = new Configuration();
+
+        configuration.addAnnotatedClass(HibernateEmployee.class);
+
+        try (var sessionFactory = configuration.configure().buildSessionFactory();
+            var session = sessionFactory.withOptions().connection(getConnection()).openSession()) {
+            return session.createQuery("from HibernateEmployee", HibernateEmployee.class).list();
         }
     }
 }

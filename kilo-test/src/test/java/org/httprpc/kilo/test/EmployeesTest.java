@@ -20,29 +20,28 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.mapOf;
-
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {
-        var baseURL = new URL("http://localhost:8080/kilo-test/employees");
+        var baseURL = new URL("http://localhost:8080/kilo-test/employees/");
 
         var t0 = System.currentTimeMillis();
 
-        var list1 = WebServiceProxy.get(baseURL).setArguments(mapOf(
-            entry("stream", false)
-        )).invoke(List.class, Object.class);
+        var list1 = WebServiceProxy.get(baseURL).invoke(List.class, Object.class);
 
         var t1 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d unstreamed rows in %.1fs", list1.size(), (t1 - t0) / 1000.0));
+        System.out.println(String.format("Retrieved %d rows in %.1fs", list1.size(), (t1 - t0) / 1000.0));
 
-        var list2 = WebServiceProxy.get(baseURL).setArguments(mapOf(
-            entry("stream", true)
-        )).invoke(List.class, Object.class);
+        var list2 = WebServiceProxy.get(baseURL, "stream").invoke(List.class, Object.class);
 
         var t2 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d streamed rows in %.1fs", list1.size(), (t2 - t1) / 1000.0));
+        System.out.println(String.format("Retrieved %d streamed rows in %.1fs", list2.size(), (t2 - t1) / 1000.0));
+
+        var list3 = WebServiceProxy.get(baseURL, "hibernate").invoke(List.class, Object.class);
+
+        var t3 = System.currentTimeMillis();
+
+        System.out.println(String.format("Retrieved %d Hibernate rows in %.1fs", list3.size(), (t3 - t2) / 1000.0));
     }
 }

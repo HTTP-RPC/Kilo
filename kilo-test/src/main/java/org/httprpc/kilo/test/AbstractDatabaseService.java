@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.WebService;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -36,9 +35,7 @@ public abstract class AbstractDatabaseService extends WebService {
         try {
             var initialContext = new InitialContext();
 
-            var environmentContext = (Context)initialContext.lookup("java:comp/env");
-
-            dataSource = (DataSource)environmentContext.lookup("jdbc/DemoDB");
+            dataSource = (DataSource)initialContext.lookup("java:comp/env/jdbc/DemoDB");
         } catch (NamingException exception) {
             throw new ServletException(exception);
         }
