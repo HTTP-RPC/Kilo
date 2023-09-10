@@ -52,7 +52,7 @@ public class Conditionals {
             throw new IllegalArgumentException();
         }
 
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(64);
 
         stringBuilder.append(operator);
         stringBuilder.append(" ");
@@ -115,7 +115,7 @@ public class Conditionals {
             throw new IllegalArgumentException();
         }
 
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(128);
 
         stringBuilder.append("(");
 

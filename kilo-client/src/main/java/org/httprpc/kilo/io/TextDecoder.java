@@ -29,7 +29,7 @@ public class TextDecoder extends Decoder<String> {
 
         reader = new BufferedReader(reader);
 
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(1024);
 
         int c;
         while ((c = reader.read()) != EOF) {

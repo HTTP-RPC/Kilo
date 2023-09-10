@@ -161,7 +161,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(256);
 
         stringBuilder.append("insert into ");
         stringBuilder.append(table);
@@ -705,7 +705,7 @@ public class QueryBuilder {
             var c = sql.charAt(i++);
 
             if (c == ':' && !quoted) {
-                var parameterBuilder = new StringBuilder();
+                var parameterBuilder = new StringBuilder(32);
 
                 while (i < n) {
                     c = sql.charAt(i);
