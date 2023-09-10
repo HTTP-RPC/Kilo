@@ -27,6 +27,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -36,13 +37,24 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
-    private DataSource dataSource = null;
     private ExecutorService executorService = null;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
+        executorService = Executors.newSingleThreadExecutor();
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        executorService.shutdown();
+    }
+
+    private Connection getConnection() throws SQLException {
+        DataSource dataSource;
         try {
             var initialContext = new InitialContext();
 
@@ -53,14 +65,7 @@ public class EmployeeService extends WebService {
             throw new IllegalStateException(exception);
         }
 
-        executorService = Executors.newSingleThreadExecutor();
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        executorService.shutdown();
+        return dataSource.getConnection();
     }
 
     @RequestMethod("GET")
@@ -79,7 +84,7 @@ public class EmployeeService extends WebService {
             var pipe = new Pipe<Employee>(4096, 15000);
 
             executorService.submit(() -> {
-                try (var connection = dataSource.getConnection();
+                try (var connection = getConnection();
                     var statement = queryBuilder.prepare(connection);
                     var resultSet = queryBuilder.executeQuery(statement, mapOf());
                     var resultSetAdapter = new ResultSetAdapter(resultSet)) {
@@ -91,7 +96,7 @@ public class EmployeeService extends WebService {
 
             return pipe;
         } else {
-            try (var connection = dataSource.getConnection()) {
+            try (var connection = getConnection()) {
                 return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
             }
         }
