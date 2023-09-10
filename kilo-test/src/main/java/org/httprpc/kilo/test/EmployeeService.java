@@ -119,8 +119,9 @@ public class EmployeeService extends WebService {
 
         configuration.addAnnotatedClass(HibernateEmployee.class);
 
-        try (var sessionFactory = configuration.configure().buildSessionFactory();
-            var session = sessionFactory.withOptions().connection(getConnection()).openSession()) {
+        try (var connection = getConnection();
+            var sessionFactory = configuration.configure().buildSessionFactory();
+            var session = sessionFactory.withOptions().connection(connection).openSession()) {
             return session.createQuery("from HibernateEmployee", HibernateEmployee.class).list();
         }
     }
