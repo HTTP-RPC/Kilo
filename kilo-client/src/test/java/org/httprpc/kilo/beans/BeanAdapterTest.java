@@ -179,9 +179,10 @@ public class BeanAdapterTest {
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(null, Boolean.TYPE));
         assertEquals(Boolean.TRUE, BeanAdapter.coerce("true", Boolean.TYPE));
         assertEquals(Boolean.TRUE, BeanAdapter.coerce(1, Boolean.TYPE));
+        assertEquals(Boolean.TRUE, BeanAdapter.coerce(-1, Boolean.TYPE));
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(0, Boolean.TYPE));
-        assertEquals(Boolean.TRUE, BeanAdapter.coerce(0.5, Boolean.TYPE));
         assertEquals(Boolean.TRUE, BeanAdapter.coerce(1.0, Boolean.TYPE));
+        assertEquals(Boolean.TRUE, BeanAdapter.coerce(-1.0, Boolean.TYPE));
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(0.0, Boolean.TYPE));
     }
 
