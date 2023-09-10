@@ -437,10 +437,10 @@ public class BeanAdapterTest {
         assertEquals(0L, Collections.valueAt(beanAdapter, "long"));
         assertEquals(false, Collections.valueAt(beanAdapter, "nestedBean", "flag"));
 
-        assertThrows(IllegalStateException.class, () -> beanAdapter.get("string"));
-        assertThrows(IllegalStateException.class, () -> beanAdapter.get("integerList"));
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("string"));
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("integerList"));
 
-        assertThrows(IllegalStateException.class, () -> {
+        assertThrows(UnsupportedOperationException.class, () -> {
             var iterator = beanAdapter.entrySet().iterator();
 
             while (iterator.hasNext()) {
@@ -457,16 +457,16 @@ public class BeanAdapterTest {
 
         var testInterface = BeanAdapter.coerce(map, TestInterface.class);
 
-        assertThrows(IllegalStateException.class, testInterface::getLong);
+        assertThrows(UnsupportedOperationException.class, testInterface::getLong);
 
-        assertThrows(IllegalStateException.class, testInterface::getString);
+        assertThrows(UnsupportedOperationException.class, testInterface::getString);
         assertThrows(IllegalArgumentException.class, () -> testInterface.setString(null));
 
-        assertThrows(IllegalStateException.class, testInterface::getIntegerList);
+        assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
 
         var nestedInterface = testInterface.getNestedBean();
 
-        assertThrows(IllegalStateException.class, nestedInterface::getFlag);
+        assertThrows(UnsupportedOperationException.class, nestedInterface::getFlag);
         assertThrows(IllegalArgumentException.class, () -> nestedInterface.setFlag(null));
 
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestRecord.class));

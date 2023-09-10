@@ -936,7 +936,7 @@ var vehicleAdapter = new BeanAdapter(vehicle);
 vehicleAdapter.put("manufacturer", null); // throws
 ```
 
-Similarly, attempting to dynamically access an invalid value will result in an `IllegalStateException`:
+Similarly, attempting to dynamically access an invalid value will result in an `UnsupportedOperationException`:
 
 ```java
 vehicleAdapter.get("manufacturer"); // throws

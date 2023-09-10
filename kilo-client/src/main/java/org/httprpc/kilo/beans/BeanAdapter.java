@@ -318,7 +318,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = map.get(key);
 
                     if (method.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalStateException("Value is not defined.");
+                        throw new UnsupportedOperationException("Value is not defined.");
                     }
 
                     return toGenericType(value, method.getGenericReturnType());
@@ -441,7 +441,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var value = property.accessor.invoke(bean);
 
             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                throw new IllegalStateException("Value is not defined.");
+                throw new UnsupportedOperationException("Value is not defined.");
             }
 
             return adapt(value, propertyCache);
@@ -521,7 +521,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             var value = property.accessor.invoke(bean);
 
                             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                                throw new IllegalStateException("Value is not defined.");
+                                throw new UnsupportedOperationException("Value is not defined.");
                             }
 
                             return new SimpleImmutableEntry<>(key, adapt(value, propertyCache));
