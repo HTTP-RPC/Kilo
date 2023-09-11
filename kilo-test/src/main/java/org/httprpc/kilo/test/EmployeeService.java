@@ -114,7 +114,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("hibernate")
-    public List<HibernateEmployee> getEmployeesHibernate() throws SQLException {
+    public List<Employee> getEmployeesHibernate() throws SQLException {
         var configuration = new Configuration();
 
         configuration.addAnnotatedClass(HibernateEmployee.class);
@@ -122,7 +122,37 @@ public class EmployeeService extends WebService {
         try (var connection = getConnection();
             var sessionFactory = configuration.configure().buildSessionFactory();
             var session = sessionFactory.withOptions().connection(connection).openSession()) {
-            return session.createQuery("from HibernateEmployee", HibernateEmployee.class).list();
+            var criteriaQuery = session.getCriteriaBuilder().createQuery(Employee.class);
+            var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
+
+            return query.list();
         }
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("hibernate-stream")
+    public List<Employee> getEmployeesHibernateStream() {
+        var pipe = new Pipe<Employee>(4096, 15000);
+
+        executorService.submit(() -> {
+            var configuration = new Configuration();
+
+            configuration.addAnnotatedClass(HibernateEmployee.class);
+
+            try (var connection = getConnection();
+                var sessionFactory = configuration.configure().buildSessionFactory();
+                var session = sessionFactory.withOptions().connection(connection).openSession()) {
+                var criteriaQuery = session.getCriteriaBuilder().createQuery(Employee.class);
+                var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
+
+                try (var stream = query.stream()) {
+                    pipe.accept(stream);
+                }
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        });
+
+        return pipe;
     }
 }

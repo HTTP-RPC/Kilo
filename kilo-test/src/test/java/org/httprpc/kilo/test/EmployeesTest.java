@@ -43,5 +43,11 @@ public class EmployeesTest {
         var t3 = System.currentTimeMillis();
 
         System.out.println(String.format("Retrieved %d Hibernate rows in %.1fs", list3.size(), (t3 - t2) / 1000.0));
+
+        var list4 = WebServiceProxy.get(baseURL, "hibernate-stream").invoke(List.class, Object.class);
+
+        var t4 = System.currentTimeMillis();
+
+        System.out.println(String.format("Retrieved %d streamed Hibernate rows in %.1fs", list4.size(), (t4 - t3) / 1000.0));
     }
 }
