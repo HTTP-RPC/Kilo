@@ -84,7 +84,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testBeanAdapter() throws MalformedURLException {
-        Map<String, ?> map = mapOf(
+        var map = mapOf(
             entry("i", 1),
             entry("long", 2L),
             entry("double", 4.0),
@@ -384,7 +384,7 @@ public class BeanAdapterTest {
 
         testInterface.setNestedBean(nestedBean);
 
-        assertTrue(map.get("nestedBean") instanceof Map<?, ?>);
+        assertTrue(map.get("nestedBean") instanceof Map);
         assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
     }
 
@@ -407,7 +407,7 @@ public class BeanAdapterTest {
 
     @Test
     public void testObjectMethodDelegation() {
-        Map<String, Object> map1 = new HashMap<>() {
+        var map1 = new HashMap<String, Object>() {
             @Override
             public String toString() {
                 return "abc";
@@ -416,12 +416,13 @@ public class BeanAdapterTest {
 
         map1.put("flag", true);
 
-        Map<String, Object> map2 = mapOf(entry("flag", true));
+        var map2 = mapOf(entry("flag", true));
 
         var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
         var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
 
         assertEquals(nestedBean1, nestedBean2);
+
         assertEquals(map1.hashCode(), nestedBean1.hashCode());
         assertEquals(map1.toString(), nestedBean1.toString());
     }
@@ -495,7 +496,7 @@ public class BeanAdapterTest {
 
         assertNull(testRecord.localDate());
 
-        var recordAdapter = (Map<String, ?>)BeanAdapter.adapt(new TestRecord(1, 2.0, "xyx", LocalDate.now()));
+        var recordAdapter = (Map<String, Object>)BeanAdapter.adapt(new TestRecord(1, 2.0, "xyx", LocalDate.now()));
 
         assertNull(recordAdapter.get("localDate"));
     }

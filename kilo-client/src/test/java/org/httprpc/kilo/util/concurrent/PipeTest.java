@@ -59,6 +59,14 @@ public class PipeTest {
         testPipe(new Pipe<>(Integer.MAX_VALUE, 60000));
     }
 
+    private void testPipe(Pipe<Integer> pipe) {
+        var expectedValues = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
+
+        executorService.submit(() -> pipe.accept(expectedValues.stream()));
+
+        assertEquals(expectedValues, pipe.stream().toList());
+    }
+
     @Test
     public void testPollTimeout() {
         var pipe = new Pipe<String>(1, 100);
@@ -85,13 +93,5 @@ public class PipeTest {
         });
 
         assertTrue(future.get());
-    }
-
-    private void testPipe(Pipe<Integer> pipe) {
-        var expectedValues = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
-
-        executorService.submit(() -> pipe.accept(expectedValues.stream()));
-
-        assertEquals(expectedValues, pipe.stream().toList());
     }
 }

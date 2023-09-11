@@ -1405,7 +1405,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeType(Type type) {
-        if (type instanceof Class<?>) {
+        if (type instanceof Class) {
             return describeType((Class<?>)type);
         } else if (type instanceof ParameterizedType parameterizedType) {
             var rawType = parameterizedType.getRawType();

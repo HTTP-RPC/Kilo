@@ -42,11 +42,11 @@ public class JSONDecoderTest {
     public void testNumber() throws IOException {
         assertEquals(42, (int)decode("42", Integer.class));
         assertEquals((long)Integer.MAX_VALUE + 1, (long)decode(String.valueOf((long)Integer.MAX_VALUE + 1), Long.class));
-        assertEquals(42.5, decode("42.5", Double.class), 0);
+        assertEquals(42.5, decode("42.5", Double.class));
 
         assertEquals(-789, (int)decode("-789", Integer.class));
         assertEquals((long)Integer.MIN_VALUE - 1, (long)decode(String.valueOf((long)Integer.MIN_VALUE - 1), Long.class));
-        assertEquals(-789.10, decode("-789.10", Double.class), 0);
+        assertEquals(-789.10, decode("-789.10", Double.class));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class JSONDecoderTest {
 
     @Test
     public void testArray() throws IOException {
-        List<?> expected = listOf(
+        var expected = listOf(
             "abc",
             123,
             true,
@@ -70,15 +70,16 @@ public class JSONDecoderTest {
             mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0))
         );
 
-        List<?> list = decode("[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]",
-            List.class, Object.class);
+        var text = "[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
 
-        assertEquals(expected, list);
+        var actual = decode(text, List.class, Object.class);
+
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testObject() throws IOException {
-        Map<?, ?> expected = mapOf(
+        var expected = mapOf(
             entry("a", "abc"),
             entry("b", 123),
             entry("c", true),
@@ -86,10 +87,11 @@ public class JSONDecoderTest {
             entry("e", mapOf(entry("x", 1), entry("y", 2.0), entry("z", 3.0)))
         );
 
-        Map<?, ?> map = decode("{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}",
-            Map.class, String.class, Object.class);
+        var text = "{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}";
 
-        assertEquals(expected, map);
+        var actual = decode(text, Map.class, String.class, Object.class);
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -97,7 +99,7 @@ public class JSONDecoderTest {
         assertThrows(IOException.class, () -> decode("xyz", Object.class));
     }
 
-    private static <T> T decode(String text, Class<T> rawType, Type... actualTypeArguments) throws IOException {
+    private static Object decode(String text, Class<?> rawType, Type... actualTypeArguments) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
         return BeanAdapter.coerce(jsonDecoder.read(new StringReader(text)), rawType, actualTypeArguments);

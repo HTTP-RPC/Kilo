@@ -91,7 +91,7 @@ public class JSONEncoder extends Encoder<Object> {
             writer.write("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.write(value.toString());
-        } else if (value instanceof Enum<?>) {
+        } else if (value instanceof Enum) {
             encode(value.toString(), writer);
         } else if (value instanceof Date date) {
             encode(date.getTime(), writer);

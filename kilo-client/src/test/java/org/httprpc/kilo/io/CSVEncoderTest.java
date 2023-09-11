@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -35,7 +33,7 @@ public class CSVEncoderTest {
             + "\"A,B,\"\"C\"\" \",1,2.0,true,0,\"12%\"\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
-        List<Map<String, ?>> values = listOf(
+        var values = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
@@ -52,8 +50,6 @@ public class CSVEncoderTest {
             )
         );
 
-        var writer = new StringWriter();
-
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f"));
 
         csvEncoder.setLabels(mapOf(
@@ -64,8 +60,12 @@ public class CSVEncoderTest {
             entry("f", NumberFormat.getPercentInstance())
         ));
 
+        var writer = new StringWriter();
+
         csvEncoder.write(values, writer);
 
-        assertEquals(expected, writer.toString());
+        var actual = writer.toString();
+
+        assertEquals(expected, actual);
     }
 }

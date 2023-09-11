@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.entry;
@@ -30,12 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CSVDecoderTest {
     @Test
     public void testRead() throws IOException {
-        var text = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
-            + "\" D\rÉ\nF\r\n\",2,4.0,false\r\n"
-            + ",3,6.0\n";
-
-        List<Map<String, ?>> expected = listOf(
+        var expected = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
                 entry("b", "1"),
@@ -54,16 +48,21 @@ public class CSVDecoderTest {
             )
         );
 
-        var reader = new StringReader(text);
+        var text = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
+            + "\" D\rÉ\nF\r\n\",2,4.0,false\r\n"
+            + ",3,6.0\n";
 
         var csvDecoder = new CSVDecoder();
 
-        assertEquals(expected, csvDecoder.read(reader));
+        var actual = csvDecoder.read(new StringReader(text));
+
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testIterate() throws IOException {
-        List<Map<String, ?>> expected = listOf(
+        var expected = listOf(
             mapOf(
                 entry("a", "1"),
                 entry("b", "2"),

@@ -27,8 +27,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.entry;
@@ -119,7 +117,7 @@ public class JSONEncoderTest {
             + "  }\n"
             + "]";
 
-        List<?> list = listOf(
+        var list = listOf(
             "abc",
             123L,
             true,
@@ -127,7 +125,9 @@ public class JSONEncoderTest {
             mapOf(entry("x", 1L), entry("y", 2.0), entry("z", 3.0))
         );
 
-        assertEquals(expected, encode(list));
+        var actual = encode(list);
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class JSONEncoderTest {
             + "  }\n"
             + "}";
 
-        Map<String, ?> map = mapOf(
+        var map = mapOf(
             entry("a", "abc"),
             entry("b", 123L),
             entry("c", true),
@@ -156,7 +156,9 @@ public class JSONEncoderTest {
             entry("e", mapOf(entry("x", 1L), entry("y", 2.0), entry("z", 3.0)))
         );
 
-        assertEquals(expected, encode(map));
+        var actual = encode(map);
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -168,13 +170,15 @@ public class JSONEncoderTest {
     public void testCompact() throws IOException {
         var expected = "{\"a\":1,\"b\":2,\"c\":3}";
 
-        Map<String, ?> map = mapOf(
+        var map = mapOf(
             entry("a", 1),
             entry("b", 2),
             entry("c", 3)
         );
 
-        assertEquals(expected, encode(map, true));
+        var actual = encode(map, true);
+
+        assertEquals(expected, actual);
     }
 
     private static String encode(Object value) throws IOException {
@@ -182,9 +186,9 @@ public class JSONEncoderTest {
     }
 
     private static String encode(Object value, boolean compact) throws IOException {
-        var writer = new StringWriter();
-
         var jsonEncoder = new JSONEncoder(compact);
+
+        var writer = new StringWriter();
 
         jsonEncoder.write(value, writer);
 

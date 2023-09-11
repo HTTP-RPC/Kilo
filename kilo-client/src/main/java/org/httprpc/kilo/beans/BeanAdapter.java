@@ -577,7 +577,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Number
             || value instanceof Boolean
             || value instanceof String
-            || value instanceof Enum<?>
+            || value instanceof Enum
             || value instanceof Date
             || value instanceof TemporalAccessor
             || value instanceof TemporalAmount

@@ -85,7 +85,7 @@ public class JSONDecoder extends Decoder<Object> {
 
                 // If the current container is a map, read the key
                 String key;
-                if (container instanceof Map<?, ?>) {
+                if (container instanceof Map) {
                     if (c != '"') {
                         throw new IOException("Invalid key.");
                     }

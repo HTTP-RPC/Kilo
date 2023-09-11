@@ -95,7 +95,7 @@ public class ElementAdapterTest {
 
         assertTrue(elementAdapter.containsKey("map"));
 
-        var map = (Map<String, ?>)elementAdapter.get("map");
+        var map = (Map<String, Object>)elementAdapter.get("map");
 
         assertTrue(map.containsKey("@b"));
         assertFalse(map.containsKey("@c"));
@@ -105,34 +105,34 @@ public class ElementAdapterTest {
 
         assertTrue(map.containsKey("list"));
 
-        var list = (Map<String, ?>)map.get("list");
+        var list = (Map<String, Object>)map.get("list");
 
         assertEquals("C", list.get("@c"));
 
         assertTrue(list.containsKey("item*"));
 
-        var items = (List<?>)list.get("item*");
+        var items = (List<Object>)list.get("item*");
 
         assertEquals(3, items.size());
 
-        var item1 = (Map<String, ?>)items.get(0);
+        var item1 = (Map<String, Object>)items.get(0);
 
         assertEquals("1", item1.get("@d"));
         assertEquals("abc", item1.get("."));
 
-        var item2 = (Map<String, ?>)items.get(1);
+        var item2 = (Map<String, Object>)items.get(1);
 
         assertEquals("2", item2.get("@d"));
         assertEquals("déf", item2.get("."));
 
-        var item3 = (Map<String, ?>)items.get(2);
+        var item3 = (Map<String, Object>)items.get(2);
 
         assertEquals("3", item3.get("@d"));
         assertEquals("ghi", item3.get("."));
 
         assertTrue(list.containsKey("xyz*"));
 
-        var xyz = (List<?>)list.get("xyz*");
+        var xyz = (List<Object>)list.get("xyz*");
 
         assertTrue(xyz.isEmpty());
     }
@@ -165,13 +165,14 @@ public class ElementAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testMultipleElements() {
         var elementAdapter = new ElementAdapter(documentBuilder.newDocument().createElement("root"));
 
         elementAdapter.put("item*", listOf(1, 2, 3));
         elementAdapter.put("item*", listOf(4, 5, 6));
 
-        var items = (List<?>)elementAdapter.get("item*");
+        var items = (List<Object>)elementAdapter.get("item*");
 
         assertEquals(listOf("4", "5", "6"), items.stream().map(Object::toString).toList());
 

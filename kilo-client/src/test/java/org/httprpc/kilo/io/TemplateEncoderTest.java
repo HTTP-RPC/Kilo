@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -26,8 +27,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
@@ -52,7 +51,7 @@ public class TemplateEncoderTest {
     public void testMap() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
 
-        Map<String, ?> dictionary = mapOf(
+        var dictionary = mapOf(
             entry("a", "hello"),
             entry("b", 42),
             entry("c", mapOf(
@@ -65,16 +64,16 @@ public class TemplateEncoderTest {
         encoder.write(dictionary, writer);
 
         assertEquals(String.format("{a=%s,b=%s,c/d=%s,e=,f/g=}",
-            dictionary.get("a"),
-            dictionary.get("b"),
-            ((Map<?, ?>)dictionary.get("c")).get("d")), writer.toString());
+            Collections.valueAt(dictionary, "a"),
+            Collections.valueAt(dictionary, "b"),
+            Collections.valueAt(dictionary, "c", "d")), writer.toString());
     }
 
     @Test
     public void testPath() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("path.txt"));
 
-        Map<String, ?> dictionary = mapOf(
+        var dictionary = mapOf(
             entry("a", mapOf(
                 entry("b", 0),
                 entry("d", mapOf(
@@ -193,57 +192,53 @@ public class TemplateEncoderTest {
     public void testSingleElementRepeatingSection() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
-        Map<String, ?> dictionary = mapOf(
+        var dictionary = mapOf(
             entry("a", "hello"),
             entry("b", 1L),
             entry("c", 2.0));
 
-        List<?> list = listOf(dictionary);
-
         var writer = new StringWriter();
 
-        encoder.write(mapOf(entry("list", list)), writer);
+        encoder.write(mapOf(entry("list", listOf(dictionary))), writer);
 
         assertEquals(String.format("[{a=%s,b=%s,c=%s}]",
-            dictionary.get("a"),
-            dictionary.get("b"),
-            dictionary.get("c")), writer.toString());
+            Collections.valueAt(dictionary, "a"),
+            Collections.valueAt(dictionary, "b"),
+            Collections.valueAt(dictionary, "c")), writer.toString());
     }
 
     @Test
     public void testMultiElementRepeatingSection() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
-        Map<String, ?> dictionary1 = mapOf(
+        var dictionary1 = mapOf(
             entry("a", "hello"),
             entry("b", 1L),
             entry("c", 2.0));
 
-        Map<String, ?> dictionary2 = mapOf(
+        var dictionary2 = mapOf(
             entry("a", "goodbye"),
             entry("b", 2L),
             entry("c", 4.0));
 
-        List<?> list = listOf(dictionary1, dictionary2);
-
         var writer = new StringWriter();
 
-        encoder.write(mapOf(entry("list", list)), writer);
+        encoder.write(mapOf(entry("list", listOf(dictionary1, dictionary2))), writer);
 
         assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]",
-            dictionary1.get("a"),
-            dictionary1.get("b"),
-            dictionary1.get("c"),
-            dictionary2.get("a"),
-            dictionary2.get("b"),
-            dictionary2.get("c")), writer.toString());
+            Collections.valueAt(dictionary1, "a"),
+            Collections.valueAt(dictionary1, "b"),
+            Collections.valueAt(dictionary1, "c"),
+            Collections.valueAt(dictionary2, "a"),
+            Collections.valueAt(dictionary2, "b"),
+            Collections.valueAt(dictionary2, "c")), writer.toString());
     }
 
     @Test
     public void testNestedRepeatingSection1() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating2.txt"));
 
-        Map<String, ?> dictionary = mapOf(
+        var dictionary = mapOf(
             entry("abc", "ABC"),
             entry("list1", listOf(mapOf(
                 entry("def", "DEF"),
@@ -266,7 +261,7 @@ public class TemplateEncoderTest {
     public void testNestedRepeatingSection2() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating3.txt"));
 
-        List<?> value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
+        var value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
         var writer = new StringWriter();
 
@@ -290,7 +285,7 @@ public class TemplateEncoderTest {
     public void testPrimitiveRepeatingSection() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating4.txt"));
 
-        List<?> value = listOf("hello", 42, false);
+        var value = listOf("hello", 42, false);
 
         var writer = new StringWriter();
 
@@ -303,7 +298,7 @@ public class TemplateEncoderTest {
     public void testRepeatingSectionSeparator() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating5.txt"));
 
-        List<?> value = listOf("a", "b", "c");
+        var value = listOf("a", "b", "c");
 
         var writer = new StringWriter();
 
@@ -316,7 +311,7 @@ public class TemplateEncoderTest {
     public void testMapRepeatingSection1() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating6.txt"));
 
-        Map<String, ?> value = mapOf(
+        var value = mapOf(
             entry("entries", mapOf(
                 entry("one", mapOf(entry("value", 1))),
                 entry("two", mapOf(entry("value", 2))),
@@ -335,7 +330,7 @@ public class TemplateEncoderTest {
     public void testMapRepeatingSection2() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("repeating7.txt"));
 
-        Map<String, ?> value = mapOf(
+        var value = mapOf(
             entry("entries", mapOf(
                 entry("a", "A"),
                 entry("b", "B"),
@@ -445,7 +440,7 @@ public class TemplateEncoderTest {
     public void testInheritance() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("inheritance.txt"));
 
-        Map<String, ?> dictionary = mapOf(
+        var dictionary = mapOf(
             entry("a", "$"),
             entry("b", mapOf(
                 entry("c", "C")
@@ -599,7 +594,7 @@ public class TemplateEncoderTest {
     public void testRecursion() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("recursion.txt"));
 
-        List<?> list = listOf(
+        var list = listOf(
             listOf(
                 listOf(), listOf()
             ),
@@ -622,7 +617,7 @@ public class TemplateEncoderTest {
     public void testEmptyRecursion() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("recursion.txt"));
 
-        List<?> list = listOf();
+        var list = listOf();
 
         var writer = new StringWriter();
 
@@ -635,7 +630,7 @@ public class TemplateEncoderTest {
     public void testInvalidMapValue1() {
         var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
 
-        Map<String, ?> root = mapOf(
+        var root = mapOf(
             entry("a", "xyz")
         );
 
@@ -646,7 +641,7 @@ public class TemplateEncoderTest {
     public void testInvalidMapValue2() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
 
-        Map<String, ?> root = mapOf(
+        var root = mapOf(
             entry("a", null)
         );
 

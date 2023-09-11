@@ -24,12 +24,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TextEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        var writer = new StringWriter();
+        var expected = "héllo/r/nwørld";
 
         var textEncoder = new TextEncoder();
 
-        textEncoder.write("héllo/r/nwørld", writer);
+        var writer = new StringWriter();
 
-        assertEquals("héllo/r/nwørld", writer.toString());
+        textEncoder.write(expected, writer);
+
+        var actual = writer.toString();
+
+        assertEquals(expected, actual);
     }
 }
