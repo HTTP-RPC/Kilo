@@ -35,7 +35,7 @@ public class NestedDataStructuresTest2 {
     public static void main(String[] args) throws IOException {
         var url = new URL("https://jsonplaceholder.typicode.com/users");
 
-        List<User> users = BeanAdapter.coerce(WebServiceProxy.get(url).invoke(), List.class, User.class);
+        var users = (List<User>)BeanAdapter.coerce(WebServiceProxy.get(url).invoke(), List.class, User.class);
 
         var catchPhrases = users.stream()
             .map(user -> user.getCompany().getCatchPhrase())
