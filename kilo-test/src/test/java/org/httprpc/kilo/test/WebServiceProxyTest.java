@@ -80,9 +80,8 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGet() throws IOException {
-        var result = (Map<String, Object>)WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+        var result = WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -116,9 +115,8 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetKeys() throws IOException {
-        var result = (Map<String, Object>)WebServiceProxy.get(baseURL, "test/a/%d/b/%s/c/%d/d/%s",
+        var result = WebServiceProxy.get(baseURL, "test/a/%d/b/%s/c/%d/d/%s",
             123,
             URLEncoder.encode("héllo", StandardCharsets.UTF_8),
             456,
@@ -137,9 +135,8 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testGetFibonacci() throws IOException {
-        var result = (List<Number>)WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
+        var result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
             mapOf(
                 entry("count", 8)
             )
@@ -149,9 +146,8 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testURLEncodedPost() throws IOException {
-        var result = (Map<String, Object>)WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -374,9 +370,8 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testHeaders() throws IOException {
-        var result = (Map<String, Object>)WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
+        var result = WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
             entry("X-Header-A", "abc"),
             entry("X-Header-B", 123)
         )).setMonitorStream(System.out).invoke();
