@@ -642,10 +642,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
      *
-     * <p>For parameterized types, if the target type is {@link List} or
-     * {@link Map}, the value is wrapped in an instance of the same type that
-     * automatically coerces its contents. Other parameterized types are not
-     * supported.</p>
+     * <p>If the target type is {@link List} or {@link Map}, the return value
+     * is an instance of the same type with its contents coerced. Other
+     * parameterized types are not supported.</p>
      *
      * <p>For reference types, {@code null} values are returned as is. For
      * numeric or boolean primitives, they are converted to 0 or
