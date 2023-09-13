@@ -44,7 +44,6 @@ public class PetService extends AbstractDatabaseService {
     private static final String TEXT_HTML = "text/html";
 
     @RequestMethod("GET")
-    @SuppressWarnings("unchecked")
     public List<Pet> getPets(@Required String owner, boolean stream) throws SQLException, IOException {
         var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
 
@@ -96,11 +95,12 @@ public class PetService extends AbstractDatabaseService {
 
             return null;
         } else {
-            var results = queryBuilder.execute(getConnection(), mapOf(
-                entry("owner", owner)
-            )).getResults();
-
-            return BeanAdapter.coerce(results, List.class, Pet.class);
+            try (var statement = queryBuilder.prepare(getConnection());
+                var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+                    entry("owner", owner)
+                )))) {
+                return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+            }
         }
     }
 

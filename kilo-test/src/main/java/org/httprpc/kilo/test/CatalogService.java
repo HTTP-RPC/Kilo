@@ -23,6 +23,7 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.kilo.sql.ResultSetAdapter;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -37,11 +38,13 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
-    @SuppressWarnings("unchecked")
     public List<Item> getItems() throws SQLException {
-        var results = QueryBuilder.select("*").from("item").execute(getConnection()).getResults();
+        var queryBuilder = QueryBuilder.select("*").from("item");
 
-        return BeanAdapter.coerce(results, List.class, Item.class);
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+            return results.stream().map(result -> BeanAdapter.coerce(result, Item.class)).toList();
+        }
     }
 
     @RequestMethod("POST")
@@ -51,20 +54,29 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         var item = (Item)getBody();
 
-        var connection = getConnection();
-
-        var keys = QueryBuilder.insertInto("item").values(mapOf(
+        var queryBuilder = QueryBuilder.insertInto("item").values(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
-        )).execute(connection, new BeanAdapter(item)).getGeneratedKeys();
+        ));
 
-        var result = QueryBuilder.select("*").from("item").where("id = :id").execute(connection, mapOf(
-            entry("id", keys.get(0))
-        )).getResult();
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(item));
+        }
 
         getResponse().setStatus(HttpServletResponse.SC_CREATED);
 
-        return BeanAdapter.coerce(result, Item.class);
+        return getItem(BeanAdapter.coerce(queryBuilder.getGeneratedKeys().get(0), Integer.class));
+    }
+
+    private Item getItem(int itemID) throws SQLException {
+        var queryBuilder = QueryBuilder.select("*").from("item").where("id = :id");
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+                entry("id", itemID)
+            )))) {
+            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, Item.class)).orElse(null);
+        }
     }
 
     @RequestMethod("PUT")
@@ -79,10 +91,14 @@ public class CatalogService extends AbstractDatabaseService {
 
         item.setID(id);
 
-        QueryBuilder.update("item").set(mapOf(
+        var queryBuilder = QueryBuilder.update("item").set(mapOf(
             entry("description", ":description"),
             entry("price", ":price")
-        )).where("id = :id").execute(getConnection(), new BeanAdapter(item));
+        )).where("id = :id");
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(item));
+        }
     }
 
     @RequestMethod("DELETE")
@@ -92,9 +108,13 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem() throws SQLException {
         var id = getKey("itemID", Integer.class);
 
-        QueryBuilder.deleteFrom("item").where("id = :id").execute(getConnection(), mapOf(
-            entry("id", id)
-        ));
+        var queryBuilder = QueryBuilder.deleteFrom("item").where("id = :id");
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("id", id)
+            ));
+        }
     }
 
     @RequestMethod("GET")

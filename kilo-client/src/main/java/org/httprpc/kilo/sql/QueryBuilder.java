@@ -783,7 +783,12 @@ public class QueryBuilder {
      *
      * @throws SQLException
      * If an error occurs while executing the query.
+     *
+     * @deprecated
+     * Use {@link #executeQuery(PreparedStatement)} or
+     * {@link #executeUpdate(PreparedStatement)} instead.
      */
+    @Deprecated
     public QueryBuilder execute(Connection connection) throws SQLException {
         return execute(connection, mapOf());
     }
@@ -802,7 +807,12 @@ public class QueryBuilder {
      *
      * @throws SQLException
      * If an error occurs while executing the query.
+     *
+     * @deprecated
+     * Use {@link #executeQuery(PreparedStatement, Map)} or
+     * {@link #executeUpdate(PreparedStatement, Map)} instead.
      */
+    @Deprecated
     public QueryBuilder execute(Connection connection, Map<String, ?> arguments) throws SQLException {
         if (connection == null || arguments == null) {
             throw new IllegalArgumentException();
@@ -846,7 +856,11 @@ public class QueryBuilder {
      * @return
      * The query result, or {@code null} if the query either did not produce a
      * result set or did not return any rows.
+     *
+     * @deprecated
+     * Use {@link #executeQuery(PreparedStatement, Map)} instead.
      */
+    @Deprecated
     public Map<String, Object> getResult() {
         if (results == null) {
             return null;
@@ -865,7 +879,11 @@ public class QueryBuilder {
      * @return
      * The query results, or {@code null} if the query did not produce a result
      * set.
+     *
+     * @deprecated
+     * Use {@link #executeQuery(PreparedStatement, Map)} instead.
      */
+    @Deprecated
     public List<Map<String, Object>> getResults() {
         return results;
     }
@@ -876,7 +894,11 @@ public class QueryBuilder {
      * @return
      * The number of rows that were affected by the query, or -1 if the query
      * did not produce an update count.
+     *
+     * @deprecated
+     * Use {@link #executeUpdate(PreparedStatement, Map)} instead.
      */
+    @Deprecated
     public int getUpdateCount() {
         return updateCount;
     }
@@ -918,6 +940,22 @@ public class QueryBuilder {
      * @param statement
      * The statement that will be used to execute the query.
      *
+     * @return
+     * The query results.
+     *
+     * @throws SQLException
+     * If an error occurs while executing the query.
+     */
+    public ResultSet executeQuery(PreparedStatement statement) throws SQLException {
+        return executeQuery(statement, mapOf());
+    }
+
+    /**
+     * Executes a query.
+     *
+     * @param statement
+     * The statement that will be used to execute the query.
+     *
      * @param arguments
      * The query arguments.
      *
@@ -943,6 +981,22 @@ public class QueryBuilder {
      * @param statement
      * The statement that will be used to execute the query.
      *
+     * @return
+     * The number of rows that were affected by the query.
+     *
+     * @throws SQLException
+     * If an error occurs while executing the query.
+     */
+    public int executeUpdate(PreparedStatement statement) throws SQLException {
+        return executeUpdate(statement, mapOf());
+    }
+
+    /**
+     * Executes a query.
+     *
+     * @param statement
+     * The statement that will be used to execute the query.
+     *
      * @param arguments
      * The query arguments.
      *
@@ -959,7 +1013,27 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        return statement.executeUpdate();
+        var updateCount = statement.executeUpdate();
+
+        if (updateCount > 0) {
+            try (var generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    var generatedKeysMetaData = generatedKeys.getMetaData();
+
+                    var n = generatedKeysMetaData.getColumnCount();
+
+                    this.generatedKeys = new ArrayList<>(n);
+
+                    for (var i = 0; i < n; i++) {
+                        this.generatedKeys.add(generatedKeys.getObject(i + 1));
+                    }
+                } else {
+                    this.generatedKeys = null;
+                }
+            }
+        }
+
+        return updateCount;
     }
 
     /**

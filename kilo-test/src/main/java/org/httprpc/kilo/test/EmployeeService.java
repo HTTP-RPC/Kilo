@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.httprpc.kilo.util.Collections.mapOf;
-
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
     private ExecutorService executorService = null;
@@ -68,7 +66,6 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @SuppressWarnings("unchecked")
     public List<Employee> getEmployees() throws SQLException {
         var queryBuilder = QueryBuilder.select(
             "emp_no as employeeNumber",
@@ -79,8 +76,10 @@ public class EmployeeService extends WebService {
             "hire_date as hireDate"
         ).from("employees");
 
-        try (var connection = getConnection()) {
-            return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
+        try (var connection = getConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+            return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
         }
     }
 
@@ -101,9 +100,8 @@ public class EmployeeService extends WebService {
         executorService.submit(() -> {
             try (var connection = getConnection();
                 var statement = queryBuilder.prepare(connection);
-                var resultSet = queryBuilder.executeQuery(statement, mapOf());
-                var resultSetAdapter = new ResultSetAdapter(resultSet)) {
-                pipe.accept(resultSetAdapter.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+                var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+                pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
