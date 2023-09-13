@@ -235,13 +235,13 @@ public class BeanAdapterTest {
             1,
             2,
             3
-        ), BeanAdapter.coerce(listOf(
+        ), BeanAdapter.coerceList(listOf(
             "1",
             "2",
             "3"
-        ), List.class, Integer.class));
+        ), Integer.class));
 
-        assertNull(BeanAdapter.coerce(null, List.class, Object.class));
+        assertNull(BeanAdapter.coerceList(null, Object.class));
     }
 
     @Test
@@ -250,58 +250,26 @@ public class BeanAdapterTest {
             entry("a", 1.0),
             entry("b", 2.0),
             entry("c", 3.0)
-        ), BeanAdapter.coerce(mapOf(
+        ), BeanAdapter.coerceMap(mapOf(
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
-        ), Map.class, String.class, Double.class));
+        ), Double.class));
 
         assertEquals(mapOf(
             entry(1, 1.0),
             entry(2, 2.0),
             entry(3, 3.0)
-        ), BeanAdapter.coerce(mapOf(
-            entry("1", "1.0"),
-            entry("2", "2.0"),
-            entry("3", "3.0")
-        ), Map.class, Integer.class, Double.class));
+        ), BeanAdapter.coerceMap(mapOf(
+            entry(1, "1.0"),
+            entry(2, "2.0"),
+            entry(3, "3.0")
+        ), Double.class));
 
-        assertNull(BeanAdapter.coerce(null, Map.class, Object.class, Object.class));
+        assertNull(BeanAdapter.coerceMap(null, Object.class));
     }
 
     @Test
-    public void testNestedCoercion() {
-        assertEquals(listOf(
-            listOf(
-                1,
-                2,
-                3
-            )
-        ), BeanAdapter.coerce(listOf(
-            listOf(
-                "1",
-                "2",
-                "3"
-            )
-        ), List.class, BeanAdapter.typeOf(List.class, Integer.class)));
-
-        assertEquals(listOf(
-            mapOf(
-                entry(1, 1.0),
-                entry(2, 2.0),
-                entry(3, 3.0)
-            )
-        ), BeanAdapter.coerce(listOf(
-            mapOf(
-                entry("1", "1.0"),
-                entry("2", "2.0"),
-                entry("3", "3.0")
-            )
-        ), List.class, BeanAdapter.typeOf(Map.class, Integer.class, Double.class)));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
     public void testMutableListCoercion() {
         var strings = new ArrayList<String>();
 
@@ -310,7 +278,7 @@ public class BeanAdapterTest {
         strings.add("3");
         strings.add(null);
 
-        var integers = (List<Integer>)BeanAdapter.coerce(strings, List.class, Integer.class);
+        var integers = BeanAdapter.coerceList(strings, Integer.class);
 
         assertEquals(listOf(1, 2, 3, null), integers);
 
@@ -324,7 +292,6 @@ public class BeanAdapterTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testMutableMapCoercion() {
         var strings = new HashMap<Integer, String>();
 
@@ -333,7 +300,7 @@ public class BeanAdapterTest {
         strings.put(3, "3.0");
         strings.put(4, null);
 
-        var doubles = (Map<Integer, Double>)BeanAdapter.coerce(strings, Map.class, Integer.class, Double.class);
+        var doubles = BeanAdapter.coerceMap(strings, Double.class);
 
         assertEquals(mapOf(
             entry(1, 1.0),

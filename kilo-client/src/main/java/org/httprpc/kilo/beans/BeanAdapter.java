@@ -664,10 +664,126 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * @return
      * The coerced value.
+     *
+     * @deprecated
+     * Use {@link #coerce(Object, Class)}, {@link #coerceList(List, Class)}, or
+     * {@link #coerceMap(Map, Class)} instead.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <T> T coerce(Object value, Class<T> rawType, Type... actualTypeArguments) {
         return (T)toGenericType(value, typeOf(rawType, actualTypeArguments));
+    }
+
+    /**
+     * <p>Coerces a value to a given type. For unparamterized types, if the
+     * value is already an instance of the requested type, it is returned as
+     * is. Otherwise, if the requested type is one of the following, the return
+     * value is obtained via an appropriate conversion method; for example,
+     * {@link Number#intValue()}, {@link Object#toString()}, or
+     * {@link LocalDate#parse(CharSequence)}:</p>
+     *
+     * <ul>
+     * <li>{@link Byte} or {@code byte}</li>
+     * <li>{@link Short} or {@code short}</li>
+     * <li>{@link Integer} or {@code int}</li>
+     * <li>{@link Long} or {@code long}</li>
+     * <li>{@link Float} or {@code float}</li>
+     * <li>{@link Double} or {@code double}</li>
+     * <li>{@link Boolean} or {@code boolean}</li>
+     * <li>{@link String}</li>
+     * <li>{@link Date}</li>
+     * <li>{@link Instant}</li>
+     * <li>{@link LocalDate}</li>
+     * <li>{@link LocalTime}</li>
+     * <li>{@link LocalDateTime}</li>
+     * <li>{@link Duration}</li>
+     * <li>{@link Period}</li>
+     * <li>{@link UUID}</li>
+     * <li>{@link URL}</li>
+     * </ul>
+     *
+     * <p>If the target type is an {@link Enum}, the resulting value is the
+     * first constant whose string representation matches the value's string
+     * representation.</p>
+     *
+     * <p>If none of the previous conditions apply, the provided value is
+     * assumed to be a map. If the if the target type is a {@link Record}, the
+     * resulting value is instantiated via the type's canonical constructor
+     * using the entries in the map. Otherwise, the target type is assumed to
+     * be a bean:</p>
+     *
+     * <ul>
+     * <li>If the type is an interface, the return value is a proxy
+     * implementation of the interface that maps accessor and mutator methods
+     * to entries in the map. {@link Object} methods are delegated to the
+     * underlying map.</li>
+     * <li>If the type is a concrete class, an instance of the type is
+     * dynamically created and populated using the entries in the map.</li>
+     * </ul>
+     *
+     * <p>For reference types, {@code null} values are returned as is. For
+     * numeric or boolean primitives, they are converted to 0 or
+     * {@code false}, respectively.</p>
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param value
+     * The value to coerce.
+     *
+     * @param type
+     * The target type.
+     *
+     * @return
+     * The coerced value.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T coerce(Object value, Class<T> type) {
+        return (T)toGenericType(value, type);
+    }
+
+    /**
+     * Coerces list elements to a given type.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param list
+     * The source list.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * A list containing the coerced elements.
+     */
+    @SuppressWarnings("unchecked")
+    public static <E> List<E> coerceList(List<?> list, Class<E> elementType) {
+        return (List<E>)toGenericType(list, typeOf(List.class, elementType));
+    }
+
+    /**
+     * Coerces map values to a given type.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param map
+     * The source map.
+     *
+     * @param valueType
+     * The value type.
+     *
+     * @return
+     * A map containing the coerced values.
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Class<V> valueType) {
+        return (Map<K, V>)toGenericType(map, typeOf(Map.class, Object.class, valueType));
     }
 
     private static Object toGenericType(Object value, Type type) {
