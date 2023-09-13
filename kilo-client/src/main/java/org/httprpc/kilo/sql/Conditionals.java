@@ -142,7 +142,11 @@ public class Conditionals {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link #in(QueryBuilder)} or {@link #exists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String equalTo(QueryBuilder queryBuilder) {
         if (queryBuilder == null) {
             throw new IllegalArgumentException();
@@ -159,7 +163,12 @@ public class Conditionals {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link #notIn(QueryBuilder)} or {@link #notExists(QueryBuilder)}
+     * instead.
      */
+    @Deprecated
     public static String notEqualTo(QueryBuilder queryBuilder) {
         if (queryBuilder == null) {
             throw new IllegalArgumentException();

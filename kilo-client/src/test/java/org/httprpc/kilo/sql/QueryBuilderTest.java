@@ -19,10 +19,8 @@ import org.junit.jupiter.api.Test;
 import static org.httprpc.kilo.sql.Conditionals.allOf;
 import static org.httprpc.kilo.sql.Conditionals.and;
 import static org.httprpc.kilo.sql.Conditionals.anyOf;
-import static org.httprpc.kilo.sql.Conditionals.equalTo;
 import static org.httprpc.kilo.sql.Conditionals.exists;
 import static org.httprpc.kilo.sql.Conditionals.in;
-import static org.httprpc.kilo.sql.Conditionals.notEqualTo;
 import static org.httprpc.kilo.sql.Conditionals.notExists;
 import static org.httprpc.kilo.sql.Conditionals.notIn;
 import static org.httprpc.kilo.sql.Conditionals.or;
@@ -242,28 +240,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testEqualToConditional() {
-        var queryBuilder = QueryBuilder.select("*")
-            .from("A")
-            .where("b", equalTo(
-                QueryBuilder.select("b").from("B").where("c = :c")
-            ));
-
-        assertEquals("select * from A where b = (select b from B where c = ?)", queryBuilder.getSQL());
-    }
-
-    @Test
-    public void testNotEqualToConditional() {
-        var queryBuilder = QueryBuilder.select("*")
-            .from("A")
-            .where("b", notEqualTo(
-                QueryBuilder.select("b").from("B").where("c = :c")
-            ));
-
-        assertEquals("select * from A where b != (select b from B where c = ?)", queryBuilder.getSQL());
-    }
-
-    @Test
     public void testInConditional() {
         var queryBuilder = QueryBuilder.select("*")
             .from("B")
@@ -276,7 +252,8 @@ public class QueryBuilderTest {
 
     @Test
     public void testNotInConditional() {
-        var queryBuilder = QueryBuilder.select("*").from("D").where("e", notIn(
+        var queryBuilder = QueryBuilder.select("*").from("D")
+            .where("e", notIn(
                 QueryBuilder.select("e").from("E")
             ));
 
@@ -296,9 +273,10 @@ public class QueryBuilderTest {
 
     @Test
     public void testNotExistsConditional() {
-        var queryBuilder = QueryBuilder.select("*").from("D").where("e", notExists(
-            QueryBuilder.select("e").from("E")
-        ));
+        var queryBuilder = QueryBuilder.select("*").from("D")
+            .where("e", notExists(
+                QueryBuilder.select("e").from("E")
+            ));
 
         assertEquals("select * from D where e not exists (select e from E)", queryBuilder.getSQL());
     }

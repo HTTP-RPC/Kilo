@@ -1007,23 +1007,15 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. This approach is well-suited to serializing large amounts of data, as it does not require any intermediate buffering and has low latency:
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be serialized to JSON or CSV, or used as the data dictionary for a template document:
 
 ```java
-var jsonEncoder = new JSONEncoder();
+var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
 
-jsonEncoder.write(results, response.getOutputStream());
+templateEncoder.write(results, response.getOutputStream());
 ```
 
-However, for smaller data sets, the following more concise alternative can be used:
-
-```java
-var results = queryBuilder.execute(getConnection(), mapOf(
-    entry("owner", owner)
-)).getResults();
-```
-
-The results could then be mapped to a list of `Pet` instances and returned from a service method as follows:
+Alternatively, they could be mapped to a list of `Pet` instances and returned to the caller:
 
 ```java
 public interface Pet {
@@ -1037,7 +1029,7 @@ public interface Pet {
 ```
 
 ```java
-return BeanAdapter.coerce(results, List.class, Pet.class);
+return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
@@ -1188,8 +1180,10 @@ var queryBuilder = QueryBuilder.select(
 This code could be used to transform the results to a list of `Employee` instances:
 
 ```java
-try (var connection = getConnection()) {
-    return BeanAdapter.coerce(queryBuilder.execute(connection).getResults(), List.class, Employee.class);
+try (var connection = getConnection();
+    var statement = queryBuilder.prepare(connection);
+    var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+    return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
 }
 ```
 
@@ -1201,9 +1195,8 @@ var pipe = new Pipe<Employee>(4096, 15000);
 executorService.submit(() -> {
     try (var connection = getConnection();
         var statement = queryBuilder.prepare(connection);
-        var resultSet = queryBuilder.executeQuery(statement, mapOf());
-        var resultSetAdapter = new ResultSetAdapter(resultSet)) {
-        pipe.accept(resultSetAdapter.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+        var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+        pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }
