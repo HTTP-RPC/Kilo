@@ -61,25 +61,25 @@ public class ExamplesTest {
             entry("b", 2)
         ));
 
-        System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
+        System.out.println(webServiceProxy.invoke()); // 6.0
 
         // GET /math/sum?values=1&values=2&values=3
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         ));
 
-        System.out.println(webServiceProxy.invoke(Double.class)); // 6.0
+        System.out.println(webServiceProxy.invoke()); // 6.0
 
         // GET /math/sum?a=2&b=4
         System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
-        )).invoke(Double.class)); // 6.0
+        )).invoke()); // 6.0
 
         // GET /math/sum?values=1&values=2&values=3
         System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
-        )).invoke(Double.class)); // 6.0
+        )).invoke()); // 6.0
     }
 
     @Test

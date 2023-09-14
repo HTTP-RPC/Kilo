@@ -550,27 +550,18 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public Object invoke() throws IOException {
-        return invoke(Object.class);
+        return invoke((inputStream, contentType) -> {
+            var jsonDecoder = new JSONDecoder();
+
+            return jsonDecoder.read(inputStream);
+        });
     }
 
     /**
-     * Invokes the service operation.
-     *
-     * @param <T>
-     * The result type.
-     *
-     * @param rawType
-     * The raw result type.
-     *
-     * @param actualTypeArguments
-     * The actual result type arguments.
-     *
-     * @return
-     * The result of the operation.
-     *
-     * @throws IOException
-     * If an exception occurs while executing the operation.
+     * @deprecated
+     * Use {@link #invoke()} or {@link #invoke(ResponseHandler)} instead.
      */
+    @Deprecated
     public <T> T invoke(Class<T> rawType, Type... actualTypeArguments) throws IOException {
         return invoke((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();

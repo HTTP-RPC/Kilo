@@ -142,7 +142,7 @@ public class WebServiceProxyTest {
             )
         ).setMonitorStream(System.out).invoke();
 
-        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), BeanAdapter.coerce(result, List.class, Integer.class));
+        assertEquals(listOf(0, 1, 1, 2, 3, 5, 8, 13), result);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class WebServiceProxyTest {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        var response = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
+        var result = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -201,9 +201,9 @@ public class WebServiceProxyTest {
             entry("period", period),
             entry("uuid", uuid),
             entry("attachments", listOf(textTestURL, imageTestURL))
-        )).invoke(TestService.Response.class);
+        )).invoke();
 
-        assertNotNull(response);
+        var response = BeanAdapter.coerce(result, TestService.Response.class);
 
         assertTrue(response.getString().equals("héllo&gøod+bye?")
             && response.getStrings().equals(listOf("a", "b", "c"))
@@ -230,7 +230,7 @@ public class WebServiceProxyTest {
 
         var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke();
 
-        assertEquals(BeanAdapter.coerce(body, List.class, String.class), result);
+        assertEquals(BeanAdapter.coerceList(body, String.class), result);
     }
 
     @Test
@@ -276,9 +276,9 @@ public class WebServiceProxyTest {
             entry("flag", true)
         ), TestService.Body.class);
 
-        var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        var result = BeanAdapter.coerce(WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        )).setBody(body).setMonitorStream(System.out).invoke(TestService.Body.class);
+        )).setBody(body).setMonitorStream(System.out).invoke(), TestService.Body.class);
 
         assertEquals(body, result);
     }
@@ -299,7 +299,7 @@ public class WebServiceProxyTest {
         var result = WebServiceProxy.post(baseURL, "test/coordinates")
             .setBody(coordinates)
             .setMonitorStream(System.out)
-            .invoke(List.class, Object.class);
+            .invoke();
 
         assertEquals(coordinates, result);
     }
@@ -466,7 +466,7 @@ public class WebServiceProxyTest {
         try {
             WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
                 entry("id", 101)
-            )).setBody(mapOf()).setMonitorStream(System.out).invoke(TestService.Body.class);
+            )).setBody(mapOf()).setMonitorStream(System.out).invoke();
 
             fail();
         } catch (WebServiceException exception) {
@@ -509,16 +509,18 @@ public class WebServiceProxyTest {
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
-        )).setMonitorStream(System.out).invoke(Double.class));
+        )).setMonitorStream(System.out).invoke());
 
         assertEquals(6.0, WebServiceProxy.get(baseURL, "test/math/sum").setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
-        )).setMonitorStream(System.out).invoke(Double.class));
+        )).setMonitorStream(System.out).invoke());
     }
 
     @Test
     public void testMathPost() throws IOException {
-        assertEquals(6.0, WebServiceProxy.post(baseURL, "math/sum").setBody(listOf(1, 2, 3)).setMonitorStream(System.out).invoke(Double.class));
+        assertEquals(6.0, WebServiceProxy.post(baseURL, "math/sum")
+            .setBody(listOf(1, 2, 3))
+            .setMonitorStream(System.out).invoke());
     }
 
     @Test
@@ -526,21 +528,21 @@ public class WebServiceProxyTest {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        assertEquals(26L, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
+        assertEquals(26, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
             entry("file", textTestURL)
-        )).invoke(Long.class));
+        )).invoke());
 
-        assertEquals(10418L, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
+        assertEquals(10418, WebServiceProxy.post(baseURL, "upload").setArguments(mapOf(
             entry("files", listOf(textTestURL, imageTestURL))
-        )).invoke(Long.class));
+        )).invoke());
     }
 
     @Test
     public void testCatalog() throws IOException {
-        var item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
+        var item = BeanAdapter.coerce(WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
             entry("description", "abc"),
             entry("price", 150.00)
-        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(Item.class);
+        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(), Item.class);
 
         assertNotNull(item);
         assertNotNull(item.getID());
@@ -563,14 +565,12 @@ public class WebServiceProxyTest {
         assertEquals(Arrays.asList(Size.values()), getCatalogSizes());
     }
 
-    @SuppressWarnings("unchecked")
     private List<Item> getCatalogItems() throws IOException {
-        return WebServiceProxy.get(baseURL, "catalog/items").invoke(List.class, Item.class);
+        return BeanAdapter.coerceList((List<?>)WebServiceProxy.get(baseURL, "catalog/items").invoke(), Item.class);
     }
 
-    @SuppressWarnings("unchecked")
     private List<Size> getCatalogSizes() throws IOException {
-        return WebServiceProxy.get(baseURL, "catalog/sizes").invoke(List.class, Size.class);
+        return BeanAdapter.coerceList((List<?>)WebServiceProxy.get(baseURL, "catalog/sizes").invoke(), Size.class);
     }
 
     @Test
@@ -580,7 +580,7 @@ public class WebServiceProxyTest {
         testPetsCSV();
         testPetsHTML();
 
-        var averageAge = WebServiceProxy.get(baseURL, "pets/average-age").invoke(Number.class);
+        var averageAge = WebServiceProxy.get(baseURL, "pets/average-age").invoke();
 
         assertNotNull(averageAge);
     }

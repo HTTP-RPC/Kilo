@@ -20,9 +20,7 @@ import static org.httprpc.kilo.sql.Conditionals.allOf;
 import static org.httprpc.kilo.sql.Conditionals.and;
 import static org.httprpc.kilo.sql.Conditionals.anyOf;
 import static org.httprpc.kilo.sql.Conditionals.exists;
-import static org.httprpc.kilo.sql.Conditionals.in;
 import static org.httprpc.kilo.sql.Conditionals.notExists;
-import static org.httprpc.kilo.sql.Conditionals.notIn;
 import static org.httprpc.kilo.sql.Conditionals.or;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -240,28 +238,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testInConditional() {
-        var queryBuilder = QueryBuilder.select("*")
-            .from("B")
-            .where("c", in(
-                QueryBuilder.select("c").from("C").where("d = :d")
-            ));
-
-        assertEquals("select * from B where c in (select c from C where d = ?)", queryBuilder.getSQL());
-    }
-
-    @Test
-    public void testNotInConditional() {
-        var queryBuilder = QueryBuilder.select("*").from("D")
-            .where("e", notIn(
-                QueryBuilder.select("e").from("E")
-            ));
-
-        assertEquals("select * from D where e not in (select e from E)", queryBuilder.getSQL());
-    }
-
-    @Test
-    public void testExistsConditional() {
+    public void testExists() {
         var queryBuilder = QueryBuilder.select("*")
             .from("B")
             .where(exists(
@@ -272,7 +249,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testNotExistsConditional() {
+    public void testNotExists() {
         var queryBuilder = QueryBuilder.select("*").from("D")
             .where("e", notExists(
                 QueryBuilder.select("e").from("E")

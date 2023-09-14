@@ -1123,7 +1123,11 @@ public abstract class WebService extends HttpServlet {
                 if (values != null) {
                     var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
-                    list = BeanAdapter.coerce(values, List.class, elementType);
+                    if (!(elementType instanceof Class<?>)) {
+                        throw new UnsupportedOperationException("Invalid element type.");
+                    }
+
+                    list = BeanAdapter.coerceList(values, (Class<?>)elementType);
                 } else {
                     list = listOf();
                 }
@@ -1307,7 +1311,11 @@ public abstract class WebService extends HttpServlet {
         var body = jsonDecoder.read(request.getInputStream());
 
         if (multiple) {
-            return BeanAdapter.coerce(body, List.class, type);
+            if (!(body instanceof List<?> list)) {
+                throw new UnsupportedOperationException("Body is not a list.");
+            }
+
+            return BeanAdapter.coerceList(list, type);
         } else {
             return BeanAdapter.coerce(body, type);
         }

@@ -242,6 +242,9 @@ public class BeanAdapterTest {
         ), Integer.class));
 
         assertNull(BeanAdapter.coerceList(null, Object.class));
+
+        assertTrue(BeanAdapter.coerce(listOf(), List.class) instanceof List);
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, List.class));
     }
 
     @Test
@@ -267,6 +270,9 @@ public class BeanAdapterTest {
         ), Double.class));
 
         assertNull(BeanAdapter.coerceMap(null, Object.class));
+
+        assertTrue(BeanAdapter.coerce(mapOf(), Map.class) instanceof Map);
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Map.class));
     }
 
     @Test

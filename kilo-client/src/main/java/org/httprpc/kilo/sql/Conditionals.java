@@ -136,7 +136,7 @@ public class Conditionals {
 
     /**
      * @deprecated
-     * Use {@link #in(QueryBuilder)} or {@link #exists(QueryBuilder)} instead.
+     * Use {@link #exists(QueryBuilder)} instead.
      */
     @Deprecated
     public static String equalTo(QueryBuilder queryBuilder) {
@@ -149,8 +149,7 @@ public class Conditionals {
 
     /**
      * @deprecated
-     * Use {@link #notIn(QueryBuilder)} or {@link #notExists(QueryBuilder)}
-     * instead.
+     * Use {@link #exists(QueryBuilder)} instead.
      */
     @Deprecated
     public static String notEqualTo(QueryBuilder queryBuilder) {
@@ -162,14 +161,10 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "in" conditional.
-     *
-     * @param queryBuilder
-     * The conditional's subquery.
-     *
-     * @return
-     * The conditional text.
+     * @deprecated
+     * Use {@link #exists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String in(QueryBuilder queryBuilder) {
         if (queryBuilder == null) {
             throw new IllegalArgumentException();
@@ -179,14 +174,10 @@ public class Conditionals {
     }
 
     /**
-     * Creates a "not in" conditional.
-     *
-     * @param queryBuilder
-     * The conditional's subquery.
-     *
-     * @return
-     * The conditional text.
+     * @deprecated
+     * Use {@link #exists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String notIn(QueryBuilder queryBuilder) {
         if (queryBuilder == null) {
             throw new IllegalArgumentException();
