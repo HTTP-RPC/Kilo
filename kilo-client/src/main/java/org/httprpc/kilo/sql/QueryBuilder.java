@@ -971,21 +971,19 @@ public class QueryBuilder {
 
         var updateCount = statement.executeUpdate();
 
-        if (updateCount > 0) {
-            try (var generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    var generatedKeysMetaData = generatedKeys.getMetaData();
+        try (var generatedKeys = statement.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                var generatedKeysMetaData = generatedKeys.getMetaData();
 
-                    var n = generatedKeysMetaData.getColumnCount();
+                var n = generatedKeysMetaData.getColumnCount();
 
-                    this.generatedKeys = new ArrayList<>(n);
+                this.generatedKeys = new ArrayList<>(n);
 
-                    for (var i = 0; i < n; i++) {
-                        this.generatedKeys.add(generatedKeys.getObject(i + 1));
-                    }
-                } else {
-                    this.generatedKeys = null;
+                for (var i = 0; i < n; i++) {
+                    this.generatedKeys.add(generatedKeys.getObject(i + 1));
                 }
+            } else {
+                this.generatedKeys = null;
             }
         }
 
