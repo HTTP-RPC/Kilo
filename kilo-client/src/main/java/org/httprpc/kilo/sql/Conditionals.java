@@ -135,14 +135,6 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "equal to" conditional.
-     *
-     * @param queryBuilder
-     * The conditional's subquery.
-     *
-     * @return
-     * The conditional text.
-     *
      * @deprecated
      * Use {@link #in(QueryBuilder)} or {@link #exists(QueryBuilder)} instead.
      */
@@ -156,14 +148,6 @@ public class Conditionals {
     }
 
     /**
-     * Creates a "not equal to" conditional.
-     *
-     * @param queryBuilder
-     * The conditional's subquery.
-     *
-     * @return
-     * The conditional text.
-     *
      * @deprecated
      * Use {@link #notIn(QueryBuilder)} or {@link #notExists(QueryBuilder)}
      * instead.

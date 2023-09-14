@@ -773,17 +773,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Executes a query.
-     *
-     * @param connection
-     * The connection on which the query will be executed.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     *
-     * @throws SQLException
-     * If an error occurs while executing the query.
-     *
      * @deprecated
      * Use {@link #executeQuery(PreparedStatement)} or
      * {@link #executeUpdate(PreparedStatement)} instead.
@@ -794,20 +783,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Executes a query.
-     *
-     * @param connection
-     * The connection on which the query will be executed.
-     *
-     * @param arguments
-     * The query arguments.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     *
-     * @throws SQLException
-     * If an error occurs while executing the query.
-     *
      * @deprecated
      * Use {@link #executeQuery(PreparedStatement, Map)} or
      * {@link #executeUpdate(PreparedStatement, Map)} instead.
@@ -850,13 +825,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the result of executing a query that is expected to return at
-     * most a single row.
-     *
-     * @return
-     * The query result, or {@code null} if the query either did not produce a
-     * result set or did not return any rows.
-     *
      * @deprecated
      * Use {@link #executeQuery(PreparedStatement, Map)} instead.
      */
@@ -874,12 +842,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the results of executing a query.
-     *
-     * @return
-     * The query results, or {@code null} if the query did not produce a result
-     * set.
-     *
      * @deprecated
      * Use {@link #executeQuery(PreparedStatement, Map)} instead.
      */
@@ -889,12 +851,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the number of rows that were affected by the query.
-     *
-     * @return
-     * The number of rows that were affected by the query, or -1 if the query
-     * did not produce an update count.
-     *
      * @deprecated
      * Use {@link #executeUpdate(PreparedStatement, Map)} instead.
      */
