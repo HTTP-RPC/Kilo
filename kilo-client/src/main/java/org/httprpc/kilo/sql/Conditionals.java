@@ -39,23 +39,6 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "and" conditional.
-     *
-     * @param predicates
-     * The conditional's predicates.
-     *
-     * @return
-     * The conditional text.
-     *
-     * @deprecated
-     * Use {@link #and(String)} or {@link #allOf(String...)} instead.
-     */
-    @Deprecated
-    public static String and(String... predicates) {
-        return conditional("and", predicates);
-    }
-
-    /**
      * Creates an "or" conditional.
      *
      * @param predicate
@@ -70,52 +53,6 @@ public class Conditionals {
         }
 
         return String.format("or %s", predicate);
-    }
-
-    /**
-     * Creates an "or" conditional.
-     *
-     * @param predicates
-     * The conditional's predicates.
-     *
-     * @return
-     * The conditional text.
-     *
-     * @deprecated
-     * Use {@link #or(String)} or {@link #anyOf(String...)} instead.
-     */
-    @Deprecated
-    public static String or(String... predicates) {
-        return conditional("or", predicates);
-    }
-
-    private static String conditional(String operator, String... predicates) {
-        if (predicates == null || predicates.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        var stringBuilder = new StringBuilder(64);
-
-        stringBuilder.append(operator);
-        stringBuilder.append(" ");
-
-        if (predicates.length > 1) {
-            stringBuilder.append("(");
-        }
-
-        for (var i = 0; i < predicates.length; i++) {
-            if (i > 0) {
-                stringBuilder.append(" ");
-            }
-
-            stringBuilder.append(predicates[i]);
-        }
-
-        if (predicates.length > 1) {
-            stringBuilder.append(")");
-        }
-
-        return stringBuilder.toString();
     }
 
     /**
@@ -174,58 +111,6 @@ public class Conditionals {
         stringBuilder.append(")");
 
         return stringBuilder.toString();
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #exists(QueryBuilder)} instead.
-     */
-    @Deprecated
-    public static String equalTo(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("= (%s)", queryBuilder);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #exists(QueryBuilder)} instead.
-     */
-    @Deprecated
-    public static String notEqualTo(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("!= (%s)", queryBuilder);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #exists(QueryBuilder)} instead.
-     */
-    @Deprecated
-    public static String in(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("in (%s)", queryBuilder);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #exists(QueryBuilder)} instead.
-     */
-    @Deprecated
-    public static String notIn(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return String.format("not in (%s)", queryBuilder);
     }
 
     /**

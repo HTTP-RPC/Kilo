@@ -596,17 +596,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * @deprecated
-     * Use {@link #coerce(Object, Class)}, {@link #coerceList(List, Class)}, or
-     * {@link #coerceMap(Map, Class)} instead.
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public static <T> T coerce(Object value, Class<T> rawType, Type... actualTypeArguments) {
-        return (T)toGenericType(value, typeOf(rawType, actualTypeArguments));
-    }
-
-    /**
      * <p>Coerces a value to a given type. For unparamterized types, if the
      * value is already an instance of the requested type, it is returned as
      * is. Otherwise, if the requested type is one of the following, the return

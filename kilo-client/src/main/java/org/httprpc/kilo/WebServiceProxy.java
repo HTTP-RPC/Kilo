@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -554,19 +553,6 @@ public class WebServiceProxy {
             var jsonDecoder = new JSONDecoder();
 
             return jsonDecoder.read(inputStream);
-        });
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #invoke()} or {@link #invoke(ResponseHandler)} instead.
-     */
-    @Deprecated
-    public <T> T invoke(Class<T> rawType, Type... actualTypeArguments) throws IOException {
-        return invoke((inputStream, contentType) -> {
-            var jsonDecoder = new JSONDecoder();
-
-            return BeanAdapter.coerce(jsonDecoder.read(inputStream), rawType, actualTypeArguments);
         });
     }
 

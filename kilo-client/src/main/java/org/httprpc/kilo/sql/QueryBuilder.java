@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -40,8 +39,6 @@ public class QueryBuilder {
 
     private List<String> parameters = new LinkedList<>();
 
-    private List<Map<String, Object>> results = null;
-    private int updateCount = -1;
     private List<Object> generatedKeys = null;
 
     private static final int CAPACITY = 1024;
@@ -770,93 +767,6 @@ public class QueryBuilder {
         } else {
             sqlBuilder.append(value);
         }
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #executeQuery(PreparedStatement)} or
-     * {@link #executeUpdate(PreparedStatement)} instead.
-     */
-    @Deprecated
-    public QueryBuilder execute(Connection connection) throws SQLException {
-        return execute(connection, mapOf());
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #executeQuery(PreparedStatement, Map)} or
-     * {@link #executeUpdate(PreparedStatement, Map)} instead.
-     */
-    @Deprecated
-    public QueryBuilder execute(Connection connection, Map<String, ?> arguments) throws SQLException {
-        if (connection == null || arguments == null) {
-            throw new IllegalArgumentException();
-        }
-
-        try (var statement = prepare(connection)) {
-            apply(statement, arguments);
-
-            if (statement.execute()) {
-                try (var resultSetAdapter = new ResultSetAdapter(statement.getResultSet())) {
-                    results = resultSetAdapter.stream().collect(Collectors.toCollection(ArrayList::new));
-                }
-            } else {
-                updateCount = statement.getUpdateCount();
-
-                try (var generatedKeys = statement.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        var generatedKeysMetaData = generatedKeys.getMetaData();
-
-                        var n = generatedKeysMetaData.getColumnCount();
-
-                        this.generatedKeys = new ArrayList<>(n);
-
-                        for (var i = 0; i < n; i++) {
-                            this.generatedKeys.add(generatedKeys.getObject(i + 1));
-                        }
-                    } else {
-                        this.generatedKeys = null;
-                    }
-                }
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #executeQuery(PreparedStatement, Map)} instead.
-     */
-    @Deprecated
-    public Map<String, Object> getResult() {
-        if (results == null) {
-            return null;
-        }
-
-        return switch (results.size()) {
-            case 0 -> null;
-            case 1 -> results.get(0);
-            default -> throw new IllegalStateException("Unexpected result count.");
-        };
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #executeQuery(PreparedStatement, Map)} instead.
-     */
-    @Deprecated
-    public List<Map<String, Object>> getResults() {
-        return results;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #executeUpdate(PreparedStatement, Map)} instead.
-     */
-    @Deprecated
-    public int getUpdateCount() {
-        return updateCount;
     }
 
     /**
