@@ -36,7 +36,7 @@ public class QueryBuilderTest {
             .join("B").on("A.id = B.id", and("x = 50"))
             .leftJoin("C").on("B.id = C.id", and("b = :b"))
             .rightJoin("D").on("C.id = D.id", and("c = :c"))
-            .where("a > 10", or("b < 200", and("d != ?")))
+            .where("a > 10", or(allOf("b < 200", "d != ?")))
             .orderBy("a", "b")
             .limit(10)
             .forUpdate()
@@ -298,7 +298,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testToString() {
-        var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a", and("bar = :b", or("bar = :c")));
+        var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a", and(anyOf("bar = :b", "bar = :c")));
 
         assertEquals("select * from xyz where foo = :a and (bar = :b or bar = :c)", queryBuilder.toString());
     }

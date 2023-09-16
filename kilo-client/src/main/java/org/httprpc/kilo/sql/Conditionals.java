@@ -24,14 +24,52 @@ public class Conditionals {
     /**
      * Creates an "and" conditional.
      *
+     * @param predicate
+     * The conditional's predicate.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String and(String predicate) {
+        if (predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("and %s", predicate);
+    }
+
+    /**
+     * Creates an "and" conditional.
+     *
      * @param predicates
      * The conditional's predicates.
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link #and(String)} or {@link #allOf(String...)} instead.
      */
+    @Deprecated
     public static String and(String... predicates) {
         return conditional("and", predicates);
+    }
+
+    /**
+     * Creates an "or" conditional.
+     *
+     * @param predicate
+     * The conditional's predicate.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String or(String predicate) {
+        if (predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("or %s", predicate);
     }
 
     /**
@@ -42,7 +80,11 @@ public class Conditionals {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link #or(String)} or {@link #anyOf(String...)} instead.
      */
+    @Deprecated
     public static String or(String... predicates) {
         return conditional("or", predicates);
     }
@@ -90,7 +132,7 @@ public class Conditionals {
             throw new IllegalArgumentException();
         }
 
-        return conditionalGroup("and", predicates);
+        return group("and", predicates);
     }
 
     /**
@@ -107,10 +149,10 @@ public class Conditionals {
             throw new IllegalArgumentException();
         }
 
-        return conditionalGroup("or", predicates);
+        return group("or", predicates);
     }
 
-    private static String conditionalGroup(String operator, String... predicates) {
+    private static String group(String operator, String... predicates) {
         if (predicates == null || predicates.length == 0) {
             throw new IllegalArgumentException();
         }
