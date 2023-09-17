@@ -298,6 +298,52 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "where exists" clause to a query.
+     *
+     * @param queryBuilder
+     * The "exists" subquery.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder whereExists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" where exists (");
+        sqlBuilder.append(queryBuilder.getSQL());
+        sqlBuilder.append(")");
+
+        parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
+     * Appends a "where not exists" clause to a query.
+     *
+     * @param queryBuilder
+     * The "not exists" subquery.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder whereNotExists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" where not exists (");
+        sqlBuilder.append(queryBuilder.getSQL());
+        sqlBuilder.append(")");
+
+        parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
      * Appends a "group by" clause to a query.
      *
      * @param columns
