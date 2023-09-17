@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 import static org.httprpc.kilo.sql.Conditionals.allOf;
 import static org.httprpc.kilo.sql.Conditionals.and;
 import static org.httprpc.kilo.sql.Conditionals.anyOf;
-import static org.httprpc.kilo.sql.Conditionals.exists;
-import static org.httprpc.kilo.sql.Conditionals.notExists;
 import static org.httprpc.kilo.sql.Conditionals.or;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -238,24 +236,24 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testExists() {
+    public void testWhereExists() {
         var queryBuilder = QueryBuilder.select("*")
             .from("B")
-            .where(exists(
+            .whereExists(
                 QueryBuilder.select("c").from("C").where("d = :d")
-            ));
+            );
 
         assertEquals("select * from B where exists (select c from C where d = ?)", queryBuilder.getSQL());
     }
 
     @Test
-    public void testNotExists() {
+    public void testWhereNotExists() {
         var queryBuilder = QueryBuilder.select("*").from("D")
-            .where("e", notExists(
+            .whereNotExists(
                 QueryBuilder.select("e").from("E")
-            ));
+            );
 
-        assertEquals("select * from D where e not exists (select e from E)", queryBuilder.getSQL());
+        assertEquals("select * from D where not exists (select e from E)", queryBuilder.getSQL());
     }
 
     @Test

@@ -155,7 +155,11 @@ public class Conditionals {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link QueryBuilder#whereExists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String exists(QueryBuilder queryBuilder) {
         if (queryBuilder == null) {
             throw new IllegalArgumentException();
@@ -172,7 +176,11 @@ public class Conditionals {
      *
      * @return
      * The conditional text.
+     *
+     * @deprecated
+     * Use {@link QueryBuilder#whereNotExists(QueryBuilder)} instead.
      */
+    @Deprecated
     public static String notExists(QueryBuilder queryBuilder) {
         if (queryBuilder == null) {
             throw new IllegalArgumentException();
