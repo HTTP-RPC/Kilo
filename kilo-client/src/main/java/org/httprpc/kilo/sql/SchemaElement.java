@@ -104,8 +104,8 @@ public interface SchemaElement {
      * @return
      * The conditional instance.
      */
-    default Conditional eq(String key) {
-        return new Conditional(this, Conditional.Operator.EQUAL_TO, key);
+    default String eq(String key) {
+        return String.format("%s = :%s", label(), key);
     }
 
     /**
@@ -117,7 +117,7 @@ public interface SchemaElement {
      * @return
      * The conditional instance.
      */
-    default Conditional ne(String key) {
-        return new Conditional(this, Conditional.Operator.NOT_EQUAL_TO, key);
+    default String ne(String key) {
+        return String.format("%s != :%s", label(), key);
     }
 }

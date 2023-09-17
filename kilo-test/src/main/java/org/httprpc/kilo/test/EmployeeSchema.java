@@ -31,5 +31,5 @@ public enum EmployeeSchema implements SchemaElement {
     @Column("birth_date")
     BIRTH_DATE,
     @Column("hire_date")
-    HIRE_DATE;
+    HIRE_DATE
 }
