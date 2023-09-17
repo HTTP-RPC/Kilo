@@ -306,7 +306,7 @@ public class MathService extends WebService {
 }
 ```
 
-Descriptions can also be associated with bean types, enumerations, and records:
+Descriptions can also be associated with bean types, enumerated types, and records:
 
 ```java
 @Description("Represents an item in the catalog.")

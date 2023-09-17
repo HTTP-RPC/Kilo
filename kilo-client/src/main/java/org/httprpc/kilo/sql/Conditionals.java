@@ -39,6 +39,23 @@ public class Conditionals {
     }
 
     /**
+     * Creates an "and" conditional.
+     *
+     * @param predicate
+     * The conditional's predicate.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String and(Conditional predicate) {
+        if (predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("and %s", predicate);
+    }
+
+    /**
      * Creates an "or" conditional.
      *
      * @param predicate
@@ -48,6 +65,23 @@ public class Conditionals {
      * The conditional text.
      */
     public static String or(String predicate) {
+        if (predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return String.format("or %s", predicate);
+    }
+
+    /**
+     * Creates an "or" conditional.
+     *
+     * @param predicate
+     * The conditional's predicate.
+     *
+     * @return
+     * The conditional text.
+     */
+    public static String or(Conditional predicate) {
         if (predicate == null) {
             throw new IllegalArgumentException();
         }
