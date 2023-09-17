@@ -15,20 +15,11 @@
 package org.httprpc.kilo.sql;
 
 /**
- * Represents a conditional operation.
- *
- * @param schemaElement
- * The schema element to which the left-hand side of the operation applies.
- *
- * @param operator
- * The operator.
- *
- * @param key
- * The key of the value to which the right-hand side of the operation applies.
+ * Represents a conditional expression.
  */
-public record Conditional(SchemaElement schemaElement, Operator operator, String key) {
+public class Conditional {
     /**
-     * Represents a conditional operator.
+     * Conditional operators.
      */
     public enum Operator {
         /**
@@ -53,13 +44,30 @@ public record Conditional(SchemaElement schemaElement, Operator operator, String
         }
     }
 
+    private SchemaElement schemaElement;
+    private Operator operator;
+    private String key;
+
     /**
      * Constructs a new conditional.
+     *
+     * @param schemaElement
+     * The schema element representing the left-hand side of the expression.
+     *
+     * @param operator
+     * The conditional operator.
+     *
+     * @param key
+     * The key of the value representing the right-hand side of the expression.
      */
-    public Conditional {
+    protected Conditional(SchemaElement schemaElement, Operator operator, String key) {
         if (schemaElement == null || operator == null || key == null) {
             throw new IllegalArgumentException();
         }
+
+        this.schemaElement = schemaElement;
+        this.operator = operator;
+        this.key = key;
     }
 
     /**
