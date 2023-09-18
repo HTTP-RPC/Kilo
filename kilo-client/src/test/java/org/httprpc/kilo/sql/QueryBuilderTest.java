@@ -50,7 +50,7 @@ public class QueryBuilderTest {
             + "order by a, b "
             + "limit 10 "
             + "for update "
-            + "union select a, b, c, d from C where c = ?", queryBuilder.getSQL());
+            + "union select a, b, c, d from C where c = ?", queryBuilder.toString());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("d"), queryBuilder.getParameters());
 
-        assertEquals("select * from (select a, b, c from A) a where d = ?", queryBuilder.getSQL());
+        assertEquals("select * from (select a, b, c from A) a where d = ?", queryBuilder.toString());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("c", "d"), queryBuilder.getParameters());
 
-        assertEquals("select * from A join (select c, d from C) c on c = ? where d = ?", queryBuilder.getSQL());
+        assertEquals("select * from A join (select c, d from C) c on c = ? where d = ?", queryBuilder.toString());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("e"), queryBuilder.getParameters());
 
-        assertEquals("select a, avg(b) as c from A group by b having d > 10 and e like ?", queryBuilder.getSQL());
+        assertEquals("select a, avg(b) as c from A group by b having d > 10 and e like ?", queryBuilder.toString());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("d", null, "g"), queryBuilder.getParameters());
 
-        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", queryBuilder.getSQL());
+        assertEquals("insert into A (a, b, c, d, e, f) values (1, true, 'hello', ?, ?, (select f from F where g = ?))", queryBuilder.toString());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("a", "b"), queryBuilder.getParameters());
 
-        assertEquals("insert into B (c, d) select a, b from A where a = ? and b = ?", queryBuilder.getSQL());
+        assertEquals("insert into B (c, d) select a, b from A where a = ? and b = ?", queryBuilder.toString());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("c"), queryBuilder.getParameters());
 
-        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = value(b), c = value(c)", queryBuilder.getSQL());
+        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = value(b), c = value(c)", queryBuilder.toString());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("c", "d"), queryBuilder.getParameters());
 
-        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = false, c = ?", queryBuilder.getSQL());
+        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = false, c = ?", queryBuilder.toString());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("d", null, "g"), queryBuilder.getParameters());
 
-        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", queryBuilder.getSQL());
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", queryBuilder.toString());
     }
 
     @Test
@@ -164,14 +164,14 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("a", "d"), queryBuilder.getParameters());
 
-        assertEquals("update xyz set foo = ? + b where c = ?", queryBuilder.getSQL());
+        assertEquals("update xyz set foo = ? + b where c = ?", queryBuilder.toString());
     }
 
     @Test
     public void testDeleteFrom() {
         var queryBuilder = QueryBuilder.deleteFrom("A").where("a < 150");
 
-        assertEquals("delete from A where a < 150", queryBuilder.getSQL());
+        assertEquals("delete from A where a < 150", queryBuilder.toString());
     }
 
     @Test
@@ -188,18 +188,19 @@ public class QueryBuilderTest {
         assertEquals("with cte1 as (select a, ? as b from table1), "
             + "cte2 as (select c, ? as d from table2) "
             + "select b, d from cte1 join cte2 "
-            + "where cte1.a = cte2.c", queryBuilder.getSQL());
+            + "where cte1.a = cte2.c", queryBuilder.toString());
     }
 
     @Test
     public void testAppend() {
-        var queryBuilder = new QueryBuilder("select a, 'b''c:d' as b");
+        var queryBuilder = new QueryBuilder();
 
+        queryBuilder.append("select a, 'b''c:d' as b");
         queryBuilder.append(" from foo where bar = :x");
 
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
-        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.getSQL());
+        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.toString());
     }
 
     @Test
@@ -212,7 +213,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("b", "c"), queryBuilder.getParameters());
 
-        assertEquals("insert into A (a, b, c) values (1, coalesce(?, 0), coalesce(?, c))", queryBuilder.getSQL());
+        assertEquals("insert into A (a, b, c) values (1, coalesce(?, 0), coalesce(?, c))", queryBuilder.toString());
     }
 
     @Test
@@ -225,14 +226,14 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("b", "c"), queryBuilder.getParameters());
 
-        assertEquals("update A set a = 1, b = coalesce(?, 0), c = coalesce(?, c)", queryBuilder.getSQL());
+        assertEquals("update A set a = 1, b = coalesce(?, 0), c = coalesce(?, c)", queryBuilder.toString());
     }
 
     @Test
     public void testConditionalGroups() {
         var queryBuilder = QueryBuilder.select("*").from("xyz").where(allOf("a = 1", "b = 2", "c = 3"), and(anyOf("d = 4", "e = 5")));
 
-        assertEquals("select * from xyz where (a = 1 and b = 2 and c = 3) and (d = 4 or e = 5)", queryBuilder.getSQL());
+        assertEquals("select * from xyz where (a = 1 and b = 2 and c = 3) and (d = 4 or e = 5)", queryBuilder.toString());
     }
 
     @Test
@@ -243,7 +244,7 @@ public class QueryBuilderTest {
                 QueryBuilder.select("c").from("C").where("d = :d")
             );
 
-        assertEquals("select * from B where exists (select c from C where d = ?)", queryBuilder.getSQL());
+        assertEquals("select * from B where exists (select c from C where d = ?)", queryBuilder.toString());
     }
 
     @Test
@@ -253,21 +254,21 @@ public class QueryBuilderTest {
                 QueryBuilder.select("e").from("E")
             );
 
-        assertEquals("select * from D where not exists (select e from E)", queryBuilder.getSQL());
+        assertEquals("select * from D where not exists (select e from E)", queryBuilder.toString());
     }
 
     @Test
     public void testQuotedColon() {
         var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = 'a:b:c'");
 
-        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.getSQL());
+        assertEquals("select * from xyz where foo = 'a:b:c'", queryBuilder.toString());
     }
 
     @Test
     public void testQuotedQuestionMark() {
         var queryBuilder = QueryBuilder.select("'?' as q").from("xyz");
 
-        assertEquals("select '?' as q from xyz", queryBuilder.getSQL());
+        assertEquals("select '?' as q from xyz", queryBuilder.toString());
     }
 
     @Test
@@ -279,7 +280,7 @@ public class QueryBuilderTest {
     public void testEscapedQuotes() {
         var queryBuilder = QueryBuilder.select("xyz.*", "''':z' as z").from("xyz").where("foo = 'a''b'':c'''", and("bar = ''''"));
 
-        assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.getSQL());
+        assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.toString());
     }
 
     @Test
@@ -292,12 +293,5 @@ public class QueryBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto("xyz").values(mapOf(
             entry("foo", ":")
         )));
-    }
-
-    @Test
-    public void testToString() {
-        var queryBuilder = QueryBuilder.select("*").from("xyz").where("foo = :a", and(anyOf("bar = :b", "bar = :c")));
-
-        assertEquals("select * from xyz where foo = :a and (bar = :b or bar = :c)", queryBuilder.toString());
     }
 }
