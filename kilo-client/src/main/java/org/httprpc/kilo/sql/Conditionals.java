@@ -131,7 +131,7 @@ public class Conditionals {
             throw new IllegalArgumentException();
         }
 
-        return String.format("exists (%s)", queryBuilder);
+        return String.format("exists (%s)", reconstruct(queryBuilder));
     }
 
     /**
@@ -152,6 +152,33 @@ public class Conditionals {
             throw new IllegalArgumentException();
         }
 
-        return String.format("not exists (%s)", queryBuilder);
+        return String.format("not exists (%s)", reconstruct(queryBuilder));
+    }
+
+    private static String reconstruct(QueryBuilder queryBuilder) {
+        var sql = queryBuilder.toString();
+
+        var stringBuilder = new StringBuilder(sql);
+
+        var parameterIterator = queryBuilder.getParameters().iterator();
+
+        for (int i = 0, n = sql.length(); i < n; i++) {
+            var c = sql.charAt(i);
+
+            if (c == '?') {
+                var parameter = parameterIterator.next();
+
+                if (parameter == null) {
+                    stringBuilder.append(c);
+                } else {
+                    stringBuilder.append(':');
+                    stringBuilder.append(parameter);
+                }
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

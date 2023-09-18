@@ -41,20 +41,31 @@ public class QueryBuilder {
 
     private List<Object> generatedKeys = null;
 
-    private static final int CAPACITY = 1024;
+    private static final int INITIAL_CAPACITY = 1024;
+
+    /**
+     * Constructs a new query builder.
+     */
+    public QueryBuilder() {
+        sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
+    }
 
     /**
      * Constructs a query builder from an existing SQL query.
      *
      * @param sql
      * The existing SQL query.
+     *
+     * @deprecated
+     * Use {@link QueryBuilder()} and {@link #append(String)} instead.
      */
+    @Deprecated
     public QueryBuilder(String sql) {
         if (sql == null) {
             throw new IllegalArgumentException();
         }
 
-        sqlBuilder = new StringBuilder(CAPACITY);
+        sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         append(sql);
     }
@@ -77,7 +88,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder(CAPACITY);
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         sqlBuilder.append("select ");
 
@@ -484,7 +495,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder(CAPACITY);
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         sqlBuilder.append("insert into ");
         sqlBuilder.append(table);
@@ -619,7 +630,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder(CAPACITY);
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         sqlBuilder.append("update ");
         sqlBuilder.append(table);
@@ -676,7 +687,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder(CAPACITY);
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         sqlBuilder.append("delete from ");
         sqlBuilder.append(table);
@@ -698,7 +709,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var sqlBuilder = new StringBuilder(CAPACITY);
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         sqlBuilder.append("with ");
 
@@ -995,38 +1006,17 @@ public class QueryBuilder {
      *
      * @return
      * The generated SQL.
+     *
+     * @deprecated
+     * Use {@link #toString()} instead.
      */
+    @Deprecated
     public String getSQL() {
-        return sqlBuilder.toString();
+        return toString();
     }
 
-    /**
-     * Returns the query as a string.
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
-        var stringBuilder = new StringBuilder(CAPACITY);
-
-        var parameterIterator = parameters.iterator();
-
-        for (int i = 0, n = sqlBuilder.length(); i < n; i++) {
-            var c = sqlBuilder.charAt(i);
-
-            if (c == '?') {
-                var parameter = parameterIterator.next();
-
-                if (parameter == null) {
-                    stringBuilder.append(c);
-                } else {
-                    stringBuilder.append(':');
-                    stringBuilder.append(parameter);
-                }
-            } else {
-                stringBuilder.append(c);
-            }
-        }
-
-        return stringBuilder.toString();
+        return sqlBuilder.toString();
     }
 }
