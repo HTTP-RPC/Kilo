@@ -30,9 +30,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Provides a fluent API for programmatically constructing and executing SQL
- * queries. Named parameters can be declared by prepending a colon to an
- * argument name. Parameter values are provided via an argument map passed to
- * an execution method.
+ * queries.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -105,14 +103,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "select" query.
-     *
-     * @param columns
-     * The column names.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #select(SchemaElement...)} instead.
      */
+    @Deprecated
     public static QueryBuilder select(String... columns) {
         if (columns == null || columns.length == 0) {
             throw new IllegalArgumentException();
@@ -136,14 +130,48 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "from" clause to a "select" query.
+     * Creates a "select" query.
      *
-     * @param tables
-     * The table names.
+     * @param schemaElements
+     * A list of schema elements representing the columns to select.
      *
      * @return
-     * The {@link QueryBuilder} instance.
+     * The new {@link QueryBuilder} instance.
      */
+    public static QueryBuilder select(SchemaElement... schemaElements) {
+        if (schemaElements == null || schemaElements.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
+
+        sqlBuilder.append("select ");
+
+        for (var i = 0; i < schemaElements.length; i++) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            var schemaElement = schemaElements[i];
+
+            sqlBuilder.append(schemaElement.getLabel());
+
+            var alias = schemaElement.getAlias();
+
+            if (alias != null) {
+                sqlBuilder.append(" as ");
+                sqlBuilder.append(alias);
+            }
+        }
+
+        return new QueryBuilder(sqlBuilder);
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #from(Class)} instead.
+     */
+    @Deprecated
     public QueryBuilder from(String... tables) {
         if (tables == null || tables.length == 0) {
             throw new IllegalArgumentException();
@@ -151,6 +179,26 @@ public class QueryBuilder {
 
         sqlBuilder.append(" from ");
         sqlBuilder.append(String.join(", ", tables));
+
+        return this;
+    }
+
+    /**
+     * Appends a "from" clause to a "select" query.
+     *
+     * @param schemaType
+     * The schema type representing the table to select from.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder from(Class<? extends SchemaElement> schemaType) {
+        if (schemaType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" from ");
+        sqlBuilder.append(SchemaElement.getLabel(schemaType));
 
         return this;
     }
@@ -700,7 +748,8 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends arbitrary SQL text to a query.
+     * Appends arbitrary SQL text to a query. Named parameters can be declared
+     * by prepending a colon to an argument name.
      *
      * @param sql
      * The SQL text to append.

@@ -20,6 +20,10 @@ import static org.httprpc.kilo.sql.Conditionals.allOf;
 import static org.httprpc.kilo.sql.Conditionals.and;
 import static org.httprpc.kilo.sql.Conditionals.anyOf;
 import static org.httprpc.kilo.sql.Conditionals.or;
+import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.A;
+import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.B;
+import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.C;
+import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.D;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -27,9 +31,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QueryBuilderTest {
+    @Table("A")
+    public enum ASchema implements SchemaElement {
+        @Column("id")
+        ID,
+        @Column("a")
+        A,
+        @Column("b")
+        B,
+        @Column("c")
+        C,
+        @Column("d")
+        D
+    }
+
+    @Table("B")
+    public enum BSchema implements SchemaElement {
+        @Column("id")
+        ID
+    }
+
     @Test
     public void testSelect() {
-        var queryBuilder = QueryBuilder.select(":a as a", "'b' as b", "c", "d").from("A")
+        var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D).from(ASchema.class)
             .join("B").on("A.id = B.id", and("x = 50"))
             .leftJoin("C").on("B.id = C.id", and("b = :b"))
             .rightJoin("D").on("C.id = D.id", and("c = :c"))
@@ -39,9 +63,9 @@ public class QueryBuilderTest {
             .forUpdate()
             .union(QueryBuilder.select("a", "b", "c", "d").from("C").where("c = :c"));
 
-        assertEquals(listOf("a", "b", "c", null, "c"), queryBuilder.getParameters());
+        assertEquals(listOf("b", "c", null, "c"), queryBuilder.getParameters());
 
-        assertEquals("select ? as a, 'b' as b, c, d from A "
+        assertEquals("select a as x, b, c, d from A "
             + "join B on A.id = B.id and x = 50 "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "

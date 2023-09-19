@@ -43,7 +43,7 @@ public class PredicateComponent {
 
         var stringBuilder = new StringBuilder(32);
 
-        stringBuilder.append(schemaElement.label());
+        stringBuilder.append(schemaElement.getLabel());
         stringBuilder.append(" ");
 
         if (keys.length == 1) {

@@ -19,13 +19,37 @@ package org.httprpc.kilo.sql;
  */
 public interface SchemaElement {
     /**
-     * Returns the schema element's label. By default, this is the value of the
-     * {@link Column} annotation associated with the element.
+     * Returns the label for a schema type, as specified by the {@link Table}
+     * annotation.
+     *
+     * @param schemaType
+     * The schema type.
+     *
+     * @return
+     * The schema type's label.
+     */
+    static String getLabel(Class<? extends SchemaElement> schemaType) {
+        if (!Enum.class.isAssignableFrom(schemaType)) {
+            throw new UnsupportedOperationException("Schema type is not an enum.");
+        }
+
+        var table = schemaType.getAnnotation(Table.class);
+
+        if (table == null) {
+            throw new UnsupportedOperationException("Missing table annotation.");
+        }
+
+        return table.value();
+    }
+
+    /**
+     * Returns the schema element's label, as specified by the {@link Column}
+     * annotation.
      *
      * @return
      * The schema element's label.
      */
-    default String label() {
+    default String getLabel() {
         if (!(this instanceof Enum<?> schemaElement)) {
             throw new UnsupportedOperationException("Schema element is not an enum constant.");
         }
@@ -63,7 +87,7 @@ public interface SchemaElement {
      * The schema element's alias, or {@code null} if an alias has not been
      * defined.
      */
-    default String alias() {
+    default String getAlias() {
         return null;
     }
 
@@ -81,16 +105,16 @@ public interface SchemaElement {
             throw new IllegalArgumentException();
         }
 
-        var label = label();
+        var label = getLabel();
 
         return new SchemaElement() {
             @Override
-            public String label() {
+            public String getLabel() {
                 return label;
             }
 
             @Override
-            public String alias() {
+            public String getAlias() {
                 return alias;
             }
 
