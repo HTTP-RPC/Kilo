@@ -37,43 +37,48 @@ public class PredicateComponent {
      * right-hand side of the comparison.
      */
     public PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
-        if (operator == null || schemaElement == null || keys == null || keys.length == 0) {
+        if (operator == null || schemaElement == null || keys == null) {
             throw new IllegalArgumentException();
         }
 
         var stringBuilder = new StringBuilder(32);
 
-        stringBuilder.append(schemaElement.getLabel());
-        stringBuilder.append(" ");
+        var label = schemaElement.getLabel();
 
-        if (keys.length == 1) {
+        if (keys.length == 0) {
             stringBuilder.append(operator);
-            stringBuilder.append(" :");
-            stringBuilder.append(keys[0]);
+            stringBuilder.append("(");
+            stringBuilder.append(label);
+            stringBuilder.append(")");
         } else {
-            stringBuilder.append(operator);
-            stringBuilder.append(" (");
+            stringBuilder.append(label);
+            stringBuilder.append(" ");
 
-            for (var i = 0; i < keys.length; i++) {
-                if (i > 0) {
-                    stringBuilder.append(", ");
+            if (keys.length == 1) {
+                stringBuilder.append(operator);
+                stringBuilder.append(" :");
+                stringBuilder.append(keys[0]);
+            } else {
+                stringBuilder.append(operator);
+                stringBuilder.append(" (");
+
+                for (var i = 0; i < keys.length; i++) {
+                    if (i > 0) {
+                        stringBuilder.append(", ");
+                    }
+
+                    stringBuilder.append(":");
+                    stringBuilder.append(keys[i]);
                 }
 
-                stringBuilder.append(":");
-                stringBuilder.append(keys[i]);
+                stringBuilder.append(")");
             }
-
-            stringBuilder.append(")");
         }
 
         text = stringBuilder.toString();
     }
 
     private PredicateComponent(String operator, PredicateComponent... predicateComponents) {
-        if (operator == null || predicateComponents == null || predicateComponents.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
         var stringBuilder = new StringBuilder(128);
 
         if (predicateComponents.length == 1) {
@@ -110,6 +115,10 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent and(PredicateComponent predicateComponent) {
+        if (predicateComponent == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new PredicateComponent(AND, predicateComponent);
     }
 
@@ -124,6 +133,10 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent or(PredicateComponent predicateComponent) {
+        if (predicateComponent == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new PredicateComponent(OR, predicateComponent);
     }
 
@@ -137,6 +150,10 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent allOf(PredicateComponent... predicateComponents) {
+        if (predicateComponents == null || predicateComponents.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
         return new PredicateComponent(AND, predicateComponents);
     }
 
@@ -150,6 +167,10 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent anyOf(PredicateComponent... predicateComponents) {
+        if (predicateComponents == null || predicateComponents.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
         return new PredicateComponent(OR, predicateComponents);
     }
 

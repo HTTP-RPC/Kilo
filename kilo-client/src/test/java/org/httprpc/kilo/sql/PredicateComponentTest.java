@@ -82,6 +82,31 @@ public class PredicateComponentTest {
     }
 
     @Test
+    public void testCount() {
+        testPredicateComponents("count(a)", A.count());
+    }
+
+    @Test
+    public void testAvg() {
+        testPredicateComponents("avg(a)", A.avg());
+    }
+
+    @Test
+    public void testSum() {
+        testPredicateComponents("sum(a)", A.sum());
+    }
+
+    @Test
+    public void testMin() {
+        testPredicateComponents("min(a)", A.min());
+    }
+
+    @Test
+    public void testMax() {
+        testPredicateComponents("max(a)", A.max());
+    }
+
+    @Test
     public void testAlias() {
         testPredicateComponents("a = :a", A.as("x").eq("a"));
     }

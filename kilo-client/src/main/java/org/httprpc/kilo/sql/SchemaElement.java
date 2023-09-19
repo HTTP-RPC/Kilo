@@ -241,4 +241,54 @@ public interface SchemaElement {
     default PredicateComponent notIn(String... keys) {
         return new PredicateComponent(this, "not in", keys);
     }
+
+    /**
+     * Creates a "count" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent count() {
+        return new PredicateComponent(this, "count");
+    }
+
+    /**
+     * Creates an "average" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent avg() {
+        return new PredicateComponent(this, "avg");
+    }
+
+    /**
+     * Creates a "sum" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent sum() {
+        return new PredicateComponent(this, "sum");
+    }
+
+    /**
+     * Creates a "minimum" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent min() {
+        return new PredicateComponent(this, "min");
+    }
+
+    /**
+     * Creates a "maximum" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent max() {
+        return new PredicateComponent(this, "max");
+    }
 }
