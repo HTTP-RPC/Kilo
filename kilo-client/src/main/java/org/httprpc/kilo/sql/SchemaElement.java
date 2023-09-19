@@ -19,6 +19,9 @@ package org.httprpc.kilo.sql;
  */
 public interface SchemaElement {
     /**
+     * Returns the schema element's label. By default, this is the value of the
+     * {@link Column} annotation associated with the element.
+     *
      * @return
      * The schema element's label.
      */
@@ -53,6 +56,9 @@ public interface SchemaElement {
     }
 
     /**
+     * Returns the schema element's alias, as specified via the
+     * {@link #as(String)} method.
+     *
      * @return
      * The schema element's alias, or {@code null} if an alias has not been
      * defined.
@@ -96,28 +102,119 @@ public interface SchemaElement {
     }
 
     /**
-     * Creates an "equal to" conditional.
+     * Creates an "equal to" predicate component.
      *
      * @param key
      * The key of the value against which the conditional will be evaluated.
      *
      * @return
-     * The conditional instance.
+     * The predicate component.
      */
-    default String eq(String key) {
-        return String.format("%s = :%s", label(), key);
+    default PredicateComponent eq(String key) {
+        return new PredicateComponent(this, "=", key);
     }
 
     /**
-     * Creates a "not equal to" conditional.
+     * Creates a "not equal to" predicate component.
      *
      * @param key
      * The key of the value against which the conditional will be evaluated.
      *
      * @return
-     * The conditional instance.
+     * The predicate component.
      */
-    default String ne(String key) {
-        return String.format("%s != :%s", label(), key);
+    default PredicateComponent ne(String key) {
+        return new PredicateComponent(this, "!=", key);
+    }
+
+    /**
+     * Creates a "greater than" predicate component.
+     *
+     * @param key
+     * The key of the value against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent gt(String key) {
+        return new PredicateComponent(this, ">", key);
+    }
+
+    /**
+     * Creates a "greater than or equal to" predicate component.
+     *
+     * @param key
+     * The key of the value against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ge(String key) {
+        return new PredicateComponent(this, ">=", key);
+    }
+
+    /**
+     * Creates a "less than" predicate component.
+     *
+     * @param key
+     * The key of the value against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent lt(String key) {
+        return new PredicateComponent(this, "<", key);
+    }
+
+    /**
+     * Creates a "less than or equal to" predicate component.
+     *
+     * @param key
+     * The key of the value against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent le(String key) {
+        return new PredicateComponent(this, "<=", key);
+    }
+
+    /**
+     * Creates a "like" predicate component.
+     *
+     * @param key
+     * The key of the value against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent like(String key) {
+        return new PredicateComponent(this, "like", key);
+    }
+
+    /**
+     * Creates an "in" predicate component.
+     *
+     * @param keys
+     * The keys of the values against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent in(String... keys) {
+        return new PredicateComponent(this, "in", keys);
+    }
+
+    /**
+     * Creates a "not in" predicate component.
+     *
+     * @param keys
+     * The keys of the values against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent notIn(String... keys) {
+        return new PredicateComponent(this, "not in", keys);
     }
 }

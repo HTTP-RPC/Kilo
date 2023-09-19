@@ -22,14 +22,10 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "and" conditional.
-     *
-     * @param predicate
-     * The conditional's predicate.
-     *
-     * @return
-     * The conditional text.
+     * @deprecated
+     * Use {{@link PredicateComponent#and(PredicateComponent)} instead.
      */
+    @Deprecated
     public static String and(String predicate) {
         if (predicate == null) {
             throw new IllegalArgumentException();
@@ -39,14 +35,10 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "or" conditional.
-     *
-     * @param predicate
-     * The conditional's predicate.
-     *
-     * @return
-     * The conditional text.
+     * @deprecated
+     * Use {{@link PredicateComponent#or(PredicateComponent)} instead.
      */
+    @Deprecated
     public static String or(String predicate) {
         if (predicate == null) {
             throw new IllegalArgumentException();
@@ -56,14 +48,10 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "and" conditional group.
-     *
-     * @param predicates
-     * The group's predicates.
-     *
-     * @return
-     * The conditional text.
+     * @deprecated
+     * Use {{@link PredicateComponent#allOf(PredicateComponent...)} instead.
      */
+    @Deprecated
     public static String allOf(String... predicates) {
         if (predicates == null || predicates.length == 0) {
             throw new IllegalArgumentException();
@@ -73,14 +61,10 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "or" conditional group.
-     *
-     * @param predicates
-     * The group's predicates.
-     *
-     * @return
-     * The conditional text.
+     * @deprecated
+     * Use {{@link PredicateComponent#anyOf(PredicateComponent...)} instead.
      */
+    @Deprecated
     public static String anyOf(String... predicates) {
         if (predicates == null || predicates.length == 0) {
             throw new IllegalArgumentException();
