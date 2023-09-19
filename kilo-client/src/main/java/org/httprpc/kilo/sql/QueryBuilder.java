@@ -941,11 +941,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the generated SQL.
-     *
-     * @return
-     * The generated SQL.
-     *
      * @deprecated
      * Use {@link #toString()} instead.
      */
