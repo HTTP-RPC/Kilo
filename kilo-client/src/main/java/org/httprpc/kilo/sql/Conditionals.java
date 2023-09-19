@@ -114,14 +114,6 @@ public class Conditionals {
     }
 
     /**
-     * Creates an "exists" conditional.
-     *
-     * @param queryBuilder
-     * The conditional's subquery.
-     *
-     * @return
-     * The conditional text.
-     *
      * @deprecated
      * Use {@link QueryBuilder#whereExists(QueryBuilder)} instead.
      */
@@ -135,14 +127,6 @@ public class Conditionals {
     }
 
     /**
-     * Creates a "not exists" conditional.
-     *
-     * @param queryBuilder
-     * The conditional's subquery.
-     *
-     * @return
-     * The conditional text.
-     *
      * @deprecated
      * Use {@link QueryBuilder#whereNotExists(QueryBuilder)} instead.
      */
