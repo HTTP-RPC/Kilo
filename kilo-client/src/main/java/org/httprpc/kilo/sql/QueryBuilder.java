@@ -156,17 +156,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "from" clause to a "select" query.
-     *
-     * @param queryBuilder
-     * A "select" subquery.
-     *
-     * @param alias
-     * The subquery's alias.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #append(String)} instead.
      */
+    @Deprecated
     public QueryBuilder from(QueryBuilder queryBuilder, String alias) {
         if (queryBuilder == null || alias == null) {
             throw new IllegalArgumentException();
@@ -183,17 +176,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Prepends an "insert into" statement to a "select" query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @param columns
-     * The column names.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #append(String)} instead.
      */
+    @Deprecated
     public QueryBuilder into(String table, String... columns) {
         if (table == null || columns == null) {
             throw new IllegalArgumentException();
@@ -246,17 +232,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause to a query.
-     *
-     * @param queryBuilder
-     * A "select" subquery.
-     *
-     * @param alias
-     * The subquery's alias.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #append(String)} instead.
      */
+    @Deprecated
     public QueryBuilder join(QueryBuilder queryBuilder, String alias) {
         if (queryBuilder == null || alias == null) {
             throw new IllegalArgumentException();
@@ -580,14 +559,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends an "on duplicate key update" clause to a query.
-     *
-     * @param columns
-     * The columns to update.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #onDuplicateKeyUpdate(Map)} instead.
      */
+    @Deprecated
     public QueryBuilder onDuplicateKeyUpdate(String... columns) {
         if (columns == null) {
             throw new IllegalArgumentException();
@@ -729,11 +704,8 @@ public class QueryBuilder {
      *
      * @param sql
      * The SQL text to append.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder append(String sql) {
+    public void append(String sql) {
         var quoted = false;
 
         var n = sql.length();
@@ -776,8 +748,6 @@ public class QueryBuilder {
                 sqlBuilder.append(c);
             }
         }
-
-        return this;
     }
 
     private void append(QueryBuilder queryBuilder) {

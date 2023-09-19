@@ -29,12 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class QueryBuilderTest {
     @Test
     public void testSelect() {
-        var queryBuilder = QueryBuilder.select(":a as a", "'b' as b", "c", "d")
-            .from("A")
+        var queryBuilder = QueryBuilder.select(":a as a", "'b' as b", "c", "d").from("A")
             .join("B").on("A.id = B.id", and("x = 50"))
             .leftJoin("C").on("B.id = C.id", and("b = :b"))
             .rightJoin("D").on("C.id = D.id", and("c = :c"))
-            .where("a > 10", or(allOf("b < 200", "d != ?")))
+            .where("a > 10", or("b < 200"), or("d != ?"))
             .orderBy("a", "b")
             .limit(10)
             .forUpdate()
@@ -46,33 +45,11 @@ public class QueryBuilderTest {
             + "join B on A.id = B.id and x = 50 "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "
-            + "where a > 10 or (b < 200 and d != ?) "
+            + "where a > 10 or b < 200 or d != ? "
             + "order by a, b "
             + "limit 10 "
             + "for update "
             + "union select a, b, c, d from C where c = ?", queryBuilder.toString());
-    }
-
-    @Test
-    public void testSelectWithSubquery() {
-        var queryBuilder = QueryBuilder.select("*")
-            .from(QueryBuilder.select("a, b, c").from("A"), "a")
-            .where("d = :d");
-
-        assertEquals(listOf("d"), queryBuilder.getParameters());
-
-        assertEquals("select * from (select a, b, c from A) a where d = ?", queryBuilder.toString());
-    }
-
-    @Test
-    public void testSelectWithSubqueryJoin() {
-        var queryBuilder = QueryBuilder.select("*").from("A")
-            .join(QueryBuilder.select("c, d").from("C"), "c").on("c = :c")
-            .where("d = :d");
-
-        assertEquals(listOf("c", "d"), queryBuilder.getParameters());
-
-        assertEquals("select * from A join (select c, d from C) c on c = ? where d = ?", queryBuilder.toString());
     }
 
     @Test
@@ -101,31 +78,7 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testSelectInto() {
-        var queryBuilder = QueryBuilder.select("a, b").from("A")
-            .where("a = :a", and("b = :b"))
-            .into("B", "c", "d");
-
-        assertEquals(listOf("a", "b"), queryBuilder.getParameters());
-
-        assertEquals("insert into B (c, d) select a, b from A where a = ? and b = ?", queryBuilder.toString());
-    }
-
-    @Test
-    public void testOnDuplicateKeyUpdate1() {
-        var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
-            entry("a", 1),
-            entry("b", true),
-            entry("c", ":c")
-        )).onDuplicateKeyUpdate("b", "c");
-
-        assertEquals(listOf("c"), queryBuilder.getParameters());
-
-        assertEquals("insert into A (a, b, c) values (1, true, ?) on duplicate key update b = value(b), c = value(c)", queryBuilder.toString());
-    }
-
-    @Test
-    public void testOnDuplicateKeyUpdate2() {
+    public void testOnDuplicateKeyUpdate() {
         var queryBuilder = QueryBuilder.insertInto("A").values(mapOf(
             entry("a", 1),
             entry("b", true),
@@ -146,25 +99,14 @@ public class QueryBuilderTest {
             entry("a", 1),
             entry("b", true),
             entry("c", "'hello'"),
-            entry("d", ":d"),
+            entry("d", ":d + 2"),
             entry("e", "?"),
             entry("f", QueryBuilder.select("f").from("F").where("g = :g"))
         )).where("a is not null");
 
         assertEquals(listOf("d", null, "g"), queryBuilder.getParameters());
 
-        assertEquals("update A set a = 1, b = true, c = 'hello', d = ?, e = ?, f = (select f from F where g = ?) where a is not null", queryBuilder.toString());
-    }
-
-    @Test
-    public void testUpdateWithExpression() {
-        var queryBuilder = QueryBuilder.update("xyz").set(mapOf(
-            entry("foo", ":a + b")
-        )).where("c = :d");
-
-        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
-
-        assertEquals("update xyz set foo = ? + b where c = ?", queryBuilder.toString());
+        assertEquals("update A set a = 1, b = true, c = 'hello', d = ? + 2, e = ?, f = (select f from F where g = ?) where a is not null", queryBuilder.toString());
     }
 
     @Test
@@ -178,12 +120,12 @@ public class QueryBuilderTest {
     public void testAppend() {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("select a, 'b''c:d' as b");
-        queryBuilder.append(" from foo where bar = :x");
+        queryBuilder.append("select a, 'b''c:d' as b\n");
+        queryBuilder.append("from foo where bar = :x\n");
 
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
-        assertEquals("select a, 'b''c:d' as b from foo where bar = ?", queryBuilder.toString());
+        assertEquals("select a, 'b''c:d' as b\nfrom foo where bar = ?\n", queryBuilder.toString());
     }
 
     @Test
@@ -223,19 +165,16 @@ public class QueryBuilderTest {
     public void testWhereExists() {
         var queryBuilder = QueryBuilder.select("*")
             .from("B")
-            .whereExists(
-                QueryBuilder.select("c").from("C").where("d = :d")
-            );
+            .whereExists(QueryBuilder.select("c").from("C").where("d = :d"));
 
         assertEquals("select * from B where exists (select c from C where d = ?)", queryBuilder.toString());
     }
 
     @Test
     public void testWhereNotExists() {
-        var queryBuilder = QueryBuilder.select("*").from("D")
-            .whereNotExists(
-                QueryBuilder.select("e").from("E")
-            );
+        var queryBuilder = QueryBuilder.select("*")
+            .from("D")
+            .whereNotExists(QueryBuilder.select("e").from("E"));
 
         assertEquals("select * from D where not exists (select e from E)", queryBuilder.toString());
     }
