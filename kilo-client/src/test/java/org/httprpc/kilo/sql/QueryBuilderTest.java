@@ -76,7 +76,7 @@ public class QueryBuilderTest {
             .forUpdate()
             .union(QueryBuilder.select("a", "b", "c", "d").from("C").where("c = :c"));
 
-        // TODO assertEquals(listOf("a", "b", "c", null, "c"), queryBuilder.getParameters());
+        assertEquals(listOf("a", "b", "c", null, "c"), queryBuilder.getParameters());
 
         assertEquals("select a as x, b, c, d "
             + "from A "
