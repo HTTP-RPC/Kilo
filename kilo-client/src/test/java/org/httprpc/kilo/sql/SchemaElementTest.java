@@ -133,7 +133,7 @@ public class SchemaElementTest {
     }
 
     private static void testSchemaElementLabel(String expected, SchemaElement schemaElement) {
-        assertEquals(expected, schemaElement.getLabel());
+        assertEquals(expected, schemaElement.getColumnName());
     }
 
     private static void testPredicateComponents(String expected, PredicateComponent... predicateComponents) {

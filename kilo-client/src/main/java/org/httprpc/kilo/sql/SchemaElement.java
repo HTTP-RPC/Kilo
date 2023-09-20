@@ -28,7 +28,7 @@ public interface SchemaElement {
      * @return
      * The schema type's label.
      */
-    static String getLabel(Class<? extends SchemaElement> schemaType) {
+    static String getTableName(Class<? extends SchemaElement> schemaType) {
         if (!Enum.class.isAssignableFrom(schemaType)) {
             throw new UnsupportedOperationException("Schema type is not an enum.");
         }
@@ -49,7 +49,7 @@ public interface SchemaElement {
      * @return
      * The schema element's label.
      */
-    default String getLabel() {
+    default String getColumnName() {
         if (!(this instanceof Enum<?> schemaElement)) {
             throw new UnsupportedOperationException("Schema element is not an enum constant.");
         }
@@ -98,11 +98,11 @@ public interface SchemaElement {
      * A count schema element.
      */
     default SchemaElement count() {
-        var label = String.format("count(%s)", getLabel());
+        var label = String.format("count(%s)", getColumnName());
 
         return new SchemaElement() {
             @Override
-            public String getLabel() {
+            public String getColumnName() {
                 return label;
             }
         };
@@ -115,11 +115,11 @@ public interface SchemaElement {
      * A count schema element.
      */
     default SchemaElement avg() {
-        var label = String.format("avg(%s)", getLabel());
+        var label = String.format("avg(%s)", getColumnName());
 
         return new SchemaElement() {
             @Override
-            public String getLabel() {
+            public String getColumnName() {
                 return label;
             }
         };
@@ -132,11 +132,11 @@ public interface SchemaElement {
      * A count schema element.
      */
     default SchemaElement sum() {
-        var label = String.format("sum(%s)", getLabel());
+        var label = String.format("sum(%s)", getColumnName());
 
         return new SchemaElement() {
             @Override
-            public String getLabel() {
+            public String getColumnName() {
                 return label;
             }
         };
@@ -149,11 +149,11 @@ public interface SchemaElement {
      * A count schema element.
      */
     default SchemaElement min() {
-        var label = String.format("min(%s)", getLabel());
+        var label = String.format("min(%s)", getColumnName());
 
         return new SchemaElement() {
             @Override
-            public String getLabel() {
+            public String getColumnName() {
                 return label;
             }
         };
@@ -166,11 +166,11 @@ public interface SchemaElement {
      * A count schema element.
      */
     default SchemaElement max() {
-        var label = String.format("max(%s)", getLabel());
+        var label = String.format("max(%s)", getColumnName());
 
         return new SchemaElement() {
             @Override
-            public String getLabel() {
+            public String getColumnName() {
                 return label;
             }
         };
@@ -190,11 +190,11 @@ public interface SchemaElement {
             throw new IllegalArgumentException();
         }
 
-        var label = getLabel();
+        var label = getColumnName();
 
         return new SchemaElement() {
             @Override
-            public String getLabel() {
+            public String getColumnName() {
                 return label;
             }
 

@@ -154,7 +154,7 @@ public class QueryBuilder {
 
             var schemaElement = schemaElements[i];
 
-            sqlBuilder.append(schemaElement.getLabel());
+            sqlBuilder.append(schemaElement.getColumnName());
 
             var alias = schemaElement.getAlias();
 
@@ -198,7 +198,7 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" from ");
-        sqlBuilder.append(SchemaElement.getLabel(schemaType));
+        sqlBuilder.append(SchemaElement.getTableName(schemaType));
 
         return this;
     }
