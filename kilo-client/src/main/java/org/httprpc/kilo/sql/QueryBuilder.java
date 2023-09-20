@@ -260,14 +260,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause to a query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #join(Class)} instead.
      */
+    @Deprecated
     public QueryBuilder join(String table) {
         if (table == null) {
             throw new IllegalArgumentException();
@@ -277,6 +273,23 @@ public class QueryBuilder {
         sqlBuilder.append(table);
 
         return this;
+    }
+
+    /**
+     * Appends a "join" clause to a query.
+     *
+     * @param schemaType
+     * The schema type representing the table to join on.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder join(Class<? extends SchemaElement> schemaType) {
+        if (schemaType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return join(null, schemaType);
     }
 
     /**
@@ -300,14 +313,10 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "left join" clause to a query.
-     *
-     * @param table
-     * The table name.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #leftJoin(Class)} instead.
      */
+    @Deprecated
     public QueryBuilder leftJoin(String table) {
         if (table == null) {
             throw new IllegalArgumentException();
@@ -320,14 +329,27 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "right join" clause to a query.
+     * Appends a "left join" clause to a query.
      *
-     * @param table
-     * The table name.
+     * @param schemaType
+     * The schema type representing the table to join on.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
+    public QueryBuilder leftJoin(Class<? extends SchemaElement> schemaType) {
+        if (schemaType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return join("left", schemaType);
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #rightJoin(Class)} instead.
+     */
+    @Deprecated
     public QueryBuilder rightJoin(String table) {
         if (table == null) {
             throw new IllegalArgumentException();
@@ -340,16 +362,55 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends an "on" clause to a query.
+     * Appends a "right join" clause to a query.
      *
-     * @param predicates
-     * The clause predicates.
+     * @param schemaType
+     * The schema type representing the table to join on.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
+    public QueryBuilder rightJoin(Class<? extends SchemaElement> schemaType) {
+        if (schemaType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return join("right", schemaType);
+    }
+
+    private QueryBuilder join(String type, Class<? extends SchemaElement> schemaType) {
+        if (type != null) {
+            sqlBuilder.append(" ");
+            sqlBuilder.append(type);
+        }
+
+        sqlBuilder.append(" join ");
+        sqlBuilder.append(SchemaElement.getTableName(schemaType));
+
+        return this;
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #on(PredicateComponent...)} instead.
+     */
+    @Deprecated
     public QueryBuilder on(String... predicates) {
         return filter("on", predicates);
+    }
+
+    /**
+     * Appends an "on" clause to a query.
+     *
+     * @param predicateComponents
+     * The predicate components.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder on(PredicateComponent... predicateComponents) {
+        // TODO
+        return this;
     }
 
     /**

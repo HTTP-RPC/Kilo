@@ -23,17 +23,29 @@ import static org.httprpc.kilo.sql.PredicateComponent.allOf;
 import static org.httprpc.kilo.sql.PredicateComponent.and;
 import static org.httprpc.kilo.sql.PredicateComponent.anyOf;
 import static org.httprpc.kilo.sql.PredicateComponent.or;
-import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema.A;
-import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema.B;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.A;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.B;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SchemaElementTest {
-    @Table("test")
-    public enum TestSchema implements SchemaElement {
+    @Table("test1")
+    public enum TestSchema1 implements SchemaElement {
         @Column("a")
         A,
         @Column("b")
         B
+    }
+
+    @Table("test2")
+    public enum TestSchema2 implements SchemaElement {
+        @Column("c")
+        C
+    }
+
+    @Table("test3")
+    public enum TestSchema3 implements SchemaElement {
+        @Column("c")
+        C
     }
 
     @Test
@@ -64,6 +76,7 @@ public class SchemaElementTest {
     @Test
     public void testEQ() {
         testPredicateComponents("a = :a", A.eq("a"));
+        testPredicateComponents("test2.c = test3.c", TestSchema2.C.eq(TestSchema3.C));
     }
 
     @Test

@@ -37,7 +37,7 @@ public class PredicateComponent {
      * right-hand side of the comparison.
      */
     public PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
-        if (operator == null || schemaElement == null || keys == null || keys.length == 0) {
+        if (schemaElement == null || operator == null || keys == null || keys.length == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -65,6 +65,38 @@ public class PredicateComponent {
 
             stringBuilder.append(")");
         }
+
+        text = stringBuilder.toString();
+    }
+
+    /**
+     * Constructs a new comparison predicate component.
+     *
+     * @param schemaElement1
+     * The schema element representing the left-hand side of the comparison.
+     *
+     * @param operator
+     * The comparison operator.
+     *
+     * @param schemaElement2
+     * The schema element representing the right-hand side of the comparison.
+     */
+    public PredicateComponent(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
+        if (schemaElement1 == null || operator == null || schemaElement2 == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var stringBuilder = new StringBuilder(32);
+
+        stringBuilder.append(SchemaElement.getTableName(schemaElement1.getClass()));
+        stringBuilder.append(".");
+        stringBuilder.append(schemaElement1.getColumnName());
+        stringBuilder.append(" ");
+        stringBuilder.append(operator);
+        stringBuilder.append(" ");
+        stringBuilder.append(SchemaElement.getTableName(schemaElement2.getClass()));
+        stringBuilder.append(".");
+        stringBuilder.append(schemaElement2.getColumnName());
 
         text = stringBuilder.toString();
     }

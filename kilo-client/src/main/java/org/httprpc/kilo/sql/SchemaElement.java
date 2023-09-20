@@ -19,6 +19,13 @@ package org.httprpc.kilo.sql;
  */
 public interface SchemaElement {
     /**
+     * The "equal to" operator.
+     */
+    String EQ = "=";
+
+    // TODO More operators
+
+    /**
      * Returns the label for a schema type, as specified by the {@link Table}
      * annotation.
      *
@@ -220,7 +227,20 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent eq(String key) {
-        return new PredicateComponent(this, "=", key);
+        return new PredicateComponent(this, EQ, key);
+    }
+
+    /**
+     * Creates an "equal to" predicate component.
+     *
+     * @param schemaElement
+     * The schema element against which the conditional will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent eq(SchemaElement schemaElement) {
+        return new PredicateComponent(this, EQ, schemaElement);
     }
 
     /**
