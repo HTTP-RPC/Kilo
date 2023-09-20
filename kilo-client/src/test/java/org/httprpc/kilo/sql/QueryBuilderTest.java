@@ -53,7 +53,8 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelect() {
-        var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D).from(ASchema.class)
+        var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D)
+            .from(ASchema.class)
             .join("B").on("A.id = B.id", and("x = 50"))
             .leftJoin("C").on("B.id = C.id", and("b = :b"))
             .rightJoin("D").on("C.id = D.id", and("c = :c"))
@@ -65,7 +66,8 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("b", "c", null, "c"), queryBuilder.getParameters());
 
-        assertEquals("select a as x, b, c, d from A "
+        assertEquals("select a as x, b, c, d "
+            + "from A "
             + "join B on A.id = B.id and x = 50 "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "
@@ -78,7 +80,9 @@ public class QueryBuilderTest {
 
     @Test
     public void testGroupBy() {
-        var queryBuilder = QueryBuilder.select("a", "avg(b) as c").from("A").groupBy("b").having("d > 10", and("e like :e"));
+        var queryBuilder = QueryBuilder.select(A, B.avg().as("c"))
+            .from(ASchema.class)
+            .groupBy("b").having("d > 10", and("e like :e"));
 
         assertEquals(listOf("e"), queryBuilder.getParameters());
 

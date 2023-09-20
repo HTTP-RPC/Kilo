@@ -23,17 +23,42 @@ import static org.httprpc.kilo.sql.PredicateComponent.allOf;
 import static org.httprpc.kilo.sql.PredicateComponent.and;
 import static org.httprpc.kilo.sql.PredicateComponent.anyOf;
 import static org.httprpc.kilo.sql.PredicateComponent.or;
-import static org.httprpc.kilo.sql.PredicateComponentTest.TestSchema.A;
-import static org.httprpc.kilo.sql.PredicateComponentTest.TestSchema.B;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema.A;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema.B;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PredicateComponentTest {
+public class SchemaElementTest {
     @Table("test")
     public enum TestSchema implements SchemaElement {
         @Column("a")
         A,
         @Column("b")
         B
+    }
+
+    @Test
+    public void testCount() {
+        testSchemaElementLabel("count(a)", A.count());
+    }
+
+    @Test
+    public void testAvg() {
+        testSchemaElementLabel("avg(a)", A.avg());
+    }
+
+    @Test
+    public void testSum() {
+        testSchemaElementLabel("sum(a)", A.sum());
+    }
+
+    @Test
+    public void testMin() {
+        testSchemaElementLabel("min(a)", A.min());
+    }
+
+    @Test
+    public void testMax() {
+        testSchemaElementLabel("max(a)", A.max());
     }
 
     @Test
@@ -82,36 +107,6 @@ public class PredicateComponentTest {
     }
 
     @Test
-    public void testCount() {
-        testPredicateComponents("count(a)", A.count());
-    }
-
-    @Test
-    public void testAvg() {
-        testPredicateComponents("avg(a)", A.avg());
-    }
-
-    @Test
-    public void testSum() {
-        testPredicateComponents("sum(a)", A.sum());
-    }
-
-    @Test
-    public void testMin() {
-        testPredicateComponents("min(a)", A.min());
-    }
-
-    @Test
-    public void testMax() {
-        testPredicateComponents("max(a)", A.max());
-    }
-
-    @Test
-    public void testAlias() {
-        testPredicateComponents("a = :a", A.as("x").eq("a"));
-    }
-
-    @Test
     public void testAnd() {
         testPredicateComponents("a = :a and b = :b", A.eq("a"), and(B.eq("b")));
     }
@@ -129,6 +124,16 @@ public class PredicateComponentTest {
     @Test
     public void testAnyOf() {
         testPredicateComponents("(a = :a or b = :b)", anyOf(A.eq("a"), B.eq("b")));
+    }
+
+    @Test
+    public void testAlias() {
+        testSchemaElementLabel("count(a)", A.count().as("x"));
+        testPredicateComponents("a = :a", A.as("x").eq("a"));
+    }
+
+    private static void testSchemaElementLabel(String expected, SchemaElement schemaElement) {
+        assertEquals(expected, schemaElement.getLabel());
     }
 
     private static void testPredicateComponents(String expected, PredicateComponent... predicateComponents) {

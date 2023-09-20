@@ -37,42 +37,33 @@ public class PredicateComponent {
      * right-hand side of the comparison.
      */
     public PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
-        if (operator == null || schemaElement == null || keys == null) {
+        if (operator == null || schemaElement == null || keys == null || keys.length == 0) {
             throw new IllegalArgumentException();
         }
 
         var stringBuilder = new StringBuilder(32);
 
-        var label = schemaElement.getLabel();
+        stringBuilder.append(schemaElement.getLabel());
+        stringBuilder.append(" ");
 
-        if (keys.length == 0) {
+        if (keys.length == 1) {
             stringBuilder.append(operator);
-            stringBuilder.append("(");
-            stringBuilder.append(label);
-            stringBuilder.append(")");
+            stringBuilder.append(" :");
+            stringBuilder.append(keys[0]);
         } else {
-            stringBuilder.append(label);
-            stringBuilder.append(" ");
+            stringBuilder.append(operator);
+            stringBuilder.append(" (");
 
-            if (keys.length == 1) {
-                stringBuilder.append(operator);
-                stringBuilder.append(" :");
-                stringBuilder.append(keys[0]);
-            } else {
-                stringBuilder.append(operator);
-                stringBuilder.append(" (");
-
-                for (var i = 0; i < keys.length; i++) {
-                    if (i > 0) {
-                        stringBuilder.append(", ");
-                    }
-
-                    stringBuilder.append(":");
-                    stringBuilder.append(keys[i]);
+            for (var i = 0; i < keys.length; i++) {
+                if (i > 0) {
+                    stringBuilder.append(", ");
                 }
 
-                stringBuilder.append(")");
+                stringBuilder.append(":");
+                stringBuilder.append(keys[i]);
             }
+
+            stringBuilder.append(")");
         }
 
         text = stringBuilder.toString();

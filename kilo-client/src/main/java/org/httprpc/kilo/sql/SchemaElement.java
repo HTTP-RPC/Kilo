@@ -92,6 +92,91 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates a "count" schema element.
+     *
+     * @return
+     * A count schema element.
+     */
+    default SchemaElement count() {
+        var label = String.format("count(%s)", getLabel());
+
+        return new SchemaElement() {
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
+    }
+
+    /**
+     * Creates an "average" schema element.
+     *
+     * @return
+     * A count schema element.
+     */
+    default SchemaElement avg() {
+        var label = String.format("avg(%s)", getLabel());
+
+        return new SchemaElement() {
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
+    }
+
+    /**
+     * Creates a "sum" schema element.
+     *
+     * @return
+     * A count schema element.
+     */
+    default SchemaElement sum() {
+        var label = String.format("sum(%s)", getLabel());
+
+        return new SchemaElement() {
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
+    }
+
+    /**
+     * Creates a "minimum" schema element.
+     *
+     * @return
+     * A count schema element.
+     */
+    default SchemaElement min() {
+        var label = String.format("min(%s)", getLabel());
+
+        return new SchemaElement() {
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
+    }
+
+    /**
+     * Creates a "maximum" schema element.
+     *
+     * @return
+     * A count schema element.
+     */
+    default SchemaElement max() {
+        var label = String.format("max(%s)", getLabel());
+
+        return new SchemaElement() {
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
+    }
+
+    /**
      * Associates an alias with the schema element.
      *
      * @param alias
@@ -240,55 +325,5 @@ public interface SchemaElement {
      */
     default PredicateComponent notIn(String... keys) {
         return new PredicateComponent(this, "not in", keys);
-    }
-
-    /**
-     * Creates a "count" predicate component.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent count() {
-        return new PredicateComponent(this, "count");
-    }
-
-    /**
-     * Creates an "average" predicate component.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent avg() {
-        return new PredicateComponent(this, "avg");
-    }
-
-    /**
-     * Creates a "sum" predicate component.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent sum() {
-        return new PredicateComponent(this, "sum");
-    }
-
-    /**
-     * Creates a "minimum" predicate component.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent min() {
-        return new PredicateComponent(this, "min");
-    }
-
-    /**
-     * Creates a "maximum" predicate component.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent max() {
-        return new PredicateComponent(this, "max");
     }
 }
