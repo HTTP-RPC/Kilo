@@ -357,7 +357,7 @@ public class QueryBuilder {
             filterBuilder.append(predicateComponents[i].toString());
         }
 
-        append(filterBuilder);
+        append(filterBuilder.toString());
 
         return this;
     }
@@ -603,7 +603,7 @@ public class QueryBuilder {
      * @param sql
      * The SQL text to append.
      */
-    public void append(CharSequence sql) {
+    public void append(String sql) {
         if (sql == null) {
             throw new IllegalArgumentException();
         }
