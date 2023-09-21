@@ -41,17 +41,6 @@ public class QueryBuilder {
     private static final int INITIAL_CAPACITY = 1024;
 
     /**
-     * @deprecated
-     * Use {@link QueryBuilder()} and {@link #append(String)} instead.
-     */
-    @Deprecated
-    public QueryBuilder(String sql) {
-        this();
-
-        append(sql);
-    }
-
-    /**
      * Constructs a new query builder.
      */
     public QueryBuilder() {
@@ -117,33 +106,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #select(SchemaElement...)} instead.
-     */
-    @Deprecated
-    public static QueryBuilder select(String... columns) {
-        if (columns == null || columns.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
-
-        sqlBuilder.append("select ");
-
-        var queryBuilder = new QueryBuilder(sqlBuilder);
-
-        for (var i = 0; i < columns.length; i++) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            queryBuilder.append(columns[i]);
-        }
-
-        return queryBuilder;
-    }
-
-    /**
      * Creates a "select" query.
      *
      * @param schemaElements
@@ -182,22 +144,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #from(Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder from(String... tables) {
-        if (tables == null || tables.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" from ");
-        sqlBuilder.append(String.join(", ", tables));
-
-        return this;
-    }
-
-    /**
      * Appends a "from" clause to a "select" query.
      *
      * @param schemaType
@@ -213,78 +159,6 @@ public class QueryBuilder {
 
         sqlBuilder.append(" from ");
         sqlBuilder.append(SchemaElement.getTableName(schemaType));
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #append(String)} instead.
-     */
-    @Deprecated
-    public QueryBuilder from(QueryBuilder queryBuilder, String alias) {
-        if (queryBuilder == null || alias == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" from (");
-
-        append(queryBuilder);
-
-        sqlBuilder.append(") ");
-        sqlBuilder.append(alias);
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #append(String)} instead.
-     */
-    @Deprecated
-    public QueryBuilder into(String table, String... columns) {
-        if (table == null || columns == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var stringBuilder = new StringBuilder(256);
-
-        stringBuilder.append("insert into ");
-        stringBuilder.append(table);
-
-        if (columns.length > 0) {
-            stringBuilder.append(" (");
-
-            for (var i = 0; i < columns.length; i++) {
-                if (i > 0) {
-                    stringBuilder.append(", ");
-                }
-
-                stringBuilder.append(columns[i]);
-            }
-
-            stringBuilder.append(")");
-        }
-
-        stringBuilder.append(" ");
-
-        sqlBuilder.insert(0, stringBuilder);
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #join(Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder join(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" join ");
-        sqlBuilder.append(table);
 
         return this;
     }
@@ -307,42 +181,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #append(String)} instead.
-     */
-    @Deprecated
-    public QueryBuilder join(QueryBuilder queryBuilder, String alias) {
-        if (queryBuilder == null || alias == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" join (");
-
-        append(queryBuilder);
-
-        sqlBuilder.append(") ");
-        sqlBuilder.append(alias);
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #leftJoin(Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder leftJoin(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" left join ");
-        sqlBuilder.append(table);
-
-        return this;
-    }
-
-    /**
      * Appends a "left join" clause to a query.
      *
      * @param schemaType
@@ -357,22 +195,6 @@ public class QueryBuilder {
         }
 
         return join("left", schemaType);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #rightJoin(Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder rightJoin(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" right join ");
-        sqlBuilder.append(table);
-
-        return this;
     }
 
     /**
@@ -405,15 +227,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #on(PredicateComponent...)} instead.
-     */
-    @Deprecated
-    public QueryBuilder on(String... predicates) {
-        return filter("on", predicates);
-    }
-
-    /**
      * Appends an "on" clause to a query.
      *
      * @param predicateComponents
@@ -424,15 +237,6 @@ public class QueryBuilder {
      */
     public QueryBuilder on(PredicateComponent... predicateComponents) {
         return filter("on", predicateComponents);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #where(PredicateComponent...)} instead.
-     */
-    @Deprecated
-    public QueryBuilder where(String... predicates) {
-        return filter("where", predicates);
     }
 
     /**
@@ -495,22 +299,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #groupBy(SchemaElement...)} instead.
-     */
-    @Deprecated
-    public QueryBuilder groupBy(String... columns) {
-        if (columns == null || columns.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" group by ");
-        sqlBuilder.append(String.join(", ", columns));
-
-        return this;
-    }
-
-    /**
      * Appends a "group by" clause to a query.
      *
      * @param schemaElements
@@ -538,15 +326,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #having(PredicateComponent...)} instead.
-     */
-    @Deprecated
-    public QueryBuilder having(String... predicates) {
-        return filter("having", predicates);
-    }
-
-    /**
      * Appends a "having" clause to a query.
      *
      * @param predicateComponents
@@ -557,26 +336,6 @@ public class QueryBuilder {
      */
     public QueryBuilder having(PredicateComponent... predicateComponents) {
         return filter("having", predicateComponents);
-    }
-
-    private QueryBuilder filter(String clause, String... predicates) {
-        if (predicates == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" ");
-        sqlBuilder.append(clause);
-        sqlBuilder.append(" ");
-
-        for (var i = 0; i < predicates.length; i++) {
-            if (i > 0) {
-                sqlBuilder.append(" ");
-            }
-
-            append(predicates[i]);
-        }
-
-        return this;
     }
 
     private QueryBuilder filter(String clause, PredicateComponent... predicateComponents) {
@@ -595,22 +354,6 @@ public class QueryBuilder {
 
             append(predicateComponents[i].toString());
         }
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #orderBy(SchemaElement...)} instead.
-     */
-    @Deprecated
-    public QueryBuilder orderBy(String... columns) {
-        if (columns == null || columns.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" order by ");
-        sqlBuilder.append(String.join(", ", columns));
 
         return this;
     }
@@ -709,63 +452,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #insertInto(Class, Map)} instead.
-     */
-    @Deprecated
-    public static QueryBuilder insertInto(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
-
-        sqlBuilder.append("insert into ");
-        sqlBuilder.append(table);
-
-        return new QueryBuilder(sqlBuilder);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #insertInto(Class, Map)} instead.
-     */
-    @Deprecated
-    public QueryBuilder values(Map<String, ?> values) {
-        if (values == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" (");
-
-        List<String> columns = new ArrayList<>(values.keySet());
-
-        var n = columns.size();
-
-        for (var i = 0; i < n; i++) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(columns.get(i));
-        }
-
-        sqlBuilder.append(") values (");
-
-        for (var i = 0; i < n; i++) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            encode(values.get(columns.get(i)));
-        }
-
-        sqlBuilder.append(")");
-
-        return this;
-    }
-
-    /**
      * Creates an "insert into" query.
      *
      * @param <S>
@@ -830,112 +516,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #append(String)} instead.
-     */
-    @Deprecated
-    public QueryBuilder onDuplicateKeyUpdate(String... columns) {
-        if (columns == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" on duplicate key update ");
-
-        for (var i = 0; i < columns.length; i++) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            var column = columns[i];
-
-            sqlBuilder.append(column);
-            sqlBuilder.append(" = value(");
-            sqlBuilder.append(column);
-            sqlBuilder.append(")");
-        }
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #append(String)} instead.
-     */
-    @Deprecated
-    public QueryBuilder onDuplicateKeyUpdate(Map<String, ?> values) {
-        if (values == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" on duplicate key update ");
-
-        var i = 0;
-
-        for (var entry : values.entrySet()) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(entry.getKey());
-            sqlBuilder.append(" = ");
-
-            encode(entry.getValue());
-
-            i++;
-        }
-
-        return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #update(Class, Map)} instead.
-     */
-    @Deprecated
-    public static QueryBuilder update(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
-
-        sqlBuilder.append("update ");
-        sqlBuilder.append(table);
-
-        return new QueryBuilder(sqlBuilder);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #update(Class, Map)} instead.
-     */
-    @Deprecated
-    public QueryBuilder set(Map<String, ?> values) {
-        if (values == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" set ");
-
-        var i = 0;
-
-        for (Map.Entry<String, ?> entry : values.entrySet()) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(entry.getKey());
-            sqlBuilder.append(" = ");
-
-            encode(entry.getValue());
-
-            i++;
-        }
-
-        return this;
-    }
-
-    /**
      * Creates an "update" query.
      *
      * @param <S>
@@ -988,24 +568,6 @@ public class QueryBuilder {
         }
 
         return new QueryBuilder(sqlBuilder, parameters);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #deleteFrom(Class)} instead.
-     */
-    @Deprecated
-    public static QueryBuilder deleteFrom(String table) {
-        if (table == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
-
-        sqlBuilder.append("delete from ");
-        sqlBuilder.append(table);
-
-        return new QueryBuilder(sqlBuilder);
     }
 
     /**
@@ -1139,7 +701,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        return connection.prepareStatement(getSQL(), Statement.RETURN_GENERATED_KEYS);
+        return connection.prepareStatement(toString(), Statement.RETURN_GENERATED_KEYS);
     }
 
     /**
@@ -1274,15 +836,6 @@ public class QueryBuilder {
 
             statement.setObject(i++, arguments.get(parameter));
         }
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #toString()} instead.
-     */
-    @Deprecated
-    public String getSQL() {
-        return toString();
     }
 
     @Override
