@@ -1015,7 +1015,54 @@ public interface Pet {
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
 
-See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
+See the [pet service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) example for more information.
+
+### Schema Types
+`QueryBuilder` also supports a more structured approach to query construction using "schema types". For example, given the following table definiton:
+
+```sql
+create table item (
+    id int not null auto_increment,
+    description varchar(256) not null,
+    price double not null,
+    primary key (id)
+);
+```
+
+this query could be used to retrieve the row for a particular item:
+
+```sql
+select * from item where id = :id
+```
+
+The same query could be written and executed as follows using a schema type:
+
+```java
+@Table("item")
+public enum ItemSchema implements SchemaElement {
+    @Column("id")
+    ID,
+    @Column("description")
+    DESCRIPTION,
+    @Column("price")
+    PRICE
+}
+```
+
+```java
+var queryBuilder = QueryBuilder.selectAll().from(ItemSchema.class).where(ID.eq("id"));
+
+try (var statement = queryBuilder.prepare(getConnection());
+    var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+        entry("id", itemID)
+    )))) {
+    return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, Item.class)).orElse(null);
+}
+```
+
+Note that the `ID` component is statically imported to reduce verbosity.
+
+Insert, update, and delete operations are also supported. See the [catalog service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service example for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
