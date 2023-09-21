@@ -126,7 +126,7 @@ public class Conditionals {
     private static String reconstruct(QueryBuilder queryBuilder) {
         var sql = queryBuilder.toString();
 
-        var stringBuilder = new StringBuilder(sql);
+        var stringBuilder = new StringBuilder();
 
         var parameterIterator = queryBuilder.getParameters().iterator();
 
