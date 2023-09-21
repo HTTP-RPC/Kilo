@@ -29,6 +29,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.httprpc.kilo.test.ItemSchema.DESCRIPTION;
+import static org.httprpc.kilo.test.ItemSchema.ID;
+import static org.httprpc.kilo.test.ItemSchema.PRICE;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -39,7 +42,7 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() throws SQLException {
-        var queryBuilder = QueryBuilder.select("*").from("item");
+        var queryBuilder = QueryBuilder.selectAll().from(ItemSchema.class);
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
@@ -54,9 +57,9 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         var item = (Item)getBody();
 
-        var queryBuilder = QueryBuilder.insertInto("item").values(mapOf(
-            entry("description", ":description"),
-            entry("price", ":price")
+        var queryBuilder = QueryBuilder.insertInto(ItemSchema.class, mapOf(
+            entry(DESCRIPTION, "description"),
+            entry(PRICE, "price")
         ));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
@@ -69,7 +72,7 @@ public class CatalogService extends AbstractDatabaseService {
     }
 
     private Item getItem(int itemID) throws SQLException {
-        var queryBuilder = QueryBuilder.select("*").from("item").where("id = :id");
+        var queryBuilder = QueryBuilder.selectAll().from(ItemSchema.class).where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -91,10 +94,10 @@ public class CatalogService extends AbstractDatabaseService {
 
         item.setID(id);
 
-        var queryBuilder = QueryBuilder.update("item").set(mapOf(
-            entry("description", ":description"),
-            entry("price", ":price")
-        )).where("id = :id");
+        var queryBuilder = QueryBuilder.update(ItemSchema.class, mapOf(
+            entry(DESCRIPTION, "description"),
+            entry(PRICE, "price")
+        )).where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -108,7 +111,7 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem() throws SQLException {
         var id = getKey("itemID", Integer.class);
 
-        var queryBuilder = QueryBuilder.deleteFrom("item").where("id = :id");
+        var queryBuilder = QueryBuilder.deleteFrom(ItemSchema.class).where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(

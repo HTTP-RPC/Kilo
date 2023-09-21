@@ -33,11 +33,11 @@ public class PredicateComponent {
      * The comparison operator.
      *
      * @param keys
-     * The key or keys of the value or values, respectively, representing the
-     * right-hand side of the comparison.
+     * The keys of the values representing the right-hand side of the
+     * comparison.
      */
     public PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
-        if (schemaElement == null || operator == null || keys == null || keys.length == 0) {
+        if (schemaElement == null || operator == null || keys == null) {
             throw new IllegalArgumentException();
         }
 
@@ -45,25 +45,26 @@ public class PredicateComponent {
 
         stringBuilder.append(schemaElement.getColumnName());
         stringBuilder.append(" ");
+        stringBuilder.append(operator);
 
-        if (keys.length == 1) {
-            stringBuilder.append(operator);
-            stringBuilder.append(" :");
-            stringBuilder.append(keys[0]);
-        } else {
-            stringBuilder.append(operator);
-            stringBuilder.append(" (");
+        if (keys.length > 0) {
+            if (keys.length == 1) {
+                stringBuilder.append(" :");
+                stringBuilder.append(keys[0]);
+            } else {
+                stringBuilder.append(" (");
 
-            for (var i = 0; i < keys.length; i++) {
-                if (i > 0) {
-                    stringBuilder.append(", ");
+                for (var i = 0; i < keys.length; i++) {
+                    if (i > 0) {
+                        stringBuilder.append(", ");
+                    }
+
+                    stringBuilder.append(":");
+                    stringBuilder.append(keys[i]);
                 }
 
-                stringBuilder.append(":");
-                stringBuilder.append(keys[i]);
+                stringBuilder.append(")");
             }
-
-            stringBuilder.append(")");
         }
 
         text = stringBuilder.toString();
@@ -102,6 +103,10 @@ public class PredicateComponent {
     }
 
     private PredicateComponent(String operator, PredicateComponent... predicateComponents) {
+        if (predicateComponents == null || predicateComponents.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
         var stringBuilder = new StringBuilder(128);
 
         if (predicateComponents.length == 1) {
@@ -138,10 +143,6 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent and(PredicateComponent predicateComponent) {
-        if (predicateComponent == null) {
-            throw new IllegalArgumentException();
-        }
-
         return new PredicateComponent(AND, predicateComponent);
     }
 
@@ -156,10 +157,6 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent or(PredicateComponent predicateComponent) {
-        if (predicateComponent == null) {
-            throw new IllegalArgumentException();
-        }
-
         return new PredicateComponent(OR, predicateComponent);
     }
 
@@ -173,10 +170,6 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent allOf(PredicateComponent... predicateComponents) {
-        if (predicateComponents == null || predicateComponents.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
         return new PredicateComponent(AND, predicateComponents);
     }
 
@@ -190,10 +183,6 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent anyOf(PredicateComponent... predicateComponents) {
-        if (predicateComponents == null || predicateComponents.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
         return new PredicateComponent(OR, predicateComponents);
     }
 

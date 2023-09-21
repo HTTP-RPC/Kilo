@@ -19,27 +19,60 @@ package org.httprpc.kilo.sql;
  */
 public interface SchemaElement {
     /**
+     * Sort order options.
+     */
+    enum SortOrder {
+        /**
+         * Ascending sort.
+         */
+        ASC,
+
+        /**
+         * Descending sort.
+         */
+        DESC
+    }
+
+    /**
      * The "equal to" operator.
      */
     String EQ = "=";
 
-    // TODO More operators
+    /**
+     * The "not equal to" operator.
+     */
+    String NE = "!=";
 
     /**
-     * Returns the label for a schema type, as specified by the {@link Table}
-     * annotation.
+     * The "greater than" operator.
+     */
+    String GT = ">";
+
+    /**
+     * The "greater than or equal to" operator.
+     */
+    String GE = ">=";
+
+    /**
+     * The "less than" operator.
+     */
+    String LT = "<";
+
+    /**
+     * The "less than or equal to" operator.
+     */
+    String LE = "<=";
+
+    /**
+     * Returns the name of the table associated with the schema type.
      *
      * @param schemaType
      * The schema type.
      *
      * @return
-     * The schema type's label.
+     * The schema type's table name.
      */
     static String getTableName(Class<? extends SchemaElement> schemaType) {
-        if (!Enum.class.isAssignableFrom(schemaType)) {
-            throw new UnsupportedOperationException("Schema type is not an enum.");
-        }
-
         var table = schemaType.getAnnotation(Table.class);
 
         if (table == null) {
@@ -50,18 +83,23 @@ public interface SchemaElement {
     }
 
     /**
-     * Returns the schema element's label, as specified by the {@link Column}
-     * annotation.
+     * Returns the name of the schema element.
      *
      * @return
-     * The schema element's label.
+     * The schema element's name.
+     */
+    default String name() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the name of the column associated with the schema element.
+     *
+     * @return
+     * The schema element's column name.
      */
     default String getColumnName() {
-        if (!(this instanceof Enum<?> schemaElement)) {
-            throw new UnsupportedOperationException("Schema element is not an enum constant.");
-        }
-
-        var name = schemaElement.name();
+        var name = name();
 
         var fields = getClass().getDeclaredFields();
 
@@ -99,88 +137,65 @@ public interface SchemaElement {
     }
 
     /**
+     * Returns the schema element's sort order, as specified via either
+     * {@link #asc()} or {@link #desc()}.
+     *
+     * @return
+     * The schema element's sort order, or {@code null} if a sort order has not
+     * been defined.
+     */
+    default SortOrder getSortOrder() {
+        return null;
+    }
+
+    /**
      * Creates a "count" schema element.
      *
      * @return
      * A count schema element.
      */
     default SchemaElement count() {
-        var label = String.format("count(%s)", getColumnName());
-
-        return new SchemaElement() {
-            @Override
-            public String getColumnName() {
-                return label;
-            }
-        };
+        return new SchemaElementAdapter(String.format("count(%s)", getColumnName()));
     }
 
     /**
      * Creates an "average" schema element.
      *
      * @return
-     * A count schema element.
+     * An average schema element.
      */
     default SchemaElement avg() {
-        var label = String.format("avg(%s)", getColumnName());
-
-        return new SchemaElement() {
-            @Override
-            public String getColumnName() {
-                return label;
-            }
-        };
+        return new SchemaElementAdapter(String.format("avg(%s)", getColumnName()));
     }
 
     /**
      * Creates a "sum" schema element.
      *
      * @return
-     * A count schema element.
+     * A sum schema element.
      */
     default SchemaElement sum() {
-        var label = String.format("sum(%s)", getColumnName());
-
-        return new SchemaElement() {
-            @Override
-            public String getColumnName() {
-                return label;
-            }
-        };
+        return new SchemaElementAdapter(String.format("sum(%s)", getColumnName()));
     }
 
     /**
      * Creates a "minimum" schema element.
      *
      * @return
-     * A count schema element.
+     * A minimum schema element.
      */
     default SchemaElement min() {
-        var label = String.format("min(%s)", getColumnName());
-
-        return new SchemaElement() {
-            @Override
-            public String getColumnName() {
-                return label;
-            }
-        };
+        return new SchemaElementAdapter(String.format("min(%s)", getColumnName()));
     }
 
     /**
      * Creates a "maximum" schema element.
      *
      * @return
-     * A count schema element.
+     * A maximum schema element.
      */
     default SchemaElement max() {
-        var label = String.format("max(%s)", getColumnName());
-
-        return new SchemaElement() {
-            @Override
-            public String getColumnName() {
-                return label;
-            }
-        };
+        return new SchemaElementAdapter(String.format("max(%s)", getColumnName()));
     }
 
     /**
@@ -190,38 +205,43 @@ public interface SchemaElement {
      * The schema element's alias.
      *
      * @return
-     * A new schema element with the current label and given alias.
+     * A new schema element with the current column name and provided alias.
      */
     default SchemaElement as(String alias) {
         if (alias == null) {
             throw new IllegalArgumentException();
         }
 
-        var label = getColumnName();
+        return new SchemaElementAdapter(getColumnName(), alias);
+    }
 
-        return new SchemaElement() {
-            @Override
-            public String getColumnName() {
-                return label;
-            }
+    /**
+     * Associates an ascending sort order with the schema element.
+     *
+     * @return
+     * A new schema element with the current column name and ascending sort
+     * order.
+     */
+    default SchemaElement asc() {
+        return new SchemaElementAdapter(getColumnName(), SortOrder.ASC);
+    }
 
-            @Override
-            public String getAlias() {
-                return alias;
-            }
-
-            @Override
-            public SchemaElement as(String alias) {
-                throw new UnsupportedOperationException();
-            }
-        };
+    /**
+     * Associates a descending sort order with the schema element.
+     *
+     * @return
+     * A new schema element with the current column name and descending sort
+     * order.
+     */
+    default SchemaElement desc() {
+        return new SchemaElementAdapter(getColumnName(), SortOrder.DESC);
     }
 
     /**
      * Creates an "equal to" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
@@ -234,7 +254,7 @@ public interface SchemaElement {
      * Creates an "equal to" predicate component.
      *
      * @param schemaElement
-     * The schema element against which the conditional will be evaluated.
+     * The schema element representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
@@ -247,72 +267,137 @@ public interface SchemaElement {
      * Creates a "not equal to" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
      */
     default PredicateComponent ne(String key) {
-        return new PredicateComponent(this, "!=", key);
+        return new PredicateComponent(this, NE, key);
+    }
+
+    /**
+     * Creates a "not equal to" predicate component.
+     *
+     * @param schemaElement
+     * The schema element representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ne(SchemaElement schemaElement) {
+        return new PredicateComponent(this, NE, schemaElement);
     }
 
     /**
      * Creates a "greater than" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
      */
     default PredicateComponent gt(String key) {
-        return new PredicateComponent(this, ">", key);
+        return new PredicateComponent(this, GT, key);
+    }
+
+    /**
+     * Creates a "greater than" predicate component.
+     *
+     * @param schemaElement
+     * The schema element representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent gt(SchemaElement schemaElement) {
+        return new PredicateComponent(this, GT, schemaElement);
     }
 
     /**
      * Creates a "greater than or equal to" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
      */
     default PredicateComponent ge(String key) {
-        return new PredicateComponent(this, ">=", key);
+        return new PredicateComponent(this, GE, key);
+    }
+
+    /**
+     * Creates a "greater than or equal to" predicate component.
+     *
+     * @param schemaElement
+     * The schema element representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ge(SchemaElement schemaElement) {
+        return new PredicateComponent(this, GE, schemaElement);
     }
 
     /**
      * Creates a "less than" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
      */
     default PredicateComponent lt(String key) {
-        return new PredicateComponent(this, "<", key);
+        return new PredicateComponent(this, LT, key);
+    }
+
+    /**
+     * Creates a "less than" predicate component.
+     *
+     * @param schemaElement
+     * The schema element representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent lt(SchemaElement schemaElement) {
+        return new PredicateComponent(this, LT, schemaElement);
     }
 
     /**
      * Creates a "less than or equal to" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
      */
     default PredicateComponent le(String key) {
-        return new PredicateComponent(this, "<=", key);
+        return new PredicateComponent(this, LE, key);
+    }
+
+    /**
+     * Creates a "less than or equal to" predicate component.
+     *
+     * @param schemaElement
+     * The schema element representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent le(SchemaElement schemaElement) {
+        return new PredicateComponent(this, LE, schemaElement);
     }
 
     /**
      * Creates a "like" predicate component.
      *
      * @param key
-     * The key of the value against which the conditional will be evaluated.
+     * The key of the value representing the right-hand side of the comparison.
      *
      * @return
      * The predicate component.
@@ -325,7 +410,7 @@ public interface SchemaElement {
      * Creates an "in" predicate component.
      *
      * @param keys
-     * The keys of the values against which the conditional will be evaluated.
+     * The keys of the values against which the expression will be evaluated.
      *
      * @return
      * The predicate component.
@@ -338,12 +423,32 @@ public interface SchemaElement {
      * Creates a "not in" predicate component.
      *
      * @param keys
-     * The keys of the values against which the conditional will be evaluated.
+     * The keys of the values against which the expression will be evaluated.
      *
      * @return
      * The predicate component.
      */
     default PredicateComponent notIn(String... keys) {
         return new PredicateComponent(this, "not in", keys);
+    }
+
+    /**
+     * Creates an "is null" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent isNull() {
+        return new PredicateComponent(this, "is null");
+    }
+
+    /**
+     * Creates an "is not null" predicate component.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent isNotNull() {
+        return new PredicateComponent(this, "is not null");
     }
 }

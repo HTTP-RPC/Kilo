@@ -34,6 +34,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.httprpc.kilo.test.EmployeeSchema.BIRTH_DATE;
+import static org.httprpc.kilo.test.EmployeeSchema.EMPLOYEE_NUMBER;
+import static org.httprpc.kilo.test.EmployeeSchema.FIRST_NAME;
+import static org.httprpc.kilo.test.EmployeeSchema.GENDER;
+import static org.httprpc.kilo.test.EmployeeSchema.HIRE_DATE;
+import static org.httprpc.kilo.test.EmployeeSchema.LAST_NAME;
+
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
     private ExecutorService executorService = null;
@@ -68,13 +75,13 @@ public class EmployeeService extends WebService {
     @RequestMethod("GET")
     public List<Employee> getEmployees() throws SQLException {
         var queryBuilder = QueryBuilder.select(
-            "emp_no as employeeNumber",
-            "first_name as firstName",
-            "last_name as lastName",
-            "gender",
-            "birth_date as birthDate",
-            "hire_date as hireDate"
-        ).from("employees");
+            EMPLOYEE_NUMBER.as("employeeNumber"),
+            FIRST_NAME.as("firstName"),
+            LAST_NAME.as("lastName"),
+            GENDER,
+            BIRTH_DATE.as("birthDate"),
+            HIRE_DATE.as("hireDate")
+        ).from(EmployeeSchema.class);
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
@@ -87,13 +94,13 @@ public class EmployeeService extends WebService {
     @ResourcePath("stream")
     public List<Employee> getEmployeesStream() {
         var queryBuilder = QueryBuilder.select(
-            "emp_no as employeeNumber",
-            "first_name as firstName",
-            "last_name as lastName",
-            "gender",
-            "birth_date as birthDate",
-            "hire_date as hireDate"
-        ).from("employees");
+            EMPLOYEE_NUMBER.as("employeeNumber"),
+            FIRST_NAME.as("firstName"),
+            LAST_NAME.as("lastName"),
+            GENDER,
+            BIRTH_DATE.as("birthDate"),
+            HIRE_DATE.as("hireDate")
+        ).from(EmployeeSchema.class);
 
         var pipe = new Pipe<Employee>(4096, 15000);
 

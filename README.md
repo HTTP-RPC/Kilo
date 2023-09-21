@@ -46,7 +46,7 @@ Classes provided by the Kilo framework include:
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes plain text content
 * [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
 * [BeanAdapter](#beanadapter) - map adapter for Java beans
-* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides a fluent API for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
+* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides support for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [Pipe](#pipe) - facilitates communication between producer and consumer threads
@@ -958,7 +958,7 @@ a call to `get()` with a key of "ignored" would return `null`. The value would a
 Attempting to `put()` an ignored value will result in an `UnsupportedOperationException`. 
 
 ## QueryBuilder and ResultSetAdapter
-The `QueryBuilder` class provides a fluent API for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:
+The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:
 
 ```sql
 create table pet (
@@ -971,31 +971,15 @@ create table pet (
 );
 ```
 
-this code could be used to create a query that returns all columns and rows in the table:
+this code could be used to create a query that returns all rows associated with a particular owner:
 
 ```java
-QueryBuilder.select("*").from("pet");
+var queryBuilder = new QueryBuilder();
+
+queryBuilder.append("select * from pet where owner = :owner");
 ```
 
-The resulting SQL would look like this:
-
-```sql
-select * from pet
-```
-
-To select only rows associated with a particular owner, the following query could be used:
-
-```java
-QueryBuilder.select("*").from("pet").where("owner = :owner");
-```
-
-The colon character identifies "owner" as a parameter, or variable. The resulting SQL would look like this:
-
-```sql
-select * from pet where owner = ?
-```
-
-Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
+The colon character identifies "owner" as a parameter, or variable. Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
 
 ```java
 try (var statement = queryBuilder.prepare(getConnection());
@@ -1031,7 +1015,7 @@ public interface Pet {
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
 
-Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
+See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) or [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
@@ -1167,13 +1151,13 @@ For example, the following code constructs a SQL query that retrieves all rows f
 
 ```java
 var queryBuilder = QueryBuilder.select(
-    "emp_no as employeeNumber",
-    "first_name as firstName",
-    "last_name as lastName",
-    "gender",
-    "birth_date as birthDate",
-    "hire_date as hireDate"
-).from("employees");
+    EMPLOYEE_NUMBER.as("employeeNumber"),
+    FIRST_NAME.as("firstName"),
+    LAST_NAME.as("lastName"),
+    GENDER,
+    BIRTH_DATE.as("birthDate"),
+    HIRE_DATE.as("hireDate")
+).from(EmployeeSchema.class);
 ```
 
 This code could be used to transform the results to a list of `Employee` instances:

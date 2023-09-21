@@ -45,7 +45,9 @@ public class PetService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     public List<Pet> getPets(@Required String owner, boolean stream) throws SQLException, IOException {
-        var queryBuilder = QueryBuilder.select("*").from("pet").where("owner = :owner");
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select * from pet where owner = :owner");
 
         if (stream) {
             var response = getResponse();
@@ -107,11 +109,13 @@ public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
-        var sql = QueryBuilder.select("birth").from("pet").toString();
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select birth from pet");
 
         double averageAge;
-        try (var statement = getConnection().createStatement();
-            var results = new ResultSetAdapter(statement.executeQuery(sql))) {
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
             var now = new Date();
 
             averageAge = results.stream()

@@ -23,9 +23,6 @@ import org.httprpc.kilo.sql.QueryBuilder;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.mapOf;
-
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
     private static final int BATCH_SIZE = 25000;
@@ -33,13 +30,10 @@ public class BulkUploadService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("upload")
     public void upload() throws SQLException, IOException {
-        var queryBuilder = QueryBuilder.insertInto("bulk_upload_test").values(mapOf(
-            entry("text1", ":text1"),
-            entry("text2", ":text2"),
-            entry("number1", ":number1"),
-            entry("number2", ":number2"),
-            entry("number3", ":number3")
-        ));
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("insert into bulk_upload_test (text1, text2, number1, number2, number3) "
+            + "values(:text1, :text2, :number1, :number2, :number3)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             var csvDecoder = new CSVDecoder();
@@ -53,13 +47,10 @@ public class BulkUploadService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("upload-batch")
     public void uploadBatch() throws SQLException, IOException {
-        var queryBuilder = QueryBuilder.insertInto("bulk_upload_test").values(mapOf(
-            entry("text1", ":text1"),
-            entry("text2", ":text2"),
-            entry("number1", ":number1"),
-            entry("number2", ":number2"),
-            entry("number3", ":number3")
-        ));
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("insert into bulk_upload_test (text1, text2, number1, number2, number3) "
+            + "values(:text1, :text2, :number1, :number2, :number3)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             var i = 0;
