@@ -15,7 +15,7 @@
 package org.httprpc.kilo.sql;
 
 /**
- * Represents a predicate.
+ * Represents a predicate component.
  */
 public class PredicateComponent {
     private String text;
