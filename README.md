@@ -306,7 +306,7 @@ public class MathService extends WebService {
 }
 ```
 
-Descriptions can also be associated with bean types, enumerated types, and records:
+Descriptions can also be associated with bean types, enums, and records:
 
 ```java
 @Description("Represents an item in the catalog.")
@@ -1029,13 +1029,13 @@ create table item (
 );
 ```
 
-this query could be used to retrieve the row for a particular item:
+this SQL query could be used to retrieve the row for a particular item:
 
 ```sql
 select * from item where id = :id
 ```
 
-The same query could be written and executed as follows using a schema type:
+The same query could be written as follows using a schema type:
 
 ```java
 @Table("item")
@@ -1051,16 +1051,9 @@ public enum ItemSchema implements SchemaElement {
 
 ```java
 var queryBuilder = QueryBuilder.selectAll().from(ItemSchema.class).where(ID.eq("id"));
-
-try (var statement = queryBuilder.prepare(getConnection());
-    var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
-        entry("id", itemID)
-    )))) {
-    return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, Item.class)).orElse(null);
-}
 ```
 
-Note that the `ID` component is statically imported to reduce verbosity.
+Schema types are enums that implement the `SchemaElement` interface. They are associated with table and column names using the `Table` and `Column` annotations, respectively. In the example above, the `ID` constant has been statically imported to reduce verbosity.
 
 Insert, update, and delete operations are also supported. See the [catalog service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service example for more information.
 

@@ -343,17 +343,21 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        sqlBuilder.append(" ");
-        sqlBuilder.append(clause);
-        sqlBuilder.append(" ");
+        var filterBuilder = new StringBuilder(64);
+
+        filterBuilder.append(" ");
+        filterBuilder.append(clause);
+        filterBuilder.append(" ");
 
         for (var i = 0; i < predicateComponents.length; i++) {
             if (i > 0) {
-                sqlBuilder.append(" ");
+                filterBuilder.append(" ");
             }
 
-            append(predicateComponents[i].toString());
+            filterBuilder.append(predicateComponents[i].toString());
         }
+
+        append(filterBuilder);
 
         return this;
     }
@@ -599,7 +603,7 @@ public class QueryBuilder {
      * @param sql
      * The SQL text to append.
      */
-    public void append(String sql) {
+    public void append(CharSequence sql) {
         if (sql == null) {
             throw new IllegalArgumentException();
         }
@@ -652,36 +656,6 @@ public class QueryBuilder {
         sqlBuilder.append(queryBuilder);
 
         parameters.addAll(queryBuilder.parameters);
-    }
-
-    private void encode(Object value) {
-        if (value instanceof String string) {
-            append(string);
-        } else if (value instanceof List<?> list) {
-            sqlBuilder.append("coalesce(");
-
-            var i = 0;
-
-            for (var element : list) {
-                if (i > 0) {
-                    sqlBuilder.append(", ");
-                }
-
-                encode(element);
-
-                i++;
-            }
-
-            sqlBuilder.append(")");
-        } else if (value instanceof QueryBuilder queryBuilder) {
-            sqlBuilder.append("(");
-
-            append(queryBuilder);
-
-            sqlBuilder.append(")");
-        } else {
-            sqlBuilder.append(value);
-        }
     }
 
     /**
