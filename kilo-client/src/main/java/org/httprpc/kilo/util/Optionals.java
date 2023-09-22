@@ -38,10 +38,6 @@ public class Optionals {
      */
     @SafeVarargs
     public static <T> T coalesce(T... values) {
-        if (values == null) {
-            throw new IllegalArgumentException();
-        }
-
         for (var i = 0; i < values.length; i++) {
             var value = values[i];
 

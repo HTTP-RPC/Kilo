@@ -996,7 +996,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * A type that describes the given raw type and actual type arguments.
      */
     public static Type typeOf(Class<?> rawType, Type... actualTypeArguments) {
-        if (rawType == null || actualTypeArguments == null) {
+        if (rawType == null) {
             throw new IllegalArgumentException();
         }
 
@@ -1009,12 +1009,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         if (typeParameters.length == 0) {
             return rawType;
         } else {
-            for (var i = 0; i < actualTypeArguments.length; i++) {
-                if (actualTypeArguments[i] == null) {
-                    throw new IllegalArgumentException();
-                }
-            }
-
             return new ParameterizedType() {
                 @Override
                 public Type[] getActualTypeArguments() {

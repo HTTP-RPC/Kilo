@@ -44,10 +44,6 @@ public class Collections {
      */
     @SafeVarargs
     public static <E> List<E> listOf(E... elements) {
-        if (elements == null) {
-            throw new IllegalArgumentException();
-        }
-
         var list = new ArrayList<E>(elements.length);
 
         java.util.Collections.addAll(list, elements);
@@ -90,10 +86,6 @@ public class Collections {
      */
     @SafeVarargs
     public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
-        if (entries == null) {
-            throw new IllegalArgumentException();
-        }
-
         var map = new LinkedHashMap<K, V>();
 
         for (var entry : entries) {

@@ -115,8 +115,8 @@ public class QueryBuilder {
      * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder select(SchemaElement... schemaElements) {
-        if (schemaElements == null || schemaElements.length == 0) {
-            throw new IllegalArgumentException();
+        if (schemaElements.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
@@ -308,8 +308,8 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder groupBy(SchemaElement... schemaElements) {
-        if (schemaElements == null || schemaElements.length == 0) {
-            throw new IllegalArgumentException();
+        if (schemaElements.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         sqlBuilder.append(" group by ");
@@ -339,8 +339,8 @@ public class QueryBuilder {
     }
 
     private QueryBuilder filter(String clause, PredicateComponent... predicateComponents) {
-        if (predicateComponents == null || predicateComponents.length == 0) {
-            throw new IllegalArgumentException();
+        if (predicateComponents.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         var filterBuilder = new StringBuilder(64);
@@ -372,8 +372,8 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder orderBy(SchemaElement... schemaElements) {
-        if (schemaElements == null || schemaElements.length == 0) {
-            throw new IllegalArgumentException();
+        if (schemaElements.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         sqlBuilder.append(" order by ");

@@ -1055,7 +1055,7 @@ var queryBuilder = QueryBuilder.selectAll().from(ItemSchema.class).where(ID.eq("
 
 Schema types are enums that implement the `SchemaElement` interface. They are associated with table and column names using the `Table` and `Column` annotations, respectively. In the example above, the `ID` constant has been statically imported to reduce verbosity.
 
-Insert, update, and delete operations are also supported. See the [catalog service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service example for more information.
+Insert, update, and delete operations are also supported. See the [catalog service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) example for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:

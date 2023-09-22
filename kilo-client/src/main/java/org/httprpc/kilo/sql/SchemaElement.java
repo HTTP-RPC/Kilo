@@ -73,6 +73,10 @@ public interface SchemaElement {
      * The schema type's table name.
      */
     static String getTableName(Class<? extends SchemaElement> schemaType) {
+        if (schemaType == null) {
+            throw new IllegalArgumentException();
+        }
+
         var table = schemaType.getAnnotation(Table.class);
 
         if (table == null) {

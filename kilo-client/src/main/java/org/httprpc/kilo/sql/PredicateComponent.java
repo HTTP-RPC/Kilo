@@ -37,7 +37,7 @@ public class PredicateComponent {
      * comparison.
      */
     public PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
-        if (schemaElement == null || operator == null || keys == null) {
+        if (schemaElement == null || operator == null) {
             throw new IllegalArgumentException();
         }
 
@@ -103,8 +103,8 @@ public class PredicateComponent {
     }
 
     private PredicateComponent(String operator, PredicateComponent... predicateComponents) {
-        if (predicateComponents == null || predicateComponents.length == 0) {
-            throw new IllegalArgumentException();
+        if (predicateComponents.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         var stringBuilder = new StringBuilder(128);

@@ -189,13 +189,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             var elementAdapter = new ElementAdapter(element);
 
             for (var entry : map.entrySet()) {
-                var key = entry.getKey();
-
-                if (key == null) {
-                    throw new IllegalArgumentException();
-                }
-
-                elementAdapter.put(key.toString(), entry.getValue());
+                elementAdapter.put(entry.getKey().toString(), entry.getValue());
             }
         } else {
             element.setTextContent(value.toString());

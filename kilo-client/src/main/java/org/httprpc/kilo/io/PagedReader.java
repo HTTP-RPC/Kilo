@@ -41,10 +41,6 @@ class PagedReader extends Reader {
     }
 
     PagedReader(Reader reader, int pageSize) {
-        if (reader == null) {
-            throw new IllegalArgumentException();
-        }
-
         this.reader = reader;
         this.pageSize = pageSize;
     }
