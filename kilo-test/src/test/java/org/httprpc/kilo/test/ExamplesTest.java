@@ -176,7 +176,7 @@ public class ExamplesTest {
             entry("c", true)
         );
 
-        var templateEncoder = new TemplateEncoder(getClass().getResource("example.txt"));
+        var templateEncoder = new TemplateEncoder(getClass().getResource("example.html"));
 
         templateEncoder.write(map, System.out);
     }
