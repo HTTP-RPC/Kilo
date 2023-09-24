@@ -620,7 +620,7 @@ System.out.println(text); // Hello, World!
 ```
 
 ## TemplateEncoder
-The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) format and supports most Mustache features. 
+The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
 
 `TemplateEncoder` provides the following constructors:
 
