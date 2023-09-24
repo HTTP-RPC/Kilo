@@ -669,7 +669,7 @@ public interface Modifier {
 }
 ```
  
-The first argument to the method represents the value to be modified, and the second is the optional argument value that follows the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
+The first argument to the method represents the value to be modified, and the second is the optional argument text that follows the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
 Custom modifiers are associated with a template encoder instance via the `bind()` method. For example, this code creates a modifier named "upper" that converts values to uppercase:
 
