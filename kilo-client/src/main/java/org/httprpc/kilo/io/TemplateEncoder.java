@@ -364,7 +364,7 @@ public class TemplateEncoder extends Encoder<Object> {
      * @param modifier
      * The custom modifier.
      */
-    public void map(String name, Modifier modifier) {
+    public void bind(String name, Modifier modifier) {
         if (name == null || modifier == null) {
             throw new IllegalArgumentException();
         }

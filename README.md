@@ -671,7 +671,7 @@ hello, 123, true
 Injected values are automatically escaped for HTML and XML documents. For other document types, a custom [modifier](template-reference.md#modifiers) (discussed below) can be used.
 
 ### Custom Modifiers
-Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
+Modifiers can be created by implementing the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
 
 ```java
 public interface Modifier {
@@ -679,21 +679,21 @@ public interface Modifier {
 }
 ```
  
-The first argument to the method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
+The first argument to the method represents the value to be modified, and the second is the optional argument value that follows the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
-Custom modifiers are associated with a template encoder instance via the `map()` method. For example, the following code creates a modifier that converts values to uppercase:
+Modifiers are associated with a template encoder instance via the `bind()` method. For example, this code creates a modifier named "upper" that converts values to uppercase:
 
 ```java
-var templateEncoder = new TemplateEncoder(getClass().getResource("modifier.txt"));
+var templateEncoder = new TemplateEncoder(getClass().getResource("upper.txt"));
 
-templateEncoder.map("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
-
-templateEncoder.write(mapOf(
-    entry("text", "hello")
-), System.out);
+templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 ```
 
-The output of this code would be "HELLO".
+The modifier can be applied as shown below:
+
+```
+{{.:upper}}
+```
 
 ## BeanAdapter
 The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:

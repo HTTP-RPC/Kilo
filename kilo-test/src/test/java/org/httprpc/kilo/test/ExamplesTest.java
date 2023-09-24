@@ -182,17 +182,6 @@ public class ExamplesTest {
     }
 
     @Test
-    public void testModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("modifier.txt"));
-
-        templateEncoder.map("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
-
-        templateEncoder.write(mapOf(
-            entry("text", "hello")
-        ), System.out);
-    }
-
-    @Test
     public void testCustomPropertyKeys() throws IOException {
         var person = new Person();
 
