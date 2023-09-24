@@ -660,7 +660,7 @@ templateEncoder.write(map, System.out);
 
 Injected values are automatically escaped for HTML and XML documents. For other document types, a custom modifier (discussed below) can be used.
 
-### Modifiers
+### Custom Modifiers
 [Modifiers](template-reference.md#modifiers) are implementions of the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
 
 ```java
