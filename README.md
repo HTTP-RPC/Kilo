@@ -631,8 +631,6 @@ public TemplateEncoder(URL url, ResourceBundle resourceBundle) { ... }
 
 Both versions accept an argument specifying the location of the template document (typically as a resource on the application's classpath). The second version additionally accepts an optional resource bundle that, when present, is used to resolve resource markers. 
 
-An escape [modifier](#custom-modifiers) corresponding to the document's extension will be automatically applied to injected values, if available. HTML and XML are supported by default.
-
 Templates are applied via one of the following methods:
 
 ```java
@@ -672,6 +670,8 @@ the resulting output would look like this:
 hello, 123, true
 ```
 
+Injected values are automatically escaped for HTML and XML documents.
+
 ### Custom Modifiers
 [Modifiers](template-reference.md#modifiers) are created by implementing the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
 
@@ -683,12 +683,12 @@ public interface Modifier {
  
 The first argument to the method represents the value to be modified, and the second is the optional argument value following the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
 
-Custom modifiers are added to a template encoder instance via the `getModifiers()` method. For example, the following code creates a modifier that converts values to uppercase:
+Custom modifiers are associated with a template encoder instance via the `map()` method. For example, the following code creates a modifier that converts values to uppercase:
 
 ```java
 var templateEncoder = new TemplateEncoder(getClass().getResource("modifier.txt"));
 
-templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
+templateEncoder.map("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 
 templateEncoder.write(mapOf(
     entry("text", "hello")

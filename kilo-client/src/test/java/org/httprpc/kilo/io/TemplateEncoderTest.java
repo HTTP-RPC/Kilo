@@ -542,17 +542,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testMarkupEscapeModifier() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("html.txt"));
-
-        var writer = new StringWriter();
-
-        encoder.write("a<b>c&d\"e", writer);
-
-        assertEquals("a&lt;b&gt;c&amp;d&quot;e", writer.toString());
-    }
-
-    @Test
     public void testDefaultMarkupEscapeModifier() throws IOException {
         var url = getClass().getResource("example.xml");
         var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
@@ -656,7 +645,7 @@ public class TemplateEncoderTest {
     public void testUppercaseModifier() throws IOException {
         var encoder = new TemplateEncoder(getClass().getResource("upper.txt"));
 
-        encoder.getModifiers().put("case", (value, argument, locale, timeZone) -> {
+        encoder.map("case", (value, argument, locale, timeZone) -> {
             var result = value.toString();
 
             if (argument != null) {

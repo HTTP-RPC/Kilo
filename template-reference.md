@@ -29,19 +29,16 @@ Nested values can be referred to by path; e.g. "name/first". A literal slash or 
 The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.
 
 ### Modifiers
-Modifiers are used to transform a variable's representation before it is written to the output stream; for example, to apply an escape sequence.
-
-Modifiers are specified as shown below. They are invoked in order from left to right. An optional argument value may be included to provide additional information to the modifier:
+Modifiers are used to transform a variable's representation before it is written to the output stream. They are specified as shown below and are invoked in declaration order, from left to right. An optional argument value may be included to provide additional information to the modifier:
 
 ```
 {{variable:modifier1:modifier2:modifier3=argument:...}}
 ```
 
-All templates support the following set of standard modifiers:
+All templates support the following standard modifiers:
 
 * `format` - applies a [format string](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html#syntax)
 * `url` - URL-encodes a value
-* `html`/`xml` - escapes reserved HTML/XML characters
 
 For example, the following marker applies a format string to a value and then URL-encodes the result:
 

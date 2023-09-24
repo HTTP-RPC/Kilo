@@ -312,7 +312,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private static final FormatModifier formatModifier = new FormatModifier();
     private static final URLEncodingModifier urlEncodingModifier = new URLEncodingModifier();
-    private static final MarkupEscapeModifier markupEscapeModifier = new MarkupEscapeModifier();
 
     private static final int EOF = -1;
 
@@ -350,26 +349,35 @@ public class TemplateEncoder extends Encoder<Object> {
 
         modifiers.put("format", formatModifier);
         modifiers.put("url", urlEncodingModifier);
-        modifiers.put("html", markupEscapeModifier);
-        modifiers.put("xml", markupEscapeModifier);
 
         var path = url.getPath();
 
         var i = path.lastIndexOf('.');
 
         if (i != -1) {
-            defaultEscapeModifier = modifiers.get(path.substring(i + 1));
+            var extension = path.substring(i + 1);
+
+            if (extension.equals("html") || extension.equals("xml")) {
+                defaultEscapeModifier = new MarkupEscapeModifier();
+            }
         }
     }
 
     /**
-     * Returns the modifier map.
+     * Associates a custom modifier with the template encoder.
      *
-     * @return
-     * The modifier map.
+     * @param name
+     * The modifier name.
+     *
+     * @param modifier
+     * The custom modifier.
      */
-    public Map<String, Modifier> getModifiers() {
-        return modifiers;
+    public void map(String name, Modifier modifier) {
+        if (name == null || modifier == null) {
+            throw new IllegalArgumentException();
+        }
+
+        modifiers.put(name, modifier);
     }
 
     @Override

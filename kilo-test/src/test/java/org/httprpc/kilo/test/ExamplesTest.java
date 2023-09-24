@@ -185,7 +185,7 @@ public class ExamplesTest {
     public void testModifier() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("modifier.txt"));
 
-        templateEncoder.getModifiers().put("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
+        templateEncoder.map("uppercase", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 
         templateEncoder.write(mapOf(
             entry("text", "hello")
