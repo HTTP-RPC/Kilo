@@ -50,7 +50,7 @@ Classes provided by the Kilo framework include:
 * [ElementAdapter](#elementadapter) - map adapter for XML elements
 * [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
 * [Pipe](#pipe) - facilitates communication between producer and consumer threads
-* [Collections and Optionals](#collections-and-optionals) - utility methods for working with collection types and optional values, respectively
+* [Collections and Optionals](#collections-and-optionals) - utility methods for working with collection types/optional values
 
 Each is discussed in more detail in the following sections.
 
@@ -245,7 +245,7 @@ protected HttpServletRequest getRequest() { ... }
 protected HttpServletResponse getResponse() { ... }
 ```
 
-For example, a service might use the request to get the name of the current user, or use the response to return a custom header or status code.
+For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
 
@@ -644,7 +644,7 @@ public void write(Object value, Writer writer, Locale locale) { ... }
 public void write(Object value, Writer writer, Locale locale, TimeZone timeZone) { ... }
 ```
 
-The first argument represents the value to write (i.e. the data dictionary), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
+The first argument represents the value to write (i.e. the "data dictionary"), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
 
 For example, this code applies a template named "example.txt" to a map instance:
 
@@ -660,7 +660,7 @@ var templateEncoder = new TemplateEncoder(getClass().getResource("example.txt"))
 templateEncoder.write(map, System.out);
 ```
 
-If "example.txt" was written as follows:
+If "example.txt" contained the following:
 
 ```
 {{a}}, {{b}}, {{c}}

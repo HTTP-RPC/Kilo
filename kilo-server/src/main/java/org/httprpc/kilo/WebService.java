@@ -1440,7 +1440,7 @@ public abstract class WebService extends HttpServlet {
             || type == Object.class
             || type == Boolean.class
             || Number.class.isAssignableFrom(type)
-            || CharSequence.class.isAssignableFrom(type)
+            || String.class.isAssignableFrom(type)
             || type == Void.class
             || Date.class.isAssignableFrom(type)
             || type == Instant.class
