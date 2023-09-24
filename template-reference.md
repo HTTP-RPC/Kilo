@@ -29,7 +29,7 @@ Nested values can be referred to by path; e.g. "name/first". A literal slash or 
 The reserved "~" and "." variable names represent key and value references, respectively, and are discussed in more detail below.
 
 ### Modifiers
-Modifiers are used to transform a variable's representation before it is written to the output stream. They are specified as shown below and are invoked in declaration order, from left to right. An optional argument value may be included to provide additional information to the modifier:
+Modifiers are used to transform a variable's representation before it is written to the output stream. They are specified as shown below, and are invoked in declaration order (from left to right). An optional argument value may be included to provide additional information to the modifier:
 
 ```
 {{variable:modifier1:modifier2:modifier3=argument:...}}
