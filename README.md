@@ -644,7 +644,11 @@ public void write(Object value, Writer writer, Locale locale, TimeZone timeZone)
 
 The first argument represents the value to write (i.e. the "data dictionary"), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
 
-For example, this code applies a template named "example.txt" to a map instance:
+For example, this code applies a simple template named "example.txt" to a map instance:
+
+```
+{{a}}, {{b}}, {{c}}
+```
 
 ```java
 var map = mapOf(
@@ -658,22 +662,16 @@ var templateEncoder = new TemplateEncoder(getClass().getResource("example.txt"))
 templateEncoder.write(map, System.out);
 ```
 
-If "example.txt" contained the following:
-
-```
-{{a}}, {{b}}, {{c}}
-```
-
-the resulting output would look like this:
+The resulting output would look like this:
 
 ```
 hello, 123, true
 ```
 
-Injected values are automatically escaped for HTML and XML documents.
+Injected values are automatically escaped for HTML and XML documents. For other document types, a custom [modifier](template-reference.md#modifiers) (discussed below) can be used.
 
 ### Custom Modifiers
-[Modifiers](template-reference.md#modifiers) are created by implementing the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
+Modifiers are created by implementing the `TemplateEncoder.Modifier` interface, which defines a single `apply()` method:
 
 ```java
 public interface Modifier {

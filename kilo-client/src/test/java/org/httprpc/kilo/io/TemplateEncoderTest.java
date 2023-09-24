@@ -616,8 +616,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvalidMapValue1() {
-        var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
+    public void testInvalidPath1() {
+        var encoder = new TemplateEncoder(getClass().getResource("invalid-path.txt"));
 
         var root = mapOf(
             entry("a", "xyz")
@@ -627,8 +627,8 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testInvalidMapValue2() throws IOException {
-        var encoder = new TemplateEncoder(getClass().getResource("invalid.txt"));
+    public void testInvalidPath2() throws IOException {
+        var encoder = new TemplateEncoder(getClass().getResource("invalid-path.txt"));
 
         var root = mapOf(
             entry("a", null)
@@ -666,5 +666,16 @@ public class TemplateEncoderTest {
         encoder.write("abcdefg", writer);
 
         assertEquals("ABCDEFG", writer.toString());
+    }
+
+    @Test
+    public void testInvalidModifier() {
+        var encoder = new TemplateEncoder(getClass().getResource("invalid-modifier.txt"));
+
+        var root = mapOf(
+            entry("a", "xyz")
+        );
+
+        assertThrows(IOException.class, () -> encoder.write(root, new StringWriter()));
     }
 }

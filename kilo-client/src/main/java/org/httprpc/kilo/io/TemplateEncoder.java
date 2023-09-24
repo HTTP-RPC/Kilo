@@ -255,10 +255,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
                 @Override
                 public Object get(Object key) {
-                    if (key == null) {
-                        throw new IllegalArgumentException();
-                    }
-
                     if (key.equals(KEY_REFERENCE)) {
                         return entry.getKey();
                     } else {
@@ -276,10 +272,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
                 @Override
                 public boolean containsKey(Object key) {
-                    if (key == null) {
-                        throw new IllegalArgumentException();
-                    }
-
                     if (key.equals(KEY_REFERENCE)) {
                         return true;
                     } else {
@@ -753,9 +745,11 @@ public class TemplateEncoder extends Encoder<Object> {
                                 for (var modifierName : modifierNames) {
                                     var modifier = modifiers.get(modifierName);
 
-                                    if (modifier != null) {
-                                        value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
+                                    if (modifier == null) {
+                                        throw new IOException("Invalid modifier.");
                                     }
+
+                                    value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                                 }
 
                                 if (defaultEscapeModifier != null) {
