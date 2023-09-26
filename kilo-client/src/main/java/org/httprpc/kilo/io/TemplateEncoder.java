@@ -543,7 +543,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         c = reader.read();
                     }
 
-                    if (markerBuilder.length() == 0) {
+                    if (markerBuilder.isEmpty()) {
                         throw new IOException("Invalid marker.");
                     }
 
@@ -566,7 +566,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             if (c == ':' || c == '}') {
-                                if (modifierNameBuilder.length() == 0) {
+                                if (modifierNameBuilder.isEmpty()) {
                                     throw new IOException("Invalid modifier name.");
                                 }
 

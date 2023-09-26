@@ -631,7 +631,7 @@ public class QueryBuilder {
                     i++;
                 }
 
-                if (parameterBuilder.length() == 0) {
+                if (parameterBuilder.isEmpty()) {
                     throw new IllegalArgumentException("Missing parameter name.");
                 }
 

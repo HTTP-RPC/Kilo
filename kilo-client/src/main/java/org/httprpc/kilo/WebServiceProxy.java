@@ -602,7 +602,7 @@ public class WebServiceProxy {
         } else {
             var query = encodeQuery();
 
-            if (query.length() == 0) {
+            if (query.isEmpty()) {
                 url = this.url;
             } else {
                 url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), this.url.getFile() + "?" + query);

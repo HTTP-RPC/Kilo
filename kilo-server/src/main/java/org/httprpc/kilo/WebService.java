@@ -788,7 +788,7 @@ public abstract class WebService extends HttpServlet {
                     for (var j = 0; j < components.length; j++) {
                         var component = components[j];
 
-                        if (component.length() == 0) {
+                        if (component.isEmpty()) {
                             continue;
                         }
 
@@ -915,7 +915,7 @@ public abstract class WebService extends HttpServlet {
             for (var i = 0; i < components.length; i++) {
                 var component = components[i];
 
-                if (component.length() == 0) {
+                if (component.isEmpty()) {
                     continue;
                 }
 
@@ -963,7 +963,7 @@ public abstract class WebService extends HttpServlet {
             for (var part : request.getParts()) {
                 var submittedFileName = part.getSubmittedFileName();
 
-                if (submittedFileName == null || submittedFileName.length() == 0) {
+                if (submittedFileName == null || submittedFileName.isEmpty()) {
                     continue;
                 }
 

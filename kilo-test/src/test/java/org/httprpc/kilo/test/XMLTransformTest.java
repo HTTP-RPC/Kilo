@@ -27,26 +27,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 public class XMLTransformTest {
-    public static void main(String[] args) {
-        try {
-            var xmlTransformTest = new XMLTransformTest();
+    public static void main(String[] args) throws Exception {
+        var xmlTransformTest = new XMLTransformTest();
 
-            var t0 = System.currentTimeMillis();
+        var t0 = System.currentTimeMillis();
 
-            xmlTransformTest.transformXML1();
+        xmlTransformTest.transformXML1();
 
-            var t1 = System.currentTimeMillis();
+        var t1 = System.currentTimeMillis();
 
-            System.out.printf("%s %dms\n", Transformer.class.getSimpleName(), (t1 - t0));
+        System.out.printf("%s %dms\n", Transformer.class.getSimpleName(), (t1 - t0));
 
-            xmlTransformTest.transformXML2();
+        xmlTransformTest.transformXML2();
 
-            var t2 = System.currentTimeMillis();
+        var t2 = System.currentTimeMillis();
 
-            System.out.printf("%s %dms\n", TemplateEncoder.class.getSimpleName(), (t2 - t1));
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        System.out.printf("%s %dms\n", TemplateEncoder.class.getSimpleName(), (t2 - t1));
     }
 
     private void transformXML1() throws Exception {
