@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -545,14 +546,55 @@ public class WebServiceProxy {
     /**
      * Invokes the service operation.
      *
+     * @return
+     * The result of the operation.
+     *
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
     public Object invoke() throws IOException {
+        return invoke(Object.class);
+    }
+
+    /**
+     * Invokes the service operation.
+     *
+     * @param <T>
+     * The result type.
+     *
+     * @param type
+     * The result type.
+     *
+     * @return
+     * The result of the operation.
+     *
+     * @throws IOException
+     * If an exception occurs while executing the operation.
+     */
+    public <T> T invoke(Class<T> type) throws IOException {
+        return invoke(result -> BeanAdapter.coerce(result, type));
+    }
+
+    /**
+     * Invokes the service operation.
+     *
+     * @param <T>
+     * The result type.
+     *
+     * @param transform
+     * The mapping function.
+     *
+     * @return
+     * The result of the operation.
+     *
+     * @throws IOException
+     * If an exception occurs while executing the operation.
+     */
+    public <T> T invoke(Function<Object, ? extends T> transform) throws IOException {
         return invoke((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return jsonDecoder.read(inputStream);
+            return Optionals.map(jsonDecoder.read(inputStream), transform);
         });
     }
 

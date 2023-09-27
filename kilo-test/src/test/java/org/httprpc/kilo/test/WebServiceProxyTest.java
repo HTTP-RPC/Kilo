@@ -201,36 +201,34 @@ public class WebServiceProxyTest {
             entry("period", period),
             entry("uuid", uuid),
             entry("attachments", listOf(textTestURL, imageTestURL))
-        )).invoke();
+        )).invoke(TestService.Response.class);
 
-        var response = BeanAdapter.coerce(result, TestService.Response.class);
-
-        assertTrue(response.getString().equals("héllo&gøod+bye?")
-            && response.getStrings().equals(listOf("a", "b", "c"))
-            && response.getNumber() == 123
-            && response.getFlag()
-            && response.getDayOfWeek().equals(dayOfWeek)
-            && response.getDate().equals(date)
-            && response.getInstant().equals(instant)
-            && response.getLocalDate().equals(localDate)
-            && response.getLocalTime().equals(localTime)
-            && response.getLocalDateTime().equals(localDateTime)
-            && response.getDuration().equals(duration)
-            && response.getPeriod().equals(period)
-            && response.getUUID().equals(uuid)
-            && response.getAttachmentInfo().get(0).getBytes() == 26
-            && response.getAttachmentInfo().get(0).getChecksum() == 2412
-            && response.getAttachmentInfo().get(1).getBytes() == 10392
-            && response.getAttachmentInfo().get(1).getChecksum() == 1038036);
+        assertTrue(result.getString().equals("héllo&gøod+bye?")
+            && result.getStrings().equals(listOf("a", "b", "c"))
+            && result.getNumber() == 123
+            && result.getFlag()
+            && result.getDayOfWeek().equals(dayOfWeek)
+            && result.getDate().equals(date)
+            && result.getInstant().equals(instant)
+            && result.getLocalDate().equals(localDate)
+            && result.getLocalTime().equals(localTime)
+            && result.getLocalDateTime().equals(localDateTime)
+            && result.getDuration().equals(duration)
+            && result.getPeriod().equals(period)
+            && result.getUUID().equals(uuid)
+            && result.getAttachmentInfo().get(0).getBytes() == 26
+            && result.getAttachmentInfo().get(0).getChecksum() == 2412
+            && result.getAttachmentInfo().get(1).getBytes() == 10392
+            && result.getAttachmentInfo().get(1).getChecksum() == 1038036);
     }
 
     @Test
     public void testListPost() throws IOException {
         var body = listOf(1, 2, 3);
 
-        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke();
+        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke(List.class);
 
-        assertEquals(BeanAdapter.coerceList(body, String.class), result);
+        assertEquals(body, BeanAdapter.coerceList(result, Integer.class));
     }
 
     @Test
@@ -276,9 +274,9 @@ public class WebServiceProxyTest {
             entry("flag", true)
         ), TestService.Body.class);
 
-        var result = BeanAdapter.coerce(WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        )).setBody(body).setMonitorStream(System.out).invoke(), TestService.Body.class);
+        )).setBody(body).setMonitorStream(System.out).invoke(TestService.Body.class);
 
         assertEquals(body, result);
     }
@@ -539,10 +537,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCatalog() throws IOException {
-        var item = BeanAdapter.coerce(WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
+        var item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
             entry("description", "abc"),
             entry("price", 150.00)
-        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(), Item.class);
+        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(Item.class);
 
         assertNotNull(item);
         assertNotNull(item.getID());
@@ -566,11 +564,11 @@ public class WebServiceProxyTest {
     }
 
     private List<Item> getCatalogItems() throws IOException {
-        return BeanAdapter.coerceList((List<?>)WebServiceProxy.get(baseURL, "catalog/items").invoke(), Item.class);
+        return WebServiceProxy.get(baseURL, "catalog/items").invoke(result -> BeanAdapter.coerceList((List<?>)result, Item.class));
     }
 
     private List<Size> getCatalogSizes() throws IOException {
-        return BeanAdapter.coerceList((List<?>)WebServiceProxy.get(baseURL, "catalog/sizes").invoke(), Size.class);
+        return WebServiceProxy.get(baseURL, "catalog/sizes").invoke(result -> BeanAdapter.coerceList((List<?>)result, Size.class));
     }
 
     @Test
