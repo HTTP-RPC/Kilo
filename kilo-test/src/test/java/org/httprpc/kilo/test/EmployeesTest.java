@@ -26,25 +26,25 @@ public class EmployeesTest {
 
         var t0 = System.currentTimeMillis();
 
-        var list1 = WebServiceProxy.get(baseURL).invoke(List.class);
+        var list1 = (List<?>)WebServiceProxy.get(baseURL).invoke();
 
         var t1 = System.currentTimeMillis();
 
         System.out.println(String.format("Retrieved %d rows in %.1fs", list1.size(), (t1 - t0) / 1000.0));
 
-        var list2 = WebServiceProxy.get(baseURL, "stream").invoke(List.class);
+        var list2 = (List<?>)WebServiceProxy.get(baseURL, "stream").invoke();
 
         var t2 = System.currentTimeMillis();
 
         System.out.println(String.format("Retrieved %d streamed rows in %.1fs", list2.size(), (t2 - t1) / 1000.0));
 
-        var list3 = WebServiceProxy.get(baseURL, "hibernate").invoke(List.class);
+        var list3 = (List<?>)WebServiceProxy.get(baseURL, "hibernate").invoke();
 
         var t3 = System.currentTimeMillis();
 
         System.out.println(String.format("Retrieved %d Hibernate rows in %.1fs", list3.size(), (t3 - t2) / 1000.0));
 
-        var list4 = WebServiceProxy.get(baseURL, "hibernate-stream").invoke(List.class);
+        var list4 = (List<?>)WebServiceProxy.get(baseURL, "hibernate-stream").invoke();
 
         var t4 = System.currentTimeMillis();
 

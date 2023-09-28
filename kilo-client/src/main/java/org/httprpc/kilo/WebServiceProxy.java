@@ -553,7 +553,7 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public Object invoke() throws IOException {
-        return invoke(Object.class);
+        return invoke(result -> result);
     }
 
     /**
@@ -562,8 +562,8 @@ public class WebServiceProxy {
      * @param <T>
      * The result type.
      *
-     * @param type
-     * The result type.
+     * @param resultHandler
+     * The result handler.
      *
      * @return
      * The result of the operation.
@@ -571,30 +571,15 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(Class<T> type) throws IOException {
-        return invoke(result -> BeanAdapter.coerce(result, type));
-    }
+    public <T> T invoke(Function<Object, ? extends T> resultHandler) throws IOException {
+        if (resultHandler == null) {
+            throw new IllegalArgumentException();
+        }
 
-    /**
-     * Invokes the service operation.
-     *
-     * @param <T>
-     * The result type.
-     *
-     * @param transform
-     * The mapping function.
-     *
-     * @return
-     * The result of the operation.
-     *
-     * @throws IOException
-     * If an exception occurs while executing the operation.
-     */
-    public <T> T invoke(Function<Object, ? extends T> transform) throws IOException {
         return invoke((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return Optionals.map(jsonDecoder.read(inputStream), transform);
+            return resultHandler.apply(jsonDecoder.read(inputStream));
         });
     }
 

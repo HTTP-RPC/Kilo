@@ -186,7 +186,7 @@ public class WebServiceProxyTest {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        var result = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
+        var response = WebServiceProxy.post(baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -201,34 +201,34 @@ public class WebServiceProxyTest {
             entry("period", period),
             entry("uuid", uuid),
             entry("attachments", listOf(textTestURL, imageTestURL))
-        )).invoke(TestService.Response.class);
+        )).invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
 
-        assertTrue(result.getString().equals("héllo&gøod+bye?")
-            && result.getStrings().equals(listOf("a", "b", "c"))
-            && result.getNumber() == 123
-            && result.getFlag()
-            && result.getDayOfWeek().equals(dayOfWeek)
-            && result.getDate().equals(date)
-            && result.getInstant().equals(instant)
-            && result.getLocalDate().equals(localDate)
-            && result.getLocalTime().equals(localTime)
-            && result.getLocalDateTime().equals(localDateTime)
-            && result.getDuration().equals(duration)
-            && result.getPeriod().equals(period)
-            && result.getUUID().equals(uuid)
-            && result.getAttachmentInfo().get(0).getBytes() == 26
-            && result.getAttachmentInfo().get(0).getChecksum() == 2412
-            && result.getAttachmentInfo().get(1).getBytes() == 10392
-            && result.getAttachmentInfo().get(1).getChecksum() == 1038036);
+        assertTrue(response.getString().equals("héllo&gøod+bye?")
+            && response.getStrings().equals(listOf("a", "b", "c"))
+            && response.getNumber() == 123
+            && response.getFlag()
+            && response.getDayOfWeek().equals(dayOfWeek)
+            && response.getDate().equals(date)
+            && response.getInstant().equals(instant)
+            && response.getLocalDate().equals(localDate)
+            && response.getLocalTime().equals(localTime)
+            && response.getLocalDateTime().equals(localDateTime)
+            && response.getDuration().equals(duration)
+            && response.getPeriod().equals(period)
+            && response.getUUID().equals(uuid)
+            && response.getAttachmentInfo().get(0).getBytes() == 26
+            && response.getAttachmentInfo().get(0).getChecksum() == 2412
+            && response.getAttachmentInfo().get(1).getBytes() == 10392
+            && response.getAttachmentInfo().get(1).getChecksum() == 1038036);
     }
 
     @Test
     public void testListPost() throws IOException {
         var body = listOf(1, 2, 3);
 
-        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke(List.class);
+        var result = WebServiceProxy.post(baseURL, "test").setBody(body).setMonitorStream(System.out).invoke();
 
-        assertEquals(body, BeanAdapter.coerceList(result, Integer.class));
+        assertEquals(body, BeanAdapter.coerceList((List<?>)result, Integer.class));
     }
 
     @Test
@@ -267,18 +267,18 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomBodyPost() throws IOException {
-        var body = BeanAdapter.coerce(mapOf(
+        var requestBody = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true)
         ), TestService.Body.class);
 
-        var result = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
+        var responseBody = WebServiceProxy.post(baseURL, "test").setArguments(mapOf(
             entry("id", 101)
-        )).setBody(body).setMonitorStream(System.out).invoke(TestService.Body.class);
+        )).setBody(requestBody).setMonitorStream(System.out).invoke(result -> BeanAdapter.coerce(result, TestService.Body.class));
 
-        assertEquals(body, result);
+        assertEquals(requestBody, responseBody);
     }
 
     @Test
@@ -540,7 +540,7 @@ public class WebServiceProxyTest {
         var item = WebServiceProxy.post(baseURL, "catalog/items").setBody(mapOf(
             entry("description", "abc"),
             entry("price", 150.00)
-        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(Item.class);
+        )).setExpectedStatus(WebServiceProxy.Status.CREATED).invoke(result -> BeanAdapter.coerce(result, Item.class));
 
         assertNotNull(item);
         assertNotNull(item.getID());
