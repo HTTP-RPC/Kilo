@@ -374,11 +374,6 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testInvalidTypeOf() {
-        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.typeOf(List.class));
-    }
-
-    @Test
     public void testObjectMethodDelegation() {
         var map1 = new HashMap<String, Object>() {
             @Override

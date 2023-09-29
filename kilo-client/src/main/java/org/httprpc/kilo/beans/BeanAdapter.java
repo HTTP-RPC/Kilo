@@ -1040,7 +1040,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException();
         }
 
-        return new ContainerType(new Type[] {Object.class, valueType}, List.class);
+        return new ContainerType(new Type[] {Object.class, valueType}, Map.class);
     }
 
     /**

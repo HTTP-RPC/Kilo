@@ -545,25 +545,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * Prepares the web service proxy for execution.
-     *
-     * @param consumer
-     * A callback that accepts a web service proxy instance.
-     *
-     * @return
-     * The web service proxy.
-     */
-    public WebServiceProxy prepare(Consumer<WebServiceProxy> consumer) {
-        if (consumer == null) {
-            throw new IllegalArgumentException();
-        }
-
-        consumer.accept(this);
-
-        return this;
-    }
-
-    /**
      * Invokes the service operation.
      *
      * @return
