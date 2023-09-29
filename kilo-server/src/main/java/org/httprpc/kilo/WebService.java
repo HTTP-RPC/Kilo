@@ -1380,7 +1380,7 @@ public abstract class WebService extends HttpServlet {
 
                     if (content != null) {
                         if (content.multiple()) {
-                            operation.consumes = describeGenericType(BeanAdapter.typeOf(List.class, content.type()));
+                            operation.consumes = describeGenericType(BeanAdapter.typeOfList(content.type()));
                         } else {
                             operation.consumes = describeRawType(content.type());
                         }
@@ -1453,9 +1453,9 @@ public abstract class WebService extends HttpServlet {
             || type == URL.class) {
             return new TypeDescriptor(type, true);
         } else if (List.class.isAssignableFrom(type)) {
-            return describeGenericType(BeanAdapter.typeOf(List.class, Object.class));
+            return describeGenericType(BeanAdapter.typeOfList(Object.class));
         } else if (Map.class.isAssignableFrom(type)) {
-            return describeGenericType(BeanAdapter.typeOf(Map.class, Object.class, Object.class));
+            return describeGenericType(BeanAdapter.typeOfMap(Object.class));
         } else {
             if (type.isEnum()) {
                 var enumeration = serviceDescriptor.enumerations.get(type);

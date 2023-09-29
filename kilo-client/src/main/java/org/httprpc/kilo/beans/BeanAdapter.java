@@ -372,6 +372,32 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    // Container type
+    private static class ContainerType implements ParameterizedType {
+        Type[] actualTypeArguments;
+        Type rawType;
+
+        ContainerType(Type[] actualTypeArguments, Type rawType) {
+            this.actualTypeArguments = actualTypeArguments;
+            this.rawType = rawType;
+        }
+
+        @Override
+        public Type[] getActualTypeArguments() {
+            return actualTypeArguments;
+        }
+
+        @Override
+        public Type getRawType() {
+            return rawType;
+        }
+
+        @Override
+        public Type getOwnerType() {
+            return null;
+        }
+    }
+
     private Object bean;
     private Map<Class<?>, Map<String, Property>> propertyCache;
 
@@ -680,7 +706,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(List<?> list, Class<E> elementType) {
-        return (List<E>)toGenericType(list, typeOf(List.class, elementType));
+        return (List<E>)toGenericType(list, typeOfList(elementType));
     }
 
     /**
@@ -703,7 +729,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Class<V> valueType) {
-        return (Map<K, V>)toGenericType(map, typeOf(Map.class, Object.class, valueType));
+        return (Map<K, V>)toGenericType(map, typeOfMap(valueType));
     }
 
     private static Object toGenericType(Object value, Type type) {
@@ -984,48 +1010,37 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Generates a type descriptor.
+     * Generates a list type descriptor.
      *
-     * @param rawType
-     * The raw type.
-     *
-     * @param actualTypeArguments
-     * The actual type arguments.
+     * @param elementType
+     * The element type.
      *
      * @return
-     * A type that describes the given raw type and actual type arguments.
+     * A list type descriptor.
      */
-    public static Type typeOf(Class<?> rawType, Type... actualTypeArguments) {
-        if (rawType == null) {
+    public static Type typeOfList(Class<?> elementType) {
+        if (elementType == null) {
             throw new IllegalArgumentException();
         }
 
-        var typeParameters = rawType.getTypeParameters();
+        return new ContainerType(new Type[] {elementType}, List.class);
+    }
 
-        if (typeParameters.length != actualTypeArguments.length) {
-            throw new IllegalArgumentException("Type parameter mismatch.");
+    /**
+     * Generates a map type descriptor.
+     *
+     * @param valueType
+     * The value type.
+     *
+     * @return
+     * A map type descriptor.
+     */
+    public static Type typeOfMap(Class<?> valueType) {
+        if (valueType == null) {
+            throw new IllegalArgumentException();
         }
 
-        if (typeParameters.length == 0) {
-            return rawType;
-        } else {
-            return new ParameterizedType() {
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return actualTypeArguments;
-                }
-
-                @Override
-                public Type getRawType() {
-                    return rawType;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            };
-        }
+        return new ContainerType(new Type[] {Object.class, valueType}, List.class);
     }
 
     /**
