@@ -1380,13 +1380,13 @@ public abstract class WebService extends HttpServlet {
 
                     if (content != null) {
                         if (content.multiple()) {
-                            operation.consumes = describeType(BeanAdapter.typeOf(List.class, content.type()));
+                            operation.consumes = describeGenericType(BeanAdapter.typeOf(List.class, content.type()));
                         } else {
-                            operation.consumes = describeType(content.type());
+                            operation.consumes = describeRawType(content.type());
                         }
                     }
 
-                    operation.produces = describeType(handler.method.getGenericReturnType());
+                    operation.produces = describeGenericType(handler.method.getGenericReturnType());
 
                     var parameters = handler.method.getParameters();
 
@@ -1395,7 +1395,7 @@ public abstract class WebService extends HttpServlet {
 
                         var parameterDescriptor = new VariableDescriptor(parameter);
 
-                        parameterDescriptor.type = describeType(parameter.getParameterizedType());
+                        parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
 
                         operation.parameters.add(parameterDescriptor);
                     }
@@ -1412,17 +1412,17 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private TypeDescriptor describeType(Type type) {
+    private TypeDescriptor describeGenericType(Type type) {
         if (type instanceof Class) {
-            return describeType((Class<?>)type);
+            return describeRawType((Class<?>)type);
         } else if (type instanceof ParameterizedType parameterizedType) {
             var rawType = parameterizedType.getRawType();
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class) {
-                return new ListTypeDescriptor(describeType(actualTypeArguments[0]));
+                return new ListTypeDescriptor(describeGenericType(actualTypeArguments[0]));
             } else if (rawType == Map.class) {
-                return new MapTypeDescriptor(describeType(actualTypeArguments[0]), describeType(actualTypeArguments[1]));
+                return new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
             } else {
                 throw new IllegalArgumentException();
             }
@@ -1431,7 +1431,7 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private TypeDescriptor describeType(Class<?> type) {
+    private TypeDescriptor describeRawType(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException();
         }
@@ -1453,9 +1453,9 @@ public abstract class WebService extends HttpServlet {
             || type == URL.class) {
             return new TypeDescriptor(type, true);
         } else if (List.class.isAssignableFrom(type)) {
-            return describeType(BeanAdapter.typeOf(List.class, Object.class));
+            return describeGenericType(BeanAdapter.typeOf(List.class, Object.class));
         } else if (Map.class.isAssignableFrom(type)) {
-            return describeType(BeanAdapter.typeOf(Map.class, Object.class, Object.class));
+            return describeGenericType(BeanAdapter.typeOf(Map.class, Object.class, Object.class));
         } else {
             if (type.isEnum()) {
                 var enumeration = serviceDescriptor.enumerations.get(type);
@@ -1489,13 +1489,13 @@ public abstract class WebService extends HttpServlet {
                         var interfaces = type.getInterfaces();
 
                         for (var i = 0; i < interfaces.length; i++) {
-                            structure.supertypes.add(describeType(interfaces[i]));
+                            structure.supertypes.add(describeRawType(interfaces[i]));
                         }
                     } else {
                         var baseType = type.getSuperclass();
 
                         if (baseType != Object.class && baseType != Record.class) {
-                            structure.supertypes.add(describeType(baseType));
+                            structure.supertypes.add(describeRawType(baseType));
                         }
                     }
 
@@ -1508,7 +1508,7 @@ public abstract class WebService extends HttpServlet {
 
                         var propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
 
-                        propertyDescriptor.type = describeType(accessor.getGenericReturnType());
+                        propertyDescriptor.type = describeGenericType(accessor.getGenericReturnType());
 
                         structure.properties.add(propertyDescriptor);
                     }
