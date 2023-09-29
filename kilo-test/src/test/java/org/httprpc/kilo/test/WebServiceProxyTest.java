@@ -369,15 +369,21 @@ public class WebServiceProxyTest {
 
     @Test
     public void testHeaders() throws IOException {
-        var result = WebServiceProxy.get(baseURL, "test/headers").setHeaders(mapOf(
-            entry("X-Header-A", "abc"),
-            entry("X-Header-B", 123)
-        )).setMonitorStream(System.out).invoke();
+        var result = WebServiceProxy.get(baseURL, "test/headers")
+            .prepare(this::applyHeaders)
+            .setMonitorStream(System.out).invoke();
 
         assertEquals(mapOf(
             entry("X-Header-A", "abc"),
             entry("X-Header-B", "123")
         ), result);
+    }
+
+    private void applyHeaders(WebServiceProxy webServiceProxy) {
+        webServiceProxy.setHeaders(mapOf(
+            entry("X-Header-A", "abc"),
+            entry("X-Header-B", 123)
+        ));
     }
 
     @Test

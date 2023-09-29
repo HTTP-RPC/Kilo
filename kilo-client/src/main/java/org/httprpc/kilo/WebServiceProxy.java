@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -539,6 +540,25 @@ public class WebServiceProxy {
      */
     public WebServiceProxy setMonitorStream(PrintStream monitorStream) {
         this.monitorStream = monitorStream;
+
+        return this;
+    }
+
+    /**
+     * Prepares the web service proxy for execution.
+     *
+     * @param consumer
+     * A callback that accepts a web service proxy instance.
+     *
+     * @return
+     * The web service proxy.
+     */
+    public WebServiceProxy prepare(Consumer<WebServiceProxy> consumer) {
+        if (consumer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        consumer.accept(this);
 
         return this;
     }
