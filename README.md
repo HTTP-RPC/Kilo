@@ -368,10 +368,7 @@ Service types or methods that are not considered public can be tagged with the `
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to submit API requests to a server. It provides a single constructor that accepts the following arguments:
-
-* `method` - the HTTP method to execute
-* `url` - the URL of the requested resource
+The `WebServiceProxy` class is used to submit API requests to a server. It provides constructors that accept the HTTP method to execute and the URL of the requested resource.
 
 Request arguments are specified via the `setArguments()` method. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
 
@@ -417,76 +414,29 @@ public interface ErrorHandler {
 The following code demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
 
 ```java
-var webServiceProxy = WebServiceProxy.get(new URL(baseURL, "math/sum"));
-
 // GET /math/sum?a=2&b=4
+var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+
 webServiceProxy.setArguments(mapOf(
     entry("a", 4),
     entry("b", 2)
-));
-
-System.out.println(webServiceProxy.invoke()); // 6.0
-
-// GET /math/sum?values=1&values=2&values=3
-webServiceProxy.setArguments(mapOf(
-    entry("values", listOf(1, 2, 3))
 ));
 
 System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
-### Fluent Invocation
-`WebServiceProxy` supports a fluent (i.e. "chained") invocation model. For example, the following code is functionally equivalent to the previous version:
-
 ```java
-// GET /math/sum?a=2&b=4
-System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
-    entry("a", 4),
-    entry("b", 2)
-)).invoke()); // 6.0
-
 // GET /math/sum?values=1&values=2&values=3
-System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
+var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+
+webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))
-)).invoke()); // 6.0
+));
+
+System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
 POST, PUT, and DELETE operations are also supported.
-
-### Monitoring Service Invocations
-Service request and response data can be captured by setting the monitor stream on a proxy instance. For example:
-
-```java
-var result = WebServiceProxy.get(baseURL, "test/fibonacci").setArguments(
-    mapOf(
-        entry("count", 8)
-    )
-).setMonitorStream(System.out).invoke();
-```
-
-This code would produce output similar to the following:
-
-```
-GET http://localhost:8080/kilo-test/test/fibonacci?count=8
-Accept-Language: en-us
-HTTP 200
-Keep-Alive: timeout=20
-Transfer-Encoding: chunked
-vary: accept-encoding
-Connection: keep-alive
-Date: Wed, 10 May 2023 15:52:55 GMT
-Content-Type: application/json;charset=UTF-8
-[
-  0,
-  1,
-  1,
-  2,
-  3,
-  5,
-  8,
-  13
-]
-```
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used directly by application logic. For example: 

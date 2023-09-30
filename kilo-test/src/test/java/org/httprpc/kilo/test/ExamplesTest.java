@@ -50,36 +50,28 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 public class ExamplesTest {
     @Test
-    public void testMathService() throws IOException {
-        var baseURL = new URL("http://localhost:8080/kilo-test/");
-
-        var webServiceProxy = WebServiceProxy.get(new URL(baseURL, "math/sum"));
-
+    public void testMathService1() throws IOException {
         // GET /math/sum?a=2&b=4
+        var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+
         webServiceProxy.setArguments(mapOf(
             entry("a", 4),
             entry("b", 2)
         ));
 
         System.out.println(webServiceProxy.invoke()); // 6.0
+    }
 
+    @Test
+    public void testMathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
+        var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         ));
 
         System.out.println(webServiceProxy.invoke()); // 6.0
-
-        // GET /math/sum?a=2&b=4
-        System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
-            entry("a", 4),
-            entry("b", 2)
-        )).invoke()); // 6.0
-
-        // GET /math/sum?values=1&values=2&values=3
-        System.out.println(WebServiceProxy.get(baseURL, "math/sum").setArguments(mapOf(
-            entry("values", listOf(1, 2, 3))
-        )).invoke()); // 6.0
     }
 
     @Test
