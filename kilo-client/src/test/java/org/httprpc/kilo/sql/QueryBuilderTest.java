@@ -73,7 +73,8 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelect() {
-        var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D).from(ASchema.class)
+        var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D)
+            .from(ASchema.class)
             .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID), and(ASchema.A.eq("a")))
             .leftJoin(CSchema.class).on(BSchema.ID.eq(CSchema.ID), and(BSchema.B.eq("b")))
             .rightJoin(DSchema.class).on(CSchema.ID.eq(DSchema.ID), and(CSchema.C.eq("c")))
@@ -85,7 +86,8 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("a", "b", "c", "m", "n", "z"), queryBuilder.getParameters());
 
-        assertEquals("select a as x, b, c, d from A "
+        assertEquals("select a as x, b, c, d "
+            + "from A "
             + "join B on A.id = B.id and a = ? "
             + "left join C on B.id = C.id and b = ? "
             + "right join D on C.id = D.id and c = ? "
@@ -98,17 +100,32 @@ public class QueryBuilderTest {
 
     @Test
     public void testGroupBy() {
-        var queryBuilder = QueryBuilder.select(A, B.avg().as("y")).from(ASchema.class)
-            .groupBy(A).having(C.gt("c"), and(D.like("d")));
+        var queryBuilder = QueryBuilder.select(A, B.avg().as("y"))
+            .from(ASchema.class)
+            .groupBy(A)
+            .having(C.gt("c"), and(D.like("d")));
 
         assertEquals(listOf("c", "d"), queryBuilder.getParameters());
 
-        assertEquals("select a, avg(b) as y from A "
-            + "group by a having c > ? and d like ?", queryBuilder.toString());
+        assertEquals("select a, avg(b) as y "
+            + "from A "
+            + "group by a "
+            + "having c > ? and d like ?", queryBuilder.toString());
     }
 
     @Test
     public void testInsertInto() {
+        var queryBuilder = QueryBuilder.insertInto(ASchema.class, A, B, C)
+            .values("a", "b", "c");
+
+        assertEquals(listOf("a", "b", "c"), queryBuilder.getParameters());
+
+        assertEquals("insert into A (a, b, c) values (?, ?, ?)", queryBuilder.toString());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testInsertInto_old() {
         var queryBuilder = QueryBuilder.insertInto(ASchema.class, mapOf(
             entry(A, "a"),
             entry(B, "b"),
@@ -122,6 +139,18 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdate() {
+        var queryBuilder = QueryBuilder.update(ASchema.class, A, B, C)
+            .set("a", "b", "c")
+            .where(A.gt("m"), and(B.isNull()));
+
+        assertEquals(listOf("a", "b", "c", "m"), queryBuilder.getParameters());
+
+        assertEquals("update A set a = ?, b = ?, c = ? where a > ? and b is null", queryBuilder.toString());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testUpdate_old() {
         var queryBuilder = QueryBuilder.update(ASchema.class, mapOf(
             entry(A, "a"),
             entry(B, "b"),
@@ -135,28 +164,35 @@ public class QueryBuilderTest {
 
     @Test
     public void testDeleteFrom() {
-        var queryBuilder = QueryBuilder.deleteFrom(ASchema.class).where(A.lt("x"), and(B.isNotNull()));
+        var queryBuilder = QueryBuilder.deleteFrom(ASchema.class)
+            .where(A.lt("x"), and(B.isNotNull()));
 
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
-        assertEquals("delete from A where a < ? and b is not null", queryBuilder.toString());
+        assertEquals("delete from A "
+            + "where a < ? and b is not null", queryBuilder.toString());
     }
 
     @Test
     public void testConditionalGroups() {
-        var queryBuilder = QueryBuilder.selectAll().from(ASchema.class)
+        var queryBuilder = QueryBuilder.selectAll()
+            .from(ASchema.class)
             .where(allOf(A.eq("a"), B.ne("b"), C.lt("c")), and(anyOf(D.gt("d"), E.notIn("m", "n"))));
 
         assertEquals(listOf("a", "b", "c", "d", "m", "n"), queryBuilder.getParameters());
 
-        assertEquals("select * from A "
+        assertEquals("select * "
+            + "from A "
             + "where (a = ? and b != ? and c < ?) and (d > ? or e not in (?, ?))", queryBuilder.toString());
     }
 
     @Test
     public void testWhereExists() {
-        var queryBuilder = QueryBuilder.selectAll().from(BSchema.class)
-            .whereExists(QueryBuilder.select(CSchema.C).from(CSchema.class).where(CSchema.ID.eq(BSchema.ID), and(CSchema.C.eq("c"))));
+        var queryBuilder = QueryBuilder.selectAll()
+            .from(BSchema.class)
+            .whereExists(QueryBuilder.select(CSchema.C)
+                .from(CSchema.class)
+                .where(CSchema.ID.eq(BSchema.ID), and(CSchema.C.eq("c"))));
 
         assertEquals(listOf("c"), queryBuilder.getParameters());
 
@@ -166,8 +202,11 @@ public class QueryBuilderTest {
 
     @Test
     public void testWhereNotExists() {
-        var queryBuilder = QueryBuilder.selectAll().from(BSchema.class)
-            .whereNotExists(QueryBuilder.select(CSchema.C).from(CSchema.class).where(CSchema.ID.eq(BSchema.ID), and(CSchema.C.eq("c"))));
+        var queryBuilder = QueryBuilder.selectAll()
+            .from(BSchema.class)
+            .whereNotExists(QueryBuilder.select(CSchema.C)
+                .from(CSchema.class)
+                .where(CSchema.ID.eq(BSchema.ID), and(CSchema.C.eq("c"))));
 
         assertEquals(listOf("c"), queryBuilder.getParameters());
 
@@ -221,16 +260,5 @@ public class QueryBuilderTest {
         var queryBuilder = new QueryBuilder();
 
         assertThrows(IllegalArgumentException.class, () -> queryBuilder.append("select * from xyz where foo = : and bar is null"));
-    }
-
-    @Test
-    public void testMissingValue() {
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.insertInto(ASchema.class, mapOf(
-            entry(A, null)
-        )));
-
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.update(ASchema.class, mapOf(
-            entry(A, null)
-        )));
     }
 }

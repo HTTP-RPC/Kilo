@@ -34,7 +34,9 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
-    private List<String> parameters;
+    private SchemaElement[] schemaElements;
+
+    private List<String> parameters = new LinkedList<>();
 
     private List<Object> generatedKeys = null;
 
@@ -58,12 +60,12 @@ public class QueryBuilder {
     }
 
     private QueryBuilder(StringBuilder sqlBuilder) {
-        this(sqlBuilder, new LinkedList<>());
+        this(sqlBuilder, null);
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder, List<String> parameters) {
+    private QueryBuilder(StringBuilder sqlBuilder, SchemaElement[] schemaElements) {
         this.sqlBuilder = sqlBuilder;
-        this.parameters = parameters;
+        this.schemaElements = schemaElements;
     }
 
     /**
@@ -302,7 +304,7 @@ public class QueryBuilder {
      * Appends a "group by" clause to a query.
      *
      * @param schemaElements
-     * The schema elements representing the columns to group by.
+     * A list of schema elements representing the columns to group by.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -366,7 +368,7 @@ public class QueryBuilder {
      * Appends an "order by" clause to a query.
      *
      * @param schemaElements
-     * The schema elements representing the columns to order by.
+     * A list of schema elements representing the columns to order by.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -456,20 +458,11 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates an "insert into" query.
-     *
-     * @param <S>
-     * The schema type.
-     *
-     * @param schemaType
-     * The schema type.
-     *
-     * @param values
-     * The values to insert.
-     *
-     * @return
-     * The new {@link QueryBuilder} instance.
+     * @deprecated
+     * Use {@link #insertInto(Class, SchemaElement...)} and
+     * {@link #values(String...)} instead.
      */
+    @Deprecated
     public static <S extends SchemaElement> QueryBuilder insertInto(Class<S> schemaType, Map<S, String> values) {
         if (schemaType == null || values == null) {
             throw new IllegalArgumentException();
@@ -516,24 +509,87 @@ public class QueryBuilder {
 
         sqlBuilder.append(")");
 
-        return new QueryBuilder(sqlBuilder, parameters);
+        var queryBuilder = new QueryBuilder(sqlBuilder);
+
+        queryBuilder.parameters.addAll(parameters);
+
+        return queryBuilder;
     }
 
     /**
-     * Creates an "update" query.
-     *
-     * @param <S>
-     * The schema type.
+     * Creates an "insert into" query.
      *
      * @param schemaType
-     * The schema type.
+     * The schema type representing the table to populate.
      *
-     * @param values
-     * The values to update.
+     * @param schemaElements
+     * A list of schema elements representing the columns to populate.
      *
      * @return
      * The new {@link QueryBuilder} instance.
      */
+    public static QueryBuilder insertInto(Class<? extends SchemaElement> schemaType, SchemaElement... schemaElements) {
+        if (schemaType == null || schemaElements.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
+
+        sqlBuilder.append("insert into ");
+        sqlBuilder.append(SchemaElement.getTableName(schemaType));
+
+        sqlBuilder.append(" (");
+
+        for (var i = 0; i < schemaElements.length; i++) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(schemaElements[i].getColumnName());
+        }
+
+        sqlBuilder.append(")");
+
+        return new QueryBuilder(sqlBuilder);
+    }
+
+    /**
+     * Appends a "values" clause to an "insert into" query.
+     *
+     * @param values
+     * The values to insert.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder values(String... values) {
+        if (values.length == 0) {
+             throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" values (");
+
+        for (var i = 0; i < values.length; i++) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append("?");
+
+            parameters.add(values[i]);
+        }
+
+        sqlBuilder.append(")");
+
+        return this;
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #update(Class, SchemaElement...)} and {@link #set(String...)}
+     * instead.
+     */
+    @Deprecated
     public static <S extends SchemaElement> QueryBuilder update(Class<S> schemaType, Map<S, String> values) {
         if (schemaType == null || values == null) {
             throw new IllegalArgumentException();
@@ -571,7 +627,72 @@ public class QueryBuilder {
             i++;
         }
 
-        return new QueryBuilder(sqlBuilder, parameters);
+        var queryBuilder = new QueryBuilder(sqlBuilder);
+
+        queryBuilder.parameters.addAll(parameters);
+
+        return queryBuilder;
+    }
+
+    /**
+     * Creates an "update" query.
+     *
+     * @param schemaType
+     * The schema type representing the table to update.
+     *
+     * @param schemaElements
+     * A list of schema elements representing the columns to update.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder update(Class<? extends SchemaElement> schemaType, SchemaElement... schemaElements) {
+        if (schemaType == null || schemaElements.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
+
+        sqlBuilder.append("update ");
+        sqlBuilder.append(SchemaElement.getTableName(schemaType));
+
+        return new QueryBuilder(sqlBuilder, schemaElements);
+    }
+
+    /**
+     * Appends a "set" clause to an "update" query.
+     *
+     * @param values
+     * The updated values.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder set(String... values) {
+        if (schemaElements == null) {
+            throw new IllegalStateException();
+        }
+
+        if (values.length != schemaElements.length) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" set ");
+
+        for (var i = 0; i < schemaElements.length; i++) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(schemaElements[i].getColumnName());
+            sqlBuilder.append(" = ");
+
+            sqlBuilder.append("?");
+
+            parameters.add(values[i]);
+        }
+
+        return this;
     }
 
     /**

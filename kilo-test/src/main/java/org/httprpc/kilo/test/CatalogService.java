@@ -57,10 +57,8 @@ public class CatalogService extends AbstractDatabaseService {
     public Item addItem() throws SQLException {
         var item = (Item)getBody();
 
-        var queryBuilder = QueryBuilder.insertInto(ItemSchema.class, mapOf(
-            entry(DESCRIPTION, "description"),
-            entry(PRICE, "price")
-        ));
+        var queryBuilder = QueryBuilder.insertInto(ItemSchema.class, DESCRIPTION, PRICE)
+            .values("description", "price");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -94,10 +92,9 @@ public class CatalogService extends AbstractDatabaseService {
 
         item.setID(id);
 
-        var queryBuilder = QueryBuilder.update(ItemSchema.class, mapOf(
-            entry(DESCRIPTION, "description"),
-            entry(PRICE, "price")
-        )).where(ID.eq("id"));
+        var queryBuilder = QueryBuilder.update(ItemSchema.class, DESCRIPTION, PRICE)
+            .set("description", "price")
+            .where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));

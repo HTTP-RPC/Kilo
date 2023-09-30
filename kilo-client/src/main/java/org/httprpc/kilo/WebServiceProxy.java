@@ -261,6 +261,28 @@ public class WebServiceProxy {
     }
 
     /**
+     * Constructs a new web service proxy.
+     *
+     * @param method
+     * The HTTP method.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @param path
+     * The path to the resource, relative to the base URL.
+     *
+     * @param args
+     * Path format specifier arguments.
+     *
+     * @throws MalformedURLException
+     * If a URL cannot be constructed from the base URL and path.
+     */
+    public WebServiceProxy(String method, URL baseURL, String path, Object... args) throws MalformedURLException {
+        this(method, new URL(baseURL, String.format(path, args)));
+    }
+
+    /**
      * Returns the HTTP method.
      *
      * @return
@@ -876,141 +898,73 @@ public class WebServiceProxy {
     }
 
     /**
-     * Creates a web service proxy representing a GET request.
-     *
-     * @param url
-     * The resource URL.
-     *
-     * @return
-     * The new web service proxy.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy get(URL url) {
         return new WebServiceProxy("GET", url);
     }
 
     /**
-     * Creates a web service proxy representing a GET request.
-     *
-     * @param baseURL
-     * The base URL.
-     *
-     * @param path
-     * The path to the resource, relative to the base URL.
-     *
-     * @param args
-     * Path format specifier arguments.
-     *
-     * @return
-     * The new web service proxy.
-     *
-     * @throws MalformedURLException
-     * If a URL cannot be constructed from the base URL and path.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy get(URL baseURL, String path, Object... args) throws MalformedURLException {
         return get(new URL(baseURL, String.format(path, args)));
     }
 
     /**
-     * Creates a web service proxy representing a POST request.
-     *
-     * @param url
-     * The resource URL.
-     *
-     * @return
-     * The new web service proxy.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy post(URL url) {
         return new WebServiceProxy("POST", url);
     }
 
     /**
-     * Creates a web service proxy representing a POST request.
-     *
-     * @param baseURL
-     * The base URL.
-     *
-     * @param path
-     * The path to the resource, relative to the base URL.
-     *
-     * @param args
-     * Path format specifier arguments.
-     *
-     * @return
-     * The new web service proxy.
-     *
-     * @throws MalformedURLException
-     * If a URL cannot be constructed from the base URL and path.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy post(URL baseURL, String path, Object... args) throws MalformedURLException {
         return post(new URL(baseURL, String.format(path, args)));
     }
 
     /**
-     * Creates a web service proxy representing a PUT request.
-     *
-     * @param url
-     * The resource URL.
-     *
-     * @return
-     * The new web service proxy.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy put(URL url) {
         return new WebServiceProxy("PUT", url);
     }
 
     /**
-     * Creates a web service proxy representing a PUT request.
-     *
-     * @param baseURL
-     * The base URL.
-     *
-     * @param path
-     * The path to the resource, relative to the base URL.
-     *
-     * @param args
-     * Path format specifier arguments.
-     *
-     * @return
-     * The new web service proxy.
-     *
-     * @throws MalformedURLException
-     * If a URL cannot be constructed from the base URL and path.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy put(URL baseURL, String path, Object... args) throws MalformedURLException {
         return put(new URL(baseURL, String.format(path, args)));
     }
 
     /**
-     * Creates a web service proxy representing a DELETE request.
-     *
-     * @param url
-     * The resource URL.
-     *
-     * @return
-     * The new web service proxy.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy delete(URL url) {
         return new WebServiceProxy("DELETE", url);
     }
 
     /**
-     * Creates a web service proxy representing a DELETE request.
-     *
-     * @param baseURL
-     * The base URL.
-     *
-     * @param path
-     * The path to the resource, relative to the base URL.
-     *
-     * @param args
-     * Path format specifier arguments.
-     *
-     * @return
-     * The new web service proxy.
-     *
-     * @throws MalformedURLException
-     * If a URL cannot be constructed from the base URL and path.
+     * @deprecated
+     * Use {@link #WebServiceProxy(String, URL, String, Object...)} instead.
      */
+    @Deprecated
     public static WebServiceProxy delete(URL baseURL, String path, Object... args) throws MalformedURLException {
         return delete(new URL(baseURL, String.format(path, args)));
     }
