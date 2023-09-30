@@ -22,6 +22,8 @@ import java.util.List;
 
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {
+        // TODO Move invocations to dedicated method
+
         var baseURL = new URL("http://localhost:8080/kilo-test/employees/");
 
         var t0 = System.currentTimeMillis();

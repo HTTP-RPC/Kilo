@@ -81,7 +81,9 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGet() throws IOException {
-        var result = WebServiceProxy.get(baseURL, "test").setArguments(mapOf(
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "test");
+
+        webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -95,7 +97,11 @@ public class WebServiceProxyTest {
             entry("duration", duration),
             entry("period", period),
             entry("uuid", uuid)
-        )).setMonitorStream(System.out).invoke();
+        ));
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
