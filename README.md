@@ -393,9 +393,7 @@ public <T> T invoke(Function<Object, ? extends T> resultHandler) throws IOExcept
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version deserializes a successful JSON response (if any). The second applies a result handler to the deserialized response. 
-
-The third version allows a caller to provide a custom response handler:
+The first version deserializes a successful JSON response (if any). The second applies a result handler to the deserialized response. The third version allows a caller to provide a custom response handler:
 
 ```java
 public interface ResponseHandler<T> {
