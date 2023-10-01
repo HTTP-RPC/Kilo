@@ -18,8 +18,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Keys;
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
@@ -81,16 +81,15 @@ public class CatalogService extends AbstractDatabaseService {
     }
 
     @RequestMethod("PUT")
-    @ResourcePath("items/?:itemID")
+    @ResourcePath("items/?")
     @Description("Updates an item.")
-    @Keys({"The item ID."})
     @Content(type = Item.class)
-    public void updateItem() throws SQLException {
-        var id = getKey("itemID", Integer.class);
-
+    public void updateItem(
+        @Description("The item ID.") @Required Integer itemID
+    ) throws SQLException {
         var item = (Item)getBody();
 
-        item.setID(id);
+        item.setID(itemID);
 
         var queryBuilder = QueryBuilder.update(ItemSchema.class, DESCRIPTION, PRICE)
             .set("description", "price")
@@ -102,17 +101,16 @@ public class CatalogService extends AbstractDatabaseService {
     }
 
     @RequestMethod("DELETE")
-    @ResourcePath("items/?:itemID")
+    @ResourcePath("items/?")
     @Description("Deletes an item.")
-    @Keys({"The item ID."})
-    public void deleteItem() throws SQLException {
-        var id = getKey("itemID", Integer.class);
-
+    public void deleteItem(
+        @Description("The item ID.") @Required Integer itemID
+    ) throws SQLException {
         var queryBuilder = QueryBuilder.deleteFrom(ItemSchema.class).where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("id", id)
+                entry("id", itemID)
             ));
         }
     }

@@ -19,7 +19,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Keys;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
@@ -52,7 +51,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
@@ -205,25 +203,18 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("a/?:a/b/?/c/?:c/d/?")
-    @Keys({
-        "The first key.",
-        "The second key.",
-        "The third key.",
-        "The fourth key (which has a really long description)."
-    })
+    @ResourcePath("a/?/b/?/c/?/d/?")
     public Map<String, Object> testGetKeys(
-        @Description("Parameter 1.") int a,
-        @Description("Parameter 2.") int b
+        @Description("First key.") int a,
+        @Description("Second key.") String b,
+        @Description("Third key.") int c,
+        @Description("Fourth key.") String d
     ) {
         return mapOf(
-            entry("list", listOf(getKey(0), getKey(1), getKey(2), getKey(3))),
-            entry("map", mapOf(
-                entry("a", getKey("a")),
-                entry("b", getKey("b")),
-                entry("c", getKey("c")),
-                entry("d", getKey("d"))
-            ))
+            entry("a", a),
+            entry("b", b),
+            entry("c", c),
+            entry("d", d)
         );
     }
 

@@ -189,7 +189,7 @@ public abstract class WebService extends HttpServlet {
             this.method = method;
 
             description = Optionals.map(handler.method.getAnnotation(Description.class), Description::value);
-            keys = Optionals.map(handler.method.getAnnotation(Keys.class), keys -> Arrays.asList(keys.value()));
+            keys = new ArrayList<>(); // TODO
 
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
@@ -1185,70 +1185,6 @@ public abstract class WebService extends HttpServlet {
      */
     protected HttpServletResponse getResponse() {
         return response.get();
-    }
-
-    /**
-     * Returns the value of a key in the request path.
-     *
-     * @param index
-     * The index of the key to return.
-     *
-     * @return
-     * The key value.
-     */
-    protected String getKey(int index) {
-        return getKey(index, String.class);
-    }
-
-    /**
-     * Returns the value of a key in the request path.
-     *
-     * @param <T>
-     * The key type.
-     *
-     * @param index
-     * The index of the key to return.
-     *
-     * @param type
-     * The key type.
-     *
-     * @return
-     * The key value.
-     */
-    protected <T> T getKey(int index, Class<T> type) {
-        return BeanAdapter.coerce(keyList.get().get(index), type);
-    }
-
-    /**
-     * Returns the value of a key in the request path.
-     *
-     * @param name
-     * The name of the key to return.
-     *
-     * @return
-     * The key value.
-     */
-    protected String getKey(String name) {
-        return getKey(name, String.class);
-    }
-
-    /**
-     * Returns the value of a key in the request path.
-     *
-     * @param <T>
-     * The key type.
-     *
-     * @param name
-     * The name of the key to return.
-     *
-     * @param type
-     * The key type.
-     *
-     * @return
-     * The key value.
-     */
-    protected <T> T getKey(String name, Class<T> type) {
-        return BeanAdapter.coerce(keyMap.get().get(name), type);
     }
 
     /**

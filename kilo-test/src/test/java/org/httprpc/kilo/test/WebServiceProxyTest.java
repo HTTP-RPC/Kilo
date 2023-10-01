@@ -134,13 +134,10 @@ public class WebServiceProxyTest {
         var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
-            entry("list", listOf("123", "héllo", "456", "göodbye")),
-            entry("map", mapOf(
-                entry("a", "123"),
-                entry("b", null),
-                entry("c", "456"),
-                entry("d", null)
-            ))
+            entry("a", 123),
+            entry("b", "héllo"),
+            entry("c", 456),
+            entry("d", "göodbye")
         ), result);
     }
 

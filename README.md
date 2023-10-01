@@ -164,46 +164,10 @@ Path variables are specified by a "?" character in an endpoint's resource path:
 public Contact getContact() { ... }
 ```
 
-They may optionally be associated with a name or "key", as shown below:
+TODO
 
-```java
-@RequestMethod("GET")
-@ResourcePath("contacts/?:contactID")
-public Contact getContact() { ... }
-```
-
-The value of a key can be obtained via one of the following methods:
-
-```java
-protected String getKey(int index) { ... }
-protected <T> T getKey(int index, Class<T> type) { ... }
-
-protected String getKey(String name) { ... }
-protected <T> T getKey(String name, Class<T> type) { ... }
-```
-
-For example:
-
-```java
-var id = getKey("id", Integer.class);
-```
-
-### Custom Body Content
-The `Content` annotation can be used to associate custom body content with a service method. Annotated methods can access decoded content via the `getBody()` method:
-
-```java
-@RequestMethod("POST")
-@ResourcePath("items")
-@Content(type = Item.class)
-public Item addItem() throws SQLException {
-    var item = (Item)getBody();
-
-    ...
-}
-```
-
-The `multiple` attribute of the `Content` annotation can be used to specify that the body is expected to contain a list of values of the given type. For example, this version of the `getSum()` method from the math service example takes input from the request body instead of the query string: 
-:
+### Body Content
+TODO Update example
 
 ```java
 @RequestMethod("POST")
@@ -346,22 +310,6 @@ public record Coordinates(
 ```
 
 Types or methods tagged with the `Deprecated` annotation will be identified as such in the output.
-
-#### Keys
-The `Keys` annotation can be used to provide descriptions for an endpoint's keys. For example:
-
-```java
-@RequestMethod("PUT")
-@ResourcePath("items/?:itemID")
-@Description("Updates an item.")
-@Keys({"The item ID."})
-@Content(type = Item.class)
-public void updateItem() throws SQLException {
-    var item = (Item)getBody();
-
-    ... 
-}
-```
 
 #### JSON Documentation
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
