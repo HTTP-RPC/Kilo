@@ -458,65 +458,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #insertInto(Class, SchemaElement...)} and
-     * {@link #values(String...)} instead.
-     */
-    @Deprecated
-    public static <S extends SchemaElement> QueryBuilder insertInto(Class<S> schemaType, Map<S, String> values) {
-        if (schemaType == null || values == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
-
-        var parameters = new LinkedList<String>();
-
-        sqlBuilder.append("insert into ");
-        sqlBuilder.append(SchemaElement.getTableName(schemaType));
-
-        sqlBuilder.append(" (");
-
-        var schemaElements = new ArrayList<>(values.keySet());
-
-        var n = schemaElements.size();
-
-        for (var i = 0; i < n; i++) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(schemaElements.get(i).getColumnName());
-        }
-
-        sqlBuilder.append(") values (");
-
-        for (var i = 0; i < n; i++) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append("?");
-
-            var key = values.get(schemaElements.get(i));
-
-            if (key == null) {
-                throw new IllegalArgumentException();
-            }
-
-            parameters.add(key);
-        }
-
-        sqlBuilder.append(")");
-
-        var queryBuilder = new QueryBuilder(sqlBuilder);
-
-        queryBuilder.parameters.addAll(parameters);
-
-        return queryBuilder;
-    }
-
-    /**
      * Creates an "insert into" query.
      *
      * @param schemaType
@@ -582,56 +523,6 @@ public class QueryBuilder {
         sqlBuilder.append(")");
 
         return this;
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #update(Class, SchemaElement...)} and {@link #set(String...)}
-     * instead.
-     */
-    @Deprecated
-    public static <S extends SchemaElement> QueryBuilder update(Class<S> schemaType, Map<S, String> values) {
-        if (schemaType == null || values == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
-
-        var parameters = new LinkedList<String>();
-
-        sqlBuilder.append("update ");
-        sqlBuilder.append(SchemaElement.getTableName(schemaType));
-
-        sqlBuilder.append(" set ");
-
-        var i = 0;
-
-        for (var entry : values.entrySet()) {
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(entry.getKey().getColumnName());
-            sqlBuilder.append(" = ");
-
-            sqlBuilder.append("?");
-
-            var key = entry.getValue();
-
-            if (key == null) {
-                throw new IllegalArgumentException();
-            }
-
-            parameters.add(key);
-
-            i++;
-        }
-
-        var queryBuilder = new QueryBuilder(sqlBuilder);
-
-        queryBuilder.parameters.addAll(parameters);
-
-        return queryBuilder;
     }
 
     /**

@@ -25,9 +25,7 @@ import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.B;
 import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.C;
 import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.D;
 import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.E;
-import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -124,38 +122,10 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testInsertInto_old() {
-        var queryBuilder = QueryBuilder.insertInto(ASchema.class, mapOf(
-            entry(A, "a"),
-            entry(B, "b"),
-            entry(C, "c")
-        ));
-
-        assertEquals(listOf("a", "b", "c"), queryBuilder.getParameters());
-
-        assertEquals("insert into A (a, b, c) values (?, ?, ?)", queryBuilder.toString());
-    }
-
-    @Test
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update(ASchema.class, A, B, C)
             .set("a", "b", "c")
             .where(A.gt("m"), and(B.isNull()));
-
-        assertEquals(listOf("a", "b", "c", "m"), queryBuilder.getParameters());
-
-        assertEquals("update A set a = ?, b = ?, c = ? where a > ? and b is null", queryBuilder.toString());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testUpdate_old() {
-        var queryBuilder = QueryBuilder.update(ASchema.class, mapOf(
-            entry(A, "a"),
-            entry(B, "b"),
-            entry(C, "c")
-        )).where(A.gt("m"), and(B.isNull()));
 
         assertEquals(listOf("a", "b", "c", "m"), queryBuilder.getParameters());
 
