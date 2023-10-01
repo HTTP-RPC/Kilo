@@ -159,24 +159,16 @@ The `Description` annotation is discussed in more detail in the [API Documentati
 Path variables are specified by a "?" character in an endpoint's resource path:
 
 ```java
-@RequestMethod("GET")
-@ResourcePath("contacts/?")
-public Contact getContact() { ... }
+TODO
 ```
 
 TODO
 
 ### Body Content
-TODO Update example
+TODO
 
 ```java
-@RequestMethod("POST")
-@ResourcePath("sum")
-@Content(type = Double.class, multiple = true)
-@SuppressWarnings("unchecked")
-public double getSum() {
-    return getSum((List<Double>)getBody());
-}
+TODO
 ```
 
 By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
@@ -321,7 +313,7 @@ Request arguments are specified via the `setArguments()` method. Like HTML forms
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
-Custom body content can be provided via the `setBody()` method. By default, body data is serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom encodings:
+The `setBody()` method can be used to supply body content. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate custom encodings:
 
 ```java
 public interface RequestHandler {
