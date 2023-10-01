@@ -156,22 +156,35 @@ public long uploadFile(
 The `Description` annotation is discussed in more detail in the [API Documentation](#api-documentation) section.
 
 ### Path Variables
-Path variables are specified by a "?" character in an endpoint's resource path:
+Path variables (or "keys") are specified by a "?" character in an endpoint's resource path:
 
 ```java
-TODO
+@RequestMethod("DELETE")
+@ResourcePath("items/?")
+@Description("Deletes an item.")
+public void deleteItem(
+    @Description("The item ID.") Integer itemID
+) throws SQLException { ... }
 ```
 
-TODO
+They are mapped to method arguments in declaration order and are implicitly required. Note that it is not possible to define a method that accepts both path variables and query string arguments. 
 
 ### Body Content
-TODO
+Body content may be declared as the final parameter to a POST or PUT handler, following any path variable parameters:
 
 ```java
-TODO
+@RequestMethod("PUT")
+@ResourcePath("items/?")
+@Description("Updates an item.")
+public void updateItem(
+    @Description("The item ID.") Integer itemID,
+    @Description("The updated item.") Item item
+) throws SQLException { ... }
 ```
 
-By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+Like path variables, body parameters are implicitly required. By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+
+Note that body parameters are not supported for POST requests submitted using a form encoding. Arguments for these encodings are handled as described earlier.
 
 ### Return Values
 Return values are converted to JSON as follows:
