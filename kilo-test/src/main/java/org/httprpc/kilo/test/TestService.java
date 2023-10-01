@@ -19,7 +19,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Internal;
 import org.httprpc.kilo.Keys;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -390,13 +389,6 @@ public class TestService extends WebService {
             entry("X-Header-A", request.getHeader("X-Header-A")),
             entry("X-Header-B", request.getHeader("X-Header-B"))
         );
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("internal")
-    @Internal
-    public void testInternal() {
-        // No-op
     }
 
     @RequestMethod("GET")

@@ -345,6 +345,8 @@ public record Coordinates(
 }
 ```
 
+Types or methods tagged with the `Deprecated` annotation will be identified as such in the output.
+
 #### Keys
 The `Keys` annotation can be used to provide descriptions for an endpoint's keys. For example:
 
@@ -360,9 +362,6 @@ public void updateItem() throws SQLException {
     ... 
 }
 ```
-
-#### Internal/Deprecated Methods
-Service types or methods that are not considered public can be tagged with the `Internal` annotation. This designation will be reflected in the generated documentation. Types or methods tagged with the `Deprecated` annotation will also be identified as such in the output.
 
 #### JSON Documentation
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 

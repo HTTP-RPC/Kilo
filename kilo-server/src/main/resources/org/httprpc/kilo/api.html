@@ -146,10 +146,6 @@
       text-transform: uppercase;
       background: var(--color-neutral-light);
     }
-    strong.internal {
-      text-transform: uppercase;
-      color: var(--color-neutral);
-    }
     strong.deprecated {
       text-transform: uppercase;
       color: var(--color-neutral);
@@ -221,7 +217,7 @@
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
       <!-- {{#operations}} -->
-      <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?internal}} <strong class="internal">{{@internal}}</strong>{{/internal}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
+      <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
       <!-- {{?description}} -->
       <p>{{.}}</p>
       <!-- {{/description}} -->

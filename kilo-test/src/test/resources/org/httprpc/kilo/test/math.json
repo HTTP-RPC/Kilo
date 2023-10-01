@@ -7,7 +7,6 @@
           "consumes": null,
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
-          "internal": false,
           "keys": null,
           "method": "GET",
           "parameters": [
@@ -54,7 +53,6 @@
           "consumes": null,
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
-          "internal": false,
           "keys": null,
           "method": "GET",
           "parameters": [
@@ -111,7 +109,6 @@
           },
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
-          "internal": false,
           "keys": null,
           "method": "POST",
           "parameters": [

@@ -71,7 +71,6 @@ public abstract class WebService extends HttpServlet {
         private String path;
         private String description;
 
-        private boolean internal;
         private boolean deprecated;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
@@ -84,7 +83,6 @@ public abstract class WebService extends HttpServlet {
 
             description = Optionals.map(type.getAnnotation(Description.class), Description::value);
 
-            internal = type.getAnnotation(Internal.class) != null;
             deprecated = type.getAnnotation(Deprecated.class) != null;
         }
 
@@ -180,7 +178,6 @@ public abstract class WebService extends HttpServlet {
         private String description;
         private List<String> keys;
 
-        private boolean internal;
         private boolean deprecated;
 
         private TypeDescriptor consumes = null;
@@ -194,7 +191,6 @@ public abstract class WebService extends HttpServlet {
             description = Optionals.map(handler.method.getAnnotation(Description.class), Description::value);
             keys = Optionals.map(handler.method.getAnnotation(Keys.class), keys -> Arrays.asList(keys.value()));
 
-            internal = handler.method.getAnnotation(Internal.class) != null;
             deprecated = handler.method.getAnnotation(Deprecated.class) != null;
         }
 
@@ -226,17 +222,6 @@ public abstract class WebService extends HttpServlet {
          */
         public List<String> getKeys() {
             return keys;
-        }
-
-        /**
-         * Indicates that the operation is internal.
-         *
-         * @return
-         * {@code true} if the operation is internal; {@code false},
-         * otherwise.
-         */
-        public boolean isInternal() {
-            return internal;
         }
 
         /**
@@ -1373,7 +1358,6 @@ public abstract class WebService extends HttpServlet {
                 for (var handler : entry.getValue()) {
                     var operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
 
-                    operation.internal |= serviceDescriptor.internal;
                     operation.deprecated |= serviceDescriptor.deprecated;
 
                     var content = handler.method.getAnnotation(Content.class);
