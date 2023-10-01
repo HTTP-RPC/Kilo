@@ -242,38 +242,10 @@ public class TestService extends WebService {
         return new TestList();
     }
 
-    @RequestMethod("POST")
-    @ResourcePath("list")
-    @Content(type = List.class)
-    public void testPostList() {
-        // No-op
-    }
-
-    @RequestMethod("POST")
-    @ResourcePath("list-multiple")
-    @Content(type = List.class, multiple = true)
-    public void testPostListMultiple() {
-        // No-op
-    }
-
     @RequestMethod("GET")
     @ResourcePath("map")
     public TestMap testGetMap() {
         return new TestMap();
-    }
-
-    @RequestMethod("POST")
-    @ResourcePath("map")
-    @Content(type = Map.class)
-    public void testPostMap() {
-        // No-op
-    }
-
-    @RequestMethod("POST")
-    @ResourcePath("map-multiple")
-    @Content(type = Map.class, multiple = true)
-    public void testPostMapMultiple() {
-        // No-op
     }
 
     @RequestMethod("POST")
