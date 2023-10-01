@@ -64,15 +64,21 @@ public class BulkUploadTest {
     }
 
     public static void main(String[] args) throws IOException {
-        // TODO Move invocations to dedicated method
-
         var baseURL = new URL("http://localhost:8080/kilo-test/bulk-upload/");
 
         var t0 = System.currentTimeMillis();
 
-        var count = 25000;
+        logTiming(baseURL, "upload", 25000, t0);
 
-        WebServiceProxy.post(baseURL, "upload").setRequestHandler(new WebServiceProxy.RequestHandler() {
+        var t1 = System.currentTimeMillis();
+
+        logTiming(baseURL, "upload-batch", 500000, t1);
+    }
+
+    private static void logTiming(URL baseURL, String path, int count, long start) throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, path);
+
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return "text/csv";
@@ -84,30 +90,12 @@ public class BulkUploadTest {
 
                 csvEncoder.write(new Rows(count), outputStream);
             }
-        }).invoke();
+        });
 
-        var t1 = System.currentTimeMillis();
+        webServiceProxy.invoke();
 
-        System.out.println(String.format("Uploaded %d rows in %.1fs", count, (t1 - t0) / 1000.0));
+        var current = System.currentTimeMillis();
 
-        var batchCount = 500000;
-
-        WebServiceProxy.post(baseURL, "upload-batch").setRequestHandler(new WebServiceProxy.RequestHandler() {
-            @Override
-            public String getContentType() {
-                return "text/csv";
-            }
-
-            @Override
-            public void encodeRequest(OutputStream outputStream) throws IOException {
-                var csvEncoder = new CSVEncoder(listOf("text1", "text2", "number1", "number2", "number3"));
-
-                csvEncoder.write(new Rows(batchCount), outputStream);
-            }
-        }).invoke();
-
-        var t2 = System.currentTimeMillis();
-
-        System.out.println(String.format("Uploaded %d rows in %.1fs", batchCount, (t2 - t1) / 1000.0));
+        System.out.println(String.format("Uploaded %d rows in %.1fs", count, (current - start) / 1000.0));
     }
 }

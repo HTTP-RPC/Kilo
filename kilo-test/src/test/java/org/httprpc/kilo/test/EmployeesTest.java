@@ -22,34 +22,32 @@ import java.util.List;
 
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {
-        // TODO Move invocations to dedicated method
-
-        var baseURL = new URL("http://localhost:8080/kilo-test/employees/");
+        var baseURL = new URL("http://localhost:8080/kilo-test/");
 
         var t0 = System.currentTimeMillis();
 
-        var list1 = (List<?>)WebServiceProxy.get(baseURL).invoke();
+        logTiming(baseURL, "employees", t0);
 
         var t1 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d rows in %.1fs", list1.size(), (t1 - t0) / 1000.0));
-
-        var list2 = (List<?>)WebServiceProxy.get(baseURL, "stream").invoke();
+        logTiming(baseURL, "employees/stream", t1);
 
         var t2 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d streamed rows in %.1fs", list2.size(), (t2 - t1) / 1000.0));
-
-        var list3 = (List<?>)WebServiceProxy.get(baseURL, "hibernate").invoke();
+        logTiming(baseURL, "employees/hibernate", t2);
 
         var t3 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d Hibernate rows in %.1fs", list3.size(), (t3 - t2) / 1000.0));
+        logTiming(baseURL, "employees/hibernate-stream", t3);
+    }
 
-        var list4 = (List<?>)WebServiceProxy.get(baseURL, "hibernate-stream").invoke();
+    private static void logTiming(URL baseURL, String path, long start) throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, path);
 
-        var t4 = System.currentTimeMillis();
+        var result = (List<?>)webServiceProxy.invoke();
 
-        System.out.println(String.format("Retrieved %d streamed Hibernate rows in %.1fs", list4.size(), (t4 - t3) / 1000.0));
+        var current = System.currentTimeMillis();
+
+        System.out.println(String.format("Retrieved %d rows from %s in %.1fs", result.size(), path, (current - start) / 1000.0));
     }
 }
