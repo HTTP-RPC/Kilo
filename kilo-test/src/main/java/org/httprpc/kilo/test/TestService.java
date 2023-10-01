@@ -17,7 +17,6 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import org.httprpc.kilo.Content;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -292,37 +291,31 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    @Content(type = String.class, multiple = true)
-    @SuppressWarnings("unchecked")
-    public List<String> testPost() {
-        return (List<String>)getBody();
+    @ResourcePath("list")
+    public List<String> testPostList(List<String> list) {
+        return list;
     }
 
     @RequestMethod("POST")
-    @Content(type = Body.class)
-    public Body testPostBody(int id) {
-        var body = (Body)getBody();
-
-        body.getString();
-
+    @ResourcePath("body")
+    public Body testPostBody(Body body) {
         return body;
     }
 
     @RequestMethod("POST")
     @ResourcePath("coordinates")
-    @Content(type = Coordinates.class, multiple = true)
-    @SuppressWarnings("unchecked")
-    public List<Coordinates> testPostCoordinates() {
-        return (List<Coordinates>)getBody();
+    public Coordinates testPostCoordinates(Coordinates coordinates) {
+        return coordinates;
     }
 
     @RequestMethod("POST")
-    public void testPost(String name) throws IOException {
+    @ResourcePath("image")
+    public void testPostImage() throws IOException {
         echo();
     }
 
     @RequestMethod("PUT")
-    public void testPut(int id) throws IOException {
+    public void testPut() throws IOException {
         echo();
     }
 
@@ -339,8 +332,9 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("DELETE")
-    public void testDelete(int id) {
-        // No-op
+    @ResourcePath("?")
+    public Integer testDelete(Integer id) {
+        return id;
     }
 
     @RequestMethod("GET")

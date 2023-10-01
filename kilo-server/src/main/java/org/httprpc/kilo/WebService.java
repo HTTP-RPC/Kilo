@@ -685,11 +685,6 @@ public abstract class WebService extends HttpServlet {
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
-    private ThreadLocal<List<String>> keyList = new ThreadLocal<>();
-    private ThreadLocal<Map<String, String>> keyMap = new ThreadLocal<>();
-
-    private ThreadLocal<Content> content = new ThreadLocal<>();
-
     private ServiceDescriptor serviceDescriptor = null;
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
@@ -978,16 +973,6 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        Map<String, String> keyMap = new HashMap<>();
-
-        for (int i = 0, n = keyList.size(); i < n; i++) {
-            var key = handler.keys.get(i);
-
-            if (key != null) {
-                keyMap.put(key, keyList.get(i));
-            }
-        }
-
         Object[] arguments;
         try {
             arguments = getArguments(handler.method, parameterMap);
@@ -998,11 +983,6 @@ public abstract class WebService extends HttpServlet {
 
         this.request.set(request);
         this.response.set(response);
-
-        this.keyList.set(keyList);
-        this.keyMap.set(keyMap);
-
-        this.content.set(handler.method.getAnnotation(Content.class));
 
         Object result;
         try {
@@ -1035,11 +1015,6 @@ public abstract class WebService extends HttpServlet {
         } finally {
             this.request.remove();
             this.response.remove();
-
-            this.keyList.remove();
-            this.keyMap.remove();
-
-            this.content.remove();
         }
 
         if (response.isCommitted()) {
@@ -1188,58 +1163,27 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Returns the body content associated with the current request.
-     *
-     * @return
-     * The decoded request body.
-     */
-    protected Object getBody() {
-        var content = this.content.get();
-
-        if (content == null) {
-            return null;
-        }
-
-        try {
-            return decodeBody(getRequest(), content.type(), content.multiple());
-        } catch (IOException exception) {
-            throw new UnsupportedOperationException(exception);
-        }
-    }
-
-    /**
      * Decodes the body of a service request.
      *
      * @param request
      * The servlet request.
      *
      * @param type
-     * The content type.
-     *
-     * @param multiple
-     * Indicates that the body is expected to contain a list of values of the
-     * given type.
+     * The body type.
      *
      * @return
-     * The decoded body content.
+     * The decoded body.
      *
      * @throws IOException
      * If an exception occurs while decoding the content.
      */
-    protected Object decodeBody(HttpServletRequest request, Class<?> type, boolean multiple) throws IOException {
+    protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
         var body = jsonDecoder.read(request.getInputStream());
 
-        if (multiple) {
-            if (!(body instanceof List<?> list)) {
-                throw new UnsupportedOperationException("Body is not a list.");
-            }
-
-            return BeanAdapter.coerceList(list, type);
-        } else {
-            return BeanAdapter.coerce(body, type);
-        }
+        // TODO
+        return null;
     }
 
     /**
@@ -1296,15 +1240,7 @@ public abstract class WebService extends HttpServlet {
 
                     operation.deprecated |= serviceDescriptor.deprecated;
 
-                    var content = handler.method.getAnnotation(Content.class);
-
-                    if (content != null) {
-                        if (content.multiple()) {
-                            operation.consumes = describeGenericType(BeanAdapter.typeOfList(content.type()));
-                        } else {
-                            operation.consumes = describeRawType(content.type());
-                        }
-                    }
+                    operation.consumes = null; // TODO
 
                     operation.produces = describeGenericType(handler.method.getGenericReturnType());
 

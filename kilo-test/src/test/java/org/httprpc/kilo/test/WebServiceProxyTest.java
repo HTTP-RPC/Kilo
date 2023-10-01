@@ -251,9 +251,10 @@ public class WebServiceProxyTest {
     public void testListPost() throws IOException {
         var body = listOf(1, 2, 3);
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
 
         webServiceProxy.setBody(body);
+
         webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
@@ -263,9 +264,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testInvalidListPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
 
         webServiceProxy.setBody("xyz");
+
         webServiceProxy.setMonitorStream(System.out);
 
         try {
@@ -279,7 +281,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMalformedListPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
 
         webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
@@ -307,57 +309,52 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomBodyPost() throws IOException {
-        var requestBody = BeanAdapter.coerce(mapOf(
+    public void testBodyPost() throws IOException {
+        var request = mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("flag", true)
-        ), TestService.Body.class);
+        );
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/body");
 
-        webServiceProxy.setArguments(mapOf(
-            entry("id", 101)
-        ));
-
-        webServiceProxy.setBody(requestBody);
+        webServiceProxy.setBody(request);
 
         webServiceProxy.setMonitorStream(System.out);
 
-        var responseBody = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Body.class));
+        var body = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Body.class));
 
-        assertEquals(requestBody, responseBody);
+        assertEquals(request.get("string"), body.getString());
+        assertEquals(request.get("strings"), body.getStrings());
+        assertEquals(request.get("number"), body.getNumber());
+        assertEquals(request.get("flag"), body.getFlag());
     }
 
     @Test
     public void testCoordinatesPost() throws IOException {
-        var coordinates = listOf(
-            mapOf(
-                entry("x", 1),
-                entry("y", 2)
-            ),
-            mapOf(
-                entry("x", 3),
-                entry("y", 4)
-            )
+        var request = mapOf(
+            entry("x", 1),
+            entry("y", 2)
         );
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/coordinates");
 
-        webServiceProxy.setBody(coordinates);
+        webServiceProxy.setBody(request);
+
         webServiceProxy.setMonitorStream(System.out);
 
-        var result = webServiceProxy.invoke();
+        var coordinates = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, Coordinates.class));
 
-        assertEquals(coordinates, result);
+        assertEquals(request.get("x"), coordinates.x());
+        assertEquals(request.get("y"), coordinates.y());
     }
 
     @Test
     public void testImagePost() throws IOException {
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/image");
 
         webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
@@ -425,17 +422,15 @@ public class WebServiceProxyTest {
 
     @Test
     public void testDelete() throws IOException {
-        var webServiceProxy = new WebServiceProxy("DELETE", baseURL, "test");
+        var id = 101;
 
-        webServiceProxy.setArguments(mapOf(
-            entry("id", 101)
-        ));
+        var webServiceProxy = new WebServiceProxy("DELETE", baseURL, "test/%d", id);
 
         webServiceProxy.setMonitorStream(System.out);
 
-        webServiceProxy.invoke();
+        var result = webServiceProxy.invoke();
 
-        assertTrue(true);
+        assertEquals(id, result);
     }
 
     @Test
@@ -651,19 +646,6 @@ public class WebServiceProxyTest {
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var result = webServiceProxy.invoke();
-
-        assertEquals(6.0, result);
-    }
-
-    @Test
-    public void testMathPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "math/sum");
-
-        webServiceProxy.setBody(listOf(1, 2, 3));
 
         webServiceProxy.setMonitorStream(System.out);
 

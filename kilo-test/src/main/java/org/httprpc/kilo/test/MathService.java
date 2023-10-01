@@ -14,13 +14,12 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Content;
+import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 
-import jakarta.servlet.annotation.WebServlet;
 import java.util.List;
 
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
@@ -49,14 +48,5 @@ public class MathService extends WebService {
         }
 
         return total;
-    }
-
-    @RequestMethod("POST")
-    @ResourcePath("sum")
-    @Description("Calculates the sum of a list of numbers.")
-    @Content(type = Double.class, multiple = true)
-    @SuppressWarnings("unchecked")
-    public double getSum() {
-        return getSum((List<Double>)getBody());
     }
 }
