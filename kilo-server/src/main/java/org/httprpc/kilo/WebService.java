@@ -916,6 +916,8 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
+        // TODO Handle keyed methods
+
         var handlerList = resource.handlerMap.get(verb);
 
         if (handlerList == null) {
