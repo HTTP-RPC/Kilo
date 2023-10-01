@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -450,21 +449,6 @@ public class WebServiceProxyTest {
             entry("X-Header-A", "abc"),
             entry("X-Header-B", "123")
         ), result);
-    }
-
-    @Test
-    public void testUnauthorized() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/unauthorized");
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        try {
-            webServiceProxy.invoke();
-
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(HttpURLConnection.HTTP_FORBIDDEN, exception.getStatusCode());
-        }
     }
 
     @Test

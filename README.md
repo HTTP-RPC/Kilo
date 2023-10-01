@@ -167,7 +167,7 @@ public void deleteItem(
 ) throws SQLException { ... }
 ```
 
-They are mapped to method arguments in declaration order and are implicitly required. Note that it is not possible to define a method that accepts both path variables and query string arguments. 
+They are mapped to method arguments in declaration order and are implicitly required. Note that it is not possible to define a method that accepts both path variables and query string/form arguments. 
 
 ### Body Content
 Body content may be declared as the final parameter to a POST or PUT handler, following any path variable parameters:
@@ -182,9 +182,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path variables, body parameters are implicitly required. By default, body data is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+Like path variables, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-Note that body parameters are not supported for POST requests submitted using a form encoding. Arguments for these encodings are handled as described earlier.
+As with path variables, it is not possible to define a method that accepts both body content and query string/form arguments.
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -217,15 +217,6 @@ protected HttpServletResponse getResponse() { ... }
 For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
-
-### Authorization
-Service requests can be authorized by overriding the following method:
-
-```java
-protected boolean isAuthorized(HttpServletRequest request, Method method) { ... }
-```
-
-The first argument contains the current request, and the second the service method to be invoked. If `isAuthorized()` returns `true` (the default), method execution will proceed. Otherwise, the method will not be invoked, and an HTTP 403 response will be returned.
 
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is returned as shown below:

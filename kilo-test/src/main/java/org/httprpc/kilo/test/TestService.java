@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -28,7 +27,6 @@ import org.httprpc.kilo.beans.Key;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -356,12 +354,6 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("unauthorized")
-    public void testUnauthorized() {
-        // No-op
-    }
-
-    @RequestMethod("GET")
     @ResourcePath("error")
     public void testError() throws Exception {
         throw new Exception("Sample error message.");
@@ -384,12 +376,5 @@ public class TestService extends WebService {
     @ResourcePath("math/sum")
     public double getSum(List<Double> values) {
         return getInstance(MathService.class).getSum(values);
-    }
-
-    @Override
-    protected boolean isAuthorized(HttpServletRequest request, Method method) {
-        var pathInfo = request.getPathInfo();
-
-        return (pathInfo == null || !pathInfo.endsWith("unauthorized"));
     }
 }

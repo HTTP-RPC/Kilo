@@ -7,7 +7,8 @@
           "consumes": null,
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
-          "keys": null,
+          "keys": [
+          ],
           "method": "GET",
           "parameters": [
             {
@@ -53,7 +54,8 @@
           "consumes": null,
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
-          "keys": null,
+          "keys": [
+          ],
           "method": "GET",
           "parameters": [
             {
@@ -78,40 +80,6 @@
                 "valueType": null
               }
             }
-          ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "keyType": null,
-            "list": false,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          }
-        },
-        {
-          "consumes": {
-            "elementType": {
-              "elementType": null,
-              "intrinsic": true,
-              "keyType": null,
-              "list": false,
-              "map": false,
-              "name": "Double",
-              "valueType": null
-            },
-            "intrinsic": true,
-            "keyType": null,
-            "list": true,
-            "map": false,
-            "name": "List",
-            "valueType": null
-          },
-          "deprecated": false,
-          "description": "Calculates the sum of a list of numbers.",
-          "keys": null,
-          "method": "POST",
-          "parameters": [
           ],
           "produces": {
             "elementType": null,

@@ -916,8 +916,6 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        // TODO Handle keyed methods
-
         var handlerList = resource.handlerMap.get(verb);
 
         if (handlerList == null) {
@@ -933,53 +931,61 @@ public abstract class WebService extends HttpServlet {
 
         var parameterNames = request.getParameterNames();
 
-        while (parameterNames.hasMoreElements()) {
-            var name = parameterNames.nextElement();
+        Handler handler;
+        Object[] arguments;
+        if (parameterNames.hasMoreElements()) {
+            while (parameterNames.hasMoreElements()) {
+                var name = parameterNames.nextElement();
 
-            parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
-        }
-
-        var contentType = request.getContentType();
-
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            for (var part : request.getParts()) {
-                var submittedFileName = part.getSubmittedFileName();
-
-                if (submittedFileName == null || submittedFileName.isEmpty()) {
-                    continue;
-                }
-
-                var name = part.getName();
-
-                var values = (List<URL>)parameterMap.get(name);
-
-                if (values == null) {
-                    values = new ArrayList<>();
-
-                    parameterMap.put(name, values);
-                }
-
-                values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
+                parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
             }
-        }
 
-        var handler = getHandler(handlerList, parameterMap);
+            var contentType = request.getContentType();
+
+            if (contentType != null && contentType.startsWith("multipart/form-data")) {
+                for (var part : request.getParts()) {
+                    var submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null || submittedFileName.isEmpty()) {
+                        continue;
+                    }
+
+                    var name = part.getName();
+
+                    var values = (List<URL>)parameterMap.get(name);
+
+                    if (values == null) {
+                        values = new ArrayList<>();
+
+                        parameterMap.put(name, values);
+                    }
+
+                    values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
+                }
+            }
+
+            handler = getHandler(handlerList, parameterMap);
+
+            if (handler != null) {
+                try {
+                    arguments = getArguments(handler.method, parameterMap);
+                } catch (Exception exception) {
+                    sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
+                    return;
+                }
+            } else {
+                arguments = null;
+            }
+        } else {
+            handler = handlerList.get(0);
+
+            // TODO Convert keys to arguments
+            // TODO If the handler has more arguments than keys, decode the body and append
+            arguments = null;
+        }
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return;
-        }
-
-        if (!isAuthorized(request, handler.method)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        Object[] arguments;
-        try {
-            arguments = getArguments(handler.method, parameterMap);
-        } catch (Exception exception) {
-            sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
         }
 
@@ -1126,22 +1132,6 @@ public abstract class WebService extends HttpServlet {
             response.getWriter().append(message);
             response.flushBuffer();
         }
-    }
-
-    /**
-     * Determines if the current request is authorized.
-     *
-     * @param request
-     * The servlet request.
-     *
-     * @param method
-     * The method to be invoked.
-     *
-     * @return
-     * {@code true} if the method should be invoked; {@code false}, otherwise.
-     */
-    protected boolean isAuthorized(HttpServletRequest request, Method method) {
-        return true;
     }
 
     /**
