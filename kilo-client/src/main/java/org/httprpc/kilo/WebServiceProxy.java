@@ -317,18 +317,13 @@ public class WebServiceProxy {
      *
      * @param encoding
      * The encoding used for POST requests.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setEncoding(Encoding encoding) {
+    public void setEncoding(Encoding encoding) {
         if (encoding == null) {
             throw new IllegalArgumentException();
         }
 
         this.encoding = encoding;
-
-        return this;
     }
 
     /**
@@ -346,18 +341,13 @@ public class WebServiceProxy {
      *
      * @param headers
      * The header map.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setHeaders(Map<String, Object> headers) {
+    public void setHeaders(Map<String, Object> headers) {
         if (headers == null) {
             throw new IllegalArgumentException();
         }
 
         this.headers = headers;
-
-        return this;
     }
 
     /**
@@ -375,18 +365,13 @@ public class WebServiceProxy {
      *
      * @param arguments
      * The argument map.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setArguments(Map<String, Object> arguments) {
+    public void setArguments(Map<String, Object> arguments) {
         if (arguments == null) {
             throw new IllegalArgumentException();
         }
 
         this.arguments = arguments;
-
-        return this;
     }
 
     /**
@@ -405,14 +390,9 @@ public class WebServiceProxy {
      *
      * @param body
      * A value representing the body content, or {@code null} for no body.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setBody(Object body) {
+    public void setBody(Object body) {
         this.body = body;
-
-        return this;
     }
 
     /**
@@ -430,14 +410,9 @@ public class WebServiceProxy {
      *
      * @param requestHandler
      * The request handler, or {@code null} for the default request handler.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setRequestHandler(RequestHandler requestHandler) {
+    public void setRequestHandler(RequestHandler requestHandler) {
         this.requestHandler = requestHandler;
-
-        return this;
     }
 
     /**
@@ -455,14 +430,9 @@ public class WebServiceProxy {
      *
      * @param errorHandler
      * The error handler, or {@code null} for the default error handler.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setErrorHandler(ErrorHandler errorHandler) {
+    public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
-
-        return this;
     }
 
     /**
@@ -480,14 +450,9 @@ public class WebServiceProxy {
      *
      * @param connectTimeout
      * The connect timeout.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setConnectTimeout(int connectTimeout) {
+    public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
-
-        return this;
     }
 
     /**
@@ -505,14 +470,9 @@ public class WebServiceProxy {
      *
      * @param readTimeout
      * The read timeout.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setReadTimeout(int readTimeout) {
+    public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
-
-        return this;
     }
 
     /**
@@ -530,14 +490,9 @@ public class WebServiceProxy {
      *
      * @param expectedStatus
      * The expected status.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setExpectedStatus(Status expectedStatus) {
+    public void setExpectedStatus(Status expectedStatus) {
         this.expectedStatus = expectedStatus;
-
-        return this;
     }
 
     /**
@@ -555,14 +510,9 @@ public class WebServiceProxy {
      *
      * @param monitorStream
      * The monitor stream, or {@code null} for no monitor.
-     *
-     * @return
-     * The web service proxy.
      */
-    public WebServiceProxy setMonitorStream(PrintStream monitorStream) {
+    public void setMonitorStream(PrintStream monitorStream) {
         this.monitorStream = monitorStream;
-
-        return this;
     }
 
     /**

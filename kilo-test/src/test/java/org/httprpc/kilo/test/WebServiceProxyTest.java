@@ -146,7 +146,9 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetFibonacci() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/fibonacci").setArguments(
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/fibonacci");
+
+        webServiceProxy.setArguments(
             mapOf(
                 entry("count", 8)
             )
@@ -161,7 +163,9 @@ public class WebServiceProxyTest {
 
     @Test
     public void testURLEncodedPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test").setArguments(mapOf(
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+
+        webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -204,7 +208,11 @@ public class WebServiceProxyTest {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test").setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA).setArguments(mapOf(
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+
+        webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
+
+        webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
@@ -314,7 +322,9 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setArguments(mapOf(
             entry("id", 101)
-        )).setBody(requestBody);
+        ));
+
+        webServiceProxy.setBody(requestBody);
 
         webServiceProxy.setMonitorStream(System.out);
 
@@ -367,7 +377,9 @@ public class WebServiceProxyTest {
                     }
                 }
             }
-        }).setArguments(mapOf(
+        });
+
+        webServiceProxy.setArguments(mapOf(
             entry("name", imageTestURL.getFile())
         ));
 
