@@ -144,11 +144,9 @@ public class WebServiceProxyTest {
     public void testGetFibonacci() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/fibonacci");
 
-        webServiceProxy.setArguments(
-            mapOf(
-                entry("count", 8)
-            )
-        );
+        webServiceProxy.setArguments(mapOf(
+            entry("count", 8)
+        ));
 
         webServiceProxy.setMonitorStream(System.out);
 
@@ -850,11 +848,9 @@ public class WebServiceProxyTest {
 
         var webServiceProxy = new WebServiceProxy("GET", baseURL, name);
 
-        webServiceProxy.setHeaders(
-            mapOf(
-                entry("Accept", "application/json")
-            )
-        );
+        webServiceProxy.setHeaders(mapOf(
+            entry("Accept", "application/json")
+        ));
 
         webServiceProxy.setArguments(mapOf(
             entry("api", "json")
