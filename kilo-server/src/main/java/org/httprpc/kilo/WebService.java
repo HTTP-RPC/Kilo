@@ -887,7 +887,7 @@ public abstract class WebService extends HttpServlet {
 
         var resource = root;
 
-        List<String> keyList = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
 
         if (pathInfo != null) {
             var components = pathInfo.split("/");
@@ -909,7 +909,7 @@ public abstract class WebService extends HttpServlet {
                         return;
                     }
 
-                    keyList.add(component);
+                    keys.add(component);
                 }
 
                 resource = child;
@@ -979,9 +979,29 @@ public abstract class WebService extends HttpServlet {
         } else {
             handler = handlerList.get(0);
 
-            // TODO Convert keys to arguments
-            // TODO If the handler has more arguments than keys, decode the body and append
-            arguments = null;
+            var genericParameterTypes = handler.method.getGenericParameterTypes();
+
+            if (genericParameterTypes.length < keys.size()) {
+                throw new UnsupportedOperationException("Invalid argument count.");
+            }
+
+            arguments = new Object[genericParameterTypes.length];
+
+            var i = 0;
+
+            for (var key : keys) {
+                var argumentType = genericParameterTypes[i];
+
+                if (!(argumentType instanceof Class<?> type)) {
+                    throw new UnsupportedOperationException("Invalid argument type.");
+                }
+
+                arguments[i++] = BeanAdapter.coerce(key, type);
+            }
+
+            if (i < genericParameterTypes.length) {
+                arguments[i] = decodeBody(request, genericParameterTypes[i]);
+            }
         }
 
         if (handler == null) {
@@ -1174,8 +1194,33 @@ public abstract class WebService extends HttpServlet {
 
         var body = jsonDecoder.read(request.getInputStream());
 
-        // TODO
-        return null;
+        if (body == null) {
+            throw new UnsupportedOperationException("Body is required.");
+        }
+
+        if (type instanceof ParameterizedType parameterizedType) {
+            var rawType = parameterizedType.getRawType();
+
+            if (rawType == List.class) {
+                if (!(body instanceof List<?> list)) {
+                    throw new UnsupportedOperationException("Body is not a list.");
+                }
+
+                return BeanAdapter.coerceList(list, (Class<?>)parameterizedType.getActualTypeArguments()[0]);
+            } else if (rawType == Map.class) {
+                if (!(body instanceof Map<?, ?> map)) {
+                    throw new UnsupportedOperationException("Body is not a map.");
+                }
+
+                return BeanAdapter.coerceMap(map, (Class<?>)parameterizedType.getActualTypeArguments()[1]);
+            } else {
+                throw new UnsupportedOperationException("Invalid parameterized body type.");
+            }
+        } else if (type instanceof Class<?> rawType) {
+            return BeanAdapter.coerce(body, rawType);
+        } else {
+            throw new UnsupportedOperationException("Invalid body type.");
+        }
     }
 
     /**
