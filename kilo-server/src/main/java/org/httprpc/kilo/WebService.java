@@ -176,22 +176,19 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
-        private List<String> keys;
 
         private boolean deprecated;
 
-        private TypeDescriptor consumes = null;
         private TypeDescriptor produces = null;
 
         private List<VariableDescriptor> parameters = new LinkedList<>();
 
-        private OperationDescriptor(String method, Handler handler) {
+        private OperationDescriptor(String method, Method handler) {
             this.method = method;
 
-            description = Optionals.map(handler.method.getAnnotation(Description.class), Description::value);
-            keys = new ArrayList<>(); // TODO
+            description = Optionals.map(handler.getAnnotation(Description.class), Description::value);
 
-            deprecated = handler.method.getAnnotation(Deprecated.class) != null;
+            deprecated = handler.getAnnotation(Deprecated.class) != null;
         }
 
         /**
@@ -215,16 +212,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns the keys defined by the operation.
-         *
-         * @return
-         * The endpoint's keys.
-         */
-        public List<String> getKeys() {
-            return keys;
-        }
-
-        /**
          * Indicates that the operation is deprecated.
          *
          * @return
@@ -233,17 +220,6 @@ public abstract class WebService extends HttpServlet {
          */
         public boolean isDeprecated() {
             return deprecated;
-        }
-
-        /**
-         * Returns the type of content consumed by the operation.
-         *
-         * @return
-         * The type of content consumed by the operation, or {@code null} if
-         * the operation does not accept request content.
-         */
-        public TypeDescriptor getConsumes() {
-            return consumes;
         }
 
         /**
@@ -627,7 +603,7 @@ public abstract class WebService extends HttpServlet {
     private static class Resource {
         static List<String> order = listOf("get", "post", "put", "delete");
 
-        final Map<String, List<Handler>> handlerMap = new TreeMap<>((verb1, verb2) -> {
+        final Map<String, List<Method>> handlerMap = new TreeMap<>((verb1, verb2) -> {
             var i1 = order.indexOf(verb1);
             var i2 = order.indexOf(verb2);
 
@@ -635,16 +611,6 @@ public abstract class WebService extends HttpServlet {
         });
 
         final Map<String, Resource> resources = new TreeMap<>();
-    }
-
-    private static class Handler {
-        final Method method;
-
-        final List<String> keys = new ArrayList<>();
-
-        Handler(Method method) {
-            this.method = method;
-        }
     }
 
     private static class PartURLConnection extends URLConnection {
@@ -688,6 +654,8 @@ public abstract class WebService extends HttpServlet {
     private ServiceDescriptor serviceDescriptor = null;
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
+
+    private static final String PATH_VARIABLE = "?";
 
     private static final String UTF_8 = "UTF-8";
 
@@ -756,8 +724,6 @@ public abstract class WebService extends HttpServlet {
             var requestMethod = method.getAnnotation(RequestMethod.class);
 
             if (requestMethod != null) {
-                var handler = new Handler(method);
-
                 var resource = root;
 
                 var resourcePath = method.getAnnotation(ResourcePath.class);
@@ -769,26 +735,7 @@ public abstract class WebService extends HttpServlet {
                         var component = components[j];
 
                         if (component.isEmpty()) {
-                            continue;
-                        }
-
-                        if (component.startsWith(ResourcePath.PATH_VARIABLE_PREFIX)) {
-                            var k = ResourcePath.PATH_VARIABLE_PREFIX.length();
-
-                            String key;
-                            if (component.length() > k) {
-                                if (component.charAt(k++) != ':') {
-                                    throw new ServletException("Invalid path variable.");
-                                }
-
-                                key = component.substring(k);
-
-                                component = ResourcePath.PATH_VARIABLE_PREFIX;
-                            } else {
-                                key = null;
-                            }
-
-                            handler.keys.add(key);
+                            throw new ServletException("Invalid resource path.");
                         }
 
                         var child = resource.resources.get(component);
@@ -813,7 +760,7 @@ public abstract class WebService extends HttpServlet {
                     resource.handlerMap.put(verb, handlerList);
                 }
 
-                handlerList.add(handler);
+                handlerList.add(method);
             }
         }
 
@@ -832,8 +779,8 @@ public abstract class WebService extends HttpServlet {
 
     private static void sort(Resource root) {
         for (var handlers : root.handlerMap.values()) {
-            Comparator<Handler> methodNameComparator = Comparator.comparing(handler -> handler.method.getName());
-            Comparator<Handler> methodParameterCountComparator = Comparator.comparing(handler -> handler.method.getParameterCount());
+            var methodNameComparator = Comparator.comparing(Method::getName);
+            var methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
 
             handlers.sort(methodNameComparator.thenComparing(methodParameterCountComparator.reversed()));
         }
@@ -892,17 +839,13 @@ public abstract class WebService extends HttpServlet {
         if (pathInfo != null) {
             var components = pathInfo.split("/");
 
-            for (var i = 0; i < components.length; i++) {
+            for (var i = 1; i < components.length; i++) {
                 var component = components[i];
-
-                if (component.isEmpty()) {
-                    continue;
-                }
 
                 var child = resource.resources.get(component);
 
                 if (child == null) {
-                    child = resource.resources.get(ResourcePath.PATH_VARIABLE_PREFIX);
+                    child = resource.resources.get(PATH_VARIABLE);
 
                     if (child == null) {
                         super.service(request, response);
@@ -931,9 +874,9 @@ public abstract class WebService extends HttpServlet {
 
         var parameterNames = request.getParameterNames();
 
-        Handler handler;
+        Method handler;
         Object[] arguments;
-        if (parameterNames.hasMoreElements()) {
+        if (keys.isEmpty() && parameterNames.hasMoreElements()) {
             while (parameterNames.hasMoreElements()) {
                 var name = parameterNames.nextElement();
 
@@ -968,7 +911,7 @@ public abstract class WebService extends HttpServlet {
 
             if (handler != null) {
                 try {
-                    arguments = getArguments(handler.method, parameterMap);
+                    arguments = getArguments(handler, parameterMap);
                 } catch (Exception exception) {
                     sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
                     return;
@@ -980,7 +923,7 @@ public abstract class WebService extends HttpServlet {
             handler = handlerList.get(0);
 
             try {
-                arguments = getArguments(handler.method, keys, request);
+                arguments = getArguments(handler, keys, request);
             } catch (Exception exception) {
                 sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
                 return;
@@ -997,7 +940,7 @@ public abstract class WebService extends HttpServlet {
 
         Object result;
         try {
-            result = handler.method.invoke(this, arguments);
+            result = handler.invoke(this, arguments);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             if (response.isCommitted()) {
                 throw new ServletException(exception);
@@ -1032,7 +975,7 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        var returnType = handler.method.getReturnType();
+        var returnType = handler.getReturnType();
 
         if (returnType == Void.TYPE || returnType == Void.class) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -1043,15 +986,15 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static Handler getHandler(List<Handler> handlerList, Map<String, List<?>> parameterMap) {
-        Handler handler = null;
+    private Method getHandler(List<Method> handlerList, Map<String, List<?>> parameterMap) {
+        Method handler = null;
 
         var n = parameterMap.size();
 
         var i = Integer.MAX_VALUE;
 
-        for (var option : handlerList) {
-            var parameters = option.method.getParameters();
+        for (var method : handlerList) {
+            var parameters = method.getParameters();
 
             if (parameters.length >= n) {
                 var j = 0;
@@ -1065,7 +1008,7 @@ public abstract class WebService extends HttpServlet {
                 }
 
                 if (parameters.length - j == n && j < i) {
-                    handler = option;
+                    handler = method;
 
                     i = j;
                 }
@@ -1288,11 +1231,9 @@ public abstract class WebService extends HttpServlet {
 
                     operation.deprecated |= serviceDescriptor.deprecated;
 
-                    operation.consumes = null; // TODO
+                    operation.produces = describeGenericType(handler.getGenericReturnType());
 
-                    operation.produces = describeGenericType(handler.method.getGenericReturnType());
-
-                    var parameters = handler.method.getParameters();
+                    var parameters = handler.getParameters();
 
                     for (var i = 0; i < parameters.length; i++) {
                         var parameter = parameters[i];

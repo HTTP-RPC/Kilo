@@ -1,0 +1,245 @@
+{
+  "description": "Catalog example service.",
+  "endpoints": [
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "description": "Returns a list of all items in the catalog.",
+          "method": "GET",
+          "parameters": [
+          ],
+          "produces": {
+            "elementType": {
+              "elementType": null,
+              "intrinsic": false,
+              "keyType": null,
+              "list": false,
+              "map": false,
+              "name": "Item",
+              "valueType": null
+            },
+            "intrinsic": true,
+            "keyType": null,
+            "list": true,
+            "map": false,
+            "name": "List",
+            "valueType": null
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "Adds an item to the catalog.",
+          "method": "POST",
+          "parameters": [
+            {
+              "description": "The item to add.",
+              "name": "item",
+              "required": false,
+              "type": {
+                "elementType": null,
+                "intrinsic": false,
+                "keyType": null,
+                "list": false,
+                "map": false,
+                "name": "Item",
+                "valueType": null
+              }
+            }
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": false,
+            "keyType": null,
+            "list": false,
+            "map": false,
+            "name": "Item",
+            "valueType": null
+          }
+        }
+      ],
+      "path": "/catalog/items"
+    },
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "description": "Updates an item.",
+          "method": "PUT",
+          "parameters": [
+            {
+              "description": "The item ID.",
+              "name": "itemID",
+              "required": false,
+              "type": {
+                "elementType": null,
+                "intrinsic": true,
+                "keyType": null,
+                "list": false,
+                "map": false,
+                "name": "Integer",
+                "valueType": null
+              }
+            },
+            {
+              "description": "The updated item.",
+              "name": "item",
+              "required": false,
+              "type": {
+                "elementType": null,
+                "intrinsic": false,
+                "keyType": null,
+                "list": false,
+                "map": false,
+                "name": "Item",
+                "valueType": null
+              }
+            }
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "keyType": null,
+            "list": false,
+            "map": false,
+            "name": "void",
+            "valueType": null
+          }
+        },
+        {
+          "deprecated": false,
+          "description": "Deletes an item.",
+          "method": "DELETE",
+          "parameters": [
+            {
+              "description": "The item ID.",
+              "name": "itemID",
+              "required": false,
+              "type": {
+                "elementType": null,
+                "intrinsic": true,
+                "keyType": null,
+                "list": false,
+                "map": false,
+                "name": "Integer",
+                "valueType": null
+              }
+            }
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "keyType": null,
+            "list": false,
+            "map": false,
+            "name": "void",
+            "valueType": null
+          }
+        }
+      ],
+      "path": "/catalog/items/?"
+    },
+    {
+      "operations": [
+        {
+          "deprecated": false,
+          "description": "Returns a list of size options.",
+          "method": "GET",
+          "parameters": [
+          ],
+          "produces": {
+            "elementType": {
+              "elementType": null,
+              "intrinsic": false,
+              "keyType": null,
+              "list": false,
+              "map": false,
+              "name": "Size",
+              "valueType": null
+            },
+            "intrinsic": true,
+            "keyType": null,
+            "list": true,
+            "map": false,
+            "name": "List",
+            "valueType": null
+          }
+        }
+      ],
+      "path": "/catalog/sizes"
+    }
+  ],
+  "enumerations": [
+    {
+      "description": "Represents a size option.",
+      "name": "Size",
+      "values": [
+        {
+          "description": "A small size.",
+          "name": "SMALL"
+        },
+        {
+          "description": "A medium size.",
+          "name": "MEDIUM"
+        },
+        {
+          "description": "A large size.",
+          "name": "LARGE"
+        }
+      ]
+    }
+  ],
+  "path": "/catalog",
+  "structures": [
+    {
+      "description": "Represents an item in the catalog.",
+      "name": "Item",
+      "properties": [
+        {
+          "description": "The item's description.",
+          "name": "description",
+          "required": true,
+          "type": {
+            "elementType": null,
+            "intrinsic": true,
+            "keyType": null,
+            "list": false,
+            "map": false,
+            "name": "String",
+            "valueType": null
+          }
+        },
+        {
+          "description": "The item's ID.",
+          "name": "id",
+          "required": false,
+          "type": {
+            "elementType": null,
+            "intrinsic": true,
+            "keyType": null,
+            "list": false,
+            "map": false,
+            "name": "Integer",
+            "valueType": null
+          }
+        },
+        {
+          "description": "The item's price.",
+          "name": "price",
+          "required": true,
+          "type": {
+            "elementType": null,
+            "intrinsic": true,
+            "keyType": null,
+            "list": false,
+            "map": false,
+            "name": "Double",
+            "valueType": null
+          }
+        }
+      ],
+      "supertypes": [
+      ]
+    }
+  ]
+}

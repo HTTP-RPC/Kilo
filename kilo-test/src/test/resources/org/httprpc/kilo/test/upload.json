@@ -1,38 +1,24 @@
 {
-  "description": "Math example service.",
+  "description": "File upload example service.",
   "endpoints": [
     {
       "operations": [
         {
           "deprecated": false,
-          "description": "Calculates the sum of two numbers.",
-          "method": "GET",
+          "description": "Uploads a single file.",
+          "method": "POST",
           "parameters": [
             {
-              "description": "The first number.",
-              "name": "a",
-              "required": false,
+              "description": "The file to upload.",
+              "name": "file",
+              "required": true,
               "type": {
                 "elementType": null,
                 "intrinsic": true,
                 "keyType": null,
                 "list": false,
                 "map": false,
-                "name": "double",
-                "valueType": null
-              }
-            },
-            {
-              "description": "The second number.",
-              "name": "b",
-              "required": false,
-              "type": {
-                "elementType": null,
-                "intrinsic": true,
-                "keyType": null,
-                "list": false,
-                "map": false,
-                "name": "double",
+                "name": "URL",
                 "valueType": null
               }
             }
@@ -43,18 +29,18 @@
             "keyType": null,
             "list": false,
             "map": false,
-            "name": "double",
+            "name": "long",
             "valueType": null
           }
         },
         {
           "deprecated": false,
-          "description": "Calculates the sum of a list of numbers.",
-          "method": "GET",
+          "description": "Uploads a list of files.",
+          "method": "POST",
           "parameters": [
             {
-              "description": "The numbers to add.",
-              "name": "values",
+              "description": "The files to upload.",
+              "name": "files",
               "required": true,
               "type": {
                 "elementType": {
@@ -63,7 +49,7 @@
                   "keyType": null,
                   "list": false,
                   "map": false,
-                  "name": "Double",
+                  "name": "URL",
                   "valueType": null
                 },
                 "intrinsic": true,
@@ -81,17 +67,17 @@
             "keyType": null,
             "list": false,
             "map": false,
-            "name": "double",
+            "name": "long",
             "valueType": null
           }
         }
       ],
-      "path": "/math/sum"
+      "path": "/upload"
     }
   ],
   "enumerations": [
   ],
-  "path": "/math",
+  "path": "/upload",
   "structures": [
   ]
 }

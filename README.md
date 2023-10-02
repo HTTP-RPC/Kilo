@@ -22,20 +22,6 @@ Kilo is distributed via Maven Central:
 * [org.httprpc:kilo-client](https://repo1.maven.org/maven2/org/httprpc/kilo-client/) - provides support for consuming web services, interacting with relational databases, and working with common file formats (Java 17 or later required)
 * [org.httprpc:kilo-server](https://repo1.maven.org/maven2/org/httprpc/kilo-server/) - depends on client; provides support for creating web services (Jakarta Servlet specification 5.0 or later required)
 
-The following Gradle script will assemble a basic Java web application that includes support for Kilo-based web services:
-
-```groovy
-plugins {
-    id 'war'
-}
-
-dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
-
-    implementation "org.httprpc:kilo-server:${kiloVersion}"
-}
-```
-
 # Kilo Classes
 Classes provided by the Kilo framework include:
 
@@ -57,7 +43,7 @@ Each is discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard servlet API.
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments are provided either via the query string or in the request body, like an HTML form. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments are provided either via the query string or the resource path/request body. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself.
 
@@ -65,16 +51,24 @@ Multiple methods may be associated with the same verb and path. `WebService` sel
 
 ```java
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
+@Description("Math example service.")
 public class MathService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("sum")
-    public double getSum(double a, double b) {
+    @Description("Calculates the sum of two numbers.")
+    public double getSum(
+        @Description("The first number.") double a,
+        @Description("The second number.") double b
+    ) {
         return a + b;
     }
 
     @RequestMethod("GET")
     @ResourcePath("sum")
-    public double getSum(List<Double> values) {
+    @Description("Calculates the sum of a list of numbers.")
+    public double getSum(
+        @Description("The numbers to add.") List<Double> values
+    ) {
         double total = 0;
 
         for (double value : values) {
@@ -102,7 +96,9 @@ In either case, the service would return the value 6 in response.
 
 If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) will be called.
 
-At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the generated [documentation](#api-documentation).
+At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the generated documentation.
+
+The optional `Description` annotation is used to document service implementations and is discussed in more detail [later](#api-documentation).
 
 ### Method Parameters
 Method parameters may be any of the following types:
@@ -126,9 +122,9 @@ Method parameters may be any of the following types:
 * `java.util.List`
 * `java.net.URL`
 
-Unspecified values are automatically converted to `0` or `false` for primitive types.
+Additionally, `java.util.Map` and bean types are supported for [body content](#body-content).
 
-`List` values are automatically converted to their declared types (e.g. `List<Double>`). If no arguments are provided for a list parameter, an empty list (not `null`) will be passed to the method.
+Unspecified values are automatically converted to `0` or `false` for primitive types. `List` values are automatically converted to their declared types (e.g. `List<Double>`). If no arguments are provided for a list parameter, an empty list (not `null`) will be passed to the method.
 
 `URL` and `List<URL>` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) service example for more information.
 
@@ -152,8 +148,6 @@ public long uploadFile(
 ```
 
 `List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
-
-The `Description` annotation is discussed in more detail in the [API Documentation](#api-documentation) section.
 
 ### Path Variables
 Path variables (or "keys") are specified by a "?" character in an endpoint's resource path:
@@ -241,27 +235,24 @@ GET http://localhost:8080/kilo-test
 Documentation for a specific service can be viewed by appending "?api" to the service's base URL:
 
 ```
-GET http://localhost:8080/kilo-test/math?api
+GET http://localhost:8080/kilo-test/catalog?api
 ```
 
-<img src="README/math-api.png" width="640px"/>
+<img src="README/catalog-api.png" width="640px"/>
 
 Endpoints are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
-@WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
-@Description("Math example service.")
-public class MathService extends WebService {
+@WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
+@Description("Catalog example service.")
+public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("GET")
-    @ResourcePath("sum")
-    @Description("Calculates the sum of two numbers.")
-    public double getSum(
-        @Description("The first number.") double a,
-        @Description("The second number.") double b
-    ) {
-        return a + b;
+    @ResourcePath("items")
+    @Description("Returns a list of all items in the catalog.")
+    public List<Item> getItems() throws SQLException {
+        ...
     }
-
+    
     ...
 }
 ```
@@ -311,9 +302,16 @@ Types or methods tagged with the `Deprecated` annotation will be identified as s
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to submit API requests to a server. It provides constructors that accept the HTTP method to execute and the URL of the requested resource.
+The `WebServiceProxy` class is used to submit API requests to a server. It provides the following two constructors:
 
-Request arguments are specified via the `setArguments()` method. Like HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
+```java
+public WebServiceProxy(String method, URL url) { ... }
+public WebServiceProxy(String method, URL baseURL, String path, Object... args) throws MalformedURLException { ... }
+```
+
+The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the method, a base URL, and a relative path, as a format string to which the optional trailing arguments are applied.
+
+Request arguments are specified via the `setArguments()` method. As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 

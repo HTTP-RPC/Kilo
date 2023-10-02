@@ -51,7 +51,9 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("items")
     @Description("Adds an item to the catalog.")
-    public Item addItem(Item item) throws SQLException {
+    public Item addItem(
+        @Description("The item to add.") Item item
+    ) throws SQLException {
         var queryBuilder = QueryBuilder.insertInto(ItemSchema.class, DESCRIPTION, PRICE)
             .values("description", "price");
 

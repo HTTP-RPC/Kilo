@@ -295,6 +295,12 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
+    @ResourcePath("map")
+    public Map<String, Double> testPostMap(Map<String, Double> map) {
+        return map;
+    }
+
+    @RequestMethod("POST")
     @ResourcePath("body")
     public Body testPostBody(Body body) {
         body.getString();

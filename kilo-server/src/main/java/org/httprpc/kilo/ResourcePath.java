@@ -26,11 +26,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ResourcePath {
     /**
-     * Path variable prefix.
-     */
-    String PATH_VARIABLE_PREFIX = "?";
-
-    /**
      * The method's resource path.
      */
     String value();

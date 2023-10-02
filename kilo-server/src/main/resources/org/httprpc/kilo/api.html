@@ -217,18 +217,10 @@
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
       <!-- {{#operations}} -->
-      <pre><span class="method {{method}}">{{method}}</span>{{?consumes}} ({{>type.html}}){{/consumes}}{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
+      <pre><span class="method {{method}}">{{method}}</span>{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
       <!-- {{?description}} -->
       <p>{{.}}</p>
       <!-- {{/description}} -->
-      <!-- {{?keys}} -->
-      <table>
-        <tr><th style="width: 100%">{{@keys}}</th></tr>
-        <!-- {{#.}} -->
-        <tr><td style="width: 100%"><code>{{.}}</code></td></tr>
-        <!-- {{/.}} -->
-      </table>
-      <!-- {{/keys}} -->
       <!-- {{?parameters}} -->
       <table>
         <tr><th>{{@parameter}}</th><th>{{@type}}</th><th>{{@description}}</th></tr>

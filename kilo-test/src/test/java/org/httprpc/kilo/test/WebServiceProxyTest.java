@@ -308,6 +308,25 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testMapPost() throws IOException {
+        var body = mapOf(
+            entry("a", 1.0),
+            entry("b", 2.0),
+            entry("c", 3.0)
+        );
+
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/map");
+
+        webServiceProxy.setBody(body);
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals(body, result);
+    }
+
+    @Test
     public void testBodyPost() throws IOException {
         var request = mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -816,14 +835,20 @@ public class WebServiceProxyTest {
 
     @Test
     public void testAPIDocumentation() throws IOException {
+        testAPIDocumentation("math");
+        testAPIDocumentation("upload");
+        testAPIDocumentation("catalog");
+    }
+
+    private void testAPIDocumentation(String name) throws IOException {
         Map<?, ?> expected;
-        try (var inputStream = getClass().getResourceAsStream("math.json")) {
+        try (var inputStream = getClass().getResourceAsStream(String.format("%s.json", name))) {
             var jsonDecoder = new JSONDecoder();
 
             expected = (Map<?, ?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "math");
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, name);
 
         webServiceProxy.setHeaders(
             mapOf(
