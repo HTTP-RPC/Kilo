@@ -309,7 +309,7 @@ public WebServiceProxy(String method, URL url) { ... }
 public WebServiceProxy(String method, URL baseURL, String path, Object... args) throws MalformedURLException { ... }
 ```
 
-The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the method, a base URL, and a relative path, as a format string to which the optional trailing arguments are applied.
+The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the HTTP method, a base URL, and a relative path (as a format string, to which the optional trailing arguments are applied).
 
 Request arguments are specified via the `setArguments()` method. As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
 

@@ -778,10 +778,10 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static void sort(Resource root) {
-        for (var handlers : root.handlerMap.values()) {
-            var methodNameComparator = Comparator.comparing(Method::getName);
-            var methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
+        var methodNameComparator = Comparator.comparing(Method::getName);
+        var methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
 
+        for (var handlers : root.handlerMap.values()) {
             handlers.sort(methodNameComparator.thenComparing(methodParameterCountComparator.reversed()));
         }
 
