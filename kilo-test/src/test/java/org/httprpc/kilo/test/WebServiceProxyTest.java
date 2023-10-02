@@ -372,10 +372,6 @@ public class WebServiceProxyTest {
             }
         });
 
-        webServiceProxy.setArguments(mapOf(
-            entry("name", imageTestURL.getFile())
-        ));
-
         var image = webServiceProxy.invoke((inputStream, contentType) -> ImageIO.read(inputStream));
 
         assertNotNull(image);
@@ -403,10 +399,6 @@ public class WebServiceProxyTest {
                 }
             }
         });
-
-        webServiceProxy.setArguments(mapOf(
-            entry("id", 101)
-        ));
 
         webServiceProxy.setMonitorStream(System.out);
 
@@ -549,11 +541,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMissingRequiredProperty() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
-
-        webServiceProxy.setArguments(mapOf(
-            entry("id", 101)
-        ));
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/body");
 
         webServiceProxy.setBody(mapOf());
 
