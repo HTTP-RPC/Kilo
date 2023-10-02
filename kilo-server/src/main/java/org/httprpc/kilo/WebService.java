@@ -1198,7 +1198,9 @@ public abstract class WebService extends HttpServlet {
             throw new UnsupportedOperationException("Body is required.");
         }
 
-        if (type instanceof ParameterizedType parameterizedType) {
+        if (type instanceof Class<?> rawType) {
+            return BeanAdapter.coerce(body, rawType);
+        } else if (type instanceof ParameterizedType parameterizedType) {
             var rawType = parameterizedType.getRawType();
 
             if (rawType == List.class) {
@@ -1216,8 +1218,6 @@ public abstract class WebService extends HttpServlet {
             } else {
                 throw new UnsupportedOperationException("Invalid parameterized body type.");
             }
-        } else if (type instanceof Class<?> rawType) {
-            return BeanAdapter.coerce(body, rawType);
         } else {
             throw new UnsupportedOperationException("Invalid body type.");
         }
