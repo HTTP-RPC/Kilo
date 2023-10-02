@@ -297,6 +297,8 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     @ResourcePath("body")
     public Body testPostBody(Body body) {
+        body.getString();
+
         return body;
     }
 

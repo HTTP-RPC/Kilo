@@ -979,28 +979,11 @@ public abstract class WebService extends HttpServlet {
         } else {
             handler = handlerList.get(0);
 
-            var genericParameterTypes = handler.method.getGenericParameterTypes();
-
-            if (genericParameterTypes.length < keys.size()) {
-                throw new UnsupportedOperationException("Invalid argument count.");
-            }
-
-            arguments = new Object[genericParameterTypes.length];
-
-            var i = 0;
-
-            for (var key : keys) {
-                var argumentType = genericParameterTypes[i];
-
-                if (!(argumentType instanceof Class<?> type)) {
-                    throw new UnsupportedOperationException("Invalid argument type.");
-                }
-
-                arguments[i++] = BeanAdapter.coerce(key, type);
-            }
-
-            if (i < genericParameterTypes.length) {
-                arguments[i] = decodeBody(request, genericParameterTypes[i]);
+            try {
+                arguments = getArguments(handler.method, keys, request);
+            } catch (Exception exception) {
+                sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
+                return;
             }
         }
 
@@ -1092,7 +1075,7 @@ public abstract class WebService extends HttpServlet {
         return handler;
     }
 
-    private static Object[] getArguments(Method method, Map<String, List<?>> parameterMap) {
+    private Object[] getArguments(Method method, Map<String, List<?>> parameterMap) {
         var parameters = method.getParameters();
 
         var arguments = new Object[parameters.length];
@@ -1137,6 +1120,34 @@ public abstract class WebService extends HttpServlet {
             }
 
             arguments[i] = argument;
+        }
+
+        return arguments;
+    }
+
+    private Object[] getArguments(Method method, List<String> keys, HttpServletRequest request) throws IOException {
+        var genericParameterTypes = method.getGenericParameterTypes();
+
+        if (genericParameterTypes.length < keys.size()) {
+            throw new UnsupportedOperationException("Invalid argument count.");
+        }
+
+        var arguments = new Object[genericParameterTypes.length];
+
+        var i = 0;
+
+        for (var key : keys) {
+            var argumentType = genericParameterTypes[i];
+
+            if (!(argumentType instanceof Class<?> type)) {
+                throw new UnsupportedOperationException("Invalid argument type.");
+            }
+
+            arguments[i++] = BeanAdapter.coerce(key, type);
+        }
+
+        if (i < genericParameterTypes.length) {
+            arguments[i] = decodeBody(request, genericParameterTypes[i]);
         }
 
         return arguments;
