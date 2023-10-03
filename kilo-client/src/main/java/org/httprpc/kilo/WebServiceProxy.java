@@ -25,6 +25,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -202,6 +206,25 @@ public class WebServiceProxy {
         @Override
         public void close() throws IOException {
             outputStream.close();
+        }
+    }
+
+    // Typed invocation handler
+    private static class TypedInvocationHandler implements InvocationHandler {
+        URL baseURL;
+
+        TypedInvocationHandler(URL baseURL) {
+            this.baseURL = baseURL;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+            // TODO
+            method.getAnnotation(RequestMethod.class);
+            method.getAnnotation(ResourcePath.class);
+
+            // TODO
+            return null;
         }
     }
 
@@ -845,5 +868,54 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
+    }
+
+    /**
+     * Creates a typed proxy for web service invocation.
+     *
+     * @param <T>
+     * The proxy type.
+     *
+     * @param type
+     * The proxy type.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @return
+     * The typed service proxy.
+     */
+    public static <T> T adapt(Class<T> type, URL baseURL) {
+        return adapt(type, baseURL, webServiceProxy -> {});
+    }
+
+    /**
+     * Creates a typed proxy for web service invocation.
+     *
+     * @param <T>
+     * The proxy type.
+     *
+     * @param type
+     * The proxy type.
+     *
+     * @param baseURL
+     * The base URL.
+     *
+     * @param initializer
+     * An initializer that will be called prior to each service invocation.
+     *
+     * @return
+     * The typed web service proxy.
+     */
+    public static <T> T adapt(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
+        if (type == null || baseURL == null || initializer == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("Type is not an interface.");
+        }
+
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURL)));
     }
 }

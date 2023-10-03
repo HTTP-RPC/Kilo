@@ -43,7 +43,7 @@ Each is discussed in more detail in the following sections.
 ## WebService
 `WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard servlet API.
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments are provided either via the query string or the resource path/request body. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments are typically provided either via the query string or the resource path/request body. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON. 
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself.
 
@@ -376,6 +376,9 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
 POST, PUT, and DELETE operations are also supported.
+
+### Typed Invocation
+TODO
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used directly by application logic. For example: 
