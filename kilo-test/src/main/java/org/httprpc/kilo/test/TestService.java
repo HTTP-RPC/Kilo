@@ -201,7 +201,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("a/?/b/?/c/?/d/?")
-    public Map<String, Object> testGetKeys(
+    public Map<String, Object> testKeys(
         @Description("First key.") int a,
         @Description("Second key.") String b,
         @Description("Third key.") int c,

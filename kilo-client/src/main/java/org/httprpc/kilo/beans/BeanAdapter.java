@@ -732,7 +732,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return (Map<K, V>)toGenericType(map, typeOfMap(valueType));
     }
 
-    private static Object toGenericType(Object value, Type type) {
+    /**
+     * Converts a value to a generic type.
+     *
+     * @param value
+     * The value to convert.
+     *
+     * @param type
+     * The target type.
+     *
+     * @return
+     * The converted value.
+     */
+    public static Object toGenericType(Object value, Type type) {
         if (type instanceof Class<?> rawType) {
             return toRawType(value, rawType);
         } else if (type instanceof ParameterizedType parameterizedType) {

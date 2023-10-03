@@ -1146,35 +1146,7 @@ public abstract class WebService extends HttpServlet {
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
-        var body = jsonDecoder.read(request.getInputStream());
-
-        if (body == null) {
-            throw new UnsupportedOperationException("Body is required.");
-        }
-
-        if (type instanceof Class<?> rawType) {
-            return BeanAdapter.coerce(body, rawType);
-        } else if (type instanceof ParameterizedType parameterizedType) {
-            var rawType = parameterizedType.getRawType();
-
-            if (rawType == List.class) {
-                if (!(body instanceof List<?> list)) {
-                    throw new UnsupportedOperationException("Body is not a list.");
-                }
-
-                return BeanAdapter.coerceList(list, (Class<?>)parameterizedType.getActualTypeArguments()[0]);
-            } else if (rawType == Map.class) {
-                if (!(body instanceof Map<?, ?> map)) {
-                    throw new UnsupportedOperationException("Body is not a map.");
-                }
-
-                return BeanAdapter.coerceMap(map, (Class<?>)parameterizedType.getActualTypeArguments()[1]);
-            } else {
-                throw new UnsupportedOperationException("Invalid parameterized body type.");
-            }
-        } else {
-            throw new UnsupportedOperationException("Invalid body type.");
-        }
+        return BeanAdapter.toGenericType(jsonDecoder.read(request.getInputStream()), type);
     }
 
     /**

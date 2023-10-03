@@ -120,7 +120,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testGetKeys() throws IOException {
+    public void testKeys() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/a/%d/b/%s/c/%d/d/%s",
             123,
             URLEncoder.encode("héllo", StandardCharsets.UTF_8),
@@ -131,6 +131,20 @@ public class WebServiceProxyTest {
         webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
+
+        assertEquals(mapOf(
+            entry("a", 123),
+            entry("b", "héllo"),
+            entry("c", 456),
+            entry("d", "göodbye")
+        ), result);
+    }
+
+    @Test
+    public void testKeysProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        var result = testServiceProxy.testKeys(123, "héllo", 456,"göodbye");
 
         assertEquals(mapOf(
             entry("a", 123),
@@ -461,6 +475,25 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testHeadersProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
+            webServiceProxy.setHeaders(mapOf(
+                entry("X-Header-A", "abc"),
+                entry("X-Header-B", 123)
+            ));
+
+            webServiceProxy.setMonitorStream(System.out);
+        });
+
+        var result = testServiceProxy.testHeaders();
+
+        assertEquals(mapOf(
+            entry("X-Header-A", "abc"),
+            entry("X-Header-B", "123")
+        ), result);
+    }
+
+    @Test
     public void testException() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/error");
 
@@ -644,6 +677,14 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testMathProxy() throws IOException {
+        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL(baseURL, "math/"));
+
+        assertEquals(6.0, mathServiceProxy.getSum(4, 2));
+        assertEquals(6.0, mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0)));
+    }
+
+    @Test
     public void testFileUpload1() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "upload");
 
@@ -734,6 +775,38 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "catalog/sizes");
 
         return webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, Size.class));
+    }
+
+    @Test
+    public void testCatalogProxy() throws IOException {
+        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, new URL(baseURL, "catalog/"));
+
+        var item = BeanAdapter.coerce(mapOf(), Item.class);
+
+        item.setDescription("abc");
+        item.setPrice(150.0);
+
+        item = catalogServiceProxy.addItem(item);
+
+        assertNotNull(item);
+        assertNotNull(item.getID());
+        assertEquals("abc", item.getDescription());
+        assertEquals(150.00, item.getPrice());
+
+        assertNotNull(catalogServiceProxy.getItems().stream().filter(item::equals).findAny().orElse(null));
+
+        item.setDescription("xyz");
+        item.setPrice(300.00);
+
+        catalogServiceProxy.updateItem(item.getID(), item);
+
+        assertNotNull(catalogServiceProxy.getItems().stream().filter(item::equals).findAny().orElse(null));
+
+        catalogServiceProxy.deleteItem(item.getID());
+
+        assertNull(catalogServiceProxy.getItems().stream().filter(item::equals).findAny().orElse(null));
+
+        assertEquals(Arrays.asList(Size.values()), catalogServiceProxy.getSizes());
     }
 
     @Test

@@ -306,7 +306,7 @@ The `WebServiceProxy` class is used to submit API requests to a server. It provi
 
 ```java
 public WebServiceProxy(String method, URL url) { ... }
-public WebServiceProxy(String method, URL baseURL, String path, Object... args) throws MalformedURLException { ... }
+public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) throws MalformedURLException { ... }
 ```
 
 The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the HTTP method, a base URL, and a relative path (as a format string, to which the optional trailing arguments are applied).
@@ -378,7 +378,37 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 POST, PUT, and DELETE operations are also supported.
 
 ### Typed Invocation
-TODO
+`WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
+
+```java
+public static <T> T of(Class<T> type, URL baseURL) { ... }
+public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) { ... }
+```
+
+Both versions accept an interface type and a base URL. The second accepts an optional initializer that, when provided, will be called prior to each service invocation; for example, to apply common request headers.
+
+The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice). For example:
+
+```java
+public interface MathServiceProxy {
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(double a, double b) throws IOException;
+
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(List<Double> values) throws IOException;
+}
+```
+
+```java
+var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http://localhost:8080/kilo-test/math/"));
+
+System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
+System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
+```
+
+Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 ## JSONEncoder and JSONDecoder
 The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used directly by application logic. For example: 

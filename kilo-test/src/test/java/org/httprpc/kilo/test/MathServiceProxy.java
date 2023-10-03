@@ -12,29 +12,20 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'war'
-}
+package org.httprpc.kilo.test;
 
-dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.ResourcePath;
 
-    implementation project(':kilo-server')
-    implementation 'org.hibernate.orm:hibernate-core:6.3.0.Final'
-}
+import java.io.IOException;
+import java.util.List;
 
-compileJava {
-    options.compilerArgs = [
-        '-parameters'
-    ]
-}
+public interface MathServiceProxy {
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(double a, double b) throws IOException;
 
-compileTestJava {
-    options.compilerArgs = [
-            '-parameters'
-    ]
-}
-
-war {
-    archiveFileName = "${project.name}.war"
+    @RequestMethod("GET")
+    @ResourcePath("sum")
+    double getSum(List<Double> values) throws IOException;
 }

@@ -75,6 +75,14 @@ public class ExamplesTest {
     }
 
     @Test
+    public void testMathService3() throws IOException {
+        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http://localhost:8080/kilo-test/math/"));
+
+        System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
+        System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
+    }
+
+    @Test
     public void testJSONEncoder() throws IOException {
         var map = mapOf(
             entry("vegetables", listOf(

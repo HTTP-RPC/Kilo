@@ -12,29 +12,20 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'war'
-}
+package org.httprpc.kilo.test;
 
-dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.ResourcePath;
 
-    implementation project(':kilo-server')
-    implementation 'org.hibernate.orm:hibernate-core:6.3.0.Final'
-}
+import java.io.IOException;
+import java.util.Map;
 
-compileJava {
-    options.compilerArgs = [
-        '-parameters'
-    ]
-}
+public interface TestServiceProxy {
+    @RequestMethod("GET")
+    @ResourcePath("a/?/b/?/c/?/d/?")
+    Map<String, Object> testKeys(int a, String b, int c, String d) throws IOException;
 
-compileTestJava {
-    options.compilerArgs = [
-            '-parameters'
-    ]
-}
-
-war {
-    archiveFileName = "${project.name}.war"
+    @RequestMethod("GET")
+    @ResourcePath("headers")
+    Map<String, String> testHeaders() throws IOException;
 }

@@ -34,6 +34,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -209,22 +210,88 @@ public class WebServiceProxy {
         }
     }
 
-    // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
         URL baseURL;
+        Consumer<WebServiceProxy> initializer;
 
-        TypedInvocationHandler(URL baseURL) {
+        TypedInvocationHandler(URL baseURL, Consumer<WebServiceProxy> initializer) {
             this.baseURL = baseURL;
+            this.initializer = initializer;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-            // TODO
-            method.getAnnotation(RequestMethod.class);
-            method.getAnnotation(ResourcePath.class);
+            var requestMethod = method.getAnnotation(RequestMethod.class);
 
-            // TODO
-            return null;
+            if (requestMethod == null) {
+                throw new UnsupportedOperationException("Request method is not defined.");
+            }
+
+            var pathBuilder = new StringBuilder();
+
+            var i = 0;
+
+            var resourcePath = method.getAnnotation(ResourcePath.class);
+
+            if (resourcePath != null) {
+                var components = resourcePath.value().split("/");
+
+                for (var j = 0; j < components.length; j++) {
+                    var component = components[j];
+
+                    if (component.isEmpty()) {
+                        throw new UnsupportedOperationException("Invalid resource path.");
+                    }
+
+                    if (component.equals(PATH_VARIABLE)) {
+                        if (arguments == null || i > arguments.length) {
+                            throw new UnsupportedOperationException("Path parameter is not defined.");
+                        }
+
+                        var parameterValue = getParameterValue(arguments[i]);
+
+                        if (parameterValue == null) {
+                            throw new IllegalArgumentException("Path variable is required.");
+                        }
+
+                        component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
+
+                        i++;
+                    }
+
+                    if (i > 0) {
+                        pathBuilder.append("/");
+                    }
+
+                    pathBuilder.append(component);
+                }
+            }
+
+            var webServiceProxy = new WebServiceProxy(requestMethod.value(), new URL(baseURL, pathBuilder.toString()));
+
+            if (initializer != null) {
+                initializer.accept(webServiceProxy);
+            }
+
+            if (arguments != null) {
+                if (i == 0 && !webServiceProxy.getMethod().equals("POST")) {
+                    var parameters = method.getParameters();
+
+                    var argumentMap = new LinkedHashMap<String, Object>();
+
+                    for (var j = 0; j < arguments.length; j++) {
+                        argumentMap.put(parameters[j].getName(), arguments[j]);
+                    }
+
+                    webServiceProxy.setArguments(argumentMap);
+                } else if (arguments.length > i) {
+                    webServiceProxy.setBody(arguments[i]);
+                } else {
+                    // TODO?
+                }
+            }
+
+            return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
     }
 
@@ -249,6 +316,8 @@ public class WebServiceProxy {
     private PrintStream monitorStream = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
+
+    private static final String PATH_VARIABLE = "?";
 
     private static final int EOF = -1;
 
@@ -295,14 +364,14 @@ public class WebServiceProxy {
      * @param path
      * The path to the resource, relative to the base URL.
      *
-     * @param args
+     * @param arguments
      * Path format specifier arguments.
      *
      * @throws MalformedURLException
      * If a URL cannot be constructed from the base URL and path.
      */
-    public WebServiceProxy(String method, URL baseURL, String path, Object... args) throws MalformedURLException {
-        this(method, new URL(baseURL, String.format(path, args)));
+    public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) throws MalformedURLException {
+        this(method, new URL(baseURL, String.format(path, arguments)));
     }
 
     /**
@@ -885,8 +954,8 @@ public class WebServiceProxy {
      * @return
      * The typed service proxy.
      */
-    public static <T> T adapt(Class<T> type, URL baseURL) {
-        return adapt(type, baseURL, webServiceProxy -> {});
+    public static <T> T of(Class<T> type, URL baseURL) {
+        return of(type, baseURL, null);
     }
 
     /**
@@ -902,13 +971,14 @@ public class WebServiceProxy {
      * The base URL.
      *
      * @param initializer
-     * An initializer that will be called prior to each service invocation.
+     * An initializer that will be called prior to each service invocation, or
+     * {@code null} for no initializer.
      *
      * @return
      * The typed web service proxy.
      */
-    public static <T> T adapt(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
-        if (type == null || baseURL == null || initializer == null) {
+    public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
+        if (type == null || baseURL == null) {
             throw new IllegalArgumentException();
         }
 
@@ -916,6 +986,6 @@ public class WebServiceProxy {
             throw new IllegalArgumentException("Type is not an interface.");
         }
 
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURL)));
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURL, initializer)));
     }
 }
