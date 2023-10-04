@@ -387,7 +387,7 @@ public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> ini
 
 Both versions accept an interface type and base URL, and return an implementation of the interface that submits API requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
 
-The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice). For example:
+The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. For example:
 
 ```java
 public interface MathServiceProxy {
