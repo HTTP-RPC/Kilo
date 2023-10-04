@@ -601,7 +601,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static class Resource {
-        static List<String> order = listOf("get", "post", "put", "delete");
+        static List<String> order = listOf("GET", "POST", "PUT", "DELETE");
 
         final Map<String, List<Method>> handlerMap = new TreeMap<>((verb1, verb2) -> {
             var i1 = order.indexOf(verb1);
@@ -654,8 +654,6 @@ public abstract class WebService extends HttpServlet {
     private ServiceDescriptor serviceDescriptor = null;
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
-
-    private static final String PATH_VARIABLE = "?";
 
     private static final String UTF_8 = "UTF-8";
 
@@ -719,14 +717,14 @@ public abstract class WebService extends HttpServlet {
         var methods = getClass().getMethods();
 
         for (var i = 0; i < methods.length; i++) {
-            var method = methods[i];
+            var handler = methods[i];
 
-            var requestMethod = method.getAnnotation(RequestMethod.class);
+            var requestMethod = handler.getAnnotation(RequestMethod.class);
 
             if (requestMethod != null) {
                 var resource = root;
 
-                var resourcePath = method.getAnnotation(ResourcePath.class);
+                var resourcePath = handler.getAnnotation(ResourcePath.class);
 
                 if (resourcePath != null) {
                     var components = resourcePath.value().split("/");
@@ -750,17 +748,17 @@ public abstract class WebService extends HttpServlet {
                     }
                 }
 
-                var verb = requestMethod.value().toLowerCase();
+                var method = requestMethod.value().toUpperCase();
 
-                var handlerList = resource.handlerMap.get(verb);
+                var handlerList = resource.handlerMap.get(method);
 
                 if (handlerList == null) {
                     handlerList = new LinkedList<>();
 
-                    resource.handlerMap.put(verb, handlerList);
+                    resource.handlerMap.put(method, handlerList);
                 }
 
-                handlerList.add(method);
+                handlerList.add(handler);
             }
         }
 
@@ -797,10 +795,10 @@ public abstract class WebService extends HttpServlet {
     @Override
     @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        var verb = request.getMethod().toLowerCase();
+        var method = request.getMethod().toUpperCase();
         var pathInfo = request.getPathInfo();
 
-        if (verb.equals("get") && pathInfo == null) {
+        if (method.equals("GET") && pathInfo == null) {
             var api = request.getParameter("api");
 
             if (api != null) {
@@ -845,7 +843,7 @@ public abstract class WebService extends HttpServlet {
                 var child = resource.resources.get(component);
 
                 if (child == null) {
-                    child = resource.resources.get(PATH_VARIABLE);
+                    child = resource.resources.get("?");
 
                     if (child == null) {
                         super.service(request, response);
@@ -859,7 +857,7 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        var handlerList = resource.handlerMap.get(verb);
+        var handlerList = resource.handlerMap.get(method);
 
         if (handlerList == null) {
             super.service(request, response);

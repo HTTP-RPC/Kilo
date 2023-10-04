@@ -760,7 +760,6 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                         }
-                        default -> throw new UnsupportedOperationException();
                     }
                 } else {
                     writer.append('{');

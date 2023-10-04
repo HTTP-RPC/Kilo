@@ -284,10 +284,8 @@ public class WebServiceProxy {
                     }
 
                     webServiceProxy.setArguments(argumentMap);
-                } else if (arguments.length > i) {
-                    webServiceProxy.setBody(arguments[i]);
                 } else {
-                    // TODO?
+                    webServiceProxy.setBody(arguments.length > i ? arguments[i] : null);
                 }
             }
 
@@ -686,7 +684,6 @@ public class WebServiceProxy {
                     switch (encoding) {
                         case APPLICATION_X_WWW_FORM_URLENCODED -> encodeApplicationXWWWFormURLEncodedRequest(outputStream);
                         case MULTIPART_FORM_DATA -> encodeMultipartFormDataRequest(outputStream);
-                        default -> throw new UnsupportedOperationException();
                     }
                 }
             };
