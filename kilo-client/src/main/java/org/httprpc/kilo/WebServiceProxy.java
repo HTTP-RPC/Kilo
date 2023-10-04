@@ -243,7 +243,7 @@ public class WebServiceProxy {
                         throw new UnsupportedOperationException("Invalid resource path.");
                     }
 
-                    if (component.equals(PATH_VARIABLE)) {
+                    if (component.equals("?")) {
                         if (arguments == null || i > arguments.length) {
                             throw new UnsupportedOperationException("Path parameter is not defined.");
                         }
@@ -314,8 +314,6 @@ public class WebServiceProxy {
     private PrintStream monitorStream = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
-
-    private static final String PATH_VARIABLE = "?";
 
     private static final int EOF = -1;
 
