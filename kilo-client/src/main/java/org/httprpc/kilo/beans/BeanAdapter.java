@@ -547,7 +547,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             var value = property.accessor.invoke(bean);
 
                             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                                throw new UnsupportedOperationException("Value is not defined.");
+                                throw new UnsupportedOperationException("Required property is not defined.");
                             }
 
                             return new SimpleImmutableEntry<>(key, adapt(value, propertyCache));
@@ -963,7 +963,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             if (accessor.getAnnotation(Required.class) != null && argument == null) {
-                throw new IllegalArgumentException(String.format("Component \"%s\" is required.", name));
+                throw new IllegalArgumentException("Required component is not defined.");
             }
 
             arguments[i] = argument;

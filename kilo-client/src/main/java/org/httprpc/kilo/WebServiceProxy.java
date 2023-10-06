@@ -279,8 +279,15 @@ public class WebServiceProxy {
 
                     var argumentMap = new LinkedHashMap<String, Object>();
 
-                    for (var j = 0; j < arguments.length; j++) {
-                        argumentMap.put(parameters[j].getName(), arguments[j]);
+                    for (var j = 0; j < parameters.length; j++) {
+                        var parameter = parameters[j];
+                        var value = arguments[j];
+
+                        if (parameter.getAnnotation(Required.class) != null && value == null) {
+                            throw new IllegalArgumentException("Required argument is not defined.");
+                        }
+
+                        argumentMap.put(parameters[j].getName(), value);
                     }
 
                     webServiceProxy.setArguments(argumentMap);

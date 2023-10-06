@@ -334,7 +334,7 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testTypedInvocationProxy() {
+    public void testInterfaceCoercion() {
         var map = new HashMap<String, Object>();
 
         map.put("nestedBean", mapOf());
