@@ -15,12 +15,17 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public interface TestServiceProxy {
+    @RequestMethod("GET")
+    Map<String, Object> testGet(@Required String string, List<String> strings, int number);
+
     @RequestMethod("GET")
     @ResourcePath("a/?/b/?/c/?/d/?")
     Map<String, Object> testKeys(int a, String b, int c, String d) throws IOException;
