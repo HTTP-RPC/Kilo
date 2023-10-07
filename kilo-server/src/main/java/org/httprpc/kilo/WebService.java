@@ -914,7 +914,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler, argumentMap);
+            arguments = getArguments(handler, keys, argumentMap);
         } catch (Exception exception) {
             sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
@@ -981,6 +981,10 @@ public abstract class WebService extends HttpServlet {
                 continue;
             }
 
+            if (n == 0) {
+                return handler;
+            }
+
             var j = 0;
 
             for (var k = i; k < parameters.length; k++) {
@@ -993,7 +997,9 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Method method, Map<String, List<?>> parameterMap) {
+    private Object[] getArguments(Method method, List<String> keys, Map<String, List<?>> parameterMap) {
+        var n = keys.size();
+
         var parameters = method.getParameters();
 
         var arguments = new Object[parameters.length];
@@ -1001,43 +1007,47 @@ public abstract class WebService extends HttpServlet {
         for (var i = 0; i < parameters.length; i++) {
             var parameter = parameters[i];
 
-            var name = parameter.getName();
-            var type = parameter.getType();
+            if (i < n) {
+                arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
+            } else {
+                var name = parameter.getName();
+                var type = parameter.getType();
 
-            var values = parameterMap.get(name);
+                var values = parameterMap.get(name);
 
-            Object argument;
-            if (type == List.class) {
-                List<?> list;
-                if (values != null) {
-                    var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                Object argument;
+                if (type == List.class) {
+                    List<?> list;
+                    if (values != null) {
+                        var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
-                    if (!(elementType instanceof Class<?>)) {
-                        throw new UnsupportedOperationException("Invalid element type.");
+                        if (!(elementType instanceof Class<?>)) {
+                            throw new UnsupportedOperationException("Invalid element type.");
+                        }
+
+                        list = BeanAdapter.coerceList(values, (Class<?>)elementType);
+                    } else {
+                        list = listOf();
                     }
 
-                    list = BeanAdapter.coerceList(values, (Class<?>)elementType);
+                    argument = list;
                 } else {
-                    list = listOf();
+                    Object value;
+                    if (values != null) {
+                        value = values.get(values.size() - 1);
+                    } else {
+                        value = null;
+                    }
+
+                    if (parameter.getAnnotation(Required.class) != null && value == null) {
+                        throw new IllegalArgumentException("Required argument is not defined.");
+                    }
+
+                    argument = BeanAdapter.coerce(value, type);
                 }
 
-                argument = list;
-            } else {
-                Object value;
-                if (values != null) {
-                    value = values.get(values.size() - 1);
-                } else {
-                    value = null;
-                }
-
-                if (parameter.getAnnotation(Required.class) != null && value == null) {
-                    throw new IllegalArgumentException("Required argument is not defined.");
-                }
-
-                argument = BeanAdapter.coerce(value, type);
+                arguments[i] = argument;
             }
-
-            arguments[i] = argument;
         }
 
         return arguments;
