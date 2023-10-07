@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -278,35 +279,40 @@ public class WebServiceProxy {
             }
 
             if (n > i) {
-                // TODO Local variable?
-                if (webServiceProxy.getMethod().equals("POST") || webServiceProxy.getMethod().equals("PUT")) {
-                    n--;
-                }
-
-                var argumentMap = new LinkedHashMap<String, Object>();
-
-                var parameters = method.getParameters();
-
-                for (var j = i; j < n; j++) {
-                    var parameter = parameters[j];
-
-                    var value = argumentList.get(j);
-
-                    if (parameter.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalArgumentException("Required argument is not defined.");
-                    }
-
-                    argumentMap.put(parameters[j].getName(), value);
-                }
-
-                webServiceProxy.setArguments(argumentMap);
-
-                if (n < parameters.length) {
-                    webServiceProxy.setBody(argumentList.get(n));
-                }
+                configure(webServiceProxy, i, method.getParameters(), argumentList);
             }
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
+        }
+
+        void configure(WebServiceProxy webServiceProxy, int keyCount, Parameter[] parameters, List<Object> argumentList) {
+            var n = parameters.length;
+
+            var method = webServiceProxy.getMethod();
+
+            if (method.equals("POST") || method.equals("PUT")) {
+                n--;
+            }
+
+            var argumentMap = new LinkedHashMap<String, Object>();
+
+            for (var j = keyCount; j < n; j++) {
+                var parameter = parameters[j];
+
+                var value = argumentList.get(j);
+
+                if (parameter.getAnnotation(Required.class) != null && value == null) {
+                    throw new IllegalArgumentException("Required argument is not defined.");
+                }
+
+                argumentMap.put(parameters[j].getName(), value);
+            }
+
+            webServiceProxy.setArguments(argumentMap);
+
+            if (n < parameters.length) {
+                webServiceProxy.setBody(argumentList.get(n));
+            }
         }
     }
 
