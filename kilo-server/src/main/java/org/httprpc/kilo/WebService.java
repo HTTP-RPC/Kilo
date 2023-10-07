@@ -910,11 +910,9 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        // TODO Handle body content for POST and PUT
-
         Object[] arguments;
         try {
-            arguments = getArguments(handler, keys, argumentMap);
+            arguments = getArguments(handler, keys, argumentMap, request);
         } catch (Exception exception) {
             sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
@@ -971,24 +969,24 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private Method getHandler(int i, List<Method> handlerList, Set<String> argumentNames) {
-        var n = argumentNames.size();
+    private Method getHandler(int keyCount, List<Method> handlerList, Set<String> argumentNames) {
+        var argumentCount = argumentNames.size();
 
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
-            if (i > parameters.length) {
+            if (keyCount > parameters.length) {
                 continue;
             }
 
-            if (n == 0) {
+            if (argumentCount == 0) {
                 return handler;
             }
 
-            var j = 0;
+            var i = 0;
 
-            for (var k = i; k < parameters.length; k++) {
-                if (argumentNames.contains(parameters[k].getName()) && ++j == n) {
+            for (var j = keyCount; j < parameters.length; j++) {
+                if (argumentNames.contains(parameters[j].getName()) && ++i == argumentCount) {
                     return handler;
                 }
             }
@@ -997,17 +995,24 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Method method, List<String> keys, Map<String, List<?>> argumentMap) {
-        var n = keys.size();
+    private Object[] getArguments(Method method, List<String> keys, Map<String, List<?>> argumentMap, HttpServletRequest request) {
+        var keyCount = keys.size();
 
         var parameters = method.getParameters();
 
-        var arguments = new Object[parameters.length];
+        var n = parameters.length;
 
-        for (var i = 0; i < parameters.length; i++) {
+        var arguments = new Object[n];
+
+        // TODO Exclude form data requests
+        if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
+            n--;
+        }
+
+        for (var i = 0; i < n; i++) {
             var parameter = parameters[i];
 
-            if (i < n) {
+            if (i < keyCount) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
                 var name = parameter.getName();
@@ -1047,6 +1052,14 @@ public abstract class WebService extends HttpServlet {
                 }
 
                 arguments[i] = argument;
+            }
+        }
+
+        if (n < parameters.length) {
+            try {
+                arguments[n] = decodeBody(request, parameters[n].getType());
+            } catch (IOException exception) {
+                throw new UnsupportedOperationException(exception);
             }
         }
 

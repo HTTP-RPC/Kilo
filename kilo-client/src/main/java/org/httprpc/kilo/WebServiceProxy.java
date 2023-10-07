@@ -278,6 +278,10 @@ public class WebServiceProxy {
             }
 
             if (n > i) {
+                if (webServiceProxy.getMethod().equals("POST") || webServiceProxy.getMethod().equals("PUT")) {
+                    n--;
+                }
+
                 var argumentMap = new LinkedHashMap<String, Object>();
 
                 var parameters = method.getParameters();
@@ -296,7 +300,9 @@ public class WebServiceProxy {
 
                 webServiceProxy.setArguments(argumentMap);
 
-                // TODO Handle body content for POST and PUT
+                if (n < parameters.length) {
+                    webServiceProxy.setBody(parameters[n]);
+                }
             }
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());

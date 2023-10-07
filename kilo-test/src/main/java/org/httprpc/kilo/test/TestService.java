@@ -219,10 +219,10 @@ public class TestService extends WebService {
     @ResourcePath("foo/?/bar/?")
     public Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) {
         return mapOf(
-            entry("a", a),
-            entry("b", b),
             entry("x", x),
             entry("y", y),
+            entry("a", a),
+            entry("b", b),
             entry("values", values)
         );
     }

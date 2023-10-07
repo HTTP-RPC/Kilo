@@ -159,8 +159,8 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/foo/%d/bar/%d", 1, 2);
 
         webServiceProxy.setArguments(mapOf(
-            entry("x", 3),
-            entry("y", 4)
+            entry("a", 3),
+            entry("b", 4)
         ));
 
         webServiceProxy.setBody(listOf(5.0, 6.0, 7.0));
@@ -170,10 +170,10 @@ public class WebServiceProxyTest {
         var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
-            entry("a", 1),
-            entry("b", 2),
-            entry("x", 3),
-            entry("y", 4),
+            entry("x", 1),
+            entry("y", 2),
+            entry("a", 3),
+            entry("b", 4),
             entry("values", listOf(5.0, 6.0, 7.0))
         ), result);
     }
