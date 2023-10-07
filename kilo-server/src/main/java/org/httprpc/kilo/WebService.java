@@ -912,7 +912,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler, keys, argumentMap, request);
+            arguments = getArguments(handler.getParameters(), keys, argumentMap, request);
         } catch (Exception exception) {
             sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
@@ -995,9 +995,7 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Method method, List<String> keys, Map<String, List<?>> argumentMap, HttpServletRequest request) {
-        var parameters = method.getParameters();
-
+    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, HttpServletRequest request) {
         var arguments = new Object[parameters.length];
 
         if (parameters.length > 0) {
@@ -1005,12 +1003,12 @@ public abstract class WebService extends HttpServlet {
 
             var n = parameters.length;
 
-            // TODO Local variable?
-            if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
-                // TODO Can this be simplified?
+            var method = request.getMethod();
+
+            if (method.equals("POST") || method.equals("PUT")) {
                 var contentType = request.getContentType();
 
-                if (!(contentType != null && (contentType.startsWith("multipart/form-data") || contentType.startsWith("application/x-www-form-urlencoded")))) {
+                if (contentType == null || !(contentType.startsWith("multipart/form-data") || contentType.startsWith("application/x-www-form-urlencoded"))) {
                     n--;
                 }
             }
