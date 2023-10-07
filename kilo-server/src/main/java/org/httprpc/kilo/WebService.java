@@ -997,7 +997,7 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Method method, List<String> keys, Map<String, List<?>> parameterMap) {
+    private Object[] getArguments(Method method, List<String> keys, Map<String, List<?>> argumentMap) {
         var n = keys.size();
 
         var parameters = method.getParameters();
@@ -1013,7 +1013,7 @@ public abstract class WebService extends HttpServlet {
                 var name = parameter.getName();
                 var type = parameter.getType();
 
-                var values = parameterMap.get(name);
+                var values = argumentMap.get(name);
 
                 Object argument;
                 if (type == List.class) {
