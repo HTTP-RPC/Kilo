@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -227,9 +228,12 @@ public class WebServiceProxy {
                 throw new UnsupportedOperationException("Request method is not defined.");
             }
 
-            var pathBuilder = new StringBuilder();
+            var argumentList = Optionals.map(arguments, Arrays::asList, listOf());
 
+            var n = argumentList.size();
             var i = 0;
+
+            var pathBuilder = new StringBuilder();
 
             var resourcePath = method.getAnnotation(ResourcePath.class);
 
@@ -244,11 +248,11 @@ public class WebServiceProxy {
                     }
 
                     if (component.equals("?")) {
-                        if (arguments == null || i > arguments.length) {
+                        if (i >= n) {
                             throw new UnsupportedOperationException("Path parameter is not defined.");
                         }
 
-                        var parameterValue = getParameterValue(arguments[i]);
+                        var parameterValue = getParameterValue(argumentList.get(i));
 
                         if (parameterValue == null) {
                             throw new IllegalArgumentException("Path variable is required.");
@@ -273,27 +277,26 @@ public class WebServiceProxy {
                 initializer.accept(webServiceProxy);
             }
 
-            if (arguments != null) {
-                if (i == 0 && !webServiceProxy.getMethod().equals("POST")) {
-                    var parameters = method.getParameters();
+            if (i == 0 && !webServiceProxy.getMethod().equals("POST")) {
+                var parameters = method.getParameters();
 
-                    var argumentMap = new LinkedHashMap<String, Object>();
+                var argumentMap = new LinkedHashMap<String, Object>();
 
-                    for (var j = 0; j < parameters.length; j++) {
-                        var parameter = parameters[j];
-                        var value = arguments[j];
+                for (var j = 0; j < parameters.length; j++) {
+                    var parameter = parameters[j];
 
-                        if (parameter.getAnnotation(Required.class) != null && value == null) {
-                            throw new IllegalArgumentException("Required argument is not defined.");
-                        }
+                    var value = argumentList.get(j);
 
-                        argumentMap.put(parameters[j].getName(), value);
+                    if (parameter.getAnnotation(Required.class) != null && value == null) {
+                        throw new IllegalArgumentException("Required argument is not defined.");
                     }
 
-                    webServiceProxy.setArguments(argumentMap);
-                } else {
-                    webServiceProxy.setBody(arguments.length > i ? arguments[i] : null);
+                    argumentMap.put(parameters[j].getName(), value);
                 }
+
+                webServiceProxy.setArguments(argumentMap);
+            } else {
+                webServiceProxy.setBody(argumentList.size() > i ? argumentList.get(i) : null);
             }
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());

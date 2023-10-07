@@ -603,9 +603,9 @@ public abstract class WebService extends HttpServlet {
     private static class Resource {
         static List<String> order = listOf("GET", "POST", "PUT", "DELETE");
 
-        final Map<String, List<Method>> handlerMap = new TreeMap<>((verb1, verb2) -> {
-            var i1 = order.indexOf(verb1);
-            var i2 = order.indexOf(verb2);
+        final Map<String, List<Method>> handlerMap = new TreeMap<>((method1, method2) -> {
+            var i1 = order.indexOf(method1);
+            var i2 = order.indexOf(method2);
 
             return Integer.compare((i1 == -1) ? order.size() : i1, (i2 == -1) ? order.size() : i2);
         });
@@ -985,35 +985,21 @@ public abstract class WebService extends HttpServlet {
     }
 
     private Method getHandler(List<Method> handlerList, Map<String, List<?>> parameterMap) {
-        Method handler = null;
-
         var n = parameterMap.size();
 
-        var i = Integer.MAX_VALUE;
+        for (var handler : handlerList) {
+            var parameters = handler.getParameters();
 
-        for (var method : handlerList) {
-            var parameters = method.getParameters();
+            var i = 0;
 
-            if (parameters.length >= n) {
-                var j = 0;
-
-                for (var k = 0; k < parameters.length; k++) {
-                    var name = parameters[k].getName();
-
-                    if (!(parameterMap.containsKey(name))) {
-                        j++;
-                    }
-                }
-
-                if (parameters.length - j == n && j < i) {
-                    handler = method;
-
-                    i = j;
+            for (var j = 0; j < parameters.length; j++) {
+                if (parameterMap.containsKey(parameters[j].getName()) && ++i == n) {
+                    return handler;
                 }
             }
         }
 
-        return handler;
+        return null;
     }
 
     private Object[] getArguments(Method method, Map<String, List<?>> parameterMap) {
