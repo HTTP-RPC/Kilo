@@ -1005,8 +1005,14 @@ public abstract class WebService extends HttpServlet {
 
             var n = parameters.length;
 
+            // TODO Local variable?
             if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
-                n--;
+                // TODO Can this be simplified?
+                var contentType = request.getContentType();
+
+                if (!(contentType != null && (contentType.startsWith("multipart/form-data") || contentType.startsWith("application/x-www-form-urlencoded")))) {
+                    n--;
+                }
             }
 
             for (var i = 0; i < n; i++) {

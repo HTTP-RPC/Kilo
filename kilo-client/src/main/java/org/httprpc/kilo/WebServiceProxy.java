@@ -278,6 +278,7 @@ public class WebServiceProxy {
             }
 
             if (n > i) {
+                // TODO Local variable?
                 if (webServiceProxy.getMethod().equals("POST") || webServiceProxy.getMethod().equals("PUT")) {
                     n--;
                 }
