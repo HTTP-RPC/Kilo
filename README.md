@@ -161,10 +161,10 @@ public void deleteItem(
 ) throws SQLException { ... }
 ```
 
-They are mapped to method arguments in declaration order and are implicitly required. Note that it is not possible to define a method that accepts both path variables and query string/form arguments. 
+Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
 ### Body Content
-Body content may be declared as the final parameter to a POST or PUT handler, following any path variable parameters:
+Body content may be declared as the final parameter to a POST or PUT handler:
 
 ```java
 @RequestMethod("PUT")
@@ -177,8 +177,6 @@ public void updateItem(
 ```
 
 Like path variables, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
-
-As with path variables, it is not possible to define a method that accepts both body content and query string/form arguments.
 
 ### Return Values
 Return values are converted to JSON as follows:

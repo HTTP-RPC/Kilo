@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -868,7 +869,7 @@ public abstract class WebService extends HttpServlet {
             request.setCharacterEncoding(UTF_8);
         }
 
-        Map<String, List<?>> parameterMap = new HashMap<>();
+        Map<String, List<?>> argumentMap = new HashMap<>();
 
         var parameterNames = request.getParameterNames();
 
@@ -878,7 +879,7 @@ public abstract class WebService extends HttpServlet {
             while (parameterNames.hasMoreElements()) {
                 var name = parameterNames.nextElement();
 
-                parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
+                argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
             }
 
             var contentType = request.getContentType();
@@ -893,23 +894,23 @@ public abstract class WebService extends HttpServlet {
 
                     var name = part.getName();
 
-                    var values = (List<URL>)parameterMap.get(name);
+                    var values = (List<URL>)argumentMap.get(name);
 
                     if (values == null) {
                         values = new ArrayList<>();
 
-                        parameterMap.put(name, values);
+                        argumentMap.put(name, values);
                     }
 
                     values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
                 }
             }
 
-            handler = getHandler(handlerList, parameterMap);
+            handler = getHandler(handlerList, argumentMap.keySet());
 
             if (handler != null) {
                 try {
-                    arguments = getArguments(handler, parameterMap);
+                    arguments = getArguments(handler, argumentMap);
                 } catch (Exception exception) {
                     sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
                     return;
@@ -984,8 +985,8 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private Method getHandler(List<Method> handlerList, Map<String, List<?>> parameterMap) {
-        var n = parameterMap.size();
+    private Method getHandler(List<Method> handlerList, Set<String> argumentNames) {
+        var n = argumentNames.size();
 
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
@@ -993,7 +994,7 @@ public abstract class WebService extends HttpServlet {
             var i = 0;
 
             for (var j = 0; j < parameters.length; j++) {
-                if (parameterMap.containsKey(parameters[j].getName()) && ++i == n) {
+                if (argumentNames.contains(parameters[j].getName()) && ++i == n) {
                     return handler;
                 }
             }
