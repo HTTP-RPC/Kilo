@@ -215,6 +215,18 @@ public class TestService extends WebService {
         );
     }
 
+    @RequestMethod("POST")
+    @ResourcePath("foo/?/bar/?")
+    public Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) {
+        return mapOf(
+            entry("a", a),
+            entry("b", b),
+            entry("x", x),
+            entry("y", y),
+            entry("values", values)
+        );
+    }
+
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
     public List<Number> testGetFibonacci(int count) {

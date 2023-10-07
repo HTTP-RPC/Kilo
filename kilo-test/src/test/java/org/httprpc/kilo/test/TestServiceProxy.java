@@ -30,6 +30,10 @@ public interface TestServiceProxy {
     @ResourcePath("a/?/b/?/c/?/d/?")
     Map<String, Object> testKeys(int a, String b, int c, String d) throws IOException;
 
+    @RequestMethod("POST")
+    @ResourcePath("foo/?/bar/?")
+    Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values);
+
     @RequestMethod("GET")
     @ResourcePath("headers")
     Map<String, String> testHeaders() throws IOException;

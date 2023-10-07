@@ -873,64 +873,50 @@ public abstract class WebService extends HttpServlet {
 
         var parameterNames = request.getParameterNames();
 
-        Method handler;
-        Object[] arguments;
-        if (keys.isEmpty() && parameterNames.hasMoreElements()) {
-            while (parameterNames.hasMoreElements()) {
-                var name = parameterNames.nextElement();
+        while (parameterNames.hasMoreElements()) {
+            var name = parameterNames.nextElement();
 
-                argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
-            }
+            argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
+        }
 
-            var contentType = request.getContentType();
+        var contentType = request.getContentType();
 
-            if (contentType != null && contentType.startsWith("multipart/form-data")) {
-                for (var part : request.getParts()) {
-                    var submittedFileName = part.getSubmittedFileName();
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            for (var part : request.getParts()) {
+                var submittedFileName = part.getSubmittedFileName();
 
-                    if (submittedFileName == null || submittedFileName.isEmpty()) {
-                        continue;
-                    }
-
-                    var name = part.getName();
-
-                    var values = (List<URL>)argumentMap.get(name);
-
-                    if (values == null) {
-                        values = new ArrayList<>();
-
-                        argumentMap.put(name, values);
-                    }
-
-                    values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
+                if (submittedFileName == null || submittedFileName.isEmpty()) {
+                    continue;
                 }
-            }
 
-            handler = getHandler(handlerList, argumentMap.keySet());
+                var name = part.getName();
 
-            if (handler != null) {
-                try {
-                    arguments = getArguments(handler, argumentMap);
-                } catch (Exception exception) {
-                    sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
-                    return;
+                var values = (List<URL>)argumentMap.get(name);
+
+                if (values == null) {
+                    values = new ArrayList<>();
+
+                    argumentMap.put(name, values);
                 }
-            } else {
-                arguments = null;
-            }
-        } else {
-            handler = handlerList.get(0);
 
-            try {
-                arguments = getArguments(handler, keys, request);
-            } catch (Exception exception) {
-                sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
-                return;
+                values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
             }
         }
 
+        var handler = getHandler(keys.size(), handlerList, argumentMap.keySet());
+
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+
+        // TODO Handle body content for POST and PUT
+
+        Object[] arguments;
+        try {
+            arguments = getArguments(handler, argumentMap);
+        } catch (Exception exception) {
+            sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
         }
 
@@ -985,16 +971,20 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private Method getHandler(List<Method> handlerList, Set<String> argumentNames) {
+    private Method getHandler(int i, List<Method> handlerList, Set<String> argumentNames) {
         var n = argumentNames.size();
 
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
-            var i = 0;
+            if (i > parameters.length) {
+                continue;
+            }
 
-            for (var j = 0; j < parameters.length; j++) {
-                if (argumentNames.contains(parameters[j].getName()) && ++i == n) {
+            var j = 0;
+
+            for (var k = i; k < parameters.length; k++) {
+                if (argumentNames.contains(parameters[k].getName()) && ++j == n) {
                     return handler;
                 }
             }
@@ -1048,34 +1038,6 @@ public abstract class WebService extends HttpServlet {
             }
 
             arguments[i] = argument;
-        }
-
-        return arguments;
-    }
-
-    private Object[] getArguments(Method method, List<String> keys, HttpServletRequest request) throws IOException {
-        var genericParameterTypes = method.getGenericParameterTypes();
-
-        if (genericParameterTypes.length < keys.size()) {
-            throw new UnsupportedOperationException("Invalid argument count.");
-        }
-
-        var arguments = new Object[genericParameterTypes.length];
-
-        var i = 0;
-
-        for (var key : keys) {
-            var argumentType = genericParameterTypes[i];
-
-            if (!(argumentType instanceof Class<?> type)) {
-                throw new UnsupportedOperationException("Invalid argument type.");
-            }
-
-            arguments[i++] = BeanAdapter.coerce(key, type);
-        }
-
-        if (i < genericParameterTypes.length) {
-            arguments[i] = decodeBody(request, genericParameterTypes[i]);
         }
 
         return arguments;

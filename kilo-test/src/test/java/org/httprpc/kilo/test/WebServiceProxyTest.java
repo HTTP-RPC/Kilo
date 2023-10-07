@@ -155,6 +155,45 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testParameters() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/foo/%d/bar/%d", 1, 2);
+
+        webServiceProxy.setArguments(mapOf(
+            entry("x", 3),
+            entry("y", 4)
+        ));
+
+        webServiceProxy.setBody(listOf(5.0, 6.0, 7.0));
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals(mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("x", 3),
+            entry("y", 4),
+            entry("values", listOf(5.0, 6.0, 7.0))
+        ), result);
+    }
+
+    @Test
+    public void testParametersProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        var result = testServiceProxy.testParameters(1, 2, 3, 4, listOf(5.0, 6.0, 7.0));
+
+        assertEquals(mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("x", 3),
+            entry("y", 4),
+            entry("values", listOf(5.0, 6.0, 7.0))
+        ), result);
+    }
+
+    @Test
     public void testGetFibonacci() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/fibonacci");
 
