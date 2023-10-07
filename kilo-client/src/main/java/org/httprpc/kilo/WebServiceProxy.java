@@ -301,7 +301,7 @@ public class WebServiceProxy {
                 webServiceProxy.setArguments(argumentMap);
 
                 if (n < parameters.length) {
-                    webServiceProxy.setBody(parameters[n]);
+                    webServiceProxy.setBody(arguments[n]);
                 }
             }
 

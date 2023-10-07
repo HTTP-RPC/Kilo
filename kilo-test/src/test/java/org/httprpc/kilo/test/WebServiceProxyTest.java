@@ -185,10 +185,10 @@ public class WebServiceProxyTest {
         var result = testServiceProxy.testParameters(1, 2, 3, 4, listOf(5.0, 6.0, 7.0));
 
         assertEquals(mapOf(
-            entry("a", 1),
-            entry("b", 2),
-            entry("x", 3),
-            entry("y", 4),
+            entry("x", 1),
+            entry("y", 2),
+            entry("a", 3),
+            entry("b", 4),
             entry("values", listOf(5.0, 6.0, 7.0))
         ), result);
     }
