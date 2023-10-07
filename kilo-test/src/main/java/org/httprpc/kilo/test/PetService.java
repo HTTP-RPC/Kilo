@@ -39,10 +39,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends AbstractDatabaseService {
-    private static final String APPLICATION_JSON = "application/json";
-    private static final String TEXT_CSV = "text/csv";
-    private static final String TEXT_HTML = "text/html";
-
     @RequestMethod("GET")
     public List<Pet> getPets(@Required String owner, boolean stream) throws SQLException, IOException {
         var queryBuilder = new QueryBuilder();

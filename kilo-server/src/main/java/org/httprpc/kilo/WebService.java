@@ -656,6 +656,14 @@ public abstract class WebService extends HttpServlet {
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
+    protected static final String APPLICATION_JSON = "application/json";
+    protected static final String TEXT_CSV = "text/csv";
+    protected static final String TEXT_HTML = "text/html";
+    protected static final String TEXT_XML = "text/xml";
+
+    private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+    private static final String MULTIPART_FORM_DATA = "multipart/form-data";
+
     private static final String UTF_8 = "UTF-8";
 
     /**
@@ -805,14 +813,14 @@ public abstract class WebService extends HttpServlet {
             if (api != null) {
                 var accept = request.getHeader("Accept");
 
-                if (accept != null && accept.equalsIgnoreCase("application/json")) {
-                    response.setContentType(String.format("application/json;charset=%s", UTF_8));
+                if (accept != null && accept.equalsIgnoreCase(APPLICATION_JSON)) {
+                    response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, UTF_8));
 
                     var jsonEncoder = new JSONEncoder();
 
                     jsonEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
                 } else {
-                    response.setContentType(String.format("text/html;charset=%s", UTF_8));
+                    response.setContentType(String.format("%s;charset=%s", TEXT_HTML, UTF_8));
 
                     var url = WebService.class.getResource("api.html");
                     var resourceBundle = ResourceBundle.getBundle(WebService.class.getName(), request.getLocale());
@@ -881,7 +889,7 @@ public abstract class WebService extends HttpServlet {
 
         var contentType = request.getContentType();
 
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+        if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA)) {
             for (var part : request.getParts()) {
                 var submittedFileName = part.getSubmittedFileName();
 
@@ -1008,7 +1016,7 @@ public abstract class WebService extends HttpServlet {
             if (method.equals("POST") || method.equals("PUT")) {
                 var contentType = request.getContentType();
 
-                if (contentType == null || !(contentType.startsWith("multipart/form-data") || contentType.startsWith("application/x-www-form-urlencoded"))) {
+                if (contentType == null || !(contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.startsWith(MULTIPART_FORM_DATA))) {
                     n--;
                 }
             }
@@ -1140,7 +1148,7 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
-        response.setContentType(String.format("application/json;charset=%s", UTF_8));
+        response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, UTF_8));
 
         var jsonEncoder = new JSONEncoder(isCompact());
 
