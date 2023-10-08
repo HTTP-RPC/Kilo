@@ -290,7 +290,7 @@ public class WebServiceProxy {
 
             var method = webServiceProxy.getMethod();
 
-            if ((method.equals("POST") || method.equals("PUT")) && n > 0) {
+            if (method.equals("POST") || method.equals("PUT")) {
                 n--;
             }
 
