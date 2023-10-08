@@ -178,7 +178,7 @@ public void updateItem(
 
 Like path variables, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-Note that body parameters are not supported for POST requests submitted using a form encoding.
+Note that body parameters are not supported for POST requests submitted as form data.
 
 ### Return Values
 Return values are converted to JSON as follows:
