@@ -861,6 +861,7 @@ public class WebServiceProxyTest {
         testPetsJSON(true);
         testPetsCSV();
         testPetsHTML();
+        testPetsXML();
 
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/average-age");
 
@@ -888,6 +889,8 @@ public class WebServiceProxyTest {
             entry("stream", stream)
         ));
 
+        webServiceProxy.setMonitorStream(System.out);
+
         var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);
@@ -912,6 +915,8 @@ public class WebServiceProxyTest {
             entry("stream", true)
         ));
 
+        webServiceProxy.setMonitorStream(System.out);
+
         var actual = webServiceProxy.invoke((inputStream, contentType) -> {
             var csvDecoder = new CSVDecoder();
 
@@ -923,8 +928,16 @@ public class WebServiceProxyTest {
     }
 
     private void testPetsHTML() throws IOException {
+        testPetsMarkup("pets.html", "text/html");
+    }
+
+    private void testPetsXML() throws IOException {
+        testPetsMarkup("pets.xml", "text/xml");
+    }
+
+    private void testPetsMarkup(String name, String mimeType) throws IOException {
         String expected;
-        try (var inputStream = getClass().getResourceAsStream("pets.html")) {
+        try (var inputStream = getClass().getResourceAsStream(name)) {
             var textDecoder = new TextDecoder();
 
             expected = textDecoder.read(inputStream);
@@ -933,13 +946,15 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets");
 
         webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "text/html")
+            entry("Accept", mimeType)
         ));
 
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen"),
             entry("stream", true)
         ));
+
+        webServiceProxy.setMonitorStream(System.out);
 
         var actual = webServiceProxy.invoke((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();

@@ -85,6 +85,12 @@ public class PetService extends AbstractDatabaseService {
                         var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
 
                         templateEncoder.write(results, response.getOutputStream());
+                    } else if (accept.equalsIgnoreCase(TEXT_XML)) {
+                        response.setContentType(TEXT_XML);
+
+                        var templateEncoder = new TemplateEncoder(getClass().getResource("pets.xml"), resourceBundle);
+
+                        templateEncoder.write(results, response.getOutputStream());
                     } else {
                         throw new UnsupportedOperationException();
                     }

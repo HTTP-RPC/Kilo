@@ -656,9 +656,24 @@ public abstract class WebService extends HttpServlet {
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
+    /**
+     * JSON MIME type.
+     */
     protected static final String APPLICATION_JSON = "application/json";
+
+    /**
+     * CSV MIME type.
+     */
     protected static final String TEXT_CSV = "text/csv";
+
+    /**
+     * HTML MIME type.
+     */
     protected static final String TEXT_HTML = "text/html";
+
+    /**
+     * XML MIME type.
+     */
     protected static final String TEXT_XML = "text/xml";
 
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
