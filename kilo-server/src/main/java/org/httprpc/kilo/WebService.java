@@ -1019,75 +1019,73 @@ public abstract class WebService extends HttpServlet {
     }
 
     private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, HttpServletRequest request) {
-        var arguments = new Object[parameters.length];
+        var n = parameters.length;
 
-        if (parameters.length > 0) {
-            var keyCount = keys.size();
+        var arguments = new Object[n];
 
-            var n = parameters.length;
+        var method = request.getMethod();
 
-            var method = request.getMethod();
+        if ((method.equals("POST") || method.equals("PUT")) && n > 0) {
+            var contentType = request.getContentType();
 
-            if (method.equals("POST") || method.equals("PUT")) {
-                var contentType = request.getContentType();
-
-                if (contentType == null || !(contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.startsWith(MULTIPART_FORM_DATA))) {
-                    n--;
-                }
+            if (contentType == null || !(contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.startsWith(MULTIPART_FORM_DATA))) {
+                n--;
             }
+        }
 
-            for (var i = 0; i < n; i++) {
-                var parameter = parameters[i];
+        var keyCount = keys.size();
 
-                if (i < keyCount) {
-                    arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
-                } else {
-                    var name = parameter.getName();
-                    var type = parameter.getType();
+        for (var i = 0; i < n; i++) {
+            var parameter = parameters[i];
 
-                    var values = argumentMap.get(name);
+            if (i < keyCount) {
+                arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
+            } else {
+                var name = parameter.getName();
+                var type = parameter.getType();
 
-                    Object argument;
-                    if (type == List.class) {
-                        List<?> list;
-                        if (values != null) {
-                            var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                var values = argumentMap.get(name);
 
-                            if (!(elementType instanceof Class<?>)) {
-                                throw new UnsupportedOperationException("Invalid element type.");
-                            }
+                Object argument;
+                if (type == List.class) {
+                    List<?> list;
+                    if (values != null) {
+                        var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
-                            list = BeanAdapter.coerceList(values, (Class<?>)elementType);
-                        } else {
-                            list = listOf();
+                        if (!(elementType instanceof Class<?>)) {
+                            throw new UnsupportedOperationException("Invalid element type.");
                         }
 
-                        argument = list;
+                        list = BeanAdapter.coerceList(values, (Class<?>)elementType);
                     } else {
-                        Object value;
-                        if (values != null) {
-                            value = values.get(values.size() - 1);
-                        } else {
-                            value = null;
-                        }
-
-                        if (parameter.getAnnotation(Required.class) != null && value == null) {
-                            throw new IllegalArgumentException("Required argument is not defined.");
-                        }
-
-                        argument = BeanAdapter.coerce(value, type);
+                        list = listOf();
                     }
 
-                    arguments[i] = argument;
-                }
-            }
+                    argument = list;
+                } else {
+                    Object value;
+                    if (values != null) {
+                        value = values.get(values.size() - 1);
+                    } else {
+                        value = null;
+                    }
 
-            if (n < parameters.length) {
-                try {
-                    arguments[n] = decodeBody(request, parameters[n].getType());
-                } catch (IOException exception) {
-                    throw new UnsupportedOperationException(exception);
+                    if (parameter.getAnnotation(Required.class) != null && value == null) {
+                        throw new IllegalArgumentException("Required argument is not defined.");
+                    }
+
+                    argument = BeanAdapter.coerce(value, type);
                 }
+
+                arguments[i] = argument;
+            }
+        }
+
+        if (n < parameters.length) {
+            try {
+                arguments[n] = decodeBody(request, parameters[n].getType());
+            } catch (IOException exception) {
+                throw new UnsupportedOperationException(exception);
             }
         }
 

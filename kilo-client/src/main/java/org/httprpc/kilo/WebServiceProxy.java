@@ -279,18 +279,18 @@ public class WebServiceProxy {
             }
 
             if (n > i) {
-                configure(webServiceProxy, i, method.getParameters(), argumentList);
+                configure(webServiceProxy, method.getParameters(), i, argumentList);
             }
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
 
-        void configure(WebServiceProxy webServiceProxy, int keyCount, Parameter[] parameters, List<Object> argumentList) {
+        void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList) {
             var n = parameters.length;
 
             var method = webServiceProxy.getMethod();
 
-            if (method.equals("POST") || method.equals("PUT")) {
+            if ((method.equals("POST") || method.equals("PUT")) && n > 0) {
                 n--;
             }
 
