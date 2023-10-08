@@ -25,23 +25,23 @@ Kilo is distributed via Maven Central:
 # Kilo Classes
 Classes provided by the Kilo framework include:
 
-* [WebService](#webservice) - abstract base class for web services
-* [WebServiceProxy](#webserviceproxy) - client-side invocation proxy for web services
-* [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder) - encodes/decodes an object hierarchy to/from JSON
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder) - encodes/decodes a sequence of map values to/from CSV
-* [TextEncoder and TextDecoder](#textencoder-and-textdecoder) - encodes/decodes plain text content
-* [TemplateEncoder](#templateencoder) - encodes an object hierarchy using a [template document](template-reference.md)
-* [BeanAdapter](#beanadapter) - map adapter for Java beans
-* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter) - provides support for programmatically constructing and executing SQL queries/iterable adapter for JDBC result sets
-* [ElementAdapter](#elementadapter) - map adapter for XML elements
-* [ResourceBundleAdapter](#resourcebundleadapter) - map adapter for resource bundles
-* [Pipe](#pipe) - facilitates communication between producer and consumer threads
-* [Collections and Optionals](#collections-and-optionals) - utility methods for working with collection types/optional values
+* [WebService](#webservice)
+* [WebServiceProxy](#webserviceproxy)
+* [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
+* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
+* [TextEncoder and TextDecoder](#textencoder-and-textdecoder)
+* [TemplateEncoder](#templateencoder)
+* [BeanAdapter](#beanadapter)
+* [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
+* [ElementAdapter](#elementadapter)
+* [ResourceBundleAdapter](#resourcebundleadapter)
+* [Pipe](#pipe)
+* [Collections and Optionals](#collections-and-optionals)
 
-Each is discussed in more detail in the following sections.
+Each is discussed in more detail below.
 
 ## WebService
-`WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard servlet API.
+`WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/5.0/).
 
 Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments may be provided via the query string, resource path, or request body. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
 
