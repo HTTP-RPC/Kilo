@@ -242,6 +242,10 @@ public class WebServiceProxy {
                 var components = resourcePath.value().split("/");
 
                 for (var j = 0; j < components.length; j++) {
+                    if (j > 0) {
+                        pathBuilder.append("/");
+                    }
+
                     var component = components[j];
 
                     if (component.isEmpty()) {
@@ -262,10 +266,6 @@ public class WebServiceProxy {
                         component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
 
                         i++;
-                    }
-
-                    if (i > 0) {
-                        pathBuilder.append("/");
                     }
 
                     pathBuilder.append(component);
