@@ -630,7 +630,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMissingRequiredParameterProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
         assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, 0));
     }
