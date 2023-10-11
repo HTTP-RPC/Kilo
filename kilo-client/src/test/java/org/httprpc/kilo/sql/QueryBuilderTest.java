@@ -97,6 +97,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectAll() {
+        var queryBuilder = QueryBuilder.select(SchemaElement.all(ASchema.class), BSchema.B)
+            .from(ASchema.class)
+            .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID));
+
+        assertEquals("select A.*, b "
+            + "from A "
+            + "join B on A.id = B.id", queryBuilder.toString());
+    }
+
+    @Test
     public void testGroupBy() {
         var queryBuilder = QueryBuilder.select(A, B.avg().as("y"))
             .from(ASchema.class)

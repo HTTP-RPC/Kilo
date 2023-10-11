@@ -87,6 +87,19 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates an "all" schema element.
+     *
+     * @param schemaType
+     * The schema type.
+     *
+     * @return
+     * A schema element representing all columns in the associated table.
+     */
+    static SchemaElement all(Class<? extends SchemaElement> schemaType) {
+        return new SchemaElementAdapter(String.format("%s.*", getTableName(schemaType)));
+    }
+
+    /**
      * Returns the name of the schema element.
      *
      * @return
