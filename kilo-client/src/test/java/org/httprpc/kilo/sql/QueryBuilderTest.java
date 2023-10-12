@@ -84,16 +84,16 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("a", "b", "c", "m", "n", "z"), queryBuilder.getParameters());
 
-        assertEquals("select a as x, b, c, d "
+        assertEquals("select A.a as x, A.b, A.c, A.d "
             + "from A "
-            + "join B on A.id = B.id and a = ? "
-            + "left join C on B.id = C.id and b = ? "
-            + "right join D on C.id = D.id and c = ? "
-            + "where a > ? or b < ? "
-            + "order by a, b asc, c desc "
+            + "join B on A.id = B.id and A.a = ? "
+            + "left join C on B.id = C.id and B.b = ? "
+            + "right join D on C.id = D.id and C.c = ? "
+            + "where A.a > ? or A.b < ? "
+            + "order by A.a, A.b asc, A.c desc "
             + "limit 10 "
             + "for update "
-            + "union select a, b, c, d from A where c = ?", queryBuilder.toString());
+            + "union select A.a, A.b, A.c, A.d from A where A.c = ?", queryBuilder.toString());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class QueryBuilderTest {
             .from(ASchema.class)
             .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID));
 
-        assertEquals("select A.*, b "
+        assertEquals("select A.*, B.b "
             + "from A "
             + "join B on A.id = B.id", queryBuilder.toString());
     }
@@ -116,10 +116,10 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("c", "d"), queryBuilder.getParameters());
 
-        assertEquals("select a, avg(b) as y "
+        assertEquals("select A.a, avg(A.b) as y "
             + "from A "
-            + "group by a "
-            + "having c > ? and d like ?", queryBuilder.toString());
+            + "group by A.a "
+            + "having A.c > ? and A.d like ?", queryBuilder.toString());
     }
 
     @Test
@@ -134,13 +134,13 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdate() {
-        var queryBuilder = QueryBuilder.update(ASchema.class, A, B, C)
+        var queryBuilder = QueryBuilder.update(ASchema.class, A, B, C.optional())
             .set("a", "b", "c")
             .where(A.gt("m"), and(B.isNull()));
 
         assertEquals(listOf("a", "b", "c", "m"), queryBuilder.getParameters());
 
-        assertEquals("update A set a = ?, b = ?, c = ? where a > ? and b is null", queryBuilder.toString());
+        assertEquals("update A set a = ?, b = ?, c = coalesce(?, c) where A.a > ? and A.b is null", queryBuilder.toString());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class QueryBuilderTest {
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
         assertEquals("delete from A "
-            + "where a < ? and b is not null", queryBuilder.toString());
+            + "where A.a < ? and A.b is not null", queryBuilder.toString());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class QueryBuilderTest {
 
         assertEquals("select * "
             + "from A "
-            + "where (a = ? and b != ? and c < ?) and (d > ? or e not in (?, ?))", queryBuilder.toString());
+            + "where (A.a = ? and A.b != ? and A.c < ?) and (A.d > ? or A.e not in (?, ?))", queryBuilder.toString());
     }
 
     @Test
@@ -178,7 +178,7 @@ public class QueryBuilderTest {
         assertEquals(listOf("c"), queryBuilder.getParameters());
 
         assertEquals("select * from B "
-            + "where exists (select c from C where C.id = B.id and c = ?)", queryBuilder.toString());
+            + "where exists (select C.c from C where C.id = B.id and C.c = ?)", queryBuilder.toString());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class QueryBuilderTest {
         assertEquals(listOf("c"), queryBuilder.getParameters());
 
         assertEquals("select * from B "
-            + "where not exists (select c from C where C.id = B.id and c = ?)", queryBuilder.toString());
+            + "where not exists (select C.c from C where C.id = B.id and C.c = ?)", queryBuilder.toString());
     }
 
     @Test

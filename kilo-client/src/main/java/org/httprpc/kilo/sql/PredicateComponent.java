@@ -43,6 +43,8 @@ public class PredicateComponent {
 
         var stringBuilder = new StringBuilder(32);
 
+        stringBuilder.append(schemaElement.getTableName());
+        stringBuilder.append(".");
         stringBuilder.append(schemaElement.getColumnName());
         stringBuilder.append(" ");
         stringBuilder.append(operator);
@@ -89,13 +91,13 @@ public class PredicateComponent {
 
         var stringBuilder = new StringBuilder(32);
 
-        stringBuilder.append(SchemaElement.getTableName(schemaElement1.getClass()));
+        stringBuilder.append(schemaElement1.getTableName());
         stringBuilder.append(".");
         stringBuilder.append(schemaElement1.getColumnName());
         stringBuilder.append(" ");
         stringBuilder.append(operator);
         stringBuilder.append(" ");
-        stringBuilder.append(SchemaElement.getTableName(schemaElement2.getClass()));
+        stringBuilder.append(schemaElement2.getTableName());
         stringBuilder.append(".");
         stringBuilder.append(schemaElement2.getColumnName());
 

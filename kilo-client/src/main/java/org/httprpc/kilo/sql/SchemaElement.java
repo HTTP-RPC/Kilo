@@ -96,7 +96,7 @@ public interface SchemaElement {
      * A schema element representing all columns in the associated table.
      */
     static SchemaElement all(Class<? extends SchemaElement> schemaType) {
-        return new SchemaElementAdapter(String.format("%s.*", getTableName(schemaType)));
+        return new SchemaElementAdapter(null, String.format("%s.*", getTableName(schemaType)));
     }
 
     /**
@@ -107,6 +107,16 @@ public interface SchemaElement {
      */
     default String name() {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the name of the table associated with the schema element.
+     *
+     * @return
+     * The schema element's table name.
+     */
+    default String getTableName() {
+        return getTableName(getClass());
     }
 
     /**
@@ -166,13 +176,23 @@ public interface SchemaElement {
     }
 
     /**
+     * Indicates that the schema element is required.
+     *
+     * @return
+     * {@code true} if the element is required; {@code false}, otherwise.
+     */
+    default boolean isRequired() {
+        return true;
+    }
+
+    /**
      * Creates a "count" schema element.
      *
      * @return
      * A count schema element.
      */
     default SchemaElement count() {
-        return new SchemaElementAdapter(String.format("count(%s)", getColumnName()));
+        return new SchemaElementAdapter(null, String.format("count(%s.%s)", getTableName(), getColumnName()));
     }
 
     /**
@@ -182,7 +202,7 @@ public interface SchemaElement {
      * An average schema element.
      */
     default SchemaElement avg() {
-        return new SchemaElementAdapter(String.format("avg(%s)", getColumnName()));
+        return new SchemaElementAdapter(null, String.format("avg(%s.%s)", getTableName(), getColumnName()));
     }
 
     /**
@@ -192,7 +212,7 @@ public interface SchemaElement {
      * A sum schema element.
      */
     default SchemaElement sum() {
-        return new SchemaElementAdapter(String.format("sum(%s)", getColumnName()));
+        return new SchemaElementAdapter(null, String.format("sum(%s.%s)", getTableName(), getColumnName()));
     }
 
     /**
@@ -202,7 +222,7 @@ public interface SchemaElement {
      * A minimum schema element.
      */
     default SchemaElement min() {
-        return new SchemaElementAdapter(String.format("min(%s)", getColumnName()));
+        return new SchemaElementAdapter(null, String.format("min(%s.%s)", getTableName(), getColumnName()));
     }
 
     /**
@@ -212,7 +232,7 @@ public interface SchemaElement {
      * A maximum schema element.
      */
     default SchemaElement max() {
-        return new SchemaElementAdapter(String.format("max(%s)", getColumnName()));
+        return new SchemaElementAdapter(null, String.format("max(%s.%s)", getTableName(), getColumnName()));
     }
 
     /**
@@ -222,36 +242,14 @@ public interface SchemaElement {
      * The schema element's alias.
      *
      * @return
-     * A new schema element with the current column name and provided alias.
+     * A schema element with the current column name and provided alias.
      */
     default SchemaElement as(String alias) {
         if (alias == null) {
             throw new IllegalArgumentException();
         }
 
-        return new SchemaElementAdapter(getColumnName(), alias);
-    }
-
-    /**
-     * Associates an ascending sort order with the schema element.
-     *
-     * @return
-     * A new schema element with the current column name and ascending sort
-     * order.
-     */
-    default SchemaElement asc() {
-        return new SchemaElementAdapter(getColumnName(), SortOrder.ASC);
-    }
-
-    /**
-     * Associates a descending sort order with the schema element.
-     *
-     * @return
-     * A new schema element with the current column name and descending sort
-     * order.
-     */
-    default SchemaElement desc() {
-        return new SchemaElementAdapter(getColumnName(), SortOrder.DESC);
+        return new SchemaElementAdapter(getTableName(), getColumnName(), alias);
     }
 
     /**
@@ -467,5 +465,37 @@ public interface SchemaElement {
      */
     default PredicateComponent isNotNull() {
         return new PredicateComponent(this, "is not null");
+    }
+
+    /**
+     * Associates an ascending sort order with the schema element.
+     *
+     * @return
+     * A schema element with the current column name and ascending sort
+     * order.
+     */
+    default SchemaElement asc() {
+        return new SchemaElementAdapter(getTableName(), getColumnName(), SortOrder.ASC);
+    }
+
+    /**
+     * Associates a descending sort order with the schema element.
+     *
+     * @return
+     * A schema element with the current column name and descending sort
+     * order.
+     */
+    default SchemaElement desc() {
+        return new SchemaElementAdapter(getTableName(), getColumnName(), SortOrder.DESC);
+    }
+
+    /**
+     * Flags the schema element as optional.
+     *
+     * @return
+     * An optional schema element with the current column name.
+     */
+    default SchemaElement optional() {
+        return new SchemaElementAdapter(getTableName(), getColumnName(), false);
     }
 }

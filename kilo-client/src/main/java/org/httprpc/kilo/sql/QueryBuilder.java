@@ -107,6 +107,13 @@ public class QueryBuilder {
 
             var schemaElement = schemaElements[i];
 
+            var tableName = schemaElement.getTableName();
+
+            if (tableName != null) {
+                sqlBuilder.append(tableName);
+                sqlBuilder.append(".");
+            }
+
             sqlBuilder.append(schemaElement.getColumnName());
 
             var alias = schemaElement.getAlias();
@@ -296,7 +303,11 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(schemaElements[i].getColumnName());
+            var schemaElement = schemaElements[i];
+
+            sqlBuilder.append(schemaElement.getTableName());
+            sqlBuilder.append(".");
+            sqlBuilder.append(schemaElement.getColumnName());
         }
 
         return this;
@@ -362,6 +373,8 @@ public class QueryBuilder {
 
             var schemaElement = schemaElements[i];
 
+            sqlBuilder.append(schemaElement.getTableName());
+            sqlBuilder.append(".");
             sqlBuilder.append(schemaElement.getColumnName());
 
             var sortOrder = schemaElement.getSortOrder();
@@ -444,8 +457,7 @@ public class QueryBuilder {
      * @return
      * The new {@link QueryBuilder} instance.
      */
-    @SafeVarargs
-    public static <S extends SchemaElement> QueryBuilder insertInto(Class<S> schemaType, S... schemaElements) {
+    public static QueryBuilder insertInto(Class<? extends SchemaElement> schemaType, SchemaElement... schemaElements) {
         if (schemaType == null || schemaElements.length == 0) {
             throw new IllegalArgumentException();
         }
@@ -517,8 +529,7 @@ public class QueryBuilder {
      * @return
      * The new {@link QueryBuilder} instance.
      */
-    @SafeVarargs
-    public static <S extends SchemaElement> QueryBuilder update(Class<S> schemaType, S... schemaElements) {
+    public static QueryBuilder update(Class<? extends SchemaElement> schemaType, SchemaElement... schemaElements) {
         if (schemaType == null || schemaElements.length == 0) {
             throw new IllegalArgumentException();
         }
@@ -556,10 +567,20 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(schemaElements[i].getColumnName());
+            var schemaElement = schemaElements[i];
+
+            var columnName = schemaElement.getColumnName();
+
+            sqlBuilder.append(columnName);
             sqlBuilder.append(" = ");
 
-            sqlBuilder.append("?");
+            if (schemaElement.isRequired()) {
+                sqlBuilder.append("?");
+            } else {
+                sqlBuilder.append("coalesce(?, ");
+                sqlBuilder.append(columnName);
+                sqlBuilder.append(")");
+            }
 
             parameters.add(values[i]);
         }

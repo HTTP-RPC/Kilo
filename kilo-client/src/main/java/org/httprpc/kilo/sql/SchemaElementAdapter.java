@@ -14,58 +14,40 @@
 
 package org.httprpc.kilo.sql;
 
-/**
- * Adapts a schema element.
- */
-public class SchemaElementAdapter implements SchemaElement {
+class SchemaElementAdapter implements SchemaElement {
+    private String tableName;
     private String columnName;
-    private String alias;
-    private SortOrder sortOrder;
 
-    /**
-     * Constructs a new schema element adapter.
-     *
-     * @param columnName
-     * The column name.
-     */
-    public SchemaElementAdapter(String columnName) {
-        this(columnName, null, null);
-    }
+    private String alias = null;
+    private SortOrder sortOrder = null;
+    private boolean required = true;
 
-    /**
-     * Constructs a new schema element adapter.
-     *
-     * @param columnName
-     * The column name.
-     *
-     * @param alias
-     * The schema element's alias.
-     */
-    public SchemaElementAdapter(String columnName, String alias) {
-        this(columnName, alias, null);
-    }
-
-    /**
-     * Constructs a new schema element adapter.
-     *
-     * @param columnName
-     * The column name.
-     *
-     * @param sortOrder
-     * The schema element's sort order.
-     */
-    public SchemaElementAdapter(String columnName, SortOrder sortOrder) {
-        this(columnName, null, sortOrder);
-    }
-
-    private SchemaElementAdapter(String columnName, String alias, SortOrder sortOrder) {
-        if (columnName == null) {
-            throw new IllegalArgumentException();
-        }
-
+    SchemaElementAdapter(String tableName, String columnName) {
+        this.tableName = tableName;
         this.columnName = columnName;
+    }
+
+    SchemaElementAdapter(String tableName, String columnName, String alias) {
+        this(tableName, columnName);
+
         this.alias = alias;
+    }
+
+    SchemaElementAdapter(String tableName, String columnName, SortOrder sortOrder) {
+        this(tableName, columnName);
+
         this.sortOrder = sortOrder;
+    }
+
+    SchemaElementAdapter(String tableName, String columnName, boolean required) {
+        this(tableName, columnName);
+
+        this.required = required;
+    }
+
+    @Override
+    public String getTableName() {
+        return tableName;
     }
 
     @Override
@@ -81,5 +63,10 @@ public class SchemaElementAdapter implements SchemaElement {
     @Override
     public SortOrder getSortOrder() {
         return sortOrder;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return required;
     }
 }
