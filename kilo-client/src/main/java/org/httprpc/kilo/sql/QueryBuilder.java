@@ -467,7 +467,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(")");
 
-        return new QueryBuilder(sqlBuilder);
+        return new QueryBuilder(sqlBuilder, schemaElements);
     }
 
     /**
@@ -480,8 +480,12 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder values(String... values) {
-        if (values.length == 0) {
-             throw new IllegalArgumentException();
+        if (schemaElements == null) {
+            throw new IllegalStateException();
+        }
+
+        if (values.length != schemaElements.length) {
+            throw new IllegalArgumentException();
         }
 
         sqlBuilder.append(" values (");
