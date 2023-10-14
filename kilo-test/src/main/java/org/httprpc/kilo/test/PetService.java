@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.test.Pet.Schema.BIRTH;
+import static org.httprpc.kilo.test.Pet.Schema.OWNER;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -40,70 +42,74 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
-    public List<Pet> getPets(@Required String owner, boolean stream) throws SQLException, IOException {
+    public List<Pet> getPets(@Required String owner) throws SQLException, IOException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.append("select * from pet where owner = :owner");
 
-        if (stream) {
-            var response = getResponse();
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+                entry("owner", owner)
+            )))) {
+            return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+        }
+    }
 
-            var accept = getRequest().getHeader("Accept");
+    @RequestMethod("GET")
+    @ResourcePath("stream")
+    public void getPetsStream(@Required String owner) throws SQLException, IOException {
+        var response = getResponse();
 
-            if (accept == null) {
+        var accept = getRequest().getHeader("Accept");
+
+        if (accept == null) {
+            throw new UnsupportedOperationException();
+        }
+
+        var queryBuilder = QueryBuilder.selectAll()
+            .from(Pet.Schema.class)
+            .where(OWNER.eq("owner"));
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+                entry("owner", owner)
+            )))) {
+            if (accept.equalsIgnoreCase(APPLICATION_JSON)) {
+                response.setContentType(APPLICATION_JSON);
+
+                var jsonEncoder = new JSONEncoder();
+
+                jsonEncoder.write(results, response.getOutputStream());
+            } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
+                response.setContentType(TEXT_CSV);
+
+                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
+
+                var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
+
+                csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
+
+                csvEncoder.setFormats(mapOf(
+                    entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
+                ));
+
+                csvEncoder.write(results, response.getOutputStream());
+            } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
+                response.setContentType(TEXT_HTML);
+
+                var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
+
+                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
+
+                templateEncoder.write(results, response.getOutputStream());
+            } else if (accept.equalsIgnoreCase(TEXT_XML)) {
+                response.setContentType(TEXT_XML);
+
+                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.xml"));
+
+                templateEncoder.write(results, response.getOutputStream());
+            } else {
                 throw new UnsupportedOperationException();
-            }
-
-            try (var statement = queryBuilder.prepare(getConnection());
-                var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
-                    entry("owner", owner)
-                )))) {
-                if (accept.equalsIgnoreCase(APPLICATION_JSON)) {
-                    response.setContentType(APPLICATION_JSON);
-
-                    var jsonEncoder = new JSONEncoder();
-
-                    jsonEncoder.write(results, response.getOutputStream());
-                } else {
-                    var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
-
-                    if (accept.equalsIgnoreCase(TEXT_CSV)) {
-                        response.setContentType(TEXT_CSV);
-
-                        var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
-
-                        csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
-
-                        csvEncoder.setFormats(mapOf(
-                            entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
-                        ));
-
-                        csvEncoder.write(results, response.getOutputStream());
-                    } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
-                        response.setContentType(TEXT_HTML);
-
-                        var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
-
-                        templateEncoder.write(results, response.getOutputStream());
-                    } else if (accept.equalsIgnoreCase(TEXT_XML)) {
-                        response.setContentType(TEXT_XML);
-
-                        var templateEncoder = new TemplateEncoder(getClass().getResource("pets.xml"), resourceBundle);
-
-                        templateEncoder.write(results, response.getOutputStream());
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-                }
-            }
-
-            return null;
-        } else {
-            try (var statement = queryBuilder.prepare(getConnection());
-                var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
-                    entry("owner", owner)
-                )))) {
-                return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
             }
         }
     }
@@ -111,9 +117,8 @@ public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("select birth from pet");
+        var queryBuilder = QueryBuilder.select(BIRTH)
+            .from(Pet.Schema.class);;
 
         double averageAge;
         try (var statement = queryBuilder.prepare(getConnection());

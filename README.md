@@ -867,12 +867,12 @@ The `QueryBuilder` class provides support for programmatically constructing and 
 
 ```sql
 create table pet (
-  name varchar(20),
-  owner varchar(20),
-  species varchar(20),
-  sex char(1),
-  birth date,
-  death date
+    name varchar(20),
+    owner varchar(20),
+    species varchar(20),
+    sex char(1),
+    birth date,
+    death date
 );
 ```
 
@@ -920,47 +920,40 @@ public interface Pet {
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
 
-See the [pet service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) example for more information.
-
 ### Schema Types
-`QueryBuilder` also supports a more structured approach to query construction using "schema types". For example, given the following table definiton:
-
-```sql
-create table item (
-    id int not null auto_increment,
-    description varchar(256) not null,
-    price double not null,
-    primary key (id)
-);
-```
-
-this SQL query could be used to retrieve the row for a particular item:
-
-```sql
-select * from item where id = :id
-```
-
-The same query could be written as follows using a schema type:
+`QueryBuilder` also supports a more structured approach to query construction using "schema types". For example, the preceding query could be written as follows using a schema type:
 
 ```java
-@Table("item")
-public enum ItemSchema implements SchemaElement {
-    @Column("id")
-    ID,
-    @Column("description")
-    DESCRIPTION,
-    @Column("price")
-    PRICE
+public interface Pet {
+    @Table("pet")
+    enum Schema implements SchemaElement {
+        @Column("name")
+        NAME,
+        @Column("owner")
+        OWNER,
+        @Column("species")
+        SPECIES,
+        @Column("sex")
+        SEX,
+        @Column("birth")
+        BIRTH,
+        @Column("death")
+        DEATH
+    }
+
+    ...
 }
 ```
 
 ```java
-var queryBuilder = QueryBuilder.selectAll().from(ItemSchema.class).where(ID.eq("id"));
+var queryBuilder = QueryBuilder.selectAll()
+    .from(Pet.Schema.class)
+    .where(OWNER.eq("owner"));
 ```
 
-Schema types are enums that implement the `SchemaElement` interface. They are associated with table and column names using the `Table` and `Column` annotations, respectively. In the example above, the `ID` constant has been statically imported to reduce verbosity.
+Schema types are enums that implement the `SchemaElement` interface. They are associated with table and column names using the `Table` and `Column` annotations, respectively. In the example above, the `OWNER` constant has been statically imported to reduce verbosity.
 
-Insert, update, and delete operations are also supported. See the [catalog service](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) example for more information.
+Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
@@ -1102,7 +1095,7 @@ var queryBuilder = QueryBuilder.select(
     GENDER,
     BIRTH_DATE.as("birthDate"),
     HIRE_DATE.as("hireDate")
-).from(EmployeeSchema.class);
+).from(Employee.Schema.class);
 ```
 
 This code could be used to transform the results to a list of `Employee` instances:

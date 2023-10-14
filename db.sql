@@ -5,12 +5,12 @@ create schema demo;
 use demo;
 
 create table pet (
-  name varchar(20),
-  owner varchar(20),
-  species varchar(20),
-  sex char(1),
-  birth date,
-  death date
+    name varchar(20),
+    owner varchar(20),
+    species varchar(20),
+    sex char(1),
+    birth date,
+    death date
 );
 
 insert into pet (name, owner, species, sex, birth, death) values ('Fluffy', 'Harold', 'cat', 'f', '1993-02-04', null);

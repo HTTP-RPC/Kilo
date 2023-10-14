@@ -14,9 +14,29 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.SchemaElement;
+import org.httprpc.kilo.sql.Table;
+
 import java.time.LocalDate;
 
 public interface Employee {
+    @Table("employees")
+    enum Schema implements SchemaElement {
+        @Column("emp_no")
+        EMPLOYEE_NUMBER,
+        @Column("first_name")
+        FIRST_NAME,
+        @Column("last_name")
+        LAST_NAME,
+        @Column("gender")
+        GENDER,
+        @Column("birth_date")
+        BIRTH_DATE,
+        @Column("hire_date")
+        HIRE_DATE
+    }
+
     Integer getEmployeeNumber();
     String getFirstName();
     String getLastName();

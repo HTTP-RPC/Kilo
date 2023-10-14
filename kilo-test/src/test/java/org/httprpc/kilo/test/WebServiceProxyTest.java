@@ -857,11 +857,12 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPets() throws IOException {
-        testPetsJSON(false);
-        testPetsJSON(true);
-        testPetsCSV();
-        testPetsHTML();
-        testPetsXML();
+        testPetsJSON();
+
+        testPetsStreamJSON();
+        testPetsStreamCSV();
+        testPetsStreamHTML();
+        testPetsStreamXML();
 
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/average-age");
 
@@ -870,7 +871,7 @@ public class WebServiceProxyTest {
         assertNotNull(averageAge);
     }
 
-    private void testPetsJSON(boolean stream) throws IOException {
+    private void testPetsJSON() throws IOException {
         List<?> expected;
         try (var inputStream = getClass().getResourceAsStream("pets.json")) {
             var jsonDecoder = new JSONDecoder();
@@ -880,13 +881,8 @@ public class WebServiceProxyTest {
 
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets");
 
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", stream ? "application/json" : "*/*")
-        ));
-
         webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen"),
-            entry("stream", stream)
+            entry("owner", "Gwen")
         ));
 
         webServiceProxy.setMonitorStream(System.out);
@@ -896,7 +892,32 @@ public class WebServiceProxyTest {
         assertEquals(expected, actual);
     }
 
-    private void testPetsCSV() throws IOException {
+    private void testPetsStreamJSON() throws IOException {
+        List<?> expected;
+        try (var inputStream = getClass().getResourceAsStream("pets.json")) {
+            var jsonDecoder = new JSONDecoder();
+
+            expected = (List<?>)jsonDecoder.read(inputStream);
+        }
+
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
+
+        webServiceProxy.setHeaders(mapOf(
+            entry("Accept", "application/json")
+        ));
+
+        webServiceProxy.setArguments(mapOf(
+            entry("owner", "Gwen")
+        ));
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        var actual = webServiceProxy.invoke();
+
+        assertEquals(expected, actual);
+    }
+
+    private void testPetsStreamCSV() throws IOException {
         List<?> expected;
         try (var inputStream = getClass().getResourceAsStream("pets.csv")) {
             var csvDecoder = new CSVDecoder();
@@ -904,15 +925,14 @@ public class WebServiceProxyTest {
             expected = csvDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets");
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "text/csv")
         ));
 
         webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen"),
-            entry("stream", true)
+            entry("owner", "Gwen")
         ));
 
         webServiceProxy.setMonitorStream(System.out);
@@ -927,15 +947,15 @@ public class WebServiceProxyTest {
 
     }
 
-    private void testPetsHTML() throws IOException {
-        testPetsMarkup("pets.html", "text/html");
+    private void testPetsStreamHTML() throws IOException {
+        testPetsStreamMarkup("pets.html", "text/html");
     }
 
-    private void testPetsXML() throws IOException {
-        testPetsMarkup("pets.xml", "text/xml");
+    private void testPetsStreamXML() throws IOException {
+        testPetsStreamMarkup("pets.xml", "text/xml");
     }
 
-    private void testPetsMarkup(String name, String mimeType) throws IOException {
+    private void testPetsStreamMarkup(String name, String mimeType) throws IOException {
         String expected;
         try (var inputStream = getClass().getResourceAsStream(name)) {
             var textDecoder = new TextDecoder();
@@ -943,15 +963,14 @@ public class WebServiceProxyTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets");
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", mimeType)
         ));
 
         webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen"),
-            entry("stream", true)
+            entry("owner", "Gwen")
         ));
 
         webServiceProxy.setMonitorStream(System.out);
