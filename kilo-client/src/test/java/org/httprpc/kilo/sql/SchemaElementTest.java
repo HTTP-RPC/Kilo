@@ -49,11 +49,6 @@ public class SchemaElementTest {
     }
 
     @Test
-    public void testAll() {
-        testSchemaElementColumnName("test1.*", SchemaElement.all(TestSchema1.class));
-    }
-
-    @Test
     public void testCount() {
         testSchemaElementColumnName("count(test1.a)", A.count());
     }

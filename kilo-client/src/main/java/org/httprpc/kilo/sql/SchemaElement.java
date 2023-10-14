@@ -96,7 +96,7 @@ public interface SchemaElement {
      * A schema element representing all columns in the associated table.
      */
     static SchemaElement all(Class<? extends SchemaElement> schemaType) {
-        return new SchemaElementAdapter(null, String.format("%s.*", getTableName(schemaType)));
+        return new SchemaElementAdapter(getTableName(schemaType), "*");
     }
 
     /**
@@ -242,7 +242,7 @@ public interface SchemaElement {
      * The schema element's alias.
      *
      * @return
-     * A schema element with the current column name and provided alias.
+     * A schema element with the provided alias.
      */
     default SchemaElement as(String alias) {
         if (alias == null) {
@@ -471,8 +471,7 @@ public interface SchemaElement {
      * Associates an ascending sort order with the schema element.
      *
      * @return
-     * A schema element with the current column name and ascending sort
-     * order.
+     * A schema element with an ascending sort order.
      */
     default SchemaElement asc() {
         return new SchemaElementAdapter(getTableName(), getColumnName(), SortOrder.ASC);
@@ -482,8 +481,7 @@ public interface SchemaElement {
      * Associates a descending sort order with the schema element.
      *
      * @return
-     * A schema element with the current column name and descending sort
-     * order.
+     * A schema element with a descending sort order.
      */
     default SchemaElement desc() {
         return new SchemaElementAdapter(getTableName(), getColumnName(), SortOrder.DESC);
@@ -493,7 +491,7 @@ public interface SchemaElement {
      * Flags the schema element as optional.
      *
      * @return
-     * An optional schema element with the current column name.
+     * An optional schema element.
      */
     default SchemaElement optional() {
         return new SchemaElementAdapter(getTableName(), getColumnName(), false);
