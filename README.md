@@ -224,7 +224,7 @@ If an exception is thrown by a service method and the response has not yet been 
 A reference to any service annotated with `jakarta.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
 ### API Documentation
-An index of all active services can be found at the application's context root; for example:
+An index of all active services can be found at the application's context root:
 
 ```
 GET http://localhost:8080/kilo-test
