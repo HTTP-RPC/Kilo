@@ -1025,15 +1025,15 @@ public abstract class WebService extends HttpServlet {
 
         var method = request.getMethod();
 
-        if ((method.equals("POST") || method.equals("PUT")) && n > 0) {
+        var keyCount = keys.size();
+
+        if ((method.equals("POST") || method.equals("PUT")) && n > keyCount) {
             var contentType = request.getContentType();
 
             if (contentType == null || !(contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.startsWith(MULTIPART_FORM_DATA))) {
                 n--;
             }
         }
-
-        var keyCount = keys.size();
 
         for (var i = 0; i < n; i++) {
             var parameter = parameters[i];

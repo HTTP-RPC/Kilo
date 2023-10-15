@@ -24,7 +24,7 @@ import java.util.Map;
 
 public interface TestServiceProxy {
     @RequestMethod("GET")
-    Map<String, Object> testGet(@Required String string, List<String> strings, int number);
+    Map<String, Object> testGet(@Required String string, List<String> strings, int number) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("a/?/b/?/c/?/d/?")
@@ -32,7 +32,11 @@ public interface TestServiceProxy {
 
     @RequestMethod("POST")
     @ResourcePath("foo/?/bar/?")
-    Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values);
+    Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) throws IOException;
+
+    @RequestMethod("PUT")
+    @ResourcePath("?")
+    int testEmptyPut(int value) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("headers")

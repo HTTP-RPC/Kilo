@@ -482,6 +482,24 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testEmptyPut() throws IOException {
+        var webServiceProxy = new WebServiceProxy("PUT", baseURL, "test/%d", 101);
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals(101, result);
+    }
+
+    @Test
+    public void testEmptyPutProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        var result = testServiceProxy.testEmptyPut(101);
+
+        assertEquals(101, result);
+    }
+
+    @Test
     public void testDelete() throws IOException {
         var id = 101;
 

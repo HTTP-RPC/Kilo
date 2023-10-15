@@ -337,6 +337,12 @@ public class TestService extends WebService {
         echo();
     }
 
+    @RequestMethod("PUT")
+    @ResourcePath("?")
+    public int testEmptyPut(int value) {
+        return value;
+    }
+
     private void echo() throws IOException {
         InputStream inputStream = getRequest().getInputStream();
         OutputStream outputStream = getResponse().getOutputStream();
