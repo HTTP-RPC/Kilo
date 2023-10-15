@@ -1,4 +1,5 @@
 {
+  "deprecated": false,
   "description": "Math example service.",
   "endpoints": [
     {
@@ -55,7 +56,7 @@
             {
               "description": "The numbers to add.",
               "name": "values",
-              "required": true,
+              "required": false,
               "type": {
                 "elementType": {
                   "elementType": null,

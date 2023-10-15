@@ -1,4 +1,5 @@
 {
+  "deprecated": false,
   "description": "File upload example service.",
   "endpoints": [
     {
@@ -41,7 +42,7 @@
             {
               "description": "The files to upload.",
               "name": "files",
-              "required": true,
+              "required": false,
               "type": {
                 "elementType": {
                   "elementType": null,

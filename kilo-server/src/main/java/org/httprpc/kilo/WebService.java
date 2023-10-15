@@ -71,7 +71,6 @@ public abstract class WebService extends HttpServlet {
     public static class ServiceDescriptor {
         private String path;
         private String description;
-
         private boolean deprecated;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
@@ -105,6 +104,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Indicates that the service is deprecated.
+         *
+         * @return
+         * {@code true} if the service is deprecated; {@code false}, otherwise.
+         */
+        public boolean isDeprecated() {
+            return deprecated;
         }
 
         /**
@@ -177,7 +186,6 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
-
         private boolean deprecated;
 
         private TypeDescriptor produces = null;
@@ -250,30 +258,25 @@ public abstract class WebService extends HttpServlet {
      */
     public static class VariableDescriptor {
         private String name;
-        private boolean required;
-
         private String description;
+        private boolean required;
 
         private TypeDescriptor type = null;
 
         private VariableDescriptor(Parameter parameter) {
             name = parameter.getName();
 
-            if (parameter.getType() == List.class) {
-                required = true;
-            } else {
-                required = parameter.getAnnotation(Required.class) != null;
-            }
-
             description = Optionals.map(parameter.getAnnotation(Description.class), Description::value);
+
+            required = parameter.getAnnotation(Required.class) != null;
         }
 
         private VariableDescriptor(String name, Method accessor) {
             this.name = name;
 
-            required = accessor.getAnnotation(Required.class) != null;
-
             description = Optionals.map(accessor.getAnnotation(Description.class), Description::value);
+
+            required = accessor.getAnnotation(Required.class) != null;
         }
 
         /**
@@ -287,16 +290,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Indicates that the variable is required.
-         *
-         * @return
-         * {@code true} if the variable is required; {@code false}, otherwise.
-         */
-        public boolean isRequired() {
-            return required;
-        }
-
-        /**
          * Returns a description of the variable.
          *
          * @return
@@ -304,6 +297,16 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Indicates that the variable is required.
+         *
+         * @return
+         * {@code true} if the variable is required; {@code false}, otherwise.
+         */
+        public boolean isRequired() {
+            return required;
         }
 
         /**
