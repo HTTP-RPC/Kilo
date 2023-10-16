@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,6 +91,23 @@ public class QueryBuilder {
      * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder select(SchemaElement... schemaElements) {
+        return select(false, schemaElements);
+    }
+
+    /**
+     * Creates a "select distinct" query.
+     *
+     * @param schemaElements
+     * A list of schema elements representing the columns to select.
+     *
+     * @return
+     * The new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder selectDistinct(SchemaElement... schemaElements) {
+        return select(true, schemaElements);
+    }
+
+    private static QueryBuilder select(boolean distinct, SchemaElement... schemaElements) {
         if (schemaElements.length == 0) {
             throw new UnsupportedOperationException();
         }
@@ -99,6 +115,10 @@ public class QueryBuilder {
         var sqlBuilder = new StringBuilder(INITIAL_CAPACITY);
 
         sqlBuilder.append("select ");
+
+        if (distinct) {
+            sqlBuilder.append("distinct ");
+        }
 
         for (var i = 0; i < schemaElements.length; i++) {
             if (i > 0) {
@@ -234,52 +254,6 @@ public class QueryBuilder {
      */
     public QueryBuilder where(PredicateComponent... predicateComponents) {
         return filter("where", predicateComponents);
-    }
-
-    /**
-     * Appends a "where exists" clause to a query.
-     *
-     * @param queryBuilder
-     * The "exists" subquery.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder whereExists(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" where exists (");
-
-        append(queryBuilder);
-
-        sqlBuilder.append(")");
-
-        return this;
-    }
-
-    /**
-     * Appends a "where not exists" clause to a query.
-     *
-     * @param queryBuilder
-     * The "not exists" subquery.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder whereNotExists(QueryBuilder queryBuilder) {
-        if (queryBuilder == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" where not exists (");
-
-        append(queryBuilder);
-
-        sqlBuilder.append(")");
-
-        return this;
     }
 
     /**
@@ -678,7 +652,7 @@ public class QueryBuilder {
      * @return
      * The parameters parsed by the query builder.
      */
-    public Collection<String> getParameters() {
+    public List<String> getParameters() {
         return Collections.unmodifiableList(parameters);
     }
 

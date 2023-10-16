@@ -991,6 +991,10 @@ public abstract class WebService extends HttpServlet {
         } else if (result == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
+            if (handler.getAnnotation(Creates.class) != null) {
+                response.setStatus(HttpServletResponse.SC_CREATED);
+            }
+
             encodeResult(request, response, result);
         }
     }

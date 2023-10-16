@@ -70,6 +70,17 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectAll() {
+        var queryBuilder = QueryBuilder.select(SchemaElement.all(ASchema.class), BSchema.B)
+            .from(ASchema.class)
+            .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID));
+
+        assertEquals("select A.*, B.b "
+            + "from A "
+            + "join B on A.id = B.id", queryBuilder.toString());
+    }
+
+    @Test
     public void testSelect() {
         var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D)
             .from(ASchema.class)
@@ -97,14 +108,10 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testSelectAll() {
-        var queryBuilder = QueryBuilder.select(SchemaElement.all(ASchema.class), BSchema.B)
-            .from(ASchema.class)
-            .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID));
+    public void testSelectDistinct() {
+        var queryBuilder = QueryBuilder.selectDistinct(A, B, C).from(ASchema.class);
 
-        assertEquals("select A.*, B.b "
-            + "from A "
-            + "join B on A.id = B.id", queryBuilder.toString());
+        assertEquals("select distinct A.a, A.b, A.c from A", queryBuilder.toString());
     }
 
     @Test
@@ -165,34 +172,6 @@ public class QueryBuilderTest {
         assertEquals("select * "
             + "from A "
             + "where (A.a = ? and A.b != ? and A.c < ?) and (A.d > ? or A.e not in (?, ?))", queryBuilder.toString());
-    }
-
-    @Test
-    public void testWhereExists() {
-        var queryBuilder = QueryBuilder.selectAll()
-            .from(BSchema.class)
-            .whereExists(QueryBuilder.select(CSchema.C)
-                .from(CSchema.class)
-                .where(CSchema.ID.eq(BSchema.ID), and(CSchema.C.eq("c"))));
-
-        assertEquals(listOf("c"), queryBuilder.getParameters());
-
-        assertEquals("select * from B "
-            + "where exists (select C.c from C where C.id = B.id and C.c = ?)", queryBuilder.toString());
-    }
-
-    @Test
-    public void testWhereNotExists() {
-        var queryBuilder = QueryBuilder.selectAll()
-            .from(BSchema.class)
-            .whereNotExists(QueryBuilder.select(CSchema.C)
-                .from(CSchema.class)
-                .where(CSchema.ID.eq(BSchema.ID), and(CSchema.C.eq("c"))));
-
-        assertEquals(listOf("c"), queryBuilder.getParameters());
-
-        assertEquals("select * from B "
-            + "where not exists (select C.c from C where C.id = B.id and C.c = ?)", queryBuilder.toString());
     }
 
     @Test

@@ -15,7 +15,7 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletResponse;
+import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
@@ -51,6 +51,7 @@ public class CatalogService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("items")
     @Description("Adds an item to the catalog.")
+    @Creates
     public Item addItem(
         @Description("The item to add.") Item item
     ) throws SQLException {
@@ -60,8 +61,6 @@ public class CatalogService extends AbstractDatabaseService {
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
         }
-
-        getResponse().setStatus(HttpServletResponse.SC_CREATED);
 
         return getItem(BeanAdapter.coerce(queryBuilder.getGeneratedKeys().get(0), Integer.class));
     }

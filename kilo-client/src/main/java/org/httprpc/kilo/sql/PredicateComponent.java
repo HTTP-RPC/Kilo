@@ -23,20 +23,7 @@ public class PredicateComponent {
     private static final String AND = "and";
     private static final String OR = "or";
 
-    /**
-     * Constructs a new comparison predicate component.
-     *
-     * @param schemaElement
-     * The schema element representing the left-hand side of the comparison.
-     *
-     * @param operator
-     * The comparison operator.
-     *
-     * @param keys
-     * The keys of the values representing the right-hand side of the
-     * comparison.
-     */
-    public PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
+    PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
         if (schemaElement == null || operator == null) {
             throw new IllegalArgumentException();
         }
@@ -72,19 +59,7 @@ public class PredicateComponent {
         text = stringBuilder.toString();
     }
 
-    /**
-     * Constructs a new comparison predicate component.
-     *
-     * @param schemaElement1
-     * The schema element representing the left-hand side of the comparison.
-     *
-     * @param operator
-     * The comparison operator.
-     *
-     * @param schemaElement2
-     * The schema element representing the right-hand side of the comparison.
-     */
-    public PredicateComponent(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
+    PredicateComponent(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
         if (schemaElement1 == null || operator == null || schemaElement2 == null) {
             throw new IllegalArgumentException();
         }
