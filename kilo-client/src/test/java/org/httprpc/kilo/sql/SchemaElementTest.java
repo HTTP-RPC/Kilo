@@ -25,6 +25,7 @@ import static org.httprpc.kilo.sql.PredicateComponent.anyOf;
 import static org.httprpc.kilo.sql.PredicateComponent.or;
 import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.A;
 import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.B;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.C;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SchemaElementTest {
@@ -33,7 +34,9 @@ public class SchemaElementTest {
         @Column("a")
         A,
         @Column("b")
-        B
+        B,
+        @Column("c")
+        C
     }
 
     @Table("test2")
@@ -132,6 +135,26 @@ public class SchemaElementTest {
     @Test
     public void testIsNotNull() {
         testPredicateComponents("test1.a is not null", A.isNotNull());
+    }
+
+    @Test
+    public void testPlus() {
+        testSchemaElementColumnName("(test1.a + test1.b)", A.plus(B));
+    }
+
+    @Test
+    public void testMinus() {
+        testSchemaElementColumnName("(test1.a - test1.b)", A.minus(B));
+    }
+
+    @Test
+    public void testMultipliedBy() {
+        testSchemaElementColumnName("(test1.a * (test1.b + test1.c))", A.multipliedBy(B.plus(C)));
+    }
+
+    @Test
+    public void testDividedBy() {
+        testSchemaElementColumnName("(test1.a / (test1.b - test1.c))", A.dividedBy(B.minus(C)));
     }
 
     @Test

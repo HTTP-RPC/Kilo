@@ -87,24 +87,24 @@ public class QueryBuilderTest {
             .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID), and(ASchema.A.eq("a")))
             .leftJoin(CSchema.class).on(BSchema.ID.eq(CSchema.ID), and(BSchema.B.eq("b")))
             .rightJoin(DSchema.class).on(CSchema.ID.eq(DSchema.ID), and(CSchema.C.eq("c")))
-            .where(A.gt("m"), or(B.lt("n")))
+            .where(A.gt("m"), or(B.lt("n")), or(C.plus(D).gt("y")))
             .orderBy(A, B.asc(), C.desc())
             .limit(10)
             .forUpdate()
-            .union(QueryBuilder.select(A, B, C, D).from(ASchema.class).where(C.eq("z")));
+            .union(QueryBuilder.select(A, B, C.minus(D).as("d")).from(ASchema.class).where(C.eq("z")));
 
-        assertEquals(listOf("a", "b", "c", "m", "n", "z"), queryBuilder.getParameters());
+        assertEquals(listOf("a", "b", "c", "m", "n", "y", "z"), queryBuilder.getParameters());
 
         assertEquals("select A.a as x, A.b, A.c, A.d "
             + "from A "
             + "join B on A.id = B.id and A.a = ? "
             + "left join C on B.id = C.id and B.b = ? "
             + "right join D on C.id = D.id and C.c = ? "
-            + "where A.a > ? or A.b < ? "
+            + "where A.a > ? or A.b < ? or (A.c + A.d) > ? "
             + "order by A.a, A.b asc, A.c desc "
             + "limit 10 "
             + "for update "
-            + "union select A.a, A.b, A.c, A.d from A where A.c = ?", queryBuilder.toString());
+            + "union select A.a, A.b, (A.c - A.d) as d from A where A.c = ?", queryBuilder.toString());
     }
 
     @Test

@@ -127,14 +127,7 @@ public class QueryBuilder {
 
             var schemaElement = schemaElements[i];
 
-            var tableName = schemaElement.getTableName();
-
-            if (tableName != null) {
-                sqlBuilder.append(tableName);
-                sqlBuilder.append(".");
-            }
-
-            sqlBuilder.append(schemaElement.getColumnName());
+            sqlBuilder.append(schemaElement.getQualifiedName());
 
             var alias = schemaElement.getAlias();
 
@@ -277,11 +270,7 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            var schemaElement = schemaElements[i];
-
-            sqlBuilder.append(schemaElement.getTableName());
-            sqlBuilder.append(".");
-            sqlBuilder.append(schemaElement.getColumnName());
+            sqlBuilder.append(schemaElements[i].getQualifiedName());
         }
 
         return this;
@@ -347,9 +336,7 @@ public class QueryBuilder {
 
             var schemaElement = schemaElements[i];
 
-            sqlBuilder.append(schemaElement.getTableName());
-            sqlBuilder.append(".");
-            sqlBuilder.append(schemaElement.getColumnName());
+            sqlBuilder.append(schemaElement.getQualifiedName());
 
             var sortOrder = schemaElement.getSortOrder();
 

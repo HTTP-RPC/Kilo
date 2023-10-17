@@ -64,6 +64,26 @@ public interface SchemaElement {
     String LE = "<=";
 
     /**
+     * The "plus" operator.
+     */
+    String PLUS = "+";
+
+    /**
+     * The "minus" operator.
+     */
+    String MINUS = "-";
+
+    /**
+     * The "multiplied by" operator.
+     */
+    String MULTIPLIED_BY = "*";
+
+    /**
+     * The "divided by" operator.
+     */
+    String DIVIDED_BY = "/";
+
+    /**
      * Returns the name of the table associated with the schema type.
      *
      * @param schemaType
@@ -152,6 +172,22 @@ public interface SchemaElement {
     }
 
     /**
+     * Returns the qualified name of the schema element.
+     *
+     * @return
+     * The schema element's qualified name.
+     */
+    default String getQualifiedName() {
+        var tableName = getTableName();
+
+        if (tableName == null) {
+            return getColumnName();
+        } else {
+            return String.format("%s.%s", tableName, getColumnName());
+        }
+    }
+
+    /**
      * Returns the schema element's alias, as specified via the
      * {@link #as(String)} method.
      *
@@ -192,7 +228,7 @@ public interface SchemaElement {
      * A count schema element.
      */
     default SchemaElement count() {
-        return new SchemaElementAdapter(null, String.format("count(%s.%s)", getTableName(), getColumnName()));
+        return new SchemaElementAdapter(null, String.format("count(%s)", getQualifiedName()));
     }
 
     /**
@@ -202,7 +238,7 @@ public interface SchemaElement {
      * An average schema element.
      */
     default SchemaElement avg() {
-        return new SchemaElementAdapter(null, String.format("avg(%s.%s)", getTableName(), getColumnName()));
+        return new SchemaElementAdapter(null, String.format("avg(%s)", getQualifiedName()));
     }
 
     /**
@@ -212,7 +248,7 @@ public interface SchemaElement {
      * A sum schema element.
      */
     default SchemaElement sum() {
-        return new SchemaElementAdapter(null, String.format("sum(%s.%s)", getTableName(), getColumnName()));
+        return new SchemaElementAdapter(null, String.format("sum(%s)", getQualifiedName()));
     }
 
     /**
@@ -222,7 +258,7 @@ public interface SchemaElement {
      * A minimum schema element.
      */
     default SchemaElement min() {
-        return new SchemaElementAdapter(null, String.format("min(%s.%s)", getTableName(), getColumnName()));
+        return new SchemaElementAdapter(null, String.format("min(%s)", getQualifiedName()));
     }
 
     /**
@@ -232,7 +268,7 @@ public interface SchemaElement {
      * A maximum schema element.
      */
     default SchemaElement max() {
-        return new SchemaElementAdapter(null, String.format("max(%s.%s)", getTableName(), getColumnName()));
+        return new SchemaElementAdapter(null, String.format("max(%s)", getQualifiedName()));
     }
 
     /**
@@ -465,6 +501,86 @@ public interface SchemaElement {
      */
     default PredicateComponent isNotNull() {
         return new PredicateComponent(this, "is not null");
+    }
+
+    /**
+     * Creates an addition schema element.
+     *
+     * @param schemaElement
+     * The schema element to add.
+     *
+     * @return
+     * An addition schema element.
+     */
+    default SchemaElement plus(SchemaElement schemaElement) {
+        if (schemaElement == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            PLUS,
+            schemaElement.getQualifiedName()));
+    }
+
+    /**
+     * Creates a subtraction schema element.
+     *
+     * @param schemaElement
+     * The schema element to subtract.
+     *
+     * @return
+     * A subtraction schema element.
+     */
+    default SchemaElement minus(SchemaElement schemaElement) {
+        if (schemaElement == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            MINUS,
+            schemaElement.getQualifiedName()));
+    }
+
+    /**
+     * Creates a multiplication schema element.
+     *
+     * @param schemaElement
+     * The schema element to multiply by.
+     *
+     * @return
+     * A multiplication schema element.
+     */
+    default SchemaElement multipliedBy(SchemaElement schemaElement) {
+        if (schemaElement == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            MULTIPLIED_BY,
+            schemaElement.getQualifiedName()));
+    }
+
+    /**
+     * Creates a division schema element.
+     *
+     * @param schemaElement
+     * The schema element to divide by.
+     *
+     * @return
+     * A division schema element.
+     */
+    default SchemaElement dividedBy(SchemaElement schemaElement) {
+        if (schemaElement == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            DIVIDED_BY,
+            schemaElement.getQualifiedName()));
     }
 
     /**
