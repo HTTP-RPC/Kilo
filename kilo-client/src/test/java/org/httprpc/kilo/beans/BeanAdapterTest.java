@@ -63,10 +63,8 @@ public class BeanAdapterTest {
     }
 
     public static class MissingAccessor {
-        private int value;
-
         public void setValue(int value) {
-            this.value = value;
+            // No-op
         }
     }
 

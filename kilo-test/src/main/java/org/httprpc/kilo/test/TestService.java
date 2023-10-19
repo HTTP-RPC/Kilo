@@ -122,7 +122,7 @@ public class TestService extends WebService {
     private static class FibonacciSequence extends AbstractList<Number> {
         private int count;
 
-        public FibonacciSequence(int count) {
+        FibonacciSequence(int count) {
             this.count = count;
         }
 

@@ -196,7 +196,7 @@ public class ExamplesTest {
     @Test
     public void testRequiredProperty1() {
         try {
-            var vehicle = BeanAdapter.coerce(mapOf(), Vehicle.class);
+            BeanAdapter.coerce(mapOf(), Vehicle.class);
         } catch (IllegalArgumentException exception) {
             System.out.println(exception.getMessage());
         }
