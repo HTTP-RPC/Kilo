@@ -812,6 +812,12 @@ public class QueryBuilder {
         }
     }
 
+    /**
+     * Returns the generated query text.
+     *
+     * @return
+     * The generated query text.
+     */
     @Override
     public String toString() {
         return sqlBuilder.toString();
