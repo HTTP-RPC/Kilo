@@ -984,18 +984,20 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        var returnType = handler.getReturnType();
-
-        if (returnType == Void.TYPE || returnType == Void.class) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        } else if (result == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        } else {
+        if (result != null) {
             if (handler.getAnnotation(Creates.class) != null) {
                 response.setStatus(HttpServletResponse.SC_CREATED);
             }
 
             encodeResult(request, response, result);
+        } else {
+            var returnType = handler.getReturnType();
+
+            if (returnType == Void.TYPE || returnType == Void.class) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
         }
     }
 

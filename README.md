@@ -195,7 +195,9 @@ Return values are converted to JSON as follows:
 * `java.util.List`: array
 * `java.util.Map` or any other type: object
 
-By default, an HTTP 200 response is returned when a service method completes successfully. However, if a method returns `void` or `Void`, an HTTP 204 response will be returned. If a method returns `null`, HTTP 404 will be returned.
+By default, an HTTP 200 response is returned when a service method completes successfully. However, if the handler method is annotated with `Creates`, HTTP 201 will be returned instead. If the handler's return type is `void` or `Void`, HTTP 204 will be returned.
+
+If a service method returns `null`, an HTTP 404 response will be returned.
 
 #### Custom Result Encodings
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative representations. See the method documentation for more information.
