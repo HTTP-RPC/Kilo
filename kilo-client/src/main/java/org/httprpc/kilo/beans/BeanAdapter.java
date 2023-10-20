@@ -47,6 +47,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -359,7 +360,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return false;
             }
 
-            return map.equals(typedInvocationHandler.map);
+            for (var entry : accessors.entrySet()) {
+                var key = entry.getKey();
+
+                var type = entry.getValue().getGenericReturnType();
+
+                var value1 = toGenericType(map.get(key), type);
+                var value2 = toGenericType(typedInvocationHandler.map.get(key), type);
+
+                if (!Objects.equals(value1, value2)) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         @Override
