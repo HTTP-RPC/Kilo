@@ -361,9 +361,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             for (var entry : accessors.entrySet()) {
+                var propertyName = entry.getKey();
                 var accessor = entry.getValue();
 
-                var key = getKey(accessor, entry.getKey());
+                var key = getKey(accessor, propertyName);
 
                 var type = accessor.getGenericReturnType();
 
