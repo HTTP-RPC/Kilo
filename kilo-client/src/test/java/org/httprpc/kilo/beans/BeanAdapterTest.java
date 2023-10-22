@@ -381,8 +381,12 @@ public class BeanAdapterTest {
         };
 
         map1.put("flag", true);
+        map1.put("foo", 1);
 
-        var map2 = mapOf(entry("flag", true));
+        var map2 = mapOf(
+            entry("flag", 1),
+            entry("foo", 2)
+        );
 
         var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
         var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);

@@ -274,11 +274,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Typed invocation handler
     private static class TypedInvocationHandler implements InvocationHandler {
         Map<?, ?> map;
+        Class<?> type;
 
         Map<String, Method> accessors = new HashMap<>();
 
         TypedInvocationHandler(Map<?, ?> map, Class<?> type) {
             this.map = map;
+            this.type = type;
 
             var methods = type.getMethods();
 
@@ -356,7 +358,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 object = Proxy.getInvocationHandler(object);
             }
 
-            if (!(object instanceof TypedInvocationHandler typedInvocationHandler)) {
+            if (!(object instanceof TypedInvocationHandler typedInvocationHandler) || type != typedInvocationHandler.type) {
                 return false;
             }
 
