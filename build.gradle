@@ -17,15 +17,9 @@ subprojects {
     version = '2.7.7'
 
     apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
 
     repositories {
         mavenCentral()
-    }
-
-    dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     }
 
     java {
@@ -47,65 +41,6 @@ subprojects {
                 'Implementation-Title': project.name,
                 'Implementation-Version': project.version
             )
-        }
-    }
-
-    if (!project.name.endsWith('test')) {
-        task sourcesJar(type: Jar) {
-            from sourceSets.main.allJava
-            archiveClassifier = 'sources'
-        }
-
-        task javadocJar(type: Jar) {
-            from javadoc
-            archiveClassifier = 'javadoc'
-        }
-
-        publishing {
-            repositories {
-                maven {
-                    url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-
-                    credentials {
-                        username project.properties['nexusUsername'] ?: ''
-                        password project.properties['nexusPassword'] ?: ''
-                    }
-                }
-            }
-
-            publications {
-                mavenJava(MavenPublication) {
-                    artifactId = project.name
-                    from components.java
-                    artifact sourcesJar
-                    artifact javadocJar
-                    pom {
-                        name = project.name
-                        description = 'Lightweight REST for Java'
-                        url = 'http://httprpc.org'
-                        licenses {
-                            license {
-                                name = 'The Apache License, Version 2.0'
-                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            }
-                        }
-                        developers {
-                            developer {
-                                name = 'Greg Brown'
-                                email = 'gk_brown@icloud.com'
-                            }
-                        }
-                        scm {
-                            connection = 'scm:git:git://github.com/HTTP-RPC/Kilo.git'
-                            url = 'https://github.com/HTTP-RPC/Kilo'
-                        }
-                    }
-                }
-            }
-        }
-
-        signing {
-            sign publishing.publications.mavenJava
         }
     }
 }
