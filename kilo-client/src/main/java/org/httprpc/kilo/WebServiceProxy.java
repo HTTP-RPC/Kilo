@@ -231,33 +231,27 @@ public class WebServiceProxy {
 
             var argumentList = Optionals.map(arguments, Arrays::asList, listOf());
 
-            var n = argumentList.size();
-            var i = 0;
-
             var pathBuilder = new StringBuilder();
+            var m = 0;
 
             var resourcePath = method.getAnnotation(ResourcePath.class);
 
             if (resourcePath != null) {
                 var components = resourcePath.value().split("/");
 
-                for (var j = 0; j < components.length; j++) {
-                    if (j > 0) {
+                for (var i = 0; i < components.length; i++) {
+                    if (i > 0) {
                         pathBuilder.append("/");
                     }
 
-                    var component = components[j];
+                    var component = components[i];
 
                     if (component.isEmpty()) {
                         throw new UnsupportedOperationException("Invalid resource path.");
                     }
 
                     if (component.equals("?")) {
-                        if (i >= n) {
-                            throw new UnsupportedOperationException("Path parameter is not defined.");
-                        }
-
-                        var parameterValue = getParameterValue(argumentList.get(i));
+                        var parameterValue = getParameterValue(argumentList.get(m));
 
                         if (parameterValue == null) {
                             throw new IllegalArgumentException("Path variable is required.");
@@ -265,7 +259,7 @@ public class WebServiceProxy {
 
                         component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
 
-                        i++;
+                        m++;
                     }
 
                     pathBuilder.append(component);
@@ -278,14 +272,14 @@ public class WebServiceProxy {
                 initializer.accept(webServiceProxy);
             }
 
-            if (n > i) {
-                configure(webServiceProxy, method.getParameters(), i, argumentList);
+            if (argumentList.size() > m) {
+                configure(webServiceProxy, method.getParameters(), m, argumentList);
             }
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
 
-        void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList) {
+        void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int m, List<Object> argumentList) {
             var n = parameters.length;
 
             var method = webServiceProxy.getMethod();
@@ -296,16 +290,16 @@ public class WebServiceProxy {
 
             var argumentMap = new LinkedHashMap<String, Object>();
 
-            for (var j = keyCount; j < n; j++) {
-                var parameter = parameters[j];
+            for (var i = m; i < n; i++) {
+                var parameter = parameters[i];
 
-                var value = argumentList.get(j);
+                var value = argumentList.get(i);
 
                 if (parameter.getAnnotation(Required.class) != null && value == null) {
                     throw new IllegalArgumentException("Required argument is not defined.");
                 }
 
-                argumentMap.put(parameters[j].getName(), value);
+                argumentMap.put(parameters[i].getName(), value);
             }
 
             webServiceProxy.setArguments(argumentMap);

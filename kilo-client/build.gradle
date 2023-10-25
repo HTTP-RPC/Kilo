@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-apply from: '../publish.gradle'
+apply from: rootProject.file('publish.gradle')
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'

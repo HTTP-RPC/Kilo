@@ -298,7 +298,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testListPost() throws IOException {
+    public void testListPost1() throws IOException {
         var body = listOf(1, 2, 3);
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
@@ -313,7 +313,24 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testInvalidListPost() throws IOException {
+    public void testListPost2() throws IOException {
+        var list = listOf(1, 2, 3);
+
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
+
+        webServiceProxy.setArguments(mapOf(
+            entry("list", list)
+        ));
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals(list, BeanAdapter.coerceList((List<?>)result, Integer.class));
+    }
+
+    @Test
+    public void testInvalidListPost1() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
 
         webServiceProxy.setBody("xyz");
@@ -326,6 +343,27 @@ public class WebServiceProxyTest {
             fail();
         } catch (WebServiceException exception) {
             assertEquals(403, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testInvalidListPost2() throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
+
+        webServiceProxy.setArguments(mapOf(
+            entry("list", listOf(1, 2, 3))
+        ));
+
+        webServiceProxy.setBody(listOf(4, 5, 6));
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        try {
+            webServiceProxy.invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(405, exception.getStatusCode());
         }
     }
 

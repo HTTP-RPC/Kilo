@@ -929,7 +929,11 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        var handler = getHandler(keys.size(), handlerList, argumentMap.keySet());
+        var empty = contentType == null ||
+            contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) ||
+            contentType.startsWith(MULTIPART_FORM_DATA);
+
+        var handler = getHandler(keys.size(), empty, handlerList, argumentMap.keySet());
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -938,7 +942,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler.getParameters(), keys, argumentMap, request);
+            arguments = getArguments(handler.getParameters(), keys, empty, argumentMap, request);
         } catch (Exception exception) {
             sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
             return;
@@ -1001,24 +1005,30 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private Method getHandler(int keyCount, List<Method> handlerList, Set<String> argumentNames) {
-        var argumentCount = argumentNames.size();
+    private Method getHandler(int m, boolean empty, List<Method> handlerList, Set<String> argumentNames) {
+        var c = argumentNames.size();
 
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
-            if (keyCount > parameters.length) {
+            var n = parameters.length;
+
+            if (m > n) {
                 continue;
             }
 
-            if (argumentCount == 0) {
+            if (c == 0) {
                 return handler;
+            }
+
+            if (!empty) {
+                n--;
             }
 
             var i = 0;
 
-            for (var j = keyCount; j < parameters.length; j++) {
-                if (argumentNames.contains(parameters[j].getName()) && ++i == argumentCount) {
+            for (var j = m; j < n; j++) {
+                if (argumentNames.contains(parameters[j].getName()) && ++i == c) {
                     return handler;
                 }
             }
@@ -1027,27 +1037,21 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, HttpServletRequest request) {
+    private Object[] getArguments(Parameter[] parameters, List<String> keys, boolean empty, Map<String, List<?>> argumentMap, HttpServletRequest request) {
         var n = parameters.length;
 
         var arguments = new Object[n];
 
-        var method = request.getMethod();
+        var m = keys.size();
 
-        var keyCount = keys.size();
-
-        if ((method.equals("POST") || method.equals("PUT")) && n > keyCount) {
-            var contentType = request.getContentType();
-
-            if (contentType == null || !(contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) || contentType.startsWith(MULTIPART_FORM_DATA))) {
-                n--;
-            }
+        if (n > m && !empty) {
+            n--;
         }
 
         for (var i = 0; i < n; i++) {
             var parameter = parameters[i];
 
-            if (i < keyCount) {
+            if (i < m) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
                 var name = parameter.getName();
@@ -1149,6 +1153,16 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
+        var contentType = request.getContentType();
+
+        if (contentType == null) {
+            return null;
+        }
+
+        if (!contentType.equals(APPLICATION_JSON)) {
+            throw new UnsupportedOperationException();
+        }
+
         var jsonDecoder = new JSONDecoder();
 
         return BeanAdapter.toGenericType(jsonDecoder.read(request.getInputStream()), type);
