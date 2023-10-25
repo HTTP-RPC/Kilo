@@ -325,6 +325,7 @@ public class WebServiceProxy {
 
     private int connectTimeout = 0;
     private int readTimeout = 0;
+    private int chunkSize = 4096;
 
     private Status expectedStatus = null;
 
@@ -581,6 +582,26 @@ public class WebServiceProxy {
     }
 
     /**
+     * Returns the chunk size.
+     *
+     * @return
+     * The chunk size.
+     */
+    public int getChunkSize() {
+        return chunkSize;
+    }
+
+    /**
+     * Sets the chunk size.
+     *
+     * @param chunkSize
+     * The chunk size.
+     */
+    public void setChunkSize(int chunkSize) {
+        this.chunkSize = chunkSize;
+    }
+
+    /**
      * Returns the expected status.
      *
      * @return
@@ -769,6 +790,7 @@ public class WebServiceProxy {
         // Write request body
         if (requestHandler != null) {
             connection.setDoOutput(true);
+            connection.setChunkedStreamingMode(chunkSize);
 
             var contentType = requestHandler.getContentType();
 

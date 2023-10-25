@@ -92,6 +92,8 @@ public class BulkUploadTest {
             }
         });
 
+        webServiceProxy.setChunkSize(65536);
+
         webServiceProxy.invoke();
 
         var current = System.currentTimeMillis();
