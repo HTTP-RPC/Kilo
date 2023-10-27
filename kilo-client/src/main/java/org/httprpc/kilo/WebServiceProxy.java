@@ -703,7 +703,7 @@ public class WebServiceProxy {
 
         URL url;
         RequestHandler requestHandler;
-        if (method.equals("POST") && body == null && this.requestHandler == null) {
+        if (method.equals("POST") && !arguments.isEmpty() && body == null && this.requestHandler == null) {
             url = this.url;
 
             requestHandler = new RequestHandler() {

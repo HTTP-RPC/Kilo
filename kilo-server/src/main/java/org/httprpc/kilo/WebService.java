@@ -1155,12 +1155,8 @@ public abstract class WebService extends HttpServlet {
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
         var contentType = request.getContentType();
 
-        if (contentType == null) {
-            return null;
-        }
-
         if (!contentType.equals(APPLICATION_JSON)) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Invalid content type.");
         }
 
         var jsonDecoder = new JSONDecoder();
