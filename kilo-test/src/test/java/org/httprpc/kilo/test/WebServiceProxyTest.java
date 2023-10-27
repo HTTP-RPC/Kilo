@@ -298,7 +298,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testListPost1() throws IOException {
+    public void testListPost() throws IOException {
         var body = listOf(1, 2, 3);
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
@@ -313,7 +313,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testListPost2() throws IOException {
+    public void testListPostWithArguments() throws IOException {
         var list = listOf(1, 2, 3);
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
@@ -330,24 +330,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testInvalidListPost1() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
-
-        webServiceProxy.setBody("xyz");
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        try {
-            webServiceProxy.invoke();
-
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(403, exception.getStatusCode());
-        }
-    }
-
-    @Test
-    public void testInvalidListPost2() throws IOException {
+    public void testUnsupportedListPost() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
 
         webServiceProxy.setArguments(mapOf(
@@ -364,6 +347,23 @@ public class WebServiceProxyTest {
             fail();
         } catch (WebServiceException exception) {
             assertEquals(405, exception.getStatusCode());
+        }
+    }
+
+    @Test
+    public void testInvalidListPost() throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
+
+        webServiceProxy.setBody("xyz");
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        try {
+            webServiceProxy.invoke();
+
+            fail();
+        } catch (WebServiceException exception) {
+            assertEquals(403, exception.getStatusCode());
         }
     }
 
