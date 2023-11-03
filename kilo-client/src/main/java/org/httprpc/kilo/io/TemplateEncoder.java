@@ -21,8 +21,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -187,14 +185,6 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // URL-encoding modifier
-    private static class URLEncodingModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8);
-        }
-    }
-
     // Markup escape modifier
     private static class MarkupEscapeModifier implements Modifier {
         @Override
@@ -303,7 +293,6 @@ public class TemplateEncoder extends Encoder<Object> {
     private Deque<String> sectionNames = new LinkedList<>();
 
     private static final FormatModifier formatModifier = new FormatModifier();
-    private static final URLEncodingModifier urlEncodingModifier = new URLEncodingModifier();
 
     private static final int EOF = -1;
 
@@ -340,7 +329,6 @@ public class TemplateEncoder extends Encoder<Object> {
         modifiers = new HashMap<>();
 
         modifiers.put("format", formatModifier);
-        modifiers.put("url", urlEncodingModifier);
 
         var path = url.getPath();
 

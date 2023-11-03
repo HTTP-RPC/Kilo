@@ -35,15 +35,10 @@ Modifiers are used to transform a variable's representation before it is written
 {{variable:modifier1:modifier2:modifier3=argument:...}}
 ```
 
-All templates support the following standard modifiers:
-
-* `format` - applies a [format string](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html#syntax)
-* `url` - URL-encodes a value
-
-For example, the following marker applies a format string to a value and then URL-encodes the result:
+All templates support the `format` modifier, which applies a [format string](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html#syntax):
 
 ```
-{{value:format=0x%04x:url}}
+{{value:format=0x%04x}}
 ```
 
 Applications may also define their own custom modifiers.

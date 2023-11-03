@@ -531,17 +531,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testURLEncodingModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("url.txt"));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write("abc:def&xyz", writer);
-
-        assertEquals("abc%3Adef%26xyz", writer.toString());
-    }
-
-    @Test
     public void testDefaultMarkupEscapeModifier() throws IOException {
         var url = getClass().getResource("example.xml");
         var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
