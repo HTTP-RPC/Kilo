@@ -37,7 +37,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * Constructs a new CSV encoder.
      *
      * @param keys
-     * The output column keys.
+     * The column keys.
      */
     public CSVEncoder(List<String> keys) {
         this(keys, ',');
@@ -47,7 +47,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * Constructs a new CSV encoder.
      *
      * @param keys
-     * The output column keys.
+     * The column keys.
      *
      * @param delimiter
      * The character to use as a field delimiter.
