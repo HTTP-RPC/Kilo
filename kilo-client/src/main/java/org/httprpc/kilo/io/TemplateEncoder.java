@@ -189,27 +189,29 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class MarkupEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var string = value.toString();
+            if (value instanceof CharSequence string) {
+                var stringBuilder = new StringBuilder();
 
-            var resultBuilder = new StringBuilder();
+                for (int i = 0, n = string.length(); i < n; i++) {
+                    var c = string.charAt(i);
 
-            for (int i = 0, n = string.length(); i < n; i++) {
-                var c = string.charAt(i);
-
-                if (c == '<') {
-                    resultBuilder.append("&lt;");
-                } else if (c == '>') {
-                    resultBuilder.append("&gt;");
-                } else if (c == '&') {
-                    resultBuilder.append("&amp;");
-                } else if (c == '"') {
-                    resultBuilder.append("&quot;");
-                } else {
-                    resultBuilder.append(c);
+                    if (c == '<') {
+                        stringBuilder.append("&lt;");
+                    } else if (c == '>') {
+                        stringBuilder.append("&gt;");
+                    } else if (c == '&') {
+                        stringBuilder.append("&amp;");
+                    } else if (c == '"') {
+                        stringBuilder.append("&quot;");
+                    } else {
+                        stringBuilder.append(c);
+                    }
                 }
-            }
 
-            return resultBuilder.toString();
+                return stringBuilder.toString();
+            } else {
+                return value;
+            }
         }
     }
 
@@ -339,6 +341,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
             if (extension.equals("html") || extension.equals("xml")) {
                 defaultEscapeModifier = new MarkupEscapeModifier();
+            } else {
+                defaultEscapeModifier = null;
             }
         }
     }
