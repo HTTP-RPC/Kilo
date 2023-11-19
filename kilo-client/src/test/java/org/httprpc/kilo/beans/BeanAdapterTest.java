@@ -139,6 +139,24 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testListAdapter() {
+        var list = listOf(1, false, "xyz");
+
+        assertEquals(list, BeanAdapter.adaptList(list));
+    }
+
+    @Test
+    public void testMapAdapter() {
+        var map = mapOf(
+            entry("a", 1),
+            entry("b", false),
+            entry("c", "xyz")
+        );
+
+        assertEquals(map, BeanAdapter.adaptMap(map));
+    }
+
+    @Test
     public void testInvalidGet() {
         var beanAdapter = new BeanAdapter(new TestBean());
 

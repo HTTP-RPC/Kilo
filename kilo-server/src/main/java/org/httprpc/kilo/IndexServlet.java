@@ -39,7 +39,7 @@ public class IndexServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var serviceDescriptors = BeanAdapter.adapt(WebService.getServiceDescriptors());
+        var serviceDescriptors = BeanAdapter.adaptList(WebService.getServiceDescriptors());
 
         var accept = request.getHeader("Accept");
 

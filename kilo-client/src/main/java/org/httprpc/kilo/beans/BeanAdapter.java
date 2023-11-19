@@ -98,6 +98,104 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    // List adapter
+    private static class ListAdapter extends AbstractList<Object> {
+        List<?> list;
+        Map<Class<?>, Map<String, Property>> propertyCache;
+
+        ListAdapter(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
+            this.list = list;
+            this.propertyCache = propertyCache;
+        }
+
+        @Override
+        public Object get(int index) {
+            return adapt(list.get(index), propertyCache);
+        }
+
+        @Override
+        public int size() {
+            return list.size();
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<>() {
+                Iterator<?> iterator = list.iterator();
+
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public Object next() {
+                    return adapt(iterator.next(), propertyCache);
+                }
+            };
+        }
+    }
+
+    // Map adapter
+    private static class MapAdapter<K> extends AbstractMap<K, Object> {
+        Map<K, ?> map;
+        Map<Class<?>, Map<String, Property>> propertyCache;
+
+        MapAdapter(Map<K, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
+            this.map = map;
+            this.propertyCache = propertyCache;
+        }
+
+        @Override
+        public Object get(Object key) {
+            return adapt(map.get(key), propertyCache);
+        }
+
+        @Override
+        public Set<Entry<K, Object>> entrySet() {
+            return new AbstractSet<>() {
+                @Override
+                public int size() {
+                    return map.size();
+                }
+
+                @Override
+                public Iterator<Entry<K, Object>> iterator() {
+                    return new Iterator<>() {
+                        Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
+
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Entry<K, Object> next() {
+                            return new Entry<>() {
+                                Entry<K, ?> entry = iterator.next();
+
+                                @Override
+                                public K getKey() {
+                                    return entry.getKey();
+                                }
+
+                                @Override
+                                public Object getValue() {
+                                    return adapt(entry.getValue(), propertyCache);
+                                }
+
+                                @Override
+                                public Object setValue(Object value) {
+                                    throw new UnsupportedOperationException();
+                                }
+                            };
+                        }
+                    };
+                }
+            };
+        }
+    }
+
     // Record adapter
     private static class RecordAdapter extends AbstractMap<String, Object> {
         Object value;
@@ -166,104 +264,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             } catch (IllegalAccessException | InvocationTargetException exception) {
                                 throw new RuntimeException(exception);
                             }
-                        }
-                    };
-                }
-            };
-        }
-    }
-
-    // List adapter
-    private static class ListAdapter extends AbstractList<Object> {
-        List<?> list;
-        Map<Class<?>, Map<String, Property>> propertyCache;
-
-        ListAdapter(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
-            this.list = list;
-            this.propertyCache = propertyCache;
-        }
-
-        @Override
-        public Object get(int index) {
-            return adapt(list.get(index), propertyCache);
-        }
-
-        @Override
-        public int size() {
-            return list.size();
-        }
-
-        @Override
-        public Iterator<Object> iterator() {
-            return new Iterator<>() {
-                Iterator<?> iterator = list.iterator();
-
-                @Override
-                public boolean hasNext() {
-                    return iterator.hasNext();
-                }
-
-                @Override
-                public Object next() {
-                    return adapt(iterator.next(), propertyCache);
-                }
-            };
-        }
-    }
-
-    // Map adapter
-    private static class MapAdapter extends AbstractMap<Object, Object> {
-        Map<?, ?> map;
-        Map<Class<?>, Map<String, Property>> propertyCache;
-
-        MapAdapter(Map<?, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
-            this.map = map;
-            this.propertyCache = propertyCache;
-        }
-
-        @Override
-        public Object get(Object key) {
-            return adapt(map.get(key), propertyCache);
-        }
-
-        @Override
-        public Set<Entry<Object, Object>> entrySet() {
-            return new AbstractSet<>() {
-                @Override
-                public int size() {
-                    return map.size();
-                }
-
-                @Override
-                public Iterator<Entry<Object, Object>> iterator() {
-                    return new Iterator<>() {
-                        Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
-
-                        @Override
-                        public boolean hasNext() {
-                            return iterator.hasNext();
-                        }
-
-                        @Override
-                        public Entry<Object, Object> next() {
-                            return new Entry<>() {
-                                Entry<?, ?> entry = iterator.next();
-
-                                @Override
-                                public Object getKey() {
-                                    return entry.getKey();
-                                }
-
-                                @Override
-                                public Object getValue() {
-                                    return adapt(entry.getValue(), propertyCache);
-                                }
-
-                                @Override
-                                public Object setValue(Object value) {
-                                    throw new UnsupportedOperationException();
-                                }
-                            };
                         }
                     };
                 }
@@ -595,14 +595,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * <p>If the value is a {@link Record}, it is wrapped in an adapter that
-     * will recursively adapt the record's fields.</p>
-     *
      * <p>If the value is a {@link List}, it is wrapped in an adapter that
      * will recursively adapt the list's elements.</p>
      *
      * <p>If the value is a {@link Map}, it is wrapped in an adapter that will
      * recursively adapt the map's values. Map keys are not adapted.</p>
+     *
+     * <p>If the value is a {@link Record}, it is wrapped in an adapter that
+     * will recursively adapt the record's fields.</p>
      *
      * <p>If none of the previous conditions apply, the value is assumed to be
      * a bean and is wrapped in a {@link BeanAdapter}.</p>
@@ -629,15 +629,60 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof UUID
             || value instanceof URL) {
             return value;
+        } else if (value instanceof List<?> list) {
+            return adaptList(list, propertyCache);
+        } else if (value instanceof Map<?, ?> map) {
+            return adaptMap(map, propertyCache);
         } else if (value instanceof Record) {
             return new RecordAdapter(value, propertyCache);
-        } else if (value instanceof List<?> list) {
-            return new ListAdapter(list, propertyCache);
-        } else if (value instanceof Map<?, ?> map) {
-            return new MapAdapter(map, propertyCache);
         } else {
             return new BeanAdapter(value, propertyCache);
         }
+    }
+
+    /**
+     * Adapts a list for loose typing.
+     *
+     * @param list
+     * The list to adapt.
+     *
+     * @return
+     * An adapter that will recursively adapt the list's elements.
+     */
+    public static List<Object> adaptList(List<?> list) {
+        if (list == null) {
+            return null;
+        } else {
+            return adaptList(list, new HashMap<>());
+        }
+    }
+
+    private static List<Object> adaptList(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
+        return new ListAdapter(list, propertyCache);
+    }
+
+    /**
+     * Adapts a map for loose typing.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param map
+     * The map to adapt.
+     *
+     * @return
+     * An adapter that will recursively adapt the map's values.
+     */
+    public static <K> Map<K, Object> adaptMap(Map<K, ?> map) {
+        if (map == null) {
+            return null;
+        } else {
+            return adaptMap(map, new HashMap<>());
+        }
+    }
+
+    private static <K> Map<K, Object> adaptMap(Map<K, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
+        return new MapAdapter<>(map, propertyCache);
     }
 
     /**
