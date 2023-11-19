@@ -137,11 +137,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     // Map adapter
-    private static class MapAdapter<K> extends AbstractMap<K, Object> {
-        Map<K, ?> map;
+    private static class MapAdapter extends AbstractMap<Object, Object> {
+        Map<?, ?> map;
         Map<Class<?>, Map<String, Property>> propertyCache;
 
-        MapAdapter(Map<K, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
+        MapAdapter(Map<?, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
             this.map = map;
             this.propertyCache = propertyCache;
         }
@@ -152,7 +152,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         @Override
-        public Set<Entry<K, Object>> entrySet() {
+        public Set<Entry<Object, Object>> entrySet() {
             return new AbstractSet<>() {
                 @Override
                 public int size() {
@@ -160,9 +160,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
 
                 @Override
-                public Iterator<Entry<K, Object>> iterator() {
+                public Iterator<Entry<Object, Object>> iterator() {
                     return new Iterator<>() {
-                        Iterator<? extends Entry<K, ?>> iterator = map.entrySet().iterator();
+                        Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 
                         @Override
                         public boolean hasNext() {
@@ -170,12 +170,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         }
 
                         @Override
-                        public Entry<K, Object> next() {
+                        public Entry<Object, Object> next() {
                             return new Entry<>() {
-                                Entry<K, ?> entry = iterator.next();
+                                Entry<?, ?> entry = iterator.next();
 
                                 @Override
-                                public K getKey() {
+                                public Object getKey() {
                                     return entry.getKey();
                                 }
 
@@ -630,59 +630,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof URL) {
             return value;
         } else if (value instanceof List<?> list) {
-            return adaptList(list, propertyCache);
+            return new ListAdapter(list, propertyCache);
         } else if (value instanceof Map<?, ?> map) {
-            return adaptMap(map, propertyCache);
+            return new MapAdapter(map, propertyCache);
         } else if (value instanceof Record) {
             return new RecordAdapter(value, propertyCache);
         } else {
             return new BeanAdapter(value, propertyCache);
         }
-    }
-
-    /**
-     * Adapts a list for loose typing.
-     *
-     * @param list
-     * The list to adapt.
-     *
-     * @return
-     * An adapter that will recursively adapt the list's elements.
-     */
-    public static List<Object> adaptList(List<?> list) {
-        if (list == null) {
-            return null;
-        } else {
-            return adaptList(list, new HashMap<>());
-        }
-    }
-
-    private static List<Object> adaptList(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
-        return new ListAdapter(list, propertyCache);
-    }
-
-    /**
-     * Adapts a map for loose typing.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param map
-     * The map to adapt.
-     *
-     * @return
-     * An adapter that will recursively adapt the map's values.
-     */
-    public static <K> Map<K, Object> adaptMap(Map<K, ?> map) {
-        if (map == null) {
-            return null;
-        } else {
-            return adaptMap(map, new HashMap<>());
-        }
-    }
-
-    private static <K> Map<K, Object> adaptMap(Map<K, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
-        return new MapAdapter<>(map, propertyCache);
     }
 
     /**
