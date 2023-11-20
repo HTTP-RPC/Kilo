@@ -81,6 +81,103 @@ public class TemplateEncoder extends Encoder<Object> {
         Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
     }
 
+    /**
+     * Content type options.
+     */
+    public enum ContentType {
+        /**
+         * Markup content type.
+         */
+        MARKUP(new MarkupModifier()),
+
+        /**
+         * JSON content type.
+         */
+        JSON(new JSONModifier()),
+
+        /**
+         * CSV content type.
+         */
+        CSV(new CSVModifier()),
+
+        /**
+         * Unspecified content type.
+         */
+        UNSPECIFIED(null);
+
+        private final Modifier modifier;
+
+        ContentType(Modifier modifier) {
+            this.modifier = modifier;
+        }
+    }
+
+    // Markup modifier
+    private static class MarkupModifier implements Modifier {
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            if (value instanceof CharSequence text) {
+                var stringBuilder = new StringBuilder();
+
+                for (int i = 0, n = text.length(); i < n; i++) {
+                    var c = text.charAt(i);
+
+                    if (c == '<') {
+                        stringBuilder.append("&lt;");
+                    } else if (c == '>') {
+                        stringBuilder.append("&gt;");
+                    } else if (c == '&') {
+                        stringBuilder.append("&amp;");
+                    } else if (c == '"') {
+                        stringBuilder.append("&quot;");
+                    } else {
+                        stringBuilder.append(c);
+                    }
+                }
+
+                return stringBuilder.toString();
+            } else {
+                return value;
+            }
+        }
+    }
+
+    // JSON modifier
+    private static class JSONModifier implements Modifier {
+        JSONEncoder jsonEncoder = new JSONEncoder(true);
+
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            var stringWriter = new StringWriter();
+
+            try {
+                jsonEncoder.encode(value, stringWriter);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return stringWriter.toString();
+        }
+    }
+
+    // CSV modifier
+    private static class CSVModifier implements Modifier {
+        CSVEncoder csvEncoder = new CSVEncoder(listOf());
+
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            var stringWriter = new StringWriter();
+
+            try {
+                csvEncoder.encode(value, stringWriter);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return stringWriter.toString();
+        }
+    }
+
     // Format modifier
     private static class FormatModifier implements Modifier {
         static final String CURRENCY = "currency";
@@ -188,72 +285,6 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    // Markup escape modifier
-    private static class MarkupEscapeModifier implements Modifier {
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (value instanceof CharSequence text) {
-                var stringBuilder = new StringBuilder();
-
-                for (int i = 0, n = text.length(); i < n; i++) {
-                    var c = text.charAt(i);
-
-                    if (c == '<') {
-                        stringBuilder.append("&lt;");
-                    } else if (c == '>') {
-                        stringBuilder.append("&gt;");
-                    } else if (c == '&') {
-                        stringBuilder.append("&amp;");
-                    } else if (c == '"') {
-                        stringBuilder.append("&quot;");
-                    } else {
-                        stringBuilder.append(c);
-                    }
-                }
-
-                return stringBuilder.toString();
-            } else {
-                return value;
-            }
-        }
-    }
-
-    // JSON modifier
-    private static class JSONModifier implements Modifier {
-        JSONEncoder jsonEncoder = new JSONEncoder(true);
-
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var stringWriter = new StringWriter();
-
-            try {
-                jsonEncoder.encode(value, stringWriter);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return stringWriter.toString();
-        }
-    }
-
-    // CSV modifier
-    private static class CSVModifier implements Modifier {
-        CSVEncoder csvEncoder = new CSVEncoder(listOf());
-
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var stringWriter = new StringWriter();
-
-            try {
-                csvEncoder.encode(value, stringWriter);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return stringWriter.toString();
-        }
-    }
-
     // Marker type enumeration
     private enum MarkerType {
         CONDITIONAL_SECTION_START,
@@ -326,8 +357,12 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private URL url;
     private ResourceBundle resourceBundle;
-    private Map<String, Modifier> modifiers;
-    private Modifier defaultModifier;
+
+    private ContentType contentType = ContentType.MARKUP;
+
+    private Map<String, Modifier> modifiers = mapOf(
+        entry("format", new FormatModifier())
+    );
 
     private Deque<Map<?, ?>> dictionaries = new LinkedList<>();
 
@@ -364,23 +399,30 @@ public class TemplateEncoder extends Encoder<Object> {
 
         this.url = url;
         this.resourceBundle = resourceBundle;
+    }
 
-        modifiers = mapOf(
-            entry("format", new FormatModifier())
-        );
+    /**
+     * Returns the content type.
+     *
+     * @return
+     * The content type.
+     */
+    public ContentType getContentType() {
+        return contentType;
+    }
 
-        var path = url.getPath();
-
-        var i = path.lastIndexOf('.');
-
-        if (i != -1) {
-            defaultModifier = switch (path.substring(i + 1)) {
-                case "html", "xml" -> new MarkupEscapeModifier();
-                case "json" -> new JSONModifier();
-                case "csv" -> new CSVModifier();
-                default -> null;
-            };
+    /**
+     * Sets the content type.
+     *
+     * @param contentType
+     * The content type.
+     */
+    public void setContentType(ContentType contentType) {
+        if (contentType == null) {
+            throw new IllegalArgumentException();
         }
+
+        this.contentType = contentType;
     }
 
     /**
@@ -746,8 +788,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                 value = marker;
                             }
 
-                            if (defaultModifier != null) {
-                                value = defaultModifier.apply(value, null, locale, timeZone);
+                            if (contentType.modifier != null) {
+                                value = contentType.modifier.apply(value, null, locale, timeZone);
                             }
 
                             writer.append(value.toString());
@@ -779,8 +821,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                     value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                                 }
 
-                                if (defaultModifier != null) {
-                                    value = defaultModifier.apply(value, null, locale, timeZone);
+                                if (contentType.modifier != null) {
+                                    value = contentType.modifier.apply(value, null, locale, timeZone);
                                 }
 
                                 writer.append(value.toString());

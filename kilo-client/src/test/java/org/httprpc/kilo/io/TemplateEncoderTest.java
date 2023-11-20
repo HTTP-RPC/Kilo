@@ -531,9 +531,9 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testDefaultMarkupEscapeModifier() throws IOException {
-        var url = getClass().getResource("example.xml");
-        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
+    public void testMarkupModifier() throws IOException {
+        var url = getClass().getResource("xml.txt");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
         var templateEncoder = new TemplateEncoder(url, resourceBundle);
 
@@ -547,11 +547,13 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testDefaultJSONModifier() throws IOException {
-        var url = getClass().getResource("example.json");
-        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
+    public void testJSONModifier() throws IOException {
+        var url = getClass().getResource("json.txt");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
         var templateEncoder = new TemplateEncoder(url, resourceBundle);
+
+        templateEncoder.setContentType(TemplateEncoder.ContentType.JSON);
 
         var writer = new StringWriter();
 
@@ -565,11 +567,13 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testDefaultCSVModifier() throws IOException {
-        var url = getClass().getResource("example.csv");
-        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
+    public void testCSVModifier() throws IOException {
+        var url = getClass().getResource("csv.txt");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
         var templateEncoder = new TemplateEncoder(url, resourceBundle);
+
+        templateEncoder.setContentType(TemplateEncoder.ContentType.CSV);
 
         var writer = new StringWriter();
 
@@ -583,6 +587,22 @@ public class TemplateEncoderTest {
         ), writer);
 
         assertEquals("\"\"\"n,\top\"\"\",f\n1,true\n", writer.toString());
+    }
+
+    @Test
+    public void testUnspecifiedModifier() throws IOException {
+        var url = getClass().getResource("unspecified.txt");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
+
+        var templateEncoder = new TemplateEncoder(url, resourceBundle);
+
+        templateEncoder.setContentType(TemplateEncoder.ContentType.UNSPECIFIED);
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(), writer);
+
+        assertEquals("f<g>h&i\"j\"klm\n\"\"n,\top\"", writer.toString());
     }
 
     @Test
