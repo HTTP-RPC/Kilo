@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.io;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 

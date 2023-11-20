@@ -547,6 +547,45 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testDefaultJSONModifier() throws IOException {
+        var url = getClass().getResource("example.json");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
+
+        var templateEncoder = new TemplateEncoder(url, resourceBundle);
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(
+            entry("b", mapOf(
+                entry("c", 1)
+            ))
+        ), writer);
+
+        assertEquals("{\"b\": {\"c\":1}, \"d\": \"\\\"klm\\n\\\"\"}", writer.toString());
+    }
+
+    @Test
+    public void testDefaultCSVModifier() throws IOException {
+        var url = getClass().getResource("example.csv");
+        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".example");
+
+        var templateEncoder = new TemplateEncoder(url, resourceBundle);
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(
+            entry("g", listOf(
+                mapOf(
+                    entry("h", 1),
+                    entry("i", true)
+                )
+            ))
+        ), writer);
+
+        assertEquals("\"\"\"n,\top\"\"\",f\n1,true\n", writer.toString());
+    }
+
+    @Test
     public void testSimpleInclude() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("master1.txt"));
 

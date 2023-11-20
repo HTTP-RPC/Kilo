@@ -585,7 +585,7 @@ var templateEncoder = new TemplateEncoder(getClass().getResource("example.html")
 templateEncoder.write(map, System.out);
 ```
 
-Injected values are automatically escaped for HTML and XML documents. For other document types, a custom modifier (discussed below) can be used.
+Injected values are automatically escaped for HTML and XML documents. For JSON and CSV documents, values are automatically encoded. 
 
 ### Custom Modifiers
 Custom modifiers can be associated with a template encoder instance via the `bind()` method:

@@ -14,11 +14,13 @@
 
 package org.httprpc.kilo.io;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -47,6 +49,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
@@ -189,11 +192,11 @@ public class TemplateEncoder extends Encoder<Object> {
     private static class MarkupEscapeModifier implements Modifier {
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            if (value instanceof CharSequence string) {
+            if (value instanceof CharSequence text) {
                 var stringBuilder = new StringBuilder();
 
-                for (int i = 0, n = string.length(); i < n; i++) {
-                    var c = string.charAt(i);
+                for (int i = 0, n = text.length(); i < n; i++) {
+                    var c = text.charAt(i);
 
                     if (c == '<') {
                         stringBuilder.append("&lt;");
@@ -212,6 +215,42 @@ public class TemplateEncoder extends Encoder<Object> {
             } else {
                 return value;
             }
+        }
+    }
+
+    // JSON modifier
+    private static class JSONModifier implements Modifier {
+        JSONEncoder jsonEncoder = new JSONEncoder(true);
+
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            var stringWriter = new StringWriter();
+
+            try {
+                jsonEncoder.encode(value, stringWriter);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return stringWriter.toString();
+        }
+    }
+
+    // CSV modifier
+    private static class CSVModifier implements Modifier {
+        CSVEncoder csvEncoder = new CSVEncoder(listOf());
+
+        @Override
+        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
+            var stringWriter = new StringWriter();
+
+            try {
+                csvEncoder.encode(value, stringWriter);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            return stringWriter.toString();
         }
     }
 
@@ -288,13 +327,11 @@ public class TemplateEncoder extends Encoder<Object> {
     private URL url;
     private ResourceBundle resourceBundle;
     private Map<String, Modifier> modifiers;
-    private Modifier defaultEscapeModifier;
+    private Modifier defaultModifier;
 
     private Deque<Map<?, ?>> dictionaries = new LinkedList<>();
 
     private Deque<String> sectionNames = new LinkedList<>();
-
-    private static final FormatModifier formatModifier = new FormatModifier();
 
     private static final int EOF = -1;
 
@@ -328,22 +365,21 @@ public class TemplateEncoder extends Encoder<Object> {
         this.url = url;
         this.resourceBundle = resourceBundle;
 
-        modifiers = new HashMap<>();
-
-        modifiers.put("format", formatModifier);
+        modifiers = mapOf(
+            entry("format", new FormatModifier())
+        );
 
         var path = url.getPath();
 
         var i = path.lastIndexOf('.');
 
         if (i != -1) {
-            var extension = path.substring(i + 1);
-
-            if (extension.equals("html") || extension.equals("xml")) {
-                defaultEscapeModifier = new MarkupEscapeModifier();
-            } else {
-                defaultEscapeModifier = null;
-            }
+            defaultModifier = switch (path.substring(i + 1)) {
+                case "html", "xml" -> new MarkupEscapeModifier();
+                case "json" -> new JSONModifier();
+                case "csv" -> new CSVModifier();
+                default -> null;
+            };
         }
     }
 
@@ -710,8 +746,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                 value = marker;
                             }
 
-                            if (defaultEscapeModifier != null) {
-                                value = defaultEscapeModifier.apply(value, null, locale, timeZone);
+                            if (defaultModifier != null) {
+                                value = defaultModifier.apply(value, null, locale, timeZone);
                             }
 
                             writer.append(value.toString());
@@ -743,8 +779,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                     value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                                 }
 
-                                if (defaultEscapeModifier != null) {
-                                    value = defaultEscapeModifier.apply(value, null, locale, timeZone);
+                                if (defaultModifier != null) {
+                                    value = defaultModifier.apply(value, null, locale, timeZone);
                                 }
 
                                 writer.append(value.toString());

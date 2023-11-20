@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.io;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
@@ -62,7 +63,7 @@ public class JSONEncoder extends Encoder<Object> {
         writer.flush();
     }
 
-    private void encode(Object value, Writer writer) throws IOException {
+    void encode(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
         } else if (value instanceof CharSequence text) {

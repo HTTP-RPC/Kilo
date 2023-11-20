@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.io;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.Format;
@@ -174,7 +175,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         writer.flush();
     }
 
-    private void encode(Object value, Writer writer) throws IOException {
+    void encode(Object value, Writer writer) throws IOException {
         if (value instanceof CharSequence text) {
             writer.write('"');
 

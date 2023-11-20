@@ -82,7 +82,7 @@ public class CSVDecoderTest {
 
         var actual = new ArrayList<Map<String, String>>(expected.size());
 
-        try (var inputStream = getClass().getResourceAsStream("example.csv")) {
+        try (var inputStream = getClass().getResourceAsStream("iterate.csv")) {
             var csvDecoder = new CSVDecoder();
 
             for (var row : csvDecoder.iterate(inputStream)) {
