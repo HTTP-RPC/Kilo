@@ -715,7 +715,6 @@ public class TemplateEncoder extends Encoder<Object> {
                             }
 
                             writer.append(value.toString());
-
                         }
                         case INCLUDE -> {
                             if (root != null) {
@@ -750,7 +749,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
                                 writer.append(value.toString());
                             }
-
                         }
                     }
                 } else {
