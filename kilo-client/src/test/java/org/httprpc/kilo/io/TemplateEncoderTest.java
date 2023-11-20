@@ -531,7 +531,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testMarkupModifier() throws IOException {
+    public void testDefaultContentType() throws IOException {
         var url = getClass().getResource("xml.txt");
         var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
@@ -547,7 +547,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testJSONModifier() throws IOException {
+    public void testJSONContentType() throws IOException {
         var url = getClass().getResource("json.txt");
         var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
@@ -567,7 +567,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testCSVModifier() throws IOException {
+    public void testCSVContentType() throws IOException {
         var url = getClass().getResource("csv.txt");
         var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
@@ -590,7 +590,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testUnspecifiedModifier() throws IOException {
+    public void testUnspecifiedContentType() throws IOException {
         var url = getClass().getResource("unspecified.txt");
         var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".test");
 
