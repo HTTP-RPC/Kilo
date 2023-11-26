@@ -51,6 +51,14 @@ public class SchemaElementTest {
         C
     }
 
+    @Table("test4")
+    public enum TestSchema4 implements SchemaElement {
+        @Column("d")
+        D,
+        @Column("e")
+        E
+    }
+
     @Test
     public void testCount() {
         testSchemaElementColumnName("count(test1.a)", A.count());
@@ -80,12 +88,16 @@ public class SchemaElementTest {
     public void testEQ() {
         testPredicateComponents("test1.a = :a", A.eq("a"));
         testPredicateComponents("test2.c = test3.c", TestSchema2.C.eq(TestSchema3.C));
+        testPredicateComponents("test4.d = 10", TestSchema4.D.eq(10));
+        testPredicateComponents("test4.e = true", TestSchema4.E.eq(true));
     }
 
     @Test
     public void testNE() {
         testPredicateComponents("test1.a != :a", A.ne("a"));
         testPredicateComponents("test2.c != test3.c", TestSchema2.C.ne(TestSchema3.C));
+        testPredicateComponents("test4.d != 10", TestSchema4.D.ne(10));
+        testPredicateComponents("test4.e != true", TestSchema4.E.ne(true));
     }
 
     @Test
@@ -120,11 +132,13 @@ public class SchemaElementTest {
     @Test
     public void testIn() {
         testPredicateComponents("test1.a in (:a, :b, :c)", A.in("a", "b", "c"));
+        testPredicateComponents("test4.d in (10, 11, 12)", TestSchema4.D.in(10, 11, 12));
     }
 
     @Test
     public void testNotIn() {
         testPredicateComponents("test1.a not in (:a, :b, :c)", A.notIn("a", "b", "c"));
+        testPredicateComponents("test4.d not in (10, 11, 12)", TestSchema4.D.notIn(10, 11, 12));
     }
 
     @Test

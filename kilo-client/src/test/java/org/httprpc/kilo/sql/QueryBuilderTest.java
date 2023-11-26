@@ -109,9 +109,9 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectDistinct() {
-        var queryBuilder = QueryBuilder.selectDistinct(A, B, C).from(ASchema.class);
+        var queryBuilder = QueryBuilder.selectDistinct(A, B, C).from(ASchema.class).where(E.eq(100));
 
-        assertEquals("select distinct A.a, A.b, A.c from A", queryBuilder.toString());
+        assertEquals("select distinct A.a, A.b, A.c from A where A.e = 100", queryBuilder.toString());
     }
 
     @Test

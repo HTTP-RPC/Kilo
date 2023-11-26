@@ -64,6 +64,16 @@ public interface SchemaElement {
     String LE = "<=";
 
     /**
+     * The "in" operator.
+     */
+    String IN = "in";
+
+    /**
+     * The "not in" operator.
+     */
+    String NOT_IN = "not in";
+
+    /**
      * The "plus" operator.
      */
     String PLUS = "+";
@@ -298,7 +308,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent eq(String key) {
-        return new PredicateComponent(this, EQ, key);
+        return PredicateComponent.variable(this, EQ, key);
     }
 
     /**
@@ -311,7 +321,33 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent eq(SchemaElement schemaElement) {
-        return new PredicateComponent(this, EQ, schemaElement);
+        return PredicateComponent.column(this, EQ, schemaElement);
+    }
+
+    /**
+     * Creates an "equal to" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent eq(Number value) {
+        return PredicateComponent.literal(this, EQ, value);
+    }
+
+    /**
+     * Creates an "equal to" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent eq(boolean value) {
+        return PredicateComponent.literal(this, EQ, value);
     }
 
     /**
@@ -324,7 +360,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent ne(String key) {
-        return new PredicateComponent(this, NE, key);
+        return PredicateComponent.variable(this, NE, key);
     }
 
     /**
@@ -337,7 +373,33 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent ne(SchemaElement schemaElement) {
-        return new PredicateComponent(this, NE, schemaElement);
+        return PredicateComponent.column(this, NE, schemaElement);
+    }
+
+    /**
+     * Creates a "not equal to" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ne(Number value) {
+        return PredicateComponent.literal(this, NE, value);
+    }
+
+    /**
+     * Creates a "not equal to" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ne(boolean value) {
+        return PredicateComponent.literal(this, NE, value);
     }
 
     /**
@@ -350,7 +412,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent gt(String key) {
-        return new PredicateComponent(this, GT, key);
+        return PredicateComponent.variable(this, GT, key);
     }
 
     /**
@@ -363,7 +425,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent gt(SchemaElement schemaElement) {
-        return new PredicateComponent(this, GT, schemaElement);
+        return PredicateComponent.column(this, GT, schemaElement);
     }
 
     /**
@@ -376,7 +438,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent ge(String key) {
-        return new PredicateComponent(this, GE, key);
+        return PredicateComponent.variable(this, GE, key);
     }
 
     /**
@@ -389,7 +451,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent ge(SchemaElement schemaElement) {
-        return new PredicateComponent(this, GE, schemaElement);
+        return PredicateComponent.column(this, GE, schemaElement);
     }
 
     /**
@@ -402,7 +464,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent lt(String key) {
-        return new PredicateComponent(this, LT, key);
+        return PredicateComponent.variable(this, LT, key);
     }
 
     /**
@@ -415,7 +477,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent lt(SchemaElement schemaElement) {
-        return new PredicateComponent(this, LT, schemaElement);
+        return PredicateComponent.column(this, LT, schemaElement);
     }
 
     /**
@@ -428,7 +490,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent le(String key) {
-        return new PredicateComponent(this, LE, key);
+        return PredicateComponent.variable(this, LE, key);
     }
 
     /**
@@ -441,7 +503,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent le(SchemaElement schemaElement) {
-        return new PredicateComponent(this, LE, schemaElement);
+        return PredicateComponent.column(this, LE, schemaElement);
     }
 
     /**
@@ -454,7 +516,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent like(String key) {
-        return new PredicateComponent(this, "like", key);
+        return PredicateComponent.variable(this, "like", key);
     }
 
     /**
@@ -467,7 +529,20 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent in(String... keys) {
-        return new PredicateComponent(this, "in", keys);
+        return PredicateComponent.variable(this, IN, keys);
+    }
+
+    /**
+     * Creates an "in" predicate component.
+     *
+     * @param values
+     * The values against which the expression will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent in(Number... values) {
+        return PredicateComponent.literal(this, IN, values);
     }
 
     /**
@@ -480,7 +555,20 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent notIn(String... keys) {
-        return new PredicateComponent(this, "not in", keys);
+        return PredicateComponent.variable(this, NOT_IN, keys);
+    }
+
+    /**
+     * Creates a "not in" predicate component.
+     *
+     * @param values
+     * The values against which the expression will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent notIn(Number... values) {
+        return PredicateComponent.literal(this, NOT_IN, values);
     }
 
     /**
@@ -490,7 +578,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent isNull() {
-        return new PredicateComponent(this, "is null");
+        return PredicateComponent.unary(this, "is null");
     }
 
     /**
@@ -500,7 +588,7 @@ public interface SchemaElement {
      * The predicate component.
      */
     default PredicateComponent isNotNull() {
-        return new PredicateComponent(this, "is not null");
+        return PredicateComponent.unary(this, "is not null");
     }
 
     /**

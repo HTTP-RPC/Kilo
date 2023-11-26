@@ -23,7 +23,11 @@ public class PredicateComponent {
     private static final String AND = "and";
     private static final String OR = "or";
 
-    PredicateComponent(SchemaElement schemaElement, String operator, String... keys) {
+    private PredicateComponent(String text) {
+        this.text = text;
+    }
+
+    static PredicateComponent variable(SchemaElement schemaElement, String operator, String... keys) {
         if (schemaElement == null || operator == null) {
             throw new IllegalArgumentException();
         }
@@ -54,26 +58,117 @@ public class PredicateComponent {
             }
         }
 
-        text = stringBuilder.toString();
+        return new PredicateComponent(stringBuilder.toString());
     }
 
-    PredicateComponent(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
+    static PredicateComponent column(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
         if (schemaElement1 == null || operator == null || schemaElement2 == null) {
             throw new IllegalArgumentException();
         }
 
-        var stringBuilder = new StringBuilder(32);
-
-        stringBuilder.append(schemaElement1.getQualifiedName());
-        stringBuilder.append(" ");
-        stringBuilder.append(operator);
-        stringBuilder.append(" ");
-        stringBuilder.append(schemaElement2.getQualifiedName());
-
-        text = stringBuilder.toString();
+        return new PredicateComponent(String.format("%s %s %s", schemaElement1.getQualifiedName(), operator, schemaElement2.getQualifiedName()));
     }
 
-    private PredicateComponent(String operator, PredicateComponent... predicateComponents) {
+    static PredicateComponent literal(SchemaElement schemaElement, String operator, Number... values) {
+        var stringBuilder = new StringBuilder(32);
+
+        stringBuilder.append(schemaElement.getQualifiedName());
+        stringBuilder.append(" ");
+        stringBuilder.append(operator);
+
+        if (values.length > 0) {
+            if (values.length == 1) {
+                stringBuilder.append(" ");
+                stringBuilder.append(values[0]);
+            } else {
+                stringBuilder.append(" (");
+
+                for (var i = 0; i < values.length; i++) {
+                    if (i > 0) {
+                        stringBuilder.append(", ");
+                    }
+
+                    stringBuilder.append(values[i]);
+                }
+
+                stringBuilder.append(")");
+            }
+        }
+
+        return new PredicateComponent(stringBuilder.toString());
+    }
+
+    static PredicateComponent literal(SchemaElement schemaElement, String operator, boolean value) {
+        if (schemaElement == null || operator == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new PredicateComponent(String.format("%s %s %b", schemaElement.getQualifiedName(), operator, value));
+    }
+
+    static PredicateComponent unary(SchemaElement schemaElement, String operator) {
+        if (schemaElement == null || operator == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new PredicateComponent(String.format("%s %s", schemaElement.getQualifiedName(), operator));
+    }
+
+    /**
+     * Creates an "and" predicate component.
+     *
+     * @param predicateComponent
+     * The predicate component representing the right-hand side of the
+     * operation.
+     *
+     * @return
+     * The predicate component.
+     */
+    public static PredicateComponent and(PredicateComponent predicateComponent) {
+        return group(AND, predicateComponent);
+    }
+
+    /**
+     * Creates an "or" predicate component.
+     *
+     * @param predicateComponent
+     * The predicate component representing the right-hand side of the
+     * operation.
+     *
+     * @return
+     * The predicate component.
+     */
+    public static PredicateComponent or(PredicateComponent predicateComponent) {
+        return group(OR, predicateComponent);
+    }
+
+    /**
+     * Creates an "and" group predicate component.
+     *
+     * @param predicateComponents
+     * The group's predicate components.
+     *
+     * @return
+     * The predicate component.
+     */
+    public static PredicateComponent allOf(PredicateComponent... predicateComponents) {
+        return group(AND, predicateComponents);
+    }
+
+    /**
+     * Creates an "or" group predicate component.
+     *
+     * @param predicateComponents
+     * The group's predicate components.
+     *
+     * @return
+     * The predicate component.
+     */
+    public static PredicateComponent anyOf(PredicateComponent... predicateComponents) {
+        return group(OR, predicateComponents);
+    }
+
+    private static PredicateComponent group(String operator, PredicateComponent... predicateComponents) {
         if (predicateComponents.length == 0) {
             throw new UnsupportedOperationException();
         }
@@ -100,61 +195,7 @@ public class PredicateComponent {
             stringBuilder.append(")");
         }
 
-        text = stringBuilder.toString();
-    }
-
-    /**
-     * Creates an "and" predicate component.
-     *
-     * @param predicateComponent
-     * The predicate component representing the right-hand side of the
-     * operation.
-     *
-     * @return
-     * The predicate component.
-     */
-    public static PredicateComponent and(PredicateComponent predicateComponent) {
-        return new PredicateComponent(AND, predicateComponent);
-    }
-
-    /**
-     * Creates an "or" predicate component.
-     *
-     * @param predicateComponent
-     * The predicate component representing the right-hand side of the
-     * operation.
-     *
-     * @return
-     * The predicate component.
-     */
-    public static PredicateComponent or(PredicateComponent predicateComponent) {
-        return new PredicateComponent(OR, predicateComponent);
-    }
-
-    /**
-     * Creates an "and" group predicate component.
-     *
-     * @param predicateComponents
-     * The group's predicate components.
-     *
-     * @return
-     * The predicate component.
-     */
-    public static PredicateComponent allOf(PredicateComponent... predicateComponents) {
-        return new PredicateComponent(AND, predicateComponents);
-    }
-
-    /**
-     * Creates an "or" group predicate component.
-     *
-     * @param predicateComponents
-     * The group's predicate components.
-     *
-     * @return
-     * The predicate component.
-     */
-    public static PredicateComponent anyOf(PredicateComponent... predicateComponents) {
-        return new PredicateComponent(OR, predicateComponents);
+        return new PredicateComponent(stringBuilder.toString());
     }
 
     /**
