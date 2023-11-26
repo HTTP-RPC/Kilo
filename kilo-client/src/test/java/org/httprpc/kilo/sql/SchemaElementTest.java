@@ -23,30 +23,29 @@ import static org.httprpc.kilo.sql.PredicateComponent.allOf;
 import static org.httprpc.kilo.sql.PredicateComponent.and;
 import static org.httprpc.kilo.sql.PredicateComponent.anyOf;
 import static org.httprpc.kilo.sql.PredicateComponent.or;
-import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.A;
-import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.B;
-import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema1.C;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema3.B;
+import static org.httprpc.kilo.sql.SchemaElementTest.TestSchema3.C;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SchemaElementTest {
     @Table("test1")
     public enum TestSchema1 implements SchemaElement {
         @Column("a")
-        A,
-        @Column("b")
-        B,
-        @Column("c")
-        C
+        A
     }
 
     @Table("test2")
     public enum TestSchema2 implements SchemaElement {
-        @Column("c")
-        C
+        @Column("a")
+        A
     }
 
     @Table("test3")
     public enum TestSchema3 implements SchemaElement {
+        @Column("a")
+        A,
+        @Column("b")
+        B,
         @Column("c")
         C
     }
@@ -61,140 +60,140 @@ public class SchemaElementTest {
 
     @Test
     public void testCount() {
-        testSchemaElementColumnName("count(test1.a)", A.count());
+        testSchemaElementColumnName("count(test3.a)", TestSchema3.A.count());
     }
 
     @Test
     public void testAvg() {
-        testSchemaElementColumnName("avg(test1.a)", A.avg());
+        testSchemaElementColumnName("avg(test3.a)", TestSchema3.A.avg());
     }
 
     @Test
     public void testSum() {
-        testSchemaElementColumnName("sum(test1.a)", A.sum());
+        testSchemaElementColumnName("sum(test3.a)", TestSchema3.A.sum());
     }
 
     @Test
     public void testMin() {
-        testSchemaElementColumnName("min(test1.a)", A.min());
+        testSchemaElementColumnName("min(test3.a)", TestSchema3.A.min());
     }
 
     @Test
     public void testMax() {
-        testSchemaElementColumnName("max(test1.a)", A.max());
+        testSchemaElementColumnName("max(test3.a)", TestSchema3.A.max());
     }
 
     @Test
     public void testEQ() {
-        testPredicateComponents("test1.a = :a", A.eq("a"));
-        testPredicateComponents("test2.c = test3.c", TestSchema2.C.eq(TestSchema3.C));
+        testPredicateComponents("test1.a = test2.a", TestSchema1.A.eq(TestSchema2.A));
+        testPredicateComponents("test3.a = :a", TestSchema3.A.eq("a"));
         testPredicateComponents("test4.d = 10", TestSchema4.D.eq(10));
         testPredicateComponents("test4.e = true", TestSchema4.E.eq(true));
     }
 
     @Test
     public void testNE() {
-        testPredicateComponents("test1.a != :a", A.ne("a"));
-        testPredicateComponents("test2.c != test3.c", TestSchema2.C.ne(TestSchema3.C));
+        testPredicateComponents("test1.a != test2.a", TestSchema1.A.ne(TestSchema2.A));
+        testPredicateComponents("test3.a != :a", TestSchema3.A.ne("a"));
         testPredicateComponents("test4.d != 10", TestSchema4.D.ne(10));
         testPredicateComponents("test4.e != true", TestSchema4.E.ne(true));
     }
 
     @Test
     public void testGT() {
-        testPredicateComponents("test1.a > :a", A.gt("a"));
-        testPredicateComponents("test2.c > test3.c", TestSchema2.C.gt(TestSchema3.C));
+        testPredicateComponents("test1.a > test2.a", TestSchema1.A.gt(TestSchema2.A));
+        testPredicateComponents("test3.a > :a", TestSchema3.A.gt("a"));
     }
 
     @Test
     public void testGE() {
-        testPredicateComponents("test1.a >= :a", A.ge("a"));
-        testPredicateComponents("test2.c >= test3.c", TestSchema2.C.ge(TestSchema3.C));
+        testPredicateComponents("test1.a >= test2.a", TestSchema1.A.ge(TestSchema2.A));
+        testPredicateComponents("test3.a >= :a", TestSchema3.A.ge("a"));
     }
 
     @Test
     public void testLT() {
-        testPredicateComponents("test1.a < :a", A.lt("a"));
-        testPredicateComponents("test2.c < test3.c", TestSchema2.C.lt(TestSchema3.C));
+        testPredicateComponents("test1.a < test2.a", TestSchema1.A.lt(TestSchema2.A));
+        testPredicateComponents("test3.a < :a", TestSchema3.A.lt("a"));
     }
 
     @Test
     public void testLE() {
-        testPredicateComponents("test1.a <= :a", A.le("a"));
-        testPredicateComponents("test2.c <= test3.c", TestSchema2.C.le(TestSchema3.C));
+        testPredicateComponents("test1.a <= test2.a", TestSchema1.A.le(TestSchema2.A));
+        testPredicateComponents("test3.a <= :a", TestSchema3.A.le("a"));
     }
 
     @Test
     public void testLike() {
-        testPredicateComponents("test1.a like :a", A.like("a"));
+        testPredicateComponents("test3.a like :a", TestSchema3.A.like("a"));
     }
 
     @Test
     public void testIn() {
-        testPredicateComponents("test1.a in (:a, :b, :c)", A.in("a", "b", "c"));
+        testPredicateComponents("test3.a in (:a, :b, :c)", TestSchema3.A.in("a", "b", "c"));
         testPredicateComponents("test4.d in (10, 11, 12)", TestSchema4.D.in(10, 11, 12));
     }
 
     @Test
     public void testNotIn() {
-        testPredicateComponents("test1.a not in (:a, :b, :c)", A.notIn("a", "b", "c"));
+        testPredicateComponents("test3.a not in (:a, :b, :c)", TestSchema3.A.notIn("a", "b", "c"));
         testPredicateComponents("test4.d not in (10, 11, 12)", TestSchema4.D.notIn(10, 11, 12));
     }
 
     @Test
     public void testIsNull() {
-        testPredicateComponents("test1.a is null", A.isNull());
+        testPredicateComponents("test3.a is null", TestSchema3.A.isNull());
     }
 
     @Test
     public void testIsNotNull() {
-        testPredicateComponents("test1.a is not null", A.isNotNull());
+        testPredicateComponents("test3.a is not null", TestSchema3.A.isNotNull());
     }
 
     @Test
     public void testPlus() {
-        testSchemaElementColumnName("(test1.a + test1.b)", A.plus(B));
+        testSchemaElementColumnName("(test3.a + test3.b)", TestSchema3.A.plus(B));
     }
 
     @Test
     public void testMinus() {
-        testSchemaElementColumnName("(test1.a - test1.b)", A.minus(B));
+        testSchemaElementColumnName("(test3.a - test3.b)", TestSchema3.A.minus(B));
     }
 
     @Test
     public void testMultipliedBy() {
-        testSchemaElementColumnName("(test1.a * (test1.b + test1.c))", A.multipliedBy(B.plus(C)));
+        testSchemaElementColumnName("(test3.a * (test3.b + test3.c))", TestSchema3.A.multipliedBy(B.plus(C)));
     }
 
     @Test
     public void testDividedBy() {
-        testSchemaElementColumnName("(test1.a / (test1.b - test1.c))", A.dividedBy(B.minus(C)));
+        testSchemaElementColumnName("(test3.a / (test3.b - test3.c))", TestSchema3.A.dividedBy(B.minus(C)));
     }
 
     @Test
     public void testAnd() {
-        testPredicateComponents("test1.a = :a and test1.b = :b", A.eq("a"), and(B.eq("b")));
+        testPredicateComponents("test3.a = :a and test3.b = :b", TestSchema3.A.eq("a"), and(B.eq("b")));
     }
 
     @Test
     public void testOr() {
-        testPredicateComponents("test1.a = :a or test1.b = :b", A.eq("a"), or(B.eq("b")));
+        testPredicateComponents("test3.a = :a or test3.b = :b", TestSchema3.A.eq("a"), or(B.eq("b")));
     }
 
     @Test
     public void testAllOf() {
-        testPredicateComponents("(test1.a = :a and test1.b = :b)", allOf(A.eq("a"), B.eq("b")));
+        testPredicateComponents("(test3.a = :a and test3.b = :b)", allOf(TestSchema3.A.eq("a"), B.eq("b")));
     }
 
     @Test
     public void testAnyOf() {
-        testPredicateComponents("(test1.a = :a or test1.b = :b)", anyOf(A.eq("a"), B.eq("b")));
+        testPredicateComponents("(test3.a = :a or test3.b = :b)", anyOf(TestSchema3.A.eq("a"), B.eq("b")));
     }
 
     @Test
     public void testAlias() {
-        testSchemaElementColumnName("count(test1.a)", A.count().as("x"));
-        testPredicateComponents("test1.a = :a", A.as("x").eq("a"));
+        testSchemaElementColumnName("count(test3.a)", TestSchema3.A.count().as("x"));
+        testPredicateComponents("test3.a = :a", TestSchema3.A.as("x").eq("a"));
     }
 
     private static void testSchemaElementColumnName(String expected, SchemaElement schemaElement) {

@@ -301,19 +301,6 @@ public interface SchemaElement {
     /**
      * Creates an "equal to" predicate component.
      *
-     * @param key
-     * The key of the value representing the right-hand side of the comparison.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent eq(String key) {
-        return PredicateComponent.variable(this, EQ, key);
-    }
-
-    /**
-     * Creates an "equal to" predicate component.
-     *
      * @param schemaElement
      * The schema element representing the right-hand side of the comparison.
      *
@@ -322,6 +309,19 @@ public interface SchemaElement {
      */
     default PredicateComponent eq(SchemaElement schemaElement) {
         return PredicateComponent.column(this, EQ, schemaElement);
+    }
+
+    /**
+     * Creates an "equal to" predicate component.
+     *
+     * @param key
+     * The key of the value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent eq(String key) {
+        return PredicateComponent.variable(this, EQ, key);
     }
 
     /**
@@ -353,19 +353,6 @@ public interface SchemaElement {
     /**
      * Creates a "not equal to" predicate component.
      *
-     * @param key
-     * The key of the value representing the right-hand side of the comparison.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent ne(String key) {
-        return PredicateComponent.variable(this, NE, key);
-    }
-
-    /**
-     * Creates a "not equal to" predicate component.
-     *
      * @param schemaElement
      * The schema element representing the right-hand side of the comparison.
      *
@@ -374,6 +361,19 @@ public interface SchemaElement {
      */
     default PredicateComponent ne(SchemaElement schemaElement) {
         return PredicateComponent.column(this, NE, schemaElement);
+    }
+
+    /**
+     * Creates a "not equal to" predicate component.
+     *
+     * @param key
+     * The key of the value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ne(String key) {
+        return PredicateComponent.variable(this, NE, key);
     }
 
     /**
@@ -405,19 +405,6 @@ public interface SchemaElement {
     /**
      * Creates a "greater than" predicate component.
      *
-     * @param key
-     * The key of the value representing the right-hand side of the comparison.
-     *
-     * @return
-     * The predicate component.
-     */
-    default PredicateComponent gt(String key) {
-        return PredicateComponent.variable(this, GT, key);
-    }
-
-    /**
-     * Creates a "greater than" predicate component.
-     *
      * @param schemaElement
      * The schema element representing the right-hand side of the comparison.
      *
@@ -429,7 +416,7 @@ public interface SchemaElement {
     }
 
     /**
-     * Creates a "greater than or equal to" predicate component.
+     * Creates a "greater than" predicate component.
      *
      * @param key
      * The key of the value representing the right-hand side of the comparison.
@@ -437,8 +424,8 @@ public interface SchemaElement {
      * @return
      * The predicate component.
      */
-    default PredicateComponent ge(String key) {
-        return PredicateComponent.variable(this, GE, key);
+    default PredicateComponent gt(String key) {
+        return PredicateComponent.variable(this, GT, key);
     }
 
     /**
@@ -455,7 +442,7 @@ public interface SchemaElement {
     }
 
     /**
-     * Creates a "less than" predicate component.
+     * Creates a "greater than or equal to" predicate component.
      *
      * @param key
      * The key of the value representing the right-hand side of the comparison.
@@ -463,8 +450,8 @@ public interface SchemaElement {
      * @return
      * The predicate component.
      */
-    default PredicateComponent lt(String key) {
-        return PredicateComponent.variable(this, LT, key);
+    default PredicateComponent ge(String key) {
+        return PredicateComponent.variable(this, GE, key);
     }
 
     /**
@@ -481,7 +468,7 @@ public interface SchemaElement {
     }
 
     /**
-     * Creates a "less than or equal to" predicate component.
+     * Creates a "less than" predicate component.
      *
      * @param key
      * The key of the value representing the right-hand side of the comparison.
@@ -489,8 +476,8 @@ public interface SchemaElement {
      * @return
      * The predicate component.
      */
-    default PredicateComponent le(String key) {
-        return PredicateComponent.variable(this, LE, key);
+    default PredicateComponent lt(String key) {
+        return PredicateComponent.variable(this, LT, key);
     }
 
     /**
@@ -504,6 +491,19 @@ public interface SchemaElement {
      */
     default PredicateComponent le(SchemaElement schemaElement) {
         return PredicateComponent.column(this, LE, schemaElement);
+    }
+
+    /**
+     * Creates a "less than or equal to" predicate component.
+     *
+     * @param key
+     * The key of the value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent le(String key) {
+        return PredicateComponent.variable(this, LE, key);
     }
 
     /**

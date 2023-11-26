@@ -27,6 +27,14 @@ public class PredicateComponent {
         this.text = text;
     }
 
+    static PredicateComponent column(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
+        if (schemaElement1 == null || operator == null || schemaElement2 == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new PredicateComponent(String.format("%s %s %s", schemaElement1.getQualifiedName(), operator, schemaElement2.getQualifiedName()));
+    }
+
     static PredicateComponent variable(SchemaElement schemaElement, String operator, String... keys) {
         if (schemaElement == null || operator == null) {
             throw new IllegalArgumentException();
@@ -59,14 +67,6 @@ public class PredicateComponent {
         }
 
         return new PredicateComponent(stringBuilder.toString());
-    }
-
-    static PredicateComponent column(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
-        if (schemaElement1 == null || operator == null || schemaElement2 == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new PredicateComponent(String.format("%s %s %s", schemaElement1.getQualifiedName(), operator, schemaElement2.getQualifiedName()));
     }
 
     static PredicateComponent literal(SchemaElement schemaElement, String operator, Number... values) {
