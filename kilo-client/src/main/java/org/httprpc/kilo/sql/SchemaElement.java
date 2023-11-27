@@ -429,6 +429,19 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates a "greater than" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent gt(Number value) {
+        return PredicateComponent.literal(this, GT, value);
+    }
+
+    /**
      * Creates a "greater than or equal to" predicate component.
      *
      * @param schemaElement
@@ -452,6 +465,19 @@ public interface SchemaElement {
      */
     default PredicateComponent ge(String key) {
         return PredicateComponent.variable(this, GE, key);
+    }
+
+    /**
+     * Creates a "greater than or equal to" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent ge(Number value) {
+        return PredicateComponent.literal(this, GE, value);
     }
 
     /**
@@ -481,6 +507,19 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates a "less than" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent lt(Number value) {
+        return PredicateComponent.literal(this, LT, value);
+    }
+
+    /**
      * Creates a "less than or equal to" predicate component.
      *
      * @param schemaElement
@@ -504,6 +543,19 @@ public interface SchemaElement {
      */
     default PredicateComponent le(String key) {
         return PredicateComponent.variable(this, LE, key);
+    }
+
+    /**
+     * Creates a "less than or equal to" predicate component.
+     *
+     * @param value
+     * The value representing the right-hand side of the comparison.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent le(Number value) {
+        return PredicateComponent.literal(this, LE, value);
     }
 
     /**

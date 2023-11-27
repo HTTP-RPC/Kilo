@@ -103,24 +103,28 @@ public class SchemaElementTest {
     public void testGT() {
         testPredicateComponents("test1.a > test2.a", TestSchema1.A.gt(TestSchema2.A));
         testPredicateComponents("test3.a > :a", TestSchema3.A.gt("a"));
+        testPredicateComponents("test4.d > 10", TestSchema4.D.gt(10));
     }
 
     @Test
     public void testGE() {
         testPredicateComponents("test1.a >= test2.a", TestSchema1.A.ge(TestSchema2.A));
         testPredicateComponents("test3.a >= :a", TestSchema3.A.ge("a"));
+        testPredicateComponents("test4.d >= 10", TestSchema4.D.ge(10));
     }
 
     @Test
     public void testLT() {
         testPredicateComponents("test1.a < test2.a", TestSchema1.A.lt(TestSchema2.A));
         testPredicateComponents("test3.a < :a", TestSchema3.A.lt("a"));
+        testPredicateComponents("test4.d < 10", TestSchema4.D.lt(10));
     }
 
     @Test
     public void testLE() {
         testPredicateComponents("test1.a <= test2.a", TestSchema1.A.le(TestSchema2.A));
         testPredicateComponents("test3.a <= :a", TestSchema3.A.le("a"));
+        testPredicateComponents("test4.d <= 10", TestSchema4.D.le(10));
     }
 
     @Test
