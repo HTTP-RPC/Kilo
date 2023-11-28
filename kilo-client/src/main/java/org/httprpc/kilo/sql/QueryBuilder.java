@@ -294,21 +294,21 @@ public class QueryBuilder {
             throw new UnsupportedOperationException();
         }
 
-        var filterBuilder = new StringBuilder(64);
-
-        filterBuilder.append(" ");
-        filterBuilder.append(clause);
-        filterBuilder.append(" ");
+        sqlBuilder.append(" ");
+        sqlBuilder.append(clause);
+        sqlBuilder.append(" ");
 
         for (var i = 0; i < predicateComponents.length; i++) {
             if (i > 0) {
-                filterBuilder.append(" ");
+                sqlBuilder.append(" ");
             }
 
-            filterBuilder.append(predicateComponents[i].toString());
-        }
+            var predicateComponent = predicateComponents[i];
 
-        append(filterBuilder.toString());
+            sqlBuilder.append(predicateComponent.toString());
+
+            parameters.addAll(predicateComponent.getParameters());
+        }
 
         return this;
     }
@@ -400,8 +400,9 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" union ");
+        sqlBuilder.append(queryBuilder);
 
-        append(queryBuilder);
+        parameters.addAll(queryBuilder.parameters);
 
         return this;
     }
@@ -627,17 +628,11 @@ public class QueryBuilder {
         }
     }
 
-    private void append(QueryBuilder queryBuilder) {
-        sqlBuilder.append(queryBuilder);
-
-        parameters.addAll(queryBuilder.parameters);
-    }
-
     /**
-     * Returns the parameters parsed by the query builder.
+     * Returns the query builder's parameters.
      *
      * @return
-     * The parameters parsed by the query builder.
+     * The query builder's parameters.
      */
     public List<String> getParameters() {
         return Collections.unmodifiableList(parameters);

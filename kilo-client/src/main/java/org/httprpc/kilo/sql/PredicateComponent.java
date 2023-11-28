@@ -14,17 +14,26 @@
 
 package org.httprpc.kilo.sql;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.httprpc.kilo.util.Collections.immutableListOf;
+
 /**
  * Represents a predicate component.
  */
 public class PredicateComponent {
     private String text;
+    private List<String> parameters;
 
     private static final String AND = "and";
     private static final String OR = "or";
 
-    private PredicateComponent(String text) {
+    private PredicateComponent(String text, List<String> parameters) {
         this.text = text;
+        this.parameters = parameters;
     }
 
     static PredicateComponent column(SchemaElement schemaElement1, String operator, SchemaElement schemaElement2) {
@@ -32,10 +41,18 @@ public class PredicateComponent {
             throw new IllegalArgumentException();
         }
 
-        return new PredicateComponent(String.format("%s %s %s", schemaElement1.getQualifiedName(), operator, schemaElement2.getQualifiedName()));
+        var stringBuilder = new StringBuilder(32);
+
+        stringBuilder.append(schemaElement1.getQualifiedName());
+        stringBuilder.append(" ");
+        stringBuilder.append(operator);
+        stringBuilder.append(" ");
+        stringBuilder.append(schemaElement2.getQualifiedName());
+
+        return new PredicateComponent(stringBuilder.toString(), immutableListOf());
     }
 
-    static PredicateComponent variable(SchemaElement schemaElement, String operator, String... keys) {
+    static PredicateComponent variable(SchemaElement schemaElement, String operator, String... parameters) {
         if (schemaElement == null || operator == null) {
             throw new IllegalArgumentException();
         }
@@ -46,30 +63,32 @@ public class PredicateComponent {
         stringBuilder.append(" ");
         stringBuilder.append(operator);
 
-        if (keys.length > 0) {
-            if (keys.length == 1) {
-                stringBuilder.append(" :");
-                stringBuilder.append(keys[0]);
+        if (parameters.length > 0) {
+            if (parameters.length == 1) {
+                stringBuilder.append(" ?");
             } else {
                 stringBuilder.append(" (");
 
-                for (var i = 0; i < keys.length; i++) {
+                for (var i = 0; i < parameters.length; i++) {
                     if (i > 0) {
                         stringBuilder.append(", ");
                     }
 
-                    stringBuilder.append(":");
-                    stringBuilder.append(keys[i]);
+                    stringBuilder.append("?");
                 }
 
                 stringBuilder.append(")");
             }
         }
 
-        return new PredicateComponent(stringBuilder.toString());
+        return new PredicateComponent(stringBuilder.toString(), Arrays.asList(parameters));
     }
 
     static PredicateComponent literal(SchemaElement schemaElement, String operator, Number... values) {
+        if (schemaElement == null || operator == null) {
+            throw new IllegalArgumentException();
+        }
+
         var stringBuilder = new StringBuilder(32);
 
         stringBuilder.append(schemaElement.getQualifiedName());
@@ -95,7 +114,7 @@ public class PredicateComponent {
             }
         }
 
-        return new PredicateComponent(stringBuilder.toString());
+        return new PredicateComponent(stringBuilder.toString(), immutableListOf());
     }
 
     static PredicateComponent literal(SchemaElement schemaElement, String operator, boolean value) {
@@ -103,7 +122,15 @@ public class PredicateComponent {
             throw new IllegalArgumentException();
         }
 
-        return new PredicateComponent(String.format("%s %s %b", schemaElement.getQualifiedName(), operator, value));
+        var stringBuilder = new StringBuilder(32);
+
+        stringBuilder.append(schemaElement.getQualifiedName());
+        stringBuilder.append(" ");
+        stringBuilder.append(operator);
+        stringBuilder.append(" ");
+        stringBuilder.append(value);
+
+        return new PredicateComponent(stringBuilder.toString(), immutableListOf());
     }
 
     static PredicateComponent unary(SchemaElement schemaElement, String operator) {
@@ -111,7 +138,13 @@ public class PredicateComponent {
             throw new IllegalArgumentException();
         }
 
-        return new PredicateComponent(String.format("%s %s", schemaElement.getQualifiedName(), operator));
+        var stringBuilder = new StringBuilder(32);
+
+        stringBuilder.append(schemaElement.getQualifiedName());
+        stringBuilder.append(" ");
+        stringBuilder.append(operator);
+
+        return new PredicateComponent(stringBuilder.toString(), immutableListOf());
     }
 
     /**
@@ -175,10 +208,17 @@ public class PredicateComponent {
 
         var stringBuilder = new StringBuilder(128);
 
+        var parameters = new LinkedList<String>();
+
         if (predicateComponents.length == 1) {
             stringBuilder.append(operator);
             stringBuilder.append(" ");
-            stringBuilder.append(predicateComponents[0]);
+
+            var predicateComponent = predicateComponents[0];
+
+            stringBuilder.append(predicateComponent.text);
+
+            parameters.addAll(predicateComponent.parameters);
         } else {
             stringBuilder.append("(");
 
@@ -189,13 +229,70 @@ public class PredicateComponent {
                     stringBuilder.append(" ");
                 }
 
-                stringBuilder.append(predicateComponents[i]);
+                var predicateComponent = predicateComponents[i];
+
+                stringBuilder.append(predicateComponent.text);
+
+                parameters.addAll(predicateComponent.parameters);
             }
 
             stringBuilder.append(")");
         }
 
-        return new PredicateComponent(stringBuilder.toString());
+        return new PredicateComponent(stringBuilder.toString(), parameters);
+    }
+
+    /**
+     * Creates an "exists" predicate component.
+     *
+     * @param queryBuilder
+     * The "select" query.
+     *
+     * @return
+     * The predicate component.
+     */
+    public static PredicateComponent exists(QueryBuilder queryBuilder) {
+        return new PredicateComponent(String.format("exists (%s)", queryBuilder), queryBuilder.getParameters());
+    }
+
+    /**
+     * Creates a "not exists" predicate component.
+     *
+     * @param queryBuilder
+     * The "select" query.
+     *
+     * @return
+     * The predicate component.
+     */
+    public static PredicateComponent notExists(QueryBuilder queryBuilder) {
+        return new PredicateComponent(String.format("not exists (%s)", queryBuilder), queryBuilder.getParameters());
+    }
+
+    /**
+     * Adapts a predicate component for use as a schema element.
+     *
+     * @param alias
+     * The schema element's alias.
+     *
+     * @return
+     * A schema element with the provided alias.
+     */
+    public SchemaElement as(String alias) {
+        if (alias == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, text, alias);
+    }
+
+    /**
+     * Returns the predicate component's parameters.
+     *
+     * @return
+     * The predicate component's parameters.
+     */
+    public List<String> getParameters() {
+        return Collections.unmodifiableList(parameters);
     }
 
     /**

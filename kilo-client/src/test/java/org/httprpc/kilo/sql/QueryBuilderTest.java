@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import static org.httprpc.kilo.sql.PredicateComponent.allOf;
 import static org.httprpc.kilo.sql.PredicateComponent.and;
 import static org.httprpc.kilo.sql.PredicateComponent.anyOf;
+import static org.httprpc.kilo.sql.PredicateComponent.exists;
+import static org.httprpc.kilo.sql.PredicateComponent.notExists;
 import static org.httprpc.kilo.sql.PredicateComponent.or;
 import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.A;
 import static org.httprpc.kilo.sql.QueryBuilderTest.ASchema.B;
@@ -82,7 +84,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelect() {
-        var queryBuilder = QueryBuilder.select(A.as("x"), B, C, D)
+        var queryBuilder = QueryBuilder.select(A.as("x"), B.isNull().as("b"), C, D)
             .from(ASchema.class)
             .join(BSchema.class).on(ASchema.ID.eq(BSchema.ID), and(ASchema.A.eq("a")))
             .leftJoin(CSchema.class).on(BSchema.ID.eq(CSchema.ID), and(BSchema.B.eq("b")))
@@ -95,7 +97,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("a", "b", "c", "m", "n", "y", "z"), queryBuilder.getParameters());
 
-        assertEquals("select A.a as x, A.b, A.c, A.d "
+        assertEquals("select A.a as x, A.b is null as b, A.c, A.d "
             + "from A "
             + "join B on A.id = B.id and A.a = ? "
             + "left join C on B.id = C.id and B.b = ? "
@@ -172,6 +174,38 @@ public class QueryBuilderTest {
         assertEquals("select * "
             + "from A "
             + "where (A.a = ? and A.b != ? and A.c < ?) and (A.d > ? or A.e not in (?, ?))", queryBuilder.toString());
+    }
+
+    @Test
+    public void testExists() {
+        var queryBuilder = QueryBuilder.select(exists(QueryBuilder.selectAll().from(ASchema.class)).as("x"));
+
+        assertEquals("select exists (select * from A) as x", queryBuilder.toString());
+    }
+
+    @Test
+    public void testExistsFilter() {
+        var queryBuilder = QueryBuilder.selectAll().from(ASchema.class).where(exists(
+            QueryBuilder.selectAll().from(BSchema.class).where(ASchema.ID.eq(BSchema.ID))
+        ));
+
+        assertEquals("select * from A where exists (select * from B where A.id = B.id)", queryBuilder.toString());
+    }
+
+    @Test
+    public void testNotExists() {
+        var queryBuilder = QueryBuilder.select(notExists(QueryBuilder.selectAll().from(ASchema.class)).as("x"));
+
+        assertEquals("select not exists (select * from A) as x", queryBuilder.toString());
+    }
+
+    @Test
+    public void testNotExistsFilter() {
+        var queryBuilder = QueryBuilder.selectAll().from(ASchema.class).where(notExists(
+            QueryBuilder.selectAll().from(BSchema.class).where(ASchema.ID.eq(BSchema.ID))
+        ));
+
+        assertEquals("select * from A where not exists (select * from B where A.id = B.id)", queryBuilder.toString());
     }
 
     @Test
