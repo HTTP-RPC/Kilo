@@ -1,5 +1,6 @@
 .gradle
 .idea/workspace.xml
+.idea/dataSources
 .idea/sonarlint
 **/build
 **/out
