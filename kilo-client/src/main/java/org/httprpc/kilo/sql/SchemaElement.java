@@ -598,6 +598,19 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates an "in" predicate component.
+     *
+     * @param queryBuilder
+     * A "select" query against which the expression will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent in(QueryBuilder queryBuilder) {
+        return PredicateComponent.subquery(this, IN, queryBuilder);
+    }
+
+    /**
      * Creates a "not in" predicate component.
      *
      * @param keys
@@ -621,6 +634,19 @@ public interface SchemaElement {
      */
     default PredicateComponent notIn(Number... values) {
         return PredicateComponent.literal(this, NOT_IN, values);
+    }
+
+    /**
+     * Creates a "not in" predicate component.
+     *
+     * @param queryBuilder
+     * A "select" query against which the expression will be evaluated.
+     *
+     * @return
+     * The predicate component.
+     */
+    default PredicateComponent notIn(QueryBuilder queryBuilder) {
+        return PredicateComponent.subquery(this, NOT_IN, queryBuilder);
     }
 
     /**

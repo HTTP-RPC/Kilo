@@ -209,6 +209,32 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testInSubquery() {
+        var queryBuilder = QueryBuilder.selectAll()
+            .from(ASchema.class)
+            .where(ASchema.ID.in(QueryBuilder.select(BSchema.ID)
+                .from(BSchema.class)
+                .where(BSchema.B.gt("b"))));
+
+        assertEquals(listOf("b"), queryBuilder.getParameters());
+
+        assertEquals("select * from A where A.id in (select B.id from B where B.b > ?)", queryBuilder.toString());
+    }
+
+    @Test
+    public void testNotInSubquery() {
+        var queryBuilder = QueryBuilder.selectAll()
+            .from(ASchema.class)
+            .where(ASchema.ID.notIn(QueryBuilder.select(BSchema.ID)
+                .from(BSchema.class)
+                .where(BSchema.B.gt("b"))));
+
+        assertEquals(listOf("b"), queryBuilder.getParameters());
+
+        assertEquals("select * from A where A.id not in (select B.id from B where B.b > ?)", queryBuilder.toString());
+    }
+
+    @Test
     public void testAppend() {
         var queryBuilder = new QueryBuilder();
 

@@ -147,6 +147,23 @@ public class PredicateComponent {
         return new PredicateComponent(stringBuilder.toString(), immutableListOf());
     }
 
+    static PredicateComponent subquery(SchemaElement schemaElement, String operator, QueryBuilder queryBuilder) {
+        if (schemaElement == null || operator == null || queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var stringBuilder = new StringBuilder(128);
+
+        stringBuilder.append(schemaElement.getQualifiedName());
+        stringBuilder.append(" ");
+        stringBuilder.append(operator);
+        stringBuilder.append(" (");
+        stringBuilder.append(queryBuilder);
+        stringBuilder.append(")");
+
+        return new PredicateComponent(stringBuilder.toString(), queryBuilder.getParameters());
+    }
+
     /**
      * Creates an "and" predicate component.
      *
@@ -252,6 +269,10 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent exists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new PredicateComponent(String.format("exists (%s)", queryBuilder), queryBuilder.getParameters());
     }
 
@@ -265,6 +286,10 @@ public class PredicateComponent {
      * The predicate component.
      */
     public static PredicateComponent notExists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
         return new PredicateComponent(String.format("not exists (%s)", queryBuilder), queryBuilder.getParameters());
     }
 

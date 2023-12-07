@@ -137,12 +137,14 @@ public class SchemaElementTest {
     public void testIn() {
         testPredicateComponent("test3.a in (?, ?, ?)", TestSchema3.A.in("a", "b", "c"), "a", "b", "c");
         testPredicateComponent("test4.d in (10, 11, 12)", TestSchema4.D.in(10, 11, 12));
+        testPredicateComponent("test4.d in (select test1.a from test1)", TestSchema4.D.in(QueryBuilder.select(TestSchema1.A).from(TestSchema1.class)));
     }
 
     @Test
     public void testNotIn() {
         testPredicateComponent("test3.a not in (?, ?, ?)", TestSchema3.A.notIn("a", "b", "c"), "a", "b", "c");
         testPredicateComponent("test4.d not in (10, 11, 12)", TestSchema4.D.notIn(10, 11, 12));
+        testPredicateComponent("test4.d not in (select test1.a from test1)", TestSchema4.D.notIn(QueryBuilder.select(TestSchema1.A).from(TestSchema1.class)));
     }
 
     @Test
