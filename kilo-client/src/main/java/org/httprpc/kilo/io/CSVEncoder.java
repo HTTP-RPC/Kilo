@@ -141,7 +141,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         writer.write("\r\n");
 
-        for (Map<String, ?> map : values) {
+        for (var map : values) {
             i = 0;
 
             for (var key : keys) {

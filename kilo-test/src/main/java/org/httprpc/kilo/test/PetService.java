@@ -118,7 +118,7 @@ public class PetService extends AbstractDatabaseService {
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
         var queryBuilder = QueryBuilder.select(BIRTH)
-            .from(Pet.Schema.class);;
+            .from(Pet.Schema.class);
 
         double averageAge;
         try (var statement = queryBuilder.prepare(getConnection());

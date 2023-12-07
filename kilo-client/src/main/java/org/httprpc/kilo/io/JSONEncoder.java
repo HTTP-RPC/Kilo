@@ -104,7 +104,7 @@ public class JSONEncoder extends Encoder<Object> {
 
             var i = 0;
 
-            for (Object element : iterable) {
+            for (var element : iterable) {
                 if (i > 0) {
                     writer.write(",");
                 }
@@ -136,7 +136,7 @@ public class JSONEncoder extends Encoder<Object> {
 
             var i = 0;
 
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
+            for (var entry : map.entrySet()) {
                 var key = entry.getKey();
 
                 if (key == null) {

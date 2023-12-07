@@ -40,10 +40,10 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BeanAdapterTest {
     public static class ReadOnly {
@@ -241,7 +241,7 @@ public class BeanAdapterTest {
 
         assertNull(BeanAdapter.coerceList(null, Object.class));
 
-        assertTrue(BeanAdapter.coerce(listOf(), List.class) instanceof List);
+        assertInstanceOf(List.class, BeanAdapter.coerce(listOf(), List.class));
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, List.class));
     }
 
@@ -269,7 +269,7 @@ public class BeanAdapterTest {
 
         assertNull(BeanAdapter.coerceMap(null, Object.class));
 
-        assertTrue(BeanAdapter.coerce(mapOf(), Map.class) instanceof Map);
+        assertInstanceOf(Map.class, BeanAdapter.coerce(mapOf(), Map.class));
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Map.class));
     }
 
@@ -355,7 +355,7 @@ public class BeanAdapterTest {
 
         testInterface.setNestedBean(nestedBean);
 
-        assertTrue(map.get("nestedBean") instanceof Map);
+        assertInstanceOf(Map.class, map.get("nestedBean"));
         assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
     }
 
@@ -492,7 +492,7 @@ public class BeanAdapterTest {
 
         assertEquals(TestInterface.NestedInterface.class, properties.get("nestedBean"));
 
-        assertTrue(properties.get("integerList") instanceof ParameterizedType);
+        assertInstanceOf(ParameterizedType.class, properties.get("integerList"));
 
         var integerListTypeArguments = ((ParameterizedType)properties.get("integerList")).getActualTypeArguments();
 
@@ -504,7 +504,7 @@ public class BeanAdapterTest {
         assertEquals(1, nestedBeanListTypeArguments.length);
         assertEquals(TestInterface.NestedInterface.class, nestedBeanListTypeArguments[0]);
 
-        assertTrue(properties.get("doubleMap") instanceof ParameterizedType);
+        assertInstanceOf(ParameterizedType.class, properties.get("doubleMap"));
 
         var doubleMapTypeArguments = ((ParameterizedType)properties.get("doubleMap")).getActualTypeArguments();
 
