@@ -377,7 +377,7 @@ webServiceProxy.setArguments(mapOf(
 System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
-POST, PUT, and DELETE operations are also supported.
+POST, PUT, and DELETE operations are also supported. The `listOf()` and `mapOf()` methods are discussed in more detail [later](#collections-and-optionals).
 
 ### Typed Invocation
 `WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
