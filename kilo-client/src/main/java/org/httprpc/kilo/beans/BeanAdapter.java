@@ -101,16 +101,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // List adapter
     private static class ListAdapter extends AbstractList<Object> {
         List<?> list;
-        Map<Class<?>, Map<String, Property>> propertyCache;
 
-        ListAdapter(List<?> list, Map<Class<?>, Map<String, Property>> propertyCache) {
+        ListAdapter(List<?> list) {
             this.list = list;
-            this.propertyCache = propertyCache;
         }
 
         @Override
         public Object get(int index) {
-            return adapt(list.get(index), propertyCache);
+            return adapt(list.get(index));
         }
 
         @Override
@@ -130,7 +128,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 @Override
                 public Object next() {
-                    return adapt(iterator.next(), propertyCache);
+                    return adapt(iterator.next());
                 }
             };
         }
@@ -139,16 +137,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Map adapter
     private static class MapAdapter extends AbstractMap<Object, Object> {
         Map<?, ?> map;
-        Map<Class<?>, Map<String, Property>> propertyCache;
 
-        MapAdapter(Map<?, ?> map, Map<Class<?>, Map<String, Property>> propertyCache) {
+        MapAdapter(Map<?, ?> map) {
             this.map = map;
-            this.propertyCache = propertyCache;
         }
 
         @Override
         public Object get(Object key) {
-            return adapt(map.get(key), propertyCache);
+            return adapt(map.get(key));
         }
 
         @Override
@@ -181,7 +177,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                                 @Override
                                 public Object getValue() {
-                                    return adapt(entry.getValue(), propertyCache);
+                                    return adapt(entry.getValue());
                                 }
 
                                 @Override
@@ -199,23 +195,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Record adapter
     private static class RecordAdapter extends AbstractMap<String, Object> {
         Object value;
-        Map<Class<?>, Map<String, Property>> propertyCache;
 
         Map<String, Property> properties;
 
-        RecordAdapter(Object value, Map<Class<?>, Map<String, Property>> propertyCache) {
+        RecordAdapter(Object value) {
             this.value = value;
-            this.propertyCache = propertyCache;
 
-            var type = value.getClass();
-
-            properties = propertyCache.get(type);
-
-            if (properties == null) {
-                properties = getProperties(type);
-
-                propertyCache.put(type, properties);
-            }
+            properties = getProperties(value.getClass());
         }
 
         @Override
@@ -227,7 +213,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             try {
-                return adapt(property.accessor.invoke(value), propertyCache);
+                return adapt(property.accessor.invoke(value));
             } catch (IllegalAccessException | InvocationTargetException exception) {
                 throw new RuntimeException(exception);
             }
@@ -260,7 +246,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             try {
                                 var property = entry.getValue();
 
-                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(value), propertyCache));
+                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(value)));
                             } catch (IllegalAccessException | InvocationTargetException exception) {
                                 throw new RuntimeException(exception);
                             }
@@ -418,7 +404,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private Object bean;
-    private Map<Class<?>, Map<String, Property>> propertyCache;
 
     private Map<String, Property> properties;
 
@@ -427,6 +412,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static final String SET_PREFIX = "set";
 
+    private static Map<Class<?>, Map<String, Property>> propertyCache = new HashMap<>();
+
     /**
      * Constructs a new bean adapter.
      *
@@ -434,16 +421,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The source bean.
      */
     public BeanAdapter(Object bean) {
-        this(bean, new HashMap<>());
-    }
-
-    private BeanAdapter(Object bean, Map<Class<?>, Map<String, Property>> propertyCache) {
         if (bean == null) {
             throw new IllegalArgumentException();
         }
 
         this.bean = bean;
-        this.propertyCache = propertyCache;
 
         var type = bean.getClass();
 
@@ -457,13 +439,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             type = interfaces[0];
         }
 
-        properties = propertyCache.get(type);
-
-        if (properties == null) {
-            properties = getProperties(type);
-
-            propertyCache.put(type, properties);
-        }
+        properties = getProperties(type);
     }
 
     /**
@@ -489,7 +465,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 throw new UnsupportedOperationException("Value is not defined.");
             }
 
-            return adapt(value, propertyCache);
+            return adapt(value);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException(exception);
         }
@@ -569,7 +545,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                                 throw new UnsupportedOperationException("Required property is not defined.");
                             }
 
-                            return new SimpleImmutableEntry<>(key, adapt(value, propertyCache));
+                            return new SimpleImmutableEntry<>(key, adapt(value));
                         } catch (IllegalAccessException | InvocationTargetException exception) {
                             throw new RuntimeException(exception);
                         }
@@ -614,10 +590,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The adapted value.
      */
     public static Object adapt(Object value) {
-        return adapt(value, new HashMap<>());
-    }
-
-    private static Object adapt(Object value, Map<Class<?>, Map<String, Property>> propertyCache) {
         if (value == null
             || value instanceof Number
             || value instanceof Boolean
@@ -630,13 +602,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof URL) {
             return value;
         } else if (value instanceof List<?> list) {
-            return new ListAdapter(list, propertyCache);
+            return new ListAdapter(list);
         } else if (value instanceof Map<?, ?> map) {
-            return new MapAdapter(map, propertyCache);
+            return new MapAdapter(map);
         } else if (value instanceof Record) {
-            return new RecordAdapter(value, propertyCache);
+            return new RecordAdapter(value);
         } else {
-            return new BeanAdapter(value, propertyCache);
+            return new BeanAdapter(value);
         }
     }
 
@@ -1083,68 +1055,76 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * The properties defined by the requested type.
      */
-    public static Map<String, Property> getProperties(Class<?> type) {
-        var properties = new HashMap<String, Property>();
+    public synchronized static Map<String, Property> getProperties(Class<?> type) {
+        var properties = propertyCache.get(type);
 
-        if (type.isRecord()) {
-            var recordComponents = type.getRecordComponents();
+        if (properties == null) {
+            properties = new HashMap<>();
 
-            for (var i = 0; i < recordComponents.length; i++) {
-                var recordComponent = recordComponents[i];
+            if (type.isRecord()) {
+                var recordComponents = type.getRecordComponents();
 
-                var property = new Property();
+                for (var i = 0; i < recordComponents.length; i++) {
+                    var recordComponent = recordComponents[i];
 
-                property.accessor = recordComponent.getAccessor();
+                    var property = new Property();
 
-                properties.put(recordComponent.getName(), property);
+                    property.accessor = recordComponent.getAccessor();
+
+                    properties.put(recordComponent.getName(), property);
+                }
+            } else {
+                var methods = type.getMethods();
+
+                for (var i = 0; i < methods.length; i++) {
+                    var method = methods[i];
+
+                    if (method.getDeclaringClass() == Object.class) {
+                        continue;
+                    }
+
+                    var propertyName = getPropertyName(method);
+
+                    if (propertyName == null) {
+                        continue;
+                    }
+
+                    var property = properties.get(propertyName);
+
+                    if (property == null) {
+                        property = new Property();
+
+                        properties.put(propertyName, property);
+                    }
+
+                    if (method.getParameterCount() == 0) {
+                        property.accessor = method;
+                    } else {
+                        property.mutators.add(method);
+                    }
+                }
             }
-        } else {
-            var methods = type.getMethods();
 
-            for (var i = 0; i < methods.length; i++) {
-                var method = methods[i];
+            properties = properties.entrySet().stream().filter(entry -> {
+                var accessor = entry.getValue().getAccessor();
 
-                if (method.getDeclaringClass() == Object.class) {
-                    continue;
+                if (accessor == null) {
+                    throw new UnsupportedOperationException("Missing accessor.");
                 }
 
-                var propertyName = getPropertyName(method);
+                return (accessor.getAnnotation(Ignore.class) == null);
+            }).collect(Collectors.toMap(entry -> {
+                var key = entry.getValue().getAccessor().getAnnotation(Key.class);
 
-                if (propertyName == null) {
-                    continue;
-                }
+                return Optionals.map(key, Key::value, entry.getKey());
+            }, Map.Entry::getValue, (v1, v2) -> {
+                throw new UnsupportedOperationException("Duplicate key.");
+            }, TreeMap::new));
 
-                var property = properties.get(propertyName);
-
-                if (property == null) {
-                    property = new Property();
-
-                    properties.put(propertyName, property);
-                }
-
-                if (method.getParameterCount() == 0) {
-                    property.accessor = method;
-                } else {
-                    property.mutators.add(method);
-                }
-            }
+            propertyCache.put(type, properties);
         }
 
-        return properties.entrySet().stream().filter(entry -> {
-            var accessor = entry.getValue().getAccessor();
-
-            if (accessor == null) {
-                throw new UnsupportedOperationException("Missing accessor.");
-            }
-
-            return (accessor.getAnnotation(Ignore.class) == null);
-        }).collect(Collectors.toMap(entry -> {
-            var key = entry.getValue().getAccessor().getAnnotation(Key.class);
-
-            return Optionals.map(key, Key::value, entry.getKey());
-        }, Map.Entry::getValue, (v1, v2) -> {
-            throw new UnsupportedOperationException("Duplicate key.");
-        }, TreeMap::new));
+        return properties;
     }
 
     private static String getPropertyName(Method method) {
