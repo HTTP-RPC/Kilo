@@ -323,8 +323,8 @@ public class WebServiceProxy {
     private RequestHandler requestHandler = null;
     private ErrorHandler errorHandler = null;
 
-    private int connectTimeout = 0;
-    private int readTimeout = 0;
+    private int connectTimeout = 15000;
+    private int readTimeout = 60000;
     private int chunkSize = 4096;
 
     private Status expectedStatus = null;
@@ -545,7 +545,7 @@ public class WebServiceProxy {
      * Returns the connect timeout.
      *
      * @return
-     * The connect timeout.
+     * The connect timeout, in milliseconds.
      */
     public int getConnectTimeout() {
         return connectTimeout;
@@ -555,7 +555,7 @@ public class WebServiceProxy {
      * Sets the connect timeout.
      *
      * @param connectTimeout
-     * The connect timeout.
+     * The connect timeout, in milliseconds.
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
@@ -565,7 +565,7 @@ public class WebServiceProxy {
      * Returns the read timeout.
      *
      * @return
-     * The read timeout.
+     * The read timeout, in milliseconds.
      */
     public int getReadTimeout() {
         return readTimeout;
@@ -575,7 +575,7 @@ public class WebServiceProxy {
      * Sets the read timeout.
      *
      * @param readTimeout
-     * The read timeout.
+     * The read timeout, in milliseconds.
      */
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
