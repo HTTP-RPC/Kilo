@@ -92,6 +92,7 @@ public class BulkUploadTest {
             }
         });
 
+        webServiceProxy.setReadTimeout(120000);
         webServiceProxy.setChunkSize(65536);
 
         webServiceProxy.invoke();
