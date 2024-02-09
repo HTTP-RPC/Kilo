@@ -693,6 +693,20 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testMissingProxyException() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        assertThrows(UnsupportedOperationException.class, testServiceProxy::testMissingException);
+    }
+
+    @Test
+    public void testInvalidProxyException() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        assertThrows(UnsupportedOperationException.class, testServiceProxy::testInvalidException);
+    }
+
+    @Test
     public void testMissingRequiredProperty() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/body");
 

@@ -19,6 +19,7 @@ import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,4 +42,10 @@ public interface TestServiceProxy {
     @RequestMethod("GET")
     @ResourcePath("headers")
     Map<String, String> testHeaders() throws IOException;
+
+    @RequestMethod("GET")
+    Map<String, String> testMissingException();
+
+    @RequestMethod("GET")
+    Map<String, String> testInvalidException() throws ParseException;
 }

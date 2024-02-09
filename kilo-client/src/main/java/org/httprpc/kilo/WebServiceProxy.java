@@ -229,6 +229,12 @@ public class WebServiceProxy {
                 throw new UnsupportedOperationException("Request method is not defined.");
             }
 
+            var exceptionTypes = method.getExceptionTypes();
+
+            if (exceptionTypes.length != 1 || !exceptionTypes[0].isAssignableFrom(IOException.class)) {
+                throw new UnsupportedOperationException("Missing or invalid exception declaration.");
+            }
+
             var argumentList = Optionals.map(arguments, Arrays::asList, listOf());
 
             var pathBuilder = new StringBuilder();
