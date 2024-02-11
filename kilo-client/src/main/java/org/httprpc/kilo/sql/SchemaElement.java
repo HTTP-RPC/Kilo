@@ -690,6 +690,26 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates an addition schema element.
+     *
+     * @param value
+     * The value to add.
+     *
+     * @return
+     * An addition schema element.
+     */
+    default SchemaElement plus(Number value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            PLUS,
+            value));
+    }
+
+    /**
      * Creates a subtraction schema element.
      *
      * @param schemaElement
@@ -707,6 +727,26 @@ public interface SchemaElement {
             getQualifiedName(),
             MINUS,
             schemaElement.getQualifiedName()));
+    }
+
+    /**
+     * Creates a subtraction schema element.
+     *
+     * @param value
+     * The value to add.
+     *
+     * @return
+     * A subtraction schema element.
+     */
+    default SchemaElement minus(Number value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            MINUS,
+            value));
     }
 
     /**
@@ -730,6 +770,26 @@ public interface SchemaElement {
     }
 
     /**
+     * Creates a multiplication schema element.
+     *
+     * @param value
+     * The value to multiply by.
+     *
+     * @return
+     * A multiplication schema element.
+     */
+    default SchemaElement multipliedBy(Number value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            MULTIPLIED_BY,
+            value));
+    }
+
+    /**
      * Creates a division schema element.
      *
      * @param schemaElement
@@ -747,6 +807,26 @@ public interface SchemaElement {
             getQualifiedName(),
             DIVIDED_BY,
             schemaElement.getQualifiedName()));
+    }
+
+    /**
+     * Creates a division schema element.
+     *
+     * @param value
+     * The value to divide by.
+     *
+     * @return
+     * A division schema element.
+     */
+    default SchemaElement dividedBy(Number value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new SchemaElementAdapter(null, String.format("(%s %s %s)",
+            getQualifiedName(),
+            DIVIDED_BY,
+            value));
     }
 
     /**

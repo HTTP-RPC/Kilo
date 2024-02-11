@@ -160,21 +160,25 @@ public class SchemaElementTest {
     @Test
     public void testPlus() {
         testColumnName("(test3.a + test3.b)", TestSchema3.A.plus(B));
+        testColumnName("(test3.a + 10)", TestSchema3.A.plus(10));
     }
 
     @Test
     public void testMinus() {
         testColumnName("(test3.a - test3.b)", TestSchema3.A.minus(B));
+        testColumnName("(test3.a - 10)", TestSchema3.A.minus(10));
     }
 
     @Test
     public void testMultipliedBy() {
         testColumnName("(test3.a * (test3.b + test3.c))", TestSchema3.A.multipliedBy(B.plus(C)));
+        testColumnName("(test3.a * 10)", TestSchema3.A.multipliedBy(10));
     }
 
     @Test
     public void testDividedBy() {
         testColumnName("(test3.a / (test3.b - test3.c))", TestSchema3.A.dividedBy(B.minus(C)));
+        testColumnName("(test3.a / 10)", TestSchema3.A.dividedBy(10));
     }
 
     @Test
