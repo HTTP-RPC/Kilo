@@ -613,12 +613,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Coerces a value to a given type. For unparamterized types, if the
-     * value is already an instance of the requested type, it is returned as
-     * is. Otherwise, if the requested type is one of the following, the return
-     * value is obtained via an appropriate conversion method; for example,
-     * {@link Number#intValue()}, {@link Object#toString()}, or
-     * {@link LocalDate#parse(CharSequence)}:</p>
+     * <p>Coerces a value to a given type. If the value is already an instance
+     * of the requested type, it is returned as is. Otherwise, if the requested
+     * type is one of the following, the return value is obtained via an
+     * appropriate conversion method; for example, {@link Number#intValue()},
+     * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:</p>
      *
      * <ul>
      * <li>{@link Byte} or {@code byte}</li>

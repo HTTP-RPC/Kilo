@@ -343,7 +343,7 @@ public class WebServiceProxy {
 
     private static final ErrorHandler defaultErrorHandler = (errorStream, contentType, statusCode) -> {
         String message;
-        if (contentType != null && contentType.toLowerCase().startsWith("text/plain")) {
+        if (errorStream != null && contentType != null && contentType.toLowerCase().startsWith("text/plain")) {
             var textDecoder = new TextDecoder();
 
             message = textDecoder.read(errorStream);
@@ -601,7 +601,7 @@ public class WebServiceProxy {
      * Sets the chunk size.
      *
      * @param chunkSize
-     * The chunk size.
+     * The chunk size, or a negative value to disable chunked streaming.
      */
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
@@ -796,7 +796,10 @@ public class WebServiceProxy {
         // Write request body
         if (requestHandler != null) {
             connection.setDoOutput(true);
-            connection.setChunkedStreamingMode(chunkSize);
+
+            if (chunkSize >= 0) {
+                connection.setChunkedStreamingMode(chunkSize);
+            }
 
             var contentType = requestHandler.getContentType();
 
