@@ -659,6 +659,9 @@ public abstract class WebService extends HttpServlet {
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
+    private static final Comparator<Method> methodNameComparator = Comparator.comparing(Method::getName);
+    private static final Comparator<Method> methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
+
     /**
      * JSON MIME type.
      */
@@ -803,9 +806,6 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static void sort(Resource root) {
-        var methodNameComparator = Comparator.comparing(Method::getName);
-        var methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
-
         for (var handlers : root.handlerMap.values()) {
             handlers.sort(methodNameComparator.thenComparing(methodParameterCountComparator.reversed()));
         }

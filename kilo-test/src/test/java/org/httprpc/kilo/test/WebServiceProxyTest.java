@@ -91,6 +91,7 @@ public class WebServiceProxyTest {
             entry("dayOfWeek", dayOfWeek),
             entry("instant", instant),
             entry("date", date),
+            entry("dates", listOf(date)),
             entry("localDate", localDate),
             entry("localTime", localTime),
             entry("localDateTime", localDateTime),
@@ -110,6 +111,7 @@ public class WebServiceProxyTest {
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
+            entry("dates", listOf(date.getTime())),
             entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
@@ -220,6 +222,7 @@ public class WebServiceProxyTest {
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
+            entry("dates", listOf(date)),
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
@@ -240,6 +243,7 @@ public class WebServiceProxyTest {
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
+            entry("dates", listOf(date.getTime())),
             entry("instant", instant.toString()),
             entry("localDate", localDate.toString()),
             entry("localTime", localTime.toString()),
@@ -267,6 +271,7 @@ public class WebServiceProxyTest {
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
+            entry("dates", listOf(date)),
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
@@ -285,6 +290,7 @@ public class WebServiceProxyTest {
             && response.getFlag()
             && response.getDayOfWeek().equals(dayOfWeek)
             && response.getDate().equals(date)
+            && response.getDates().equals(listOf(date))
             && response.getInstant().equals(instant)
             && response.getLocalDate().equals(localDate)
             && response.getLocalTime().equals(localTime)

@@ -965,10 +965,9 @@ public class WebServiceProxy {
         writer.flush();
     }
 
-    @SuppressWarnings("unchecked")
     private static List<Object> getParameterValues(Object argument) {
         if (argument instanceof List<?> list) {
-            return (List<Object>)list;
+            return list.stream().map(WebServiceProxy::getParameterValue).toList();
         } else {
             return listOf(getParameterValue(argument));
         }

@@ -95,6 +95,7 @@ public class TestService extends WebService {
         boolean getFlag();
         DayOfWeek getDayOfWeek();
         Date getDate();
+        List<Date> getDates();
         Instant getInstant();
         LocalDate getLocalDate();
         LocalTime getLocalTime();
@@ -178,8 +179,10 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("GET")
-    public Map<String, Object> testGet(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+    public Map<String, Object> testGet(@Required String string, List<String> strings,
+        int number, boolean flag, DayOfWeek dayOfWeek,
+        Date date, List<Date> dates,
+        Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
         UUID uuid) {
         return mapOf(
@@ -189,6 +192,7 @@ public class TestService extends WebService {
             entry("flag", flag),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
+            entry("dates", dates),
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
@@ -258,8 +262,10 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
-    public Response testPost(@Required String string, List<String> strings, int number, boolean flag, DayOfWeek dayOfWeek,
-        Date date, Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
+    public Response testPost(@Required String string, List<String> strings,
+        int number, boolean flag, DayOfWeek dayOfWeek,
+        Date date, List<Date> dates,
+        Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
         UUID uuid, List<URL> attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
@@ -289,6 +295,7 @@ public class TestService extends WebService {
             entry("flag", flag),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
+            entry("dates", dates),
             entry("instant", instant),
             entry("localDate", localDate),
             entry("localTime", localTime),
