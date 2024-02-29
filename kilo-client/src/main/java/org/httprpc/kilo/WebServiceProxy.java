@@ -703,13 +703,10 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        var url = this.url;
-
+        URL url;
         RequestHandler requestHandler;
         if (method.equals("POST") && encoding != null) {
-            if (body != null || this.requestHandler != null) {
-                throw new IllegalStateException("Encoding already specified.");
-            }
+            url = this.url;
 
             requestHandler = new RequestHandler() {
                 @Override
@@ -731,15 +728,13 @@ public class WebServiceProxy {
         } else {
             var query = encodeQuery();
 
-            if (!query.isEmpty()) {
+            if (query.isEmpty()) {
+                url = this.url;
+            } else {
                 url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), this.url.getFile() + "?" + query);
             }
 
             if (body != null) {
-                if (this.requestHandler != null) {
-                    throw new IllegalStateException("Body already specified.");
-                }
-
                 requestHandler = new RequestHandler() {
                     @Override
                     public String getContentType() {
