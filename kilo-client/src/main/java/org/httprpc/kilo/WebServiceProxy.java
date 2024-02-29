@@ -290,7 +290,7 @@ public class WebServiceProxy {
 
             var method = webServiceProxy.getMethod();
 
-            if (method.equals("POST") || method.equals("PUT")) {
+            if ((method.equals("POST") && webServiceProxy.getEncoding() == null) || method.equals("PUT")) {
                 n--;
             }
 
@@ -319,12 +319,12 @@ public class WebServiceProxy {
     private String method;
     private URL url;
 
-    private Encoding encoding = Encoding.APPLICATION_X_WWW_FORM_URLENCODED;
+    private Encoding encoding = null;
 
     private Map<String, Object> headers = mapOf();
     private Map<String, Object> arguments = mapOf();
 
-    private Object body;
+    private Object body = null;
 
     private RequestHandler requestHandler = null;
     private ErrorHandler errorHandler = null;
@@ -431,10 +431,6 @@ public class WebServiceProxy {
      * The encoding used for POST requests.
      */
     public void setEncoding(Encoding encoding) {
-        if (encoding == null) {
-            throw new IllegalArgumentException();
-        }
-
         this.encoding = encoding;
     }
 
@@ -666,8 +662,8 @@ public class WebServiceProxy {
      * @param <T>
      * The result type.
      *
-     * @param resultHandler
-     * The result handler.
+     * @param transform
+     * The mapping function to apply.
      *
      * @return
      * The result of the operation.
@@ -675,15 +671,15 @@ public class WebServiceProxy {
      * @throws IOException
      * If an exception occurs while executing the operation.
      */
-    public <T> T invoke(Function<Object, ? extends T> resultHandler) throws IOException {
-        if (resultHandler == null) {
+    public <T> T invoke(Function<Object, ? extends T> transform) throws IOException {
+        if (transform == null) {
             throw new IllegalArgumentException();
         }
 
         return invoke((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return resultHandler.apply(jsonDecoder.read(inputStream));
+            return transform.apply(jsonDecoder.read(inputStream));
         });
     }
 
@@ -707,10 +703,13 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        URL url;
+        var url = this.url;
+
         RequestHandler requestHandler;
-        if (method.equals("POST") && !arguments.isEmpty() && body == null && this.requestHandler == null) {
-            url = this.url;
+        if (method.equals("POST") && encoding != null) {
+            if (body != null || this.requestHandler != null) {
+                throw new IllegalStateException("Encoding already specified.");
+            }
 
             requestHandler = new RequestHandler() {
                 @Override
@@ -732,13 +731,15 @@ public class WebServiceProxy {
         } else {
             var query = encodeQuery();
 
-            if (query.isEmpty()) {
-                url = this.url;
-            } else {
+            if (!query.isEmpty()) {
                 url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), this.url.getFile() + "?" + query);
             }
 
             if (body != null) {
+                if (this.requestHandler != null) {
+                    throw new IllegalStateException("Body already specified.");
+                }
+
                 requestHandler = new RequestHandler() {
                     @Override
                     public String getContentType() {

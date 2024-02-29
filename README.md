@@ -313,7 +313,7 @@ public WebServiceProxy(String method, URL baseURL, String path, Object... argume
 
 The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the HTTP method, a base URL, and a relative path (as a format string, to which the optional trailing arguments are applied).
 
-Request arguments are specified via the `setArguments()` method. As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method). 
+Request arguments are specified via the `setArguments()` method. As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
@@ -325,8 +325,6 @@ public interface RequestHandler {
     void encodeRequest(OutputStream outputStream) throws IOException;
 }
 ```
-
-If either a custom body or request handler is specified, `POST` arguments will be sent in the query string.
 
 Service operations are invoked via one of the following methods:
 
