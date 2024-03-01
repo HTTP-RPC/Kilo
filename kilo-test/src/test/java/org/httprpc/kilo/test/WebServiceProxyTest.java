@@ -223,6 +223,62 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testPost() throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
+
+        webServiceProxy.setArguments(mapOf(
+            entry("string", "héllo&gøod+bye?"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("flag", true),
+            entry("dayOfWeek", dayOfWeek),
+            entry("date", date),
+            entry("dates", listOf(date)),
+            entry("instant", instant),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime),
+            entry("duration", duration),
+            entry("period", period),
+            entry("uuid", uuid)
+        ));
+
+        webServiceProxy.setMonitorStream(System.out);
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals(mapOf(
+            entry("string", "héllo&gøod+bye?"),
+            entry("strings", listOf("a", "b", "c")),
+            entry("number", 123),
+            entry("flag", true),
+            entry("dayOfWeek", dayOfWeek.toString()),
+            entry("date", date.getTime()),
+            entry("dates", listOf(date.getTime())),
+            entry("instant", instant.toString()),
+            entry("localDate", localDate.toString()),
+            entry("localTime", localTime.toString()),
+            entry("localDateTime", localDateTime.toString()),
+            entry("duration", duration.toString()),
+            entry("period", period.toString()),
+            entry("uuid", uuid.toString()),
+            entry("attachmentInfo", listOf())
+        ), result);
+    }
+
+    @Test
+    public void testPostProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, null);
+
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
+        assertEquals(listOf(), result.getAttachmentInfo());
+    }
+
+    @Test
     public void testURLEncodedPost() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
 
@@ -269,6 +325,21 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testURLEncodedPostProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
+            webServiceProxy.setEncoding(WebServiceProxy.Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+            webServiceProxy.setMonitorStream(System.out);
+        });
+
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, null);
+
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
+        assertEquals(listOf(), result.getAttachmentInfo());
+    }
+
+    @Test
     public void testMultipartPost() throws IOException {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
@@ -295,6 +366,8 @@ public class WebServiceProxyTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
+        webServiceProxy.setMonitorStream(System.out);
+
         var response = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
 
         assertTrue(response.getString().equals("héllo&gøod+bye?")
@@ -318,31 +391,24 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testURLEncodedPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
-            webServiceProxy.setEncoding(WebServiceProxy.Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
-            webServiceProxy.setMonitorStream(System.out);
-        });
-
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
-
-        assertEquals("héllo&gøod+bye?", result.getString());
-        assertEquals(listOf("a", "b", "c"), result.getStrings());
-        assertEquals(123, result.getNumber());
-    }
-
-    @Test
     public void testMultipartPostProxy() throws IOException {
+        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
             webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
             webServiceProxy.setMonitorStream(System.out);
         });
 
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, listOf(textTestURL, imageTestURL));
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
+        assertEquals(26, result.getAttachmentInfo().get(0).getBytes());
+        assertEquals(2412, result.getAttachmentInfo().get(0).getChecksum());
+        assertEquals(10392, result.getAttachmentInfo().get(1).getBytes());
+        assertEquals(1038036, result.getAttachmentInfo().get(1).getChecksum());
     }
 
     @Test

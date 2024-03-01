@@ -19,6 +19,7 @@ import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public interface TestServiceProxy {
     Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) throws IOException;
 
     @RequestMethod("POST")
-    TestService.Response testPost(@Required String string, List<String> strings, int number) throws IOException;
+    TestService.Response testPost(@Required String string, List<String> strings, int number, List<URL> attachments) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("?")
