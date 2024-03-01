@@ -123,6 +123,17 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testGetProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+
+        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+
+        assertEquals("héllo&gøod+bye?", result.get("string"));
+        assertEquals(listOf("a", "b", "c"), result.get("strings"));
+        assertEquals(123, result.get("number"));
+    }
+
+    @Test
     public void testKeys() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/a/%d/b/%s/c/%d/d/%s",
             123,
@@ -215,6 +226,8 @@ public class WebServiceProxyTest {
     public void testURLEncodedPost() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
 
+        webServiceProxy.setEncoding(WebServiceProxy.Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
@@ -302,6 +315,34 @@ public class WebServiceProxyTest {
             && response.getAttachmentInfo().get(0).getChecksum() == 2412
             && response.getAttachmentInfo().get(1).getBytes() == 10392
             && response.getAttachmentInfo().get(1).getChecksum() == 1038036);
+    }
+
+    @Test
+    public void testURLEncodedPostProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
+            webServiceProxy.setEncoding(WebServiceProxy.Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+            webServiceProxy.setMonitorStream(System.out);
+        });
+
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
+    }
+
+    @Test
+    public void testMultipartPostProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
+            webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
+            webServiceProxy.setMonitorStream(System.out);
+        });
+
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
     }
 
     @Test

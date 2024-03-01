@@ -35,6 +35,9 @@ public interface TestServiceProxy {
     @ResourcePath("foo/?/bar/?")
     Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) throws IOException;
 
+    @RequestMethod("POST")
+    TestService.Response testPost(@Required String string, List<String> strings, int number) throws IOException;
+
     @RequestMethod("PUT")
     @ResourcePath("?")
     int testEmptyPut(int value) throws IOException;
