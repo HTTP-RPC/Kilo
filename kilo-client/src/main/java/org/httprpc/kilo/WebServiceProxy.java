@@ -706,6 +706,10 @@ public class WebServiceProxy {
         URL url;
         RequestHandler requestHandler;
         if (method.equals("POST") && encoding != null) {
+            if (body != null || this.requestHandler != null) {
+                throw new IllegalStateException("Encoding already specified.");
+            }
+
             url = this.url;
 
             requestHandler = new RequestHandler() {
@@ -735,6 +739,10 @@ public class WebServiceProxy {
             }
 
             if (body != null) {
+                if (this.requestHandler != null) {
+                    throw new IllegalStateException("Body already specified.");
+                }
+
                 requestHandler = new RequestHandler() {
                     @Override
                     public String getContentType() {
