@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 public @interface Description {
     /**
-     * The description of the element.
+     * The element description.
      */
     String value();
 }
