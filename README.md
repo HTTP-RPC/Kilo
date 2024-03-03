@@ -135,7 +135,24 @@ Note that service classes must be compiled with the `-parameters` flag so that p
 #### Custom Parameter Names
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
 
-TODO 
+```java
+@WebServlet(urlPatterns = {"/members/*"}, loadOnStartup = 1)
+public class MemberService extends WebService {
+    @RequestMethod("GET")
+    public List<Person> getMembers(
+        @Name("first_name") String firstName,
+        @Name("last_name") String lastName
+    ) {
+        ...
+    }
+}
+```
+
+Callers would provide arguments to this service using the custom snake-case names rather than the compiled camel-case names: 
+
+```
+GET /members?first_name=foo&last_name=bar
+```
 
 #### Required Parameters
 Parameters that must be provided by the caller can be indicated by the `Required` annotation. This annotation can also be applied to bean properties and record components, as discussed [later](#required-properties).

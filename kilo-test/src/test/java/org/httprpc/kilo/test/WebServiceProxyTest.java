@@ -47,6 +47,7 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -941,6 +942,20 @@ public class WebServiceProxyTest {
         var result = webServiceProxy.invoke();
 
         assertEquals(10418, result);
+    }
+
+    @Test
+    public void testMembers() throws IOException {
+        var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, new URL(baseURL, "members/"));
+
+        var members = memberServiceProxy.getMembers("foo", "bar");
+
+        assertFalse(members.isEmpty());
+
+        var member = members.get(0);
+
+        assertEquals("foo", member.getFirstName());
+        assertEquals("bar", member.getLastName());
     }
 
     @Test
