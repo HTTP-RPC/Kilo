@@ -14,14 +14,14 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.beans.Key;
 
 public class Person {
     private String firstName = null;
     private String lastName = null;
 
-    @Key("first_name")
+    @Name("first_name")
     @Required
     public String getFirstName() {
         return firstName;
@@ -31,7 +31,7 @@ public class Person {
         this.firstName = firstName;
     }
 
-    @Key("last_name")
+    @Name("last_name")
     @Required
     public String getLastName() {
         return lastName;

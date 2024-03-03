@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 
 import java.math.BigInteger;
@@ -37,7 +38,7 @@ public interface TestInterface {
         void setFlag(Boolean flag);
     }
 
-    @Key("i")
+    @Name("i")
     int getInteger();
     void setInteger(int i);
 
@@ -61,8 +62,8 @@ public interface TestInterface {
     UUID getUUID();
     URL getURL();
 
-    @Ignore
-    String getIgnored();
+    @Internal
+    int getValue();
 
     NestedInterface getNestedBean();
     void setNestedBean(NestedInterface nestedBean);

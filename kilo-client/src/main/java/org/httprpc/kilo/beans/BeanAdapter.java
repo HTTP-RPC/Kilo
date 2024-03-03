@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.util.Optionals;
 
@@ -373,7 +374,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         static String getKey(Method accessor, String propertyName) {
-            return Optionals.map(accessor.getAnnotation(Key.class), Key::value, propertyName);
+            return Optionals.map(accessor.getAnnotation(Name.class), Name::value, propertyName);
         }
     }
 
@@ -944,10 +945,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var accessor = recordComponent.getAccessor();
 
             Object argument;
-            if (accessor.getAnnotation(Ignore.class) == null) {
+            if (accessor.getAnnotation(Internal.class) == null) {
                 var genericType = recordComponent.getGenericType();
 
-                argument = toGenericType(map.get(Optionals.map(accessor.getAnnotation(Key.class), Key::value, name)), genericType);
+                argument = toGenericType(map.get(Optionals.map(accessor.getAnnotation(Name.class), Name::value, name)), genericType);
             } else {
                 argument = null;
             }
@@ -1111,11 +1112,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new UnsupportedOperationException("Missing accessor.");
                 }
 
-                return (accessor.getAnnotation(Ignore.class) == null);
+                return (accessor.getAnnotation(Internal.class) == null);
             }).collect(Collectors.toMap(entry -> {
-                var key = entry.getValue().getAccessor().getAnnotation(Key.class);
+                var key = entry.getValue().getAccessor().getAnnotation(Name.class);
 
-                return Optionals.map(key, Key::value, entry.getKey());
+                return Optionals.map(key, Name::value, entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate key.");
             }, TreeMap::new));

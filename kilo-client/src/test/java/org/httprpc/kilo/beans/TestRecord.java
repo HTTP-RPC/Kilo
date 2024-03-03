@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 
 import java.time.LocalDate;
@@ -21,6 +22,6 @@ import java.time.LocalDate;
 public record TestRecord(
     int i,
     double d,
-    @Key("s") @Required String string,
-    @Ignore LocalDate localDate) {
+    @Name("s") @Required String string,
+    @Internal LocalDate localDate) {
 }

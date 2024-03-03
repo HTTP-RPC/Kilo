@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 
 import java.math.BigInteger;
@@ -62,7 +63,7 @@ public class TestBean implements TestInterface {
     private UUID uuid = null;
     private URL url = null;
 
-    private String ignored = null;
+    private int value = 0;
 
     private NestedInterface nestedBean = null;
 
@@ -75,7 +76,7 @@ public class TestBean implements TestInterface {
     private TestRecord testRecord = null;
     private List<TestRecord> testRecords = null;
 
-    @Key("i")
+    @Name("i")
     @Override
     public int getInteger() {
         return i;
@@ -216,13 +217,13 @@ public class TestBean implements TestInterface {
     }
 
     @Override
-    @Ignore
-    public String getIgnored() {
-        return ignored;
+    @Internal
+    public int getValue() {
+        return value;
     }
 
-    public void setIgnored(String ignored) {
-        this.ignored = ignored;
+    public void setValue(int value) {
+        this.value = value;
     }
 
     @Override

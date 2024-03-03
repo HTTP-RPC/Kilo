@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.beans;
+package org.httprpc.kilo;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,9 +20,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a bean property or record component should be ignored.
+ * Associates a custom name with an element.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Ignore {
+public @interface Name {
+    /**
+     * The custom name of the element.
+     */
+    String value();
 }

@@ -17,12 +17,12 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.beans.Key;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,7 +102,7 @@ public class TestService extends WebService {
         LocalDateTime getLocalDateTime();
         Duration getDuration();
         Period getPeriod();
-        @Key("uuid")
+        @Name("uuid")
         UUID getUUID();
         List<AttachmentInfo> getAttachmentInfo();
     }

@@ -20,13 +20,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Associates a custom name with a bean property or record component.
+ * Indicates that a bean property or record component is internal.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Key {
-    /**
-     * The custom property name.
-     */
-    String value();
+public @interface Internal {
 }

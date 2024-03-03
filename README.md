@@ -264,7 +264,7 @@ Descriptions can also be associated with bean types, enums, and records:
 ```java
 @Description("Represents an item in the catalog.")
 public interface Item {
-    @Key("id")
+    @Name("id")
     @Description("The item's ID.")
     Integer getID();
     void setID(Integer id);
@@ -760,15 +760,15 @@ System.out.println(employee.getHireDate()); // 1986-06-26
 
 Mutator methods are also supported.
 
-### Custom Property Keys
-The `Key` annotation can be used to associate a custom name with a bean property or record component. For example:
+### Custom Property Names
+The `Name` annotation can be used to associate a custom name with a bean property or record component. For example:
 
 ```java
 public class Person {
     private String firstName = null;
     private String lastName = null;
 
-    @Key("first_name")
+    @Name("first_name")
     public String getFirstName() {
         return firstName;
     }
@@ -777,7 +777,7 @@ public class Person {
         this.firstName = firstName;
     }
 
-    @Key("last_name")
+    @Name("last_name")
     public String getLastName() {
         return lastName;
     }
@@ -856,21 +856,25 @@ Similarly, attempting to dynamically access an invalid value will result in an `
 vehicleAdapter.get("manufacturer"); // throws
 ```
 
-Note that, unlike [list parameters](#required-parameters), list properties are not guaranteed to contain a non-`null` value and must be explicitly annotated when required.
+Note that, unlike [list parameters](#required-parameters), list properties must be explicitly annotated when required.
 
-### Ignoring Properties
-The `Ignore` annotation indicates that a bean property or record component should be ignored by `BeanAdapter`. For example, given the following code:
+### Internal Properties
+The `Internal` annotation indicates that a bean property or record component is for internal use only and should be ignored by `BeanAdapter`. For example, given the following code:
 
 ```java
-@Ignore
-public Object getIgnored() {
-    ...
+@Internal
+public int getValue() {
+    return value;
+}
+
+public void setValue(int value) {
+    this.value = value;
 }
 ```
 
-a call to `get()` with a key of "ignored" would return `null`. The value would also be omitted when traversing the map's contents. 
+a call to `get()` with a key of "value" would return `null`. The property would also be excluded when traversing the map's contents. 
 
-Attempting to `put()` an ignored value will result in an `UnsupportedOperationException`. 
+Attempting to `put()` an internal value will result in an `UnsupportedOperationException`. 
 
 ## QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:

@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.util.Collections;
 import org.junit.jupiter.api.Test;
 
@@ -69,12 +70,12 @@ public class BeanAdapterTest {
     }
 
     public static class DuplicateKey {
-        @Key("x")
+        @Name("x")
         public String getFoo() {
             return "foo";
         }
 
-        @Key("x")
+        @Name("x")
         public String getBar() {
             return "bar";
         }
@@ -445,16 +446,16 @@ public class BeanAdapterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testIgnore() {
+    public void testInternal() {
         var testBean = new TestBean();
 
-        testBean.setIgnored("abc");
+        testBean.setValue(100);
 
         var beanAdapter = new BeanAdapter(testBean);
 
-        assertNull(beanAdapter.get("ignored"));
+        assertNull(beanAdapter.get("value"));
 
-        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("ignored", "xyz"));
+        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("value", 200));
 
         var testRecord = BeanAdapter.coerce(mapOf(
             entry("s", "abc"),

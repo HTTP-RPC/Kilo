@@ -15,8 +15,8 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.beans.Key;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.SchemaElement;
 import org.httprpc.kilo.sql.Table;
@@ -33,7 +33,7 @@ public interface Item {
         PRICE
     }
 
-    @Key("id")
+    @Name("id")
     @Description("The item's ID.")
     Integer getID();
     void setID(Integer id);
