@@ -264,8 +264,8 @@ public abstract class WebService extends HttpServlet {
         private TypeDescriptor type = null;
 
         private VariableDescriptor(Parameter parameter) {
-            name = parameter.getName();
-
+            name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+            
             description = Optionals.map(parameter.getAnnotation(Description.class), Description::value);
 
             required = parameter.getAnnotation(Required.class) != null;
@@ -1028,7 +1028,11 @@ public abstract class WebService extends HttpServlet {
             var i = 0;
 
             for (var j = m; j < n; j++) {
-                if (argumentNames.contains(parameters[j].getName()) && ++i == c) {
+                var parameter = parameters[j];
+
+                var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+
+                if (argumentNames.contains(name) && ++i == c) {
                     return handler;
                 }
             }
@@ -1054,7 +1058,7 @@ public abstract class WebService extends HttpServlet {
             if (i < m) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
-                var name = parameter.getName();
+                var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
                 var type = parameter.getType();
 
                 var values = argumentMap.get(name);

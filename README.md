@@ -132,6 +132,11 @@ If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidd
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
+#### Custom Parameter Names
+The `Name` annotation can be used to associate a custom name with a method parameter. For example:
+
+TODO 
+
 #### Required Parameters
 Parameters that must be provided by the caller can be indicated by the `Required` annotation. This annotation can also be applied to bean properties and record components, as discussed [later](#required-properties).
 
@@ -407,6 +412,8 @@ var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http:
 System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
+
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. 
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
@@ -761,7 +768,7 @@ System.out.println(employee.getHireDate()); // 1986-06-26
 Mutator methods are also supported.
 
 ### Custom Property Names
-The `Name` annotation can be used to associate a custom name with a bean property or record component. For example:
+The `Name` annotation introduced [previously](#custom-parameter-names) can also be used to associate a custom name with a bean property or record component. For example:
 
 ```java
 public class Person {

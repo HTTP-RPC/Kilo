@@ -305,7 +305,9 @@ public class WebServiceProxy {
                     throw new IllegalArgumentException("Required argument is not defined.");
                 }
 
-                argumentMap.put(parameters[i].getName(), value);
+                var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+
+                argumentMap.put(name, value);
             }
 
             webServiceProxy.setArguments(argumentMap);

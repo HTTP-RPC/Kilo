@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * Associates a custom name with an element.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.PARAMETER})
 public @interface Name {
     /**
      * The custom name of the element.
