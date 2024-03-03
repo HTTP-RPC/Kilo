@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.PARAMETER})
 public @interface Name {
     /**
-     * The custom name of the element.
+     * The custom name for the element.
      */
     String value();
 }
