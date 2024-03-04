@@ -148,7 +148,7 @@ public class MemberService extends WebService {
 }
 ```
 
-This method could be invoked as follows: 
+Arguments would be passed to this method as follows: 
 
 ```
 GET /members?first_name=foo&last_name=bar
