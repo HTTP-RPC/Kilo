@@ -1047,7 +1047,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns the properties for a given type, sorted by key.
+     * Returns a sorted list of properties for a given type.
      *
      * @param type
      * The bean type.
@@ -1114,9 +1114,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 return (accessor.getAnnotation(Internal.class) == null);
             }).collect(Collectors.toMap(entry -> {
-                var key = entry.getValue().getAccessor().getAnnotation(Name.class);
+                var accessor = entry.getValue().getAccessor();
 
-                return Optionals.map(key, Name::value, entry.getKey());
+                return Optionals.map(accessor.getAnnotation(Name.class), Name::value, entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate key.");
             }, TreeMap::new));

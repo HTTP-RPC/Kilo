@@ -272,7 +272,7 @@ public class WebServiceProxy {
                 }
             }
 
-            var webServiceProxy = new WebServiceProxy(requestMethod.value(), new URL(baseURL, pathBuilder.toString()));
+            var webServiceProxy = new WebServiceProxy(requestMethod.value().toUpperCase(), new URL(baseURL, pathBuilder.toString()));
 
             if (initializer != null) {
                 initializer.accept(webServiceProxy);
