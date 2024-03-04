@@ -148,7 +148,7 @@ public class MemberService extends WebService {
 }
 ```
 
-Callers would provide arguments to this service using the custom snake-case names rather than the compiled camel-case names: 
+This method could be invoked as follows: 
 
 ```
 GET /members?first_name=foo&last_name=bar
