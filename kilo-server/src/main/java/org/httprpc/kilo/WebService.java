@@ -265,7 +265,7 @@ public abstract class WebService extends HttpServlet {
 
         private VariableDescriptor(Parameter parameter) {
             name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
-            
+
             description = Optionals.map(parameter.getAnnotation(Description.class), Description::value);
 
             required = parameter.getAnnotation(Required.class) != null;
