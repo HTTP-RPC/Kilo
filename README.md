@@ -151,7 +151,7 @@ public class MemberService extends WebService {
 Arguments would be passed to this method as follows: 
 
 ```
-GET /members?first_name=foo&last_name=bar
+GET /members?first_name=foo*&last_name=bar*
 ```
 
 #### Required Parameters
