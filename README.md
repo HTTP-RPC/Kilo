@@ -244,6 +244,8 @@ If an exception is thrown by a service method and the response has not yet been 
 * `IllegalStateException` - HTTP 409 (conflict)
 * Any other exception - HTTP 500 (internal server error)
 
+Subclasses can override the `reportError()` method to perform custom error handling.
+
 ### Inter-Service Communication
 A reference to any service annotated with `jakarta.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 

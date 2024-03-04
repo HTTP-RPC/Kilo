@@ -851,8 +851,6 @@ public abstract class WebService extends HttpServlet {
                     ), response.getOutputStream());
                 }
 
-                response.flushBuffer();
-
                 return;
             }
         }
@@ -929,9 +927,9 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        var empty = contentType == null ||
-            contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED) ||
-            contentType.startsWith(MULTIPART_FORM_DATA);
+        var empty = contentType == null
+            || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
+            || contentType.startsWith(MULTIPART_FORM_DATA);
 
         var handler = getHandler(keys.size(), empty, handlerList, argumentMap.keySet());
 
@@ -944,7 +942,10 @@ public abstract class WebService extends HttpServlet {
         try {
             arguments = getArguments(handler.getParameters(), keys, empty, argumentMap, request);
         } catch (Exception exception) {
-            sendError(response, HttpServletResponse.SC_FORBIDDEN, exception);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+            reportError(response, exception);
+
             return;
         }
 
@@ -956,14 +957,10 @@ public abstract class WebService extends HttpServlet {
             result = handler.invoke(this, arguments);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             if (response.isCommitted()) {
-                throw new ServletException(exception);
+                return;
             }
 
             var cause = exception.getCause();
-
-            if (cause == null) {
-                throw new ServletException(exception);
-            }
 
             int status;
             if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
@@ -976,7 +973,9 @@ public abstract class WebService extends HttpServlet {
                 status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             }
 
-            sendError(response, status, cause);
+            response.setStatus(status);
+
+            reportError(response, cause);
 
             return;
         } finally {
@@ -1005,7 +1004,7 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private Method getHandler(int m, boolean empty, List<Method> handlerList, Set<String> argumentNames) {
+    private static Method getHandler(int m, boolean empty, List<Method> handlerList, Set<String> argumentNames) {
         var c = argumentNames.size();
 
         for (var handler : handlerList) {
@@ -1109,18 +1108,6 @@ public abstract class WebService extends HttpServlet {
         return arguments;
     }
 
-    private void sendError(HttpServletResponse response, int status, Throwable cause) throws IOException {
-        response.setStatus(status);
-
-        var message = cause.getMessage();
-
-        if (message != null) {
-            response.setContentType(String.format("text/plain;charset=%s", UTF_8));
-            response.getWriter().append(message);
-            response.flushBuffer();
-        }
-    }
-
     /**
      * Returns the servlet request.
      *
@@ -1189,6 +1176,27 @@ public abstract class WebService extends HttpServlet {
         var jsonEncoder = new JSONEncoder(isCompact());
 
         jsonEncoder.write(BeanAdapter.adapt(result), response.getOutputStream());
+    }
+
+    /**
+     * Reports an error.
+     *
+     * @param response
+     * The servlet response.
+     *
+     * @param cause
+     * The cause of the error.
+     */
+    protected void reportError(HttpServletResponse response, Throwable cause) throws IOException {
+        response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+
+        if (cause != null) {
+            var message = cause.getMessage();
+
+            if (message != null) {
+                response.getWriter().append(message);
+            }
+        }
     }
 
     /**

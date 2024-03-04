@@ -285,7 +285,7 @@ public class WebServiceProxy {
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
 
-        void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int m, List<Object> argumentList) {
+        static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int m, List<Object> argumentList) {
             var n = parameters.length;
 
             var method = webServiceProxy.getMethod();
