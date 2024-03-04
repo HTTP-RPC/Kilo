@@ -1047,7 +1047,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Returns a sorted list of properties for a given type.
+     * Returns the properties for a given type, sorted by name.
      *
      * @param type
      * The bean type.
