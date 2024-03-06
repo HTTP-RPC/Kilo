@@ -931,7 +931,7 @@ public abstract class WebService extends HttpServlet {
             || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
             || contentType.startsWith(MULTIPART_FORM_DATA);
 
-        var handler = getHandler(keys.size(), empty, handlerList, argumentMap.keySet());
+        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -940,7 +940,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler.getParameters(), keys, empty, argumentMap, request);
+            arguments = getArguments(handler.getParameters(), keys, argumentMap, empty, request);
         } catch (Exception exception) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
@@ -1004,34 +1004,34 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static Method getHandler(int m, boolean empty, List<Method> handlerList, Set<String> argumentNames) {
-        var c = argumentNames.size();
-
+    private static Method getHandler(List<Method> handlerList, int keyCount, Set<String> argumentNames, boolean empty) {
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
             var n = parameters.length;
 
-            if (m > n) {
-                continue;
-            }
-
-            if (c == 0) {
-                return handler;
-            }
-
             if (!empty) {
                 n--;
             }
 
-            var i = 0;
+            if (keyCount > n) {
+                continue;
+            }
 
-            for (var j = m; j < n; j++) {
-                var parameter = parameters[j];
+            if (argumentNames.isEmpty()) {
+                return handler;
+            }
+
+            var c = 0;
+
+            var argumentCount = argumentNames.size();
+
+            for (var i = keyCount; i < n; i++) {
+                var parameter = parameters[i];
 
                 var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
 
-                if (argumentNames.contains(name) && ++i == c) {
+                if (argumentNames.contains(name) && ++c == argumentCount) {
                     return handler;
                 }
             }
@@ -1040,21 +1040,21 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Parameter[] parameters, List<String> keys, boolean empty, Map<String, List<?>> argumentMap, HttpServletRequest request) {
+    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, boolean empty, HttpServletRequest request) {
         var n = parameters.length;
 
         var arguments = new Object[n];
 
-        var m = keys.size();
-
-        if (n > m && !empty) {
+        if (!empty) {
             n--;
         }
+
+        var keyCount = keys.size();
 
         for (var i = 0; i < n; i++) {
             var parameter = parameters[i];
 
-            if (i < m) {
+            if (i < keyCount) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
                 var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());

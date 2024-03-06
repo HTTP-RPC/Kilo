@@ -238,7 +238,7 @@ public class WebServiceProxy {
             var argumentList = Optionals.map(arguments, Arrays::asList, listOf());
 
             var pathBuilder = new StringBuilder();
-            var m = 0;
+            var keyCount = 0;
 
             var resourcePath = method.getAnnotation(ResourcePath.class);
 
@@ -257,7 +257,7 @@ public class WebServiceProxy {
                     }
 
                     if (component.equals("?")) {
-                        var parameterValue = getParameterValue(argumentList.get(m));
+                        var parameterValue = getParameterValue(argumentList.get(keyCount));
 
                         if (parameterValue == null) {
                             throw new IllegalArgumentException("Path variable is required.");
@@ -265,7 +265,7 @@ public class WebServiceProxy {
 
                         component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
 
-                        m++;
+                        keyCount++;
                     }
 
                     pathBuilder.append(component);
@@ -278,14 +278,14 @@ public class WebServiceProxy {
                 initializer.accept(webServiceProxy);
             }
 
-            if (argumentList.size() > m) {
-                configure(webServiceProxy, method.getParameters(), m, argumentList);
+            if (argumentList.size() > keyCount) {
+                configure(webServiceProxy, method.getParameters(), keyCount, argumentList);
             }
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
 
-        static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int m, List<Object> argumentList) {
+        static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList) {
             var n = parameters.length;
 
             var method = webServiceProxy.getMethod();
@@ -296,7 +296,7 @@ public class WebServiceProxy {
 
             var argumentMap = new LinkedHashMap<String, Object>();
 
-            for (var i = m; i < n; i++) {
+            for (var i = keyCount; i < n; i++) {
                 var parameter = parameters[i];
 
                 var value = argumentList.get(i);

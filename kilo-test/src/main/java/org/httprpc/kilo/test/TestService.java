@@ -16,6 +16,7 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
@@ -24,11 +25,13 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -175,6 +178,26 @@ public class TestService extends WebService {
                     return next;
                 }
             };
+        }
+    }
+
+    @Override
+    protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
+        var contentType = request.getContentType();
+
+        if (contentType.equals("application/octet-stream")) {
+            var inputStream = request.getInputStream();
+
+            var outputStream = new ByteArrayOutputStream(1024);
+
+            int b;
+            while ((b = inputStream.read()) != -1) {
+                outputStream.write(b);
+            }
+
+            return ByteBuffer.wrap(outputStream.toByteArray());
+        } else {
+            return super.decodeBody(request, type);
         }
     }
 
@@ -335,31 +358,31 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     @ResourcePath("image")
-    public void testPostImage() throws IOException {
-        echo();
+    public void testPostImage(ByteBuffer byteBuffer) throws IOException {
+        echo(byteBuffer);
     }
 
     @RequestMethod("PUT")
-    public void testPut() throws IOException {
-        echo();
+    public void testPut(ByteBuffer byteBuffer) throws IOException {
+        echo(byteBuffer);
+    }
+
+    private void echo(ByteBuffer byteBuffer) throws IOException {
+        var data = byteBuffer.array();
+
+        OutputStream outputStream = getResponse().getOutputStream();
+
+        for (var i = 0; i < data.length; i++) {
+            outputStream.write(data[i]);
+        }
+
+        outputStream.flush();
     }
 
     @RequestMethod("PUT")
     @ResourcePath("?")
     public int testEmptyPut(int value) {
         return value;
-    }
-
-    private void echo() throws IOException {
-        InputStream inputStream = getRequest().getInputStream();
-        OutputStream outputStream = getResponse().getOutputStream();
-
-        int b;
-        while ((b = inputStream.read()) != -1) {
-            outputStream.write(b);
-        }
-
-        outputStream.flush();
     }
 
     @RequestMethod("DELETE")
