@@ -18,6 +18,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -381,6 +382,7 @@ public class TestService extends WebService {
 
     @RequestMethod("PUT")
     @ResourcePath("?")
+    @Empty
     public int testEmptyPut(int value) {
         return value;
     }

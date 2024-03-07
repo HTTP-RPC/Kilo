@@ -186,7 +186,7 @@ public void deleteItem(
 Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
 ### Body Content
-Body content may be declared as the final parameter to a POST or PUT handler:
+Body content may be declared as the final parameter to a `POST` or `PUT` handler:
 
 ```java
 @RequestMethod("PUT")
@@ -198,9 +198,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path variables, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-Note that body parameters are not supported for POST requests submitted as form data.
+Note that body parameters are not supported for `POST` requests submitted as form data.
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -399,7 +399,7 @@ webServiceProxy.setArguments(mapOf(
 System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
-POST, PUT, and DELETE operations are also supported. The `listOf()` and `mapOf()` methods are discussed in more detail [later](#collections-and-optionals).
+`POST`, `PUT`, and `DELETE` operations are also supported. The `listOf()` and `mapOf()` methods are discussed in more detail [later](#collections-and-optionals).
 
 ### Typed Invocation
 `WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
@@ -432,7 +432,9 @@ System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. 
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters.
+
+Path variables and body content are handled as described earlier. The `Empty` annotation can be used to indicate that a service method does not accept a body (i.e. that the final parameter represents an argument, not the request body). This annotation is only required for empty `POST` or `PUT` requests (`GET` and `DELETE` operations are inherently empty). It does not apply to `POST` requests submitted as form data. 
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 

@@ -278,19 +278,17 @@ public class WebServiceProxy {
                 initializer.accept(webServiceProxy);
             }
 
-            if (argumentList.size() > keyCount) {
-                configure(webServiceProxy, method.getParameters(), keyCount, argumentList);
-            }
+            configure(webServiceProxy, method.getParameters(), keyCount, argumentList, method.getAnnotation(Empty.class) != null);
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
 
-        static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList) {
+        static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList, boolean empty) {
             var n = parameters.length;
 
             var method = webServiceProxy.getMethod();
 
-            if ((method.equals("POST") && webServiceProxy.getEncoding() == null) || method.equals("PUT")) {
+            if (((method.equals("POST") && webServiceProxy.getEncoding() == null) || method.equals("PUT")) && !empty) {
                 n--;
             }
 

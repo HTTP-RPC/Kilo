@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
@@ -41,6 +42,7 @@ public interface TestServiceProxy {
 
     @RequestMethod("PUT")
     @ResourcePath("?")
+    @Empty
     int testEmptyPut(int value) throws IOException;
 
     @RequestMethod("GET")
