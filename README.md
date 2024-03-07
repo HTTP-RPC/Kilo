@@ -186,7 +186,7 @@ public void deleteItem(
 Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
 ### Body Content
-Body content may be declared as the final parameter to a `POST` or `PUT` handler:
+Body content may be declared as the final parameter in a `POST` or `PUT` handler:
 
 ```java
 @RequestMethod("PUT")
