@@ -38,6 +38,7 @@ public interface TestServiceProxy {
     Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) throws IOException;
 
     @RequestMethod("POST")
+    @Empty
     TestService.Response testPost(@Required String string, List<String> strings, int number, List<URL> attachments) throws IOException;
 
     @RequestMethod("PUT")

@@ -288,7 +288,7 @@ public class WebServiceProxy {
 
             var method = webServiceProxy.getMethod();
 
-            if (((method.equals("POST") && webServiceProxy.getEncoding() == null) || method.equals("PUT")) && !empty) {
+            if ((method.equals("POST") || method.equals("PUT")) && !empty) {
                 n--;
             }
 
@@ -311,7 +311,13 @@ public class WebServiceProxy {
             webServiceProxy.setArguments(argumentMap);
 
             if (n < parameters.length) {
-                webServiceProxy.setBody(argumentList.get(n));
+                var body = argumentList.get(n);
+
+                if (body == null) {
+                    throw new IllegalArgumentException("Body is required.");
+                }
+
+                webServiceProxy.setBody(body);
             }
         }
     }

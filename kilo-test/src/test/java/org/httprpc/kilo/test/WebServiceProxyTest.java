@@ -271,7 +271,7 @@ public class WebServiceProxyTest {
     public void testPostProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, null);
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, listOf());
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
@@ -425,23 +425,6 @@ public class WebServiceProxyTest {
         var result = webServiceProxy.invoke();
 
         assertEquals(body, BeanAdapter.coerceList((List<?>)result, Integer.class));
-    }
-
-    @Test
-    public void testListPostWithArguments() throws IOException {
-        var list = listOf(1, 2, 3);
-
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/list");
-
-        webServiceProxy.setArguments(mapOf(
-            entry("list", list)
-        ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var result = webServiceProxy.invoke();
-
-        assertEquals(list, BeanAdapter.coerceList((List<?>)result, Integer.class));
     }
 
     @Test

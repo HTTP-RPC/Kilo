@@ -14,13 +14,14 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Required;
-import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.WebService;
-
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
+import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Empty;
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
+import org.httprpc.kilo.WebService;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 public class FileUploadService extends WebService {
     @RequestMethod("POST")
     @Description("Uploads a single file.")
+    @Empty
     public long uploadFile(
         @Description("The file to upload.") @Required URL file
     ) throws IOException {
@@ -47,6 +49,7 @@ public class FileUploadService extends WebService {
 
     @RequestMethod("POST")
     @Description("Uploads a list of files.")
+    @Empty
     public long uploadFiles(
         @Description("The files to upload.") List<URL> files
     ) throws IOException {

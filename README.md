@@ -162,6 +162,7 @@ For example, the following service method accepts a single required `file` argum
 ```java
 @RequestMethod("POST")
 @Description("Uploads a single file.")
+@Empty
 public long uploadFile(
     @Description("The file to upload.") @Required URL file
 ) throws IOException {
@@ -170,6 +171,8 @@ public long uploadFile(
 ```
 
 `List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
+
+The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
 
 ### Path Variables
 Path variables (or "keys") are specified by a "?" character in an endpoint's resource path:
@@ -198,9 +201,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
 
-Note that body parameters are not supported for `POST` requests submitted as form data.
+The `Empty` annotation can be used to indicate that a service method does not accept a body. It is only required for empty `POST` or `PUT` requests (`GET` and `DELETE` requests are inherently empty). Handlers for `POST` requests submitted as form data must include this annotation.
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -432,9 +435,7 @@ System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters.
-
-Path variables and body content are handled as described earlier. The `Empty` annotation can be used to indicate that a service method does not accept a body (i.e. that the final parameter represents an argument, not the request body). This annotation is only required for empty `POST` or `PUT` requests (`GET` and `DELETE` operations are inherently empty). It does not apply to `POST` requests submitted as form data. 
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content (including the `Empty` annotation) are handled as described for `WebService`. 
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 

@@ -151,7 +151,6 @@
     }
   </style>
   <script>
-    // Highlight the active item in the table of contents.
     document.addEventListener('DOMContentLoaded', function() {
       const tocLinks = document.querySelectorAll('#toc a');
       const highlightActive = function() {
@@ -216,7 +215,7 @@
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
       <!-- {{#operations}} -->
-      <pre><span class="method {{method}}">{{method}}</span>{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
+      <pre><span class="method {{method}}">{{method}}{{?empty}}°{{/empty}}</span>{{?produces}} -&gt; {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
       <!-- {{?description}} -->
       <p>{{.}}</p>
       <!-- {{/description}} -->

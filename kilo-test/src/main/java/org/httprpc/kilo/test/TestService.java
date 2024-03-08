@@ -286,6 +286,7 @@ public class TestService extends WebService {
     }
 
     @RequestMethod("POST")
+    @Empty
     public Response testPost(@Required String string, List<String> strings,
         int number, boolean flag, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,

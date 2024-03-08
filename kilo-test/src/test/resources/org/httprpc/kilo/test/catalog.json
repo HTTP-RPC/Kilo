@@ -7,6 +7,7 @@
         {
           "deprecated": false,
           "description": "Returns a list of all items in the catalog.",
+          "empty": false,
           "method": "GET",
           "parameters": [
           ],
@@ -31,6 +32,7 @@
         {
           "deprecated": false,
           "description": "Adds an item to the catalog.",
+          "empty": false,
           "method": "POST",
           "parameters": [
             {
@@ -66,6 +68,7 @@
         {
           "deprecated": false,
           "description": "Updates an item.",
+          "empty": false,
           "method": "PUT",
           "parameters": [
             {
@@ -110,6 +113,7 @@
         {
           "deprecated": false,
           "description": "Deletes an item.",
+          "empty": false,
           "method": "DELETE",
           "parameters": [
             {
@@ -145,6 +149,7 @@
         {
           "deprecated": false,
           "description": "Returns a list of size options.",
+          "empty": false,
           "method": "GET",
           "parameters": [
           ],
