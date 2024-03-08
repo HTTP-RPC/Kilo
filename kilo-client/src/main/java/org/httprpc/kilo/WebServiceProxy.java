@@ -278,7 +278,21 @@ public class WebServiceProxy {
                 initializer.accept(webServiceProxy);
             }
 
-            configure(webServiceProxy, method.getParameters(), keyCount, argumentList, method.getAnnotation(Empty.class) != null);
+            var empty = method.getAnnotation(Empty.class) != null;
+
+            if (empty) {
+                var formData = method.getAnnotation(FormData.class);
+
+                if (formData != null) {
+                    if (formData.multipart()) {
+                        webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+                    } else {
+                        webServiceProxy.setEncoding(Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+                    }
+                }
+            }
+
+            configure(webServiceProxy, method.getParameters(), keyCount, argumentList, empty);
 
             return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }

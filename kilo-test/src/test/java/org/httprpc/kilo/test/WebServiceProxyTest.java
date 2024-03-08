@@ -271,7 +271,7 @@ public class WebServiceProxyTest {
     public void testPostProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, listOf());
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
@@ -327,12 +327,9 @@ public class WebServiceProxyTest {
 
     @Test
     public void testURLEncodedPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
-            webServiceProxy.setEncoding(WebServiceProxy.Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
-            webServiceProxy.setMonitorStream(System.out);
-        });
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, null);
+        var result = testServiceProxy.testURLEncodedPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
@@ -396,12 +393,9 @@ public class WebServiceProxyTest {
         var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
         var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
 
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
-            webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
-            webServiceProxy.setMonitorStream(System.out);
-        });
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, listOf(textTestURL, imageTestURL));
+        var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, listOf(textTestURL, imageTestURL));
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
