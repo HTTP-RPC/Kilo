@@ -940,8 +940,10 @@ public abstract class WebService extends HttpServlet {
             || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
             || contentType.startsWith(MULTIPART_FORM_DATA);
 
-        if ((method.equals("POST") || method.equals("PUT")) && empty) {
-            handlerList = handlerList.stream().filter(handler -> handler.getAnnotation(Empty.class) != null).toList();
+        if ((method.equals("POST") || method.equals("PUT"))) {
+            handlerList = handlerList.stream()
+                .filter(handler -> empty == (handler.getAnnotation(Empty.class) != null))
+                .toList();
         }
 
         var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
