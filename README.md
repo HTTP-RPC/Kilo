@@ -256,7 +256,7 @@ A reference to any service annotated with `jakarta.servlet.annotation.WebServlet
 An index of all active services can be found at the application's context root:
 
 ```
-GET http://localhost:8080/kilo-test
+GET http://localhost:8080/kilo-test/
 ```
 
 <img src="README/api-index.png" width="640px"/>

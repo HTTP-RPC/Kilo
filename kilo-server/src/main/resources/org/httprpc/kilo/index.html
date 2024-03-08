@@ -43,7 +43,7 @@
   <h1>{{@services}}</h1>
   <ol>
     <!-- {{#services}} -->
-    <li><a href="{{contextPath}}{{path}}?api">{{path}}</a><span>{{description}}</span></li>
+    <li><a href="{{contextPath}}{{path}}?api">{{?path}}{{.}}{{/path}}{{^path}}{{@default}}{{/path}}</a><span>{{description}}</span></li>
     <!-- {{/services}} -->
   </ol>
 </div>

@@ -735,9 +735,7 @@ public abstract class WebService extends HttpServlet {
     public void init() throws ServletException {
         var type = getClass();
 
-        var webServlet = type.getAnnotation(WebServlet.class);
-
-        var urlPatterns = webServlet.urlPatterns();
+        var urlPatterns = Optionals.map(type.getAnnotation(WebServlet.class), WebServlet::urlPatterns, new String[0]);
 
         if (urlPatterns.length == 0) {
             throw new ServletException("At least one URL pattern is required.");
@@ -745,7 +743,7 @@ public abstract class WebService extends HttpServlet {
 
         var path = urlPatterns[0];
 
-        if (!path.startsWith("/") && (path.length() == 1 || path.endsWith("/*"))) {
+        if (!(path.startsWith("/") && path.endsWith("/*"))) {
             throw new ServletException("Invalid URL pattern.");
         }
 
