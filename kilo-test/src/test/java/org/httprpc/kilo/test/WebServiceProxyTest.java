@@ -936,6 +936,17 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testGreeting() throws IOException {
+        var contextPath = baseURL.getPath();
+
+        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, contextPath.substring(0, contextPath.length() - 1)));
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals("Hello, World!", result);
+    }
+
+    @Test
     public void testCatalog() throws IOException {
         var item = addItem();
 
