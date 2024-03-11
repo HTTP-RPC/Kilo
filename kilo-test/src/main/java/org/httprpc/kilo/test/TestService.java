@@ -384,8 +384,8 @@ public class TestService extends WebService {
     @RequestMethod("PUT")
     @ResourcePath("?")
     @Empty
-    public int testEmptyPut(int value) {
-        return value;
+    public int testEmptyPut(int id) {
+        return id;
     }
 
     @RequestMethod("DELETE")

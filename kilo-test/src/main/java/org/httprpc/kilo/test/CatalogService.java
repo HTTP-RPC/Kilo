@@ -24,12 +24,14 @@ import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.sql.ResultSetAdapter;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.httprpc.kilo.test.Item.Schema.DESCRIPTION;
-import static org.httprpc.kilo.test.Item.Schema.ID;
-import static org.httprpc.kilo.test.Item.Schema.PRICE;
+import static org.httprpc.kilo.test.ItemDetail.Schema.COLOR;
+import static org.httprpc.kilo.test.ItemDetail.Schema.DESCRIPTION;
+import static org.httprpc.kilo.test.ItemDetail.Schema.ID;
+import static org.httprpc.kilo.test.ItemDetail.Schema.PRICE;
+import static org.httprpc.kilo.test.ItemDetail.Schema.SIZE;
+import static org.httprpc.kilo.test.ItemDetail.Schema.WEIGHT;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -40,7 +42,7 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() throws SQLException {
-        var queryBuilder = QueryBuilder.selectAll().from(Item.Schema.class);
+        var queryBuilder = QueryBuilder.select(ID, DESCRIPTION, PRICE).from(ItemDetail.Schema.class);
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
@@ -48,15 +50,31 @@ public class CatalogService extends AbstractDatabaseService {
         }
     }
 
+    @RequestMethod("GET")
+    @ResourcePath("items/?")
+    @Description("Returns detailed information about a specific item.")
+    public ItemDetail getItem(
+        @Description("The item ID.") Integer itemID
+    ) throws SQLException {
+        var queryBuilder = QueryBuilder.selectAll().from(ItemDetail.Schema.class).where(ID.eq("id"));
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+                entry("id", itemID)
+            )))) {
+            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, ItemDetail.class)).orElse(null);
+        }
+    }
+
     @RequestMethod("POST")
     @ResourcePath("items")
     @Description("Adds an item to the catalog.")
     @Creates
-    public Item addItem(
-        @Description("The item to add.") Item item
+    public ItemDetail addItem(
+        @Description("The item to add.") ItemDetail item
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.insertInto(Item.Schema.class, DESCRIPTION, PRICE)
-            .values("description", "price");
+        var queryBuilder = QueryBuilder.insertInto(ItemDetail.Schema.class, DESCRIPTION, PRICE, SIZE, COLOR, WEIGHT)
+            .values("description", "price", "size", "color", "weight");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -65,33 +83,24 @@ public class CatalogService extends AbstractDatabaseService {
         return getItem(BeanAdapter.coerce(queryBuilder.getGeneratedKeys().get(0), Integer.class));
     }
 
-    private Item getItem(int itemID) throws SQLException {
-        var queryBuilder = QueryBuilder.selectAll().from(Item.Schema.class).where(ID.eq("id"));
-
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
-                entry("id", itemID)
-            )))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, Item.class)).orElse(null);
-        }
-    }
-
     @RequestMethod("PUT")
     @ResourcePath("items/?")
     @Description("Updates an item.")
-    public void updateItem(
+    public ItemDetail updateItem(
         @Description("The item ID.") Integer itemID,
-        @Description("The updated item.") Item item
+        @Description("The updated item.") ItemDetail item
     ) throws SQLException {
         item.setID(itemID);
 
-        var queryBuilder = QueryBuilder.update(Item.Schema.class, DESCRIPTION, PRICE)
-            .set("description", "price")
+        var queryBuilder = QueryBuilder.update(ItemDetail.Schema.class, DESCRIPTION, PRICE, SIZE, COLOR, WEIGHT)
+            .set("description", "price", "size", "color", "weight")
             .where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
         }
+
+        return getItem(itemID);
     }
 
     @RequestMethod("DELETE")
@@ -100,19 +109,12 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.deleteFrom(Item.Schema.class).where(ID.eq("id"));
+        var queryBuilder = QueryBuilder.deleteFrom(ItemDetail.Schema.class).where(ID.eq("id"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("id", itemID)
             ));
         }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("sizes")
-    @Description("Returns a list of size options.")
-    public List<Size> getSizes() {
-        return Arrays.asList(Size.values());
     }
 }

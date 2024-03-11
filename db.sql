@@ -24,8 +24,11 @@ insert into pet (name, owner, species, sex, birth, death) values ('Slim', 'Benny
 
 create table item (
     id int not null auto_increment,
-    description varchar(256) not null,
+    description varchar(1024) not null,
     price double not null,
+    size enum ('SMALL', 'MEDIUM', 'LARGE') not null,
+    color varchar(128) not null,
+    weight double not null,
     primary key (id)
 );
 

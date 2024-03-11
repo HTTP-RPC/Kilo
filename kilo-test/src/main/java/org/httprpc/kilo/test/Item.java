@@ -17,22 +17,9 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.SchemaElement;
-import org.httprpc.kilo.sql.Table;
 
 @Description("Represents an item in the catalog.")
 public interface Item {
-    @Table("item")
-    enum Schema implements SchemaElement {
-        @Column("id")
-        ID,
-        @Column("description")
-        DESCRIPTION,
-        @Column("price")
-        PRICE
-    }
-
     @Name("id")
     @Description("The item's ID.")
     Integer getID();

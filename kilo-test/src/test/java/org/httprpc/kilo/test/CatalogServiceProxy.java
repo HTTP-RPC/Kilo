@@ -25,19 +25,19 @@ public interface CatalogServiceProxy {
     @ResourcePath("items")
     List<Item> getItems() throws IOException;
 
+    @RequestMethod("GET")
+    @ResourcePath("items/?")
+    ItemDetail getItem(Integer itemID) throws IOException;
+
     @RequestMethod("POST")
     @ResourcePath("items")
-    Item addItem(Item item) throws IOException;
+    ItemDetail addItem(ItemDetail item) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("items/?")
-    void updateItem(Integer itemID, Item item) throws IOException;
+    ItemDetail updateItem(Integer itemID, ItemDetail item) throws IOException;
 
     @RequestMethod("DELETE")
     @ResourcePath("items/?")
     void deleteItem(Integer itemID) throws IOException;
-
-    @RequestMethod("GET")
-    @ResourcePath("sizes")
-    List<Size> getSizes() throws IOException;
 }

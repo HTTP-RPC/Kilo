@@ -803,7 +803,13 @@ public class QueryBuilder {
                 continue;
             }
 
-            statement.setObject(i++, arguments.get(parameter));
+            var value = arguments.get(parameter);
+
+            if (value instanceof Enum<?>) {
+                value = value.toString();
+            }
+
+            statement.setObject(i++, value);
         }
     }
 

@@ -43,7 +43,7 @@ Each is discussed in more detail below.
 ## WebService
 `WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/5.0/).
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments may be provided via the query string, resource path, or request body. `WebService` converts the arguments to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
+Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments may be provided via the query string, resource path, or request body. `WebService` converts the values to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
 
 The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself.
 
@@ -124,9 +124,9 @@ Method parameters may be any of the following types:
 
 Additionally, `java.util.Map` and bean types are supported for [body content](#body-content).
 
-Unspecified values are automatically converted to `0` or `false` for primitive types. `List` values are automatically converted to their declared types (e.g. `List<Double>`). If no arguments are provided for a list parameter, an empty list (not `null`) will be passed to the method.
+Unspecified values are automatically converted to `0` or `false` for primitive types. `List` values are automatically converted to their declared types. If no arguments are provided for a list parameter, an empty list (not `null`) will be passed to the method.
 
-`URL` and `List<URL>` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) service example for more information.
+`URL` and `List<URL>` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
@@ -175,13 +175,13 @@ public long uploadFile(
 The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
 
 ### Path Variables
-Path variables (or "keys") are specified by a "?" character in an endpoint's resource path:
+Path variables (or "keys") are specified by a "?" character in an endpoint's resource path. For example:
 
 ```java
-@RequestMethod("DELETE")
+@RequestMethod("GET")
 @ResourcePath("items/?")
-@Description("Deletes an item.")
-public void deleteItem(
+@Description("Returns detailed information about a specific item.")
+public ItemDetail getItem(
     @Description("The item ID.") Integer itemID
 ) throws SQLException { ... }
 ```
@@ -197,7 +197,7 @@ Body content may be declared as the final parameter in a `POST` or `PUT` handler
 @Description("Updates an item.")
 public void updateItem(
     @Description("The item ID.") Integer itemID,
-    @Description("The updated item.") Item item
+    @Description("The updated item.") ItemDetail item
 ) throws SQLException { ... }
 ```
 

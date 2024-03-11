@@ -37,7 +37,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -948,98 +947,65 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCatalog() throws IOException {
-        var item = addItem();
+        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, new URL(baseURL, "catalog/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        assertNotNull(item);
-        assertNotNull(item.getID());
-        assertEquals("abc", item.getDescription());
-        assertEquals(150.00, item.getPrice());
-
-        assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
-
-        updateItem(item);
-
-        assertNotNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
-
-        deleteItem(item);
-
-        assertNull(getCatalogItems().stream().filter(item::equals).findAny().orElse(null));
-
-        assertEquals(Arrays.asList(Size.values()), getCatalogSizes());
-    }
-
-    private Item addItem() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "catalog/items");
-
-        webServiceProxy.setBody(mapOf(
-            entry("description", "abc"),
-            entry("price", 150.00)
-        ));
-
-        webServiceProxy.setExpectedStatus(WebServiceProxy.Status.CREATED);
-
-        return webServiceProxy.invoke(result -> BeanAdapter.coerce(result, Item.class));
-    }
-
-    private void updateItem(Item item) throws IOException {
-        item.setDescription("xyz");
-        item.setPrice(300.00);
-
-        var webServiceProxy = new WebServiceProxy("PUT", baseURL, "catalog/items/%s", item.getID());
-
-        webServiceProxy.setBody(item);
-
-        webServiceProxy.invoke();
-    }
-
-    private void deleteItem(Item item) throws IOException {
-        var webServiceProxy = new WebServiceProxy("DELETE", baseURL, "catalog/items/%s", item.getID());
-
-        webServiceProxy.invoke();
-    }
-
-    private List<Item> getCatalogItems() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "catalog/items");
-
-        return webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, Item.class));
-    }
-
-    private List<Size> getCatalogSizes() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "catalog/sizes");
-
-        return webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, Size.class));
-    }
-
-    @Test
-    public void testCatalogProxy() throws IOException {
-        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, new URL(baseURL, "catalog/"));
-
-        var item = BeanAdapter.coerce(mapOf(), Item.class);
+        var item = BeanAdapter.coerce(mapOf(), ItemDetail.class);
 
         item.setDescription("abc");
         item.setPrice(150.0);
+        item.setSize(Size.MEDIUM);
+        item.setColor("red");
+        item.setWeight(5.0);
 
         item = catalogServiceProxy.addItem(item);
 
         assertNotNull(item);
-        assertNotNull(item.getID());
-        assertEquals("abc", item.getDescription());
-        assertEquals(150.00, item.getPrice());
 
-        assertNotNull(catalogServiceProxy.getItems().stream().filter(item::equals).findAny().orElse(null));
+        var itemID = item.getID();
+
+        assertNotNull(itemID);
+
+        assertEquals("abc", item.getDescription());
+        assertEquals(150.0, item.getPrice());
+        assertEquals(Size.MEDIUM, item.getSize());
+        assertEquals(5.0, item.getWeight());
+
+        item = catalogServiceProxy.getItem(itemID);
+
+        assertNotNull(item);
+
+        assertEquals(itemID, item.getID());
+        assertEquals("abc", item.getDescription());
+        assertEquals(150.0, item.getPrice());
+        assertEquals(Size.MEDIUM, item.getSize());
+        assertEquals(5.0, item.getWeight());
 
         item.setDescription("xyz");
-        item.setPrice(300.00);
+        item.setPrice(300.0);
+        item.setSize(Size.LARGE);
+        item.setColor("blue");
+        item.setWeight(10.0);
 
-        catalogServiceProxy.updateItem(item.getID(), item);
+        item = catalogServiceProxy.updateItem(item.getID(), item);
 
-        assertNotNull(catalogServiceProxy.getItems().stream().filter(item::equals).findAny().orElse(null));
+        assertNotNull(item);
+
+        assertEquals(itemID, item.getID());
+        assertEquals("xyz", item.getDescription());
+        assertEquals(300.0, item.getPrice());
+        assertEquals(Size.LARGE, item.getSize());
+        assertEquals("blue", item.getColor());
+        assertEquals(10.0, item.getWeight());
+
+        assertNotNull(catalogServiceProxy.getItems().stream()
+            .filter(result -> result.getID().equals(itemID))
+            .findAny().orElse(null));
 
         catalogServiceProxy.deleteItem(item.getID());
 
-        assertNull(catalogServiceProxy.getItems().stream().filter(item::equals).findAny().orElse(null));
-
-        assertEquals(Arrays.asList(Size.values()), catalogServiceProxy.getSizes());
+        assertNull(catalogServiceProxy.getItems().stream()
+            .filter(result -> result.getID().equals(itemID))
+            .findAny().orElse(null));
     }
 
     @Test
