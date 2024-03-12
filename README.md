@@ -148,16 +148,14 @@ public class MemberService extends WebService {
 }
 ```
 
-Arguments would be passed to this method as follows: 
+This method could be invoked as follows: 
 
 ```
 GET /members?first_name=foo*&last_name=bar*
 ```
 
 #### Required Parameters
-Parameters that must be provided by the caller can be indicated by the `Required` annotation. This annotation can also be applied to bean properties and record components, as discussed [later](#required-properties).
-
-For example, the following service method accepts a single required `file` argument:
+Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
 
 ```java
 @RequestMethod("POST")
