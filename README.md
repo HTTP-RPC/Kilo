@@ -94,11 +94,9 @@ GET /math/sum?values=1&values=2&values=3
 
 In either case, the service would return the value 6 in response. 
 
-Argument values may also be submitted as [form data](https://www.w3.org/TR/2014/REC-html5-20141028/forms.html#attr-fs-enctype). If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) will be called.
+Arguments may also be submitted as [form data](https://www.w3.org/TR/2014/REC-html5-20141028/forms.html#attr-fs-enctype). If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) will be called.
 
-At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the generated documentation.
-
-The optional `Description` annotation is used to document service implementations and is discussed in more detail [later](#api-documentation).
+At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the [generated documentation](#api-documentation).
 
 ### Method Parameters
 Method parameters may be any of the following types:
@@ -218,9 +216,9 @@ Return values are converted to JSON as follows:
 * `java.util.List`: array
 * `java.util.Map` or any other type: object
 
-By default, an HTTP 200 response is returned when a service method completes successfully. However, if the handler method is annotated with `Creates`, HTTP 201 will be returned instead. If the handler's return type is `void` or `Void`, HTTP 204 will be returned.
+By default, an HTTP 200 (OK) response is returned when a service method completes successfully. However, if the handler method is annotated with `Creates`, HTTP 201 (created) will be returned instead. If the handler's return type is `void` or `Void`, HTTP 204 (no content) will be returned.
 
-If a service method returns `null`, an HTTP 404 response will be returned.
+If a service method returns `null`, an HTTP 404 (not found) response will be returned.
 
 #### Custom Result Encodings
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative representations. See the method documentation for more information.
@@ -248,7 +246,7 @@ If an exception is thrown by a service method and the response has not yet been 
 Subclasses can override the `reportError()` method to perform custom error handling.
 
 ### Inter-Service Communication
-A reference to any service annotated with `jakarta.servlet.annotation.WebServlet` can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
+A reference to any active service can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.
 
 ### API Documentation
 An index of all active services can be found at the application's context root:
@@ -338,11 +336,11 @@ public WebServiceProxy(String method, URL baseURL, String path, Object... argume
 
 The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the HTTP method, a base URL, and a relative path (as a format string, to which the optional trailing arguments are applied).
 
-Request arguments are specified via the `setArguments()` method. As with HTML forms, arguments are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
+Request arguments are specified via the `setArguments()` method. As with HTML forms, values are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
-Custom body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
+Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
 ```java
 public interface RequestHandler {
