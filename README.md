@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 150KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 150KB in size, making it an ideal choice for applications where a minimal footprint is desired. 
 
 The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
@@ -117,14 +117,14 @@ Method parameters may be any of the following types:
 * `java.time.Duration`: ISO-8601 duration
 * `java.time.Period`: ISO-8601 period
 * `java.util.UUID`
-* `java.util.List`
+* `java.util.List`, array/varargs
 * `java.net.URL`
 
 Additionally, `java.util.Map` and bean types are supported for [body content](#body-content).
 
-Unspecified values are automatically converted to `0` or `false` for primitive types. `List` values are automatically converted to their declared types. If no arguments are provided for a list parameter, an empty list (not `null`) will be passed to the method.
+Unspecified values are automatically converted to `0` or `false` for primitive types. `List` and array elements are automatically converted to their declared types. If no values are provided for a list or array parameter, an empty value (not `null`) will be passed to the method.
 
-`URL` and `List<URL>` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
+`URL` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
@@ -166,7 +166,7 @@ public long uploadFile(
 }
 ```
 
-`List` parameters are implicitly required, since a list argument will never be `null` (although it may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
+`List` and array parameters are implicitly required, since these values will never be `null` (although they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
 
 The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
 
@@ -338,7 +338,7 @@ The first version accepts a string representing the HTTP method to execute and t
 
 Request arguments are specified via the `setArguments()` method. As with HTML forms, values are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
