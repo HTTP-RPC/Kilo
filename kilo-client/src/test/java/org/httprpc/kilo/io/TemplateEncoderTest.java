@@ -64,8 +64,8 @@ public class TemplateEncoderTest {
         templateEncoder.write(dictionary, writer);
 
         assertEquals(String.format("{a=%s,b=%s,c/d=%s,e=,f/g=}",
-            Collections.valueAt(dictionary, "a"),
-            Collections.valueAt(dictionary, "b"),
+            dictionary.get("a"),
+            dictionary.get("b"),
             Collections.valueAt(dictionary, "c", "d")), writer.toString());
     }
 
@@ -202,9 +202,9 @@ public class TemplateEncoderTest {
         templateEncoder.write(mapOf(entry("list", listOf(dictionary))), writer);
 
         assertEquals(String.format("[{a=%s,b=%s,c=%s}]",
-            Collections.valueAt(dictionary, "a"),
-            Collections.valueAt(dictionary, "b"),
-            Collections.valueAt(dictionary, "c")), writer.toString());
+            dictionary.get("a"),
+            dictionary.get("b"),
+            dictionary.get("c")), writer.toString());
     }
 
     @Test
@@ -226,12 +226,12 @@ public class TemplateEncoderTest {
         templateEncoder.write(mapOf(entry("list", listOf(dictionary1, dictionary2))), writer);
 
         assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]",
-            Collections.valueAt(dictionary1, "a"),
-            Collections.valueAt(dictionary1, "b"),
-            Collections.valueAt(dictionary1, "c"),
-            Collections.valueAt(dictionary2, "a"),
-            Collections.valueAt(dictionary2, "b"),
-            Collections.valueAt(dictionary2, "c")), writer.toString());
+            dictionary1.get("a"),
+            dictionary1.get("b"),
+            dictionary1.get("c"),
+            dictionary2.get("a"),
+            dictionary2.get( "b"),
+            dictionary2.get("c")), writer.toString());
     }
 
     @Test

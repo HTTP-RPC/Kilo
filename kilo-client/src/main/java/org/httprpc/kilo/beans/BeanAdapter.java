@@ -18,6 +18,7 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.util.Optionals;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -96,6 +97,45 @@ public class BeanAdapter extends AbstractMap<String, Object> {
          */
         public boolean isReadOnly() {
             return mutators.isEmpty();
+        }
+    }
+
+    // Array adapter
+    private static class ArrayAdapter extends AbstractList<Object> {
+        Object array;
+        int length;
+
+        ArrayAdapter(Object array) {
+            this.array = array;
+
+            length = Array.getLength(array);
+        }
+
+        @Override
+        public Object get(int index) {
+            return adapt(Array.get(array, index));
+        }
+
+        @Override
+        public int size() {
+            return length;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new Iterator<>() {
+                int i = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return i < length;
+                }
+
+                @Override
+                public Object next() {
+                    return adapt(get(i++));
+                }
+            };
         }
     }
 
@@ -572,6 +612,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
+     * <p>If the value is an array, it is wrapped in an adapter that will
+     * recursively adapt the array's elements.</p>
+     *
      * <p>If the value is a {@link List}, it is wrapped in an adapter that
      * will recursively adapt the list's elements.</p>
      *
@@ -602,6 +645,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof UUID
             || value instanceof URL) {
             return value;
+        } else if (value.getClass().isArray()) {
+            return new ArrayAdapter(value);
         } else if (value instanceof List<?> list) {
             return new ListAdapter(list);
         } else if (value instanceof Map<?, ?> map) {
@@ -639,6 +684,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link UUID}</li>
      * <li>{@link URL}</li>
      * </ul>
+     *
+     * <p>If the target type is an array, the provided value must be an array
+     * or {@link List}. The return value is an array of the same length as the
+     * source value whose elements have been coerced to the array's component
+     * type.</p>
      *
      * <p>If the target type is an {@link Enum}, the resulting value is the
      * first constant whose string representation matches the value's string
@@ -889,6 +939,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } catch (MalformedURLException exception) {
                     throw new IllegalArgumentException(exception);
                 }
+            } else if (type.isArray()) {
+                return toArray(value, type);
             } else if (type.isEnum()) {
                 return toEnum(value, type);
             } else if (type.isRecord()) {
@@ -897,6 +949,28 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return toBean(value, type);
             }
         }
+    }
+
+    private static Object toArray(Object value, Class<?> type) {
+        if (value.getClass().isArray()) {
+            value = adapt(value);
+        }
+
+        if (!(value instanceof List<?> list)) {
+            throw new IllegalArgumentException();
+        }
+
+        var componentType = type.getComponentType();
+
+        var array = Array.newInstance(componentType, list.size());
+
+        var i = 0;
+
+        for (var element : list) {
+            Array.set(array, i++, toRawType(element, componentType));
+        }
+
+        return array;
     }
 
     private static Object toEnum(Object value, Class<?> type) {

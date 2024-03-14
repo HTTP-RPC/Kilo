@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -183,6 +184,17 @@ public class BeanAdapterTest {
         assertEquals(Boolean.TRUE, BeanAdapter.coerce(1.0, Boolean.TYPE));
         assertEquals(Boolean.TRUE, BeanAdapter.coerce(-1.0, Boolean.TYPE));
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(0.0, Boolean.TYPE));
+    }
+
+    @Test
+    public void testArrayAdapter() {
+        assertEquals(listOf(1, 2, 3), BeanAdapter.adapt(new int[] {1, 2, 3}));
+    }
+
+    @Test
+    public void testArrayCoercion() {
+        assertArrayEquals(new int[]{1, 2, 3}, (int[]) BeanAdapter.coerce(new String[] {"1", "2", "3"}, Integer.TYPE.arrayType()));
+        assertArrayEquals(new int[]{1, 2, 3}, (int[]) BeanAdapter.coerce(listOf("1", "2", "3"), Integer.TYPE.arrayType()));
     }
 
     @Test
@@ -342,11 +354,9 @@ public class BeanAdapterTest {
 
         testInterface.setInteger(150);
 
-        assertEquals(150, Collections.valueAt(map, "i"));
+        assertEquals(150, map.get("i"));
 
-        var nestedInterface = testInterface.getNestedBean();
-
-        nestedInterface.setFlag(true);
+        testInterface.getNestedBean().setFlag(true);
 
         assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
 
@@ -406,7 +416,7 @@ public class BeanAdapterTest {
 
         var beanAdapter = new BeanAdapter(testBean);
 
-        assertEquals(0L, Collections.valueAt(beanAdapter, "long"));
+        assertEquals(0L, beanAdapter.get("long"));
         assertEquals(false, Collections.valueAt(beanAdapter, "nestedBean", "flag"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("string"));
