@@ -75,12 +75,12 @@
           }
         }
       ],
-      "path": "/upload"
+      "path": "/file-upload"
     }
   ],
   "enumerations": [
   ],
-  "path": "/upload",
+  "path": "/file-upload",
   "structures": [
   ]
 }

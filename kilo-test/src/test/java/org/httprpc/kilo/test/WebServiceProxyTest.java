@@ -208,6 +208,38 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testVarargs() throws IOException {
+        var testServiceProxy = new WebServiceProxy("POST", new URL(baseURL, "test/varargs"));
+
+        testServiceProxy.setArguments(mapOf(
+            entry("numbers", listOf(1, 2, 3))
+        ));
+
+        testServiceProxy.setBody(listOf("abc", "def", "ghi"));
+
+        testServiceProxy.setMonitorStream(System.out);
+
+        var result = testServiceProxy.invoke();
+
+        assertEquals(mapOf(
+            entry("numbers", listOf(1, 2, 3)),
+            entry("strings", listOf("abc", "def", "ghi"))
+        ), result);
+    }
+
+    @Test
+    public void testVarargsProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+
+        var result = testServiceProxy.testVarargs(new int[] {1, 2, 3}, "abc", "def", "ghi");
+
+        assertEquals(mapOf(
+            entry("numbers", listOf(1, 2, 3)),
+            entry("strings", listOf("abc", "def", "ghi"))
+        ), result);
+    }
+
+    @Test
     public void testGetFibonacci() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/fibonacci");
 
@@ -338,8 +370,8 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMultipartPost() throws IOException {
-        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
-        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+        var textTestURL = getClass().getResource("test.txt");
+        var imageTestURL = getClass().getResource("test.jpg");
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
 
@@ -389,12 +421,12 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMultipartPostProxy() throws IOException {
-        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
-        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+        var textTestURL = getClass().getResource("test.txt");
+        var imageTestURL = getClass().getResource("test.jpg");
 
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, listOf(textTestURL, imageTestURL));
+        var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, textTestURL, imageTestURL);
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
@@ -550,7 +582,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testImagePost() throws IOException {
-        var imageTestURL = WebServiceProxyTest.class.getResource("test.jpg");
+        var imageTestURL = getClass().getResource("test.jpg");
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/image");
 
@@ -578,7 +610,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPut() throws IOException {
-        var textTestURL = WebServiceProxyTest.class.getResource("test.txt");
+        var textTestURL = getClass().getResource("test.txt");
 
         var webServiceProxy = new WebServiceProxy("PUT", baseURL, "test");
 
@@ -893,10 +925,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testFileUpload1() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "upload");
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "file-upload");
 
         webServiceProxy.setArguments(mapOf(
-            entry("file", WebServiceProxyTest.class.getResource("test.txt"))
+            entry("file", getClass().getResource("test.txt"))
         ));
 
         var result = webServiceProxy.invoke();
@@ -905,17 +937,38 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testFileUpload1Proxy() throws IOException {
+        var fileUploadServiceProxy = WebServiceProxy.of(FileUploadServiceProxy.class, new URL(baseURL, "file-upload"));
+
+        var result = fileUploadServiceProxy.uploadFile(getClass().getResource("test.txt"));
+
+        assertEquals(26, result);
+    }
+
+    @Test
     public void testFileUpload2() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, "upload");
+        var textTestURL = getClass().getResource("test.txt");
+        var imageTestURL = getClass().getResource("test.jpg");
+
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "file-upload");
 
         webServiceProxy.setArguments(mapOf(
-            entry("files", listOf(
-                WebServiceProxyTest.class.getResource("test.txt"),
-                WebServiceProxyTest.class.getResource("test.jpg")
-            ))
+            entry("files", listOf(textTestURL, imageTestURL))
         ));
 
         var result = webServiceProxy.invoke();
+
+        assertEquals(10418, result);
+    }
+
+    @Test
+    public void testFileUpload2Proxy() throws IOException {
+        var textTestURL = getClass().getResource("test.txt");
+        var imageTestURL = getClass().getResource("test.jpg");
+
+        var fileUploadServiceProxy = WebServiceProxy.of(FileUploadServiceProxy.class, new URL(baseURL, "file-upload"));
+
+        var result = fileUploadServiceProxy.uploadFiles(listOf(textTestURL, imageTestURL));
 
         assertEquals(10418, result);
     }
@@ -1140,7 +1193,7 @@ public class WebServiceProxyTest {
     @Test
     public void testAPIDocumentation() throws IOException {
         testAPIDocumentation("math");
-        testAPIDocumentation("upload");
+        testAPIDocumentation("file-upload");
         testAPIDocumentation("catalog");
     }
 

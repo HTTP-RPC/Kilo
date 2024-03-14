@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -34,6 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -987,7 +989,17 @@ public class WebServiceProxy {
     }
 
     private static List<Object> getParameterValues(Object argument) {
-        if (argument instanceof List<?> list) {
+        if (argument.getClass().isArray()) {
+            var length = Array.getLength(argument);
+
+            var list = new ArrayList<>(length);
+
+            for (var i = 0; i < length; i++) {
+                list.add(getParameterValue(Array.get(argument, i)));
+            }
+
+            return list;
+        } else if (argument instanceof List<?> list) {
             return list.stream().map(WebServiceProxy::getParameterValue).toList();
         } else {
             return listOf(getParameterValue(argument));

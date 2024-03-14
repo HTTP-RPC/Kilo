@@ -12,8 +12,25 @@
  * limitations under the License.
  */
 
-apply from: rootProject.file('publish.gradle')
+package org.httprpc.kilo.test;
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+import org.httprpc.kilo.Empty;
+import org.httprpc.kilo.FormData;
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
+public interface FileUploadServiceProxy {
+    @RequestMethod("POST")
+    @Empty
+    @FormData(multipart = true)
+    long uploadFile(@Required URL file) throws IOException;
+
+    @RequestMethod("POST")
+    @Empty
+    @FormData(multipart = true)
+    long uploadFiles(List<URL> files) throws IOException;
 }

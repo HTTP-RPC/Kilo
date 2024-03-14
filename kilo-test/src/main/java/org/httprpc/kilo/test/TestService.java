@@ -42,6 +42,7 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,7 +55,7 @@ import java.util.UUID;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
-@WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 0)
 @MultipartConfig
 public class TestService extends WebService {
     public interface A {
@@ -70,7 +71,8 @@ public class TestService extends WebService {
         @Override
         @Description("C's version of B")
         double getB();
-        String getC();
+        @Description("An array of strings")
+        String[] getC();
     }
 
     public static class D {
@@ -255,6 +257,15 @@ public class TestService extends WebService {
         );
     }
 
+    @RequestMethod("POST")
+    @ResourcePath("varargs")
+    public Map<String, Object> testVarargs(int[] numbers, String... strings) {
+        return mapOf(
+            entry("numbers", Arrays.stream(numbers).boxed().toList()),
+            entry("strings", Arrays.stream(strings).toList())
+        );
+    }
+
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
     public List<Number> testGetFibonacci(int count) {
@@ -292,10 +303,12 @@ public class TestService extends WebService {
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
-        UUID uuid, List<URL> attachments) throws IOException {
+        UUID uuid, URL... attachments) throws IOException {
         List<Map<String, ?>> attachmentInfo = new LinkedList<>();
 
-        for (var attachment : attachments) {
+        for (var i = 0; i < attachments.length; i++) {
+            var attachment = attachments[i];
+
             long bytes = 0;
             long checksum = 0;
 

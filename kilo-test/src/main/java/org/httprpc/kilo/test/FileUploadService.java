@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/upload/*"}, loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/file-upload/*"}, loadOnStartup = 1)
 @MultipartConfig
 @Description("File upload example service.")
 public class FileUploadService extends WebService {

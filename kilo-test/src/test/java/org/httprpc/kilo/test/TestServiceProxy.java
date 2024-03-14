@@ -39,6 +39,10 @@ public interface TestServiceProxy {
     Map<String, Object> testParameters(int x, int y, int a, int b, List<Double> values) throws IOException;
 
     @RequestMethod("POST")
+    @ResourcePath("varargs")
+    Map<String, Object> testVarargs(int[] numbers, String... strings) throws IOException;
+
+    @RequestMethod("POST")
     @Empty
     TestService.Response testPost(@Required String string, List<String> strings, int number) throws IOException;
 
@@ -50,7 +54,7 @@ public interface TestServiceProxy {
     @RequestMethod("POST")
     @Empty
     @FormData(multipart = true)
-    TestService.Response testMultipartPost(@Required String string, List<String> strings, int number, List<URL> attachments) throws IOException;
+    TestService.Response testMultipartPost(@Required String string, List<String> strings, int number, URL... attachments) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("?")

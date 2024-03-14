@@ -28,6 +28,7 @@ import org.httprpc.kilo.util.Optionals;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1076,8 +1077,21 @@ public abstract class WebService extends HttpServlet {
                 var values = argumentMap.get(name);
 
                 Object argument;
-                if (type == List.class) {
-                    List<?> list;
+                if (type.isArray()) {
+                    var componentType = type.getComponentType();
+
+                    if (values != null) {
+                        argument = Array.newInstance(componentType, values.size());
+
+                        var j = 0;
+
+                        for (var value : values) {
+                            Array.set(argument, j++, BeanAdapter.coerce(value, componentType));
+                        }
+                    } else {
+                        argument = Array.newInstance(componentType, 0);
+                    }
+                } else if (type == List.class) {
                     if (values != null) {
                         var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
@@ -1085,12 +1099,10 @@ public abstract class WebService extends HttpServlet {
                             throw new UnsupportedOperationException("Invalid element type.");
                         }
 
-                        list = BeanAdapter.coerceList(values, (Class<?>)elementType);
+                        argument = BeanAdapter.coerceList(values, (Class<?>)elementType);
                     } else {
-                        list = listOf();
+                        argument = listOf();
                     }
-
-                    argument = list;
                 } else {
                     Object value;
                     if (values != null) {
@@ -1289,10 +1301,6 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeRawType(Class<?> type) {
-        if (type.isArray()) {
-            throw new IllegalArgumentException();
-        }
-
         if (type.isPrimitive()
             || type == Object.class
             || type == Boolean.class
@@ -1309,6 +1317,8 @@ public abstract class WebService extends HttpServlet {
             || type == UUID.class
             || type == URL.class) {
             return new TypeDescriptor(type, true);
+        } else if (type.isArray()) {
+            return describeGenericType(BeanAdapter.typeOfList(type.getComponentType()));
         } else if (List.class.isAssignableFrom(type)) {
             return describeGenericType(BeanAdapter.typeOfList(Object.class));
         } else if (Map.class.isAssignableFrom(type)) {
