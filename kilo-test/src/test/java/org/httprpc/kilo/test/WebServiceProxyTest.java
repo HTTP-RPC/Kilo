@@ -209,17 +209,17 @@ public class WebServiceProxyTest {
 
     @Test
     public void testVarargs() throws IOException {
-        var testServiceProxy = new WebServiceProxy("POST", new URL(baseURL, "test/varargs"));
+        var webServiceProxy = new WebServiceProxy("POST", new URL(baseURL, "test/varargs"));
 
-        testServiceProxy.setArguments(mapOf(
+        webServiceProxy.setArguments(mapOf(
             entry("numbers", listOf(1, 2, 3))
         ));
 
-        testServiceProxy.setBody(listOf("abc", "def", "ghi"));
+        webServiceProxy.setBody(listOf("abc", "def", "ghi"));
 
-        testServiceProxy.setMonitorStream(System.out);
+        webServiceProxy.setMonitorStream(System.out);
 
-        var result = testServiceProxy.invoke();
+        var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
             entry("numbers", listOf(1, 2, 3)),
