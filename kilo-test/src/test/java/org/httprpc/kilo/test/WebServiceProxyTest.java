@@ -792,7 +792,7 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, "test");
 
         webServiceProxy.setArguments(mapOf(
-            entry("number", 5)
+            entry("string", null)
         ));
 
         webServiceProxy.setMonitorStream(System.out);

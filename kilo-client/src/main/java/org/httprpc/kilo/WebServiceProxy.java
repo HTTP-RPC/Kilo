@@ -989,7 +989,7 @@ public class WebServiceProxy {
     }
 
     private static List<Object> getParameterValues(Object argument) {
-        if (argument.getClass().isArray()) {
+        if (argument != null && argument.getClass().isArray()) {
             var length = Array.getLength(argument);
 
             var list = new ArrayList<>(length);
