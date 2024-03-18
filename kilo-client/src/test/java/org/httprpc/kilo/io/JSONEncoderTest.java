@@ -54,6 +54,13 @@ public class JSONEncoderTest {
 
         assertEquals("-789", encode(-789));
         assertEquals("-789.1", encode(-789.10));
+
+        assertThrows(IllegalArgumentException.class, () -> encode(Float.NaN));
+        assertThrows(IllegalArgumentException.class, () -> encode(Float.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> encode(Float.NEGATIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> encode(Double.NaN));
+        assertThrows(IllegalArgumentException.class, () -> encode(Double.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> encode(Double.NEGATIVE_INFINITY));
     }
 
     @Test
@@ -63,40 +70,8 @@ public class JSONEncoderTest {
     }
 
     @Test
-    public void testEnum() throws IOException {
-        assertEquals("\"MONDAY\"", encode(DayOfWeek.MONDAY));
-    }
-
-    @Test
     public void testDate() throws IOException {
         assertEquals("0", encode(new Date(0)));
-    }
-
-    @Test
-    public void testTemporalAccessors() throws IOException {
-        assertEquals("\"1970-01-01T00:00:00.001Z\"", encode(Instant.ofEpochMilli(1)));
-
-        assertEquals("\"2018-06-28\"", encode(LocalDate.parse("2018-06-28")));
-        assertEquals("\"10:45\"", encode(LocalTime.parse("10:45")));
-        assertEquals("\"2018-06-28T10:45\"", encode(LocalDateTime.parse("2018-06-28T10:45")));
-    }
-
-    @Test
-    public void testTemporalAmounts() throws IOException {
-        assertEquals("\"PT2H30M\"", encode(Duration.parse("PT2H30M")));
-        assertEquals("\"P3Y2M\"", encode(Period.parse("P3Y2M")));
-    }
-
-    @Test
-    public void testUUID() throws IOException {
-        var uuid = UUID.randomUUID();
-
-        assertEquals(String.format("\"%s\"", uuid), encode(uuid));
-    }
-
-    @Test
-    public void testURL() throws IOException {
-        assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
     }
 
     @Test
@@ -161,9 +136,36 @@ public class JSONEncoderTest {
         assertEquals(expected, actual);
     }
 
+        @Test
+    public void testEnum() throws IOException {
+        assertEquals("\"MONDAY\"", encode(DayOfWeek.MONDAY));
+    }
+
     @Test
-    public void testInvalidValue() {
-        assertThrows(IllegalArgumentException.class, () -> encode(new Object()));
+    public void testTemporalAccessors() throws IOException {
+        assertEquals("\"1970-01-01T00:00:00.001Z\"", encode(Instant.ofEpochMilli(1)));
+
+        assertEquals("\"2018-06-28\"", encode(LocalDate.parse("2018-06-28")));
+        assertEquals("\"10:45\"", encode(LocalTime.parse("10:45")));
+        assertEquals("\"2018-06-28T10:45\"", encode(LocalDateTime.parse("2018-06-28T10:45")));
+    }
+
+    @Test
+    public void testTemporalAmounts() throws IOException {
+        assertEquals("\"PT2H30M\"", encode(Duration.parse("PT2H30M")));
+        assertEquals("\"P3Y2M\"", encode(Period.parse("P3Y2M")));
+    }
+
+    @Test
+    public void testUUID() throws IOException {
+        var uuid = UUID.randomUUID();
+
+        assertEquals(String.format("\"%s\"", uuid), encode(uuid));
+    }
+
+    @Test
+    public void testURL() throws IOException {
+        assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
     }
 
     @Test

@@ -16,12 +16,8 @@ package org.httprpc.kilo.io;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Encodes an object hierarchy to JSON.
@@ -89,14 +85,22 @@ public class JSONEncoder extends Encoder<Object> {
             }
 
             writer.write("\"");
+        } else if (value instanceof Float number) {
+            if (number.isNaN() || number.isInfinite()) {
+                throw new IllegalArgumentException("Invalid float value.");
+            }
+
+            writer.write(value.toString());
+        } else if (value instanceof Double number) {
+            if (number.isNaN() || number.isInfinite()) {
+                throw new IllegalArgumentException("Invalid double value.");
+            }
+
+            writer.write(value.toString());
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.write(value.toString());
-        } else if (value instanceof Enum) {
-            encode(value.toString(), writer);
         } else if (value instanceof Date date) {
-            encode(date.getTime(), writer);
-        } else if (value instanceof TemporalAccessor || value instanceof TemporalAmount || value instanceof UUID || value instanceof URL) {
-            encode(value.toString(), writer);
+            writer.write(String.valueOf(date.getTime()));
         } else if (value instanceof Iterable<?> iterable) {
             writer.write("[");
 
@@ -176,7 +180,7 @@ public class JSONEncoder extends Encoder<Object> {
 
             writer.write("}");
         } else {
-            throw new IllegalArgumentException("Unsupported type.");
+            encode(value.toString(), writer);
         }
     }
 

@@ -36,9 +36,9 @@ public class JSONDecoder extends Decoder<Object> {
 
     private StringBuilder valueBuilder = new StringBuilder();
 
-    private static final String TRUE_KEYWORD = "true";
-    private static final String FALSE_KEYWORD = "false";
-    private static final String NULL_KEYWORD = "null";
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
+    private static final String NULL = "null";
 
     /**
      * Constructs a new JSON decoder.
@@ -108,24 +108,18 @@ public class JSONDecoder extends Decoder<Object> {
                 // Read the value
                 if (c == '"') {
                     value = readString(reader);
-                } else if (c == '+' || c == '-' || Character.isDigit(c)) {
+                } else if (c == '-' || Character.isDigit(c)) {
                     value = readNumber(reader);
-                } else if (c == TRUE_KEYWORD.charAt(0)) {
-                    if (!readKeyword(reader, TRUE_KEYWORD)) {
-                        throw new IOException();
-                    }
+                } else if (c == TRUE.charAt(0)) {
+                    readLiteral(reader, TRUE);
 
                     value = Boolean.TRUE;
-                } else if (c == FALSE_KEYWORD.charAt(0)) {
-                    if (!readKeyword(reader, FALSE_KEYWORD)) {
-                        throw new IOException();
-                    }
+                } else if (c == FALSE.charAt(0)) {
+                    readLiteral(reader, FALSE);
 
                     value = Boolean.FALSE;
-                } else if (c == NULL_KEYWORD.charAt(0)) {
-                    if (!readKeyword(reader, NULL_KEYWORD)) {
-                        throw new IOException();
-                    }
+                } else if (c == NULL.charAt(0)) {
+                    readLiteral(reader, NULL);
 
                     value = null;
                 } else if (c == '[') {
@@ -263,12 +257,12 @@ public class JSONDecoder extends Decoder<Object> {
         return number;
     }
 
-    private boolean readKeyword(Reader reader, String keyword) throws IOException {
-        var n = keyword.length();
+    private void readLiteral(Reader reader, String literal) throws IOException {
+        var n = literal.length();
         var i = 0;
 
         while (c != EOF && i < n) {
-            if (keyword.charAt(i) != c) {
+            if (literal.charAt(i) != c) {
                 break;
             }
 
@@ -277,6 +271,8 @@ public class JSONDecoder extends Decoder<Object> {
             i++;
         }
 
-        return (i == n);
+        if (i < n) {
+            throw new IOException("Invalid literal.");
+        }
     }
 }

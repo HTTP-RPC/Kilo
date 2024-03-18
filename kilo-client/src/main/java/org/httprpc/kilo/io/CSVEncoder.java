@@ -175,7 +175,9 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     }
 
     void encode(Object value, Writer writer) throws IOException {
-        if (value instanceof CharSequence text) {
+        if (value == null) {
+            writer.write("");
+        } else if (value instanceof CharSequence text) {
             writer.write('"');
 
             for (int i = 0, n = text.length(); i < n; i++) {
@@ -190,9 +192,9 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
             writer.write('"');
         } else if (value instanceof Date date) {
-            encode(date.getTime(), writer);
+            writer.write(String.valueOf(date.getTime()));
         } else {
-            writer.write((value == null) ? "" : value.toString());
+            writer.write(value.toString());
         }
     }
 }

@@ -55,6 +55,9 @@ public class JSONDecoderTest {
 
         assertEquals(true, jsonDecoder.read(new StringReader(String.valueOf(true))));
         assertEquals(false, jsonDecoder.read(new StringReader(String.valueOf(false))));
+
+        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("tabc")));
+        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("fxyz")));
     }
 
     @Test
@@ -62,6 +65,8 @@ public class JSONDecoderTest {
         var jsonDecoder = new JSONDecoder();
 
         assertNull(jsonDecoder.read(new StringReader(String.valueOf((String)null))));
+
+        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("n123")));
     }
 
     @Test

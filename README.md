@@ -205,16 +205,21 @@ The `Empty` annotation can be used to indicate that a service method does not ac
 Return values are converted to JSON as follows:
 
 * `String`: string
-* `Number` or numeric primitive: number
-* `Boolean` or boolean primitive: true/false
-* `Enum`: string
+* `Number`/numeric primitive: number
+* `Boolean`/boolean primitive: boolean
 * `java.util.Date`: number representing epoch time in milliseconds
-* `java.time.TemporalAccessor`: string
-* `java.time.TemporalAmount`: string
-* `java.util.UUID`: string
-* `java.net.URL`: string
 * `java.util.List`: array
-* `java.util.Map` or any other type: object
+* `java.util.Map`: object
+
+Additionally, instances of the following types are automatically converted to their string representations:
+
+* `Enum`
+* `java.time.TemporalAccessor`
+* `java.time.TemporalAmount`
+* `java.util.UUID`
+* `java.net.URL`
+
+All other values are assumed to be beans and are serialized as objects.
 
 By default, an HTTP 200 (OK) response is returned when a service method completes successfully. However, if the handler method is annotated with `Creates`, HTTP 201 (created) will be returned instead. If the handler's return type is `void` or `Void`, HTTP 204 (no content) will be returned.
 
@@ -480,7 +485,7 @@ Values are converted to their JSON equivalents as described [earlier](#return-va
 
 * string: `String`
 * number: `Number`
-* true/false: `Boolean`
+* boolean: `Boolean`
 * array: `java.util.List`
 * object: `java.util.Map`
 
