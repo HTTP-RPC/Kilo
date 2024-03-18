@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.Format;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -29,6 +31,8 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;
     private char delimiter;
+
+    private Map<Class<?>, Function<?, Object>> mappings = new HashMap<>();
 
     private Map<String, String> labels = mapOf();
     private Map<String, Format> formats = mapOf();
@@ -59,6 +63,28 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         this.keys = keys;
         this.delimiter = delimiter;
+
+        map(Date.class, Date::getTime);
+    }
+
+    /**
+     * Associates a mapping function with a type.
+     *
+     * @param <T>
+     * The source type.
+
+     * @param type
+     * The source type.
+     *
+     * @param transform
+     * The mapping function to apply.
+     */
+    public <T> void map(Class<T> type, Function<T, Object> transform) {
+        if (type == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        mappings.put(type, transform);
     }
 
     /**
@@ -174,8 +200,11 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         writer.flush();
     }
 
+    @SuppressWarnings("unchecked")
     void encode(Object value, Writer writer) throws IOException {
-        if (value instanceof CharSequence text) {
+        if (value == null) {
+            writer.write("");
+        } else if (value instanceof CharSequence text) {
             writer.write('"');
 
             for (int i = 0, n = text.length(); i < n; i++) {
@@ -189,10 +218,20 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
             }
 
             writer.write('"');
-        } else if (value instanceof Date date) {
-            encode(date.getTime(), writer);
         } else {
-            writer.write((value == null) ? "" : value.toString());
+            var type = value.getClass();
+
+            for (var entry : mappings.entrySet()) {
+                if (entry.getKey().isAssignableFrom(type)) {
+                    var transform = (Function<Object, Object>)entry.getValue();
+
+                    encode(transform.apply(value), writer);
+
+                    return;
+                }
+            }
+
+            writer.write(value.toString());
         }
     }
 }

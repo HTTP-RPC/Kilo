@@ -20,14 +20,18 @@ import java.net.URL;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Encodes an object hierarchy to JSON.
  */
 public class JSONEncoder extends Encoder<Object> {
     private boolean compact;
+
+    private Map<Class<?>, Function<?, Object>> mappings = new HashMap<>();
 
     private int depth = 0;
 
@@ -47,6 +51,33 @@ public class JSONEncoder extends Encoder<Object> {
      */
     public JSONEncoder(boolean compact) {
         this.compact = compact;
+
+        map(Date.class, Date::getTime);
+        map(Enum.class, Object::toString);
+        map(TemporalAccessor.class, Object::toString);
+        map(TemporalAmount.class, Object::toString);
+        map(UUID.class, Object::toString);
+        map(URL.class, Object::toString);
+    }
+
+    /**
+     * Associates a mapping function with a type.
+     *
+     * @param <T>
+     * The source type.
+
+     * @param type
+     * The source type.
+     *
+     * @param transform
+     * The mapping function to apply.
+     */
+    public <T> void map(Class<T> type, Function<T, Object> transform) {
+        if (type == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        mappings.put(type, transform);
     }
 
     @Override
@@ -62,6 +93,7 @@ public class JSONEncoder extends Encoder<Object> {
         writer.flush();
     }
 
+    @SuppressWarnings("unchecked")
     void encode(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
@@ -91,12 +123,6 @@ public class JSONEncoder extends Encoder<Object> {
             writer.write("\"");
         } else if (value instanceof Number || value instanceof Boolean) {
             writer.write(value.toString());
-        } else if (value instanceof Enum) {
-            encode(value.toString(), writer);
-        } else if (value instanceof Date date) {
-            encode(date.getTime(), writer);
-        } else if (value instanceof TemporalAccessor || value instanceof TemporalAmount || value instanceof UUID || value instanceof URL) {
-            encode(value.toString(), writer);
         } else if (value instanceof Iterable<?> iterable) {
             writer.write("[");
 
@@ -176,6 +202,18 @@ public class JSONEncoder extends Encoder<Object> {
 
             writer.write("}");
         } else {
+            var type = value.getClass();
+
+            for (var entry : mappings.entrySet()) {
+                if (entry.getKey().isAssignableFrom(type)) {
+                    var transform = (Function<Object, Object>)entry.getValue();
+
+                    encode(transform.apply(value), writer);
+
+                    return;
+                }
+            }
+
             throw new IllegalArgumentException("Unsupported type.");
         }
     }
