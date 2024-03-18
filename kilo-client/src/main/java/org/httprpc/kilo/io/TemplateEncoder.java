@@ -555,11 +555,10 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void writeRoot(Object root, Writer writer, Locale locale, TimeZone timeZone, Reader reader) throws IOException {
-        Map<String, ?> dictionary;
+        Map<?, ?> dictionary;
         if (root instanceof Map<?, ?> map) {
-            dictionary = (Map<String, ?>)map;
+            dictionary = map;
         } else {
             dictionary = mapOf(
                 entry(SELF_REFERENCE, root)
