@@ -122,7 +122,7 @@ Method parameters may be any of the following types:
 
 Additionally, `java.util.Map` and bean types are supported for [body content](#body-content).
 
-Unspecified values are automatically converted to `0` or `false` for primitive types. `Date` arguments are specified as a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
+Unspecified values are automatically converted to `0` or `false` for primitive types. `Date` values are parsed from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
 `List` and array elements are automatically converted to their declared types. If no values are provided for a list or array parameter, an empty value (not `null`) will be passed to the method.
 
