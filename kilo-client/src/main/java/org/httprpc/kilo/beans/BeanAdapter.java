@@ -453,7 +453,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static final String SET_PREFIX = "set";
 
-    private static Map<Class<?>, Map<String, Property>> propertyCache = new HashMap<>();
+    private static Map<Class<?>, Map<String, Property>> typeProperties = new HashMap<>();
 
     /**
      * Constructs a new bean adapter.
@@ -1130,7 +1130,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The properties defined by the requested type.
      */
     public synchronized static Map<String, Property> getProperties(Class<?> type) {
-        var properties = propertyCache.get(type);
+        var properties = typeProperties.get(type);
 
         if (properties == null) {
             properties = new HashMap<>();
@@ -1195,7 +1195,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 throw new UnsupportedOperationException("Duplicate key.");
             }, TreeMap::new));
 
-            propertyCache.put(type, properties);
+            typeProperties.put(type, properties);
         }
 
         return properties;

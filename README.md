@@ -109,26 +109,46 @@ Method parameters may be any of the following types:
 * `Float`/`float`
 * `Double`/`double`
 * `Boolean`/`boolean`
-* `java.util.Date` (from a long value representing epoch time in milliseconds)
-* `java.time.Instant` ("yyyy-mm-ddThh:mm:ss[.sss]Z")
-* `java.time.LocalDate` ("yyyy-mm-dd")
-* `java.time.LocalTime` ("hh:mm")
-* `java.time.LocalDateTime` ("yyyy-mm-ddThh:mm")
-* `java.time.Duration`: ISO-8601 duration
-* `java.time.Period`: ISO-8601 period
+* `java.util.Date`
+* `java.time.Instant`
+* `java.time.LocalDate`
+* `java.time.LocalTime`
+* `java.time.LocalDateTime`
+* `java.time.Duration`
+* `java.time.Period`
 * `java.util.UUID`
 * `java.util.List`, array/varargs
 * `java.net.URL`
 
 Additionally, `java.util.Map` and bean types are supported for [body content](#body-content).
 
-Unspecified values are automatically converted to `0` or `false` for primitive types. `List` and array elements are automatically converted to their declared types. If no values are provided for a list or array parameter, an empty value (not `null`) will be passed to the method.
+Unspecified values are automatically converted to `0` or `false` for primitive types. `Date` arguments are passed as a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
+
+`List` and array elements are automatically converted to their declared types. If no values are provided for a list or array parameter, an empty value (not `null`) will be passed to the method.
 
 `URL` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
+
+#### Required Parameters
+Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
+
+```java
+@RequestMethod("POST")
+@Description("Uploads a single file.")
+@Empty
+public long uploadFile(
+    @Description("The file to upload.") @Required URL file
+) throws IOException {
+    ...
+}
+```
+
+`List` and array parameters are implicitly required, since these values will never be `null` (though they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
+
+The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
 
 #### Custom Parameter Names
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
@@ -152,26 +172,8 @@ This method could be invoked as follows:
 GET /members?first_name=foo*&last_name=bar*
 ```
 
-#### Required Parameters
-Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
-
-```java
-@RequestMethod("POST")
-@Description("Uploads a single file.")
-@Empty
-public long uploadFile(
-    @Description("The file to upload.") @Required URL file
-) throws IOException {
-    ...
-}
-```
-
-`List` and array parameters are implicitly required, since these values will never be `null` (although they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
-
-The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
-
 ### Path Variables
-Path variables (or "keys") are specified by a "?" character in an endpoint's resource path. For example:
+Path variables (or "keys") are specified by a "?" character in an endpoint's resource path. For example, the `itemID` argument in the method below is provided by a path variable:
 
 ```java
 @RequestMethod("GET")
@@ -343,7 +345,7 @@ The first version accepts a string representing the HTTP method to execute and t
 
 Request arguments are specified via the `setArguments()` method. As with HTML forms, values are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time. Additionally, `List` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `List` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
@@ -540,7 +542,7 @@ This code would produce the following output:
 ...
 ```
 
-String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time. All other values are encoded via `toString()`. 
+String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time in milliseconds. All other values are encoded via `toString()`. 
 
 `CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding document as input, this code would produce the same output as the `JSONDecoder` example:
 
