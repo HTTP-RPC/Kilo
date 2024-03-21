@@ -415,7 +415,7 @@ public static <T> T of(Class<T> type, URL baseURL) { ... }
 public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) { ... }
 ```
 
-Both versions accept an interface type and base URL, and return an implementation of the interface that submits API requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
+Both versions return an implementation of a given interface that submits API requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
 
 The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. For example:
 
@@ -438,7 +438,7 @@ System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used in conjunction with `Empty` to submit `POST` requests as form data.
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used in conjunction with `Empty` to submit `POST` requests using either the URL or multi-part form data encoding.
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
@@ -792,52 +792,6 @@ System.out.println(employee.getHireDate()); // 1986-06-26
 
 Mutator methods are also supported.
 
-### Custom Property Names
-The `Name` annotation introduced [previously](#custom-parameter-names) can also be used to associate a custom name with a bean property or record component. For example:
-
-```java
-public class Person {
-    private String firstName = null;
-    private String lastName = null;
-
-    @Name("first_name")
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    @Name("last_name")
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-}
-```
-
-The preceding class would be serialized to JSON like this:
-
-```json
-{
-  "first_name": "John",
-  "last_name": "Smith"
-}
-```
-
-rather than this:
-
-```json
-{
-  "firstName": "John",
-  "lastName": "Smith"
-}
-```
-
 ### Required Properties
 The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a bean property or record component must contain a value. For example:
 
@@ -889,6 +843,52 @@ vehicleAdapter.get("manufacturer"); // throws
 ```
 
 Note that, unlike [list parameters](#required-parameters), list properties must be explicitly annotated when required.
+
+### Custom Property Names
+The `Name` annotation introduced [previously](#custom-parameter-names) can also be used to associate a custom name with a bean property or record component. For example:
+
+```java
+public class Person {
+    private String firstName = null;
+    private String lastName = null;
+
+    @Name("first_name")
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Name("last_name")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+}
+```
+
+The preceding class would be serialized to JSON like this:
+
+```json
+{
+  "first_name": "John",
+  "last_name": "Smith"
+}
+```
+
+rather than this:
+
+```json
+{
+  "firstName": "John",
+  "lastName": "Smith"
+}
+```
 
 ### Internal Properties
 The `Internal` annotation indicates that a bean property or record component is for internal use only and should be ignored by `BeanAdapter`. For example, given the following code:
