@@ -40,13 +40,10 @@ import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,7 +61,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     public static class Property {
         private Method accessor = null;
-        private List<Method> mutators = new LinkedList<>();
+        private Method mutator = null;
 
         private Property() {
         }
@@ -73,20 +70,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
          * Returns the property's accessor.
          *
          * @return
-         * The property's accessor, or {@code null} if no accessor is defined.
+         * The property's accessor.
          */
         public Method getAccessor() {
             return accessor;
         }
 
         /**
-         * Returns the property's mutators.
+         * Returns the property's mutator.
          *
          * @return
-         * The property's mutators.
+         * The property's mutator, or {@code null} if no mutator is defined.
          */
-        public Collection<Method> getMutators() {
-            return Collections.unmodifiableList(mutators);
+        public Method getMutator() {
+            return mutator;
         }
 
         /**
@@ -96,7 +93,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
          * {@code true} if the property is read-only; {@code false}, otherwise.
          */
         public boolean isReadOnly() {
-            return mutators.isEmpty();
+            return mutator == null;
         }
     }
 
@@ -499,17 +496,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return null;
         }
 
+        Object value;
         try {
-            var value = property.accessor.invoke(bean);
-
-            if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                throw new UnsupportedOperationException("Value is not defined.");
-            }
-
-            return adapt(value);
+            value = property.accessor.invoke(bean);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException(exception);
         }
+
+        if (property.accessor.getAnnotation(Required.class) != null && value == null) {
+            throw new UnsupportedOperationException("Value is not defined.");
+        }
+
+        return adapt(value);
     }
 
     /**
@@ -524,7 +522,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null) {
+        if (property == null || property.mutator == null) {
             throw new UnsupportedOperationException();
         }
 
@@ -532,18 +530,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             throw new IllegalArgumentException("Value is required.");
         }
 
-        var i = 0;
-
-        for (var mutator : property.mutators) {
-            try {
-                mutator.invoke(bean, toGenericType(value, mutator.getGenericParameterTypes()[0]));
-            } catch (Exception exception) {
-                i++;
-            }
-        }
-
-        if (i == property.mutators.size()) {
-            throw new UnsupportedOperationException();
+        try {
+            property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
+        } catch (IllegalAccessException | InvocationTargetException exception) {
+            throw new RuntimeException(exception);
         }
 
         return null;
@@ -1173,17 +1163,27 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     if (method.getParameterCount() == 0) {
                         property.accessor = method;
+                    } else if (property.mutator == null) {
+                        property.mutator = method;
                     } else {
-                        property.mutators.add(method);
+                        throw new UnsupportedOperationException("Duplicate mutator.");
                     }
                 }
             }
 
             properties = properties.entrySet().stream().filter(entry -> {
-                var accessor = entry.getValue().getAccessor();
+                var value = entry.getValue();
+
+                var accessor = value.getAccessor();
 
                 if (accessor == null) {
                     throw new UnsupportedOperationException("Missing accessor.");
+                }
+
+                var mutator = value.getMutator();
+
+                if (mutator != null && !accessor.getGenericReturnType().equals(mutator.getGenericParameterTypes()[0])) {
+                    throw new UnsupportedOperationException("Property type mismatch.");
                 }
 
                 return (accessor.getAnnotation(Internal.class) == null);

@@ -187,7 +187,7 @@ public ItemDetail getItem(
 Path parameters must precede query parameters in the method signature and are implicitly required. Values are mapped to method arguments in declaration order.
 
 ### Body Content
-Body content may be declared as the final parameter in a `POST` or `PUT` handler:
+Body content may be declared as the final parameter in a `POST` or `PUT` handler. For example, this method accepts an item ID as a path variable and an instance of `ItemDetail` as a body argument:
 
 ```java
 @RequestMethod("PUT")
@@ -343,7 +343,7 @@ public WebServiceProxy(String method, URL baseURL, String path, Object... argume
 
 The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the HTTP method, a base URL, and a relative path (as a format string, to which the optional trailing arguments are applied).
 
-Request arguments are specified via the `setArguments()` method. As with HTML forms, values are submitted either via the query string or in the request body. Arguments for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
+Request arguments are specified via a map passed to the `setArguments()` method. Argument values for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `List` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 

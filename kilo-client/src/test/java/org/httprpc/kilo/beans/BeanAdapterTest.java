@@ -82,6 +82,16 @@ public class BeanAdapterTest {
         }
     }
 
+    public static class PropertyTypeMismatch {
+        public int getX() {
+            return 0;
+        }
+
+        public void setX(String x) {
+            // No-op
+        }
+    }
+
     @Test
     public void testBeanAdapter() throws MalformedURLException {
         var map = mapOf(
@@ -151,9 +161,10 @@ public class BeanAdapterTest {
     public void testInvalidPut() {
         var beanAdapter = new BeanAdapter(new TestBean());
 
+        assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("dayOfWeek", "abc"));
+        assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("date", "xyz"));
+
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
-        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("dayOfWeek", "abc"));
-        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("date", "xyz"));
     }
 
     @Test
@@ -551,5 +562,10 @@ public class BeanAdapterTest {
     @Test
     public void testDuplicateKey() {
         assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateKey()));
+    }
+
+    @Test
+    public void testPropertyTypeMismatch() {
+        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new PropertyTypeMismatch()));
     }
 }

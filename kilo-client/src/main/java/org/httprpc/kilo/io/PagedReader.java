@@ -91,12 +91,12 @@ class PagedReader extends Reader {
             n++;
         }
 
-        return (c == EOF && n == 0) ? EOF : n;
+        return c == EOF && n == 0 ? EOF : n;
     }
 
     @Override
     public boolean ready() throws IOException {
-        return (position < count || reader.ready());
+        return position < count || reader.ready();
     }
 
     @Override
