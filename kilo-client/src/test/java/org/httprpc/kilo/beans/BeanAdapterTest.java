@@ -431,7 +431,10 @@ public class BeanAdapterTest {
         assertEquals(false, Collections.valueAt(beanAdapter, "nestedBean", "flag"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("string"));
+        assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("string", null));
+
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("integerList"));
+        assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("integerList", null));
 
         assertThrows(UnsupportedOperationException.class, () -> {
             var iterator = beanAdapter.entrySet().iterator();
@@ -456,6 +459,7 @@ public class BeanAdapterTest {
         assertThrows(IllegalArgumentException.class, () -> testInterface.setString(null));
 
         assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
+        assertThrows(IllegalArgumentException.class, () -> testInterface.setIntegerList(null));
 
         var nestedInterface = testInterface.getNestedBean();
 

@@ -29,44 +29,36 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class JSONDecoderTest {
     @Test
     public void testString() throws IOException {
-        var jsonDecoder = new JSONDecoder();
-
-        assertEquals("abcdéfg", jsonDecoder.read(new StringReader("\"abcdéfg\"")));
-        assertEquals("\b\f\r\n\t", jsonDecoder.read(new StringReader("\"\\b\\f\\r\\n\\t\"")));
-        assertEquals("é", jsonDecoder.read(new StringReader("\"\\u00E9\"")));
+        assertEquals("abcdéfg", decode("\"abcdéfg\""));
+        assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
+        assertEquals("é", decode("\"\\u00E9\""));
     }
 
     @Test
     public void testNumber() throws IOException {
-        var jsonDecoder = new JSONDecoder();
+        assertEquals(Integer.MAX_VALUE, decode(String.valueOf(Integer.MAX_VALUE)));
+        assertEquals(Long.MAX_VALUE, decode(String.valueOf(Long.MAX_VALUE)));
+        assertEquals(Double.MAX_VALUE, decode(String.valueOf(Double.MAX_VALUE)));
 
-        assertEquals(Integer.MAX_VALUE, jsonDecoder.read(new StringReader(String.valueOf(Integer.MAX_VALUE))));
-        assertEquals(Long.MAX_VALUE, jsonDecoder.read(new StringReader(String.valueOf(Long.MAX_VALUE))));
-        assertEquals(Double.MAX_VALUE, jsonDecoder.read(new StringReader(String.valueOf(Double.MAX_VALUE))));
-
-        assertEquals(Integer.MIN_VALUE, jsonDecoder.read(new StringReader(String.valueOf(Integer.MIN_VALUE))));
-        assertEquals(Long.MIN_VALUE, jsonDecoder.read(new StringReader(String.valueOf(Long.MIN_VALUE))));
-        assertEquals(Double.MIN_VALUE, jsonDecoder.read(new StringReader(String.valueOf(Double.MIN_VALUE))));
+        assertEquals(Integer.MIN_VALUE, decode(String.valueOf(Integer.MIN_VALUE)));
+        assertEquals(Long.MIN_VALUE, decode(String.valueOf(Long.MIN_VALUE)));
+        assertEquals(Double.MIN_VALUE, decode(String.valueOf(Double.MIN_VALUE)));
     }
 
     @Test
     public void testBoolean() throws IOException {
-        var jsonDecoder = new JSONDecoder();
+        assertEquals(true, decode(String.valueOf(true)));
+        assertEquals(false, decode(String.valueOf(false)));
 
-        assertEquals(true, jsonDecoder.read(new StringReader(String.valueOf(true))));
-        assertEquals(false, jsonDecoder.read(new StringReader(String.valueOf(false))));
-
-        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("tabc")));
-        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("fxyz")));
+        assertThrows(IOException.class, () -> decode("tabc"));
+        assertThrows(IOException.class, () -> decode("fxyz"));
     }
 
     @Test
     public void testNull() throws IOException {
-        var jsonDecoder = new JSONDecoder();
+        assertNull(decode(String.valueOf((String)null)));
 
-        assertNull(jsonDecoder.read(new StringReader(String.valueOf((String)null))));
-
-        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("n123")));
+        assertThrows(IOException.class, () -> decode("n123"));
     }
 
     @Test
@@ -81,9 +73,7 @@ public class JSONDecoderTest {
 
         var text = "[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
 
-        var jsonDecoder = new JSONDecoder();
-
-        var actual = jsonDecoder.read(new StringReader(text));
+        var actual = decode(text);
 
         assertEquals(expected, actual);
     }
@@ -100,17 +90,19 @@ public class JSONDecoderTest {
 
         var text = "{\"a\": \"abc\", \"b\":\t123,,,  \"c\": true,\n\"d\": [1, 2.0, 3.0],\n\"e\": {\"x\": 1, \"y\": 2.0, \"z\": 3.0}}";
 
-        var jsonDecoder = new JSONDecoder();
-
-        var actual = jsonDecoder.read(new StringReader(text));
+        var actual = decode(text);
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void testInvalidCharacters() {
+        assertThrows(IOException.class, () -> decode("xyz"));
+    }
+
+    private static Object decode(String text) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
-        assertThrows(IOException.class, () -> jsonDecoder.read(new StringReader("xyz")));
+        return jsonDecoder.read(new StringReader(text));
     }
 }

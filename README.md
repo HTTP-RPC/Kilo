@@ -842,8 +842,6 @@ Similarly, attempting to dynamically access an invalid value will result in an `
 vehicleAdapter.get("manufacturer"); // throws
 ```
 
-Note that, unlike [list parameters](#required-parameters), list properties must be explicitly annotated when required.
-
 ### Custom Property Names
 The `Name` annotation introduced [previously](#custom-parameter-names) can also be used to associate a custom name with a bean property or record component. For example:
 

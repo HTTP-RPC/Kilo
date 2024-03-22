@@ -242,6 +242,7 @@ public class TestBean implements TestInterface {
         return integerList;
     }
 
+    @Override
     public void setIntegerList(List<Integer> integerList) {
         this.integerList = integerList;
     }

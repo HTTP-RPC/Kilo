@@ -70,6 +70,8 @@ public interface TestInterface {
 
     @Required
     List<Integer> getIntegerList();
+    void setIntegerList(List<Integer> integerList);
+
     List<NestedInterface> getNestedBeanList();
 
     Map<String, Double> getDoubleMap();

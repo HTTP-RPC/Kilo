@@ -53,7 +53,7 @@ public abstract class AbstractDatabaseService extends WebService {
                 } else {
                     connection.rollback();
                 }
-            } catch (IOException | SQLException | RuntimeException exception) {
+            } catch (Exception exception) {
                 connection.rollback();
 
                 log(exception.getMessage(), exception);

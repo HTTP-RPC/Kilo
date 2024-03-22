@@ -42,7 +42,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
-    public List<Pet> getPets(@Required String owner) throws SQLException, IOException {
+    public List<Pet> getPets(@Required String owner) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.append("select * from pet where owner = :owner");
