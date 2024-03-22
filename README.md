@@ -347,7 +347,7 @@ Request arguments are specified via a map passed to the `setArguments()` method.
 
 Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `List` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
-Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
+Body content can be specified via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
 ```java
 public interface RequestHandler {
@@ -415,7 +415,7 @@ public static <T> T of(Class<T> type, URL baseURL) { ... }
 public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) { ... }
 ```
 
-Both versions return an implementation of a given interface that submits API requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
+Both versions return an implementation of a given interface that submits requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
 
 The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. For example:
 
