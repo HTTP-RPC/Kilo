@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * Decodes a sequence of map values from CSV. Columns with empty headings are
- * ignored. Empty field values are treated as {@code null}.
+ * Decodes a sequence of map values from CSV.
  */
 public class CSVDecoder extends Decoder<List<Map<String, String>>> {
     private static class Cursor implements Iterable<Map<String, String>> {

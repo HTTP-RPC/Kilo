@@ -48,7 +48,7 @@ public class CSVDecoderTest {
             )
         );
 
-        var text = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
+        var text = "\"a\",\"b\",\"c\",\"d\",\"e\",\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
             + "\" D\rÉ\nF\r\n\",2,4.0,false\r\n"
             + ",3,6.0\n";
