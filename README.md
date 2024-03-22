@@ -438,7 +438,7 @@ System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used in conjunction with `Empty` to submit `POST` requests using either the URL or multi-part form data encoding.
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used in conjunction with `Empty` to submit `POST` requests using either the URL or multi-part form encoding.
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
