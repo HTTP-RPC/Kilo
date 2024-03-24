@@ -32,14 +32,17 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -298,6 +301,24 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testSetCoercion() {
+        assertEquals(setOf(
+            1,
+            2,
+            3
+        ), BeanAdapter.coerceSet(setOf(
+            "1",
+            "2",
+            "3"
+        ), Integer.class));
+
+        assertNull(BeanAdapter.coerceSet(null, Object.class));
+
+        assertInstanceOf(Set.class, BeanAdapter.coerce(setOf(), Set.class));
+        assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Set.class));
+    }
+
+    @Test
     public void testMutableListCoercion() {
         var strings = new ArrayList<String>();
 
@@ -353,6 +374,24 @@ public class BeanAdapterTest {
             entry(3, 3.0),
             entry(4, null)
         ), doubles);
+    }
+
+    @Test
+    public void testMutableSetCoercion() {
+        var strings = new HashSet<>();
+
+        strings.add("1");
+        strings.add("2");
+        strings.add("3");
+        strings.add(null);
+
+        var integers = BeanAdapter.coerceSet(strings, Integer.class);
+
+        assertEquals(setOf(1, 2, 3, null), integers);
+
+        integers.remove(2);
+
+        assertEquals(setOf(1, 3, null), integers);
     }
 
     @Test
