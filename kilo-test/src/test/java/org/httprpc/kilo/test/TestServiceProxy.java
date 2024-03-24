@@ -25,10 +25,11 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface TestServiceProxy {
     @RequestMethod("GET")
-    Map<String, Object> testGet(@Required String string, List<String> strings, int number) throws IOException;
+    Map<String, Object> testGet(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("a/?/b/?/c/?/d/?")
@@ -44,17 +45,17 @@ public interface TestServiceProxy {
 
     @RequestMethod("POST")
     @Empty
-    TestService.Response testPost(@Required String string, List<String> strings, int number) throws IOException;
+    TestService.Response testPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
 
     @RequestMethod("POST")
     @Empty
     @FormData
-    TestService.Response testURLEncodedPost(@Required String string, List<String> strings, int number) throws IOException;
+    TestService.Response testURLEncodedPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
 
     @RequestMethod("POST")
     @Empty
     @FormData(multipart = true)
-    TestService.Response testMultipartPost(@Required String string, List<String> strings, int number, URL... attachments) throws IOException;
+    TestService.Response testMultipartPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, URL... attachments) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("?")

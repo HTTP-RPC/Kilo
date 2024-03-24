@@ -44,11 +44,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.entry;
@@ -92,11 +94,15 @@ public class TestService extends WebService {
     public static class TestMap extends HashMap<String, Double> {
     }
 
+    public static class TestSet extends HashSet<Double> {
+    }
+
     public interface Response {
         @Required
         String getString();
         List<String> getStrings();
-        int getNumber();
+        Integer getNumber();
+        Set<Integer> getNumbers();
         boolean getFlag();
         DayOfWeek getDayOfWeek();
         Date getDate();
@@ -121,7 +127,8 @@ public class TestService extends WebService {
         @Required
         String getString();
         List<String> getStrings();
-        int getNumber();
+        Integer getNumber();
+        Set<Integer> getNumbers();
         boolean getFlag();
     }
 
@@ -195,7 +202,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     public Map<String, Object> testGet(@Required String string, List<String> strings,
-        int number, boolean flag, DayOfWeek dayOfWeek,
+        Integer number, Set<Integer> numbers, boolean flag, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
@@ -204,6 +211,7 @@ public class TestService extends WebService {
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
+            entry("numbers", numbers),
             entry("flag", flag),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
@@ -285,10 +293,16 @@ public class TestService extends WebService {
         return new TestMap();
     }
 
+    @RequestMethod("GET")
+    @ResourcePath("set")
+    public TestSet testGetSet() {
+        return new TestSet();
+    }
+
     @RequestMethod("POST")
     @Empty
     public Response testPost(@Required String string, List<String> strings,
-        int number, boolean flag, DayOfWeek dayOfWeek,
+        Integer number, Set<Integer> numbers, boolean flag, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
@@ -319,6 +333,7 @@ public class TestService extends WebService {
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
+            entry("numbers", numbers),
             entry("flag", flag),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),

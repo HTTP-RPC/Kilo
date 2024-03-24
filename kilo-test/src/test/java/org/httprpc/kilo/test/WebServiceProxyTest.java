@@ -45,6 +45,7 @@ import java.util.UUID;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -87,6 +88,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("instant", instant),
@@ -108,6 +110,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 3)),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
@@ -126,11 +129,12 @@ public class WebServiceProxyTest {
     public void testGetProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
-        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
         assertEquals("héllo&gøod+bye?", result.get("string"));
         assertEquals(listOf("a", "b", "c"), result.get("strings"));
         assertEquals(123, result.get("number"));
+        assertEquals(listOf(1, 2, 3), result.get("numbers"));
     }
 
     @Test
@@ -262,6 +266,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
@@ -283,6 +288,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 3)),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
@@ -302,11 +308,12 @@ public class WebServiceProxyTest {
     public void testPostProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
+        assertEquals(setOf(1, 2, 3), result.getNumbers());
         assertEquals(listOf(), result.getAttachmentInfo());
     }
 
@@ -320,6 +327,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
@@ -335,36 +343,36 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        var result = webServiceProxy.invoke();
+        var response = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
 
-        assertEquals(mapOf(
-            entry("string", "héllo&gøod+bye?"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
-            entry("flag", true),
-            entry("dayOfWeek", dayOfWeek.toString()),
-            entry("date", date.getTime()),
-            entry("dates", listOf(date.getTime())),
-            entry("instant", instant.toString()),
-            entry("localDate", localDate.toString()),
-            entry("localTime", localTime.toString()),
-            entry("localDateTime", localDateTime.toString()),
-            entry("duration", duration.toString()),
-            entry("period", period.toString()),
-            entry("uuid", uuid.toString()),
-            entry("attachmentInfo", listOf())
-        ), result);
+        assertTrue(response.getString().equals("héllo&gøod+bye?")
+            && response.getStrings().equals(listOf("a", "b", "c"))
+            && response.getNumber() == 123
+            && response.getNumbers().equals(setOf(1, 2, 3))
+            && response.getFlag()
+            && response.getDayOfWeek().equals(dayOfWeek)
+            && response.getDate().equals(date)
+            && response.getDates().equals(listOf(date))
+            && response.getInstant().equals(instant)
+            && response.getLocalDate().equals(localDate)
+            && response.getLocalTime().equals(localTime)
+            && response.getLocalDateTime().equals(localDateTime)
+            && response.getDuration().equals(duration)
+            && response.getPeriod().equals(period)
+            && response.getUUID().equals(uuid)
+            && response.getAttachmentInfo().isEmpty());
     }
 
     @Test
     public void testURLEncodedPostProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        var result = testServiceProxy.testURLEncodedPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123);
+        var result = testServiceProxy.testURLEncodedPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
+        assertEquals(setOf(1, 2, 3), result.getNumbers());
         assertEquals(listOf(), result.getAttachmentInfo());
     }
 
@@ -381,6 +389,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
@@ -402,6 +411,7 @@ public class WebServiceProxyTest {
         assertTrue(response.getString().equals("héllo&gøod+bye?")
             && response.getStrings().equals(listOf("a", "b", "c"))
             && response.getNumber() == 123
+            && response.getNumbers().equals(setOf(1, 2, 3))
             && response.getFlag()
             && response.getDayOfWeek().equals(dayOfWeek)
             && response.getDate().equals(date)
@@ -426,11 +436,12 @@ public class WebServiceProxyTest {
 
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, textTestURL, imageTestURL);
+        var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), textTestURL, imageTestURL);
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
+        assertEquals(setOf(1, 2, 3), result.getNumbers());
         assertEquals(26, result.getAttachmentInfo().get(0).getBytes());
         assertEquals(2412, result.getAttachmentInfo().get(0).getChecksum());
         assertEquals(10392, result.getAttachmentInfo().get(1).getBytes());
@@ -811,7 +822,7 @@ public class WebServiceProxyTest {
     public void testMissingRequiredParameterProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
-        assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, 0));
+        assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, null, null));
     }
 
     @Test
