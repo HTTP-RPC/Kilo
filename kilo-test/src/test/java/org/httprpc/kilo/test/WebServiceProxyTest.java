@@ -555,6 +555,7 @@ public class WebServiceProxyTest {
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
+            entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true)
         );
 
@@ -566,10 +567,11 @@ public class WebServiceProxyTest {
 
         var body = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Body.class));
 
-        assertEquals(request.get("string"), body.getString());
-        assertEquals(request.get("strings"), body.getStrings());
-        assertEquals(request.get("number"), body.getNumber());
-        assertEquals(request.get("flag"), body.getFlag());
+        assertEquals("héllo&gøod+bye?", body.getString());
+        assertEquals(listOf("a", "b", "c"), body.getStrings());
+        assertEquals(123, body.getNumber());
+        assertEquals(setOf(1, 2, 3), body.getNumbers());
+        assertTrue(body.getFlag());
     }
 
     @Test
