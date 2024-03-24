@@ -930,26 +930,30 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new IllegalArgumentException(exception);
                 }
             } else if (type.isArray()) {
-                return toArray(value, type);
+                if (value.getClass().isArray()) {
+                    return toArray(new ArrayAdapter(value), type);
+                } else if (value instanceof List<?> list) {
+                    return toArray(list, type);
+                } else {
+                    throw new IllegalArgumentException("Value is not an array or list.");
+                }
             } else if (type.isEnum()) {
-                return toEnum(value, type);
-            } else if (type.isRecord()) {
-                return toRecord(value, type);
+                return toEnum(value.toString(), type);
             } else {
-                return toBean(value, type);
+                if (value instanceof Map<?, ?> map) {
+                    if (type.isRecord()) {
+                        return toRecord(map, type);
+                    } else {
+                        return toBean(map, type);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Value is not a map.");
+                }
             }
         }
     }
 
-    private static Object toArray(Object value, Class<?> type) {
-        if (value.getClass().isArray()) {
-            value = adapt(value);
-        }
-
-        if (!(value instanceof List<?> list)) {
-            throw new IllegalArgumentException();
-        }
-
+    private static Object toArray(List<?> list, Class<?> type) {
         var componentType = type.getComponentType();
 
         var array = Array.newInstance(componentType, list.size());
@@ -963,9 +967,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return array;
     }
 
-    private static Object toEnum(Object value, Class<?> type) {
-        var name = value.toString();
-
+    private static Object toEnum(String name, Class<?> type) {
         var fields = type.getDeclaredFields();
 
         for (var i = 0; i < fields.length; i++) {
@@ -987,14 +989,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Invalid name.");
     }
 
-    private static Object toRecord(Object value, Class<?> type) {
-        if (!(value instanceof Map<?, ?> map)) {
-            throw new IllegalArgumentException();
-        }
-
+    private static Object toRecord(Map<?, ?> map, Class<?> type) {
         var recordComponents = type.getRecordComponents();
 
         var parameterTypes = new Class<?>[recordComponents.length];
@@ -1038,11 +1036,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object toBean(Object value, Class<?> type) {
-        if (!(value instanceof Map<?, ?> map)) {
-            throw new IllegalArgumentException();
-        }
-
+    private static Object toBean(Map<?, ?> map, Class<?> type) {
         if (type.isInterface()) {
             return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, new TypedInvocationHandler(map, type)));
         } else {
