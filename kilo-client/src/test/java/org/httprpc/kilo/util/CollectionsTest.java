@@ -18,14 +18,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.httprpc.kilo.util.Collections.emptyListOf;
 import static org.httprpc.kilo.util.Collections.emptyMapOf;
+import static org.httprpc.kilo.util.Collections.emptySetOf;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.immutableListOf;
 import static org.httprpc.kilo.util.Collections.immutableMapOf;
+import static org.httprpc.kilo.util.Collections.immutableSetOf;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -89,6 +93,30 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testSetOf() {
+        var expected = new HashSet<Integer>(3);
+
+        expected.add(1);
+        expected.add(2);
+        expected.add(3);
+
+        var actual = setOf(1, 2, 3);
+
+        assertEquals(expected, actual);
+
+        actual.remove(2);
+
+        assertEquals(2, actual.size());
+    }
+
+    @Test
+    public void testImmutableSetOf() {
+        var set = immutableSetOf(1, 2, 3);
+
+        assertThrows(UnsupportedOperationException.class, () -> set.add(4));
+    }
+
+    @Test
     public void testEmptyListOf() {
         var list1 = java.util.Collections.<Integer>emptyList();
         var list2 = emptyListOf(Integer.class);
@@ -104,6 +132,15 @@ public class CollectionsTest {
 
         assertTrue(map2.isEmpty());
         assertEquals(map1, map2);
+    }
+
+    @Test
+    public void testEmptySetOf() {
+        var set1 = java.util.Collections.<Integer>emptySet();
+        var set2 = emptySetOf(Integer.class);
+
+        assertTrue(set2.isEmpty());
+        assertEquals(set1, set2);
     }
 
     @Test

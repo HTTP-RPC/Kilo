@@ -17,9 +17,11 @@ package org.httprpc.kilo.util;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -138,6 +140,44 @@ public class Collections {
     }
 
     /**
+     * Creates a set of elements.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The set elements.
+     *
+     * @return
+     * A mutable set containing the provided elements.
+     */
+    @SafeVarargs
+    public static <E> Set<E> setOf(E... elements) {
+        var set = new HashSet<E>(elements.length);
+
+        java.util.Collections.addAll(set, elements);
+
+        return set;
+    }
+
+    /**
+     * Creates an immutable set of elements.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The set elements.
+     *
+     * @return
+     * An immutable set containing the provided elements.
+     */
+    @SafeVarargs
+    public static <E> Set<E> immutableSetOf(E... elements) {
+        return java.util.Collections.unmodifiableSet(setOf(elements));
+    }
+
+    /**
      * Returns an empty list.
      *
      * @param <E>
@@ -181,6 +221,26 @@ public class Collections {
         }
 
         return mapOf();
+    }
+
+    /**
+     * Returns an empty set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * An empty set.
+     */
+    public static <E> Set<E> emptySetOf(Class<E> elementType) {
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return setOf();
     }
 
     /**

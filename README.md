@@ -1177,19 +1177,21 @@ This implementation is slightly more verbose than the first one. However, becaus
 For more information, see the [employee service](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
 ## Collections and Optionals
-The `Collections` class provides a set of static utility methods for declaratively instantiating list and map values:
+The `Collections` class provides a set of static utility methods for declaratively instantiating list, map, and set values:
 
 ```java
 public static <E> List<E> listOf(E... elements) { ... }
 public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
+public static <E> Set<E> setOf(E... elements) { ... }
 ```
 
-They offer an alternative to similar methods defined by the `List` and `Map` interfaces, which produce immutable instances and do not permit `null` values. The following immutable variants are also provided:
+They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable variants are also provided:
 
 ```java
 public static <E> List<E> immutableListOf(E... elements) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
+public static <E> Set<E> immutableSetOf(E... elements) { ... }
 ```
 
 Additionally, `Collections` includes the following methods for creating empty lists and maps:
@@ -1197,6 +1199,7 @@ Additionally, `Collections` includes the following methods for creating empty li
 ```java
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
 public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
+public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
 ```
 
 These provide a slightly more readable alternative to `java.util.Collections#emptyList()` and `java.util.Collections#emptyMap()`, respectively:
@@ -1207,6 +1210,9 @@ var list2 = emptyListOf(Integer.class);
 
 var map1 = java.util.Collections.<String, Integer>emptyMap();
 var map2 = emptyMapOf(String.class, Integer.class);
+
+var set1 = java.util.Collections.<Integer>emptySet();
+var set2 = emptySetOf(Integer.class);
 ```
 
 The following methods can be used to identify the index of the first or last element in a list that matches a given predicate:
