@@ -157,8 +157,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public int size() {
-            if (iterable instanceof List<?> list) {
-                return list.size();
+            if (iterable instanceof Collection<?> collection) {
+                return collection.size();
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -612,16 +612,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URL}</li>
      * </ul>
      *
-     * <p>If the value is an array, it is wrapped in an adapter that will
+     * <p>If the value is an array, it is wrapped in a {@link List} that will
      * recursively adapt the array's elements.</p>
      *
-     * <p>If the value is an {@link Iterable}, it is wrapped in an adapter that
-     * will recursively adapt the iterable's elements.</p>
+     * <p>If the value is an {@link Iterable}, it is wrapped in a {@link List}
+     * that will recursively adapt the iterable's elements. If the iterable
+     * implements {@link Collection}, the adapter will support the
+     * {@link Collection#size()} method. If the iterable implements
+     * {@link List}, the adapter will support the {@link List#get(int)}
+     * method.</p>
      *
-     * <p>If the value is a {@link Map}, it is wrapped in an adapter that will
-     * recursively adapt the map's values. Map keys are not adapted.</p>
+     * <p>If the value is a {@link Map}, it is wrapped in a {@link Map} that
+     * will recursively adapt the map's values. Map keys are not adapted.</p>
      *
-     * <p>If the value is a {@link Record}, it is wrapped in an adapter that
+     * <p>If the value is a {@link Record}, it is wrapped in a {@link Map} that
      * will recursively adapt the record's fields.</p>
      *
      * <p>If none of the previous conditions apply, the value is assumed to be
@@ -687,7 +691,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <p>If the target type is an array, the provided value must be an array
      * or {@link List}. The return value is an array of the same length as the
-     * source value whose elements have been coerced to the array's component
+     * provided value whose elements have been coerced to the array's component
      * type.</p>
      *
      * <p>If the target type is an {@link Enum}, the resulting value is the
@@ -731,16 +735,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a collection of elements to a list.
+     * Coerces a collection to a list.
      *
      * @param <E>
-     * The element type.
+     * The target element type.
      *
      * @param collection
      * The source collection.
      *
      * @param elementType
-     * The element type.
+     * The target element type.
      *
      * @return
      * A list containing the coerced elements.
@@ -751,19 +755,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a map of values to a given type.
+     * Coerces map values.
      *
      * @param <K>
      * The key type.
      *
      * @param <V>
-     * The value type.
+     * The target value type.
      *
      * @param map
      * The source map.
      *
      * @param valueType
-     * The value type.
+     * The target value type.
      *
      * @return
      * A map containing the coerced values.
@@ -774,16 +778,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a collection of elements to a set.
+     * Coerces a collection to a set.
      *
      * @param <E>
-     * The element type.
+     * The target element type.
      *
      * @param collection
      * The source collection.
      *
      * @param elementType
-     * The element type.
+     * The target element type.
      *
      * @return
      * A set containing the coerced elements.
