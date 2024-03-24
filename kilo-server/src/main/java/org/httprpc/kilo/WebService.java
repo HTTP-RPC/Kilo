@@ -46,6 +46,7 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ import java.util.UUID;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.setOf;
 
 /**
  * Abstract base class for web services.
@@ -511,12 +513,12 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Indicates that the type is a list.
+         * Indicates that the type is iterable.
          *
          * @return
-         * {@code true} if the type is a list; {@code false}, otherwise.
+         * {@code true} if the type is iterable; {@code false}, otherwise.
          */
-        public boolean isList() {
+        public boolean isIterable() {
             return false;
         }
 
@@ -562,19 +564,19 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Describes a list type.
+     * Describes an iterable type.
      */
-    public static class ListTypeDescriptor extends TypeDescriptor {
+    public static class IterableTypeDescriptor extends TypeDescriptor {
         private TypeDescriptor elementType;
 
-        private ListTypeDescriptor(TypeDescriptor elementType) {
-            super(List.class, true);
+        private IterableTypeDescriptor(TypeDescriptor elementType) {
+            super(Iterable.class, true);
 
             this.elementType = elementType;
         }
 
         @Override
-        public boolean isList() {
+        public boolean isIterable() {
             return true;
         }
 
@@ -1091,17 +1093,27 @@ public abstract class WebService extends HttpServlet {
                     } else {
                         argument = Array.newInstance(componentType, 0);
                     }
-                } else if (type == List.class) {
-                    if (values != null) {
-                        var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                } else if (Collection.class.isAssignableFrom(type)) {
+                    var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
 
-                        if (!(elementType instanceof Class<?>)) {
-                            throw new UnsupportedOperationException("Invalid element type.");
+                    if (elementType instanceof Class<?>) {
+                        if (type == List.class) {
+                            if (values == null) {
+                                argument = listOf();
+                            } else {
+                                argument = BeanAdapter.coerceList(values, (Class<?>)elementType);
+                            }
+                        } else if (type == Set.class) {
+                            if (values == null) {
+                                argument = setOf();
+                            } else {
+                                argument = BeanAdapter.coerceSet(values, (Class<?>)elementType);
+                            }
+                        } else {
+                            throw new UnsupportedOperationException("Unsupported collection type.");
                         }
-
-                        argument = BeanAdapter.coerceList(values, (Class<?>)elementType);
                     } else {
-                        argument = listOf();
+                        throw new UnsupportedOperationException("Invalid element type.");
                     }
                 } else {
                     Object value;
@@ -1285,12 +1297,12 @@ public abstract class WebService extends HttpServlet {
         if (type instanceof Class) {
             return describeRawType((Class<?>)type);
         } else if (type instanceof ParameterizedType parameterizedType) {
-            var rawType = parameterizedType.getRawType();
+            var rawType = (Class<?>)parameterizedType.getRawType();
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (rawType == List.class) {
-                return new ListTypeDescriptor(describeGenericType(actualTypeArguments[0]));
-            } else if (rawType == Map.class) {
+            if (Iterable.class.isAssignableFrom(rawType)) {
+                return new IterableTypeDescriptor(describeGenericType(actualTypeArguments[0]));
+            } else if (Map.class.isAssignableFrom(rawType)) {
                 return new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
             } else {
                 throw new IllegalArgumentException();

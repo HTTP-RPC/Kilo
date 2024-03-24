@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -999,8 +1000,8 @@ public class WebServiceProxy {
             }
 
             return list;
-        } else if (argument instanceof List<?> list) {
-            return list.stream().map(WebServiceProxy::getParameterValue).toList();
+        } else if (argument instanceof Collection<?> collection) {
+            return collection.stream().map(WebServiceProxy::getParameterValue).toList();
         } else {
             return listOf(getParameterValue(argument));
         }

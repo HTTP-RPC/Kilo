@@ -40,10 +40,12 @@ import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -136,28 +138,36 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // List adapter
-    private static class ListAdapter extends AbstractList<Object> {
-        List<?> list;
+    // Iterable adapter
+    private static class IterableAdapter extends AbstractList<Object> {
+        Iterable<?> iterable;
 
-        ListAdapter(List<?> list) {
-            this.list = list;
+        IterableAdapter(Iterable<?> iterable) {
+            this.iterable = iterable;
         }
 
         @Override
         public Object get(int index) {
-            return adapt(list.get(index));
+            if (iterable instanceof List<?> list) {
+                return adapt(list.get(index));
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
 
         @Override
         public int size() {
-            return list.size();
+            if (iterable instanceof List<?> list) {
+                return list.size();
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
 
         @Override
         public Iterator<Object> iterator() {
             return new Iterator<>() {
-                Iterator<?> iterator = list.iterator();
+                Iterator<?> iterator = iterable.iterator();
 
                 @Override
                 public boolean hasNext() {
@@ -605,8 +615,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <p>If the value is an array, it is wrapped in an adapter that will
      * recursively adapt the array's elements.</p>
      *
-     * <p>If the value is a {@link List}, it is wrapped in an adapter that
-     * will recursively adapt the list's elements.</p>
+     * <p>If the value is an {@link Iterable}, it is wrapped in an adapter that
+     * will recursively adapt the iterable's elements.</p>
      *
      * <p>If the value is a {@link Map}, it is wrapped in an adapter that will
      * recursively adapt the map's values. Map keys are not adapted.</p>
@@ -637,8 +647,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return value;
         } else if (value.getClass().isArray()) {
             return new ArrayAdapter(value);
-        } else if (value instanceof List<?> list) {
-            return new ListAdapter(list);
+        } else if (value instanceof Iterable<?> iterable) {
+            return new IterableAdapter(iterable);
         } else if (value instanceof Map<?, ?> map) {
             return new MapAdapter(map);
         } else if (value instanceof Record) {
@@ -721,13 +731,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces list elements to a given type.
+     * Coerces a collection of elements to a list.
      *
      * @param <E>
      * The element type.
      *
-     * @param list
-     * The source list.
+     * @param collection
+     * The source collection.
      *
      * @param elementType
      * The element type.
@@ -736,12 +746,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * A list containing the coerced elements.
      */
     @SuppressWarnings("unchecked")
-    public static <E> List<E> coerceList(List<?> list, Class<E> elementType) {
-        return (List<E>)toGenericType(list, typeOfList(elementType));
+    public static <E> List<E> coerceList(Collection<?> collection, Class<E> elementType) {
+        return (List<E>)toGenericType(collection, typeOfList(elementType));
     }
 
     /**
-     * Coerces map values to a given type.
+     * Coerces a map of values to a given type.
      *
      * @param <K>
      * The key type.
@@ -761,6 +771,26 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Class<V> valueType) {
         return (Map<K, V>)toGenericType(map, typeOfMap(valueType));
+    }
+
+    /**
+     * Coerces a collection of elements to a set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param collection
+     * The source collection.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * A set containing the coerced elements.
+     */
+    @SuppressWarnings("unchecked")
+    public static <E> Set<E> coerceSet(Collection<?> collection, Class<E> elementType) {
+        return (Set<E>)toGenericType(collection, typeOfSet(elementType));
     }
 
     /**
@@ -785,18 +815,18 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (rawType == List.class) {
                 if (value == null) {
                     return null;
-                } else if (value instanceof List<?> list) {
+                } else if (value instanceof Collection<?> collection) {
                     var elementType = actualTypeArguments[0];
 
-                    var genericList = new ArrayList<>(list.size());
+                    var genericList = new ArrayList<>(collection.size());
 
-                    for (var element : list) {
+                    for (var element : collection) {
                         genericList.add(toGenericType(element, elementType));
                     }
 
                     return genericList;
                 } else {
-                    throw new IllegalArgumentException("Value is not a list.");
+                    throw new IllegalArgumentException("Value is not a collection.");
                 }
             } else if (rawType == Map.class) {
                 if (value == null) {
@@ -815,6 +845,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else {
                     throw new IllegalArgumentException("Value is not a map.");
                 }
+            } else if (rawType == Set.class) {
+                if (value == null) {
+                    return null;
+                } else if (value instanceof Collection<?> collection) {
+                    var elementType = actualTypeArguments[0];
+
+                    var genericSet = new LinkedHashSet<>(collection.size());
+
+                    for (var element : collection) {
+                        genericSet.add(toGenericType(element, elementType));
+                    }
+
+                    return genericSet;
+                } else {
+                    throw new IllegalArgumentException("Value is not a collection.");
+                }
+
             } else {
                 throw new UnsupportedOperationException("Unsupported parameterized type.");
             }
@@ -932,8 +979,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type.isArray()) {
                 if (value.getClass().isArray()) {
                     return toArray(new ArrayAdapter(value), type);
-                } else if (value instanceof List<?> list) {
-                    return toArray(list, type);
+                } else if (value instanceof Collection<?> collection) {
+                    return toArray(collection, type);
                 } else {
                     throw new IllegalArgumentException("Value is not an array or list.");
                 }
@@ -953,14 +1000,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private static Object toArray(List<?> list, Class<?> type) {
+    private static Object toArray(Collection<?> collection, Class<?> type) {
         var componentType = type.getComponentType();
 
-        var array = Array.newInstance(componentType, list.size());
+        var array = Array.newInstance(componentType, collection.size());
 
         var i = 0;
 
-        for (var element : list) {
+        for (var element : collection) {
             Array.set(array, i++, toRawType(element, componentType));
         }
 
@@ -1102,6 +1149,23 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         return new ContainerType(new Type[] {Object.class, valueType}, Map.class);
+    }
+
+    /**
+     * Generates a set type descriptor.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * A set type descriptor.
+     */
+    public static Type typeOfSet(Class<?> elementType) {
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return new ContainerType(new Type[] {elementType}, Set.class);
     }
 
     /**

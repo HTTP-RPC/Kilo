@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 
 import java.util.AbstractList;
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,9 +132,9 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <li>If the key refers to an attribute, the attribute's value (if any)
      * will be replaced with the string representation of the provided
      * value.</li>
-     * <li>If the key refers to multiple elements, the provided value must be
-     * an instance of {@link List}. Any matching sub-elements will be replaced
-     * with new elements corresponding to the contents of the list.</li>
+     * <li>If the key refers to multiple elements, the provided value must be a
+     * {@link Collection}. Any matching sub-elements will be replaced with new
+     * elements corresponding to the collection's elements.</li>
      * <li>Otherwise, any matching sub-elements will be replaced by a single
      * new element corresponding to the provided value.</li>
      * </ul>
@@ -156,15 +157,15 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         } else if (isAttribute(key)) {
             element.setAttribute(getAttributeName(key), value.toString());
         } else if (isList(key)) {
-            if (!(value instanceof List<?> values)) {
+            if (value instanceof Collection<?> collection) {
+                var tagName = getListTagName(key);
+
+                remove(tagName);
+
+                addElements(tagName, collection);
+            } else {
                 throw new IllegalArgumentException();
             }
-
-            var tagName = getListTagName(key);
-
-            remove(tagName);
-
-            addElements(tagName, values);
         } else {
             remove(key);
 
@@ -174,9 +175,9 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         return null;
     }
 
-    private void addElements(String tagName, List<?> values) {
-        for (var value : values) {
-            addElement(tagName, value);
+    private void addElements(String tagName, Iterable<?> collection) {
+        for (var element : collection) {
+            addElement(tagName, element);
         }
     }
 

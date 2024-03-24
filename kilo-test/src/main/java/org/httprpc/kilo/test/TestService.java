@@ -40,7 +40,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -126,21 +125,11 @@ public class TestService extends WebService {
         boolean getFlag();
     }
 
-    private static class FibonacciSequence extends AbstractList<Number> {
+    private static class FibonacciSequence implements Iterable<Number> {
         private int count;
 
         FibonacciSequence(int count) {
             this.count = count;
-        }
-
-        @Override
-        public BigInteger get(int index) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int size() {
-            return count;
         }
 
         @Override
@@ -268,7 +257,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
-    public List<Number> testGetFibonacci(int count) {
+    public Iterable<Number> testGetFibonacci(int count) {
         return new FibonacciSequence(count);
     }
 

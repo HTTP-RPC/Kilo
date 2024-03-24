@@ -117,14 +117,14 @@ Method parameters may be any of the following types:
 * `java.time.Duration`
 * `java.time.Period`
 * `java.util.UUID`
-* `java.util.List`, array/varargs
+* `java.util.List`, `java.util.Set`, array/varargs
 * `java.net.URL`
 
-Additionally, `java.util.Map` and bean types are supported for [body content](#body-content).
+Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
 
 Unspecified values are automatically converted to `0` or `false` for primitive types. `Date` values are parsed from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
-`List` and array elements are automatically converted to their declared types. If no values are provided for a list or array parameter, an empty value (not `null`) will be passed to the method.
+`List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
 
 `URL` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
 
@@ -146,7 +146,7 @@ public long uploadFile(
 }
 ```
 
-`List` and array parameters are implicitly required, since these values will never be `null` (though they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
+`List`, `Set`, and array parameters are implicitly required, since these values will never be `null` (though they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
 
 The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
 
@@ -210,7 +210,7 @@ Return values are converted to JSON as follows:
 * `Number`/numeric primitive: number
 * `Boolean`/boolean primitive: boolean
 * `java.util.Date`: number representing epoch time in milliseconds
-* `java.util.List`: array
+* `Iterable`: array
 * `java.util.Map`: object
 
 Additionally, instances of the following types are automatically converted to their string representations:
@@ -345,7 +345,7 @@ The first version accepts a string representing the HTTP method to execute and t
 
 Request arguments are specified via a map passed to the `setArguments()` method. Argument values for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `List` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
 
 Body content can be specified via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
