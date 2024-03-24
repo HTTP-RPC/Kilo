@@ -92,7 +92,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("stream")
-    public List<Employee> getEmployeesStream() {
+    public Iterable<Employee> getEmployeesStream() {
         var queryBuilder = QueryBuilder.select(
             EMPLOYEE_NUMBER.as("employeeNumber"),
             FIRST_NAME.as("firstName"),
@@ -136,7 +136,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("hibernate-stream")
-    public List<Employee> getEmployeesHibernateStream() {
+    public Iterable<Employee> getEmployeesHibernateStream() {
         var pipe = new Pipe<Employee>(4096, 15000);
 
         executorService.submit(() -> {
