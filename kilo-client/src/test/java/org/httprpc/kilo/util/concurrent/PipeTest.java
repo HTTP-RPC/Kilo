@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.StreamSupport;
 
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,7 +65,7 @@ public class PipeTest {
 
         executorService.submit(() -> pipe.accept(expectedValues.stream()));
 
-        assertEquals(expectedValues, pipe.stream().toList());
+        assertEquals(expectedValues, StreamSupport.stream(pipe.spliterator(), false).toList());
     }
 
     @Test

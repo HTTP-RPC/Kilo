@@ -1127,7 +1127,7 @@ This code would produce the following output:
 ```
 
 ## Pipe
-The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for retrieval by a consumer thread. It implements the `List` interface and produces an iterator that returns values as they become available, blocking if necessary.
+The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for retrieval by a consumer thread. It implements the `Iterable` interface and returns values as they become available, blocking if necessary.
 
 For example, the following code constructs a SQL query that retrieves all rows from an `employees` table:
 

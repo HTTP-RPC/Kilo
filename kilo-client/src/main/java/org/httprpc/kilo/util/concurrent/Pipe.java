@@ -14,11 +14,8 @@
 
 package org.httprpc.kilo.util.concurrent;
 
-import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +29,7 @@ import java.util.stream.Stream;
  * @param <E>
  * The element type.
  */
-public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extends E>> {
+public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
     private BlockingQueue<Object> queue;
     private int timeout;
 
@@ -125,24 +122,6 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
     }
 
     /**
-     * Throws {@link UnsupportedOperationException}.
-     * {@inheritDoc}
-     */
-    @Override
-    public E get(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Throws {@link UnsupportedOperationException}.
-     * {@inheritDoc}
-     */
-    @Override
-    public int size() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Submits elements to the pipe.
      * {@inheritDoc}
      */
@@ -182,15 +161,5 @@ public class Pipe<E> extends AbstractList<E> implements Consumer<Stream<? extend
     @Override
     public Iterator<E> iterator() {
         return iterator;
-    }
-
-    /**
-     * Returns an ordered, immutable spliterator of unknown size over the
-     * contents of the pipe.
-     * {@inheritDoc}
-     */
-    @Override
-    public Spliterator<E> spliterator() {
-        return Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 }
