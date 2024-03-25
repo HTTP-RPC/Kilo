@@ -134,7 +134,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * value.</li>
      * <li>If the key refers to multiple elements, the provided value must be a
      * {@link Collection}. Any matching sub-elements will be replaced with new
-     * elements corresponding to the collection's elements.</li>
+     * elements corresponding to the contents of the collection.</li>
      * <li>Otherwise, any matching sub-elements will be replaced by a single
      * new element corresponding to the provided value.</li>
      * </ul>

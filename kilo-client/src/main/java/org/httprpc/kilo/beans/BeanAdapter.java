@@ -694,7 +694,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <p>If the target type is an array, the provided value must be an array
      * or {@link List}. The return value is an array of the same length as the
-     * provided value whose elements have been coerced to the array's component
+     * source value whose elements have been coerced to the array's component
      * type.</p>
      *
      * <p>If the target type is an {@link Enum}, the resulting value is the
@@ -1049,7 +1049,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         }
 
-        throw new IllegalArgumentException("Invalid name.");
+        throw new IllegalArgumentException("Invalid constant name.");
     }
 
     private static Object toRecord(Map<?, ?> map, Class<?> type) {
