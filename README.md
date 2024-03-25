@@ -101,7 +101,6 @@ At least one URL pattern is required, and it must be a path mapping (i.e. begin 
 ### Method Parameters
 Method parameters may be any of the following types:
 
-* `String`
 * `Byte`/`byte`
 * `Short`/`short`
 * `Integer`/`int`
@@ -109,6 +108,7 @@ Method parameters may be any of the following types:
 * `Float`/`float`
 * `Double`/`double`
 * `Boolean`/`boolean`
+* `String`
 * `java.util.Date`
 * `java.time.Instant`
 * `java.time.LocalDate`
