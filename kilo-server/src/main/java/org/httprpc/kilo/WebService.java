@@ -1330,13 +1330,11 @@ public abstract class WebService extends HttpServlet {
             || type == URL.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
-            return describeGenericType(BeanAdapter.typeOfList(type.getComponentType()));
-        } else if (List.class.isAssignableFrom(type)) {
-            return describeGenericType(BeanAdapter.typeOfList(Object.class));
+            return new IterableTypeDescriptor(describeRawType(type.getComponentType()));
+        } else if (Iterable.class.isAssignableFrom(type)) {
+            return new IterableTypeDescriptor(describeRawType(Object.class));
         } else if (Map.class.isAssignableFrom(type)) {
-            return describeGenericType(BeanAdapter.typeOfMap(Object.class));
-        } else if (Set.class.isAssignableFrom(type)) {
-            return describeGenericType(BeanAdapter.typeOfSet(Object.class));
+            return new MapTypeDescriptor(describeRawType(Object.class), describeRawType(Object.class));
         } else {
             if (type.isEnum()) {
                 var enumeration = serviceDescriptor.enumerations.get(type);

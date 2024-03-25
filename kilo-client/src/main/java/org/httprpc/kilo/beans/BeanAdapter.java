@@ -751,7 +751,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(Collection<?> collection, Class<E> elementType) {
-        return (List<E>)toGenericType(collection, typeOfList(elementType));
+        return (List<E>)toGenericType(collection, new ContainerType(new Type[] {elementType}, List.class));
     }
 
     /**
@@ -774,7 +774,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Class<V> valueType) {
-        return (Map<K, V>)toGenericType(map, typeOfMap(valueType));
+        return (Map<K, V>)toGenericType(map, new ContainerType(new Type[] {Object.class, valueType}, Map.class));
     }
 
     /**
@@ -794,7 +794,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <E> Set<E> coerceSet(Collection<?> collection, Class<E> elementType) {
-        return (Set<E>)toGenericType(collection, typeOfSet(elementType));
+        return (Set<E>)toGenericType(collection, new ContainerType(new Type[] {elementType}, Set.class));
     }
 
     /**
@@ -1119,57 +1119,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             return bean;
         }
-    }
-
-    /**
-     * Generates a list type descriptor.
-     *
-     * @param elementType
-     * The element type.
-     *
-     * @return
-     * A list type descriptor.
-     */
-    public static Type typeOfList(Class<?> elementType) {
-        if (elementType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new ContainerType(new Type[] {elementType}, List.class);
-    }
-
-    /**
-     * Generates a map type descriptor.
-     *
-     * @param valueType
-     * The value type.
-     *
-     * @return
-     * A map type descriptor.
-     */
-    public static Type typeOfMap(Class<?> valueType) {
-        if (valueType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new ContainerType(new Type[] {Object.class, valueType}, Map.class);
-    }
-
-    /**
-     * Generates a set type descriptor.
-     *
-     * @param elementType
-     * The element type.
-     *
-     * @return
-     * A set type descriptor.
-     */
-    public static Type typeOfSet(Class<?> elementType) {
-        if (elementType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return new ContainerType(new Type[] {elementType}, Set.class);
     }
 
     /**
