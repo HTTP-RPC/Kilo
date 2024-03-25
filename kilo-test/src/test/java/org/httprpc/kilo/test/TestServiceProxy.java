@@ -29,7 +29,7 @@ import java.util.Set;
 
 public interface TestServiceProxy {
     @RequestMethod("GET")
-    Map<String, Object> testGet(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
+    Map<String, Object> testGet(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, char character) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("a/?/b/?/c/?/d/?")

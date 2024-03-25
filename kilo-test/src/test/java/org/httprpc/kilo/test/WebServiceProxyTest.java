@@ -131,11 +131,12 @@ public class WebServiceProxyTest {
     public void testGetProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
-        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
+        var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), 'a');
 
         assertEquals("héllo&gøod+bye?", result.get("string"));
         assertEquals(listOf("a", "b", "c"), result.get("strings"));
         assertEquals(123, result.get("number"));
+        assertEquals("a", result.get("character"));
         assertEquals(listOf(1, 2, 3), result.get("numbers"));
     }
 
@@ -835,7 +836,7 @@ public class WebServiceProxyTest {
     public void testMissingRequiredParameterProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
 
-        assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, null, null));
+        assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, null, null, '\0'));
     }
 
     @Test
