@@ -79,6 +79,8 @@ public class JSONEncoder extends Encoder<Object> {
                     writer.write("\\r");
                 } else if (c == '\t') {
                     writer.write("\\t");
+                } else if (Character.isISOControl(c)) {
+                    writer.write(String.format("\\u%04x", (int)c));
                 } else {
                     writer.write(c);
                 }

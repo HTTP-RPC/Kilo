@@ -31,7 +31,7 @@ public class JSONDecoderTest {
     public void testString() throws IOException {
         assertEquals("abcdéfg", decode("\"abcdéfg\""));
         assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
-        assertEquals("é", decode("\"\\u00E9\""));
+        assertEquals("\0é", decode("\"\\u0000\\u00E9\""));
     }
 
     @Test

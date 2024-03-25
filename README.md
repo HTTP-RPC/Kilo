@@ -108,6 +108,7 @@ Method parameters may be any of the following types:
 * `Float`/`float`
 * `Double`/`double`
 * `Boolean`/`boolean`
+* `Character`/`char`
 * `String`
 * `java.util.Date`
 * `java.time.Instant`
@@ -122,7 +123,7 @@ Method parameters may be any of the following types:
 
 Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
 
-Unspecified values are automatically converted to `0` or `false` for primitive types. `Date` values are parsed from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
+Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are parsed from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
 `List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
 
@@ -208,13 +209,14 @@ Return values are converted to JSON as follows:
 
 * `String`: string
 * `Number`/numeric primitive: number
-* `Boolean`/boolean primitive: boolean
+* `Boolean`/`boolean`: boolean
 * `java.util.Date`: number representing epoch time in milliseconds
 * `Iterable`: array
 * `java.util.Map`: object
 
 Additionally, instances of the following types are automatically converted to their string representations:
 
+* `Character`/`char`
 * `Enum`
 * `java.time.TemporalAccessor`
 * `java.time.TemporalAmount`

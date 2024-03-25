@@ -43,7 +43,7 @@ import static org.httprpc.kilo.test.Employee.Schema.LAST_NAME;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
-    private ExecutorService executorService = null;
+    private static ExecutorService executorService = null;
 
     @Override
     public void init() throws ServletException {
@@ -54,9 +54,9 @@ public class EmployeeService extends WebService {
 
     @Override
     public void destroy() {
-        super.destroy();
-
         executorService.shutdown();
+
+        super.destroy();
     }
 
     private Connection getConnection() throws SQLException {

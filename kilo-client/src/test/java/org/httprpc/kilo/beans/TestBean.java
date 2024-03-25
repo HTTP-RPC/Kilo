@@ -34,6 +34,7 @@ import java.util.UUID;
 public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {
         private Boolean flag = false;
+        private Character character = 'x';
 
         @Required
         @Override
@@ -44,6 +45,16 @@ public class TestBean implements TestInterface {
         @Override
         public void setFlag(Boolean flag) {
             this.flag = flag;
+        }
+
+        @Required
+        @Override
+        public Character getCharacter() {
+            return character;
+        }
+
+        public void setCharacter(Character character) {
+            this.character = character;
         }
     }
 

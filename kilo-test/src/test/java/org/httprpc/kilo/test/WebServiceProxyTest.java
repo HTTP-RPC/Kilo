@@ -90,6 +90,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
+            entry("character", "abc"),
             entry("dayOfWeek", dayOfWeek),
             entry("instant", instant),
             entry("date", date),
@@ -112,6 +113,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("numbers", listOf(1, 2, 3)),
             entry("flag", true),
+            entry("character", "a"),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
             entry("dates", listOf(date.getTime())),
@@ -127,7 +129,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
@@ -268,6 +270,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
+            entry("character", "abc"),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", listOf(date)),
@@ -290,6 +293,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("numbers", listOf(1, 2, 3)),
             entry("flag", true),
+            entry("character", "a"),
             entry("dayOfWeek", dayOfWeek.toString()),
             entry("date", date.getTime()),
             entry("dates", listOf(date.getTime())),
@@ -306,7 +310,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
@@ -314,6 +318,7 @@ public class WebServiceProxyTest {
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
         assertEquals(setOf(1, 2, 3), result.getNumbers());
+        assertEquals('\0', result.getCharacter());
         assertEquals(listOf(), result.getAttachmentInfo());
     }
 
@@ -329,6 +334,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
+            entry("character", "abc"),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", listOf(date)),
@@ -350,6 +356,7 @@ public class WebServiceProxyTest {
             && response.getNumber() == 123
             && response.getNumbers().equals(setOf(1, 2, 3))
             && response.getFlag()
+            && response.getCharacter() == 'a'
             && response.getDayOfWeek().equals(dayOfWeek)
             && response.getDate().equals(date)
             && response.getDates().equals(listOf(date))
@@ -373,6 +380,7 @@ public class WebServiceProxyTest {
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
         assertEquals(setOf(1, 2, 3), result.getNumbers());
+        assertEquals('\0', result.getCharacter());
         assertEquals(listOf(), result.getAttachmentInfo());
     }
 
@@ -391,6 +399,7 @@ public class WebServiceProxyTest {
             entry("number", 123),
             entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true),
+            entry("character", "abc"),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", listOf(date)),
@@ -413,6 +422,7 @@ public class WebServiceProxyTest {
             && response.getNumber() == 123
             && response.getNumbers().equals(setOf(1, 2, 3))
             && response.getFlag()
+            && response.getCharacter() == 'a'
             && response.getDayOfWeek().equals(dayOfWeek)
             && response.getDate().equals(date)
             && response.getDates().equals(listOf(date))
@@ -442,6 +452,7 @@ public class WebServiceProxyTest {
         assertEquals(listOf("a", "b", "c"), result.getStrings());
         assertEquals(123, result.getNumber());
         assertEquals(setOf(1, 2, 3), result.getNumbers());
+        assertEquals('\0', result.getCharacter());
         assertEquals(26, result.getAttachmentInfo().get(0).getBytes());
         assertEquals(2412, result.getAttachmentInfo().get(0).getChecksum());
         assertEquals(10392, result.getAttachmentInfo().get(1).getBytes());

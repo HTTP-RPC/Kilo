@@ -604,6 +604,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
      * <li>{@link String}</li>
+     * <li>{@link Character}</li>
      * <li>{@link Enum}</li>
      * <li>{@link Date}</li>
      * <li>{@link TemporalAccessor}</li>
@@ -642,6 +643,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof Number
             || value instanceof Boolean
             || value instanceof String
+            || value instanceof Character
             || value instanceof Enum
             || value instanceof Date
             || value instanceof TemporalAccessor
@@ -677,6 +679,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Float} or {@code float}</li>
      * <li>{@link Double} or {@code double}</li>
      * <li>{@link Boolean} or {@code boolean}</li>
+     * <li>{@link Character} or {@code char}</li>
      * <li>{@link String}</li>
      * <li>{@link Date}</li>
      * <li>{@link Instant}</li>
@@ -938,6 +941,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return ((Number)value).doubleValue() != 0.0;
             } else {
                 return Boolean.parseBoolean(value.toString());
+            }
+        } else if (type == Character.class || type == Character.TYPE) {
+            if (value == null) {
+                return '\0';
+            } else {
+                return value.toString().charAt(0);
             }
         } else {
             if (value == null) {

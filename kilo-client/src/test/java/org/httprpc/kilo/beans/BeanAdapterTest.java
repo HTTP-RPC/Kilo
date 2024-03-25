@@ -114,14 +114,16 @@ public class BeanAdapterTest {
             entry("UUID", UUID.randomUUID()),
             entry("URL", new URL("http://localhost:8080")),
             entry("nestedBean", mapOf(
-                entry("flag", true)
+                entry("flag", true),
+                entry("character", 'y')
             )),
             entry("integerList", listOf(
                 1, 2, 3, 4
             )),
             entry("nestedBeanList", listOf(
                 mapOf(
-                    entry("flag", true)
+                    entry("flag", true),
+                    entry("character", 'y')
                 ))
             ),
             entry("doubleMap", mapOf(
@@ -132,7 +134,8 @@ public class BeanAdapterTest {
             )),
             entry("nestedBeanMap", mapOf(
                 entry("nestedBean", mapOf(
-                    entry("flag", true)
+                    entry("flag", true),
+                    entry("character", 'y')
                 ))
             )),
             entry("testRecord", mapOf(
@@ -172,23 +175,23 @@ public class BeanAdapterTest {
 
     @Test
     public void testPrimitiveCoercion() {
-        assertEquals(BeanAdapter.coerce(null, Byte.TYPE), Byte.valueOf((byte)0));
-        assertEquals(BeanAdapter.coerce("1", Byte.TYPE), Byte.valueOf((byte)1));
+        assertEquals((byte)0, BeanAdapter.coerce(null, Byte.TYPE));
+        assertEquals((byte)1, BeanAdapter.coerce("1", Byte.TYPE));
 
-        assertEquals(BeanAdapter.coerce(null, Short.TYPE), Short.valueOf((short)0));
-        assertEquals(BeanAdapter.coerce("2", Short.TYPE), Short.valueOf((short)2));
+        assertEquals((short)0, BeanAdapter.coerce(null, Short.TYPE));
+        assertEquals((short)2, BeanAdapter.coerce("2", Short.TYPE));
 
-        assertEquals(BeanAdapter.coerce(null, Integer.TYPE), Integer.valueOf(0));
-        assertEquals(BeanAdapter.coerce("3", Integer.TYPE), Integer.valueOf(3));
+        assertEquals(0, BeanAdapter.coerce(null, Integer.TYPE));
+        assertEquals(3, BeanAdapter.coerce("3", Integer.TYPE));
 
-        assertEquals(BeanAdapter.coerce(null, Long.TYPE), Long.valueOf(0));
-        assertEquals(BeanAdapter.coerce("4", Long.TYPE), Long.valueOf(4));
+        assertEquals(0L, BeanAdapter.coerce(null, Long.TYPE));
+        assertEquals(4L, BeanAdapter.coerce("4", Long.TYPE));
 
-        assertEquals(BeanAdapter.coerce(null, Float.TYPE), Float.valueOf(0));
-        assertEquals(BeanAdapter.coerce("5.0", Float.TYPE), Float.valueOf(5));
+        assertEquals(0.0f, BeanAdapter.coerce(null, Float.TYPE));
+        assertEquals(5.0f, BeanAdapter.coerce("5.0", Float.TYPE));
 
-        assertEquals(BeanAdapter.coerce(null, Double.TYPE), Double.valueOf(0));
-        assertEquals(BeanAdapter.coerce("6.0", Double.TYPE), Double.valueOf(6));
+        assertEquals(0.0, BeanAdapter.coerce(null, Double.TYPE));
+        assertEquals(6.0, BeanAdapter.coerce("6.0", Double.TYPE));
 
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(null, Boolean.TYPE));
         assertEquals(Boolean.TRUE, BeanAdapter.coerce("true", Boolean.TYPE));
@@ -198,6 +201,9 @@ public class BeanAdapterTest {
         assertEquals(Boolean.TRUE, BeanAdapter.coerce(1.0, Boolean.TYPE));
         assertEquals(Boolean.TRUE, BeanAdapter.coerce(-1.0, Boolean.TYPE));
         assertEquals(Boolean.FALSE, BeanAdapter.coerce(0.0, Boolean.TYPE));
+
+        assertEquals('\0', BeanAdapter.coerce(null, Character.TYPE));
+        assertEquals('a', BeanAdapter.coerce("abc", Character.TYPE));
     }
 
     @Test
@@ -468,6 +474,7 @@ public class BeanAdapterTest {
 
         assertEquals(0L, beanAdapter.get("long"));
         assertEquals(false, Collections.valueAt(beanAdapter, "nestedBean", "flag"));
+        assertEquals('x', Collections.valueAt(beanAdapter, "nestedBean", "character"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("string"));
         assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("string", null));

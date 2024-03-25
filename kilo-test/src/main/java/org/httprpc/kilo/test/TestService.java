@@ -104,6 +104,7 @@ public class TestService extends WebService {
         Integer getNumber();
         Set<Integer> getNumbers();
         boolean getFlag();
+        char getCharacter();
         DayOfWeek getDayOfWeek();
         Date getDate();
         List<Date> getDates();
@@ -202,7 +203,7 @@ public class TestService extends WebService {
 
     @RequestMethod("GET")
     public Map<String, Object> testGet(@Required String string, List<String> strings,
-        Integer number, Set<Integer> numbers, boolean flag, DayOfWeek dayOfWeek,
+        Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
@@ -213,6 +214,7 @@ public class TestService extends WebService {
             entry("number", number),
             entry("numbers", numbers),
             entry("flag", flag),
+            entry("character", character),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", dates),
@@ -302,7 +304,7 @@ public class TestService extends WebService {
     @RequestMethod("POST")
     @Empty
     public Response testPost(@Required String string, List<String> strings,
-        Integer number, Set<Integer> numbers, boolean flag, DayOfWeek dayOfWeek,
+        Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
@@ -335,6 +337,7 @@ public class TestService extends WebService {
             entry("number", number),
             entry("numbers", numbers),
             entry("flag", flag),
+            entry("character", character),
             entry("dayOfWeek", dayOfWeek),
             entry("date", date),
             entry("dates", dates),

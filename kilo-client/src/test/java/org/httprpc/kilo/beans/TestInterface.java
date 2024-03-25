@@ -36,6 +36,8 @@ public interface TestInterface {
         @Required
         Boolean getFlag();
         void setFlag(Boolean flag);
+
+        Character getCharacter();
     }
 
     @Name("i")
