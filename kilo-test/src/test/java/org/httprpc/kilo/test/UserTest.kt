@@ -38,19 +38,15 @@ fun main() {
 
         if (address != null) {
             println("${address.street}, ${address.suite}, ${address.city} ${address.zipCode}")
-
-            val geolocation = address.geolocation
-
-            if (geolocation != null) {
-                println("${geolocation.latitude}, ${geolocation.longitude}")
-            }
+            println("${address.geolocation.latitude}, ${address.geolocation.longitude}")
         }
 
         val company = user.company
 
         if (company != null) {
-            println("${company.name} (\"${company.catchphrase}\")")
-            println("${company.bs}")
+            println(company.name)
+            println(company.catchphrase)
+            println(company.bs)
         }
 
         println()

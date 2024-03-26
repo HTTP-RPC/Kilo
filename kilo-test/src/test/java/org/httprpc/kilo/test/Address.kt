@@ -16,12 +16,12 @@ package org.httprpc.kilo.test
 
 import org.httprpc.kilo.Name
 
-class Address {
-    var street: String? = null
-    var suite: String? = null
-    var city: String? = null
+interface Address {
+    var street: String
+    var suite: String
+    var city: String
     @get:Name("zipcode")
-    var zipCode: String? = null
+    var zipCode: String
     @get:Name("geo")
-    var geolocation: Geolocation? = null
+    var geolocation: Geolocation
 }

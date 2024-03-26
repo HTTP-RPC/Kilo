@@ -42,6 +42,7 @@ compileTestJava {
 compileKotlin {
     compilerOptions {
         freeCompilerArgs = [
+            '-jvm-target', '17',
             '-java-parameters'
         ]
     }
@@ -50,6 +51,7 @@ compileKotlin {
 compileTestKotlin {
     compilerOptions {
         freeCompilerArgs = [
+            '-jvm-target', '17',
             '-java-parameters'
         ]
     }

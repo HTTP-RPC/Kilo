@@ -16,9 +16,9 @@ package org.httprpc.kilo.test
 
 import org.httprpc.kilo.Name
 
-class Company {
-    var name: String? = null
+interface Company {
+    val name: String
     @get:Name("catchPhrase")
-    var catchphrase: String? = null
-    var bs: String? = null
+    val catchphrase: String
+    val bs: String
 }

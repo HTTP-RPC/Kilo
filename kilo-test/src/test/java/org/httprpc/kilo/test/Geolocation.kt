@@ -16,9 +16,9 @@ package org.httprpc.kilo.test
 
 import org.httprpc.kilo.Name
 
-class Geolocation {
-    @get:Name("lat")
-    var latitude: Double? = null
-    @get:Name("lng")
-    var longitude: Double? = null
+data class Geolocation(
+    @get:Name("lat") var latitude: Double,
+    @get:Name("lng") var longitude: Double
+) {
+    constructor(): this(0.0, 0.0)
 }
