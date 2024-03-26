@@ -14,6 +14,7 @@
 
 plugins {
     id 'war'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.23'
 }
 
 dependencies {
@@ -36,6 +37,22 @@ compileTestJava {
     options.compilerArgs = [
         '-parameters'
     ]
+}
+
+compileKotlin {
+    compilerOptions {
+        freeCompilerArgs = [
+            '-java-parameters'
+        ]
+    }
+}
+
+compileTestKotlin {
+    compilerOptions {
+        freeCompilerArgs = [
+            '-java-parameters'
+        ]
+    }
 }
 
 war {

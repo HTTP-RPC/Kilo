@@ -12,19 +12,13 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.test
 
-import jakarta.servlet.annotation.WebServlet;
-import org.httprpc.kilo.Description;
-import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.Name
 
-@WebServlet(urlPatterns = {"/*"}, loadOnStartup = 1)
-@Description("Greeting example service.")
-public class GreetingService extends WebService {
-    @RequestMethod("GET")
-    @Description("Returns a friendly greeting.")
-    public String getGreeting() {
-        return "Hello, World!";
-    }
+class Geolocation {
+    @get:Name("lat")
+    var latitude: Double? = null
+    @get:Name("lng")
+    var longitude: Double? = null
 }

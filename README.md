@@ -14,6 +14,7 @@ This guide introduces the Kilo framework and provides an overview of its key fea
 # Contents
 * [Getting Kilo](#getting-kilo)
 * [Kilo Classes](#kilo-classes)
+* [Kotlin Support](#kotlin-support)
 * [Additional Information](#additional-information)
 
 # Getting Kilo
@@ -1281,6 +1282,25 @@ var value = new AtomicInteger(0);
 Optional.ofNullable(value).ifPresent(AtomicInteger::incrementAndGet);
 Optionals.perform(value, AtomicInteger::incrementAndGet);
 ```
+
+# Kotlin Support
+Kilo-based web services and consumers can be also implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following is a simple web service written in Kotlin:
+
+```kotlin
+@WebServlet(urlPatterns = ["/*"], loadOnStartup = 1)
+@Description("Greeting example service.")
+class GreetingService: WebService() {
+    @RequestMethod("GET")
+    @Description("Returns a friendly greeting.")
+    fun getGreeting(): String {
+        return "Hello, World!"
+    }
+}
+```
+
+An example of a [typed invocation](#typed-invocation) proxy implemented in Kotlin can be found [here](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/test/java/org/httprpc/kilo/test/UserTest.kt).
+
+Note that Kotlin code should be compiled with the `-java-parameters` flag so that method parameter names are available at runtime. 
 
 # Additional Information
 This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).
