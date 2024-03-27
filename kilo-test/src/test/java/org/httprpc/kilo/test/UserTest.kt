@@ -19,16 +19,12 @@ import org.httprpc.kilo.beans.BeanAdapter
 import org.httprpc.kilo.io.JSONEncoder
 import java.net.URL
 
-fun main() {
-    val baseURL = URL("https://jsonplaceholder.typicode.com/")
+val baseURL = URL("https://jsonplaceholder.typicode.com/")
 
-    val userServiceProxy = WebServiceProxy.of(UserServiceProxy::class.java, baseURL) { webServiceProxy ->
-        webServiceProxy.monitorStream = System.out
-    }
+fun main() {
+    val userServiceProxy = WebServiceProxy.of(UserServiceProxy::class.java, baseURL)
 
     val users = userServiceProxy.getUsers()
-
-    println()
 
     for (user in users) {
         println("${user.name} (${user.username})")
