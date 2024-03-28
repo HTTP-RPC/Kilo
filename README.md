@@ -420,7 +420,7 @@ public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> ini
 
 Both versions return an implementation of a given interface that submits requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
 
-The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. For example:
+The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures (including HTTP error responses). For example:
 
 ```java
 public interface MathServiceProxy {
