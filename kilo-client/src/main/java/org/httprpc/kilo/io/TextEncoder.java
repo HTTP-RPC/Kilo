@@ -20,19 +20,27 @@ import java.io.Writer;
 /**
  * Encodes plain text content.
  */
-public class TextEncoder extends Encoder<CharSequence> {
+public class TextEncoder extends Encoder<Object> {
     @Override
-    public void write(CharSequence value, Writer writer) throws IOException {
+    public void write(Object value, Writer writer) throws IOException {
         if (value == null || writer == null) {
             throw new IllegalArgumentException();
         }
 
         writer = new BufferedWriter(writer);
 
-        for (int i = 0, n = value.length(); i < n; i++) {
-            writer.write(value.charAt(i));
+        if (value instanceof CharSequence text) {
+            write(text, writer);
+        } else {
+            write(value.toString(), writer);
         }
 
         writer.flush();
+    }
+
+    private void write(CharSequence text, Writer writer) throws IOException {
+        for (int i = 0, n = text.length(); i < n; i++) {
+            writer.write(text.charAt(i));
+        }
     }
 }
