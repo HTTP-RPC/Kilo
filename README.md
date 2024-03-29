@@ -375,7 +375,7 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException`. If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via `setErrorHandler()`:
+If a service returns an error response, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via `setErrorHandler()`:
 
 ```java
 public interface ErrorHandler {
