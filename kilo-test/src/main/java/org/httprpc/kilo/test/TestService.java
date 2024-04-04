@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -195,7 +194,7 @@ public class TestService extends WebService {
                 outputStream.write(b);
             }
 
-            return ByteBuffer.wrap(outputStream.toByteArray());
+            return outputStream.toByteArray();
         } else {
             return super.decodeBody(request, type);
         }
@@ -380,18 +379,16 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     @ResourcePath("image")
-    public void testPostImage(ByteBuffer byteBuffer) throws IOException {
-        echo(byteBuffer);
+    public void testPostImage(byte[] data) throws IOException {
+        echo(data);
     }
 
     @RequestMethod("PUT")
-    public void testPut(ByteBuffer byteBuffer) throws IOException {
-        echo(byteBuffer);
+    public void testPut(byte[] data) throws IOException {
+        echo(data);
     }
 
-    private void echo(ByteBuffer byteBuffer) throws IOException {
-        var data = byteBuffer.array();
-
+    private void echo(byte[] data) throws IOException {
         OutputStream outputStream = getResponse().getOutputStream();
 
         for (var i = 0; i < data.length; i++) {
