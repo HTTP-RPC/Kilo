@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.Name;
@@ -26,10 +25,7 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -177,26 +173,6 @@ public class TestService extends WebService {
                     return next;
                 }
             };
-        }
-    }
-
-    @Override
-    protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
-        var contentType = request.getContentType();
-
-        if (contentType.equals("application/octet-stream")) {
-            var inputStream = request.getInputStream();
-
-            var outputStream = new ByteArrayOutputStream(1024);
-
-            int b;
-            while ((b = inputStream.read()) != -1) {
-                outputStream.write(b);
-            }
-
-            return outputStream.toByteArray();
-        } else {
-            return super.decodeBody(request, type);
         }
     }
 
@@ -379,20 +355,22 @@ public class TestService extends WebService {
 
     @RequestMethod("POST")
     @ResourcePath("image")
-    public void testPostImage(byte[] data) throws IOException {
-        echo(data);
+    public void testPostImage(Void body) throws IOException {
+        echo();
     }
 
     @RequestMethod("PUT")
-    public void testPut(byte[] data) throws IOException {
-        echo(data);
+    public void testPut(Void body) throws IOException {
+        echo();
     }
 
-    private void echo(byte[] data) throws IOException {
-        OutputStream outputStream = getResponse().getOutputStream();
+    private void echo() throws IOException {
+        var inputStream = getRequest().getInputStream();
+        var outputStream = getResponse().getOutputStream();
 
-        for (var i = 0; i < data.length; i++) {
-            outputStream.write(data[i]);
+        int b;
+        while ((b = inputStream.read()) != -1) {
+            outputStream.write(b);
         }
 
         outputStream.flush();
