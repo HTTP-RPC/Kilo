@@ -205,6 +205,8 @@ Like path parameters, body parameters are implicitly required. By default, conte
 
 The `Empty` annotation can be used to indicate that a service method does not accept a body. It is only required for empty `POST` or `PUT` requests (`GET` and `DELETE` requests are inherently empty). Handlers for `POST` requests submitted as form data must include this annotation.
 
+Body parameters of type `Void` indicate that the handler itself will be responsible for decoding the request content. See [this](#request-and-repsonse-properties) section for more information.
+
 ### Return Values
 Return values are converted to JSON as follows:
 
