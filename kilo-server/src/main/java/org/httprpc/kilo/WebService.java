@@ -1135,20 +1135,11 @@ public abstract class WebService extends HttpServlet {
         }
 
         if (n < parameters.length) {
-            var type = parameters[n].getType();
-
-            Object body;
-            if (type == Void.class) {
-                body = null;
-            } else {
-                try {
-                    body = decodeBody(request, type);
-                } catch (IOException exception) {
-                    throw new UnsupportedOperationException(exception);
-                }
+            try {
+                arguments[n] = decodeBody(request, parameters[n].getType());
+            } catch (IOException exception) {
+                throw new UnsupportedOperationException(exception);
             }
-
-            arguments[n] = body;
         }
 
         return arguments;
@@ -1192,13 +1183,13 @@ public abstract class WebService extends HttpServlet {
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
         var contentType = request.getContentType();
 
-        if (contentType == null || !contentType.equalsIgnoreCase(APPLICATION_JSON)) {
+        if (contentType != null && contentType.equalsIgnoreCase(APPLICATION_JSON)) {
+            var jsonDecoder = new JSONDecoder();
+
+            return BeanAdapter.toGenericType(jsonDecoder.read(request.getInputStream()), type);
+        } else {
             throw new UnsupportedOperationException("Missing or invalid content type.");
         }
-
-        var jsonDecoder = new JSONDecoder();
-
-        return BeanAdapter.toGenericType(jsonDecoder.read(request.getInputStream()), type);
     }
 
     /**
