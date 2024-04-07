@@ -15,28 +15,9 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
-import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.SchemaElement;
-import org.httprpc.kilo.sql.Table;
 
 @Description("Represents detailed information about an item in the catalog.")
 public interface ItemDetail extends Item {
-    @Table("item")
-    enum Schema implements SchemaElement {
-        @Column("id")
-        ID,
-        @Column("description")
-        DESCRIPTION,
-        @Column("price")
-        PRICE,
-        @Column("size")
-        SIZE,
-        @Column("color")
-        COLOR,
-        @Column("weight")
-        WEIGHT
-    }
-
     @Description("The item's size.")
     Size getSize();
     void setSize(Size size);

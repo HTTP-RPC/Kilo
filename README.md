@@ -967,40 +967,7 @@ public interface Pet {
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
 
-### Schema Types
-`QueryBuilder` also supports a more structured approach to query construction using "schema types". For example, the preceding query could be written as follows using a schema type:
-
-```java
-public interface Pet {
-    @Table("pet")
-    enum Schema implements SchemaElement {
-        @Column("name")
-        NAME,
-        @Column("owner")
-        OWNER,
-        @Column("species")
-        SPECIES,
-        @Column("sex")
-        SEX,
-        @Column("birth")
-        BIRTH,
-        @Column("death")
-        DEATH
-    }
-
-    ...
-}
-```
-
-```java
-var queryBuilder = QueryBuilder.selectAll()
-    .from(Pet.Schema.class)
-    .where(OWNER.eq("owner"));
-```
-
-Schema types are enums that implement the `SchemaElement` interface. They are associated with table and column names using the `Table` and `Column` annotations, respectively. In the example above, the `OWNER` constant has been statically imported to reduce verbosity.
-
-Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
+See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
@@ -1135,14 +1102,15 @@ The `Pipe` class provides a vehicle by which a producer thread can submit a sequ
 For example, the following code constructs a SQL query that retrieves all rows from an `employees` table:
 
 ```java
-var queryBuilder = QueryBuilder.select(
-    EMPLOYEE_NUMBER.as("employeeNumber"),
-    FIRST_NAME.as("firstName"),
-    LAST_NAME.as("lastName"),
-    GENDER,
-    BIRTH_DATE.as("birthDate"),
-    HIRE_DATE.as("hireDate")
-).from(Employee.Schema.class);
+var queryBuilder = new QueryBuilder();
+
+queryBuilder.append("select emp_no as employeeNumber, ");
+queryBuilder.append("first_name as firstName, ");
+queryBuilder.append("last_name as lastName, ");
+queryBuilder.append("gender, ");
+queryBuilder.append("birth_date as birthDate, ");
+queryBuilder.append("hire_date as hireDate ");
+queryBuilder.append("from employees");
 ```
 
 This code could be used to transform the results to a list of `Employee` instances:

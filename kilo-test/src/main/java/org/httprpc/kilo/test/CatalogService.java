@@ -26,12 +26,6 @@ import org.httprpc.kilo.sql.ResultSetAdapter;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.httprpc.kilo.test.ItemDetail.Schema.COLOR;
-import static org.httprpc.kilo.test.ItemDetail.Schema.DESCRIPTION;
-import static org.httprpc.kilo.test.ItemDetail.Schema.ID;
-import static org.httprpc.kilo.test.ItemDetail.Schema.PRICE;
-import static org.httprpc.kilo.test.ItemDetail.Schema.SIZE;
-import static org.httprpc.kilo.test.ItemDetail.Schema.WEIGHT;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -42,7 +36,9 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() throws SQLException {
-        var queryBuilder = QueryBuilder.select(ID, DESCRIPTION, PRICE).from(ItemDetail.Schema.class);
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select id, description, price from item");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
@@ -56,11 +52,13 @@ public class CatalogService extends AbstractDatabaseService {
     public ItemDetail getItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.selectAll().from(ItemDetail.Schema.class).where(ID.eq("id"));
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select * from item where id = :itemID");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
-                entry("id", itemID)
+                entry("itemID", itemID)
             )))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, ItemDetail.class)).orElse(null);
         }
@@ -73,8 +71,10 @@ public class CatalogService extends AbstractDatabaseService {
     public ItemDetail addItem(
         @Description("The item to add.") ItemDetail item
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.insertInto(ItemDetail.Schema.class, DESCRIPTION, PRICE, SIZE, COLOR, WEIGHT)
-            .values("description", "price", "size", "color", "weight");
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("insert into item (description, price, size, color, weight) ");
+        queryBuilder.append("values (:description, :price, :size, :color, :weight)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -92,9 +92,14 @@ public class CatalogService extends AbstractDatabaseService {
     ) throws SQLException {
         item.setID(itemID);
 
-        var queryBuilder = QueryBuilder.update(ItemDetail.Schema.class, DESCRIPTION, PRICE, SIZE, COLOR, WEIGHT)
-            .set("description", "price", "size", "color", "weight")
-            .where(ID.eq("id"));
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("update item set description = :description, ");
+        queryBuilder.append("price = :price, ");
+        queryBuilder.append("size = :size, ");
+        queryBuilder.append("color = :color, ");
+        queryBuilder.append("weight = :weight ");
+        queryBuilder.append("where id = :id");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -109,11 +114,13 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.deleteFrom(ItemDetail.Schema.class).where(ID.eq("id"));
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("delete from item where id = :itemID");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("id", itemID)
+                entry("itemID", itemID)
             ));
         }
     }

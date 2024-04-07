@@ -14,29 +14,9 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.SchemaElement;
-import org.httprpc.kilo.sql.Table;
-
 import java.util.Date;
 
 public interface Pet {
-    @Table("pet")
-    enum Schema implements SchemaElement {
-        @Column("name")
-        NAME,
-        @Column("owner")
-        OWNER,
-        @Column("species")
-        SPECIES,
-        @Column("sex")
-        SEX,
-        @Column("birth")
-        BIRTH,
-        @Column("death")
-        DEATH
-    }
-
     String getName();
     String getOwner();
     String getSpecies();

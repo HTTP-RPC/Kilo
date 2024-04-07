@@ -34,13 +34,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.httprpc.kilo.test.Employee.Schema.BIRTH_DATE;
-import static org.httprpc.kilo.test.Employee.Schema.EMPLOYEE_NUMBER;
-import static org.httprpc.kilo.test.Employee.Schema.FIRST_NAME;
-import static org.httprpc.kilo.test.Employee.Schema.GENDER;
-import static org.httprpc.kilo.test.Employee.Schema.HIRE_DATE;
-import static org.httprpc.kilo.test.Employee.Schema.LAST_NAME;
-
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
     private static ExecutorService executorService = null;
@@ -74,14 +67,15 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     public List<Employee> getEmployees() throws SQLException {
-        var queryBuilder = QueryBuilder.select(
-            EMPLOYEE_NUMBER.as("employeeNumber"),
-            FIRST_NAME.as("firstName"),
-            LAST_NAME.as("lastName"),
-            GENDER,
-            BIRTH_DATE.as("birthDate"),
-            HIRE_DATE.as("hireDate")
-        ).from(Employee.Schema.class);
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select emp_no as employeeNumber, ");
+        queryBuilder.append("first_name as firstName, ");
+        queryBuilder.append("last_name as lastName, ");
+        queryBuilder.append("gender, ");
+        queryBuilder.append("birth_date as birthDate, ");
+        queryBuilder.append("hire_date as hireDate ");
+        queryBuilder.append("from employees");
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
@@ -93,14 +87,15 @@ public class EmployeeService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("stream")
     public Iterable<Employee> getEmployeesStream() {
-        var queryBuilder = QueryBuilder.select(
-            EMPLOYEE_NUMBER.as("employeeNumber"),
-            FIRST_NAME.as("firstName"),
-            LAST_NAME.as("lastName"),
-            GENDER,
-            BIRTH_DATE.as("birthDate"),
-            HIRE_DATE.as("hireDate")
-        ).from(Employee.Schema.class);
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select emp_no as employeeNumber, ");
+        queryBuilder.append("first_name as firstName, ");
+        queryBuilder.append("last_name as lastName, ");
+        queryBuilder.append("gender, ");
+        queryBuilder.append("birth_date as birthDate, ");
+        queryBuilder.append("hire_date as hireDate ");
+        queryBuilder.append("from employees");
 
         var pipe = new Pipe<Employee>(4096, 15000);
 

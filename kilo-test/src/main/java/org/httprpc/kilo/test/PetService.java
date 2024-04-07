@@ -33,8 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static org.httprpc.kilo.test.Pet.Schema.BIRTH;
-import static org.httprpc.kilo.test.Pet.Schema.OWNER;
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -66,9 +64,9 @@ public class PetService extends AbstractDatabaseService {
             throw new UnsupportedOperationException();
         }
 
-        var queryBuilder = QueryBuilder.selectAll()
-            .from(Pet.Schema.class)
-            .where(OWNER.eq("owner"));
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select * from pet where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -117,8 +115,9 @@ public class PetService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("average-age")
     public double getAverageAge() throws SQLException {
-        var queryBuilder = QueryBuilder.select(BIRTH)
-            .from(Pet.Schema.class);
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select birth from pet");
 
         double averageAge;
         try (var statement = queryBuilder.prepare(getConnection());

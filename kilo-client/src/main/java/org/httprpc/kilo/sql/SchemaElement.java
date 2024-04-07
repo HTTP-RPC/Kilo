@@ -16,7 +16,10 @@ package org.httprpc.kilo.sql;
 
 /**
  * Represents a schema element.
+ *
+ * @deprecated Use {@link QueryBuilder#append(String)} instead.
  */
+@Deprecated()
 public interface SchemaElement {
     /**
      * Sort order options.
