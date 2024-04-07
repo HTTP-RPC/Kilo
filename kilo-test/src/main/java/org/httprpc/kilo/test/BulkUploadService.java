@@ -39,8 +39,8 @@ public class BulkUploadService extends AbstractDatabaseService {
     public void upload(Void body) throws SQLException, IOException {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("insert into bulk_upload_test (text1, text2, number1, number2, number3) "
-            + "values(:text1, :text2, :number1, :number2, :number3)");
+        queryBuilder.append("insert into bulk_upload_test (text1, text2, number1, number2, number3) ");
+        queryBuilder.append("values (:text1, :text2, :number1, :number2, :number3)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             var csvDecoder = new CSVDecoder();
@@ -56,8 +56,8 @@ public class BulkUploadService extends AbstractDatabaseService {
     public void uploadBatch(Void body) throws SQLException, IOException {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("insert into bulk_upload_test (text1, text2, number1, number2, number3) "
-            + "values(:text1, :text2, :number1, :number2, :number3)");
+        queryBuilder.append("insert into bulk_upload_test (text1, text2, number1, number2, number3) ");
+        queryBuilder.append("values (:text1, :text2, :number1, :number2, :number3)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             var i = 0;
