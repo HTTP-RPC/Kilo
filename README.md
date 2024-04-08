@@ -937,7 +937,7 @@ this code could be used to create a query that returns all rows associated with 
 ```java
 var queryBuilder = new QueryBuilder();
 
-queryBuilder.append("select * from pet where owner = :owner");
+queryBuilder.appendLine("select * from pet where owner = :owner");
 ```
 
 The colon character identifies "owner" as a parameter, or variable. Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
@@ -991,7 +991,7 @@ the preceding query could be written as follows:
 ```java
 var queryBuilder = QueryBuilder.select(Pet.class);
 
-queryBuilder.append(" where owner = :owner");
+queryBuilder.appendLine("where owner = :owner");
 ```
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.

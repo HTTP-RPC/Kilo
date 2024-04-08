@@ -122,6 +122,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(" from ");
         sqlBuilder.append(tableName);
+        sqlBuilder.append("\n");
 
         return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
     }
@@ -196,7 +197,7 @@ public class QueryBuilder {
             sqlBuilder.append("?");
         }
 
-        sqlBuilder.append(")");
+        sqlBuilder.append(")\n");
 
         return new QueryBuilder(type, sqlBuilder, parameters);
     }
@@ -267,6 +268,8 @@ public class QueryBuilder {
             throw new UnsupportedOperationException();
         }
 
+        sqlBuilder.append("\n");
+
         return new QueryBuilder(type, sqlBuilder, parameters);
     }
 
@@ -289,6 +292,7 @@ public class QueryBuilder {
         var sqlBuilder = new StringBuilder("delete from ");
 
         sqlBuilder.append(tableName);
+        sqlBuilder.append("\n");
 
         return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
     }
@@ -321,7 +325,7 @@ public class QueryBuilder {
             throw new IllegalStateException();
         }
 
-        sqlBuilder.append(" where ");
+        sqlBuilder.append("where ");
 
         for (var property : BeanAdapter.getProperties(type).values()) {
             var accessor = property.getAccessor();
@@ -333,7 +337,7 @@ public class QueryBuilder {
 
                 if (primaryKey != null) {
                     sqlBuilder.append(column.value());
-                    sqlBuilder.append(" = ?");
+                    sqlBuilder.append(" = ?\n");
 
                     parameters.add(key);
 
@@ -349,27 +353,30 @@ public class QueryBuilder {
      * Appends arbitrary SQL text to a query. Named parameters can be declared
      * by prepending a colon to an argument name.
      *
-     * @param sql
+     * @param text
      * The SQL text to append.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
      */
-    public void append(String sql) {
-        if (sql == null) {
+    public QueryBuilder append(String text) {
+        if (text == null) {
             throw new IllegalArgumentException();
         }
 
         var quoted = false;
 
-        var n = sql.length();
+        var n = text.length();
         var i = 0;
 
         while (i < n) {
-            var c = sql.charAt(i++);
+            var c = text.charAt(i++);
 
             if (c == ':' && !quoted) {
                 var parameterBuilder = new StringBuilder(32);
 
                 while (i < n) {
-                    c = sql.charAt(i);
+                    c = text.charAt(i);
 
                     if (!Character.isJavaIdentifierPart(c)) {
                         break;
@@ -399,6 +406,25 @@ public class QueryBuilder {
                 sqlBuilder.append(c);
             }
         }
+
+        return this;
+    }
+
+    /**
+     * Appends arbitrary SQL text to a query, terminated by a newline character.
+     *
+     * @param text
+     * The SQL text to append.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder appendLine(String text) {
+        append(text);
+
+        sqlBuilder.append("\n");
+
+        return this;
     }
 
     /**

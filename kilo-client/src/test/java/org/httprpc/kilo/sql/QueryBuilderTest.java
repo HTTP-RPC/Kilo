@@ -66,7 +66,7 @@ public class QueryBuilderTest {
     public void testSelectA() {
         var queryBuilder = QueryBuilder.select(A.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A where a = ?", queryBuilder.toString());
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -74,7 +74,7 @@ public class QueryBuilderTest {
     public void testSelectB() {
         var queryBuilder = QueryBuilder.select(B.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B where a = ?", queryBuilder.toString());
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -82,7 +82,7 @@ public class QueryBuilderTest {
     public void testSelectC() {
         var queryBuilder = QueryBuilder.select(C.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("select C.a, C.b, C.c from C where a = ?", queryBuilder.toString());
+        assertEquals("select C.a, C.b, C.c from C\nwhere a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -90,7 +90,7 @@ public class QueryBuilderTest {
     public void testInsertInto() {
         var queryBuilder = QueryBuilder.insertInto(A.class);
 
-        assertEquals("insert into A (b, c, d) values (?, ?, ?)", queryBuilder.toString());
+        assertEquals("insert into A (b, c, d) values (?, ?, ?)\n", queryBuilder.toString());
         assertEquals(listOf("b", "c", "x"), queryBuilder.getParameters());
     }
 
@@ -98,7 +98,7 @@ public class QueryBuilderTest {
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update(A.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("update A set b = ?, c = ?, d = coalesce(?, d) where a = ?", queryBuilder.toString());
+        assertEquals("update A set b = ?, c = ?, d = coalesce(?, d)\nwhere a = ?\n", queryBuilder.toString());
         assertEquals(listOf("b", "c", "x", "a"), queryBuilder.getParameters());
     }
 
@@ -106,16 +106,16 @@ public class QueryBuilderTest {
     public void testDeleteFrom() {
         var queryBuilder = QueryBuilder.deleteFrom(A.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("delete from A where a = ?", queryBuilder.toString());
+        assertEquals("delete from A\nwhere a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
     @Test
-    public void testAppend() {
+    public void testAppendLine() {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("select a, 'b''c:d' as b from foo\n");
-        queryBuilder.append("where bar = :x\n");
+        queryBuilder.appendLine("select a, 'b''c:d' as b from foo");
+        queryBuilder.appendLine("where bar = :x");
 
         assertEquals(listOf("x"), queryBuilder.getParameters());
 
@@ -126,35 +126,35 @@ public class QueryBuilderTest {
     public void testQuotedQuestionMark() {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("select '?' as q from xyz");
+        queryBuilder.appendLine("select '?' as q from xyz");
 
         assertTrue(queryBuilder.getParameters().isEmpty());
 
-        assertEquals("select '?' as q from xyz", queryBuilder.toString());
+        assertEquals("select '?' as q from xyz\n", queryBuilder.toString());
     }
 
     @Test
     public void testEscapedQuotes() {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''");
+        queryBuilder.appendLine("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''");
 
         assertTrue(queryBuilder.getParameters().isEmpty());
 
-        assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''", queryBuilder.toString());
+        assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''\n", queryBuilder.toString());
     }
 
     @Test
     public void testDoubleColon() {
         var queryBuilder = new QueryBuilder();
 
-        assertThrows(IllegalArgumentException.class, () -> queryBuilder.append("select 'ab:c'::varchar(16) as abc"));
+        assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select 'ab:c'::varchar(16) as abc"));
     }
 
     @Test
     public void testMissingParameterName() {
         var queryBuilder = new QueryBuilder();
 
-        assertThrows(IllegalArgumentException.class, () -> queryBuilder.append("select * from xyz where foo = : and bar is null"));
+        assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select * from xyz where foo = : and bar is null"));
     }
 }

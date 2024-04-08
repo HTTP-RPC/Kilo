@@ -42,7 +42,7 @@ public class PetService extends AbstractDatabaseService {
     public List<Pet> getPets(@Required String owner) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("select * from pet where owner = :owner");
+        queryBuilder.appendLine("select * from pet where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -65,7 +65,7 @@ public class PetService extends AbstractDatabaseService {
 
         var queryBuilder = QueryBuilder.select(Pet.class);
 
-        queryBuilder.append(" where owner = :owner");
+        queryBuilder.appendLine("where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
