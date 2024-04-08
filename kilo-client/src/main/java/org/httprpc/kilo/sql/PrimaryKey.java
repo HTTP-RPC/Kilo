@@ -12,27 +12,21 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.PrimaryKey;
-import org.httprpc.kilo.sql.Table;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.time.LocalDate;
-
-@Table("employees")
-public interface Employee {
-    @Column("emp_no")
-    @PrimaryKey
-    Integer getEmployeeNumber();
-    @Column("first_name")
-    String getFirstName();
-    @Column("last_name")
-    String getLastName();
-    @Column("gender")
-    String getGender();
-    @Column("birth_date")
-    LocalDate getBirthDate();
-    @Column("hire_date")
-    LocalDate getHireDate();
+/**
+ * Indicates that a bean property or record component represents a primary key.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PrimaryKey {
+    /**
+     * Indicates that the key's values are automatically generated.
+     */
+    boolean generated() default true;
 }

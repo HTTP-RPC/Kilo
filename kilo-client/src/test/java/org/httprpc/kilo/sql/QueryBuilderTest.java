@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.sql;
 
+import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
 import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -22,6 +24,92 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QueryBuilderTest {
+    @Table("A")
+    public interface A {
+        @Column("a")
+        @PrimaryKey
+        String getA();
+        @Column("b")
+        @Required
+        Double getB();
+        @Column("c")
+        @Required
+        Boolean getC();
+        @Name("x")
+        @Column("d")
+        Boolean getD();
+    }
+
+    @Table("B")
+    public interface B extends A {
+        @Column("e")
+        Double getE();
+        @Name("y")
+        @Column("f")
+        Boolean getF();
+        Integer getG();
+    }
+
+    @Table("C")
+    public record C(
+        @Column("a")
+        @PrimaryKey
+        String a,
+        @Column("b")
+        Double b,
+        @Column("c")
+        Boolean c
+    ) {
+    }
+
+    @Test
+    public void testSelectA() {
+        var queryBuilder = QueryBuilder.select(A.class).wherePrimaryKeyEquals("a");
+
+        assertEquals("select A.a, A.b, A.c, A.d as x from A where a = ?", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectB() {
+        var queryBuilder = QueryBuilder.select(B.class).wherePrimaryKeyEquals("a");
+
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B where a = ?", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectC() {
+        var queryBuilder = QueryBuilder.select(C.class).wherePrimaryKeyEquals("a");
+
+        assertEquals("select C.a, C.b, C.c from C where a = ?", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testInsertInto() {
+        var queryBuilder = QueryBuilder.insertInto(A.class);
+
+        assertEquals("insert into A (b, c, d) values (?, ?, ?)", queryBuilder.toString());
+        assertEquals(listOf("b", "c", "x"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testUpdate() {
+        var queryBuilder = QueryBuilder.update(A.class).wherePrimaryKeyEquals("a");
+
+        assertEquals("update A set b = ?, c = ?, d = coalesce(?, d) where a = ?", queryBuilder.toString());
+        assertEquals(listOf("b", "c", "x", "a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testDeleteFrom() {
+        var queryBuilder = QueryBuilder.deleteFrom(A.class).wherePrimaryKeyEquals("a");
+
+        assertEquals("delete from A where a = ?", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
     @Test
     public void testAppend() {
         var queryBuilder = new QueryBuilder();

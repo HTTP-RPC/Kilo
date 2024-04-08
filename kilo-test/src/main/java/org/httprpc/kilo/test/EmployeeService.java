@@ -67,15 +67,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     public List<Employee> getEmployees() throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("select emp_no as employeeNumber, ");
-        queryBuilder.append("first_name as firstName, ");
-        queryBuilder.append("last_name as lastName, ");
-        queryBuilder.append("gender, ");
-        queryBuilder.append("birth_date as birthDate, ");
-        queryBuilder.append("hire_date as hireDate ");
-        queryBuilder.append("from employees");
+        var queryBuilder = QueryBuilder.select(Employee.class);
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
@@ -87,19 +79,11 @@ public class EmployeeService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("stream")
     public Iterable<Employee> getEmployeesStream() {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("select emp_no as employeeNumber, ");
-        queryBuilder.append("first_name as firstName, ");
-        queryBuilder.append("last_name as lastName, ");
-        queryBuilder.append("gender, ");
-        queryBuilder.append("birth_date as birthDate, ");
-        queryBuilder.append("hire_date as hireDate ");
-        queryBuilder.append("from employees");
-
         var pipe = new Pipe<Employee>(4096, 15000);
 
         executorService.submit(() -> {
+            var queryBuilder = QueryBuilder.select(Employee.class);
+
             try (var connection = getConnection();
                 var statement = queryBuilder.prepare(connection);
                 var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {

@@ -36,9 +36,7 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("select id, description, price from item");
+        var queryBuilder = QueryBuilder.select(Item.class);
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
@@ -52,9 +50,7 @@ public class CatalogService extends AbstractDatabaseService {
     public ItemDetail getItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("select * from item where id = :itemID");
+        var queryBuilder = QueryBuilder.select(ItemDetail.class).wherePrimaryKeyEquals("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -71,10 +67,7 @@ public class CatalogService extends AbstractDatabaseService {
     public ItemDetail addItem(
         @Description("The item to add.") ItemDetail item
     ) throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("insert into item (description, price, size, color, weight) ");
-        queryBuilder.append("values (:description, :price, :size, :color, :weight)");
+        var queryBuilder = QueryBuilder.insertInto(ItemDetail.class);
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -92,14 +85,7 @@ public class CatalogService extends AbstractDatabaseService {
     ) throws SQLException {
         item.setID(itemID);
 
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("update item set description = :description, ");
-        queryBuilder.append("price = :price, ");
-        queryBuilder.append("size = :size, ");
-        queryBuilder.append("color = :color, ");
-        queryBuilder.append("weight = :weight ");
-        queryBuilder.append("where id = :id");
+        var queryBuilder = QueryBuilder.update(ItemDetail.class).wherePrimaryKeyEquals("id");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -114,9 +100,7 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("delete from item where id = :itemID");
+        var queryBuilder = QueryBuilder.deleteFrom(Item.class).wherePrimaryKeyEquals("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(

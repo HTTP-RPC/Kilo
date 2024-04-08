@@ -14,6 +14,9 @@
 
 package org.httprpc.kilo.sql;
 
+import org.httprpc.kilo.Required;
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,9 +35,10 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  * queries.
  */
 public class QueryBuilder {
+    private Class<?> type;
     private StringBuilder sqlBuilder;
+    private List<String> parameters;
 
-    private List<String> parameters = new LinkedList<>();
     private List<Object> generatedKeys = null;
 
     private static final int INITIAL_CAPACITY = 1024;
@@ -53,11 +57,292 @@ public class QueryBuilder {
      * The initial capacity.
      */
     public QueryBuilder(int capacity) {
-        this(new StringBuilder(capacity));
+        this(null, new StringBuilder(capacity), new LinkedList<>());
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder) {
+    private QueryBuilder(Class<?> type, StringBuilder sqlBuilder, List<String> parameters) {
+        this.type = type;
         this.sqlBuilder = sqlBuilder;
+        this.parameters = parameters;
+    }
+
+    /**
+     * Creates a "select" query.
+     *
+     * @param type
+     * An annotated entity type.
+     *
+     * @return
+     * A "select" query.
+     */
+    public static QueryBuilder select(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(type);
+
+        var sqlBuilder = new StringBuilder("select ");
+
+        var i = 0;
+
+        for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+            var accessor = entry.getValue().getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                continue;
+            }
+
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+
+            var columnName = column.value();
+
+            sqlBuilder.append(columnName);
+
+            var propertyName = entry.getKey();
+
+            if (!columnName.equals(propertyName)) {
+                sqlBuilder.append(" as ");
+                sqlBuilder.append(propertyName);
+            }
+
+            i++;
+        }
+
+        if (i == 0) {
+            throw new UnsupportedOperationException();
+        }
+
+        sqlBuilder.append(" from ");
+        sqlBuilder.append(tableName);
+
+        return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
+    }
+
+    /**
+     * Creates an "insert into" query.
+     *
+     * @param type
+     * An annotated entity type.
+     *
+     * @return
+     * An "insert into" query.
+     */
+    public static QueryBuilder insertInto(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(type);
+
+        var sqlBuilder = new StringBuilder("insert into ");
+
+        sqlBuilder.append(tableName);
+
+        var columnNames = new LinkedList<String>();
+        var parameters = new LinkedList<String>();
+
+        for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+            var accessor = entry.getValue().getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                continue;
+            }
+
+            var primaryKey = accessor.getAnnotation(PrimaryKey.class);
+
+            if (primaryKey != null && primaryKey.generated()) {
+                continue;
+            }
+
+            columnNames.add(column.value());
+            parameters.add(entry.getKey());
+        }
+
+        if (columnNames.isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+
+        sqlBuilder.append(" (");
+
+        var i = 0;
+
+        for (var columnName : columnNames) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(columnName);
+
+            i++;
+        }
+
+        sqlBuilder.append(") values (");
+
+        for (var j = 0; j < i; j++) {
+            if (j > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append("?");
+        }
+
+        sqlBuilder.append(")");
+
+        return new QueryBuilder(type, sqlBuilder, parameters);
+    }
+
+    /**
+     * Creates an "update" query.
+     *
+     * @param type
+     * An annotated entity type.
+     *
+     * @return
+     * An "update" query.
+     */
+    public static QueryBuilder update(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(type);
+
+        var sqlBuilder = new StringBuilder("update ");
+
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(" set ");
+
+        var i = 0;
+
+        var parameters = new LinkedList<String>();
+
+        for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+            var accessor = entry.getValue().getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                continue;
+            }
+
+            var primaryKey = accessor.getAnnotation(PrimaryKey.class);
+
+            if (primaryKey != null && primaryKey.generated()) {
+                continue;
+            }
+
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            var columnName = column.value();
+
+            sqlBuilder.append(columnName);
+            sqlBuilder.append(" = ");
+
+            if (accessor.getAnnotation(Required.class) == null) {
+                sqlBuilder.append("coalesce(?, ");
+                sqlBuilder.append(columnName);
+                sqlBuilder.append(")");
+            } else {
+                sqlBuilder.append("?");
+            }
+
+            parameters.add(entry.getKey());
+
+            i++;
+        }
+
+        if (i == 0) {
+            throw new UnsupportedOperationException();
+        }
+
+        return new QueryBuilder(type, sqlBuilder, parameters);
+    }
+
+    /**
+     * Creates a "delete from" query.
+     *
+     * @param type
+     * An annotated entity type.
+     *
+     * @return
+     * A "delete from" query.
+     */
+    public static QueryBuilder deleteFrom(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(type);
+
+        var sqlBuilder = new StringBuilder("delete from ");
+
+        sqlBuilder.append(tableName);
+
+        return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
+    }
+
+    private static String getTableName(Class<?> type) {
+        var table = type.getAnnotation(Table.class);
+
+        if (table == null) {
+            throw new UnsupportedOperationException();
+        }
+
+        return table.value();
+    }
+
+    /**
+     * Appends a "where" clause that filters on the primary key.
+     *
+     * @param key
+     * The key of the argument representing the primary key value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder wherePrimaryKeyEquals(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (type == null) {
+            throw new IllegalStateException();
+        }
+
+        sqlBuilder.append(" where ");
+
+        for (var property : BeanAdapter.getProperties(type).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null) {
+                var primaryKey = accessor.getAnnotation(PrimaryKey.class);
+
+                if (primaryKey != null) {
+                    sqlBuilder.append(column.value());
+                    sqlBuilder.append(" = ?");
+
+                    parameters.add(key);
+
+                    return this;
+                }
+            }
+        }
+
+        throw new UnsupportedOperationException();
     }
 
     /**

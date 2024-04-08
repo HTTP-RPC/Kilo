@@ -29,7 +29,6 @@ import org.httprpc.kilo.util.ResourceBundleAdapter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -64,9 +63,9 @@ public class PetService extends AbstractDatabaseService {
             throw new UnsupportedOperationException();
         }
 
-        var queryBuilder = new QueryBuilder();
+        var queryBuilder = QueryBuilder.select(Pet.class);
 
-        queryBuilder.append("select * from pet where owner = :owner");
+        queryBuilder.append(" where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -110,25 +109,5 @@ public class PetService extends AbstractDatabaseService {
                 throw new UnsupportedOperationException();
             }
         }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("average-age")
-    public double getAverageAge() throws SQLException {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.append("select birth from pet");
-
-        double averageAge;
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
-            var now = new Date();
-
-            averageAge = results.stream()
-                .map(result -> BeanAdapter.coerce(result, Pet.class))
-                .mapToLong(pet -> now.getTime() - (pet.getBirth()).getTime()).average().getAsDouble();
-        }
-
-        return averageAge / (365.0 * 24.0 * 60.0 * 60.0 * 1000.0);
     }
 }

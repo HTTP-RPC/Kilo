@@ -1094,12 +1094,6 @@ public class WebServiceProxyTest {
         testPetsStreamCSV();
         testPetsStreamHTML();
         testPetsStreamXML();
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/average-age");
-
-        var averageAge = webServiceProxy.invoke();
-
-        assertNotNull(averageAge);
     }
 
     private void testPetsJSON() throws IOException {

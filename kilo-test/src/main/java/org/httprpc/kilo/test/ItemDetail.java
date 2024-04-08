@@ -15,18 +15,24 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Table;
 
+@Table("item")
 @Description("Represents detailed information about an item in the catalog.")
 public interface ItemDetail extends Item {
     @Description("The item's size.")
+    @Column("size")
     Size getSize();
     void setSize(Size size);
 
     @Description("The item's color.")
+    @Column("color")
     String getColor();
     void setColor(String color);
 
     @Description("The item's weight.")
+    @Column("weight")
     Double getWeight();
     void setWeight(Double weight);
 }

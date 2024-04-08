@@ -14,13 +14,23 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Table;
+
 import java.util.Date;
 
+@Table("pet")
 public interface Pet {
+    @Column("name")
     String getName();
+    @Column("owner")
     String getOwner();
+    @Column("species")
     String getSpecies();
+    @Column("sex")
     String getSex();
+    @Column("birth")
     Date getBirth();
+    @Column("death")
     Date getDeath();
 }

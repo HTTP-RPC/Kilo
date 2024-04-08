@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     /**
-     * Represents a bean property.
+     * Represents a bean property or record component.
      */
     public static class Property {
         private Method accessor = null;

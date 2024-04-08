@@ -17,19 +17,27 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
+import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.PrimaryKey;
+import org.httprpc.kilo.sql.Table;
 
+@Table("item")
 @Description("Represents an item in the catalog.")
 public interface Item {
     @Name("id")
+    @Column("id")
+    @PrimaryKey
     @Description("The item's ID.")
     Integer getID();
     void setID(Integer id);
 
+    @Column("description")
     @Description("The item's description.")
     @Required
     String getDescription();
     void setDescription(String description);
 
+    @Column("price")
     @Description("The item's price.")
     @Required
     Double getPrice();

@@ -296,17 +296,26 @@ Descriptions can also be associated with bean types, enums, and records:
 
 ```java
 @Description("Represents an item in the catalog.")
+@Table("item")
 public interface Item {
     @Name("id")
+    @Column("id")
+    @PrimaryKey
     @Description("The item's ID.")
     Integer getID();
     void setID(Integer id);
 
+    @Column("description")
     @Description("The item's description.")
+    @Required
     String getDescription();
+    void setDescription(String description);
 
+    @Column("price")
     @Description("The item's price.")
+    @Required
     Double getPrice();
+    void setPrice(Double price);
 }
 ```
 
@@ -953,21 +962,39 @@ templateEncoder.write(results, response.getOutputStream());
 Alternatively, they could be mapped to a list of `Pet` instances and returned to the caller:
 
 ```java
+return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+```
+
+### Schema Annotations
+`QueryBuilder` also supports a simplified approach to query construction using "schema annotations". For example, given this type definition:
+
+```java
+@Table("pets")
 public interface Pet {
+    @Column("name")
     String getName();
+    @Column("owner")
     String getOwner();
+    @Column("species")
     String getSpecies();
+    @Column("sex")
     String getSex();
+    @Column("birth")
     Date getBirth();
+    @Column("death")
     Date getDeath();
 }
 ```
 
+the preceding query could be written as follows:
+
 ```java
-return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+var queryBuilder = QueryBuilder.select(Pet.class);
+
+queryBuilder.append(" where owner = :owner");
 ```
 
-See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
+Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
@@ -1099,23 +1126,11 @@ This code would produce the following output:
 ## Pipe
 The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for retrieval by a consumer thread. It implements the `Iterable` interface and returns values as they become available, blocking if necessary.
 
-For example, the following code constructs a SQL query that retrieves all rows from an `employees` table:
+For example, the following code executes a SQL query that retrieves all rows from an `employees` table:
 
 ```java
-var queryBuilder = new QueryBuilder();
+var queryBuilder = QueryBuilder.select(Employee.class);
 
-queryBuilder.append("select emp_no as employeeNumber, ");
-queryBuilder.append("first_name as firstName, ");
-queryBuilder.append("last_name as lastName, ");
-queryBuilder.append("gender, ");
-queryBuilder.append("birth_date as birthDate, ");
-queryBuilder.append("hire_date as hireDate ");
-queryBuilder.append("from employees");
-```
-
-This code could be used to transform the results to a list of `Employee` instances:
-
-```java
 try (var connection = getConnection();
     var statement = queryBuilder.prepare(connection);
     var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
@@ -1129,6 +1144,8 @@ All rows are processed and added to the list before anything is returned to the 
 var pipe = new Pipe<Employee>(4096, 15000);
 
 executorService.submit(() -> {
+    var queryBuilder = QueryBuilder.select(Employee.class);
+
     try (var connection = getConnection();
         var statement = queryBuilder.prepare(connection);
         var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
