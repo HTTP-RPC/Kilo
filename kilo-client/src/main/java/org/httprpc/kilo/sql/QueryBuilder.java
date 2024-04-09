@@ -128,15 +128,15 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates an "insert into" query.
+     * Creates an "insert" query.
      *
      * @param type
      * An annotated entity type.
      *
      * @return
-     * An "insert into" query.
+     * An "insert" query.
      */
-    public static QueryBuilder insertInto(Class<?> type) {
+    public static QueryBuilder insert(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException();
         }
@@ -274,15 +274,15 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "delete from" query.
+     * Creates a "delete" query.
      *
      * @param type
      * An annotated entity type.
      *
      * @return
-     * A "delete from" query.
+     * A "delete" query.
      */
-    public static QueryBuilder deleteFrom(Class<?> type) {
+    public static QueryBuilder delete(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException();
         }

@@ -87,8 +87,8 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testInsertInto() {
-        var queryBuilder = QueryBuilder.insertInto(A.class);
+    public void testInsert() {
+        var queryBuilder = QueryBuilder.insert(A.class);
 
         assertEquals("insert into A (b, c, d) values (?, ?, ?)\n", queryBuilder.toString());
         assertEquals(listOf("b", "c", "x"), queryBuilder.getParameters());
@@ -103,8 +103,8 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testDeleteFrom() {
-        var queryBuilder = QueryBuilder.deleteFrom(A.class).wherePrimaryKeyEquals("a");
+    public void testDelete() {
+        var queryBuilder = QueryBuilder.delete(A.class).wherePrimaryKeyEquals("a");
 
         assertEquals("delete from A\nwhere a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());

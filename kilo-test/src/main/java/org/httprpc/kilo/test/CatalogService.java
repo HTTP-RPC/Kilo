@@ -67,7 +67,7 @@ public class CatalogService extends AbstractDatabaseService {
     public ItemDetail addItem(
         @Description("The item to add.") ItemDetail item
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.insertInto(ItemDetail.class);
+        var queryBuilder = QueryBuilder.insert(ItemDetail.class);
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -100,7 +100,7 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.deleteFrom(Item.class).wherePrimaryKeyEquals("itemID");
+        var queryBuilder = QueryBuilder.delete(Item.class).wherePrimaryKeyEquals("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
