@@ -951,18 +951,18 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be serialized to JSON or CSV, or used as the data dictionary for a template document:
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be mapped to a list of `Pet` instances and returned to the caller:
+
+```java
+return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+```
+
+Alternatively, they could be serialized to JSON or CSV, or used as the data dictionary for a template document:
 
 ```java
 var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
 
 templateEncoder.write(results, response.getOutputStream());
-```
-
-Alternatively, they could be mapped to a list of `Pet` instances and returned to the caller:
-
-```java
-return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
 
 ### Schema Annotations
@@ -994,7 +994,7 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Additionally, the `PrimaryKey` and `ForeignKey` annotations can be used in conjunction with these `QueryBuilder` methods to create single-row, one-to-many, and many-to-many queries, respectively:
+Additionally, the following `QueryBuilder` methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to generate single-row, one-to-many, and many-to-many queries, respectively:
 
 ```java
 public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
