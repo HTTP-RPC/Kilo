@@ -994,7 +994,7 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-The `PrimaryKey` and `ForeignKey` annotations can be used in conjunction with these methods to create single-row, one-to-many, and many-to-many queries, respectively:
+Additionally, the `PrimaryKey` and `ForeignKey` annotations can be used in conjunction with these `QueryBuilder` methods to create single-row, one-to-many, and many-to-many queries, respectively:
 
 ```java
 public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
