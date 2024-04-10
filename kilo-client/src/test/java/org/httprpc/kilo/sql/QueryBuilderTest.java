@@ -62,28 +62,6 @@ public class QueryBuilderTest {
     ) {
     }
 
-    @Table("D")
-    public interface D {
-        @Column("d")
-        @PrimaryKey
-        String getD();
-        @Column("e")
-        String getE();
-    }
-
-    @Table("E")
-    public record E(
-        @Column("a")
-        @ForeignKey(A.class)
-        String a,
-        @Column("d")
-        @ForeignKey(D.class)
-        String d,
-        @Column("z")
-        Boolean z
-    ) {
-    }
-
     @Test
     public void testSelectA() {
         var queryBuilder = QueryBuilder.select(A.class).wherePrimaryKeyEquals("a");
@@ -105,22 +83,6 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(C.class).whereForeignKeyEquals(A.class, "a");
 
         assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\n", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
-    }
-
-    @Test
-    public void testSelectAtoD() {
-        var queryBuilder = QueryBuilder.select(A.class).join(E.class, "d");
-
-        assertEquals("select A.a, A.b, A.c, A.d as x from A\njoin E on A.a = E.a and E.d = ?\n", queryBuilder.toString());
-        assertEquals(listOf("d"), queryBuilder.getParameters());
-    }
-
-    @Test
-    public void testSelectDtoA() {
-        var queryBuilder = QueryBuilder.select(D.class).join(E.class, "a");
-
-        assertEquals("select D.d, D.e from D\njoin E on D.d = E.d and E.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 

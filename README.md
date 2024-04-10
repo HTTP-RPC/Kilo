@@ -995,8 +995,6 @@ queryBuilder.appendLine("where owner = :owner");
 Alternatively, the following `QueryBuilder` methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to limit the returned rows:
 
 ```java
-public QueryBuilder join(Class<?> type, String key) { ... }
-
 public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
 public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) { ... }
 ```
