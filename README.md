@@ -951,13 +951,11 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be mapped to a list of `Pet` instances and returned to the caller:
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be mapped to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
 ```
-
-Alternatively, they could be serialized to JSON or CSV, or used as the data dictionary for a template document:
 
 ```java
 var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
@@ -994,12 +992,13 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Additionally, the following `QueryBuilder` methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to generate single-row, one-to-many, and many-to-many queries, respectively:
+Alternatively, the following `QueryBuilder` methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to limit the returned rows:
 
 ```java
-public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
-public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) {
 public QueryBuilder join(Class<?> type, String key) { ... }
+
+public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
+public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) { ... }
 ```
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
