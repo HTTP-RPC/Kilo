@@ -994,6 +994,14 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
+The `PrimaryKey` and `ForeignKey` annotations can be used in conjunction with these methods to create single-row, one-to-many, and many-to-many queries, respectively:
+
+```java
+public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
+public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) {
+public QueryBuilder join(Class<?> type, String key) { ... }
+```
+
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter

@@ -127,6 +127,106 @@ public class QueryBuilder {
         return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
     }
 
+    private static String getTableName(Class<?> type) {
+        var table = type.getAnnotation(Table.class);
+
+        if (table == null) {
+            throw new UnsupportedOperationException();
+        }
+
+        return table.value();
+    }
+
+    /**
+     * Appends a "join" clause that filters on a primary and secondary key.
+     *
+     * @param type
+     * The type that defines the primary key.
+     *
+     * @param key
+     * The key of the argument representing the secondary key value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder join(Class<?> type, String key) {
+        if (type == null || key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.type == null) {
+            throw new IllegalStateException();
+        }
+
+        var joinTableName = getTableName(type);
+
+        sqlBuilder.append("join ");
+        sqlBuilder.append(joinTableName);
+        sqlBuilder.append(" on ");
+        sqlBuilder.append(getTableName(this.type));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getPrimaryKeyColumnName(this.type));
+        sqlBuilder.append(" = ");
+
+        String joinColumnName = null;
+        String argumentColumnName = null;
+
+        for (var property : BeanAdapter.getProperties(type).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null) {
+                var foreignKey = accessor.getAnnotation(ForeignKey.class);
+
+                if (foreignKey != null) {
+                    var columnName = column.value();
+
+                    if (foreignKey.value() == this.type) {
+                        joinColumnName = columnName;
+                    } else {
+                        argumentColumnName = columnName;
+                    }
+                }
+            }
+
+            if (joinColumnName != null && argumentColumnName != null) {
+                sqlBuilder.append(joinTableName);
+                sqlBuilder.append(".");
+                sqlBuilder.append(joinColumnName);
+                sqlBuilder.append(" and ");
+                sqlBuilder.append(joinTableName);
+                sqlBuilder.append(".");
+                sqlBuilder.append(argumentColumnName);
+                sqlBuilder.append(" = ?\n");
+
+                parameters.add(key);
+
+                return this;
+            }
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    private static String getPrimaryKeyColumnName(Class<?> type) {
+        for (var property : BeanAdapter.getProperties(type).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null) {
+                var primaryKey = accessor.getAnnotation(PrimaryKey.class);
+
+                if (primaryKey != null) {
+                    return column.value();
+                }
+            }
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Creates an "insert" query.
      *
@@ -297,16 +397,6 @@ public class QueryBuilder {
         return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
     }
 
-    private static String getTableName(Class<?> type) {
-        var table = type.getAnnotation(Table.class);
-
-        if (table == null) {
-            throw new UnsupportedOperationException();
-        }
-
-        return table.value();
-    }
-
     /**
      * Appends a "where" clause that filters on the primary key.
      *
@@ -326,16 +416,50 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append("where ");
+        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getPrimaryKeyColumnName(type));
+        sqlBuilder.append(" = ?\n");
 
-        for (var property : BeanAdapter.getProperties(type).values()) {
+        parameters.add(key);
+
+        return this;
+    }
+
+    /**
+     * Appends a "where" clause that filters on a foreign key.
+     *
+     * @param type
+     * The type that defines the primary key.
+     *
+     * @param key
+     * The key of the argument representing the foreign key value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) {
+        if (type == null || key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (this.type == null) {
+            throw new IllegalStateException();
+        }
+
+        sqlBuilder.append("where ");
+
+        for (var property : BeanAdapter.getProperties(this.type).values()) {
             var accessor = property.getAccessor();
 
             var column = accessor.getAnnotation(Column.class);
 
             if (column != null) {
-                var primaryKey = accessor.getAnnotation(PrimaryKey.class);
+                var foreignKey = accessor.getAnnotation(ForeignKey.class);
 
-                if (primaryKey != null) {
+                if (foreignKey != null && foreignKey.value() == type) {
+                    sqlBuilder.append(getTableName(this.type));
+                    sqlBuilder.append(".");
                     sqlBuilder.append(column.value());
                     sqlBuilder.append(" = ?\n");
 

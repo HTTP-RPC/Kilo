@@ -53,7 +53,7 @@ public class QueryBuilderTest {
     @Table("C")
     public record C(
         @Column("a")
-        @PrimaryKey
+        @ForeignKey(A.class)
         String a,
         @Column("b")
         Double b,
@@ -62,11 +62,33 @@ public class QueryBuilderTest {
     ) {
     }
 
+    @Table("D")
+    public interface D {
+        @Column("d")
+        @PrimaryKey
+        String getD();
+        @Column("e")
+        String getE();
+    }
+
+    @Table("E")
+    public record E(
+        @Column("a")
+        @ForeignKey(A.class)
+        String a,
+        @Column("d")
+        @ForeignKey(D.class)
+        String d,
+        @Column("z")
+        Boolean z
+    ) {
+    }
+
     @Test
     public void testSelectA() {
         var queryBuilder = QueryBuilder.select(A.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere a = ?\n", queryBuilder.toString());
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -74,15 +96,31 @@ public class QueryBuilderTest {
     public void testSelectB() {
         var queryBuilder = QueryBuilder.select(B.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere a = ?\n", queryBuilder.toString());
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere B.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
     @Test
     public void testSelectC() {
-        var queryBuilder = QueryBuilder.select(C.class).wherePrimaryKeyEquals("a");
+        var queryBuilder = QueryBuilder.select(C.class).whereForeignKeyEquals(A.class, "a");
 
-        assertEquals("select C.a, C.b, C.c from C\nwhere a = ?\n", queryBuilder.toString());
+        assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\n", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectAtoD() {
+        var queryBuilder = QueryBuilder.select(A.class).join(E.class, "d");
+
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\njoin E on A.a = E.a and E.d = ?\n", queryBuilder.toString());
+        assertEquals(listOf("d"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectDtoA() {
+        var queryBuilder = QueryBuilder.select(D.class).join(E.class, "a");
+
+        assertEquals("select D.d, D.e from D\njoin E on D.d = E.d and E.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -98,7 +136,7 @@ public class QueryBuilderTest {
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update(A.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("update A set b = ?, c = ?, d = coalesce(?, d)\nwhere a = ?\n", queryBuilder.toString());
+        assertEquals("update A set b = ?, c = ?, d = coalesce(?, d)\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("b", "c", "x", "a"), queryBuilder.getParameters());
     }
 
@@ -106,7 +144,7 @@ public class QueryBuilderTest {
     public void testDelete() {
         var queryBuilder = QueryBuilder.delete(A.class).wherePrimaryKeyEquals("a");
 
-        assertEquals("delete from A\nwhere a = ?\n", queryBuilder.toString());
+        assertEquals("delete from A\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
