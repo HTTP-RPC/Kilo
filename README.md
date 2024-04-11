@@ -992,9 +992,11 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Alternatively, the following `QueryBuilder` methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to limit the returned rows:
+Alternatively, the following methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to filter the returned rows:
 
 ```java
+public QueryBuilder joinOnPrimaryKey(Class<?> type) { ... }
+public QueryBuilder joinOnForeignKey(Class<?> type) { ... }
 public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
 public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) { ... }
 ```

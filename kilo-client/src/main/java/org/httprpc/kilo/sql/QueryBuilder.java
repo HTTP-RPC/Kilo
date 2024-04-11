@@ -35,9 +35,10 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  * queries.
  */
 public class QueryBuilder {
-    private Class<?> type;
     private StringBuilder sqlBuilder;
     private List<String> parameters;
+
+    private LinkedList<Class<?>> types = new LinkedList<>();
 
     private List<Object> generatedKeys = null;
 
@@ -57,23 +58,24 @@ public class QueryBuilder {
      * The initial capacity.
      */
     public QueryBuilder(int capacity) {
-        this(null, new StringBuilder(capacity), new LinkedList<>());
+        this(new StringBuilder(capacity), new LinkedList<>(), null);
     }
 
-    private QueryBuilder(Class<?> type, StringBuilder sqlBuilder, List<String> parameters) {
-        this.type = type;
+    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Class<?> type) {
         this.sqlBuilder = sqlBuilder;
         this.parameters = parameters;
+
+        types.add(type);
     }
 
     /**
      * Creates a "select" query.
      *
      * @param type
-     * An annotated entity type.
+     * An annotated entity type representing the table to select from.
      *
      * @return
-     * A "select" query.
+     * A new {@link QueryBuilder} instance.
      */
     public static QueryBuilder select(Class<?> type) {
         if (type == null) {
@@ -124,7 +126,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), type);
     }
 
     private static String getTableName(Class<?> type) {
@@ -135,6 +137,93 @@ public class QueryBuilder {
         }
 
         return table.value();
+    }
+
+    /**
+     * Creates a "join" clause linking to the primary key of another table.
+     *
+     * @param type
+     * An annotated entity type representing the table to join.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder joinOnPrimaryKey(Class<?> type) {
+        // TODO
+        types.add(type);
+
+        return this;
+    }
+
+    /**
+     * Creates a "join" clause linking to a foreign key in another table.
+     *
+     * @param type
+     * An annotated entity type representing the table to join.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder joinOnForeignKey(Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (types.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        var lastType = types.peekLast();
+
+        if (lastType == null) {
+            throw new IllegalStateException();
+        }
+
+        var joinTableName = getTableName(type);
+
+        sqlBuilder.append("join ");
+        sqlBuilder.append(joinTableName);
+        sqlBuilder.append(" on ");
+        sqlBuilder.append(getTableName(lastType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getPrimaryKeyColumnName(lastType));
+        sqlBuilder.append(" = ");
+
+        String joinColumnName = null;
+        String argumentColumnName = null;
+
+        for (var property : BeanAdapter.getProperties(type).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null) {
+                var foreignKey = accessor.getAnnotation(ForeignKey.class);
+
+                if (foreignKey != null) {
+                    var columnName = column.value();
+
+                    if (foreignKey.value() == lastType) {
+                        joinColumnName = columnName;
+                    } else {
+                        argumentColumnName = columnName;
+                    }
+                }
+            }
+
+            if (joinColumnName != null && argumentColumnName != null) {
+                sqlBuilder.append(joinTableName);
+                sqlBuilder.append(".");
+                sqlBuilder.append(joinColumnName);
+                sqlBuilder.append("\n");
+
+                types.add(type);
+
+                return this;
+            }
+        }
+
+        throw new UnsupportedOperationException();
     }
 
     private static String getPrimaryKeyColumnName(Class<?> type) {
@@ -159,10 +248,10 @@ public class QueryBuilder {
      * Creates an "insert" query.
      *
      * @param type
-     * An annotated entity type.
+     * An annotated entity type representing the table to insert into.
      *
      * @return
-     * An "insert" query.
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder insert(Class<?> type) {
         if (type == null) {
@@ -227,17 +316,17 @@ public class QueryBuilder {
 
         sqlBuilder.append(")\n");
 
-        return new QueryBuilder(type, sqlBuilder, parameters);
+        return new QueryBuilder(sqlBuilder, parameters, type);
     }
 
     /**
      * Creates an "update" query.
      *
      * @param type
-     * An annotated entity type.
+     * An annotated entity type representing the table to update.
      *
      * @return
-     * An "update" query.
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder update(Class<?> type) {
         if (type == null) {
@@ -298,17 +387,17 @@ public class QueryBuilder {
 
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(type, sqlBuilder, parameters);
+        return new QueryBuilder(sqlBuilder, parameters, type);
     }
 
     /**
      * Creates a "delete" query.
      *
      * @param type
-     * An annotated entity type.
+     * An annotated entity type representing the table to delete from.
      *
      * @return
-     * A "delete" query.
+     * The new {@link QueryBuilder} instance.
      */
     public static QueryBuilder delete(Class<?> type) {
         if (type == null) {
@@ -322,7 +411,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(type, sqlBuilder, new LinkedList<>());
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), type);
     }
 
     /**
@@ -339,14 +428,16 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        if (type == null) {
+        var firstType = types.peekFirst();
+
+        if (firstType == null) {
             throw new IllegalStateException();
         }
 
         sqlBuilder.append("where ");
-        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(getTableName(firstType));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(type));
+        sqlBuilder.append(getPrimaryKeyColumnName(firstType));
         sqlBuilder.append(" = ?\n");
 
         parameters.add(key);
@@ -371,13 +462,15 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        if (this.type == null) {
+        var lastType = types.peekLast();
+
+        if (lastType == null) {
             throw new IllegalStateException();
         }
 
         sqlBuilder.append("where ");
 
-        for (var property : BeanAdapter.getProperties(this.type).values()) {
+        for (var property : BeanAdapter.getProperties(lastType).values()) {
             var accessor = property.getAccessor();
 
             var column = accessor.getAnnotation(Column.class);
@@ -386,7 +479,7 @@ public class QueryBuilder {
                 var foreignKey = accessor.getAnnotation(ForeignKey.class);
 
                 if (foreignKey != null && foreignKey.value() == type) {
-                    sqlBuilder.append(getTableName(this.type));
+                    sqlBuilder.append(getTableName(lastType));
                     sqlBuilder.append(".");
                     sqlBuilder.append(column.value());
                     sqlBuilder.append(" = ?\n");
