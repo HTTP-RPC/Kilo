@@ -38,6 +38,8 @@ public class CatalogService extends AbstractDatabaseService {
     public List<Item> getItems() throws SQLException {
         var queryBuilder = QueryBuilder.select(Item.class);
 
+        queryBuilder.appendLine("order by description");
+
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
             return results.stream().map(result -> BeanAdapter.coerce(result, Item.class)).toList();

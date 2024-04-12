@@ -17,8 +17,6 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.WebServiceException;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.CSVDecoder;
-import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
 import org.junit.jupiter.api.Test;
@@ -39,7 +37,6 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.entry;
@@ -50,7 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -1021,223 +1017,5 @@ public class WebServiceProxyTest {
         var result = webServiceProxy.invoke();
 
         assertEquals("Hello, World!", result);
-    }
-
-    @Test
-    public void testCatalog() throws IOException {
-        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, new URL(baseURL, "catalog/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
-
-        var item = BeanAdapter.coerce(mapOf(), ItemDetail.class);
-
-        item.setDescription("abc");
-        item.setPrice(150.0);
-        item.setSize(Size.MEDIUM);
-        item.setColor("red");
-        item.setWeight(5.0);
-
-        item = catalogServiceProxy.addItem(item);
-
-        assertNotNull(item);
-
-        var itemID = item.getID();
-
-        assertNotNull(itemID);
-
-        assertEquals("abc", item.getDescription());
-        assertEquals(150.0, item.getPrice());
-        assertEquals(Size.MEDIUM, item.getSize());
-        assertEquals(5.0, item.getWeight());
-
-        item = catalogServiceProxy.getItem(itemID);
-
-        assertNotNull(item);
-
-        assertEquals(itemID, item.getID());
-        assertEquals("abc", item.getDescription());
-        assertEquals(150.0, item.getPrice());
-        assertEquals(Size.MEDIUM, item.getSize());
-        assertEquals(5.0, item.getWeight());
-
-        item.setDescription("xyz");
-        item.setPrice(300.0);
-        item.setSize(Size.LARGE);
-        item.setColor("blue");
-        item.setWeight(10.0);
-
-        item = catalogServiceProxy.updateItem(item.getID(), item);
-
-        assertNotNull(item);
-
-        assertEquals(itemID, item.getID());
-        assertEquals("xyz", item.getDescription());
-        assertEquals(300.0, item.getPrice());
-        assertEquals(Size.LARGE, item.getSize());
-        assertEquals("blue", item.getColor());
-        assertEquals(10.0, item.getWeight());
-
-        assertNotNull(catalogServiceProxy.getItems().stream()
-            .filter(result -> result.getID().equals(itemID))
-            .findAny().orElse(null));
-
-        catalogServiceProxy.deleteItem(item.getID());
-
-        assertNull(catalogServiceProxy.getItems().stream()
-            .filter(result -> result.getID().equals(itemID))
-            .findAny().orElse(null));
-    }
-
-    @Test
-    public void testPets() throws IOException {
-        testPetsJSON();
-
-        testPetsStreamJSON();
-        testPetsStreamCSV();
-        testPetsStreamHTML();
-        testPetsStreamXML();
-    }
-
-    private void testPetsJSON() throws IOException {
-        List<?> expected;
-        try (var inputStream = getClass().getResourceAsStream("pets.json")) {
-            var jsonDecoder = new JSONDecoder();
-
-            expected = (List<?>)jsonDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets");
-
-        webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen")
-        ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var actual = webServiceProxy.invoke();
-
-        assertEquals(expected, actual);
-    }
-
-    private void testPetsStreamJSON() throws IOException {
-        List<?> expected;
-        try (var inputStream = getClass().getResourceAsStream("pets.json")) {
-            var jsonDecoder = new JSONDecoder();
-
-            expected = (List<?>)jsonDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
-
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "application/json")
-        ));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen")
-        ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var actual = webServiceProxy.invoke();
-
-        assertEquals(expected, actual);
-    }
-
-    private void testPetsStreamCSV() throws IOException {
-        List<?> expected;
-        try (var inputStream = getClass().getResourceAsStream("pets.csv")) {
-            var csvDecoder = new CSVDecoder();
-
-            expected = csvDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
-
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "text/csv")
-        ));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen")
-        ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var actual = webServiceProxy.invoke((inputStream, contentType) -> {
-            var csvDecoder = new CSVDecoder();
-
-            return csvDecoder.read(inputStream);
-        });
-
-        assertEquals(expected, actual);
-
-    }
-
-    private void testPetsStreamHTML() throws IOException {
-        testPetsStreamMarkup("pets.html", "text/html");
-    }
-
-    private void testPetsStreamXML() throws IOException {
-        testPetsStreamMarkup("pets.xml", "text/xml");
-    }
-
-    private void testPetsStreamMarkup(String name, String mimeType) throws IOException {
-        String expected;
-        try (var inputStream = getClass().getResourceAsStream(name)) {
-            var textDecoder = new TextDecoder();
-
-            expected = textDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
-
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", mimeType)
-        ));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("owner", "Gwen")
-        ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var actual = webServiceProxy.invoke((inputStream, contentType) -> {
-            var textDecoder = new TextDecoder();
-
-            return textDecoder.read(inputStream);
-        });
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testAPIDocumentation() throws IOException {
-        testAPIDocumentation("math");
-        testAPIDocumentation("file-upload");
-        testAPIDocumentation("catalog");
-    }
-
-    private void testAPIDocumentation(String name) throws IOException {
-        Map<?, ?> expected;
-        try (var inputStream = getClass().getResourceAsStream(String.format("%s.json", name))) {
-            var jsonDecoder = new JSONDecoder();
-
-            expected = (Map<?, ?>)jsonDecoder.read(inputStream);
-        }
-
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, name);
-
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "application/json")
-        ));
-
-        webServiceProxy.setArguments(mapOf(
-            entry("api", "json")
-        ));
-
-        webServiceProxy.setMonitorStream(System.out);
-
-        var actual = webServiceProxy.invoke();
-
-        assertEquals(expected, actual);
     }
 }

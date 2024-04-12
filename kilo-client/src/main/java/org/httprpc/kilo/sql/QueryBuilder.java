@@ -187,33 +187,14 @@ public class QueryBuilder {
         sqlBuilder.append(".");
         sqlBuilder.append(getPrimaryKeyColumnName(to));
         sqlBuilder.append(" = ");
+        sqlBuilder.append(getTableName(from));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(from, to));
+        sqlBuilder.append("\n");
 
-        for (var property : BeanAdapter.getProperties(from).values()) {
-            var accessor = property.getAccessor();
+        types.add(type);
 
-            var column = accessor.getAnnotation(Column.class);
-
-            if (column != null) {
-                var foreignKey = accessor.getAnnotation(ForeignKey.class);
-
-                if (foreignKey != null) {
-                    var columnName = column.value();
-
-                    if (foreignKey.value() == to) {
-                        sqlBuilder.append(getTableName(from));
-                        sqlBuilder.append(".");
-                        sqlBuilder.append(columnName);
-                        sqlBuilder.append("\n");
-
-                        types.add(type);
-
-                        return this;
-                    }
-                }
-            }
-        }
-
-        throw new UnsupportedOperationException();
+        return this;
     }
 
     private static String getPrimaryKeyColumnName(Class<?> type) {
@@ -227,6 +208,26 @@ public class QueryBuilder {
 
                 if (primaryKey != null) {
                     return column.value();
+                }
+            }
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    private static String getForeignKeyColumnName(Class<?> from, Class<?> to) {
+        for (var property : BeanAdapter.getProperties(from).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null) {
+                var foreignKey = accessor.getAnnotation(ForeignKey.class);
+
+                if (foreignKey != null) {
+                    if (foreignKey.value() == to) {
+                        return column.value();
+                    }
                 }
             }
         }
@@ -451,29 +452,14 @@ public class QueryBuilder {
         var lastType = types.getLast();
 
         sqlBuilder.append("where ");
+        sqlBuilder.append(getTableName(lastType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(lastType, type));
+        sqlBuilder.append(" = ?\n");
 
-        for (var property : BeanAdapter.getProperties(lastType).values()) {
-            var accessor = property.getAccessor();
+        parameters.add(key);
 
-            var column = accessor.getAnnotation(Column.class);
-
-            if (column != null) {
-                var foreignKey = accessor.getAnnotation(ForeignKey.class);
-
-                if (foreignKey != null && foreignKey.value() == type) {
-                    sqlBuilder.append(getTableName(lastType));
-                    sqlBuilder.append(".");
-                    sqlBuilder.append(column.value());
-                    sqlBuilder.append(" = ?\n");
-
-                    parameters.add(key);
-
-                    return this;
-                }
-            }
-        }
-
-        throw new UnsupportedOperationException();
+        return this;
     }
 
     /**
