@@ -84,7 +84,50 @@ public class QueryBuilderTest {
     ) {
     }
 
-    // TODO F, G, H
+    @Table("F")
+    public interface F {
+        @Column("f")
+        @PrimaryKey
+        Integer getF();
+        @Column("q")
+        String getQ();
+    }
+
+    @Table("G")
+    public interface G {
+        @Column("g")
+        @PrimaryKey
+        Integer getG();
+        @Column("f")
+        @ForeignKey(F.class)
+        Integer getF();
+        @Column("r")
+        String getR();
+    }
+
+    @Table("H")
+    public interface H {
+        @Column("h")
+        @PrimaryKey
+        Integer getH();
+        @Column("g")
+        @ForeignKey(G.class)
+        Integer getG();
+        @Column("s")
+        String getS();
+    }
+
+    @Table("I")
+    public interface I {
+        @Column("i")
+        @PrimaryKey
+        Integer getI();
+        @Column("h")
+        @ForeignKey(H.class)
+        Integer getH();
+        @Column("t")
+        String getT();
+    }
 
     @Test
     public void testSelectA() {
@@ -112,7 +155,9 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectAtoD() {
-        var queryBuilder = QueryBuilder.select(A.class).joinOnForeignKey(E.class).whereForeignKeyEquals(D.class, "d");
+        var queryBuilder = QueryBuilder.select(A.class)
+            .joinOnForeignKey(E.class)
+            .whereForeignKeyEquals(D.class, "d");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A\njoin E on A.a = E.a\nwhere E.d = ?\n", queryBuilder.toString());
         assertEquals(listOf("d"), queryBuilder.getParameters());
@@ -120,10 +165,28 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectDtoA() {
-        var queryBuilder = QueryBuilder.select(D.class).joinOnForeignKey(E.class).whereForeignKeyEquals(A.class, "a");
+        var queryBuilder = QueryBuilder.select(D.class)
+            .joinOnForeignKey(E.class)
+            .whereForeignKeyEquals(A.class, "a");
 
         assertEquals("select D.d, D.e from D\njoin E on D.d = E.d\nwhere E.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectFGHI() {
+        var queryBuilder = QueryBuilder.select(I.class)
+            .joinOnPrimaryKey(H.class)
+            .joinOnPrimaryKey(G.class)
+            .whereForeignKeyEquals(F.class, "f");
+
+        assertEquals("select I.h, I.i, I.t from I\njoin H on H.h = I.h\njoin G on G.g = H.g\nwhere G.f = ?\n", queryBuilder.toString());
+        assertEquals(listOf("f"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelfJoin() {
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(A.class));
     }
 
     @Test

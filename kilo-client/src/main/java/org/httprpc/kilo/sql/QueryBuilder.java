@@ -72,7 +72,7 @@ public class QueryBuilder {
      * Creates a "select" query.
      *
      * @param type
-     * An annotated entity type representing the table to select from.
+     * The type representing the table to select from.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -143,56 +143,52 @@ public class QueryBuilder {
      * Creates a "join" clause linking to the primary key of another table.
      *
      * @param type
-     * An annotated entity type representing the table to join.
+     * The type representing the table that defines the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder joinOnPrimaryKey(Class<?> type) {
-        // TODO
-        types.add(type);
-
-        return this;
+        return join(type, false);
     }
 
     /**
      * Creates a "join" clause linking to a foreign key in another table.
      *
      * @param type
-     * An annotated entity type representing the table to join.
+     * The type representing the table that defines the foreign key.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder joinOnForeignKey(Class<?> type) {
-        if (type == null) {
+        return join(type, true);
+    }
+
+    private QueryBuilder join(Class<?> type, boolean reverse) {
+        if (type == null || types.contains(type)) {
             throw new IllegalArgumentException();
         }
 
-        if (types.isEmpty()) {
-            throw new IllegalStateException();
+        Class<?> to;
+        Class<?> from;
+        if (reverse) {
+            to = types.getFirst();
+            from = type;
+        } else {
+            to = type;
+            from = types.getLast();
         }
-
-        var lastType = types.peekLast();
-
-        if (lastType == null) {
-            throw new IllegalStateException();
-        }
-
-        var joinTableName = getTableName(type);
 
         sqlBuilder.append("join ");
-        sqlBuilder.append(joinTableName);
+        sqlBuilder.append(getTableName(type));
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(lastType));
+        sqlBuilder.append(getTableName(to));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(lastType));
+        sqlBuilder.append(getPrimaryKeyColumnName(to));
         sqlBuilder.append(" = ");
 
-        String joinColumnName = null;
-        String argumentColumnName = null;
-
-        for (var property : BeanAdapter.getProperties(type).values()) {
+        for (var property : BeanAdapter.getProperties(from).values()) {
             var accessor = property.getAccessor();
 
             var column = accessor.getAnnotation(Column.class);
@@ -203,23 +199,17 @@ public class QueryBuilder {
                 if (foreignKey != null) {
                     var columnName = column.value();
 
-                    if (foreignKey.value() == lastType) {
-                        joinColumnName = columnName;
-                    } else {
-                        argumentColumnName = columnName;
+                    if (foreignKey.value() == to) {
+                        sqlBuilder.append(getTableName(from));
+                        sqlBuilder.append(".");
+                        sqlBuilder.append(columnName);
+                        sqlBuilder.append("\n");
+
+                        types.add(type);
+
+                        return this;
                     }
                 }
-            }
-
-            if (joinColumnName != null && argumentColumnName != null) {
-                sqlBuilder.append(joinTableName);
-                sqlBuilder.append(".");
-                sqlBuilder.append(joinColumnName);
-                sqlBuilder.append("\n");
-
-                types.add(type);
-
-                return this;
             }
         }
 
@@ -248,10 +238,10 @@ public class QueryBuilder {
      * Creates an "insert" query.
      *
      * @param type
-     * An annotated entity type representing the table to insert into.
+     * The type representing the table to insert into.
      *
      * @return
-     * The new {@link QueryBuilder} instance.
+     * A new {@link QueryBuilder} instance.
      */
     public static QueryBuilder insert(Class<?> type) {
         if (type == null) {
@@ -323,10 +313,10 @@ public class QueryBuilder {
      * Creates an "update" query.
      *
      * @param type
-     * An annotated entity type representing the table to update.
+     * The type representing the table to update.
      *
      * @return
-     * The new {@link QueryBuilder} instance.
+     * A new {@link QueryBuilder} instance.
      */
     public static QueryBuilder update(Class<?> type) {
         if (type == null) {
@@ -394,10 +384,10 @@ public class QueryBuilder {
      * Creates a "delete" query.
      *
      * @param type
-     * An annotated entity type representing the table to delete from.
+     * The type representing the table to delete from.
      *
      * @return
-     * The new {@link QueryBuilder} instance.
+     * A new {@link QueryBuilder} instance.
      */
     public static QueryBuilder delete(Class<?> type) {
         if (type == null) {
@@ -428,11 +418,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var firstType = types.peekFirst();
-
-        if (firstType == null) {
-            throw new IllegalStateException();
-        }
+        var firstType = types.getFirst();
 
         sqlBuilder.append("where ");
         sqlBuilder.append(getTableName(firstType));
@@ -449,7 +435,7 @@ public class QueryBuilder {
      * Appends a "where" clause that filters on a foreign key.
      *
      * @param type
-     * The type that defines the primary key.
+     * The type representing the table referenced by the foreign key.
      *
      * @param key
      * The key of the argument representing the foreign key value.
@@ -462,11 +448,7 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var lastType = types.peekLast();
-
-        if (lastType == null) {
-            throw new IllegalStateException();
-        }
+        var lastType = types.getLast();
 
         sqlBuilder.append("where ");
 
