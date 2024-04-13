@@ -467,6 +467,9 @@ public class QueryBuilder {
      *
      * @param ascending
      * {@code true} for ascending order; {@code false} for descending.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
      */
     public QueryBuilder ordered(boolean ascending) {
         var firstType = types.getFirst();
