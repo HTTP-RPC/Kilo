@@ -36,9 +36,7 @@ public class CatalogService extends AbstractDatabaseService {
     @ResourcePath("items")
     @Description("Returns a list of all items in the catalog.")
     public List<Item> getItems() throws SQLException {
-        var queryBuilder = QueryBuilder.select(Item.class);
-
-        queryBuilder.appendLine("order by description");
+        var queryBuilder = QueryBuilder.select(Item.class).ordered(true);
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {

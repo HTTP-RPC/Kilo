@@ -133,7 +133,7 @@ public class QueryBuilder {
         var table = type.getAnnotation(Table.class);
 
         if (table == null) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Table name is not defined.");
         }
 
         return table.value();
@@ -212,7 +212,7 @@ public class QueryBuilder {
             }
         }
 
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Primary key is not defined.");
     }
 
     private static String getForeignKeyColumnName(Class<?> from, Class<?> to) {
@@ -232,7 +232,7 @@ public class QueryBuilder {
             }
         }
 
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Foreign key is not defined.");
     }
 
     /**
@@ -460,6 +460,40 @@ public class QueryBuilder {
         parameters.add(key);
 
         return this;
+    }
+
+    /**
+     * Appends an "order by" clause.
+     *
+     * @param ascending
+     * {@code true} for ascending order; {@code false} for descending.
+     */
+    public QueryBuilder ordered(boolean ascending) {
+        var firstType = types.getFirst();
+
+        sqlBuilder.append("order by ");
+        sqlBuilder.append(getTableName(firstType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getIndexColumnName(firstType));
+        sqlBuilder.append(" ");
+        sqlBuilder.append(ascending ? "asc" : "desc");
+        sqlBuilder.append("\n");
+
+        return this;
+    }
+
+    private static String getIndexColumnName(Class<?> type) {
+        for (var property : BeanAdapter.getProperties(type).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null && accessor.getAnnotation(Index.class) != null) {
+                return column.value();
+            }
+        }
+
+        throw new UnsupportedOperationException("Index is not defined.");
     }
 
     /**

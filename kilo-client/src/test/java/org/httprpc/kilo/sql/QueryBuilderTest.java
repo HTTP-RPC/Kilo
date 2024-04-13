@@ -126,6 +126,7 @@ public class QueryBuilderTest {
         @ForeignKey(H.class)
         Integer getH();
         @Column("t")
+        @Index
         String getT();
     }
 
@@ -178,9 +179,10 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class)
             .joinOnPrimaryKey(H.class)
             .joinOnPrimaryKey(G.class)
-            .whereForeignKeyEquals(F.class, "f");
+            .whereForeignKeyEquals(F.class, "f")
+            .ordered(true);
 
-        assertEquals("select I.h, I.i, I.t from I\njoin H on H.h = I.h\njoin G on G.g = H.g\nwhere G.f = ?\n", queryBuilder.toString());
+        assertEquals("select I.h, I.i, I.t from I\njoin H on H.h = I.h\njoin G on G.g = H.g\nwhere G.f = ?\norder by I.t asc\n", queryBuilder.toString());
         assertEquals(listOf("f"), queryBuilder.getParameters());
     }
 

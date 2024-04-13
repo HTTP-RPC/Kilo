@@ -18,6 +18,7 @@ import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
@@ -32,6 +33,7 @@ public interface Item {
     void setID(Integer id);
 
     @Column("description")
+    @Index
     @Description("The item's description.")
     @Required
     String getDescription();

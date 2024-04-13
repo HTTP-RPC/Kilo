@@ -992,13 +992,14 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Alternatively, the following methods can be used in conjunction with the the `PrimaryKey` and `ForeignKey` annotations to filter the returned rows:
+Alternatively, the following methods can be used in conjunction with the the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter the returned rows:
 
 ```java
 public QueryBuilder joinOnPrimaryKey(Class<?> type) { ... }
 public QueryBuilder joinOnForeignKey(Class<?> type) { ... }
 public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
 public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) { ... }
+public ordered(boolean ascending) { ... }
 ```
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
