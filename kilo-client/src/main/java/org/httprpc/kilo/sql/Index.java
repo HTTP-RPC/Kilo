@@ -20,8 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a bean property or record component represents the default
- * sort column.
+ * Indicates that a property represents the default sort column.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

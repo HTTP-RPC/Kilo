@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a bean property or record component represents a primary key.
+ * Indicates that a property represents a primary key.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

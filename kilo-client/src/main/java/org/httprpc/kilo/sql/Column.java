@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Associates a column name with a bean property or record component.
+ * Associates a column name with a property.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

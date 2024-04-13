@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a bean property or record component is internal.
+ * Indicates that a property is internal.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
