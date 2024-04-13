@@ -773,34 +773,34 @@ System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); //
 Note that an interface can be used instead of a class to provide a strongly typed "view" of the underlying map data. For example:
 
 ```java
-public interface Employee {
-    Integer getEmployeeNumber();
-    String getFirstName();
-    String getLastName();
-    String getGender();
-    LocalDate getBirthDate();
-    LocalDate getHireDate();
+public interface AssetPricing {
+    Instant getDate();
+    double getOpen();
+    double getHigh();
+    double getLow();
+    double getClose();
+    long getVolume();
 }
 ```
 
 ```java
 var map = mapOf(
-    entry("employeeNumber", 10001),
-    entry("firstName", "Georgi"),
-    entry("lastName", "Facello"),
-    entry("gender", "M"),
-    entry("birthDate", "1953-09-02"),
-    entry("hireDate", "1986-06-26")
+    entry("date", Instant.now()),
+    entry("open", 34.92),
+    entry("close", 35.01),
+    entry("high", 37.48),
+    entry("low", 28.55),
+    entry("volume", 1339012)
 );
 
-var employee = BeanAdapter.coerce(map, Employee.class);
+var assetPricing = BeanAdapter.coerce(map, AssetPricing.class);
 
-System.out.println(employee.getEmployeeNumber()); // 10001
-System.out.println(employee.getFirstName()); // Georgi
-System.out.println(employee.getLastName()); // Facello
-System.out.println(employee.getGender()); // M
-System.out.println(employee.getBirthDate()); // 1953-09-02
-System.out.println(employee.getHireDate()); // 1986-06-26
+System.out.println(assetPricing.getDate()); // current timestamp
+System.out.println(assetPricing.getOpen()); // 34.92
+System.out.println(assetPricing.getClose()); // 35.01
+System.out.println(assetPricing.getHigh()); // 37.48
+System.out.println(assetPricing.getLow()); // 28.55
+System.out.println(assetPricing.getVolume()); // 1339012
 ```
 
 Mutator methods are also supported.
@@ -1136,6 +1136,25 @@ This code would produce the following output:
 The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for retrieval by a consumer thread. It implements the `Iterable` interface and returns values as they become available, blocking if necessary.
 
 For example, the following code executes a SQL query that retrieves all rows from an `employees` table:
+
+```java
+@Table("employees")
+public interface Employee {
+    @Column("emp_no")
+    @PrimaryKey
+    Integer getEmployeeNumber();
+    @Column("first_name")
+    String getFirstName();
+    @Column("last_name")
+    String getLastName();
+    @Column("gender")
+    String getGender();
+    @Column("birth_date")
+    LocalDate getBirthDate();
+    @Column("hire_date")
+    LocalDate getHireDate();
+}
+```
 
 ```java
 var queryBuilder = QueryBuilder.select(Employee.class);

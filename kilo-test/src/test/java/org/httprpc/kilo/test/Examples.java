@@ -39,6 +39,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -114,6 +115,8 @@ public class Examples {
         var jsonEncoder = new JSONEncoder();
 
         jsonEncoder.write(map, System.out);
+
+        System.out.println();
     }
 
     @SuppressWarnings("unchecked")
@@ -199,6 +202,8 @@ public class Examples {
         var jsonEncoder = new JSONEncoder();
 
         jsonEncoder.write(new BeanAdapter(person), System.out);
+
+        System.out.println();
     }
 
     public static void requiredProperty1() {
@@ -280,22 +285,22 @@ public class Examples {
 
     public static void interfaceProxy() {
         var map = mapOf(
-            entry("employeeNumber", 10001),
-            entry("firstName", "Georgi"),
-            entry("lastName", "Facello"),
-            entry("gender", "M"),
-            entry("birthDate", "1953-09-02"),
-            entry("hireDate", "1986-06-26")
+            entry("date", Instant.now()),
+            entry("open", 34.92),
+            entry("close", 35.01),
+            entry("high", 37.48),
+            entry("low", 28.55),
+            entry("volume", 1339012)
         );
 
-        var employee = BeanAdapter.coerce(map, Employee.class);
+        var assetPricing = BeanAdapter.coerce(map, AssetPricing.class);
 
-        System.out.println(employee.getEmployeeNumber()); // 10001
-        System.out.println(employee.getFirstName()); // Georgi
-        System.out.println(employee.getLastName()); // Facello
-        System.out.println(employee.getGender()); // M
-        System.out.println(employee.getBirthDate()); // 1953-09-02
-        System.out.println(employee.getHireDate()); // 1986-06-26
+        System.out.println(assetPricing.getDate()); // current timestamp
+        System.out.println(assetPricing.getOpen()); // 34.92
+        System.out.println(assetPricing.getClose()); // 35.01
+        System.out.println(assetPricing.getHigh()); // 37.48
+        System.out.println(assetPricing.getLow()); // 28.55
+        System.out.println(assetPricing.getVolume()); // 1339012
     }
 
     @SuppressWarnings("unchecked")
