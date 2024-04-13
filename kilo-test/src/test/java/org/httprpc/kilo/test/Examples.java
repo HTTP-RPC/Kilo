@@ -39,7 +39,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -285,22 +284,22 @@ public class Examples {
 
     public static void interfaceProxy() {
         var map = mapOf(
-            entry("date", Instant.now()),
-            entry("open", 34.92),
-            entry("close", 35.01),
-            entry("high", 37.48),
-            entry("low", 28.55),
-            entry("volume", 1339012)
+            entry("date", "2024-04-08T00:00:00Z"),
+            entry("open", 169.03),
+            entry("close", 168.45),
+            entry("high", 169.20),
+            entry("low", 168.24),
+            entry("volume", 37216858)
         );
 
         var assetPricing = BeanAdapter.coerce(map, AssetPricing.class);
 
-        System.out.println(assetPricing.getDate()); // current timestamp
-        System.out.println(assetPricing.getOpen()); // 34.92
-        System.out.println(assetPricing.getClose()); // 35.01
-        System.out.println(assetPricing.getHigh()); // 37.48
-        System.out.println(assetPricing.getLow()); // 28.55
-        System.out.println(assetPricing.getVolume()); // 1339012
+        System.out.println(assetPricing.getDate()); // 2024-04-08T00:00:00Z
+        System.out.println(assetPricing.getOpen()); // 169.03
+        System.out.println(assetPricing.getClose()); // 168.45
+        System.out.println(assetPricing.getHigh()); // 169.2
+        System.out.println(assetPricing.getLow()); // 168.24
+        System.out.println(assetPricing.getVolume()); // 37216858
     }
 
     @SuppressWarnings("unchecked")
