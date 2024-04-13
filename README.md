@@ -295,8 +295,8 @@ public class CatalogService extends AbstractDatabaseService {
 Descriptions can also be associated with bean types, enums, and records:
 
 ```java
-@Description("Represents an item in the catalog.")
 @Table("item")
+@Description("Represents an item in the catalog.")
 public interface Item {
     @Name("id")
     @Column("id")
@@ -306,6 +306,7 @@ public interface Item {
     void setID(Integer id);
 
     @Column("description")
+    @Index
     @Description("The item's description.")
     @Required
     String getDescription();
@@ -805,7 +806,7 @@ System.out.println(employee.getHireDate()); // 1986-06-26
 Mutator methods are also supported.
 
 ### Required Properties
-The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a bean property or record component must contain a value. For example:
+The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a property must contain a value. For example:
 
 ```java
 public class Vehicle {
@@ -855,7 +856,7 @@ vehicleAdapter.get("manufacturer"); // throws
 ```
 
 ### Custom Property Names
-The `Name` annotation introduced [previously](#custom-parameter-names) can also be used to associate a custom name with a bean property or record component. For example:
+The `Name` annotation introduced [previously](#custom-parameter-names) can also be used with properties. For example:
 
 ```java
 public class Person {
@@ -901,7 +902,7 @@ rather than this:
 ```
 
 ### Internal Properties
-The `Internal` annotation indicates that a bean property or record component is for internal use only and should be ignored by `BeanAdapter`. For example, given the following code:
+The `Internal` annotation indicates that a property is for internal use only and should be ignored by `BeanAdapter`. For example, given the following code:
 
 ```java
 @Internal
