@@ -21,20 +21,13 @@ import org.httprpc.kilo.io.TextDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PetsTest {
-    private URL baseURL;
-
-    public PetsTest() throws IOException {
-        baseURL = new URL("http://localhost:8080/kilo-test/");
-    }
-
+public class PetsTest extends AbstractTest {
     @Test
     public void testPets() throws IOException {
         testPetsJSON();

@@ -25,7 +25,6 @@ import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
 import org.httprpc.kilo.util.ResourceBundleAdapter;
 import org.httprpc.kilo.xml.ElementAdapter;
-import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -48,9 +47,27 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
-public class ExamplesTest {
-    @Test
-    public void testMathService1() throws IOException {
+public class Examples {
+    public static void main(String[] args) throws Exception {
+        mathService1();
+        mathService2();
+        mathService3();
+        jsonDecoder();
+        jsonEncoder();
+        csvEncoder();
+        csvDecoder();
+        textEncoderAndDecoder();
+        templateEncoder();
+        customPropertyKeys();
+        requiredProperty1();
+        requiredProperty2();
+        treeNode();
+        interfaceProxy();
+        elementAdapter();
+        resourceBundleAdapter();
+    }
+
+    public static void mathService1() throws IOException {
         // GET /math/sum?a=2&b=4
         var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
 
@@ -62,8 +79,7 @@ public class ExamplesTest {
         System.out.println(webServiceProxy.invoke()); // 6.0
     }
 
-    @Test
-    public void testMathService2() throws IOException {
+    public static void mathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
         var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
 
@@ -74,16 +90,14 @@ public class ExamplesTest {
         System.out.println(webServiceProxy.invoke()); // 6.0
     }
 
-    @Test
-    public void testMathService3() throws IOException {
+    public static void mathService3() throws IOException {
         var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http://localhost:8080/kilo-test/math/"));
 
         System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
         System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
     }
 
-    @Test
-    public void testJSONEncoder() throws IOException {
+    public static void jsonEncoder() throws IOException {
         var map = mapOf(
             entry("vegetables", listOf(
                 "carrots",
@@ -102,10 +116,9 @@ public class ExamplesTest {
         jsonEncoder.write(map, System.out);
     }
 
-    @Test
     @SuppressWarnings("unchecked")
-    public void testJSONDecoder() throws IOException {
-        try (var inputStream = getClass().getResourceAsStream("months.json")) {
+    public static void jsonDecoder() throws IOException {
+        try (var inputStream = Examples.class.getResourceAsStream("months.json")) {
             var jsonDecoder = new JSONDecoder();
 
             var months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
@@ -116,11 +129,10 @@ public class ExamplesTest {
         }
     }
 
-    @Test
     @SuppressWarnings("unchecked")
-    public void testCSVEncoder() throws IOException {
+    public static void csvEncoder() throws IOException {
         List<Map<String, Object>> months;
-        try (var inputStream = getClass().getResourceAsStream("months.json")) {
+        try (var inputStream = Examples.class.getResourceAsStream("months.json")) {
             var jsonDecoder = new JSONDecoder();
 
             months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
@@ -131,9 +143,8 @@ public class ExamplesTest {
         csvEncoder.write(months, System.out);
     }
 
-    @Test
-    public void testCSVDecoder() throws IOException {
-        try (var inputStream = getClass().getResourceAsStream("months.csv")) {
+    public static void csvDecoder() throws IOException {
+        try (var inputStream = Examples.class.getResourceAsStream("months.csv")) {
             var csvDecoder = new CSVDecoder();
 
             var months = csvDecoder.read(inputStream);
@@ -144,8 +155,7 @@ public class ExamplesTest {
         }
     }
 
-    @Test
-    public void testTextEncoderAndDecoder() throws IOException {
+    public static void textEncoderAndDecoder() throws IOException {
         var file = File.createTempFile("kilo", ".txt");
 
         try {
@@ -168,21 +178,19 @@ public class ExamplesTest {
         }
     }
 
-    @Test
-    public void testTemplateEncoder() throws IOException {
+    public static void templateEncoder() throws IOException {
         var map = mapOf(
             entry("a", "hello"),
             entry("b", 123),
             entry("c", true)
         );
 
-        var templateEncoder = new TemplateEncoder(getClass().getResource("example.html"));
+        var templateEncoder = new TemplateEncoder(Examples.class.getResource("example.html"));
 
         templateEncoder.write(map, System.out);
     }
 
-    @Test
-    public void testCustomPropertyKeys() throws IOException {
+    public static void customPropertyKeys() throws IOException {
         var person = new Person();
 
         person.setFirstName("first");
@@ -193,8 +201,7 @@ public class ExamplesTest {
         jsonEncoder.write(new BeanAdapter(person), System.out);
     }
 
-    @Test
-    public void testRequiredProperty1() {
+    public static void requiredProperty1() {
         try {
             BeanAdapter.coerce(mapOf(), Vehicle.class);
         } catch (IllegalArgumentException exception) {
@@ -202,8 +209,7 @@ public class ExamplesTest {
         }
     }
 
-    @Test
-    public void testRequiredProperty2() {
+    public static void requiredProperty2() {
         var vehicle = new Vehicle();
 
         var vehicleAdapter = new BeanAdapter(vehicle);
@@ -221,20 +227,19 @@ public class ExamplesTest {
         }
     }
 
-    @Test
-    public void testTreeNode() throws IOException {
+    public static void treeNode() throws IOException {
         var writer = new StringWriter();
 
-        testEncodeTreeNode(writer);
+        encodeTreeNode(writer);
 
         var text = writer.toString();
 
         System.out.println(text);
 
-        testDecodeTreeNode(new StringReader(text));
+        decodeTreeNode(new StringReader(text));
     }
 
-    private void testEncodeTreeNode(Writer writer) throws IOException {
+    private static void encodeTreeNode(Writer writer) throws IOException {
         var root = new TreeNode("Seasons", listOf(
             new TreeNode("Winter", listOf(
                 new TreeNode("January", null),
@@ -263,7 +268,7 @@ public class ExamplesTest {
         jsonEncoder.write(new BeanAdapter(root), writer);
     }
 
-    private void testDecodeTreeNode(Reader reader) throws IOException {
+    private static void decodeTreeNode(Reader reader) throws IOException {
         var jsonDecoder = new JSONDecoder();
 
         var root = BeanAdapter.coerce(jsonDecoder.read(reader), TreeNode.class);
@@ -273,8 +278,7 @@ public class ExamplesTest {
         System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
     }
 
-    @Test
-    public void testInterfaceProxy() {
+    public static void interfaceProxy() {
         var map = mapOf(
             entry("employeeNumber", 10001),
             entry("firstName", "Georgi"),
@@ -294,9 +298,8 @@ public class ExamplesTest {
         System.out.println(employee.getHireDate()); // 1986-06-26
     }
 
-    @Test
     @SuppressWarnings("unchecked")
-    public void testElementAdapter() throws ParserConfigurationException, SAXException, IOException {
+    public static void elementAdapter() throws ParserConfigurationException, SAXException, IOException {
         var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
         documentBuilderFactory.setExpandEntityReferences(false);
@@ -305,7 +308,7 @@ public class ExamplesTest {
         var documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
         Document document;
-        try (var inputStream = getClass().getResourceAsStream("account.xml")) {
+        try (var inputStream = Examples.class.getResourceAsStream("account.xml")) {
             document = documentBuilder.parse(inputStream);
         }
 
@@ -331,11 +334,10 @@ public class ExamplesTest {
         }
     }
 
-    @Test
-    public void testResourceBundleAdapter() throws IOException {
+    public static void resourceBundleAdapter() throws IOException {
         var csvEncoder = new CSVEncoder(listOf("name", "description", "quantity"));
 
-        var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".labels");
+        var resourceBundle = ResourceBundle.getBundle(Examples.class.getPackageName() + ".labels");
 
         csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
 

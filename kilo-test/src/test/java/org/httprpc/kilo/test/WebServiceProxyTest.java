@@ -51,14 +51,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class WebServiceProxyTest {
+public class WebServiceProxyTest extends AbstractTest {
     public static class CustomException extends IOException {
         public CustomException(String message) {
             super(message);
         }
     }
-
-    private URL baseURL;
 
     private DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
     private Date date = new Date();
@@ -71,10 +69,6 @@ public class WebServiceProxyTest {
     private UUID uuid = UUID.randomUUID();
 
     private static final int EOF = -1;
-
-    public WebServiceProxyTest() throws IOException {
-        baseURL = new URL("http://localhost:8080/kilo-test/");
-    }
 
     @Test
     public void testGet() throws IOException {

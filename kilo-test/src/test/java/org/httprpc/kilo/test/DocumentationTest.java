@@ -19,20 +19,13 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DocumentationTest {
-    private URL baseURL;
-
-    public DocumentationTest() throws IOException {
-        baseURL = new URL("http://localhost:8080/kilo-test/");
-    }
-
+public class DocumentationTest extends AbstractTest {
     @Test
     public void testDocumentation() throws IOException {
         testDocumentation("math");

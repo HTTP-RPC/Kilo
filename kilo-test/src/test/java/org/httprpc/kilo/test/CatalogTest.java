@@ -26,13 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class CatalogTest {
-    private URL baseURL;
-
-    public CatalogTest() throws IOException {
-        baseURL = new URL("http://localhost:8080/kilo-test/");
-    }
-
+public class CatalogTest extends AbstractTest {
     @Test
     public void testCatalog() throws IOException {
         var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, new URL(baseURL, "catalog/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
