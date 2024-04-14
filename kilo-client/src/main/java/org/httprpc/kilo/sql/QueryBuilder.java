@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -474,29 +475,55 @@ public class QueryBuilder {
     public QueryBuilder ordered(boolean ascending) {
         var firstType = types.getFirst();
 
+        var tableName = getTableName(firstType);
+
         sqlBuilder.append("order by ");
-        sqlBuilder.append(getTableName(firstType));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getIndexColumnName(firstType));
-        sqlBuilder.append(" ");
-        sqlBuilder.append(ascending ? "asc" : "desc");
+
+        var indexColumnNames = getIndexColumnNames(firstType);
+
+        if (indexColumnNames.isEmpty()) {
+            throw new UnsupportedOperationException("Index is not defined.");
+        }
+
+        var i = 0;
+
+        for (var indexColumnName : indexColumnNames) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+            sqlBuilder.append(indexColumnName);
+            sqlBuilder.append(" ");
+            sqlBuilder.append(ascending ? "asc" : "desc");
+
+            i++;
+        }
+
         sqlBuilder.append("\n");
 
         return this;
     }
 
-    private static String getIndexColumnName(Class<?> type) {
+    private static List<String> getIndexColumnNames(Class<?> type) {
+        var indexColumnNames = new TreeMap<Integer, String>();
+
         for (var property : BeanAdapter.getProperties(type).values()) {
             var accessor = property.getAccessor();
 
             var column = accessor.getAnnotation(Column.class);
 
-            if (column != null && accessor.getAnnotation(Index.class) != null) {
-                return column.value();
+            if (column != null) {
+                var index = accessor.getAnnotation(Index.class);
+
+                if (index != null) {
+                    indexColumnNames.put(index.value(), column.value());
+                }
             }
         }
 
-        throw new UnsupportedOperationException("Index is not defined.");
+        return new ArrayList<>(indexColumnNames.values());
     }
 
     /**

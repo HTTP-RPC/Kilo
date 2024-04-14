@@ -20,9 +20,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a property represents the default sort column.
+ * Indicates that a property is part of the default sort order for an entity.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Index {
+    /**
+     * The relative order of the property within the index.
+     */
+    int value() default 0;
 }

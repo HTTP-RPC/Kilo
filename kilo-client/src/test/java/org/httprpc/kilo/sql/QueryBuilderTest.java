@@ -126,8 +126,11 @@ public class QueryBuilderTest {
         @ForeignKey(H.class)
         Integer getH();
         @Column("t")
-        @Index
+        @Index(1)
         String getT();
+        @Column("u")
+        @Index(2)
+        String getU();
     }
 
     @Test
@@ -175,15 +178,27 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testSelectFGHI() {
+    public void testSelectIHGF() {
         var queryBuilder = QueryBuilder.select(I.class)
             .joinOnPrimaryKey(H.class)
             .joinOnPrimaryKey(G.class)
             .whereForeignKeyEquals(F.class, "f")
             .ordered(true);
 
-        assertEquals("select I.h, I.i, I.t from I\njoin H on H.h = I.h\njoin G on G.g = H.g\nwhere G.f = ?\norder by I.t asc\n", queryBuilder.toString());
+        assertEquals("select I.h, I.i, I.t, I.u from I\n"
+            + "join H on H.h = I.h\n"
+            + "join G on G.g = H.g\n"
+            + "where G.f = ?\n"
+            + "order by I.t asc, I.u asc\n", queryBuilder.toString());
+
         assertEquals(listOf("f"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectI() {
+        var queryBuilder = QueryBuilder.select(I.class).ordered(false);
+
+        assertEquals("select I.h, I.i, I.t, I.u from I\norder by I.t desc, I.u desc\n", queryBuilder.toString());
     }
 
     @Test
