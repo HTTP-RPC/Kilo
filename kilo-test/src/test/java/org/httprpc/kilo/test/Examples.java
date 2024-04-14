@@ -48,23 +48,39 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 public class Examples {
-    public static void main(String[] args) throws Exception {
-        mathService1();
-        mathService2();
-        mathService3();
-        jsonDecoder();
-        jsonEncoder();
-        csvEncoder();
-        csvDecoder();
-        textEncoderAndDecoder();
-        templateEncoder();
-        customPropertyKeys();
-        requiredProperty1();
-        requiredProperty2();
-        treeNode();
-        interfaceProxy();
-        elementAdapter();
-        resourceBundleAdapter();
+    public interface Example {
+        void execute() throws Exception;
+    }
+
+    public static void main(String[] args) {
+        execute("Math Service 1", Examples::mathService1);
+        execute("Math Service 2", Examples::mathService2);
+        execute("Math Service 3", Examples::mathService3);
+        execute("JSON Encoder", Examples::jsonEncoder);
+        execute("JSON Decoder", Examples::jsonDecoder);
+        execute("CSV Encoder", Examples::csvEncoder);
+        execute("CSV Decoder", Examples::csvDecoder);
+        execute("Text Encoder/Decoder", Examples::textEncoderAndDecoder);
+        execute("Template Encoder", Examples::templateEncoder);
+        execute("Custom Property Keys", Examples::customPropertyKeys);
+        execute("Required Property 1", Examples::requiredProperty1);
+        execute("Required Property 2", Examples::requiredProperty2);
+        execute("Tree Node", Examples::treeNode);
+        execute("Interface Proxy", Examples::interfaceProxy);
+        execute("Element Adapter", Examples::elementAdapter);
+        execute("Resource Bundle Adapter", Examples::resourceBundleAdapter);
+    }
+
+    private static void execute(String label, Example example) {
+        System.out.println(label);
+
+        try {
+            example.execute();
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+
+        System.out.println();
     }
 
     public static void mathService1() throws IOException {
@@ -239,6 +255,7 @@ public class Examples {
         var text = writer.toString();
 
         System.out.println(text);
+        System.out.println();
 
         decodeTreeNode(new StringReader(text));
     }
