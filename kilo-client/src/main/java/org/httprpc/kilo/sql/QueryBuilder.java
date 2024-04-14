@@ -41,9 +41,14 @@ public class QueryBuilder {
 
     private LinkedList<Class<?>> types = new LinkedList<>();
 
+    private int filterCount = 0;
+
     private List<Object> generatedKeys = null;
 
     private static final int INITIAL_CAPACITY = 1024;
+
+    private static final String WHERE = "where";
+    private static final String AND = "and";
 
     /**
      * Constructs a new query builder.
@@ -144,7 +149,7 @@ public class QueryBuilder {
      * Creates a "join" clause linking to the primary key of another table.
      *
      * @param type
-     * The type representing the table that defines the primary key.
+     * The type that defines the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -157,7 +162,7 @@ public class QueryBuilder {
      * Creates a "join" clause linking to a foreign key in another table.
      *
      * @param type
-     * The type representing the table that defines the foreign key.
+     * The type that defines the foreign key.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -407,7 +412,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "where" clause that filters on the primary key.
+     * Filters on the primary key.
      *
      * @param key
      * The key of the argument representing the primary key value.
@@ -415,14 +420,15 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder wherePrimaryKeyEquals(String key) {
+    public QueryBuilder filterByPrimaryKey(String key) {
         if (key == null) {
             throw new IllegalArgumentException();
         }
 
         var firstType = types.getFirst();
 
-        sqlBuilder.append("where ");
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(firstType));
         sqlBuilder.append(".");
         sqlBuilder.append(getPrimaryKeyColumnName(firstType));
@@ -430,14 +436,16 @@ public class QueryBuilder {
 
         parameters.add(key);
 
+        filterCount++;
+
         return this;
     }
 
     /**
-     * Appends a "where" clause that filters on a foreign key.
+     * Filters on a foreign key.
      *
      * @param type
-     * The type representing the table referenced by the foreign key.
+     * The type that defines the primary key.
      *
      * @param key
      * The key of the argument representing the foreign key value.
@@ -445,20 +453,44 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) {
-        if (type == null || key == null) {
+    public QueryBuilder filterByForeignKey(Class<?> type, String key) {
+        return filterByForeignKey(types.getFirst(), type, key);
+    }
+
+    /**
+     * Filters on a foreign key.
+     *
+     * @param from
+     * The type that defines the foreign key.
+     *
+     * @param to
+     * The type that defines the primary key.
+     *
+     * @param key
+     * The key of the argument representing the foreign key value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByForeignKey(Class<?> from, Class<?> to, String key) {
+        if (from == null || to == null || key == null) {
             throw new IllegalArgumentException();
         }
 
-        var lastType = types.getLast();
+        if (!types.contains(from)) {
+            throw new UnsupportedOperationException();
+        }
 
-        sqlBuilder.append("where ");
-        sqlBuilder.append(getTableName(lastType));
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(getTableName(from));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(lastType, type));
+        sqlBuilder.append(getForeignKeyColumnName(from, to));
         sqlBuilder.append(" = ?\n");
 
         parameters.add(key);
+
+        filterCount++;
 
         return this;
     }

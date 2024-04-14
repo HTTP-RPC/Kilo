@@ -998,8 +998,9 @@ Alternatively, the following methods can be used in conjunction with the the `Pr
 ```java
 public QueryBuilder joinOnPrimaryKey(Class<?> type) { ... }
 public QueryBuilder joinOnForeignKey(Class<?> type) { ... }
-public QueryBuilder wherePrimaryKeyEquals(String key) { ... }
-public QueryBuilder whereForeignKeyEquals(Class<?> type, String key) { ... }
+public QueryBuilder filterByPrimaryKey(String key) { ... }
+public QueryBuilder filterByForeignKey(Class<?> type, String key) { ... }
+public QueryBuilder filterByForeignKey(Class<?> from, Class<?> to, String key) { ... }
 public ordered(boolean ascending) { ... }
 ```
 

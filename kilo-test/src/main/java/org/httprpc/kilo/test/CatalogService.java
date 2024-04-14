@@ -50,7 +50,7 @@ public class CatalogService extends AbstractDatabaseService {
     public ItemDetail getItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.select(ItemDetail.class).wherePrimaryKeyEquals("itemID");
+        var queryBuilder = QueryBuilder.select(ItemDetail.class).filterByPrimaryKey("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
@@ -85,7 +85,7 @@ public class CatalogService extends AbstractDatabaseService {
     ) throws SQLException {
         item.setID(itemID);
 
-        var queryBuilder = QueryBuilder.update(ItemDetail.class).wherePrimaryKeyEquals("id");
+        var queryBuilder = QueryBuilder.update(ItemDetail.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
@@ -100,7 +100,7 @@ public class CatalogService extends AbstractDatabaseService {
     public void deleteItem(
         @Description("The item ID.") Integer itemID
     ) throws SQLException {
-        var queryBuilder = QueryBuilder.delete(Item.class).wherePrimaryKeyEquals("itemID");
+        var queryBuilder = QueryBuilder.delete(Item.class).filterByPrimaryKey("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(

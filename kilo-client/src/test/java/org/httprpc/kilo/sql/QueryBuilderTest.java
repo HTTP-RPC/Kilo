@@ -135,7 +135,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectA() {
-        var queryBuilder = QueryBuilder.select(A.class).wherePrimaryKeyEquals("a");
+        var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
@@ -143,7 +143,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectB() {
-        var queryBuilder = QueryBuilder.select(B.class).wherePrimaryKeyEquals("a");
+        var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a");
 
         assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere B.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
@@ -151,7 +151,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectC() {
-        var queryBuilder = QueryBuilder.select(C.class).whereForeignKeyEquals(A.class, "a");
+        var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a");
 
         assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
@@ -161,20 +161,30 @@ public class QueryBuilderTest {
     public void testSelectAtoD() {
         var queryBuilder = QueryBuilder.select(A.class)
             .joinOnForeignKey(E.class)
-            .whereForeignKeyEquals(D.class, "d");
+            .filterByPrimaryKey("a")
+            .filterByForeignKey(E.class, D.class, "d");
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A\njoin E on A.a = E.a\nwhere E.d = ?\n", queryBuilder.toString());
-        assertEquals(listOf("d"), queryBuilder.getParameters());
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\n"
+            + "join E on A.a = E.a\n"
+            + "where A.a = ?\n"
+            + "and E.d = ?\n", queryBuilder.toString());
+
+        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
     }
 
     @Test
     public void testSelectDtoA() {
         var queryBuilder = QueryBuilder.select(D.class)
             .joinOnForeignKey(E.class)
-            .whereForeignKeyEquals(A.class, "a");
+            .filterByForeignKey(E.class, A.class, "a")
+            .filterByPrimaryKey("d");
 
-        assertEquals("select D.d, D.e from D\njoin E on D.d = E.d\nwhere E.a = ?\n", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals("select D.d, D.e from D\n"
+            + "join E on D.d = E.d\n"
+            + "where E.a = ?\n"
+            + "and D.d = ?\n", queryBuilder.toString());
+
+        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
     }
 
     @Test
@@ -182,7 +192,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class)
             .joinOnPrimaryKey(H.class)
             .joinOnPrimaryKey(G.class)
-            .whereForeignKeyEquals(F.class, "f")
+            .filterByForeignKey(G.class, F.class, "f")
             .ordered(true);
 
         assertEquals("select I.h, I.i, I.t, I.u from I\n"
@@ -216,7 +226,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdate() {
-        var queryBuilder = QueryBuilder.update(A.class).wherePrimaryKeyEquals("a");
+        var queryBuilder = QueryBuilder.update(A.class).filterByPrimaryKey("a");
 
         assertEquals("update A set b = ?, c = ?, d = coalesce(?, d)\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("b", "c", "x", "a"), queryBuilder.getParameters());
@@ -224,7 +234,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testDelete() {
-        var queryBuilder = QueryBuilder.delete(A.class).wherePrimaryKeyEquals("a");
+        var queryBuilder = QueryBuilder.delete(A.class).filterByPrimaryKey("a");
 
         assertEquals("delete from A\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
