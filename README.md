@@ -993,7 +993,7 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Alternatively, the following methods can be used in conjunction with the the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter/sort the returned rows:
+Alternatively, the following methods can be used in conjunction with the the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter or sort the returned rows:
 
 ```java
 public QueryBuilder joinOnPrimaryKey(Class<?> type) { ... }
