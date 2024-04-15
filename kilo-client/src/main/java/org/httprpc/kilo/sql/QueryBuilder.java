@@ -168,11 +168,11 @@ public class QueryBuilder {
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(last));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(to));
+        sqlBuilder.append(getForeignKeyColumnName(last, to));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(last, to));
+        sqlBuilder.append(getPrimaryKeyColumnName(to));
         sqlBuilder.append("\n");
 
         types.add(to);
