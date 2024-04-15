@@ -161,18 +161,18 @@ public class QueryBuilder {
 
         var tableName = getTableName(to);
 
-        var lastType = types.getLast();
+        var last = types.getLast();
 
         sqlBuilder.append("join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(lastType));
+        sqlBuilder.append(getTableName(last));
         sqlBuilder.append(".");
         sqlBuilder.append(getPrimaryKeyColumnName(to));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(lastType, to));
+        sqlBuilder.append(getForeignKeyColumnName(last, to));
         sqlBuilder.append("\n");
 
         types.add(to);
@@ -196,18 +196,18 @@ public class QueryBuilder {
 
         var tableName = getTableName(from);
 
-        var firstType = types.getFirst();
+        var first = types.getFirst();
 
         sqlBuilder.append("join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(firstType));
+        sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(firstType));
+        sqlBuilder.append(getPrimaryKeyColumnName(first));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(from, firstType));
+        sqlBuilder.append(getForeignKeyColumnName(from, first));
         sqlBuilder.append("\n");
 
         types.add(from);
@@ -234,14 +234,14 @@ public class QueryBuilder {
 
         var tableName = getTableName(from);
 
-        var firstType = types.getFirst();
+        var first = types.getFirst();
 
         sqlBuilder.append("join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(firstType));
+        sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(firstType, to));
+        sqlBuilder.append(getForeignKeyColumnName(first, to));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
@@ -491,13 +491,13 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var firstType = types.getFirst();
+        var first = types.getFirst();
 
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
-        sqlBuilder.append(getTableName(firstType));
+        sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(firstType));
+        sqlBuilder.append(getPrimaryKeyColumnName(first));
         sqlBuilder.append(" = ?\n");
 
         parameters.add(key);
@@ -571,13 +571,13 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder ordered(boolean ascending) {
-        var firstType = types.getFirst();
+        var first = types.getFirst();
 
-        var tableName = getTableName(firstType);
+        var tableName = getTableName(first);
 
         sqlBuilder.append("order by ");
 
-        var indexColumnNames = getIndexColumnNames(firstType);
+        var indexColumnNames = getIndexColumnNames(first);
 
         if (indexColumnNames.isEmpty()) {
             throw new UnsupportedOperationException("Index is not defined.");
