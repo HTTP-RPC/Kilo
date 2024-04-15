@@ -231,8 +231,24 @@ public class QueryBuilder {
                 var foreignKey = accessor.getAnnotation(ForeignKey.class);
 
                 if (foreignKey != null) {
-                    if (foreignKey.value() == to) {
-                        return column.value();
+                    var type = to;
+
+                    while (type != null) {
+                        if (type.getAnnotation(Table.class) != null && foreignKey.value() == type) {
+                            return column.value();
+                        }
+
+                        if (type.isInterface()) {
+                            var interfaces = type.getInterfaces();
+
+                            if (interfaces.length > 0) {
+                                type = interfaces[0];
+                            } else {
+                                type = null;
+                            }
+                        } else {
+                            type = type.getSuperclass();
+                        }
                     }
                 }
             }

@@ -173,6 +173,21 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectBtoD() {
+        var queryBuilder = QueryBuilder.select(B.class)
+            .joinOnForeignKey(E.class)
+            .filterByPrimaryKey("a")
+            .filterByForeignKey(E.class, D.class, "d");
+
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\n"
+            + "join E on B.a = E.a\n"
+            + "where B.a = ?\n"
+            + "and E.d = ?\n", queryBuilder.toString());
+
+        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+    }
+
+    @Test
     public void testSelectDtoA() {
         var queryBuilder = QueryBuilder.select(D.class)
             .joinOnForeignKey(E.class)
@@ -214,6 +229,16 @@ public class QueryBuilderTest {
     @Test
     public void testSelfJoin() {
         assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(A.class));
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(A.class));
+    }
+
+    @Test
+    public void testInvalidJoin() {
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(String.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(String.class));
+
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(Runnable.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(Runnable.class));
     }
 
     @Test
