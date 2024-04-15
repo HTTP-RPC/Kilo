@@ -188,6 +188,20 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectCtoD() {
+        var queryBuilder = QueryBuilder.select(C.class)
+            .joinOnForeignKey(E.class, A.class)
+            .filterByForeignKey(A.class, "a")
+            .filterByForeignKey(E.class, D.class, "d");
+
+        assertEquals("select C.a, C.b, C.c from C\n"
+            + "join E on C.a = E.a\n"
+            + "where C.a = ?\n"
+            + "and E.d = ?\n", queryBuilder.toString());
+        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+    }
+
+    @Test
     public void testSelectDtoA() {
         var queryBuilder = QueryBuilder.select(D.class)
             .joinOnForeignKey(E.class)
@@ -211,8 +225,8 @@ public class QueryBuilderTest {
             .ordered(true);
 
         assertEquals("select I.h, I.i, I.t, I.u from I\n"
-            + "join H on H.h = I.h\n"
-            + "join G on G.g = H.g\n"
+            + "join H on I.h = H.h\n"
+            + "join G on H.g = G.g\n"
             + "where G.f = ?\n"
             + "order by I.t asc, I.u asc\n", queryBuilder.toString());
 
@@ -224,12 +238,6 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).ordered(false);
 
         assertEquals("select I.h, I.i, I.t, I.u from I\norder by I.t desc, I.u desc\n", queryBuilder.toString());
-    }
-
-    @Test
-    public void testSelfJoin() {
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(A.class));
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(A.class));
     }
 
     @Test

@@ -148,57 +148,107 @@ public class QueryBuilder {
     /**
      * Creates a "join" clause linking to the primary key of another table.
      *
-     * @param type
+     * @param to
      * The type that defines the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder joinOnPrimaryKey(Class<?> type) {
-        return join(type, false);
+    public QueryBuilder joinOnPrimaryKey(Class<?> to) {
+        if (to == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(to);
+
+        var lastType = types.getLast();
+
+        sqlBuilder.append("join ");
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(" on ");
+        sqlBuilder.append(getTableName(lastType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getPrimaryKeyColumnName(to));
+        sqlBuilder.append(" = ");
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(lastType, to));
+        sqlBuilder.append("\n");
+
+        types.add(to);
+
+        return this;
     }
 
     /**
      * Creates a "join" clause linking to a foreign key in another table.
      *
-     * @param type
+     * @param from
      * The type that defines the foreign key.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder joinOnForeignKey(Class<?> type) {
-        return join(type, true);
-    }
-
-    private QueryBuilder join(Class<?> type, boolean reverse) {
-        if (type == null || types.contains(type)) {
+    public QueryBuilder joinOnForeignKey(Class<?> from) {
+        if (from == null) {
             throw new IllegalArgumentException();
         }
 
-        Class<?> to;
-        Class<?> from;
-        if (reverse) {
-            to = types.getFirst();
-            from = type;
-        } else {
-            to = type;
-            from = types.getLast();
-        }
+        var tableName = getTableName(from);
+
+        var firstType = types.getFirst();
 
         sqlBuilder.append("join ");
-        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(to));
+        sqlBuilder.append(getTableName(firstType));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(to));
+        sqlBuilder.append(getPrimaryKeyColumnName(firstType));
         sqlBuilder.append(" = ");
-        sqlBuilder.append(getTableName(from));
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(from, firstType));
+        sqlBuilder.append("\n");
+
+        types.add(from);
+
+        return this;
+    }
+
+    /**
+     * Creates a "join" clause linking to a foreign key in another table.
+     *
+     * @param from
+     * The type that defines the foreign key.
+     *
+     * @param to
+     * The type that defines the primary key.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder joinOnForeignKey(Class<?> from, Class<?> to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(from);
+
+        var firstType = types.getFirst();
+
+        sqlBuilder.append("join ");
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(" on ");
+        sqlBuilder.append(getTableName(firstType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(firstType, to));
+        sqlBuilder.append(" = ");
+        sqlBuilder.append(tableName);
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(from, to));
         sqlBuilder.append("\n");
 
-        types.add(type);
+        types.add(from);
 
         return this;
     }
@@ -460,7 +510,7 @@ public class QueryBuilder {
     /**
      * Filters on a foreign key.
      *
-     * @param type
+     * @param to
      * The type that defines the primary key.
      *
      * @param key
@@ -469,8 +519,8 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByForeignKey(Class<?> type, String key) {
-        return filterByForeignKey(types.getFirst(), type, key);
+    public QueryBuilder filterByForeignKey(Class<?> to, String key) {
+        return filterByForeignKey(types.getFirst(), to, key);
     }
 
     /**
