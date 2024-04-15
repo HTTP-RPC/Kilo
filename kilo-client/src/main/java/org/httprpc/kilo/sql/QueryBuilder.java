@@ -125,7 +125,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Columns are not defined.");
         }
 
         sqlBuilder.append(" from ");
@@ -284,7 +284,7 @@ public class QueryBuilder {
         }
 
         if (columnNames.isEmpty()) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Columns are not defined.");
         }
 
         sqlBuilder.append(" (");
@@ -379,7 +379,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Columns are not defined.");
         }
 
         sqlBuilder.append("\n");
@@ -478,7 +478,7 @@ public class QueryBuilder {
         }
 
         if (!types.contains(from)) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Table is not joined.");
         }
 
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
