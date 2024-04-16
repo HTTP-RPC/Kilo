@@ -218,18 +218,18 @@ public class QueryBuilder {
 
         var tableName = getTableName(type);
 
-        var last = types.getLast();
+        var first = types.getFirst();
 
         sqlBuilder.append("join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(last));
+        sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(last));
+        sqlBuilder.append(getPrimaryKeyColumnName(first));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(type, last));
+        sqlBuilder.append(getForeignKeyColumnName(type, first));
         sqlBuilder.append("\n");
 
         types.add(type);
@@ -256,14 +256,14 @@ public class QueryBuilder {
 
         var tableName = getTableName(type);
 
-        var last = types.getLast();
+        var first = types.getFirst();
 
         sqlBuilder.append("join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(last));
+        sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(last, keyType));
+        sqlBuilder.append(getForeignKeyColumnName(first, keyType));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
