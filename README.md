@@ -996,12 +996,12 @@ queryBuilder.appendLine("where owner = :owner");
 Alternatively, the following methods can be used in conjunction with the the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter or sort the returned rows:
 
 ```java
-public QueryBuilder joinOnPrimaryKey(Class<?> to) { ... }
-public QueryBuilder joinOnForeignKey(Class<?> from) { ... }
-public QueryBuilder joinOnForeignKey(Class<?> from, Class<?> to) { ... }
+public QueryBuilder joinOnPrimaryKey(Class<?> type) { ... }
+public QueryBuilder joinOnForeignKey(Class<?> type) { ... }
+public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> keyType) { ... }
 public QueryBuilder filterByPrimaryKey(String key) { ... }
-public QueryBuilder filterByForeignKey(Class<?> to, String key) { ... }
-public QueryBuilder filterByForeignKey(Class<?> from, Class<?> to, String key) { ... }
+public QueryBuilder filterByForeignKey(Class<?> keyType, String key) { ... }
+public QueryBuilder filterByForeignKey(Class<?> type, Class<?> keyType, String key) { ... }
 public ordered(boolean ascending) { ... }
 ```
 
