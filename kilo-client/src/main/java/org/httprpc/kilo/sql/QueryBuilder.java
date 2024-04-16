@@ -234,14 +234,14 @@ public class QueryBuilder {
 
         var tableName = getTableName(from);
 
-        var first = types.getFirst();
+        var last = types.getLast();
 
         sqlBuilder.append("join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(first));
+        sqlBuilder.append(getTableName(last));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(first, to));
+        sqlBuilder.append(getForeignKeyColumnName(last, to));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
