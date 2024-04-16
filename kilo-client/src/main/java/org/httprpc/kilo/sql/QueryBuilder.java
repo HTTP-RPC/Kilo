@@ -668,18 +668,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "for update" clause to a query.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder forUpdate() {
-        sqlBuilder.append("for update\n");
-
-        return this;
-    }
-
-    /**
      * Appends arbitrary SQL text to a query. Named parameters can be declared
      * by prepending a colon to an argument name.
      *

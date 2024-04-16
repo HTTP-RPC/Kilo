@@ -151,9 +151,9 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectC() {
-        var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a").forUpdate();
+        var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a");
 
-        assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\nfor update\n", queryBuilder.toString());
+        assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
