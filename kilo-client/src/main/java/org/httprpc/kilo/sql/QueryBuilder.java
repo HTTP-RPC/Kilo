@@ -584,6 +584,103 @@ public class QueryBuilder {
     }
 
     /**
+     * Filters by index values.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexLike(String key) {
+        return filterByIndex("like", key);
+    }
+
+    /**
+     * Filters by index values.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexGreaterThan(String key) {
+        return filterByIndex(">", key);
+    }
+
+    /**
+     * Filters by index values.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexGreaterThanOrEqualTo(String key) {
+        return filterByIndex(">=", key);
+    }
+
+    /**
+     * Filters by index values.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexLessThan(String key) {
+        return filterByIndex("<", key);
+    }
+
+    /**
+     * Filters by index values.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexLessThanOrEqualTo(String key) {
+        return filterByIndex("<=", key);
+    }
+
+    private QueryBuilder filterByIndex(String operator, String key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var first = types.getFirst();
+
+        var tableName = getTableName(first);
+
+        var indexColumnNames = getIndexColumnNames(first);
+
+        if (indexColumnNames.isEmpty()) {
+            throw new UnsupportedOperationException("Index is not defined.");
+        }
+
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(".");
+        sqlBuilder.append(indexColumnNames.get(0));
+        sqlBuilder.append(" ");
+        sqlBuilder.append(operator);
+        sqlBuilder.append(" ?\n");
+
+        parameters.add(key);
+
+        filterCount++;
+
+        return this;
+
+    }
+
+    /**
      * Appends an "order by" clause.
      *
      * @param ascending

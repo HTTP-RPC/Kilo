@@ -198,6 +198,7 @@ public class QueryBuilderTest {
             + "join E on C.a = E.a\n"
             + "where C.a = ?\n"
             + "and E.d = ?\n", queryBuilder.toString());
+
         assertEquals(listOf("a", "d"), queryBuilder.getParameters());
     }
 
@@ -238,6 +239,46 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).ordered(false);
 
         assertEquals("select I.h, I.i, I.t, I.u from I\norder by I.t desc, I.u desc\n", queryBuilder.toString());
+    }
+
+    @Test
+    public void testLike() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t");
+
+        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t like ?\n", queryBuilder.toString());
+        assertEquals(listOf("t"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testGreaterThan() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThan("t");
+
+        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t > ?\n", queryBuilder.toString());
+        assertEquals(listOf("t"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testGreaterThanOrEqualTo() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThanOrEqualTo("t");
+
+        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t >= ?\n", queryBuilder.toString());
+        assertEquals(listOf("t"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testLessThan() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThan("t");
+
+        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t < ?\n", queryBuilder.toString());
+        assertEquals(listOf("t"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testLessThanOrEqualTo() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThanOrEqualTo("t");
+
+        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t <= ?\n", queryBuilder.toString());
+        assertEquals(listOf("t"), queryBuilder.getParameters());
     }
 
     @Test
