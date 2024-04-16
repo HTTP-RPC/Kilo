@@ -135,25 +135,25 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectA() {
-        var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a");
+        var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a").limit(10);
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.a = ?\n", queryBuilder.toString());
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.a = ?\nlimit 10\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
     @Test
     public void testSelectB() {
-        var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a");
+        var queryBuilder = QueryBuilder.select(B.class, 10).filterByPrimaryKey("a");
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere B.a = ?\n", queryBuilder.toString());
+        assertEquals("select top 10 B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere B.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
     @Test
     public void testSelectC() {
-        var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a");
+        var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a").forUpdate();
 
-        assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\n", queryBuilder.toString());
+        assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\nfor update\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 

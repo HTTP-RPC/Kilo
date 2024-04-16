@@ -965,7 +965,7 @@ templateEncoder.write(results, response.getOutputStream());
 ```
 
 ### Schema Annotations
-`QueryBuilder` also supports a simplified approach to query construction using "schema annotations". For example, given this type definition:
+`QueryBuilder` also offers a simplified approach to query construction using "schema annotations". For example, given this type definition:
 
 ```java
 @Table("pets")
@@ -993,17 +993,7 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Alternatively, the following methods can be used in conjunction with the the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter or sort the returned rows:
-
-```java
-public QueryBuilder joinOnPrimaryKey(Class<?> type) { ... }
-public QueryBuilder joinOnForeignKey(Class<?> type) { ... }
-public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> keyType) { ... }
-public QueryBuilder filterByPrimaryKey(String key) { ... }
-public QueryBuilder filterByForeignKey(Class<?> keyType, String key) { ... }
-public QueryBuilder filterByForeignKey(Class<?> type, Class<?> keyType, String key) { ... }
-public ordered(boolean ascending) { ... }
-```
+Additional `QueryBuilder` methods can be used in conjunction with the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter or sort the returned rows.
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 

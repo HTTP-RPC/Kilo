@@ -84,6 +84,22 @@ public class QueryBuilder {
      * A new {@link QueryBuilder} instance.
      */
     public static QueryBuilder select(Class<?> type) {
+        return select(type, -1);
+    }
+
+    /**
+     * Creates a "select" query.
+     *
+     * @param type
+     * The type representing the table to select from.
+     *
+     * @param count
+     * The top count.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder select(Class<?> type, int count) {
         if (type == null) {
             throw new IllegalArgumentException();
         }
@@ -91,6 +107,12 @@ public class QueryBuilder {
         var tableName = getTableName(type);
 
         var sqlBuilder = new StringBuilder("select ");
+
+        if (count >= 0) {
+            sqlBuilder.append("top ");
+            sqlBuilder.append(count);
+            sqlBuilder.append(" ");
+        }
 
         var i = 0;
 
@@ -622,6 +644,39 @@ public class QueryBuilder {
         }
 
         return new ArrayList<>(indexColumnNames.values());
+    }
+
+    /**
+     * Appends a "limit" clause to a query.
+     *
+     * @param count
+     * The limit count.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder limit(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append("limit ");
+        sqlBuilder.append(count);
+        sqlBuilder.append("\n");
+
+        return this;
+    }
+
+    /**
+     * Appends a "for update" clause to a query.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder forUpdate() {
+        sqlBuilder.append("for update\n");
+
+        return this;
     }
 
     /**
