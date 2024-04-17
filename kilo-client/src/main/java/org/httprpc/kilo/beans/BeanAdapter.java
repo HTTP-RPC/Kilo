@@ -339,9 +339,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] arguments) {
             if (method.getDeclaringClass() == Object.class) {
-                return method.invoke(this, arguments);
+                try {
+                    return method.invoke(this, arguments);
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new RuntimeException(exception);
+                }
             } else {
                 var propertyName = getPropertyName(method);
 
@@ -383,7 +387,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public int hashCode() {
-            return map.hashCode();
+            return 0;
         }
 
         @Override
@@ -708,10 +712,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * be a bean:</p>
      *
      * <ul>
-     * <li>If the type is an interface, the return value is a proxy
-     * implementation of the interface that maps accessor and mutator methods
-     * to entries in the map. {@link Object} methods are delegated to the
-     * underlying map.</li>
+     * <li>If the type is an interface, the return value is an implementation
+     * of the interface that maps accessor and mutator methods to entries in
+     * the map.</li>
      * <li>If the type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>
      * </ul>

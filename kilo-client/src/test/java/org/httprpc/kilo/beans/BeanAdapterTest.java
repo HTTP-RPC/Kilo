@@ -46,7 +46,6 @@ import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -171,6 +170,20 @@ public class BeanAdapterTest {
         assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("date", "xyz"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
+    }
+
+    @Test
+    public void testBeanCoercion() {
+        var testBean = BeanAdapter.coerce(mapOf(
+            entry("long", 10),
+            entry("string", "xyz"),
+            entry("integerList", listOf(1, 2, 3)),
+            entry("foo", "bar")
+        ), TestBean.class);
+
+        assertEquals(10, testBean.getLong());
+        assertEquals("xyz", testBean.getString());
+        assertEquals(listOf(1, 2, 3), testBean.getIntegerList());
     }
 
     @Test
@@ -427,41 +440,33 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testMissingProperty() {
-        var testBean = BeanAdapter.coerce(mapOf(
-            entry("long", 10),
-            entry("string", "xyz"),
-            entry("integerList", listOf()),
-            entry("foo", "bar")
-        ), TestBean.class);
+    public void testInterfaceEquality() {
+        var map1 = new HashMap<String, Object>();
 
-        assertNotNull(testBean);
-    }
+        map1.put("flag", true);
+        map1.put("character", 'a');
+        map1.put("foo", 1);
 
-    @Test
-    public void testObjectMethodDelegation() {
-        var map1 = new HashMap<String, Object>() {
+        var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
+
+        assertEquals(0, nestedBean1.hashCode());
+
+        var map2 = new HashMap<String, Object>() {
             @Override
             public String toString() {
-                return "abc";
+                return "xyz";
             }
         };
 
-        map1.put("flag", true);
-        map1.put("foo", 1);
+        map2.put("flag", 1);
+        map2.put("character", "abc");
+        map2.put("foo", 2);
 
-        var map2 = mapOf(
-            entry("flag", 1),
-            entry("foo", 2)
-        );
-
-        var nestedBean1 = BeanAdapter.coerce(map1, TestInterface.NestedInterface.class);
         var nestedBean2 = BeanAdapter.coerce(map2, TestInterface.NestedInterface.class);
 
         assertEquals(nestedBean1, nestedBean2);
 
-        assertEquals(map1.hashCode(), nestedBean1.hashCode());
-        assertEquals(map1.toString(), nestedBean1.toString());
+        assertEquals(map2.toString(), nestedBean2.toString());
     }
 
     @Test

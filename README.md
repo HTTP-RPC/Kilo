@@ -952,7 +952,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be mapped to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
+The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
