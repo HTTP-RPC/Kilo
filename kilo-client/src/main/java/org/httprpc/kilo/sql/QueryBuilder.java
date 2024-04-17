@@ -584,19 +584,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "like" filter.
-     *
-     * @param key
-     * The key of the argument value.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder filterByIndexLike(String key) {
-        return filterByIndex("like", key);
-    }
-
-    /**
      * Appends a "greater than" filter.
      *
      * @param key
@@ -646,6 +633,19 @@ public class QueryBuilder {
      */
     public QueryBuilder filterByIndexLessThanOrEqualTo(String key) {
         return filterByIndex("<=", key);
+    }
+
+    /**
+     * Appends a "like" filter.
+     *
+     * @param key
+     * The key of the argument value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexLike(String key) {
+        return filterByIndex("like", key);
     }
 
     private QueryBuilder filterByIndex(String operator, String key) {

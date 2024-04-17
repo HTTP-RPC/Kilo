@@ -242,11 +242,12 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testLike() {
-        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t");
+    public void testInvalidJoin() {
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(String.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(String.class));
 
-        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t like ?\n", queryBuilder.toString());
-        assertEquals(listOf("t"), queryBuilder.getParameters());
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(Runnable.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(Runnable.class));
     }
 
     @Test
@@ -282,12 +283,11 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testInvalidJoin() {
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(String.class));
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(String.class));
+    public void testLike() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t");
 
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(Runnable.class));
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(Runnable.class));
+        assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t like ?\n", queryBuilder.toString());
+        assertEquals(listOf("t"), queryBuilder.getParameters());
     }
 
     @Test
