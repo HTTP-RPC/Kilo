@@ -170,18 +170,18 @@ public class QueryBuilder {
     /**
      * Appends a "join" clause linking to the primary key of another table.
      *
-     * @param type
+     * @param parentType
      * The type that defines the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder joinOnPrimaryKey(Class<?> type) {
-        if (type == null) {
+    public QueryBuilder joinOnPrimaryKey(Class<?> parentType) {
+        if (parentType == null) {
             throw new IllegalArgumentException();
         }
 
-        var tableName = getTableName(type);
+        var tableName = getTableName(parentType);
 
         var last = types.getLast();
 
@@ -190,14 +190,14 @@ public class QueryBuilder {
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(last));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(last, type));
+        sqlBuilder.append(getForeignKeyColumnName(last, parentType));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(type));
+        sqlBuilder.append(getPrimaryKeyColumnName(parentType));
         sqlBuilder.append("\n");
 
-        types.add(type);
+        types.add(parentType);
 
         return this;
     }
@@ -244,7 +244,7 @@ public class QueryBuilder {
      * The type that defines the foreign key.
      *
      * @param parentType
-     * The type that is referenced by the foreign key.
+     * The type that defines the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -533,7 +533,7 @@ public class QueryBuilder {
      * Filters on a foreign key.
      *
      * @param parentType
-     * The type that is referenced by the foreign key.
+     * The type that defines the primary key.
      *
      * @param key
      * The key of the argument representing the foreign key value.
@@ -552,7 +552,7 @@ public class QueryBuilder {
      * The type that defines the foreign key.
      *
      * @param parentType
-     * The type that is referenced by the foreign key.
+     * The type that defines the primary key.
      *
      * @param key
      * The key of the argument representing the foreign key value.
