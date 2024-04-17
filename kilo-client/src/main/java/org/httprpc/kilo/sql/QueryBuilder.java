@@ -243,14 +243,14 @@ public class QueryBuilder {
      * @param type
      * The type that defines the foreign key.
      *
-     * @param keyType
+     * @param parentType
      * The type that is referenced by the foreign key.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> keyType) {
-        if (type == null || keyType == null) {
+    public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> parentType) {
+        if (type == null || parentType == null) {
             throw new IllegalArgumentException();
         }
 
@@ -263,11 +263,11 @@ public class QueryBuilder {
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(first, keyType));
+        sqlBuilder.append(getForeignKeyColumnName(first, parentType));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(type, keyType));
+        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
         sqlBuilder.append("\n");
 
         types.add(type);
@@ -532,7 +532,7 @@ public class QueryBuilder {
     /**
      * Filters on a foreign key.
      *
-     * @param keyType
+     * @param parentType
      * The type that is referenced by the foreign key.
      *
      * @param key
@@ -541,8 +541,8 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByForeignKey(Class<?> keyType, String key) {
-        return filterByForeignKey(types.getFirst(), keyType, key);
+    public QueryBuilder filterByForeignKey(Class<?> parentType, String key) {
+        return filterByForeignKey(types.getFirst(), parentType, key);
     }
 
     /**
@@ -551,7 +551,7 @@ public class QueryBuilder {
      * @param type
      * The type that defines the foreign key.
      *
-     * @param keyType
+     * @param parentType
      * The type that is referenced by the foreign key.
      *
      * @param key
@@ -560,8 +560,8 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByForeignKey(Class<?> type, Class<?> keyType, String key) {
-        if (type == null || keyType == null || key == null) {
+    public QueryBuilder filterByForeignKey(Class<?> type, Class<?> parentType, String key) {
+        if (type == null || parentType == null || key == null) {
             throw new IllegalArgumentException();
         }
 
@@ -573,7 +573,7 @@ public class QueryBuilder {
         sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(type));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(type, keyType));
+        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
         sqlBuilder.append(" = ?\n");
 
         parameters.add(key);
