@@ -147,7 +147,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException("No columns defined.");
+            throw new UnsupportedOperationException();
         }
 
         sqlBuilder.append(" from ");
@@ -168,7 +168,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "join" clause linking to the primary key of another table.
+     * Appends a "join" clause linking to the primary key of another table.
      *
      * @param type
      * The type that defines the primary key.
@@ -203,7 +203,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "join" clause linking to a foreign key in another table.
+     * Appends a "join" clause linking to a foreign key in another table.
      *
      * @param type
      * The type that defines the foreign key.
@@ -238,7 +238,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "join" clause linking to a foreign key in another table.
+     * Appends a "join" clause linking to a foreign key in another table.
      *
      * @param type
      * The type that defines the foreign key.
@@ -372,7 +372,7 @@ public class QueryBuilder {
         }
 
         if (columnNames.isEmpty()) {
-            throw new UnsupportedOperationException("No columns defined.");
+            throw new UnsupportedOperationException();
         }
 
         sqlBuilder.append(" (");
@@ -467,7 +467,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException("No columns defined.");
+            throw new UnsupportedOperationException();
         }
 
         sqlBuilder.append("\n");
@@ -566,7 +566,7 @@ public class QueryBuilder {
         }
 
         if (!types.contains(type)) {
-            throw new UnsupportedOperationException("Table is not joined.");
+            throw new UnsupportedOperationException("Table has not been joined.");
         }
 
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
@@ -584,7 +584,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by index values.
+     * Appends a "like" filter.
      *
      * @param key
      * The key of the argument value.
@@ -597,7 +597,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by index values.
+     * Appends a "greater than" filter.
      *
      * @param key
      * The key of the argument value.
@@ -610,7 +610,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by index values.
+     * Appends a "greater than or equal to" filter.
      *
      * @param key
      * The key of the argument value.
@@ -623,7 +623,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by index values.
+     * Appends a "less than" filter.
      *
      * @param key
      * The key of the argument value.
@@ -636,7 +636,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by index values.
+     * Appends a "less than or equal to" filter.
      *
      * @param key
      * The key of the argument value.
@@ -657,17 +657,11 @@ public class QueryBuilder {
 
         var tableName = getTableName(first);
 
-        var indexColumnNames = getIndexColumnNames(first);
-
-        if (indexColumnNames.isEmpty()) {
-            throw new UnsupportedOperationException("Index is not defined.");
-        }
-
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(indexColumnNames.get(0));
+        sqlBuilder.append(getIndexColumnNames(first).get(0));
         sqlBuilder.append(" ");
         sqlBuilder.append(operator);
         sqlBuilder.append(" ?\n");
@@ -696,15 +690,9 @@ public class QueryBuilder {
 
         sqlBuilder.append("order by ");
 
-        var indexColumnNames = getIndexColumnNames(first);
-
-        if (indexColumnNames.isEmpty()) {
-            throw new UnsupportedOperationException("Index is not defined.");
-        }
-
         var i = 0;
 
-        for (var indexColumnName : indexColumnNames) {
+        for (var indexColumnName : getIndexColumnNames(first)) {
             if (i > 0) {
                 sqlBuilder.append(", ");
             }
@@ -740,11 +728,15 @@ public class QueryBuilder {
             }
         }
 
+        if (indexColumnNames.isEmpty()) {
+            throw new UnsupportedOperationException("Index is not defined.");
+        }
+
         return new ArrayList<>(indexColumnNames.values());
     }
 
     /**
-     * Appends a "limit" clause to a query.
+     * Appends a "limit" clause.
      *
      * @param count
      * The limit count.
