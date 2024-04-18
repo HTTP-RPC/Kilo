@@ -77,73 +77,55 @@ public class QueryBuilder {
     /**
      * Creates a "select" query.
      *
-     * @param type
-     * The type representing the table to select from.
+     * @param types
+     * The types representing the tables to select from.
      *
      * @return
      * A new {@link QueryBuilder} instance.
      */
-    public static QueryBuilder select(Class<?> type) {
-        return select(type, -1);
-    }
-
-    /**
-     * Creates a "select" query.
-     *
-     * @param type
-     * The type representing the table to select from.
-     *
-     * @param count
-     * The top count.
-     *
-     * @return
-     * A new {@link QueryBuilder} instance.
-     */
-    public static QueryBuilder select(Class<?> type, int count) {
-        if (type == null) {
-            throw new IllegalArgumentException();
+    public static QueryBuilder select(Class<?>... types) {
+        if (types.length == 0) {
+            throw new UnsupportedOperationException();
         }
-
-        var tableName = getTableName(type);
 
         var sqlBuilder = new StringBuilder("select ");
 
-        if (count >= 0) {
-            sqlBuilder.append("top ");
-            sqlBuilder.append(count);
-            sqlBuilder.append(" ");
-        }
-
         var i = 0;
 
-        for (var entry : BeanAdapter.getProperties(type).entrySet()) {
-            var accessor = entry.getValue().getAccessor();
+        for (var j = 0; j < types.length; j++) {
+            var type = types[j];
 
-            var column = accessor.getAnnotation(Column.class);
+            var tableName = getTableName(type);
 
-            if (column == null) {
-                continue;
+            for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+                var accessor = entry.getValue().getAccessor();
+
+                var column = accessor.getAnnotation(Column.class);
+
+                if (column == null || (j > 0 && accessor.getAnnotation(ForeignKey.class) != null)) {
+                    continue;
+                }
+
+                if (i > 0) {
+                    sqlBuilder.append(", ");
+                }
+
+                sqlBuilder.append(tableName);
+                sqlBuilder.append(".");
+
+                var columnName = column.value();
+
+                sqlBuilder.append(columnName);
+
+                var propertyName = entry.getKey();
+
+                if (!columnName.equals(propertyName)) {
+                    sqlBuilder.append(" as ");
+                    sqlBuilder.append(propertyName);
+                }
+
+                i++;
             }
-
-            if (i > 0) {
-                sqlBuilder.append(", ");
-            }
-
-            sqlBuilder.append(tableName);
-            sqlBuilder.append(".");
-
-            var columnName = column.value();
-
-            sqlBuilder.append(columnName);
-
-            var propertyName = entry.getKey();
-
-            if (!columnName.equals(propertyName)) {
-                sqlBuilder.append(" as ");
-                sqlBuilder.append(propertyName);
-            }
-
-            i++;
         }
 
         if (i == 0) {
@@ -151,10 +133,10 @@ public class QueryBuilder {
         }
 
         sqlBuilder.append(" from ");
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(types[0]));
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), type);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), types[0]);
     }
 
     private static String getTableName(Class<?> type) {

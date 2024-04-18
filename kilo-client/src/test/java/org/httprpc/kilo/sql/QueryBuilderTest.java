@@ -133,19 +133,39 @@ public class QueryBuilderTest {
         String getU();
     }
 
+    @Table("J")
+    public interface J {
+        @Column("i")
+        @PrimaryKey
+        @ForeignKey(I.class)
+        Integer getI();
+        @Column("v")
+        String getV();
+    }
+
+    @Table("K")
+    public interface K {
+        @Column("i")
+        @PrimaryKey
+        @ForeignKey(I.class)
+        Integer getI();
+        @Column("w")
+        String getW();
+    }
+
     @Test
     public void testSelectA() {
-        var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a").limit(10);
+        var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a");
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.a = ?\nlimit 10\n", queryBuilder.toString());
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
     @Test
     public void testSelectB() {
-        var queryBuilder = QueryBuilder.select(B.class, 10).filterByPrimaryKey("a");
+        var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a").limit(10);
 
-        assertEquals("select top 10 B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere B.a = ?\n", queryBuilder.toString());
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\nwhere B.a = ?\nlimit 10\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -159,12 +179,12 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectAtoD() {
-        var queryBuilder = QueryBuilder.select(A.class)
+        var queryBuilder = QueryBuilder.select(A.class, E.class)
             .joinOnForeignKey(E.class)
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A\n"
+        assertEquals("select A.a, A.b, A.c, A.d as x, E.z from A\n"
             + "join E on A.a = E.a\n"
             + "where A.a = ?\n"
             + "and E.d = ?\n", queryBuilder.toString());
@@ -174,12 +194,12 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectBtoD() {
-        var queryBuilder = QueryBuilder.select(B.class)
+        var queryBuilder = QueryBuilder.select(B.class, E.class)
             .joinOnForeignKey(E.class)
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B\n"
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y, E.z from B\n"
             + "join E on B.a = E.a\n"
             + "where B.a = ?\n"
             + "and E.d = ?\n", queryBuilder.toString());
@@ -235,10 +255,20 @@ public class QueryBuilderTest {
     }
 
     @Test
-    public void testSelectI() {
-        var queryBuilder = QueryBuilder.select(I.class).ordered(false);
+    public void testSelectIJK() {
+        var queryBuilder = QueryBuilder.select(I.class, J.class, K.class)
+            .joinOnForeignKey(J.class)
+            .joinOnForeignKey(K.class)
+            .filterByPrimaryKey("i")
+            .ordered(false);
 
-        assertEquals("select I.h, I.i, I.t, I.u from I\norder by I.t desc, I.u desc\n", queryBuilder.toString());
+        assertEquals("select I.h, I.i, I.t, I.u, J.v, K.w from I\n"
+            + "join J on I.i = J.i\n"
+            + "join K on I.i = K.i\n"
+            + "where I.i = ?\n"
+            + "order by I.t desc, I.u desc\n", queryBuilder.toString());
+
+        assertEquals(listOf("i"), queryBuilder.getParameters());
     }
 
     @Test
