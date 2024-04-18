@@ -306,7 +306,7 @@ public class QueryBuilder {
                     var type = to;
 
                     while (type != null) {
-                        if (type.getAnnotation(Table.class) != null && foreignKey.value() == type) {
+                        if (foreignKey.value() == type) {
                             return column.value();
                         }
 
