@@ -883,7 +883,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return value;
         } else if (type == Byte.TYPE || type == Byte.class) {
             if (value == null) {
-                return (type == Byte.TYPE) ? Byte.valueOf((byte)0) : null;
+                return (type == Byte.TYPE) ? (byte)0 : null;
             } else if (value instanceof Number number) {
                 return number.byteValue();
             } else {
@@ -891,7 +891,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         } else if (type == Short.TYPE || type == Short.class) {
             if (value == null) {
-                return (type == Short.TYPE) ? Short.valueOf((short)0) : null;
+                return (type == Short.TYPE) ? (short)0 : null;
             } else if (value instanceof Number number) {
                 return number.shortValue();
             } else {
@@ -899,7 +899,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         } else if (type == Integer.TYPE || type == Integer.class) {
             if (value == null) {
-                return (type == Integer.TYPE) ? Integer.valueOf(0) : null;
+                return (type == Integer.TYPE) ? 0 : null;
             } else if (value instanceof Number number) {
                 return number.intValue();
             } else {
@@ -907,7 +907,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         } else if (type == Long.TYPE || type == Long.class) {
             if (value == null) {
-                return (type == Long.TYPE) ? Long.valueOf(0) : null;
+                return (type == Long.TYPE) ? 0L : null;
             } else if (value instanceof Number number) {
                 return number.longValue();
             } else {
@@ -915,7 +915,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         } else if (type == Float.TYPE || type == Float.class) {
             if (value == null) {
-                return (type == Float.TYPE) ? Float.valueOf(0) : null;
+                return (type == Float.TYPE) ? 0.0f : null;
             } else if (value instanceof Number number) {
                 return number.floatValue();
             } else {
@@ -923,7 +923,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         } else if (type == Double.TYPE || type == Double.class) {
             if (value == null) {
-                return (type == Double.TYPE) ? Double.valueOf(0) : null;
+                return (type == Double.TYPE) ? 0.0 : null;
             } else if (value instanceof Number number) {
                 return number.doubleValue();
             } else {
