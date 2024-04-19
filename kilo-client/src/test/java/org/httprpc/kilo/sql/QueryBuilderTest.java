@@ -67,8 +67,8 @@ public class QueryBuilderTest {
         @Column("d")
         @PrimaryKey
         String getD();
-        @Column("e")
-        String getE();
+        @Column("g")
+        Integer getG();
     }
 
     @Table("E")
@@ -229,7 +229,7 @@ public class QueryBuilderTest {
             .filterByForeignKey(E.class, A.class, "a")
             .filterByPrimaryKey("d");
 
-        assertEquals("select D.d, D.e from D\n"
+        assertEquals("select D.d, D.g from D\n"
             + "join E on D.d = E.d\n"
             + "where E.a = ?\n"
             + "and D.d = ?\n", queryBuilder.toString());
@@ -239,13 +239,13 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectIHGF() {
-        var queryBuilder = QueryBuilder.select(I.class)
+        var queryBuilder = QueryBuilder.select(I.class, H.class, G.class)
             .joinOnPrimaryKey(H.class)
             .joinOnPrimaryKey(G.class)
             .filterByForeignKey(G.class, F.class, "f")
             .ordered(true);
 
-        assertEquals("select I.h, I.i, I.t, I.u from I\n"
+        assertEquals("select I.h, I.i, I.t, I.u, H.h, H.s, G.g, G.r from I\n"
             + "join H on I.h = H.h\n"
             + "join G on H.g = G.g\n"
             + "where G.f = ?\n"
