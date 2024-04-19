@@ -66,6 +66,7 @@ public interface TestInterface {
 
     @Internal
     int getValue();
+    void setValue(int value);
 
     NestedInterface getNestedBean();
     void setNestedBean(NestedInterface nestedBean);

@@ -87,16 +87,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         public Method getMutator() {
             return mutator;
         }
-
-        /**
-         * Indicates that the property is read-only.
-         *
-         * @return
-         * {@code true} if the property is read-only; {@code false}, otherwise.
-         */
-        public boolean isReadOnly() {
-            return mutator == null;
-        }
     }
 
     // Array adapter
@@ -256,7 +246,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         public Object get(Object key) {
             var property = properties.get(key);
 
-            if (property == null) {
+            if (property == null || property.accessor.getAnnotation(Internal.class) != null) {
                 return null;
             }
 
@@ -270,15 +260,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public Set<Entry<String, Object>> entrySet() {
             return new AbstractSet<>() {
+                Set<Entry<String, Property>> propertySet = properties.entrySet().stream()
+                    .filter(entry -> entry.getValue().accessor.getAnnotation(Internal.class) == null)
+                    .collect(Collectors.toSet());
+
                 @Override
                 public int size() {
-                    return properties.size();
+                    return propertySet.size();
                 }
 
                 @Override
                 public Iterator<Entry<String, Object>> iterator() {
                     return new Iterator<>() {
-                        Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
+                        Iterator<Entry<String, Property>> iterator = propertySet.iterator();
 
                         @Override
                         public boolean hasNext() {
@@ -506,7 +500,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null) {
+        if (property == null || property.accessor.getAnnotation(Internal.class) != null) {
             return null;
         }
 
@@ -536,7 +530,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null || property.mutator == null) {
+        if (property == null || property.mutator == null || property.accessor.getAnnotation(Internal.class) != null) {
             throw new UnsupportedOperationException();
         }
 
@@ -560,15 +554,19 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @Override
     public Set<Entry<String, Object>> entrySet() {
         return new AbstractSet<>() {
+            Set<Entry<String, Property>> propertySet = properties.entrySet().stream()
+                .filter(entry -> entry.getValue().accessor.getAnnotation(Internal.class) == null)
+                .collect(Collectors.toSet());
+
             @Override
             public int size() {
-                return properties.size();
+                return propertySet.size();
             }
 
             @Override
             public Iterator<Entry<String, Object>> iterator() {
                 return new Iterator<>() {
-                    Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
+                    Iterator<Entry<String, Property>> iterator = propertySet.iterator();
 
                     @Override
                     public boolean hasNext() {
@@ -1069,14 +1067,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var name = recordComponent.getName();
             var accessor = recordComponent.getAccessor();
 
-            Object argument;
-            if (accessor.getAnnotation(Internal.class) == null) {
-                var genericType = recordComponent.getGenericType();
+            var genericType = recordComponent.getGenericType();
 
-                argument = toGenericType(map.get(Optionals.map(accessor.getAnnotation(Name.class), Name::value, name)), genericType);
-            } else {
-                argument = null;
-            }
+            var argument = toGenericType(map.get(Optionals.map(accessor.getAnnotation(Name.class), Name::value, name)), genericType);
 
             if (accessor.getAnnotation(Required.class) != null && argument == null) {
                 throw new IllegalArgumentException("Required component is not defined.");
@@ -1117,16 +1110,24 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 throw new RuntimeException(exception);
             }
 
-            var beanAdapter = new BeanAdapter(bean);
+            for (var entry : getProperties(type).entrySet()) {
+                var property = entry.getValue();
 
-            for (var entry : beanAdapter.properties.entrySet()) {
-                if (entry.getValue().isReadOnly()) {
+                if (property.mutator == null) {
                     continue;
                 }
 
-                var key = entry.getKey();
+                var value = map.get(entry.getKey());
 
-                beanAdapter.put(key, map.get(key));
+                if (property.accessor.getAnnotation(Required.class) != null && value == null) {
+                    throw new IllegalArgumentException("Required value is not defined.");
+                }
+
+                try {
+                    property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new RuntimeException(exception);
+                }
             }
 
             return bean;
@@ -1186,15 +1187,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     if (method.getParameterCount() == 0) {
                         property.accessor = method;
-                    } else if (property.mutator == null) {
-                        property.mutator = method;
                     } else {
-                        throw new UnsupportedOperationException("Duplicate mutator.");
+                        property.mutator = method;
                     }
                 }
             }
 
-            properties = properties.entrySet().stream().filter(entry -> {
+            properties = properties.entrySet().stream().peek(entry -> {
                 var value = entry.getValue();
 
                 var accessor = value.getAccessor();
@@ -1208,8 +1207,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 if (mutator != null && !accessor.getGenericReturnType().equals(mutator.getGenericParameterTypes()[0])) {
                     throw new UnsupportedOperationException("Property type mismatch.");
                 }
-
-                return (accessor.getAnnotation(Internal.class) == null);
             }).collect(Collectors.toMap(entry -> {
                 var accessor = entry.getValue().getAccessor();
 

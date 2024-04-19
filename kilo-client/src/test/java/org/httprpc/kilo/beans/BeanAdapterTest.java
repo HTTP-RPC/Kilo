@@ -45,6 +45,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -523,29 +524,55 @@ public class BeanAdapterTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testInternal() {
-        var testBean = new TestBean();
+        var testInterface = BeanAdapter.coerce(mapOf(
+            entry("long", 0),
+            entry("string", ""),
+            entry("integerList", listOf()),
+            entry("value", 100)
+        ), TestInterface.class);
 
-        testBean.setValue(100);
+        assertEquals(100, testInterface.getValue());
+
+        testInterface.setValue(150);
+
+        assertEquals(150, testInterface.getValue());
+
+        var interfaceAdapter = new BeanAdapter(testInterface);
+
+        assertNull(interfaceAdapter.get("value"));
+        assertFalse(interfaceAdapter.containsKey("value"));
+
+        assertThrows(UnsupportedOperationException.class, () -> interfaceAdapter.put("value", 200));
+
+        var testBean = BeanAdapter.coerce(mapOf(
+            entry("long", 0),
+            entry("string", ""),
+            entry("integerList", listOf()),
+            entry("value", 100)
+        ), TestBean.class);
+
+        assertEquals(100, testBean.getValue());
 
         var beanAdapter = new BeanAdapter(testBean);
 
         assertNull(beanAdapter.get("value"));
+        assertFalse(beanAdapter.containsKey("value"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("value", 200));
 
+        var now = LocalDate.now();
+
         var testRecord = BeanAdapter.coerce(mapOf(
-            entry("s", "abc"),
-            entry("localDate", LocalDate.now())
+            entry("s", ""),
+            entry("localDate", now)
         ), TestRecord.class);
 
-        assertEquals(0, testRecord.i());
-        assertEquals(0.0, testRecord.d());
+        assertEquals(now, testRecord.localDate());
 
-        assertNull(testRecord.localDate());
-
-        var recordAdapter = (Map<String, Object>)BeanAdapter.adapt(new TestRecord(1, 2.0, "xyx", LocalDate.now()));
+        var recordAdapter = (Map<String, Object>)BeanAdapter.adapt(testRecord);
 
         assertNull(recordAdapter.get("localDate"));
+        assertFalse(recordAdapter.containsKey("localDate"));
     }
 
     @Test

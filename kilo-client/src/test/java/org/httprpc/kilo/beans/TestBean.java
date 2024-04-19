@@ -233,6 +233,7 @@ public class TestBean implements TestInterface {
         return value;
     }
 
+    @Override
     public void setValue(int value) {
         this.value = value;
     }

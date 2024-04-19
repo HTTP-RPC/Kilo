@@ -25,6 +25,7 @@ import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.beans.Internal;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -81,6 +82,11 @@ public class TestService extends WebService {
 
     public static class E extends D {
         public double getE() {
+            return 0;
+        }
+
+        @Internal
+        public double getF() {
             return 0;
         }
     }

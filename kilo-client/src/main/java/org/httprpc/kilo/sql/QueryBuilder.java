@@ -139,6 +139,45 @@ public class QueryBuilder {
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), types[0]);
     }
 
+    /**
+     * Creates a "select distinct" query.
+     *
+     * @param type
+     * The type representing the table to select from.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder selectDistinctIndex(Class<?> type) {
+        if (type == null) {
+            throw new UnsupportedOperationException();
+        }
+
+        var sqlBuilder = new StringBuilder("select distinct ");
+
+        var tableName = getTableName(type);
+
+        var i = 0;
+
+        for (var indexColumnName : getIndexColumnNames(type)) {
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+            sqlBuilder.append(indexColumnName);
+
+            i++;
+        }
+
+        sqlBuilder.append(" from ");
+        sqlBuilder.append(tableName);
+        sqlBuilder.append("\n");
+
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), type);
+    }
+
     private static String getTableName(Class<?> type) {
         var table = type.getAnnotation(Table.class);
 

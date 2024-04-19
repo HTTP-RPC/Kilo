@@ -16,6 +16,7 @@ package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
+import org.httprpc.kilo.beans.Internal;
 import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -58,6 +59,7 @@ public class QueryBuilderTest {
         @Column("b")
         Double b,
         @Column("c")
+        @Internal
         Boolean c
     ) {
     }
@@ -323,6 +325,13 @@ public class QueryBuilderTest {
 
         assertEquals("select M.m, M.n, M.x, M.y from M\nwhere M.n = ?\n", queryBuilder.toString());
         assertEquals(listOf("m"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectDistinctIndex() {
+        var queryBuilder = QueryBuilder.selectDistinctIndex(I.class);
+
+        assertEquals("select distinct I.t, I.u from I\n", queryBuilder.toString());
     }
 
     @Test

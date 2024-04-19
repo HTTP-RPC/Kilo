@@ -17,8 +17,8 @@ package org.httprpc.kilo.util;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -153,7 +153,7 @@ public class Collections {
      */
     @SafeVarargs
     public static <E> Set<E> setOf(E... elements) {
-        var set = new HashSet<E>(elements.length);
+        var set = new LinkedHashSet<E>(elements.length);
 
         java.util.Collections.addAll(set, elements);
 
