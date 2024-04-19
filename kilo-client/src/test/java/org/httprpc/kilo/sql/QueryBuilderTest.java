@@ -153,6 +153,52 @@ public class QueryBuilderTest {
         String getW();
     }
 
+    @Table("M")
+    public static class M {
+        private Integer m;
+        private Integer n;
+        private String x;
+        private String y;
+
+        @Column("m")
+        @PrimaryKey
+        public Integer getM() {
+            return m;
+        }
+
+        public void setM(Integer m) {
+            this.m = m;
+        }
+
+        @Column("n")
+        @ForeignKey(M.class)
+        public Integer getN() {
+            return n;
+        }
+
+        public void setN(Integer n) {
+            this.n = n;
+        }
+
+        @Column("x")
+        public String getX() {
+            return x;
+        }
+
+        public void setX(String x) {
+            this.x = x;
+        }
+
+        @Column("y")
+        public String getY() {
+            return y;
+        }
+
+        public void setY(String y) {
+            this.y = y;
+        }
+    }
+
     @Test
     public void testSelectA() {
         var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a");
@@ -269,6 +315,14 @@ public class QueryBuilderTest {
             + "order by I.t desc, I.u desc\n", queryBuilder.toString());
 
         assertEquals(listOf("i"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testSelectM() {
+        var queryBuilder = QueryBuilder.select(M.class).filterByForeignKey(M.class, "m");
+
+        assertEquals("select M.m, M.n, M.x, M.y from M\nwhere M.n = ?\n", queryBuilder.toString());
+        assertEquals(listOf("m"), queryBuilder.getParameters());
     }
 
     @Test
