@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1033,10 +1034,14 @@ public class QueryBuilder {
             var value = arguments.get(parameter);
 
             if (value instanceof Enum<?>) {
-                value = value.toString();
+                statement.setObject(i, value.toString());
+            } else if (value instanceof Date date) {
+                statement.setObject(i, date.getTime());
+            } else {
+                statement.setObject(i, value);
             }
 
-            statement.setObject(i++, value);
+            i++;
         }
     }
 
