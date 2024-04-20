@@ -45,7 +45,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -97,6 +96,8 @@ public class BeanAdapterTest {
 
     @Test
     public void testBeanAdapter() throws MalformedURLException {
+        var now = LocalDate.now();
+
         var map = mapOf(
             entry("i", 1),
             entry("long", 2L),
@@ -141,13 +142,15 @@ public class BeanAdapterTest {
             entry("testRecord", mapOf(
                 entry("i", 10),
                 entry("d", 123.0),
-                entry("s", "abc")
+                entry("s", "abc"),
+                entry("localDate", now)
             )),
             entry("testRecordList", listOf(
                 mapOf(
                     entry("i", 20),
                     entry("d", 456.0),
-                    entry("s", "xyz")
+                    entry("s", "xyz"),
+                    entry("localDate", now)
                 )
             ))
         );
@@ -519,60 +522,6 @@ public class BeanAdapterTest {
         assertThrows(IllegalArgumentException.class, () -> nestedInterface.setFlag(null));
 
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(mapOf(), TestRecord.class));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testInternal() {
-        var testInterface = BeanAdapter.coerce(mapOf(
-            entry("long", 0),
-            entry("string", ""),
-            entry("integerList", listOf()),
-            entry("value", 100)
-        ), TestInterface.class);
-
-        assertEquals(100, testInterface.getValue());
-
-        testInterface.setValue(150);
-
-        assertEquals(150, testInterface.getValue());
-
-        var interfaceAdapter = new BeanAdapter(testInterface);
-
-        assertNull(interfaceAdapter.get("value"));
-        assertFalse(interfaceAdapter.containsKey("value"));
-
-        assertThrows(UnsupportedOperationException.class, () -> interfaceAdapter.put("value", 200));
-
-        var testBean = BeanAdapter.coerce(mapOf(
-            entry("long", 0),
-            entry("string", ""),
-            entry("integerList", listOf()),
-            entry("value", 100)
-        ), TestBean.class);
-
-        assertEquals(100, testBean.getValue());
-
-        var beanAdapter = new BeanAdapter(testBean);
-
-        assertNull(beanAdapter.get("value"));
-        assertFalse(beanAdapter.containsKey("value"));
-
-        assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("value", 200));
-
-        var now = LocalDate.now();
-
-        var testRecord = BeanAdapter.coerce(mapOf(
-            entry("s", ""),
-            entry("localDate", now)
-        ), TestRecord.class);
-
-        assertEquals(now, testRecord.localDate());
-
-        var recordAdapter = (Map<String, Object>)BeanAdapter.adapt(testRecord);
-
-        assertNull(recordAdapter.get("localDate"));
-        assertFalse(recordAdapter.containsKey("localDate"));
     }
 
     @Test

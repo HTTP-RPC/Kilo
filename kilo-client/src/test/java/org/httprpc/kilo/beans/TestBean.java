@@ -228,17 +228,6 @@ public class TestBean implements TestInterface {
     }
 
     @Override
-    @Internal
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    @Override
     public NestedInterface getNestedBean() {
         return nestedBean;
     }

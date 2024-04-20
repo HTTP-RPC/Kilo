@@ -246,7 +246,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         public Object get(Object key) {
             var property = properties.get(key);
 
-            if (property == null || property.accessor.getAnnotation(Internal.class) != null) {
+            if (property == null) {
                 return null;
             }
 
@@ -260,19 +260,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public Set<Entry<String, Object>> entrySet() {
             return new AbstractSet<>() {
-                Set<Entry<String, Property>> propertySet = properties.entrySet().stream()
-                    .filter(entry -> entry.getValue().accessor.getAnnotation(Internal.class) == null)
-                    .collect(Collectors.toSet());
-
                 @Override
                 public int size() {
-                    return propertySet.size();
+                    return properties.size();
                 }
 
                 @Override
                 public Iterator<Entry<String, Object>> iterator() {
                     return new Iterator<>() {
-                        Iterator<Entry<String, Property>> iterator = propertySet.iterator();
+                        Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
 
                         @Override
                         public boolean hasNext() {
@@ -500,7 +496,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null || property.accessor.getAnnotation(Internal.class) != null) {
+        if (property == null) {
             return null;
         }
 
@@ -530,7 +526,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null || property.mutator == null || property.accessor.getAnnotation(Internal.class) != null) {
+        if (property == null || property.mutator == null) {
             throw new UnsupportedOperationException();
         }
 
@@ -554,19 +550,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @Override
     public Set<Entry<String, Object>> entrySet() {
         return new AbstractSet<>() {
-            Set<Entry<String, Property>> propertySet = properties.entrySet().stream()
-                .filter(entry -> entry.getValue().accessor.getAnnotation(Internal.class) == null)
-                .collect(Collectors.toSet());
-
             @Override
             public int size() {
-                return propertySet.size();
+                return properties.size();
             }
 
             @Override
             public Iterator<Entry<String, Object>> iterator() {
                 return new Iterator<>() {
-                    Iterator<Entry<String, Property>> iterator = propertySet.iterator();
+                    Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
 
                     @Override
                     public boolean hasNext() {

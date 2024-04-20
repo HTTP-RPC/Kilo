@@ -64,10 +64,6 @@ public interface TestInterface {
     UUID getUUID();
     URL getURL();
 
-    @Internal
-    int getValue();
-    void setValue(int value);
-
     NestedInterface getNestedBean();
     void setNestedBean(NestedInterface nestedBean);
 

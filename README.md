@@ -901,24 +901,6 @@ rather than this:
 }
 ```
 
-### Internal Properties
-The `Internal` annotation indicates that a property is for internal use only and should be ignored by `BeanAdapter`. For example, given the following code:
-
-```java
-@Internal
-public int getValue() {
-    return value;
-}
-
-public void setValue(int value) {
-    this.value = value;
-}
-```
-
-a call to `get()` with a key of "value" would return `null`. The property would also be excluded when traversing the map's contents. 
-
-Attempting to `put()` an internal value will result in an `UnsupportedOperationException`. 
-
 ## QueryBuilder and ResultSetAdapter
 The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:
 

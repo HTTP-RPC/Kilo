@@ -16,7 +16,6 @@ package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.beans.Internal;
 import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -59,7 +58,6 @@ public class QueryBuilderTest {
         @Column("b")
         Double b,
         @Column("c")
-        @Internal
         Boolean c
     ) {
     }

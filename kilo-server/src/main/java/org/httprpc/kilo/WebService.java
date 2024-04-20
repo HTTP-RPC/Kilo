@@ -21,7 +21,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.beans.Internal;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
@@ -1384,7 +1383,7 @@ public abstract class WebService extends HttpServlet {
 
                         var accessor = property.getAccessor();
 
-                        if (accessor.getDeclaringClass() != type || accessor.getAnnotation(Internal.class) != null) {
+                        if (accessor.getDeclaringClass() != type) {
                             continue;
                         }
 

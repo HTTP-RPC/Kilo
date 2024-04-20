@@ -23,5 +23,5 @@ public record TestRecord(
     int i,
     double d,
     @Name("s") @Required String string,
-    @Internal LocalDate localDate) {
+    LocalDate localDate) {
 }
