@@ -1379,9 +1379,7 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     for (var entry : BeanAdapter.getProperties(type).entrySet()) {
-                        var property = entry.getValue();
-
-                        var accessor = property.getAccessor();
+                        var accessor = entry.getValue().getAccessor();
 
                         if (accessor.getDeclaringClass() != type) {
                             continue;
