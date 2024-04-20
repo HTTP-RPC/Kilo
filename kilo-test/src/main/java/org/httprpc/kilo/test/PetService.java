@@ -23,7 +23,6 @@ import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.kilo.sql.ResultSetAdapter;
 import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
@@ -45,9 +44,9 @@ public class PetService extends AbstractDatabaseService {
         queryBuilder.appendLine("select * from pet where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
-            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+            var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
-            )))) {
+            ))) {
             return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
         }
     }
@@ -68,9 +67,9 @@ public class PetService extends AbstractDatabaseService {
         queryBuilder.appendLine("where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
-            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+            var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
-            )))) {
+            ))) {
             if (accept.equalsIgnoreCase(APPLICATION_JSON)) {
                 response.setContentType(APPLICATION_JSON);
 

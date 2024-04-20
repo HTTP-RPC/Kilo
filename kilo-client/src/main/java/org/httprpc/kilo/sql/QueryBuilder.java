@@ -19,7 +19,6 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -898,7 +897,7 @@ public class QueryBuilder {
      * @throws SQLException
      * If an error occurs while executing the query.
      */
-    public ResultSet executeQuery(PreparedStatement statement) throws SQLException {
+    public ResultSetAdapter executeQuery(PreparedStatement statement) throws SQLException {
         return executeQuery(statement, mapOf());
     }
 
@@ -917,14 +916,14 @@ public class QueryBuilder {
      * @throws SQLException
      * If an error occurs while executing the query.
      */
-    public ResultSet executeQuery(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
+    public ResultSetAdapter executeQuery(PreparedStatement statement, Map<String, ?> arguments) throws SQLException {
         if (statement == null || arguments == null) {
             throw new IllegalArgumentException();
         }
 
         apply(statement, arguments);
 
-        return statement.executeQuery();
+        return new ResultSetAdapter(statement.executeQuery());
     }
 
     /**

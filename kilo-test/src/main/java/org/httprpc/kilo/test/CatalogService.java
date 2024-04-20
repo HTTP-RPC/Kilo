@@ -21,7 +21,6 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.kilo.sql.ResultSetAdapter;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -39,7 +38,7 @@ public class CatalogService extends AbstractDatabaseService {
         var queryBuilder = QueryBuilder.select(Item.class).ordered(true);
 
         try (var statement = queryBuilder.prepare(getConnection());
-            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+            var results = queryBuilder.executeQuery(statement)) {
             return results.stream().map(result -> BeanAdapter.coerce(result, Item.class)).toList();
         }
     }
@@ -53,9 +52,9 @@ public class CatalogService extends AbstractDatabaseService {
         var queryBuilder = QueryBuilder.select(ItemDetail.class).filterByPrimaryKey("itemID");
 
         try (var statement = queryBuilder.prepare(getConnection());
-            var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+            var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("itemID", itemID)
-            )))) {
+            ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, ItemDetail.class)).orElse(null);
         }
     }

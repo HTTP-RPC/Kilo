@@ -927,14 +927,14 @@ The colon character identifies "owner" as a parameter, or variable. Parameter va
 
 ```java
 try (var statement = queryBuilder.prepare(getConnection());
-    var results = new ResultSetAdapter(queryBuilder.executeQuery(statement, mapOf(
+    var results = queryBuilder.executeQuery(statement, mapOf(
         entry("owner", owner)
-    )))) {
+    ))) {
     ...
 }
 ```
 
-The `ResultSetAdapter` class provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
+The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
@@ -1135,7 +1135,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var connection = getConnection();
     var statement = queryBuilder.prepare(connection);
-    var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+    var results = queryBuilder.executeQuery(statement)) {
     return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
 }
 ```
@@ -1150,7 +1150,7 @@ executorService.submit(() -> {
 
     try (var connection = getConnection();
         var statement = queryBuilder.prepare(connection);
-        var results = new ResultSetAdapter(queryBuilder.executeQuery(statement))) {
+        var results = queryBuilder.executeQuery(statement)) {
         pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
