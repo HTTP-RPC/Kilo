@@ -77,7 +77,7 @@ public class QueryBuilder {
         var jsonDecoder = new JSONDecoder();
 
         try {
-            return jsonDecoder.read(new StringReader(value.toString()));
+            return jsonDecoder.read(new StringReader((String)value));
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
