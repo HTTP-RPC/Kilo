@@ -18,6 +18,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
@@ -27,6 +28,14 @@ import java.sql.SQLException;
 
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
+    public interface Row {
+        String getText1();
+        String getText2();
+        Double getNumber1();
+        Double getNumber2();
+        Double getNumber3();
+    }
+
     private static final int BATCH_SIZE = 25000;
 
     @Override
@@ -46,7 +55,7 @@ public class BulkUploadService extends AbstractDatabaseService {
             var csvDecoder = new CSVDecoder();
 
             for (var row : csvDecoder.iterate(getRequest().getInputStream())) {
-                queryBuilder.executeUpdate(statement, row);
+                queryBuilder.executeUpdate(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
             }
         }
     }
@@ -65,7 +74,7 @@ public class BulkUploadService extends AbstractDatabaseService {
             var csvDecoder = new CSVDecoder();
 
             for (var row : csvDecoder.iterate(getRequest().getInputStream())) {
-                queryBuilder.addBatch(statement, row);
+                queryBuilder.addBatch(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
 
                 if (++i % BATCH_SIZE == 0) {
                     statement.executeBatch();
