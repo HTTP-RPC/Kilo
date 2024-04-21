@@ -42,8 +42,8 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
-    private Set<String> jsonColumnLabels;
     private List<String> parameters;
+    private Set<String> jsonColumnLabels;
 
     private LinkedList<Class<?>> types = new LinkedList<>();
 
@@ -70,13 +70,13 @@ public class QueryBuilder {
      * The initial capacity.
      */
     public QueryBuilder(int capacity) {
-        this(new StringBuilder(capacity), new HashSet<>(), new LinkedList<>(), null);
+        this(new StringBuilder(capacity), new LinkedList<>(), new HashSet<>(), null);
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder, Set<String> jsonColumnLabels, LinkedList<String> parameters, Class<?> type) {
+    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Set<String> jsonColumnLabels, Class<?> type) {
         this.sqlBuilder = sqlBuilder;
-        this.jsonColumnLabels = jsonColumnLabels;
         this.parameters = parameters;
+        this.jsonColumnLabels = jsonColumnLabels;
 
         types.add(type);
     }
@@ -149,7 +149,7 @@ public class QueryBuilder {
         sqlBuilder.append(getTableName(types[0]));
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, jsonColumnLabels, new LinkedList<>(), types[0]);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), jsonColumnLabels, types[0]);
     }
 
     /**
@@ -188,7 +188,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new HashSet<>(), new LinkedList<>(), type);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashSet<>(), type);
     }
 
     private static String getTableName(Class<?> type) {
@@ -384,8 +384,8 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
 
         var columnNames = new LinkedList<String>();
-        var jsonColumnLabels = new HashSet<String>();
         var parameters = new LinkedList<String>();
+        var jsonColumnLabels = new HashSet<String>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -445,7 +445,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(")\n");
 
-        return new QueryBuilder(sqlBuilder, jsonColumnLabels, parameters, type);
+        return new QueryBuilder(sqlBuilder, parameters, jsonColumnLabels, type);
     }
 
     /**
@@ -471,8 +471,8 @@ public class QueryBuilder {
 
         var i = 0;
 
-        var jsonColumnLabels = new HashSet<String>();
         var parameters = new LinkedList<String>();
+        var jsonColumnLabels = new HashSet<String>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -523,7 +523,7 @@ public class QueryBuilder {
 
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, jsonColumnLabels, parameters, type);
+        return new QueryBuilder(sqlBuilder, parameters, jsonColumnLabels, type);
     }
 
     /**
@@ -547,7 +547,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new HashSet<>(), new LinkedList<>(), type);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashSet<>(), type);
     }
 
     /**
