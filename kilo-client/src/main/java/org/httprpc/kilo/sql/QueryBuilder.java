@@ -16,9 +16,12 @@ package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
+import org.httprpc.kilo.util.Optionals;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,12 +30,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.mapOf;
 
@@ -43,7 +46,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
     private List<String> parameters;
-    private Set<String> jsonKeys;
+    private Map<String, Function<Object, Object>> transforms;
 
     private LinkedList<Class<?>> types = new LinkedList<>();
 
@@ -55,6 +58,30 @@ public class QueryBuilder {
 
     private static final String WHERE = "where";
     private static final String AND = "and";
+
+    private static final Function<Object, Object> toJSON = value -> {
+        var jsonEncoder = new JSONEncoder();
+
+        var valueWriter = new StringWriter();
+
+        try {
+            jsonEncoder.write(BeanAdapter.adapt(value), valueWriter);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        return valueWriter.toString();
+    };
+
+    private static final Function<Object, Object> fromJSON = value -> {
+        var jsonDecoder = new JSONDecoder();
+
+        try {
+            return jsonDecoder.read(new StringReader(value.toString()));
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    };
 
     /**
      * Constructs a new query builder.
@@ -70,13 +97,13 @@ public class QueryBuilder {
      * The initial capacity.
      */
     public QueryBuilder(int capacity) {
-        this(new StringBuilder(capacity), new LinkedList<>(), new HashSet<>(), null);
+        this(new StringBuilder(capacity), new LinkedList<>(), new HashMap<>(), null);
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Set<String> jsonKeys, Class<?> type) {
+    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Map<String, Function<Object, Object>> transforms, Class<?> type) {
         this.sqlBuilder = sqlBuilder;
         this.parameters = parameters;
-        this.jsonKeys = jsonKeys;
+        this.transforms = transforms;
 
         types.add(type);
     }
@@ -97,7 +124,7 @@ public class QueryBuilder {
 
         var sqlBuilder = new StringBuilder("select ");
 
-        var jsonKeys = new HashSet<String>();
+        var transforms = new HashMap<String, Function<Object, Object>>();
 
         var i = 0;
 
@@ -134,7 +161,7 @@ public class QueryBuilder {
                 }
 
                 if (accessor.getAnnotation(JSON.class) != null) {
-                    jsonKeys.add(propertyName);
+                    transforms.put(propertyName, fromJSON);
                 }
 
                 i++;
@@ -149,7 +176,7 @@ public class QueryBuilder {
         sqlBuilder.append(getTableName(types[0]));
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), jsonKeys, types[0]);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), transforms, types[0]);
     }
 
     /**
@@ -188,7 +215,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashSet<>(), type);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
 
     private static String getTableName(Class<?> type) {
@@ -385,7 +412,7 @@ public class QueryBuilder {
 
         var columnNames = new LinkedList<String>();
         var parameters = new LinkedList<String>();
-        var jsonKeys = new HashSet<String>();
+        var transforms = new HashMap<String, Function<Object, Object>>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -411,7 +438,7 @@ public class QueryBuilder {
             parameters.add(propertyName);
 
             if (accessor.getAnnotation(JSON.class) != null) {
-                jsonKeys.add(propertyName);
+                transforms.put(propertyName, toJSON);
             }
         }
 
@@ -445,7 +472,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(")\n");
 
-        return new QueryBuilder(sqlBuilder, parameters, jsonKeys, type);
+        return new QueryBuilder(sqlBuilder, parameters, transforms, type);
     }
 
     /**
@@ -472,7 +499,7 @@ public class QueryBuilder {
         var i = 0;
 
         var parameters = new LinkedList<String>();
-        var jsonKeys = new HashSet<String>();
+        var transforms = new HashMap<String, Function<Object, Object>>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -511,7 +538,7 @@ public class QueryBuilder {
             parameters.add(propertyName);
 
             if (accessor.getAnnotation(JSON.class) != null) {
-                jsonKeys.add(propertyName);
+                transforms.put(propertyName, toJSON);
             }
 
             i++;
@@ -523,7 +550,7 @@ public class QueryBuilder {
 
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, parameters, jsonKeys, type);
+        return new QueryBuilder(sqlBuilder, parameters, transforms, type);
     }
 
     /**
@@ -547,7 +574,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashSet<>(), type);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
 
     /**
@@ -949,7 +976,7 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        return new ResultSetAdapter(statement.executeQuery(), jsonKeys);
+        return new ResultSetAdapter(statement.executeQuery(), transforms);
     }
 
     /**
@@ -1064,21 +1091,7 @@ public class QueryBuilder {
             } else if (value instanceof Date date) {
                 statement.setObject(i, date.getTime());
             } else {
-                if (jsonKeys.contains(parameter)) {
-                    var jsonEncoder = new JSONEncoder();
-
-                    var valueWriter = new StringWriter();
-
-                    try {
-                        jsonEncoder.write(BeanAdapter.adapt(value), valueWriter);
-                    } catch (IOException exception) {
-                        throw new IllegalArgumentException(exception);
-                    }
-
-                    value = valueWriter.toString();
-                }
-
-                statement.setObject(i, value);
+                statement.setObject(i, Optionals.map(value, Optionals.coalesce(transforms.get(parameter), Function.identity())));
             }
 
             i++;
