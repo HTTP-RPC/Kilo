@@ -72,7 +72,7 @@ public class CatalogService extends AbstractDatabaseService {
             queryBuilder.executeUpdate(statement, new BeanAdapter(item));
         }
 
-        return getItem(BeanAdapter.coerce(queryBuilder.getGeneratedKeys().get(0), Integer.class));
+        return getItem(queryBuilder.getGeneratedKey(0, Integer.class));
     }
 
     @RequestMethod("PUT")
