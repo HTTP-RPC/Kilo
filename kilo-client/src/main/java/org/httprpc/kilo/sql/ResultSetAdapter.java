@@ -38,7 +38,7 @@ import static org.httprpc.kilo.util.Collections.setOf;
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
-    private Set<String> jsonColumnLabels;
+    private Set<String> jsonKeys;
 
     private ResultSetMetaData resultSetMetaData;
 
@@ -72,7 +72,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
                     var columnLabel = resultSetMetaData.getColumnLabel(i);
 
-                    if (jsonColumnLabels.contains(columnLabel)) {
+                    if (jsonKeys.contains(columnLabel)) {
                         if (!(value instanceof String string)) {
                             throw new UnsupportedOperationException("Value is not a string.");
 
@@ -111,13 +111,13 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         this(resultSet, setOf());
     }
 
-    ResultSetAdapter(ResultSet resultSet, Set<String> jsonColumnLabels) {
+    ResultSetAdapter(ResultSet resultSet, Set<String> jsonKeys) {
         if (resultSet == null) {
             throw new IllegalArgumentException();
         }
 
         this.resultSet = resultSet;
-        this.jsonColumnLabels = jsonColumnLabels;
+        this.jsonKeys = jsonKeys;
 
         try {
             resultSetMetaData = resultSet.getMetaData();

@@ -43,7 +43,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
     private List<String> parameters;
-    private Set<String> jsonColumnLabels;
+    private Set<String> jsonKeys;
 
     private LinkedList<Class<?>> types = new LinkedList<>();
 
@@ -73,10 +73,10 @@ public class QueryBuilder {
         this(new StringBuilder(capacity), new LinkedList<>(), new HashSet<>(), null);
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Set<String> jsonColumnLabels, Class<?> type) {
+    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Set<String> jsonKeys, Class<?> type) {
         this.sqlBuilder = sqlBuilder;
         this.parameters = parameters;
-        this.jsonColumnLabels = jsonColumnLabels;
+        this.jsonKeys = jsonKeys;
 
         types.add(type);
     }
@@ -97,7 +97,7 @@ public class QueryBuilder {
 
         var sqlBuilder = new StringBuilder("select ");
 
-        var jsonColumnLabels = new HashSet<String>();
+        var jsonKeys = new HashSet<String>();
 
         var i = 0;
 
@@ -134,7 +134,7 @@ public class QueryBuilder {
                 }
 
                 if (accessor.getAnnotation(JSON.class) != null) {
-                    jsonColumnLabels.add(propertyName);
+                    jsonKeys.add(propertyName);
                 }
 
                 i++;
@@ -149,7 +149,7 @@ public class QueryBuilder {
         sqlBuilder.append(getTableName(types[0]));
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), jsonColumnLabels, types[0]);
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), jsonKeys, types[0]);
     }
 
     /**
@@ -385,7 +385,7 @@ public class QueryBuilder {
 
         var columnNames = new LinkedList<String>();
         var parameters = new LinkedList<String>();
-        var jsonColumnLabels = new HashSet<String>();
+        var jsonKeys = new HashSet<String>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -411,7 +411,7 @@ public class QueryBuilder {
             parameters.add(propertyName);
 
             if (accessor.getAnnotation(JSON.class) != null) {
-                jsonColumnLabels.add(propertyName);
+                jsonKeys.add(propertyName);
             }
         }
 
@@ -445,7 +445,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(")\n");
 
-        return new QueryBuilder(sqlBuilder, parameters, jsonColumnLabels, type);
+        return new QueryBuilder(sqlBuilder, parameters, jsonKeys, type);
     }
 
     /**
@@ -472,7 +472,7 @@ public class QueryBuilder {
         var i = 0;
 
         var parameters = new LinkedList<String>();
-        var jsonColumnLabels = new HashSet<String>();
+        var jsonKeys = new HashSet<String>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
@@ -511,7 +511,7 @@ public class QueryBuilder {
             parameters.add(propertyName);
 
             if (accessor.getAnnotation(JSON.class) != null) {
-                jsonColumnLabels.add(propertyName);
+                jsonKeys.add(propertyName);
             }
 
             i++;
@@ -523,7 +523,7 @@ public class QueryBuilder {
 
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, parameters, jsonColumnLabels, type);
+        return new QueryBuilder(sqlBuilder, parameters, jsonKeys, type);
     }
 
     /**
@@ -953,7 +953,7 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        return new ResultSetAdapter(statement.executeQuery(), jsonColumnLabels);
+        return new ResultSetAdapter(statement.executeQuery(), jsonKeys);
     }
 
     /**
@@ -1072,7 +1072,7 @@ public class QueryBuilder {
             } else if (value instanceof Date date) {
                 statement.setObject(i, date.getTime());
             } else {
-                if (jsonColumnLabels.contains(parameter)) {
+                if (jsonKeys.contains(parameter)) {
                     var jsonEncoder = new JSONEncoder();
 
                     var valueWriter = new StringWriter();
