@@ -16,7 +16,10 @@ package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONEncoder;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -24,9 +27,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static org.httprpc.kilo.util.Collections.mapOf;
@@ -37,6 +42,7 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
+    private Set<String> jsonColumnLabels;
     private List<String> parameters;
 
     private LinkedList<Class<?>> types = new LinkedList<>();
@@ -64,11 +70,12 @@ public class QueryBuilder {
      * The initial capacity.
      */
     public QueryBuilder(int capacity) {
-        this(new StringBuilder(capacity), new LinkedList<>(), null);
+        this(new StringBuilder(capacity), new HashSet<>(), new LinkedList<>(), null);
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Class<?> type) {
+    private QueryBuilder(StringBuilder sqlBuilder, Set<String> jsonColumnLabels, LinkedList<String> parameters, Class<?> type) {
         this.sqlBuilder = sqlBuilder;
+        this.jsonColumnLabels = jsonColumnLabels;
         this.parameters = parameters;
 
         types.add(type);
@@ -89,6 +96,8 @@ public class QueryBuilder {
         }
 
         var sqlBuilder = new StringBuilder("select ");
+
+        var jsonColumnLabels = new HashSet<String>();
 
         var i = 0;
 
@@ -124,6 +133,10 @@ public class QueryBuilder {
                     sqlBuilder.append(propertyName);
                 }
 
+                if (accessor.getAnnotation(JSON.class) != null) {
+                    jsonColumnLabels.add(columnName);
+                }
+
                 i++;
             }
         }
@@ -136,7 +149,7 @@ public class QueryBuilder {
         sqlBuilder.append(getTableName(types[0]));
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), types[0]);
+        return new QueryBuilder(sqlBuilder, jsonColumnLabels, new LinkedList<>(), types[0]);
     }
 
     /**
@@ -175,7 +188,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), type);
+        return new QueryBuilder(sqlBuilder, new HashSet<>(), new LinkedList<>(), type);
     }
 
     private static String getTableName(Class<?> type) {
@@ -371,6 +384,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
 
         var columnNames = new LinkedList<String>();
+        var jsonColumnLabels = new HashSet<String>();
         var parameters = new LinkedList<String>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
@@ -388,7 +402,14 @@ public class QueryBuilder {
                 continue;
             }
 
-            columnNames.add(column.value());
+            var columnName = column.value();
+
+            columnNames.add(columnName);
+
+            if (accessor.getAnnotation(JSON.class) != null) {
+                jsonColumnLabels.add(columnName);
+            }
+
             parameters.add(entry.getKey());
         }
 
@@ -422,7 +443,7 @@ public class QueryBuilder {
 
         sqlBuilder.append(")\n");
 
-        return new QueryBuilder(sqlBuilder, parameters, type);
+        return new QueryBuilder(sqlBuilder, jsonColumnLabels, parameters, type);
     }
 
     /**
@@ -448,6 +469,7 @@ public class QueryBuilder {
 
         var i = 0;
 
+        var jsonColumnLabels = new HashSet<String>();
         var parameters = new LinkedList<String>();
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
@@ -482,6 +504,10 @@ public class QueryBuilder {
                 sqlBuilder.append("?");
             }
 
+            if (accessor.getAnnotation(JSON.class) != null) {
+                jsonColumnLabels.add(columnName);
+            }
+
             parameters.add(entry.getKey());
 
             i++;
@@ -493,7 +519,7 @@ public class QueryBuilder {
 
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, parameters, type);
+        return new QueryBuilder(sqlBuilder, jsonColumnLabels, parameters, type);
     }
 
     /**
@@ -517,7 +543,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append("\n");
 
-        return new QueryBuilder(sqlBuilder, new LinkedList<>(), type);
+        return new QueryBuilder(sqlBuilder, new HashSet<>(), new LinkedList<>(), type);
     }
 
     /**
@@ -923,7 +949,7 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        return new ResultSetAdapter(statement.executeQuery());
+        return new ResultSetAdapter(statement.executeQuery(), jsonColumnLabels);
     }
 
     /**
@@ -1042,6 +1068,20 @@ public class QueryBuilder {
             } else if (value instanceof Date date) {
                 statement.setObject(i, date.getTime());
             } else {
+                if (jsonColumnLabels.contains(parameter)) {
+                    var jsonEncoder = new JSONEncoder();
+
+                    var valueWriter = new StringWriter();
+
+                    try {
+                        jsonEncoder.write(value, valueWriter);
+                    } catch (IOException exception) {
+                        throw new IllegalArgumentException(exception);
+                    }
+
+                    value = valueWriter.toString();
+                }
+
                 statement.setObject(i, value);
             }
 

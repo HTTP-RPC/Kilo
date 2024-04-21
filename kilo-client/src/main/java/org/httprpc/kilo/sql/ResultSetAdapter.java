@@ -14,6 +14,10 @@
 
 package org.httprpc.kilo.sql;
 
+import org.httprpc.kilo.io.JSONDecoder;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -21,8 +25,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static org.httprpc.kilo.util.Collections.setOf;
 
 /**
  * Provides access to the contents of a JDBC result set via the
@@ -31,6 +38,8 @@ import java.util.stream.StreamSupport;
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
+    private Set<String> jsonColumnLabels;
+
     private ResultSetMetaData resultSetMetaData;
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
@@ -59,7 +68,28 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
             try {
                 for (int i = 1, n = resultSetMetaData.getColumnCount(); i <= n; i++) {
-                    row.put(resultSetMetaData.getColumnLabel(i), resultSet.getObject(i));
+                    var value = resultSet.getObject(i);
+
+                    var columnLabel = resultSetMetaData.getColumnLabel(i);
+
+                    if (jsonColumnLabels.contains(columnLabel)) {
+                        if (!(value instanceof String string)) {
+                            throw new UnsupportedOperationException("Value is not a string.");
+
+                        }
+
+                        var jsonDecoder = new JSONDecoder();
+
+                        var valueReader = new StringReader(string);
+
+                        try {
+                            value = jsonDecoder.read(valueReader);
+                        } catch (IOException exception) {
+                            throw new UnsupportedOperationException(exception);
+                        }
+                    }
+
+                    row.put(columnLabel, value);
                 }
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
@@ -78,11 +108,16 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      * The source result set.
      */
     public ResultSetAdapter(ResultSet resultSet) {
+        this(resultSet, setOf());
+    }
+
+    ResultSetAdapter(ResultSet resultSet, Set<String> jsonColumnLabels) {
         if (resultSet == null) {
             throw new IllegalArgumentException();
         }
 
         this.resultSet = resultSet;
+        this.jsonColumnLabels = jsonColumnLabels;
 
         try {
             resultSetMetaData = resultSet.getMetaData();

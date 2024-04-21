@@ -43,6 +43,12 @@ create table bulk_upload_test (
     primary key (id)
 );
 
+create table json_test (
+    id int not null auto_increment,
+    json varchar(4096) not null,
+    primary key (id)
+);
+
 drop user if exists 'demo'@'%';
 
 create user 'demo'@'%' identified by 'demo123!';
