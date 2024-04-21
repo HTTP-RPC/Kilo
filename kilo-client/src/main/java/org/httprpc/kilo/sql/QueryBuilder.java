@@ -1078,7 +1078,7 @@ public class QueryBuilder {
                     var valueWriter = new StringWriter();
 
                     try {
-                        jsonEncoder.write(value, valueWriter);
+                        jsonEncoder.write(BeanAdapter.adapt(value), valueWriter);
                     } catch (IOException exception) {
                         throw new IllegalArgumentException(exception);
                     }
