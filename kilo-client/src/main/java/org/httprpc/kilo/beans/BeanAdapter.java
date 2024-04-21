@@ -1207,7 +1207,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                 return Optionals.map(accessor.getAnnotation(Name.class), Name::value, entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
-                throw new UnsupportedOperationException("Duplicate key.");
+                throw new UnsupportedOperationException("Duplicate name.");
             }, TreeMap::new));
 
             typeProperties.put(type, properties);
