@@ -111,8 +111,17 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         this(resultSet, setOf());
     }
 
+    /**
+     * Constructs a new result set adapter.
+     *
+     * @param resultSet
+     * The source result set.
+     *
+     * @param jsonKeys
+     * A set of keys whose associated values are encoded as JSON.
+     */
     ResultSetAdapter(ResultSet resultSet, Set<String> jsonKeys) {
-        if (resultSet == null) {
+        if (resultSet == null || jsonKeys == null) {
             throw new IllegalArgumentException();
         }
 

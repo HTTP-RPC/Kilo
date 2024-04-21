@@ -141,7 +141,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (iterable instanceof List<?> list) {
                 return adapt(list.get(index));
             } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Iterable is not a list.");
             }
         }
 
@@ -150,7 +150,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             if (iterable instanceof Collection<?> collection) {
                 return collection.size();
             } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Iterable is not a collection.");
             }
         }
 
