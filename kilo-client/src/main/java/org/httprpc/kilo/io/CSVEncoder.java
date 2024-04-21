@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.immutableMapOf;
 
 /**
  * Encodes a sequence of map values to CSV.
@@ -30,8 +30,8 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;
     private char delimiter;
 
-    private Map<String, String> labels = mapOf();
-    private Map<String, Format> formats = mapOf();
+    private Map<String, String> labels = immutableMapOf();
+    private Map<String, Format> formats = immutableMapOf();
 
     /**
      * Constructs a new CSV encoder.
