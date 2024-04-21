@@ -852,10 +852,6 @@ public class QueryBuilder {
                 parameters.add(parameterBuilder.toString());
 
                 sqlBuilder.append("?");
-            } else if (c == '?' && !quoted) {
-                parameters.add(null);
-
-                sqlBuilder.append(c);
             } else {
                 if (c == '\'') {
                     quoted = !quoted;
@@ -1061,10 +1057,6 @@ public class QueryBuilder {
         var i = 1;
 
         for (var parameter : parameters) {
-            if (parameter == null) {
-                continue;
-            }
-
             var value = arguments.get(parameter);
 
             if (value instanceof Enum<?>) {

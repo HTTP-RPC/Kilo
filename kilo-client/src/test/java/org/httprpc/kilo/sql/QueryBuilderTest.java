@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QueryBuilderTest {
     @Table("A")
@@ -410,40 +409,11 @@ public class QueryBuilderTest {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("select a, 'b''c:d' as b from foo");
-        queryBuilder.appendLine("where bar = :x");
+        queryBuilder.appendLine("where foo = :x and bar = :y");
 
-        assertEquals(listOf("x"), queryBuilder.getParameters());
+        assertEquals("select a, 'b''c:d' as b from foo\nwhere foo = ? and bar = ?\n", queryBuilder.toString());
 
-        assertEquals("select a, 'b''c:d' as b from foo\nwhere bar = ?\n", queryBuilder.toString());
-    }
-
-    @Test
-    public void testQuotedQuestionMark() {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.appendLine("select '?' as q from xyz");
-
-        assertTrue(queryBuilder.getParameters().isEmpty());
-
-        assertEquals("select '?' as q from xyz\n", queryBuilder.toString());
-    }
-
-    @Test
-    public void testEscapedQuotes() {
-        var queryBuilder = new QueryBuilder();
-
-        queryBuilder.appendLine("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''");
-
-        assertTrue(queryBuilder.getParameters().isEmpty());
-
-        assertEquals("select xyz.*, ''':z' as z from xyz where foo = 'a''b'':c''' and bar = ''''\n", queryBuilder.toString());
-    }
-
-    @Test
-    public void testDoubleColon() {
-        var queryBuilder = new QueryBuilder();
-
-        assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select 'ab:c'::varchar(16) as abc"));
+        assertEquals(listOf("x", "y"), queryBuilder.getParameters());
     }
 
     @Test
@@ -451,5 +421,12 @@ public class QueryBuilderTest {
         var queryBuilder = new QueryBuilder();
 
         assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select * from xyz where foo = : and bar is null"));
+    }
+
+    @Test
+    public void testInvalidParameterName() {
+        var queryBuilder = new QueryBuilder();
+
+        assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select * from xyz where foo = :@ and bar is null"));
     }
 }

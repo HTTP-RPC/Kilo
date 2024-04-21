@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.httprpc.kilo.util.Collections.setOf;
-
 /**
  * Provides access to the contents of a JDBC result set via the
  * {@link Iterable} interface. Individual rows are represented by mutable map
@@ -68,14 +66,13 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
             try {
                 for (int i = 1, n = resultSetMetaData.getColumnCount(); i <= n; i++) {
+                    var key = resultSetMetaData.getColumnLabel(i);
+
                     var value = resultSet.getObject(i);
 
-                    var columnLabel = resultSetMetaData.getColumnLabel(i);
-
-                    if (jsonKeys.contains(columnLabel)) {
+                    if (jsonKeys.contains(key)) {
                         if (!(value instanceof String string)) {
                             throw new UnsupportedOperationException("Value is not a string.");
-
                         }
 
                         var jsonDecoder = new JSONDecoder();
@@ -89,7 +86,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
                         }
                     }
 
-                    row.put(columnLabel, value);
+                    row.put(key, value);
                 }
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
@@ -101,30 +98,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         }
     };
 
-    /**
-     * Constructs a new result set adapter.
-     *
-     * @param resultSet
-     * The source result set.
-     */
-    public ResultSetAdapter(ResultSet resultSet) {
-        this(resultSet, setOf());
-    }
-
-    /**
-     * Constructs a new result set adapter.
-     *
-     * @param resultSet
-     * The source result set.
-     *
-     * @param jsonKeys
-     * A set of keys whose associated values are encoded as JSON.
-     */
     ResultSetAdapter(ResultSet resultSet, Set<String> jsonKeys) {
-        if (resultSet == null || jsonKeys == null) {
-            throw new IllegalArgumentException();
-        }
-
         this.resultSet = resultSet;
         this.jsonKeys = jsonKeys;
 
