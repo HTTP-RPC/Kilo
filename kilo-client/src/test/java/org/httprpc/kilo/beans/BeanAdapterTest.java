@@ -67,12 +67,28 @@ public class BeanAdapterTest {
     }
 
     public static class MissingAccessor {
-        public void setValue(int value) {
+        public void setX(int value) {
             // No-op
         }
     }
 
-    public static class DuplicateKey {
+    public static class DuplicateMutator {
+        private double x;
+
+        public double getX() {
+            return x;
+        }
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public void setX(String x) {
+            // No-op
+        }
+    }
+
+    public static class DuplicateName {
         @Name("x")
         public String getFoo() {
             return "foo";
@@ -591,8 +607,13 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testDuplicateKey() {
-        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateKey()));
+    public void testDuplicateMutator() {
+        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateMutator()));
+    }
+
+    @Test
+    public void testDuplicateName() {
+        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateName()));
     }
 
     @Test
