@@ -52,6 +52,8 @@ public class CatalogTest extends AbstractTest {
         assertEquals(Size.MEDIUM, item.getSize());
         assertEquals(5.0, item.getWeight());
 
+        assertNotNull(item.getCreated());
+
         item = catalogServiceProxy.getItem(itemID);
 
         assertNotNull(item);

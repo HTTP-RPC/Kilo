@@ -18,6 +18,8 @@ import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Table;
 
+import java.util.Date;
+
 @Table("item")
 @Description("Represents detailed information about an item in the catalog.")
 public interface ItemDetail extends Item {
@@ -35,4 +37,9 @@ public interface ItemDetail extends Item {
     @Column("weight")
     Double getWeight();
     void setWeight(Double weight);
+
+    @Column("created")
+    @Description("The date the item was created.")
+    Date getCreated();
+    void setCreated(Date created);
 }

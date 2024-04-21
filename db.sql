@@ -29,6 +29,7 @@ create table item (
     size enum ('SMALL', 'MEDIUM', 'LARGE') not null,
     color varchar(128) not null,
     weight double not null,
+    created bigint not null,
     primary key (id)
 );
 

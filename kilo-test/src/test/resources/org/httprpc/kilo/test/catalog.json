@@ -267,6 +267,20 @@
           }
         },
         {
+          "description": "The date the item was created.",
+          "name": "created",
+          "required": false,
+          "type": {
+            "elementType": null,
+            "intrinsic": true,
+            "iterable": false,
+            "keyType": null,
+            "map": false,
+            "name": "Date",
+            "valueType": null
+          }
+        },
+        {
           "description": "The item's size.",
           "name": "size",
           "required": false,
