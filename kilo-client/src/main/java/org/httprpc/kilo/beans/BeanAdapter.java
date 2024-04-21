@@ -1177,10 +1177,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         properties.put(propertyName, property);
                     }
 
+
                     if (method.getParameterCount() == 0) {
                         property.accessor = method;
-                    } else {
+                    } else if (property.mutator == null) {
                         property.mutator = method;
+                    } else {
+                        throw new UnsupportedOperationException("Duplicate mutator.");
                     }
                 }
             }
