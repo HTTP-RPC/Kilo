@@ -255,7 +255,7 @@ public class TemplateEncoder extends Encoder<Object> {
             } else if (value instanceof LocalDateTime localDateTime) {
                 temporalAccessor = ZonedDateTime.of(localDateTime, zoneId);
             } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Value is not a temporal accessor.");
             }
 
             return switch (dateTimeType) {

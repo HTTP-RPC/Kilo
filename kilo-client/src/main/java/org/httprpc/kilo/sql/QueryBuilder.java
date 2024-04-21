@@ -142,7 +142,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("No columns defined.");
         }
 
         sqlBuilder.append(" from ");
@@ -416,7 +416,7 @@ public class QueryBuilder {
         }
 
         if (columnNames.isEmpty()) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("No columns defined.");
         }
 
         sqlBuilder.append(" (");
@@ -518,7 +518,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("No columns defined.");
         }
 
         sqlBuilder.append("\n");
@@ -1025,7 +1025,7 @@ public class QueryBuilder {
      */
     public <T> T getGeneratedKey(int index, Class<T> type) {
         if (generatedKeys == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("No generated keys.");
         }
 
         return BeanAdapter.coerce(generatedKeys.get(index), type);
