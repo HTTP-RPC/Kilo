@@ -134,7 +134,7 @@ public class QueryBuilder {
                 }
 
                 if (accessor.getAnnotation(JSON.class) != null) {
-                    jsonColumnLabels.add(columnName);
+                    jsonColumnLabels.add(propertyName);
                 }
 
                 i++;
@@ -406,11 +406,13 @@ public class QueryBuilder {
 
             columnNames.add(columnName);
 
-            if (accessor.getAnnotation(JSON.class) != null) {
-                jsonColumnLabels.add(columnName);
-            }
+            var propertyName = entry.getKey();
 
-            parameters.add(entry.getKey());
+            parameters.add(propertyName);
+
+            if (accessor.getAnnotation(JSON.class) != null) {
+                jsonColumnLabels.add(propertyName);
+            }
         }
 
         if (columnNames.isEmpty()) {
@@ -504,11 +506,13 @@ public class QueryBuilder {
                 sqlBuilder.append("?");
             }
 
-            if (accessor.getAnnotation(JSON.class) != null) {
-                jsonColumnLabels.add(columnName);
-            }
+            var propertyName = entry.getKey();
 
-            parameters.add(entry.getKey());
+            parameters.add(propertyName);
+
+            if (accessor.getAnnotation(JSON.class) != null) {
+                jsonColumnLabels.add(propertyName);
+            }
 
             i++;
         }

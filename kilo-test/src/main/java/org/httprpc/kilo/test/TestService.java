@@ -132,10 +132,9 @@ public class TestService extends AbstractDatabaseService {
         @Column("id")
         @PrimaryKey
         Integer getID();
-        @Name("json")
         @Column("json")
         @JSON
-        Object getJSON();
+        Object getValue();
     }
 
     public interface Body {
@@ -375,7 +374,7 @@ public class TestService extends AbstractDatabaseService {
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("json", object)
+                entry("value", object)
             ));
         }
 
@@ -389,7 +388,7 @@ public class TestService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class).getJSON()).orElseThrow();
+            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class).getValue()).orElseThrow();
         }
     }
 
