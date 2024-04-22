@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.httprpc.kilo.util.Collections.immutableMapOf;
+import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Provides access to the contents of a JDBC result set via the
@@ -38,7 +38,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
 
-    private Map<String, Function<Object, Object>> transforms = immutableMapOf();
+    private Map<String, Function<Object, Object>> transforms = mapOf();
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;

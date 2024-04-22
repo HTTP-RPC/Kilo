@@ -47,8 +47,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static org.httprpc.kilo.util.Collections.immutableMapOf;
 import static org.httprpc.kilo.util.Collections.listOf;
+import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Client-side invocation proxy for web services.
@@ -344,8 +344,8 @@ public class WebServiceProxy {
 
     private Encoding encoding = null;
 
-    private Map<String, Object> headers = immutableMapOf();
-    private Map<String, Object> arguments = immutableMapOf();
+    private Map<String, Object> headers = mapOf();
+    private Map<String, Object> arguments = mapOf();
 
     private Object body = null;
 
