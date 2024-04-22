@@ -114,6 +114,10 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      * The mapping functions to apply.
      */
     public void setTransforms(Map<String, Function<Object, Object>> transforms) {
+        if (transforms == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.transforms = transforms;
     }
 
