@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.Required;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
@@ -60,7 +59,7 @@ public class QueryBuilder {
     private static final String AND = "and";
 
     private static final Function<Object, Object> toJSON = value -> {
-        var jsonEncoder = new JSONEncoder();
+        var jsonEncoder = new JSONEncoder(true);
 
         var valueWriter = new StringWriter();
 
@@ -138,7 +137,11 @@ public class QueryBuilder {
 
                 var column = accessor.getAnnotation(Column.class);
 
-                if (column == null || (j > 0 && accessor.getAnnotation(ForeignKey.class) != null)) {
+                if (column == null) {
+                    continue;
+                }
+
+                if (j > 0 && accessor.getAnnotation(ForeignKey.class) != null) {
                     continue;
                 }
 
@@ -510,9 +513,7 @@ public class QueryBuilder {
                 continue;
             }
 
-            var primaryKey = accessor.getAnnotation(PrimaryKey.class);
-
-            if (primaryKey != null && primaryKey.generated()) {
+            if (accessor.getAnnotation(PrimaryKey.class) != null || accessor.getAnnotation(Final.class) != null) {
                 continue;
             }
 
@@ -523,15 +524,7 @@ public class QueryBuilder {
             var columnName = column.value();
 
             sqlBuilder.append(columnName);
-            sqlBuilder.append(" = ");
-
-            if (accessor.getAnnotation(Required.class) == null) {
-                sqlBuilder.append("coalesce(?, ");
-                sqlBuilder.append(columnName);
-                sqlBuilder.append(")");
-            } else {
-                sqlBuilder.append("?");
-            }
+            sqlBuilder.append(" = ?");
 
             var propertyName = entry.getKey();
 

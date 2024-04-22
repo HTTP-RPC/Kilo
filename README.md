@@ -975,7 +975,7 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine("where owner = :owner");
 ```
 
-Additional `QueryBuilder` methods can be used in conjunction with the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter or sort the returned rows. The `JSON` annotation can be used to indicate that a column contains data encoded as JSON.
+Additional `QueryBuilder` methods can be used in conjunction with the `PrimaryKey`, `ForeignKey`, and `Index` annotations to filter or sort the returned rows.
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 

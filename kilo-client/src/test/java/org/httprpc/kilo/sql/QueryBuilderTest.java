@@ -36,6 +36,7 @@ public class QueryBuilderTest {
         Boolean getC();
         @Name("x")
         @Column("d")
+        @Final
         Boolean getD();
     }
 
@@ -392,8 +393,8 @@ public class QueryBuilderTest {
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update(A.class).filterByPrimaryKey("a");
 
-        assertEquals("update A set b = ?, c = ?, d = coalesce(?, d)\nwhere A.a = ?\n", queryBuilder.toString());
-        assertEquals(listOf("b", "c", "x", "a"), queryBuilder.getParameters());
+        assertEquals("update A set b = ?, c = ?\nwhere A.a = ?\n", queryBuilder.toString());
+        assertEquals(listOf("b", "c", "a"), queryBuilder.getParameters());
     }
 
     @Test

@@ -16,6 +16,7 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Final;
 import org.httprpc.kilo.sql.Table;
 
 import java.util.Date;
@@ -40,6 +41,7 @@ public interface ItemDetail extends Item {
 
     @Column("created")
     @Description("The date the item was created.")
+    @Final
     Date getCreated();
     void setCreated(Date created);
 }
