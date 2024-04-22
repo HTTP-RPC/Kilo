@@ -19,7 +19,6 @@ import org.httprpc.kilo.util.Optionals;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,6 +27,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static org.httprpc.kilo.util.Collections.immutableMapOf;
+
 /**
  * Provides access to the contents of a JDBC result set via the
  * {@link Iterable} interface. Individual rows are represented by mutable map
@@ -35,9 +36,9 @@ import java.util.stream.StreamSupport;
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
-    private Map<String, Function<Object, Object>> transforms;
-
     private ResultSetMetaData resultSetMetaData;
+
+    private Map<String, Function<Object, Object>> transforms = immutableMapOf();
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;
@@ -86,31 +87,34 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      * The source result set.
      */
     public ResultSetAdapter(ResultSet resultSet) {
-        this(resultSet, new HashMap<>());
-    }
-
-    /**
-     * Constructs a new result set adapter.
-     *
-     * @param resultSet
-     * The source result set.
-     *
-     * @param transforms
-     * The mapping functions to apply.
-     */
-    public ResultSetAdapter(ResultSet resultSet, Map<String, Function<Object, Object>> transforms) {
-        if (resultSet == null || transforms == null) {
+        if (resultSet == null) {
             throw new IllegalArgumentException();
         }
 
         this.resultSet = resultSet;
-        this.transforms = transforms;
 
         try {
             resultSetMetaData = resultSet.getMetaData();
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    /**
+     * Sets the transform map.
+     */
+    public Map<String, Function<Object, Object>> getTransforms() {
+        return transforms;
+    }
+
+    /**
+     * Returns the transform map.
+     *
+     * @param transforms
+     * The mapping functions to apply.
+     */
+    public void setTransforms(Map<String, Function<Object, Object>> transforms) {
+        this.transforms = transforms;
     }
 
     /**

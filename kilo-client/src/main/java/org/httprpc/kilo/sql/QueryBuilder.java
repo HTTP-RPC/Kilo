@@ -976,7 +976,11 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        return new ResultSetAdapter(statement.executeQuery(), transforms);
+        var resultSetAdapter = new ResultSetAdapter(statement.executeQuery());
+
+        resultSetAdapter.setTransforms(transforms);
+
+        return resultSetAdapter;
     }
 
     /**
