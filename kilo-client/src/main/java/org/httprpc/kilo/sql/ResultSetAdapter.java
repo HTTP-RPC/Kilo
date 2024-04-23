@@ -101,14 +101,14 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Sets the transform map.
+     * Returns the transform map.
      */
     public Map<String, Function<Object, Object>> getTransforms() {
         return transforms;
     }
 
     /**
-     * Returns the transform map.
+     * Sets the transform map.
      *
      * @param transforms
      * The mapping functions to apply.
