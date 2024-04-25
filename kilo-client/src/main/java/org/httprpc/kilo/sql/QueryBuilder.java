@@ -700,35 +700,17 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder filterByIdentifier(String key) {
-        return filterByIdentifier(types.getFirst(), key);
-    }
-
-    /**
-     * Filters by identifier.
-     *
-     * @param type
-     * The type that defines the identifier.
-     *
-     * @param key
-     * The key of the argument representing the identifier value.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder filterByIdentifier(Class<?> type, String key) {
-        if (type == null || key == null) {
+        if (key == null) {
             throw new IllegalArgumentException();
         }
 
-        if (!types.contains(type)) {
-            throw new UnsupportedOperationException("Table has not been joined.");
-        }
+        var first = types.getFirst();
 
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
-        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
-        sqlBuilder.append(getIdentifierColumnName(type));
+        sqlBuilder.append(getIdentifierColumnName(first));
         sqlBuilder.append(" = ?\n");
 
         parameters.add(key);
