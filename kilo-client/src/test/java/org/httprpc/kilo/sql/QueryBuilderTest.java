@@ -30,6 +30,7 @@ public class QueryBuilderTest {
         String getA();
         @Column("b")
         @Required
+        @Identifier
         Double getB();
         @Column("c")
         @Required
@@ -342,6 +343,14 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testIdentifier() {
+        var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b");
+
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere A.b = ?\n", queryBuilder.toString());
+        assertEquals(listOf("b"), queryBuilder.getParameters());
+    }
+
+    @Test
     public void testGreaterThan() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThan("t");
 
@@ -395,6 +404,14 @@ public class QueryBuilderTest {
 
         assertEquals("update A set b = ?, c = ?\nwhere A.a = ?\n", queryBuilder.toString());
         assertEquals(listOf("b", "c", "a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testUpdateParent() {
+        var queryBuilder = QueryBuilder.updateParent(I.class, H.class, "h").filterByPrimaryKey("i");
+
+        assertEquals("update I set h = ?\nwhere I.i = ?\n", queryBuilder.toString());
+        assertEquals(listOf("h", "i"), queryBuilder.getParameters());
     }
 
     @Test

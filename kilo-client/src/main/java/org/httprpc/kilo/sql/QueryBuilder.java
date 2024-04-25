@@ -547,6 +547,42 @@ public class QueryBuilder {
     }
 
     /**
+     * Creates an "update" query.
+     *
+     * @param type
+     * The type representing the table to update.
+     *
+     * @param parentType
+     * The type that defines the primary key.
+     *
+     * @param key
+     * The key of the argument representing the foreign key value.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder updateParent(Class<?> type, Class<?> parentType, String key) {
+        if (type == null || parentType == null || key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var tableName = getTableName(type);
+
+        var sqlBuilder = new StringBuilder("update ");
+
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(" set ");
+        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
+        sqlBuilder.append(" = ?\n");
+
+        var parameters = new LinkedList<String>();
+
+        parameters.add(key);
+
+        return new QueryBuilder(sqlBuilder, parameters, new HashMap<>(), type);
+    }
+
+    /**
      * Creates a "delete" query.
      *
      * @param type
@@ -571,7 +607,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters on the primary key.
+     * Filters by primary key.
      *
      * @param key
      * The key of the argument representing the primary key value.
@@ -601,7 +637,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters on a foreign key.
+     * Filters by foreign key.
      *
      * @param parentType
      * The type that defines the primary key.
@@ -617,7 +653,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters on a foreign key.
+     * Filters by foreign key.
      *
      * @param type
      * The type that defines the foreign key.
@@ -652,6 +688,72 @@ public class QueryBuilder {
         filterCount++;
 
         return this;
+    }
+
+    /**
+     * Filters by identifier.
+     *
+     * @param key
+     * The key of the argument representing the identifier value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIdentifier(String key) {
+        return filterByIdentifier(types.getFirst(), key);
+    }
+
+    /**
+     * Filters by identifier.
+     *
+     * @param type
+     * The type that defines the identifier.
+     *
+     * @param key
+     * The key of the argument representing the identifier value.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIdentifier(Class<?> type, String key) {
+        if (type == null || key == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!types.contains(type)) {
+            throw new UnsupportedOperationException("Table has not been joined.");
+        }
+
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getIdentifierColumnName(type));
+        sqlBuilder.append(" = ?\n");
+
+        parameters.add(key);
+
+        filterCount++;
+
+        return this;
+    }
+
+    private static String getIdentifierColumnName(Class<?> type) {
+        for (var property : BeanAdapter.getProperties(type).values()) {
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column != null) {
+                var primaryKey = accessor.getAnnotation(Identifier.class);
+
+                if (primaryKey != null) {
+                    return column.value();
+                }
+            }
+        }
+
+        throw new UnsupportedOperationException("Identifier is not defined.");
     }
 
     /**
