@@ -691,6 +691,52 @@ public class QueryBuilder {
     }
 
     /**
+     * Filters by foreign key.
+     *
+     * @param parentType
+     * The type that defines the primary key.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByForeignKeyIsNull(Class<?> parentType) {
+        return filterByForeignKeyIsNull(types.getFirst(), parentType);
+    }
+
+    /**
+     * Filters by foreign key.
+     *
+     * @param type
+     * The type that defines the foreign key.
+     *
+     * @param parentType
+     * The type that defines the primary key.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByForeignKeyIsNull(Class<?> type, Class<?> parentType) {
+        if (type == null || parentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!types.contains(type)) {
+            throw new UnsupportedOperationException("Table has not been joined.");
+        }
+
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
+        sqlBuilder.append(" is null\n");
+
+        filterCount++;
+
+        return this;
+    }
+
+    /**
      * Filters by identifier.
      *
      * @param key
