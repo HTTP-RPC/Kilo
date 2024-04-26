@@ -1055,13 +1055,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             var genericType = recordComponent.getGenericType();
 
-            var argument = toGenericType(map.get(Optionals.map(accessor.getAnnotation(Name.class), Name::value, name)), genericType);
+            var value = map.get(Optionals.map(accessor.getAnnotation(Name.class), Name::value, name));
 
-            if (accessor.getAnnotation(Required.class) != null && argument == null) {
+            if (accessor.getAnnotation(Required.class) != null && value == null) {
                 throw new IllegalArgumentException("Required value is not defined.");
             }
 
-            arguments[i] = argument;
+            arguments[i] = toGenericType(value, genericType);
         }
 
         Constructor<?> constructor;
