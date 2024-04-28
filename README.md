@@ -972,10 +972,15 @@ the preceding query could be written as follows:
 ```java
 var queryBuilder = QueryBuilder.select(Pet.class);
 
-queryBuilder.appendLine("where owner = :owner");
+queryBuilder.appendLine(" where owner = :owner");
 ```
 
-Additional annotations can be used in conjunction with other `QueryBuilder` methods to filter or sort the returned rows.
+Additional `QueryBuilder` methods can be used with the following annotations to filter or sort the returned rows:
+
+* `PrimaryKey`
+* `ForeignKey`
+* `Identifier`
+* `Index`
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 

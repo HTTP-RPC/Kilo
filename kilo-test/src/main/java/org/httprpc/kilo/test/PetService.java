@@ -64,7 +64,7 @@ public class PetService extends AbstractDatabaseService {
 
         var queryBuilder = QueryBuilder.select(Pet.class);
 
-        queryBuilder.appendLine("where owner = :owner");
+        queryBuilder.appendLine(" where owner = :owner");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(

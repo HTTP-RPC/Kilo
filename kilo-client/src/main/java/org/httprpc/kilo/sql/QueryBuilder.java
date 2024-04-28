@@ -177,7 +177,6 @@ public class QueryBuilder {
 
         sqlBuilder.append(" from ");
         sqlBuilder.append(getTableName(types[0]));
-        sqlBuilder.append("\n");
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), transforms, types[0]);
     }
@@ -203,7 +202,6 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append(".* from ");
         sqlBuilder.append(tableName);
-        sqlBuilder.append("\n");
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
@@ -242,7 +240,6 @@ public class QueryBuilder {
 
         sqlBuilder.append(" from ");
         sqlBuilder.append(tableName);
-        sqlBuilder.append("\n");
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
@@ -275,7 +272,7 @@ public class QueryBuilder {
 
         var last = types.getLast();
 
-        sqlBuilder.append("join ");
+        sqlBuilder.append(" join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(last));
@@ -285,7 +282,6 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
         sqlBuilder.append(getPrimaryKeyColumnName(parentType));
-        sqlBuilder.append("\n");
 
         types.add(parentType);
 
@@ -310,7 +306,7 @@ public class QueryBuilder {
 
         var first = types.getFirst();
 
-        sqlBuilder.append("join ");
+        sqlBuilder.append(" join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(first));
@@ -320,7 +316,6 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(type, first));
-        sqlBuilder.append("\n");
 
         types.add(type);
 
@@ -348,7 +343,7 @@ public class QueryBuilder {
 
         var first = types.getFirst();
 
-        sqlBuilder.append("join ");
+        sqlBuilder.append(" join ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(first));
@@ -358,7 +353,6 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
-        sqlBuilder.append("\n");
 
         types.add(type);
 
@@ -499,7 +493,7 @@ public class QueryBuilder {
             sqlBuilder.append("?");
         }
 
-        sqlBuilder.append(")\n");
+        sqlBuilder.append(")");
 
         return new QueryBuilder(sqlBuilder, parameters, transforms, type);
     }
@@ -567,8 +561,6 @@ public class QueryBuilder {
             throw new UnsupportedOperationException("No columns defined.");
         }
 
-        sqlBuilder.append("\n");
-
         return new QueryBuilder(sqlBuilder, parameters, transforms, type);
     }
 
@@ -599,7 +591,7 @@ public class QueryBuilder {
         sqlBuilder.append(tableName);
         sqlBuilder.append(" set ");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
-        sqlBuilder.append(" = ?\n");
+        sqlBuilder.append(" = ?");
 
         var parameters = new LinkedList<String>();
 
@@ -627,7 +619,6 @@ public class QueryBuilder {
         var sqlBuilder = new StringBuilder("delete from ");
 
         sqlBuilder.append(tableName);
-        sqlBuilder.append("\n");
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
@@ -648,12 +639,13 @@ public class QueryBuilder {
 
         var first = types.getFirst();
 
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
         sqlBuilder.append(getPrimaryKeyColumnName(first));
-        sqlBuilder.append(" = ?\n");
+        sqlBuilder.append(" = ?");
 
         parameters.add(key);
 
@@ -698,12 +690,13 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(type));
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
-        sqlBuilder.append(" = ?\n");
+        sqlBuilder.append(" = ?");
 
         parameters.add(key);
 
@@ -742,12 +735,13 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(type));
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
-        sqlBuilder.append(" is null\n");
+        sqlBuilder.append(" is null");
 
         filterCount++;
 
@@ -770,12 +764,13 @@ public class QueryBuilder {
 
         var first = types.getFirst();
 
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(first));
         sqlBuilder.append(".");
         sqlBuilder.append(getIdentifierColumnName(first));
-        sqlBuilder.append(" = ?\n");
+        sqlBuilder.append(" = ?");
 
         parameters.add(key);
 
@@ -876,6 +871,7 @@ public class QueryBuilder {
 
         var tableName = getTableName(first);
 
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(tableName);
@@ -883,7 +879,7 @@ public class QueryBuilder {
         sqlBuilder.append(getIndexColumnNames(first).get(0));
         sqlBuilder.append(" ");
         sqlBuilder.append(operator);
-        sqlBuilder.append(" ?\n");
+        sqlBuilder.append(" ?");
 
         parameters.add(key);
 
@@ -903,10 +899,11 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder filterByExists(QueryBuilder queryBuilder) {
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" exists (\n");
+        sqlBuilder.append(" exists (");
         sqlBuilder.append(queryBuilder);
-        sqlBuilder.append(")\n");
+        sqlBuilder.append(")");
 
         filterCount++;
 
@@ -925,10 +922,11 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder filterByNotExists(QueryBuilder queryBuilder) {
+        sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" not exists (\n");
+        sqlBuilder.append(" not exists (");
         sqlBuilder.append(queryBuilder);
-        sqlBuilder.append(")\n");
+        sqlBuilder.append(")");
 
         filterCount++;
 
@@ -951,7 +949,7 @@ public class QueryBuilder {
 
         var tableName = getTableName(first);
 
-        sqlBuilder.append("order by ");
+        sqlBuilder.append(" order by ");
 
         var i = 0;
 
@@ -968,8 +966,6 @@ public class QueryBuilder {
 
             i++;
         }
-
-        sqlBuilder.append("\n");
 
         return this;
     }
@@ -1012,9 +1008,8 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        sqlBuilder.append("limit ");
+        sqlBuilder.append(" limit ");
         sqlBuilder.append(count);
-        sqlBuilder.append("\n");
 
         return this;
     }
@@ -1026,7 +1021,7 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder forUpdate() {
-        sqlBuilder.append("for update\n");
+        sqlBuilder.append(" for update");
 
         return this;
     }
