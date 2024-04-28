@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -96,12 +98,26 @@ public class JSONDecoderTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    public void testSorted() throws IOException {
+        var text = "{\"c\": 3, \"b\": 2, \"a\": 1}";
+
+        var map = (Map<String, Object>)decode(text, true);
+
+        assertEquals(listOf("a", "b", "c"), new ArrayList<>(map.keySet()));
+    }
+
+    @Test
     public void testInvalidCharacters() {
         assertThrows(IOException.class, () -> decode("xyz"));
     }
 
     private static Object decode(String text) throws IOException {
-        var jsonDecoder = new JSONDecoder();
+        return decode(text, false);
+    }
+
+    private static Object decode(String text, boolean sorted) throws IOException {
+        var jsonDecoder = new JSONDecoder(sorted);
 
         return jsonDecoder.read(new StringReader(text));
     }
