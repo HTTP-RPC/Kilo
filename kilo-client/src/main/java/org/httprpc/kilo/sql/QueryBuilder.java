@@ -1054,6 +1054,27 @@ public class QueryBuilder {
     }
 
     /**
+     * Returns the transform map.
+     */
+    public Map<String, Function<Object, Object>> getTransforms() {
+        return transforms;
+    }
+
+    /**
+     * Sets the transform map.
+     *
+     * @param transforms
+     * The mapping functions to apply.
+     */
+    public void setTransforms(Map<String, Function<Object, Object>> transforms) {
+        if (transforms == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.transforms = transforms;
+    }
+
+    /**
      * Prepares a query for execution.
      *
      * @param connection

@@ -982,7 +982,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else if (value instanceof Collection<?> collection) {
                     return toArray(collection, type);
                 } else {
-                    throw new IllegalArgumentException("Value is not an array or list.");
+                    throw new IllegalArgumentException("Value is not an array or collection.");
                 }
             } else if (type.isEnum()) {
                 return toEnum(value.toString(), type);
@@ -1036,7 +1036,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         }
 
-        throw new IllegalArgumentException("Invalid constant name.");
+        throw new IllegalArgumentException("Invalid constant.");
     }
 
     private static Object toRecord(Map<?, ?> map, Class<?> type) {

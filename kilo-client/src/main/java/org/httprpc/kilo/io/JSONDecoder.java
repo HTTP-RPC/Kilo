@@ -95,7 +95,7 @@ public class JSONDecoder extends Decoder<Object> {
                     skipWhitespace(reader);
 
                     if (c != ':') {
-                        throw new IOException("Missing key/value delimiter.");
+                        throw new IOException("Missing colon.");
                     }
 
                     c = reader.read();
