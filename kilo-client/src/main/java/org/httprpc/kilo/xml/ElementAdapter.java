@@ -162,26 +162,26 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
                 remove(tagName);
 
-                addElements(tagName, collection);
+                appendElements(tagName, collection);
             } else {
                 throw new IllegalArgumentException();
             }
         } else {
             remove(key);
 
-            addElement(key, value);
+            appendElement(key, value);
         }
 
         return null;
     }
 
-    private void addElements(String tagName, Iterable<?> collection) {
+    private void appendElements(String tagName, Iterable<?> collection) {
         for (var element : collection) {
-            addElement(tagName, element);
+            appendElement(tagName, element);
         }
     }
 
-    private void addElement(String tagName, Object value) {
+    private void appendElement(String tagName, Object value) {
         var document = element.getOwnerDocument();
 
         var element = document.createElement(tagName);

@@ -19,6 +19,7 @@ import org.httprpc.kilo.util.Optionals;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,8 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
  * Provides access to the contents of a JDBC result set via the
@@ -38,7 +37,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
 
-    private Map<String, Function<Object, Object>> transforms = mapOf();
+    private Map<String, Function<Object, Object>> transforms = new HashMap<>();
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;
@@ -101,24 +100,20 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Returns the transform map.
-     */
-    public Map<String, Function<Object, Object>> getTransforms() {
-        return transforms;
-    }
-
-    /**
-     * Sets the transform map.
+     * Associates a mapping function with a result column.
      *
-     * @param transforms
-     * The mapping functions to apply.
+     * @param key
+     * The key representing the column value.
+     *
+     * @param transform
+     * The mapping function.
      */
-    public void setTransforms(Map<String, Function<Object, Object>> transforms) {
-        if (transforms == null) {
+    public void map(String key, Function<Object, Object> transform) {
+        if (key == null || transform == null) {
             throw new IllegalArgumentException();
         }
 
-        this.transforms = transforms;
+        transforms.put(key, transform);
     }
 
     /**

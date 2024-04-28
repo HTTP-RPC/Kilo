@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class QueryBuilder {
     private List<String> parameters;
     private Map<String, Function<Object, Object>> transforms;
 
-    private LinkedList<Class<?>> types = new LinkedList<>();
+    private Deque<Class<?>> types = new LinkedList<>();
 
     private int filterCount = 0;
 
@@ -99,12 +100,14 @@ public class QueryBuilder {
         this(new StringBuilder(capacity), new LinkedList<>(), new HashMap<>(), null);
     }
 
-    private QueryBuilder(StringBuilder sqlBuilder, LinkedList<String> parameters, Map<String, Function<Object, Object>> transforms, Class<?> type) {
+    private QueryBuilder(StringBuilder sqlBuilder, List<String> parameters, Map<String, Function<Object, Object>> transforms, Class<?> type) {
         this.sqlBuilder = sqlBuilder;
         this.parameters = parameters;
         this.transforms = transforms;
 
-        types.add(type);
+        if (type != null) {
+            types.add(type);
+        }
     }
 
     /**
@@ -1189,11 +1192,13 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        var resultSetAdapter = new ResultSetAdapter(statement.executeQuery());
+        var resultSet = new ResultSetAdapter(statement.executeQuery());
 
-        resultSetAdapter.setTransforms(transforms);
+        for (var entry : transforms.entrySet()) {
+            resultSet.map(entry.getKey(), entry.getValue());
+        }
 
-        return resultSetAdapter;
+        return resultSet;
     }
 
     /**

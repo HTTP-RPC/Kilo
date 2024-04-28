@@ -18,6 +18,8 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.junit.jupiter.api.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -466,6 +468,8 @@ public class QueryBuilderTest {
         assertEquals("select a, 'b''c:d' as b from foo\nwhere foo = ? and bar = ?\n", queryBuilder.toString());
 
         assertEquals(listOf("x", "y"), queryBuilder.getParameters());
+
+        assertThrows(NoSuchElementException.class, () -> queryBuilder.joinOnPrimaryKey(A.class));
     }
 
     @Test
