@@ -975,7 +975,7 @@ var queryBuilder = QueryBuilder.select(Pet.class);
 queryBuilder.appendLine(" where owner = :owner");
 ```
 
-The following annotations can be used with additional `QueryBuilder` methods to filter or sort the returned rows:
+The following annotations can be used in in conjunction with additional `QueryBuilder` methods to filter or sort the returned rows:
 
 * `PrimaryKey`
 * `ForeignKey`
