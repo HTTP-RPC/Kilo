@@ -1192,13 +1192,13 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        var resultSet = new ResultSetAdapter(statement.executeQuery());
+        var resultSetAdapter = new ResultSetAdapter(statement.executeQuery());
 
         for (var entry : transforms.entrySet()) {
-            resultSet.map(entry.getKey(), entry.getValue());
+            resultSetAdapter.map(entry.getKey(), entry.getValue());
         }
 
-        return resultSet;
+        return resultSetAdapter;
     }
 
     /**
