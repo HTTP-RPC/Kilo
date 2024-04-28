@@ -672,10 +672,6 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        if (!types.contains(type)) {
-            throw new UnsupportedOperationException("Table has not been joined.");
-        }
-
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" ");
         sqlBuilder.append(getTableName(type));
@@ -718,10 +714,6 @@ public class QueryBuilder {
     public QueryBuilder filterByForeignKeyIsNull(Class<?> type, Class<?> parentType) {
         if (type == null || parentType == null) {
             throw new IllegalArgumentException();
-        }
-
-        if (!types.contains(type)) {
-            throw new UnsupportedOperationException("Table has not been joined.");
         }
 
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
