@@ -358,7 +358,7 @@ public class Collections {
                 } else if (root instanceof Map<?, ?> map) {
                     value = map.get(component);
                 } else {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Unsupported type.");
                 }
 
                 return valueAt(value, path.subList(1, path.size()));

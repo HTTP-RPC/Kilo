@@ -115,7 +115,7 @@ public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
         queue = new LinkedBlockingQueue<>(capacity);
 
         if (timeout < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid timeout.");
         }
 
         this.timeout = timeout;

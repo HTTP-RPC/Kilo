@@ -183,6 +183,32 @@ public class QueryBuilder {
     }
 
     /**
+     * Creates a "select" query.
+     *
+     * @param type
+     * The type representing the table to select from.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder selectAll(Class<?> type) {
+        if (type == null) {
+            throw new UnsupportedOperationException();
+        }
+
+        var sqlBuilder = new StringBuilder("select ");
+
+        var tableName = getTableName(type);
+
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(".* from ");
+        sqlBuilder.append(tableName);
+        sqlBuilder.append("\n");
+
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
+    }
+
+    /**
      * Creates a "select distinct" query.
      *
      * @param type
@@ -865,6 +891,50 @@ public class QueryBuilder {
 
         return this;
 
+    }
+
+    /**
+     * Appends an "exists" filter.
+     *
+     * @param queryBuilder
+     * A "select" query.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByExists(QueryBuilder queryBuilder) {
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" exists (\n");
+        sqlBuilder.append(queryBuilder);
+        sqlBuilder.append(")\n");
+
+        filterCount++;
+
+        parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
+     * Appends a "not exists" filter.
+     *
+     * @param queryBuilder
+     * A "select" query.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByNotExists(QueryBuilder queryBuilder) {
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" not exists (\n");
+        sqlBuilder.append(queryBuilder);
+        sqlBuilder.append(")\n");
+
+        filterCount++;
+
+        parameters.addAll(queryBuilder.parameters);
+
+        return this;
     }
 
     /**

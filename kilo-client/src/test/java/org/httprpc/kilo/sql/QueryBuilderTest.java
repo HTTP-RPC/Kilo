@@ -218,9 +218,9 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectC() {
-        var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a").forUpdate();
+        var queryBuilder = QueryBuilder.selectAll(C.class).filterByForeignKey(A.class, "a").forUpdate();
 
-        assertEquals("select C.a, C.b, C.c from C\nwhere C.a = ?\nfor update\n", queryBuilder.toString());
+        assertEquals("select C.* from C\nwhere C.a = ?\nfor update\n", queryBuilder.toString());
         assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
@@ -402,6 +402,26 @@ public class QueryBuilderTest {
 
         assertEquals("select I.h, I.i, I.t, I.u from I\nwhere I.t like ?\n", queryBuilder.toString());
         assertEquals(listOf("t"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testExists() {
+        var queryBuilder = QueryBuilder.select(A.class)
+            .filterByExists(QueryBuilder.selectAll(C.class)
+                .filterByForeignKey(A.class, "a"));
+
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere exists (\nselect C.* from C\nwhere C.a = ?\n)\n", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
+    }
+
+    @Test
+    public void testNotExists() {
+        var queryBuilder = QueryBuilder.select(A.class)
+            .filterByNotExists(QueryBuilder.selectAll(C.class)
+                .filterByForeignKey(A.class, "a"));
+
+        assertEquals("select A.a, A.b, A.c, A.d as x from A\nwhere not exists (\nselect C.* from C\nwhere C.a = ?\n)\n", queryBuilder.toString());
+        assertEquals(listOf("a"), queryBuilder.getParameters());
     }
 
     @Test
