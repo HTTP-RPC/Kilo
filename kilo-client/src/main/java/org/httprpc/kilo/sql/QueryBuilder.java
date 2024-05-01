@@ -17,7 +17,6 @@ package org.httprpc.kilo.sql;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
-import org.httprpc.kilo.util.Optionals;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -26,6 +25,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -1306,17 +1308,30 @@ public class QueryBuilder {
         var i = 1;
 
         for (var parameter : parameters) {
-            var value = arguments.get(parameter);
+            var argument = arguments.get(parameter);
 
-            if (value instanceof Enum<?>) {
-                statement.setObject(i, value.toString());
-            } else if (value instanceof Date date) {
-                statement.setObject(i, date.getTime());
+            Object value;
+            if (argument instanceof Enum<?>) {
+                value = argument.toString();
+            } else if (argument instanceof Date date) {
+                value = date.getTime();
+            } else if (argument instanceof LocalDate localDate) {
+                value = java.sql.Date.valueOf(localDate);
+            } else if (argument instanceof LocalTime localTime) {
+                value = java.sql.Time.valueOf(localTime);
+            } else if (argument instanceof Instant instant) {
+                value = java.sql.Timestamp.from(instant);
             } else {
-                statement.setObject(i, Optionals.map(value, Optionals.coalesce(transforms.get(parameter), Function.identity())));
+                var transform = transforms.get(parameter);
+
+                if (transform == null) {
+                    value = argument;
+                } else {
+                    value = transform.apply(argument);
+                }
             }
 
-            i++;
+            statement.setObject(i++, value);
         }
     }
 

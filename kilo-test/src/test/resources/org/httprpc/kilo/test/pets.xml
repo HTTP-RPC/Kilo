@@ -2,15 +2,15 @@
 
 <pets>
     <!--  -->
-    <pet species="cat" sex="m">
-        <name>Claws</name>
-        <birth>1994-03-17</birth>
-        <death></death>
-    </pet>
-    <!--  -->
     <pet species="bird" sex="f">
         <name>Chirpy</name>
         <birth>1998-09-11</birth>
+        <death></death>
+    </pet>
+    <!--  -->
+    <pet species="cat" sex="m">
+        <name>Claws</name>
+        <birth>1994-03-17</birth>
         <death></death>
     </pet>
     <!--  -->

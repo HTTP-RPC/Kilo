@@ -12,9 +12,28 @@
  * limitations under the License.
  */
 
-apply from: rootProject.file('publish.gradle')
+package org.httprpc.kilo.sql;
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
+import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+@Table("temporal_accessor_test")
+public interface TemporalAccessors {
+    @Name("id")
+    @Column("id")
+    @PrimaryKey
+    Integer getID();
+    @Column("local_date")
+    @Required
+    LocalDate getDate();
+    @Column("local_time")
+    @Required
+    LocalTime getTime();
+    @Column("instant")
+    @Required
+    Instant getInstant();
 }

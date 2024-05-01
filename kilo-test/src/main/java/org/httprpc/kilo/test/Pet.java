@@ -15,22 +15,28 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.ForeignKey;
+import org.httprpc.kilo.sql.Index;
+import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Table("pet")
 public interface Pet {
     @Column("name")
+    @PrimaryKey
+    @Index
     String getName();
     @Column("owner")
+    @ForeignKey(Owner.class)
     String getOwner();
     @Column("species")
     String getSpecies();
     @Column("sex")
     String getSex();
     @Column("birth")
-    Date getBirth();
+    LocalDate getBirth();
     @Column("death")
-    Date getDeath();
+    LocalDate getDeath();
 }

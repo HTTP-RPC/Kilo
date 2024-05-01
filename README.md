@@ -902,7 +902,14 @@ rather than this:
 ```
 
 ## QueryBuilder and ResultSetAdapter
-The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following table from the MySQL sample database:
+The `QueryBuilder` class provides support for programmatically constructing and executing SQL queries. For example, given the following tables (adapted from the MySQL tutorial):
+
+```sql
+create table owner (
+    name varchar(20),
+    primary key (name)
+);
+```
 
 ```sql
 create table pet (
@@ -911,7 +918,9 @@ create table pet (
     species varchar(20),
     sex char(1),
     birth date,
-    death date
+    death date,
+    primary key (name),
+    foreign key (owner) references owner(name)
 );
 ```
 
@@ -920,7 +929,7 @@ this code could be used to create a query that returns all rows associated with 
 ```java
 var queryBuilder = new QueryBuilder();
 
-queryBuilder.appendLine("select * from pet where owner = :owner");
+queryBuilder.appendLine("select * from pet where owner = :owner order by name");
 ```
 
 The colon character identifies "owner" as a parameter, or variable. Parameter values, or arguments, can be passed to `QueryBuilder`'s `executeQuery()` method as shown below:
@@ -947,40 +956,44 @@ templateEncoder.write(results, response.getOutputStream());
 ```
 
 ### Schema Annotations
-`QueryBuilder` also offers a simplified approach to query construction using "schema annotations". For example, given this type definition:
+`QueryBuilder` also offers a simplified approach to query construction using "schema annotations". For example, given these type definitions:
 
 ```java
-@Table("pets")
+@Table("owner")
+public interface Owner {
+    @Column("name")
+    @PrimaryKey
+    @Index
+    String getName();
+}
+```
+
+```java
+@Table("pet")
 public interface Pet {
     @Column("name")
+    @PrimaryKey
+    @Index
     String getName();
     @Column("owner")
+    @ForeignKey(Owner.class)
     String getOwner();
     @Column("species")
     String getSpecies();
     @Column("sex")
     String getSex();
     @Column("birth")
-    Date getBirth();
+    LocalDate getBirth();
     @Column("death")
-    Date getDeath();
+    LocalDate getDeath();
 }
 ```
 
 the preceding query could be written as follows:
 
 ```java
-var queryBuilder = QueryBuilder.select(Pet.class);
-
-queryBuilder.appendLine(" where owner = :owner");
+var queryBuilder = QueryBuilder.select(Pet.class).filterByForeignKey(Owner.class, "owner").ordered(true);
 ```
-
-The following annotations can be used in in conjunction with additional `QueryBuilder` methods to filter or sort the returned rows:
-
-* `PrimaryKey`
-* `ForeignKey`
-* `Identifier`
-* `Index`
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 

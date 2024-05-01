@@ -27,7 +27,6 @@ import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -41,7 +40,7 @@ public class PetService extends AbstractDatabaseService {
     public List<Pet> getPets(@Required String owner) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.appendLine("select * from pet where owner = :owner");
+        queryBuilder.appendLine("select * from pet where owner = :owner order by name");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
@@ -62,9 +61,7 @@ public class PetService extends AbstractDatabaseService {
             throw new UnsupportedOperationException();
         }
 
-        var queryBuilder = QueryBuilder.select(Pet.class);
-
-        queryBuilder.appendLine(" where owner = :owner");
+        var queryBuilder = QueryBuilder.select(Pet.class).filterByForeignKey(Owner.class, "owner").ordered(true);
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
@@ -84,10 +81,6 @@ public class PetService extends AbstractDatabaseService {
                 var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
 
                 csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
-
-                csvEncoder.setFormats(mapOf(
-                    entry("birth", DateFormat.getDateInstance(DateFormat.LONG))
-                ));
 
                 csvEncoder.write(results, response.getOutputStream());
             } else if (accept.equalsIgnoreCase(TEXT_HTML)) {

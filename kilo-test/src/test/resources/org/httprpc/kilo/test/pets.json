@@ -1,26 +1,26 @@
 [
   {
-    "name": "Claws",
-    "owner": "Gwen",
-    "species": "cat",
-    "sex": "m",
-    "birth": 763880400000,
-    "death": null
-  },
-  {
+    "birth": "1998-09-11",
+    "death": null,
     "name": "Chirpy",
     "owner": "Gwen",
-    "species": "bird",
     "sex": "f",
-    "birth": 905486400000,
-    "death": null
+    "species": "bird"
   },
   {
+    "birth": "1994-03-17",
+    "death": null,
+    "name": "Claws",
+    "owner": "Gwen",
+    "sex": "m",
+    "species": "cat"
+  },
+  {
+    "birth": "1997-12-09",
+    "death": null,
     "name": "Whistler",
     "owner": "Gwen",
-    "species": "bird",
     "sex": null,
-    "birth": 881643600000,
-    "death": null
+    "species": "bird"
   }
 ]

@@ -14,8 +14,6 @@
 
 package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.util.Optionals;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -67,7 +65,23 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
                 for (int i = 1, n = resultSetMetaData.getColumnCount(); i <= n; i++) {
                     var key = resultSetMetaData.getColumnLabel(i);
 
-                    row.put(key, Optionals.map(resultSet.getObject(i), Optionals.coalesce(transforms.get(key), Function.identity())));
+                    var value = resultSet.getObject(i);
+
+                    if (value instanceof java.sql.Date date) {
+                        value = date.toLocalDate();
+                    } else if (value instanceof java.sql.Time time) {
+                        value = time.toLocalTime();
+                    } else if (value instanceof java.sql.Timestamp timestamp) {
+                        value = timestamp.toInstant();
+                    } else {
+                        var transform = transforms.get(key);
+
+                        if (transform != null) {
+                            value = transform.apply(value);
+                        }
+                    }
+
+                    row.put(key, value);
                 }
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);

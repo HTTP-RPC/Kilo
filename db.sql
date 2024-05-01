@@ -4,13 +4,25 @@ create schema demo;
 
 use demo;
 
+create table owner (
+    name varchar(20),
+    primary key (name)
+);
+
+insert into owner (name) values ('Harold');
+insert into owner (name) values ('Gwen');
+insert into owner (name) values ('Benny');
+insert into owner (name) values ('Diane');
+
 create table pet (
     name varchar(20),
     owner varchar(20),
     species varchar(20),
     sex char(1),
     birth date,
-    death date
+    death date,
+    primary key (name),
+    foreign key (owner) references owner(name)
 );
 
 insert into pet (name, owner, species, sex, birth, death) values ('Fluffy', 'Harold', 'cat', 'f', '1993-02-04', null);
@@ -46,6 +58,14 @@ create table bulk_upload_test (
 create table json_test (
     id int not null auto_increment,
     json varchar(4096) not null,
+    primary key (id)
+);
+
+create table temporal_accessor_test (
+    id int not null auto_increment,
+    local_date date not null,
+    local_time time not null,
+    instant timestamp(6) not null,
     primary key (id)
 );
 

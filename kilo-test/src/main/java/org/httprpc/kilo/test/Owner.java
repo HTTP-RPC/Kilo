@@ -12,9 +12,17 @@
  * limitations under the License.
  */
 
-apply from: rootProject.file('publish.gradle')
+package org.httprpc.kilo.test;
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
+import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Index;
+import org.httprpc.kilo.sql.PrimaryKey;
+import org.httprpc.kilo.sql.Table;
+
+@Table("owner")
+public interface Owner {
+    @Column("name")
+    @PrimaryKey
+    @Index
+    String getName();
 }
