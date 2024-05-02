@@ -45,11 +45,9 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class WebServiceProxyTest extends AbstractTest {
     public static class CustomException extends IOException {
@@ -477,13 +475,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(405, exception.getStatusCode());
-        }
+        assertEquals(405, exception.getStatusCode());
     }
 
     @Test
@@ -494,13 +488,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -523,13 +513,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -732,14 +718,10 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertNotNull(exception.getMessage());
-            assertEquals(500, exception.getStatusCode());
-        }
+        assertNotNull(exception.getMessage());
+        assertEquals(500, exception.getStatusCode());
     }
 
     @Test
@@ -753,13 +735,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -773,13 +751,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -793,13 +767,9 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -812,14 +782,10 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertNotNull(exception.getMessage());
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertNotNull(exception.getMessage());
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -851,14 +817,10 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-            fail();
-        } catch (WebServiceException exception) {
-            assertNotNull(exception.getMessage());
-            assertEquals(403, exception.getStatusCode());
-        }
+        assertNotNull(exception.getMessage());
+        assertEquals(403, exception.getStatusCode());
     }
 
     @Test
@@ -875,13 +837,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
         webServiceProxy.setMonitorStream(System.out);
 
-        try {
-            webServiceProxy.invoke();
-
-            fail();
-        } catch (IOException exception) {
-            assertInstanceOf(SocketTimeoutException.class, exception);
-        }
+        assertThrows(SocketTimeoutException.class, webServiceProxy::invoke);
     }
 
     @Test

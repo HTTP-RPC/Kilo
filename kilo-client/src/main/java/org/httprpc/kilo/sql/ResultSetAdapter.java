@@ -27,9 +27,17 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Provides access to the contents of a JDBC result set via the
+ * <p>Provides access to the contents of a JDBC result set via the
  * {@link Iterable} interface. Individual rows are represented by mutable map
- * instances produced by the adapter's iterator.
+ * instances produced by the adapter's iterator.</p>
+ *
+ * <p>Temporal values are converted as follows:</p>
+ *
+ * <ul>
+ * <li>{@link java.sql.Date} - {@link java.time.LocalDate}</li>
+ * <li>{@link java.sql.Time} - {@link java.time.LocalTime}</li>
+ * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
+ * </ul>
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
@@ -76,7 +84,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
                     } else {
                         var transform = transforms.get(key);
 
-                        if (transform != null) {
+                        if (transform != null && value != null) {
                             value = transform.apply(value);
                         }
                     }

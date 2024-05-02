@@ -702,8 +702,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * be a bean:</p>
      *
      * <ul>
-     * <li>If the type is an interface, the return value is an implementation
-     * of the interface that maps accessor and mutator methods to entries in
+     * <li>If the type is an interface, the return value is a proxy that maps
+     * accessor and mutator methods to entries in the map. The proxy implements
+     * {@link Object#equals(Object)} and delegates {@link Object#toString()} to
      * the map.</li>
      * <li>If the type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>

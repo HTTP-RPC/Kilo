@@ -29,8 +29,11 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ResultSetAdapterTest {
+    private static final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23000";
+
     @Test
     public void testTemporalAccessors() throws SQLException {
         var date = LocalDate.now();
@@ -44,7 +47,7 @@ public class ResultSetAdapterTest {
         assertEquals(id, temporalAccessorTest.getID());
         assertEquals(date, temporalAccessorTest.getDate());
         assertEquals(time.truncatedTo(ChronoUnit.SECONDS), temporalAccessorTest.getTime());
-        assertEquals(instant, temporalAccessorTest.getInstant());
+        assertEquals(instant.truncatedTo(ChronoUnit.MICROS), temporalAccessorTest.getInstant());
     }
 
     private int insertTemporalAccessorTest(LocalDate date, LocalTime time, Instant instant) throws SQLException {
@@ -98,6 +101,13 @@ public class ResultSetAdapterTest {
         var jsonTest = selectJSONTest(id);
 
         assertEquals(map, jsonTest.getValue());
+    }
+
+    @Test
+    public void testJSONNull() {
+        var exception = assertThrows(SQLException.class, () -> insertJSONTest(null));
+
+        assertEquals(INTEGRITY_CONSTRAINT_VIOLATION_CODE, exception.getSQLState());
     }
 
     private int insertJSONTest(Object value) throws SQLException {
