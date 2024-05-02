@@ -26,6 +26,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import static org.httprpc.kilo.util.Collections.entry;
+import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,17 +37,18 @@ public class ResultSetAdapterTest {
         var time = LocalTime.now();
         var instant = Instant.now();
 
-        var id = insertTemporalAccessors(date, time, instant);
+        var id = insertTemporalAccessorTest(date, time, instant);
 
-        var temporalAccessors = selectTemporalAccessors(id);
+        var temporalAccessorTest = selectTemporalAccessorTest(id);
 
-        assertEquals(date, temporalAccessors.getDate());
-        assertEquals(time.truncatedTo(ChronoUnit.SECONDS), temporalAccessors.getTime());
-        assertEquals(instant, temporalAccessors.getInstant());
+        assertEquals(id, temporalAccessorTest.getID());
+        assertEquals(date, temporalAccessorTest.getDate());
+        assertEquals(time.truncatedTo(ChronoUnit.SECONDS), temporalAccessorTest.getTime());
+        assertEquals(instant, temporalAccessorTest.getInstant());
     }
 
-    private int insertTemporalAccessors(LocalDate date, LocalTime time, Instant instant) throws SQLException {
-        var queryBuilder = QueryBuilder.insert(TemporalAccessors.class);
+    private int insertTemporalAccessorTest(LocalDate date, LocalTime time, Instant instant) throws SQLException {
+        var queryBuilder = QueryBuilder.insert(TemporalAccessorTest.class);
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection)) {
@@ -60,15 +62,64 @@ public class ResultSetAdapterTest {
         return queryBuilder.getGeneratedKey(0, Integer.class);
     }
 
-    private TemporalAccessors selectTemporalAccessors(int id) throws SQLException {
-        var queryBuilder = QueryBuilder.select(TemporalAccessors.class).filterByPrimaryKey("id");
+    private TemporalAccessorTest selectTemporalAccessorTest(int id) throws SQLException {
+        var queryBuilder = QueryBuilder.select(TemporalAccessorTest.class).filterByPrimaryKey("id");
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, TemporalAccessors.class)).orElseThrow();
+            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, TemporalAccessorTest.class)).orElseThrow();
+        }
+    }
+
+    @Test
+    public void testJSONArray() throws SQLException {
+        var list = listOf(1, 2, 3);
+
+        var id = insertJSONTest(list);
+
+        var jsonTest = selectJSONTest(id);
+
+        assertEquals(list, jsonTest.getValue());
+    }
+
+    @Test
+    public void testJSONObject() throws SQLException {
+        var map = mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        var id = insertJSONTest(map);
+
+        var jsonTest = selectJSONTest(id);
+
+        assertEquals(map, jsonTest.getValue());
+    }
+
+    private int insertJSONTest(Object value) throws SQLException {
+        var queryBuilder = QueryBuilder.insert(JSONTest.class);
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", value)
+            ));
+        }
+
+        return queryBuilder.getGeneratedKey(0, Integer.class);
+    }
+
+    private JSONTest selectJSONTest(int id) throws SQLException {
+        var queryBuilder = QueryBuilder.select(JSONTest.class).filterByPrimaryKey("id");
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("id", id)
+            ))) {
+            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class)).orElseThrow();
         }
     }
 

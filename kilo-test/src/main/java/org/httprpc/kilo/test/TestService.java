@@ -24,17 +24,11 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.JSON;
-import org.httprpc.kilo.sql.PrimaryKey;
-import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.kilo.sql.Table;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URL;
-import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -124,17 +118,6 @@ public class TestService extends AbstractDatabaseService {
     public interface AttachmentInfo {
         int getBytes();
         int getChecksum();
-    }
-
-    @Table("json_test")
-    public interface JSONTest {
-        @Name("id")
-        @Column("id")
-        @PrimaryKey
-        Integer getID();
-        @Column("json")
-        @JSON
-        Object getValue();
     }
 
     public interface Body {
@@ -358,38 +341,14 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("list")
-    public List<String> testPostList(List<String> list) throws SQLException {
-        return BeanAdapter.coerceList((List<?>)readJSON(writeJSON(list)), String.class);
+    public List<String> testPostList(List<String> list) {
+        return list;
     }
 
     @RequestMethod("POST")
     @ResourcePath("map")
-    @SuppressWarnings("unchecked")
-    public Map<String, Double> testPostMap(Map<String, Double> map) throws SQLException {
-        return BeanAdapter.coerceMap((Map<String, ?>)readJSON(writeJSON(map)), Double.class);
-    }
-
-    private int writeJSON(Object object) throws SQLException {
-        var queryBuilder = QueryBuilder.insert(JSONTest.class);
-
-        try (var statement = queryBuilder.prepare(getConnection())) {
-            queryBuilder.executeUpdate(statement, mapOf(
-                entry("value", object)
-            ));
-        }
-
-        return queryBuilder.getGeneratedKey(0, Integer.class);
-    }
-
-    private Object readJSON(int id) throws SQLException {
-        var queryBuilder = QueryBuilder.select(JSONTest.class).filterByPrimaryKey("id");
-
-        try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("id", id)
-            ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class).getValue()).orElseThrow();
-        }
+    public Map<String, Double> testPostMap(Map<String, Double> map) {
+        return map;
     }
 
     @RequestMethod("POST")

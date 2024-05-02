@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Table("temporal_accessor_test")
-public interface TemporalAccessors {
+public interface TemporalAccessorTest {
     @Name("id")
     @Column("id")
     @PrimaryKey
