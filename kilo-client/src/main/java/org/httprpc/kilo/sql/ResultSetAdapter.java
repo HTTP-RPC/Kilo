@@ -38,6 +38,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link java.sql.Time} - {@link java.time.LocalTime}</li>
  * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
  * </ul>
+ *
+ * <p>All other values are returned as is.</p>
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;

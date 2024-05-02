@@ -54,6 +54,8 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  * <li>{@link LocalTime} - {@link java.sql.Time}</li>
  * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
  * </ul>
+ *
+ * <p>All other arguments are applied as is.</p>
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
