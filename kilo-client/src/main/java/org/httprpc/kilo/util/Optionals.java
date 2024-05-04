@@ -85,7 +85,7 @@ public class Optionals {
      * The source value.
      *
      * @param transform
-     * The mapping function.
+     * The mapping function to apply.
      *
      * @param defaultValue
      * The value to return if the source value is {@code null}, or {@code null}

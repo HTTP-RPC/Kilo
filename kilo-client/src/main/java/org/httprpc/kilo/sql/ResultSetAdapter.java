@@ -17,6 +17,7 @@ package org.httprpc.kilo.sql;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,14 +39,14 @@ import java.util.stream.StreamSupport;
  * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
  * </ul>
  *
- * <p>All other values are either transformed as specified or returned as
- * is.</p>
+ * <p>All other values are transformed as specified by
+ * {@link #map(String, Function)} or returned as is.</p>
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
-    private Map<String, Function<Object, Object>> transforms;
-
     private ResultSetMetaData resultSetMetaData;
+
+    private Map<String, Function<Object, Object>> transforms = new HashMap<>();
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;
@@ -108,23 +109,36 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      *
      * @param resultSet
      * The source result set.
-     *
-     * @param transforms
-     * The mapping functions to apply.
      */
-    public ResultSetAdapter(ResultSet resultSet, Map<String, Function<Object, Object>> transforms) {
-        if (resultSet == null || transforms == null) {
+    public ResultSetAdapter(ResultSet resultSet) {
+        if (resultSet == null) {
             throw new IllegalArgumentException();
         }
 
         this.resultSet = resultSet;
-        this.transforms = transforms;
 
         try {
             resultSetMetaData = resultSet.getMetaData();
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    /**
+     * Associates a mapping function with a column.
+     *
+     * @param key
+     * The column key.
+     *
+     * @param transform
+     * The mapping function to apply.
+     */
+    public void map(String key, Function<Object, Object> transform) {
+        if (key == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        transforms.put(key, transform);
     }
 
     /**

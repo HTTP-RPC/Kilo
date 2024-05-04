@@ -43,19 +43,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 /**
  * <p>Provides support for programmatically constructing and executing SQL
  * queries.</p>
- *
- * <p>{@link Enum} arguments are converted to strings. Temporal values are
- * converted as follows:</p>
- *
- * <ul>
- * <li>{@link Date} - long value representing epoch time in milliseconds</li>
- * <li>{@link LocalDate} - {@link java.sql.Date}</li>
- * <li>{@link LocalTime} - {@link java.sql.Time}</li>
- * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
- * </ul>
- *
- * <p>All other arguments are either transformed as specified or applied as
- * is.</p>
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -1147,23 +1134,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Associates a mapping function with a parameter.
-     *
-     * @param parameter
-     * The parameter name.
-     *
-     * @param transform
-     * The mapping function.
-     */
-    public void map(String parameter, Function<Object, Object> transform) {
-        if (parameter == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        transforms.put(parameter, transform);
-    }
-
-    /**
      * Prepares a query for execution.
      *
      * @param connection
@@ -1221,7 +1191,13 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        return new ResultSetAdapter(statement.executeQuery(), transforms);
+        var results = new ResultSetAdapter(statement.executeQuery());
+
+        for (var entry : transforms.entrySet()) {
+            results.map(entry.getKey(), entry.getValue());
+        }
+
+        return results;
     }
 
     /**
