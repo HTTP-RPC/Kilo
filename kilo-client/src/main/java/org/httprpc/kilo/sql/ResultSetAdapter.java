@@ -17,7 +17,6 @@ package org.httprpc.kilo.sql;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,9 +43,9 @@ import java.util.stream.StreamSupport;
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
-    private ResultSetMetaData resultSetMetaData;
+    private Map<String, Function<Object, Object>> transforms;
 
-    private Map<String, Function<Object, Object>> transforms = new HashMap<>();
+    private ResultSetMetaData resultSetMetaData;
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;
@@ -109,36 +108,23 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      *
      * @param resultSet
      * The source result set.
+     *
+     * @param transforms
+     * The mapping functions to apply.
      */
-    public ResultSetAdapter(ResultSet resultSet) {
-        if (resultSet == null) {
+    public ResultSetAdapter(ResultSet resultSet, Map<String, Function<Object, Object>> transforms) {
+        if (resultSet == null || transforms == null) {
             throw new IllegalArgumentException();
         }
 
         this.resultSet = resultSet;
+        this.transforms = transforms;
 
         try {
             resultSetMetaData = resultSet.getMetaData();
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
-    }
-
-    /**
-     * Associates a mapping function with a column.
-     *
-     * @param key
-     * The column key.
-     *
-     * @param transform
-     * The mapping function.
-     */
-    public void map(String key, Function<Object, Object> transform) {
-        if (key == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        transforms.put(key, transform);
     }
 
     /**
