@@ -57,7 +57,8 @@ create table bulk_upload_test (
 
 create table json_test (
     id int not null auto_increment,
-    json varchar(4096) not null,
+    list varchar(1024) not null,
+    map varchar(1024) not null,
     primary key (id)
 );
 

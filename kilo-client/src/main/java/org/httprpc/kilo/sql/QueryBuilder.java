@@ -29,7 +29,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
@@ -181,7 +180,9 @@ public class QueryBuilder {
                     sqlBuilder.append(propertyName);
                 }
 
-                if (accessor.getAnnotation(JSON.class) != null) {
+                var propertyType = accessor.getReturnType();
+
+                if (propertyType == List.class || propertyType == Map.class) {
                     transforms.put(propertyName, fromJSON);
                 }
 
@@ -478,7 +479,9 @@ public class QueryBuilder {
 
             parameters.add(propertyName);
 
-            if (accessor.getAnnotation(JSON.class) != null) {
+            var propertyType = accessor.getReturnType();
+
+            if (propertyType == List.class || propertyType == Map.class) {
                 transforms.put(propertyName, toJSON);
             }
         }
@@ -568,7 +571,9 @@ public class QueryBuilder {
 
             parameters.add(propertyName);
 
-            if (accessor.getAnnotation(JSON.class) != null) {
+            var propertyType = accessor.getReturnType();
+
+            if (propertyType == List.class || propertyType == Map.class) {
                 transforms.put(propertyName, toJSON);
             }
 
@@ -1119,13 +1124,26 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the query builder's parameters.
+     * Returns the parameter count.
      *
      * @return
-     * The query builder's parameters.
+     * The parameter count.
      */
-    public List<String> getParameters() {
-        return Collections.unmodifiableList(parameters);
+    public int getParameterCount() {
+        return parameters.size();
+    }
+
+    /**
+     * Returns a parameter.
+     *
+     * @param index
+     * The parameter index.
+     *
+     * @return
+     * The parameter at the given index.
+     */
+    public String getParameter(int index) {
+        return parameters.get(index);
     }
 
     /**

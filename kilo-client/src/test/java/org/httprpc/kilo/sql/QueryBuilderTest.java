@@ -18,6 +18,8 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -207,7 +209,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where A.a = ?", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -215,7 +217,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a").limit(10);
 
         assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B where B.a = ? limit 10", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -223,7 +225,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(C.class).filterByForeignKey(A.class, "a").forUpdate();
 
         assertEquals("select C.a, C.b, C.c from C where C.a = ? for update", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -238,7 +240,7 @@ public class QueryBuilderTest {
             + "where A.a = ? "
             + "and E.d = ?", queryBuilder.toString());
 
-        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+        assertEquals(listOf("a", "d"), getParameters(queryBuilder));
     }
 
     @Test
@@ -253,7 +255,7 @@ public class QueryBuilderTest {
             + "where B.a = ? "
             + "and E.d = ?", queryBuilder.toString());
 
-        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+        assertEquals(listOf("a", "d"), getParameters(queryBuilder));
     }
 
     @Test
@@ -268,7 +270,7 @@ public class QueryBuilderTest {
             + "where C.a = ? "
             + "and E.d = ?", queryBuilder.toString());
 
-        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+        assertEquals(listOf("a", "d"), getParameters(queryBuilder));
     }
 
     @Test
@@ -283,7 +285,7 @@ public class QueryBuilderTest {
             + "where E.a = ? "
             + "and D.d = ?", queryBuilder.toString());
 
-        assertEquals(listOf("a", "d"), queryBuilder.getParameters());
+        assertEquals(listOf("a", "d"), getParameters(queryBuilder));
     }
 
     @Test
@@ -300,7 +302,7 @@ public class QueryBuilderTest {
             + "where G.f = ? "
             + "order by I.t asc, I.u asc", queryBuilder.toString());
 
-        assertEquals(listOf("f"), queryBuilder.getParameters());
+        assertEquals(listOf("f"), getParameters(queryBuilder));
     }
 
     @Test
@@ -317,7 +319,7 @@ public class QueryBuilderTest {
             + "where I.i = ? "
             + "order by I.t desc, I.u desc", queryBuilder.toString());
 
-        assertEquals(listOf("i"), queryBuilder.getParameters());
+        assertEquals(listOf("i"), getParameters(queryBuilder));
     }
 
     @Test
@@ -339,7 +341,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(M.class).filterByForeignKey(M.class, "m");
 
         assertEquals("select M.m, M.n, M.x, M.y from M where M.n = ?", queryBuilder.toString());
-        assertEquals(listOf("m"), queryBuilder.getParameters());
+        assertEquals(listOf("m"), getParameters(queryBuilder));
     }
 
     @Test
@@ -363,7 +365,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b");
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where A.b = ?", queryBuilder.toString());
-        assertEquals(listOf("b"), queryBuilder.getParameters());
+        assertEquals(listOf("b"), getParameters(queryBuilder));
     }
 
     @Test
@@ -371,7 +373,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThan("t");
 
         assertEquals("select I.h, I.i, I.t, I.u from I where I.t > ?", queryBuilder.toString());
-        assertEquals(listOf("t"), queryBuilder.getParameters());
+        assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
     @Test
@@ -379,7 +381,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThanOrEqualTo("t");
 
         assertEquals("select I.h, I.i, I.t, I.u from I where I.t >= ?", queryBuilder.toString());
-        assertEquals(listOf("t"), queryBuilder.getParameters());
+        assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
     @Test
@@ -387,7 +389,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThan("t");
 
         assertEquals("select I.h, I.i, I.t, I.u from I where I.t < ?", queryBuilder.toString());
-        assertEquals(listOf("t"), queryBuilder.getParameters());
+        assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
     @Test
@@ -395,7 +397,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThanOrEqualTo("t");
 
         assertEquals("select I.h, I.i, I.t, I.u from I where I.t <= ?", queryBuilder.toString());
-        assertEquals(listOf("t"), queryBuilder.getParameters());
+        assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
     @Test
@@ -403,7 +405,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t");
 
         assertEquals("select I.h, I.i, I.t, I.u from I where I.t like ?", queryBuilder.toString());
-        assertEquals(listOf("t"), queryBuilder.getParameters());
+        assertEquals(listOf("t"), getParameters(queryBuilder));
     }
 
     @Test
@@ -413,7 +415,7 @@ public class QueryBuilderTest {
                 .filterByForeignKey(A.class, "a"));
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where exists (select C.* from C where C.a = ?)", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -423,7 +425,7 @@ public class QueryBuilderTest {
                 .filterByForeignKey(A.class, "a"));
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where not exists (select C.* from C where C.a = ?)", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -431,7 +433,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.insert(A.class);
 
         assertEquals("insert into A (b, c, d) values (?, ?, ?)", queryBuilder.toString());
-        assertEquals(listOf("b", "c", "x"), queryBuilder.getParameters());
+        assertEquals(listOf("b", "c", "x"), getParameters(queryBuilder));
     }
 
     @Test
@@ -439,7 +441,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.update(A.class).filterByPrimaryKey("a");
 
         assertEquals("update A set b = ?, c = ? where A.a = ?", queryBuilder.toString());
-        assertEquals(listOf("b", "c", "a"), queryBuilder.getParameters());
+        assertEquals(listOf("b", "c", "a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -447,7 +449,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.updateParent(I.class, H.class, "h").filterByPrimaryKey("i");
 
         assertEquals("update I set h = ? where I.i = ?", queryBuilder.toString());
-        assertEquals(listOf("h", "i"), queryBuilder.getParameters());
+        assertEquals(listOf("h", "i"), getParameters(queryBuilder));
     }
 
     @Test
@@ -455,7 +457,7 @@ public class QueryBuilderTest {
         var queryBuilder = QueryBuilder.delete(A.class).filterByPrimaryKey("a");
 
         assertEquals("delete from A where A.a = ?", queryBuilder.toString());
-        assertEquals(listOf("a"), queryBuilder.getParameters());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
@@ -467,7 +469,7 @@ public class QueryBuilderTest {
 
         assertEquals("select a, 'b''c:d' as b from foo\nwhere foo = ? and bar = ?\n", queryBuilder.toString());
 
-        assertEquals(listOf("x", "y"), queryBuilder.getParameters());
+        assertEquals(listOf("x", "y"), getParameters(queryBuilder));
 
         assertThrows(NoSuchElementException.class, () -> queryBuilder.joinOnPrimaryKey(A.class));
     }
@@ -484,5 +486,17 @@ public class QueryBuilderTest {
         var queryBuilder = new QueryBuilder();
 
         assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select * from xyz where foo = :@ and bar is null"));
+    }
+
+    private static List<String> getParameters(QueryBuilder queryBuilder) {
+        var n = queryBuilder.getParameterCount();
+
+        var parameters = new ArrayList<String>(n);
+
+        for (var i = 0; i < n; i++) {
+            parameters.add(queryBuilder.getParameter(i));
+        }
+
+        return parameters;
     }
 }

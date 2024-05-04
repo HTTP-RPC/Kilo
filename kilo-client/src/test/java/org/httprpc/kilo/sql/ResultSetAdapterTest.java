@@ -24,16 +24,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ResultSetAdapterTest {
-    private static final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23000";
-
     @Test
     public void testTemporalAccessors() throws SQLException {
         var date = LocalDate.now();
@@ -78,44 +77,30 @@ public class ResultSetAdapterTest {
     }
 
     @Test
-    public void testJSONArray() throws SQLException {
+    public void testJSON() throws SQLException {
         var list = listOf(1, 2, 3);
 
-        var id = insertJSONTest(list);
-
-        var jsonTest = selectJSONTest(id);
-
-        assertEquals(list, jsonTest.getValue());
-    }
-
-    @Test
-    public void testJSONObject() throws SQLException {
         var map = mapOf(
             entry("a", 1),
             entry("b", 2),
             entry("c", 3)
         );
 
-        var id = insertJSONTest(map);
+        var id = insertJSONTest(list, map);
 
         var jsonTest = selectJSONTest(id);
 
-        assertEquals(map, jsonTest.getValue());
+        assertEquals(list, jsonTest.getList());
+        assertEquals(map, jsonTest.getMap());
     }
 
-    @Test
-    public void testJSONNull() {
-        var exception = assertThrows(SQLException.class, () -> insertJSONTest(null));
-
-        assertEquals(INTEGRITY_CONSTRAINT_VIOLATION_CODE, exception.getSQLState());
-    }
-
-    private int insertJSONTest(Object value) throws SQLException {
+    private int insertJSONTest(List<?> list, Map<String, ?> map) throws SQLException {
         var queryBuilder = QueryBuilder.insert(JSONTest.class);
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("value", value)
+                entry("list", list),
+                entry("map", map)
             ));
         }
 
