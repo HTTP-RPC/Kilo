@@ -125,7 +125,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                 heading = key;
             } else {
                 try {
-                    heading = resourceBundle.getString(key);
+                    heading = resourceBundle.getObject(key).toString();
                 } catch (MissingResourceException exception) {
                     heading = key;
                 }

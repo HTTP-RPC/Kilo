@@ -783,15 +783,15 @@ public class TemplateEncoder extends Encoder<Object> {
                             return;
                         }
                         case RESOURCE -> {
-                            if (resourceBundle == null) {
-                                throw new IllegalStateException("Missing resource bundle.");
-                            }
-
                             Object value;
-                            try {
-                                value = resourceBundle.getObject(marker);
-                            } catch (MissingResourceException exception) {
+                            if (resourceBundle == null) {
                                 value = marker;
+                            } else {
+                                try {
+                                    value = resourceBundle.getObject(marker);
+                                } catch (MissingResourceException exception) {
+                                    value = marker;
+                                }
                             }
 
                             if (contentType.modifier != null) {
