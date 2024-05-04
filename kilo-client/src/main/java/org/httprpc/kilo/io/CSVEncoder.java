@@ -18,10 +18,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.Format;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.httprpc.kilo.util.Collections.mapOf;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Encodes a sequence of map values to CSV.
@@ -30,8 +31,9 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;
     private char delimiter;
 
-    private Map<String, String> labels = mapOf();
-    private Map<String, Format> formats = mapOf();
+    private ResourceBundle resourceBundle = null;
+
+    private Map<String, Format> formats = new HashMap<>();
 
     /**
      * Constructs a new CSV encoder.
@@ -62,51 +64,37 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     }
 
     /**
-     * Returns the column labels.
+     * Returns the resource bundle.
      *
      * @return
-     * The column labels.
+     * The resource bundle, or {@code null} if a resource bundle has not been
+     * set.
      */
-    public Map<String, String> getLabels() {
-        return labels;
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 
     /**
-     * Sets the column labels.
+     * Sets the resource bundle.
      *
-     * @param labels
-     * The column labels.
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
      */
-    public void setLabels(Map<String, String> labels) {
-        if (labels == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.labels = labels;
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
     /**
-     * Returns the column formats.
+     * Associates a format with a column.
      *
-     * @return
-     * The column formats.
-     */
-    public Map<String, Format> getFormats() {
-        return formats;
-    }
-
-    /**
-     * Sets the column formats.
+     * @param key
+     * The column key.
      *
-     * @param formats
-     * The column formats.
+     * @param format
+     * The format to apply.
      */
-    public void setFormats(Map<String, Format> formats) {
-        if (formats == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.formats = formats;
+    public void format(String key, Format format) {
+        formats.put(key, format);
     }
 
     @Override
@@ -128,13 +116,18 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                 writer.write(delimiter);
             }
 
-            var label = labels.get(key);
-
-            if (label == null) {
-                label = key;
+            String heading;
+            if (resourceBundle == null) {
+                heading = key;
+            } else {
+                try {
+                    heading = resourceBundle.getString(key);
+                } catch (MissingResourceException exception) {
+                    heading = key;
+                }
             }
 
-            encode(label, writer);
+            encode(heading, writer);
 
             i++;
         }

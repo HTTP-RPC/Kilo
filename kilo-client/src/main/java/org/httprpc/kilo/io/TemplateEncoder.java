@@ -355,9 +355,10 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private URL url;
-    private ResourceBundle resourceBundle;
 
     private ContentType contentType = ContentType.MARKUP;
+
+    private ResourceBundle resourceBundle = null;
 
     private Map<String, Modifier> modifiers = mapOf(
         entry("format", new FormatModifier())
@@ -379,25 +380,11 @@ public class TemplateEncoder extends Encoder<Object> {
      * The URL of the template.
      */
     public TemplateEncoder(URL url) {
-        this(url, null);
-    }
-
-    /**
-     * Constructs a new template encoder.
-     *
-     * @param url
-     * The URL of the template.
-     *
-     * @param resourceBundle
-     * The resource bundle, or {@code null} for no resource bundle.
-     */
-    public TemplateEncoder(URL url, ResourceBundle resourceBundle) {
         if (url == null) {
             throw new IllegalArgumentException();
         }
 
         this.url = url;
-        this.resourceBundle = resourceBundle;
     }
 
     /**
@@ -422,6 +409,27 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         this.contentType = contentType;
+    }
+
+    /**
+     * Returns the resource bundle.
+     *
+     * @return
+     * The resource bundle, or {@code null} if a resource bundle has not been
+     * set.
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    /**
+     * Sets the resource bundle.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
     /**

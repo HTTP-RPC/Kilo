@@ -52,10 +52,9 @@ public class IndexServlet extends HttpServlet {
         } else {
             response.setContentType("text/html;charset=UTF-8");
 
-            var url = IndexServlet.class.getResource("index.html");
-            var resourceBundle = ResourceBundle.getBundle(IndexServlet.class.getName(), request.getLocale());
+            var templateEncoder = new TemplateEncoder(IndexServlet.class.getResource("index.html"));
 
-            var templateEncoder = new TemplateEncoder(url, resourceBundle);
+            templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), request.getLocale()));
 
             templateEncoder.write(mapOf(
                 entry("contextPath", request.getContextPath()),

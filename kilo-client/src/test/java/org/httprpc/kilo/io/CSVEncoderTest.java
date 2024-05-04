@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -52,13 +53,9 @@ public class CSVEncoderTest {
 
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f"));
 
-        csvEncoder.setLabels(mapOf(
-            entry("f", "F")
-        ));
+        csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
 
-        csvEncoder.setFormats(mapOf(
-            entry("f", NumberFormat.getPercentInstance())
-        ));
+        csvEncoder.format("f", NumberFormat.getPercentInstance());
 
         var writer = new StringWriter();
 

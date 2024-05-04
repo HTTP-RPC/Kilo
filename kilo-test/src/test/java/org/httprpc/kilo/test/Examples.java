@@ -23,7 +23,6 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
-import org.httprpc.kilo.util.ResourceBundleAdapter;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -41,7 +40,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
@@ -68,7 +66,6 @@ public class Examples {
         execute("Tree Node", Examples::treeNode);
         execute("Interface Proxy", Examples::interfaceProxy);
         execute("Element Adapter", Examples::elementAdapter);
-        execute("Resource Bundle Adapter", Examples::resourceBundleAdapter);
     }
 
     private static void execute(String label, Example example) {
@@ -353,31 +350,5 @@ public class Examples {
             System.out.println(credit.get("amount"));
             System.out.println(credit.get("date"));
         }
-    }
-
-    public static void resourceBundleAdapter() throws IOException {
-        var csvEncoder = new CSVEncoder(listOf("name", "description", "quantity"));
-
-        var resourceBundle = ResourceBundle.getBundle(Examples.class.getPackageName() + ".labels");
-
-        csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
-
-        csvEncoder.write(listOf(
-            mapOf(
-                entry("name", "Item 1"),
-                entry("description", "Item number 1"),
-                entry("quantity", 3)
-            ),
-            mapOf(
-                entry("name", "Item 2"),
-                entry("description", "Item number 2"),
-                entry("quantity", 5)
-            ),
-            mapOf(
-                entry("name", "Item 3"),
-                entry("description", "Item number 3"),
-                entry("quantity", 7)
-            )
-        ), System.out);
     }
 }

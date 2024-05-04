@@ -55,7 +55,8 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
  * </ul>
  *
- * <p>All other arguments are applied as is.</p>
+ * <p>All other arguments are either transformed as specified or applied as
+ * is.</p>
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -1128,24 +1129,20 @@ public class QueryBuilder {
     }
 
     /**
-     * Returns the transform map.
-     */
-    public Map<String, Function<Object, Object>> getTransforms() {
-        return transforms;
-    }
-
-    /**
-     * Sets the transform map.
+     * Associates a mapping function with a parameter.
      *
-     * @param transforms
-     * The mapping functions to apply.
+     * @param parameter
+     * The parameter name.
+     *
+     * @param transform
+     * The mapping function.
      */
-    public void setTransforms(Map<String, Function<Object, Object>> transforms) {
-        if (transforms == null) {
+    public void map(String parameter, Function<Object, Object> transform) {
+        if (parameter == null || transform == null) {
             throw new IllegalArgumentException();
         }
 
-        this.transforms = transforms;
+        transforms.put(parameter, transform);
     }
 
     /**

@@ -35,7 +35,6 @@ Classes provided by the Kilo framework include:
 * [BeanAdapter](#beanadapter)
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
 * [ElementAdapter](#elementadapter)
-* [ResourceBundleAdapter](#resourcebundleadapter)
 * [Pipe](#pipe)
 * [Collections and Optionals](#collections-and-optionals)
 
@@ -1079,50 +1078,6 @@ for (var credit : credits) {
 ```
 
 `ElementAdapter` also supports `put()` and `remove()` for modifying an element's contents.
-
-## ResourceBundleAdapter
-The `ResourceBundleAdapter` class provides access to the contents of a resource bundle via the `Map` interface. It can be used to localize the headings in a CSV document, for example:
-
-```
-name = Name
-description = Description
-quantity = Quantity
-```
-
-```java
-var csvEncoder = new CSVEncoder(listOf("name", "description", "quantity"));
-
-var resourceBundle = ResourceBundle.getBundle(getClass().getPackageName() + ".labels");
-
-csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
-
-csvEncoder.write(listOf(
-    mapOf(
-        entry("name", "Item 1"),
-        entry("description", "Item number 1"),
-        entry("quantity", 3)
-    ),
-    mapOf(
-        entry("name", "Item 2"),
-        entry("description", "Item number 2"),
-        entry("quantity", 5)
-    ),
-    mapOf(
-        entry("name", "Item 3"),
-        entry("description", "Item number 3"),
-        entry("quantity", 7)
-    )
-), System.out);
-```
-
-This code would produce the following output:
-
-```csv
-"Name","Description","Quantity"
-"Item 1","Item number 1",3
-"Item 2","Item number 2",5
-"Item 3","Item number 3",7
-```
 
 ## Pipe
 The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for retrieval by a consumer thread. It implements the `Iterable` interface and returns values as they become available, blocking if necessary.

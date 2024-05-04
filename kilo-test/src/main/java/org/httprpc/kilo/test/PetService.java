@@ -23,7 +23,6 @@ import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.kilo.util.ResourceBundleAdapter;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -78,17 +77,15 @@ public class PetService extends AbstractDatabaseService {
 
                 var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-                var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
-
-                csvEncoder.setLabels(new ResourceBundleAdapter(resourceBundle));
+                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
                 csvEncoder.write(results, response.getOutputStream());
             } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
                 response.setContentType(TEXT_HTML);
 
-                var resourceBundle = ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale());
+                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
 
-                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
+                templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
                 templateEncoder.write(results, response.getOutputStream());
             } else if (accept.equalsIgnoreCase(TEXT_XML)) {
