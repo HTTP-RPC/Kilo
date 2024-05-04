@@ -94,6 +94,10 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * The format to apply.
      */
     public void format(String key, Format format) {
+        if (key == null || format == null) {
+            throw new IllegalArgumentException();
+        }
+
         formats.put(key, format);
     }
 
