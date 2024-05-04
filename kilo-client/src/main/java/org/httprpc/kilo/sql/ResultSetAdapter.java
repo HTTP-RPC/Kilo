@@ -39,8 +39,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
  * </ul>
  *
- * <p>All other values are transformed as specified by
- * {@link #map(String, Function)} or returned as is.</p>
+ * <p>All other values are returned as is, or transformed as specified by
+ * {@link #map(String, Function)}.</p>
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
