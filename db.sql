@@ -55,18 +55,18 @@ create table bulk_upload_test (
     primary key (id)
 );
 
-create table json_test (
-    id int not null auto_increment,
-    list varchar(1024) not null,
-    map varchar(1024) not null,
-    primary key (id)
-);
-
 create table temporal_accessor_test (
     id int not null auto_increment,
     local_date date not null,
     local_time time not null,
     instant timestamp(6) not null,
+    primary key (id)
+);
+
+create table json_test (
+    id int not null auto_increment,
+    list varchar(1024) not null,
+    map varchar(1024) not null,
     primary key (id)
 );
 
