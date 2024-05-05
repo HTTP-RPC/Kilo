@@ -1209,7 +1209,7 @@ public abstract class WebService extends HttpServlet {
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, UTF_8));
 
-        var jsonEncoder = new JSONEncoder(isCompact());
+        var jsonEncoder = new JSONEncoder();
 
         jsonEncoder.write(BeanAdapter.adapt(result), response.getOutputStream());
     }
@@ -1233,17 +1233,6 @@ public abstract class WebService extends HttpServlet {
                 response.getWriter().append(message);
             }
         }
-    }
-
-    /**
-     * Enables or disables compact output.
-     *
-     * @return
-     * {@code true} if the encoded output should be compact; {@code false},
-     * otherwise.
-     */
-    protected boolean isCompact() {
-        return false;
     }
 
     /**

@@ -14,21 +14,15 @@
 
 package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.Name;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.List;
-import java.util.Map;
-
-@Table("json_test")
-public interface JSONTest {
-    @Name("id")
-    @Column("id")
-    @PrimaryKey
-    Integer getID();
-    @Column("list")
-    @JSON
-    List<Object> getList();
-    @Column("map")
-    @JSON
-    Map<String, Object> getMap();
+/**
+ * Indicates that a property is encoded as JSON.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface JSON {
 }

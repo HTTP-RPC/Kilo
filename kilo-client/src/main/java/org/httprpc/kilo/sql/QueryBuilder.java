@@ -54,7 +54,8 @@ import static org.httprpc.kilo.util.Collections.mapOf;
  * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
  * </ul>
  *
- * <p>All other arguments are applied as is.</p>
+ * <p>All other arguments are applied as is, or transformed as specified by
+ * {@link #map(String, Function)}.</p>
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -179,9 +180,7 @@ public class QueryBuilder {
                     sqlBuilder.append(propertyName);
                 }
 
-                var propertyType = accessor.getReturnType();
-
-                if (propertyType == List.class || propertyType == Map.class) {
+                if (accessor.getAnnotation(JSON.class) != null) {
                     transforms.put(propertyName, fromJSON);
                 }
 
@@ -478,9 +477,7 @@ public class QueryBuilder {
 
             parameters.add(propertyName);
 
-            var propertyType = accessor.getReturnType();
-
-            if (propertyType == List.class || propertyType == Map.class) {
+            if (accessor.getAnnotation(JSON.class) != null) {
                 transforms.put(propertyName, toJSON);
             }
         }
@@ -570,9 +567,7 @@ public class QueryBuilder {
 
             parameters.add(propertyName);
 
-            var propertyType = accessor.getReturnType();
-
-            if (propertyType == List.class || propertyType == Map.class) {
+            if (accessor.getAnnotation(JSON.class) != null) {
                 transforms.put(propertyName, toJSON);
             }
 
@@ -1143,6 +1138,23 @@ public class QueryBuilder {
      */
     public String getParameter(int index) {
         return parameters.get(index);
+    }
+
+    /**
+     * Associates a mapping function with a column.
+     *
+     * @param key
+     * The column key.
+     *
+     * @param transform
+     * The mapping function to apply.
+     */
+    public void map(String key, Function<Object, Object> transform) {
+        if (key == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        transforms.put(key, transform);
     }
 
     /**
