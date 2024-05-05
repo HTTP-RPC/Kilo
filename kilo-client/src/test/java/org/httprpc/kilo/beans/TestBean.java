@@ -74,8 +74,6 @@ public class TestBean implements TestInterface {
     private UUID uuid = null;
     private URL url = null;
 
-    private int value = 0;
-
     private NestedInterface nestedBean = null;
 
     private List<Integer> integerList = null;

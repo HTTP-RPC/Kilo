@@ -70,32 +70,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * Success status values.
-     */
-    public enum Status {
-        /**
-         * Indicates that the request was successful.
-         */
-        OK(200),
-
-        /**
-         * Indicates that the request resulted in the creation of a new resource.
-         */
-        CREATED(201),
-
-        /**
-         * Indicates that the request returned no content.
-         */
-        NO_CONTENT(204);
-
-        private final int code;
-
-        Status(int code) {
-            this.code = code;
-        }
-    }
-
-    /**
      * Represents a request handler.
      */
     public interface RequestHandler {
@@ -356,11 +330,11 @@ public class WebServiceProxy {
     private int readTimeout = 60000;
     private int chunkSize = 4096;
 
-    private Status expectedStatus = null;
-
     private PrintStream monitorStream = null;
 
     private String multipartBoundary = UUID.randomUUID().toString();
+
+    private int statusCode = -1;
 
     private static final int EOF = -1;
 
@@ -627,26 +601,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the expected status.
-     *
-     * @return
-     * The expected status.
-     */
-    public Status getExpectedStatus() {
-        return expectedStatus;
-    }
-
-    /**
-     * Sets the expected status.
-     *
-     * @param expectedStatus
-     * The expected status.
-     */
-    public void setExpectedStatus(Status expectedStatus) {
-        this.expectedStatus = expectedStatus;
-    }
-
-    /**
      * Returns the monitor stream.
      *
      * @return
@@ -844,7 +798,7 @@ public class WebServiceProxy {
         }
 
         // Read response
-        var statusCode = connection.getResponseCode();
+        statusCode = connection.getResponseCode();
 
         if (monitorStream != null) {
             monitorStream.println(String.format("HTTP %d", statusCode));
@@ -864,10 +818,6 @@ public class WebServiceProxy {
 
         T result;
         if (statusCode / 100 == 2) {
-            if (expectedStatus != null && expectedStatus.code != statusCode) {
-                throw new WebServiceException("Unexpected status.", statusCode);
-            }
-
             if (statusCode % 100 < 4) {
                 try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
                     result = responseHandler.decodeResponse(inputStream, contentType);
@@ -1013,6 +963,13 @@ public class WebServiceProxy {
         } else {
             return argument;
         }
+    }
+
+    /**
+     * Returns the status code associated with the most recent invocation.
+     */
+    public int getStatusCode() {
+        return statusCode;
     }
 
     /**

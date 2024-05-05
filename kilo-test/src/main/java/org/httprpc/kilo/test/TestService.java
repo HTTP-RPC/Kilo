@@ -17,6 +17,7 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.Name;
@@ -289,6 +290,7 @@ public class TestService extends AbstractDatabaseService {
     }
 
     @RequestMethod("POST")
+    @Creates
     @Empty
     public Response testPost(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,

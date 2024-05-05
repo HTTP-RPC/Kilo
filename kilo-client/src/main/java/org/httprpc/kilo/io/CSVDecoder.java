@@ -71,7 +71,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
                         throw new NoSuchElementException();
                     }
 
-                    Map<String, String> row = new LinkedHashMap<>();
+                    var record = new LinkedHashMap<String, String>();
 
                     for (int i = 0, n = Math.min(keys.size(), values.size()); i < n; i++) {
                         var key = keys.get(i);
@@ -86,12 +86,12 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
                             continue;
                         }
 
-                        row.put(key, value);
+                        record.put(key, value);
                     }
 
                     hasNext = null;
 
-                    return row;
+                    return record;
                 }
             };
         }
@@ -163,7 +163,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
         var keys = readValues(reader, delimiter);
 
         if (keys.isEmpty()) {
-            throw new IOException("Missing header row.");
+            throw new IOException("Missing header record.");
         }
 
         return new Cursor(keys, delimiter, reader);

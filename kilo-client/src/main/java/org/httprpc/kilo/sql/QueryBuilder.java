@@ -209,7 +209,7 @@ public class QueryBuilder {
      */
     public static QueryBuilder selectAll(Class<?> type) {
         if (type == null) {
-            throw new UnsupportedOperationException();
+            throw new IllegalArgumentException();
         }
 
         var sqlBuilder = new StringBuilder("select ");

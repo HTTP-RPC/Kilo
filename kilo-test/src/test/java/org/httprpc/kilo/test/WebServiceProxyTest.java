@@ -95,6 +95,8 @@ public class WebServiceProxyTest extends AbstractTest {
 
         var result = webServiceProxy.invoke();
 
+        assertEquals(200, webServiceProxy.getStatusCode());
+
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
@@ -275,6 +277,8 @@ public class WebServiceProxyTest extends AbstractTest {
         webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
+
+        assertEquals(201, webServiceProxy.getStatusCode());
 
         assertEquals(mapOf(
             entry("string", "héllo&gøod+bye?"),

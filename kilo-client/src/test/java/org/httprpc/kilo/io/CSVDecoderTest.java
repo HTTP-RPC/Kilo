@@ -25,6 +25,7 @@ import static org.httprpc.kilo.util.Collections.entry;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CSVDecoderTest {
     @Test
@@ -91,5 +92,14 @@ public class CSVDecoderTest {
         }
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testMissingHeader() {
+        var csvDecoder = new CSVDecoder();
+
+        assertThrows(IOException.class, () -> csvDecoder.read(new StringReader("")));
+        assertThrows(IOException.class, () -> csvDecoder.read(new StringReader("\n")));
+        assertThrows(IOException.class, () -> csvDecoder.read(new StringReader("\n\n")));
     }
 }
