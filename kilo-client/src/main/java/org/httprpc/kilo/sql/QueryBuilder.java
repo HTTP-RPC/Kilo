@@ -115,7 +115,8 @@ public class QueryBuilder {
      * Creates a "select" query.
      *
      * @param types
-     * The types representing the tables to select from.
+     * The types representing the tables to select from. Properties annotated
+     * with {@link JSON} will be automatically deserialized from a JSON string.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -421,7 +422,8 @@ public class QueryBuilder {
      * Creates an "insert" query.
      *
      * @param type
-     * The type representing the table to insert into.
+     * The type representing the table to insert into. Properties annotated
+     * with {@link JSON} will be automatically serialized to a JSON string.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -506,7 +508,8 @@ public class QueryBuilder {
      * Creates an "update" query.
      *
      * @param type
-     * The type representing the table to update.
+     * The type representing the table to update. Properties annotated with
+     * {@link JSON} will be automatically serialized to a JSON string.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -1164,7 +1167,19 @@ public class QueryBuilder {
     }
 
     /**
-     * Executes a query.
+     * <p>Executes a query.</p>
+     *
+     * <p>{@link Enum} arguments are converted to strings. Temporal values are
+     * converted as follows:</p>
+     *
+     * <ul>
+     * <li>{@link Date} - long value representing epoch time in milliseconds</li>
+     * <li>{@link LocalDate} - {@link java.sql.Date}</li>
+     * <li>{@link LocalTime} - {@link java.sql.Time}</li>
+     * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
+     * </ul>
+     *
+     * <p>All other arguments are applied as is.</p>
      *
      * @param statement
      * The statement that will be used to execute the query.
@@ -1195,7 +1210,11 @@ public class QueryBuilder {
     }
 
     /**
-     * Executes a query.
+     * <p>Executes a query.</p>
+     *
+     * <p>Arguments are handled as described for
+     * {@link #executeQuery(PreparedStatement, Map)}, or transformed as
+     * specified by {@link #insert(Class)} and {@link #update(Class)}.</p>
      *
      * @param statement
      * The statement that will be used to execute the query.
