@@ -967,6 +967,9 @@ public class WebServiceProxy {
 
     /**
      * Returns the status code associated with the most recent invocation.
+     *
+     * @return
+     * The status code associated with the most recent invocation.
      */
     public int getStatusCode() {
         return statusCode;

@@ -1212,7 +1212,7 @@ public class QueryBuilder {
     /**
      * <p>Executes a query.</p>
      *
-     * <p>Arguments are handled as described for
+     * <p>Arguments are applied as described for
      * {@link #executeQuery(PreparedStatement, Map)}, or transformed as
      * specified by {@link #insert(Class)} and {@link #update(Class)}.</p>
      *
