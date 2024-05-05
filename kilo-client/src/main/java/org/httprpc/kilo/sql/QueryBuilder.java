@@ -43,19 +43,6 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 /**
  * <p>Provides support for programmatically constructing and executing SQL
  * queries.</p>
- *
- * <p>{@link Enum} arguments are converted to strings. Temporal values are
- * converted as follows:</p>
- *
- * <ul>
- * <li>{@link Date} - long value representing epoch time in milliseconds</li>
- * <li>{@link LocalDate} - {@link java.sql.Date}</li>
- * <li>{@link LocalTime} - {@link java.sql.Time}</li>
- * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
- * </ul>
- *
- * <p>All other arguments are applied as is, or transformed as specified by
- * {@link #map(String, Function)}.</p>
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -1138,23 +1125,6 @@ public class QueryBuilder {
      */
     public String getParameter(int index) {
         return parameters.get(index);
-    }
-
-    /**
-     * Associates a mapping function with a column.
-     *
-     * @param key
-     * The column key.
-     *
-     * @param transform
-     * The mapping function to apply.
-     */
-    public void map(String key, Function<Object, Object> transform) {
-        if (key == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        transforms.put(key, transform);
     }
 
     /**
