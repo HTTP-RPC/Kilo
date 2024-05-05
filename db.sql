@@ -65,8 +65,7 @@ create table temporal_accessor_test (
 
 create table json_test (
     id int not null auto_increment,
-    list varchar(1024) not null,
-    map varchar(1024) not null,
+    json varchar(1024) not null,
     primary key (id)
 );
 

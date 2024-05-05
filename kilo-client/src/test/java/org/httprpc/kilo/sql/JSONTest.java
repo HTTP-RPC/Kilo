@@ -16,19 +16,13 @@ package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.Name;
 
-import java.util.List;
-import java.util.Map;
-
 @Table("json_test")
 public interface JSONTest {
     @Name("id")
     @Column("id")
     @PrimaryKey
     Integer getID();
-    @Column("list")
+    @Column("json")
     @JSON
-    List<Object> getList();
-    @Column("map")
-    @JSON
-    Map<String, Object> getMap();
+    Object getValue();
 }
