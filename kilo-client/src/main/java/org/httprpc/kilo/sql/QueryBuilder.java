@@ -41,8 +41,8 @@ import java.util.function.Function;
 import static org.httprpc.kilo.util.Collections.mapOf;
 
 /**
- * <p>Provides support for programmatically constructing and executing SQL
- * queries.</p>
+ * Provides support for programmatically constructing and executing SQL
+ * queries.
  */
 public class QueryBuilder {
     private StringBuilder sqlBuilder;
@@ -1192,22 +1192,6 @@ public class QueryBuilder {
         }
 
         return results;
-    }
-
-    /**
-     * Executes a query.
-     *
-     * @param statement
-     * The statement that will be used to execute the query.
-     *
-     * @return
-     * The number of rows that were affected by the query.
-     *
-     * @throws SQLException
-     * If an error occurs while executing the query.
-     */
-    public int executeUpdate(PreparedStatement statement) throws SQLException {
-        return executeUpdate(statement, mapOf());
     }
 
     /**
