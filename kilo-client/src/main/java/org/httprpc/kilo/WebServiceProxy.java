@@ -212,7 +212,7 @@ public class WebServiceProxy {
                 throw new UnsupportedOperationException("Missing or invalid exception declaration.");
             }
 
-            var argumentList = Optionals.map(arguments, Arrays::asList, listOf());
+            var argumentList = Optionals.coalesce(Optionals.map(arguments, Arrays::asList), listOf());
 
             var pathBuilder = new StringBuilder();
             var keyCount = 0;
@@ -294,7 +294,7 @@ public class WebServiceProxy {
                     throw new IllegalArgumentException("Required argument is not defined.");
                 }
 
-                var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+                var name = Optionals.coalesce(Optionals.map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
                 argumentMap.put(name, value);
             }

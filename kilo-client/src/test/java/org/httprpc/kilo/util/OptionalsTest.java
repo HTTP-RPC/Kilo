@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class OptionalsTest {
@@ -47,16 +46,6 @@ public class OptionalsTest {
     }
 
     @Test
-    public void testMapWithDefaultValue() {
-        var a = Optional.ofNullable((String)null).map(String::isEmpty).orElse(true); // true
-        var b = Optionals.map(null, String::isEmpty, true); // true
-
-        assertEquals(a, b);
-
-        assertFalse(Optionals.map("xyz", value -> false, true));
-    }
-
-    @Test
     public void testPerform() {
         var value = new AtomicInteger(0);
 
@@ -66,17 +55,5 @@ public class OptionalsTest {
         Optionals.perform(null, AtomicInteger::incrementAndGet);
 
         assertEquals(2, value.get());
-    }
-
-    @Test
-    public void testPerformWithDefaultAction() {
-        var value = new AtomicInteger(0);
-
-        Optional.ofNullable((AtomicInteger)null).ifPresentOrElse(AtomicInteger::incrementAndGet, value::decrementAndGet);
-        Optionals.perform(null, AtomicInteger::incrementAndGet, value::decrementAndGet);
-
-        Optionals.perform(value, AtomicInteger::incrementAndGet, value::decrementAndGet);
-
-        assertEquals(-1, value.get());
     }
 }

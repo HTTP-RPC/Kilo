@@ -276,7 +276,7 @@ public abstract class WebService extends HttpServlet {
         private TypeDescriptor type = null;
 
         private VariableDescriptor(Parameter parameter) {
-            name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+            name = Optionals.coalesce(Optionals.map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
             description = Optionals.map(parameter.getAnnotation(Description.class), Description::value);
 
@@ -738,7 +738,7 @@ public abstract class WebService extends HttpServlet {
     public void init() throws ServletException {
         var type = getClass();
 
-        var urlPatterns = Optionals.map(type.getAnnotation(WebServlet.class), WebServlet::urlPatterns, new String[0]);
+        var urlPatterns = Optionals.coalesce(Optionals.map(type.getAnnotation(WebServlet.class), WebServlet::urlPatterns), new String[0]);
 
         if (urlPatterns.length == 0) {
             throw new ServletException("At least one URL pattern is required.");
@@ -1044,7 +1044,7 @@ public abstract class WebService extends HttpServlet {
             for (var i = keyCount; i < n; i++) {
                 var parameter = parameters[i];
 
-                var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+                var name = Optionals.coalesce(Optionals.map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
                 if (argumentNames.contains(name) && ++c == argumentCount) {
                     return handler;
@@ -1072,7 +1072,7 @@ public abstract class WebService extends HttpServlet {
             if (i < keyCount) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
-                var name = Optionals.map(parameter.getAnnotation(Name.class), Name::value, parameter.getName());
+                var name = Optionals.coalesce(Optionals.map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
                 var type = parameter.getType();
 
                 var values = argumentMap.get(name);
