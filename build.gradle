@@ -14,7 +14,7 @@
 
 subprojects {
     group = 'org.httprpc'
-    version = '3.10'
+    version = '3.11'
 
     apply plugin: 'java-library'
 

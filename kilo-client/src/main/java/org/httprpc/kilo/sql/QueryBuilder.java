@@ -1200,13 +1200,7 @@ public class QueryBuilder {
 
         apply(statement, arguments);
 
-        var results = new ResultSetAdapter(statement.executeQuery());
-
-        for (var entry : transforms.entrySet()) {
-            results.map(entry.getKey(), entry.getValue());
-        }
-
-        return results;
+        return new ResultSetAdapter(statement.executeQuery(), transforms);
     }
 
     /**

@@ -17,7 +17,6 @@ package org.httprpc.kilo.sql;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,26 +26,15 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * <p>Provides access to the contents of a JDBC result set via the
+ * Provides access to the contents of a JDBC result set via the
  * {@link Iterable} interface. Individual rows are represented by mutable map
- * instances produced by the adapter's iterator.</p>
- *
- * <p>Temporal values are converted as follows:</p>
- *
- * <ul>
- * <li>{@link java.sql.Date} - {@link java.time.LocalDate}</li>
- * <li>{@link java.sql.Time} - {@link java.time.LocalTime}</li>
- * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
- * </ul>
- *
- * <p>All other values are returned as is, or transformed as specified by
- * {@link #map(String, Function)}.</p>
+ * instances produced by the adapter's iterator.
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
-    private ResultSetMetaData resultSetMetaData;
+    private Map<String, Function<Object, Object>> transforms;
 
-    private Map<String, Function<Object, Object>> transforms = new HashMap<>();
+    private ResultSetMetaData resultSetMetaData;
 
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;
@@ -104,18 +92,9 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         }
     };
 
-    /**
-     * Constructs a new result set adapter.
-     *
-     * @param resultSet
-     * The source result set.
-     */
-    public ResultSetAdapter(ResultSet resultSet) {
-        if (resultSet == null) {
-            throw new IllegalArgumentException();
-        }
-
+    ResultSetAdapter(ResultSet resultSet, Map<String, Function<Object, Object>> transforms) {
         this.resultSet = resultSet;
+        this.transforms = transforms;
 
         try {
             resultSetMetaData = resultSet.getMetaData();
@@ -125,24 +104,19 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Associates a mapping function with a column.
+     * <p>Returns an iterator over the results.</p>
      *
-     * @param key
-     * The column key.
+     * <p>Temporal values are converted as follows:</p>
      *
-     * @param transform
-     * The mapping function to apply.
-     */
-    public void map(String key, Function<Object, Object> transform) {
-        if (key == null || transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        transforms.put(key, transform);
-    }
-
-    /**
-     * Returns an iterator over the results.
+     * <ul>
+     * <li>{@link java.sql.Date} - {@link java.time.LocalDate}</li>
+     * <li>{@link java.sql.Time} - {@link java.time.LocalTime}</li>
+     * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
+     * </ul>
+     *
+     * <p>All other values are returned as is, or transformed as specified by
+     * {@link QueryBuilder#select(Class[])}.</p>
+     *
      * {@inheritDoc}
      */
     @Override
