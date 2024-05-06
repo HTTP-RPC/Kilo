@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.io;
 
-import org.httprpc.kilo.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -51,22 +50,21 @@ public class TemplateEncoderTest {
     public void testMap() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
 
+        var a = "abc";
+        var b = 123;
+        var c = false;
+
         var dictionary = mapOf(
-            entry("a", "hello"),
-            entry("b", 42),
-            entry("c", mapOf(
-                entry("d", false)
-            ))
+            entry("a", a),
+            entry("b", b),
+            entry("c", c)
         );
 
         var writer = new StringWriter();
 
         templateEncoder.write(dictionary, writer);
 
-        assertEquals(String.format("{a=%s,b=%s,c/d=%s,e=,f/g=}",
-            dictionary.get("a"),
-            dictionary.get("b"),
-            Collections.valueAt(dictionary, "c", "d")), writer.toString());
+        assertEquals(String.format("{a=%s,b=%s,c=%s,d=}", a, b, c), writer.toString());
     }
 
     @Test
@@ -192,46 +190,49 @@ public class TemplateEncoderTest {
     public void testSingleElementRepeatingSection() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
+        var a = "hello";
+        var b = 1L;
+        var c = 2.0;
+
         var dictionary = mapOf(
-            entry("a", "hello"),
-            entry("b", 1L),
-            entry("c", 2.0));
+            entry("a", a),
+            entry("b", b),
+            entry("c", c));
 
         var writer = new StringWriter();
 
         templateEncoder.write(mapOf(entry("list", listOf(dictionary))), writer);
 
-        assertEquals(String.format("[{a=%s,b=%s,c=%s}]",
-            dictionary.get("a"),
-            dictionary.get("b"),
-            dictionary.get("c")), writer.toString());
+        assertEquals(String.format("[{a=%s,b=%s,c=%s}]", a, b, c), writer.toString());
     }
 
     @Test
     public void testMultiElementRepeatingSection() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
 
+        var a1 = "hello";
+        var b1 = 1L;
+        var c1 = 2.0;
+
         var dictionary1 = mapOf(
-            entry("a", "hello"),
-            entry("b", 1L),
-            entry("c", 2.0));
+            entry("a", a1),
+            entry("b", b1),
+            entry("c", c1));
+
+        var a2 = "goodbye";
+        var b2 = 2L;
+        var c2 = 4.0;
 
         var dictionary2 = mapOf(
-            entry("a", "goodbye"),
-            entry("b", 2L),
-            entry("c", 4.0));
+            entry("a", a2),
+            entry("b", b2),
+            entry("c", c2));
 
         var writer = new StringWriter();
 
         templateEncoder.write(mapOf(entry("list", listOf(dictionary1, dictionary2))), writer);
 
-        assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]",
-            dictionary1.get("a"),
-            dictionary1.get("b"),
-            dictionary1.get("c"),
-            dictionary2.get("a"),
-            dictionary2.get( "b"),
-            dictionary2.get("c")), writer.toString());
+        assertEquals(String.format("[{a=%s,b=%s,c=%s}{a=%s,b=%s,c=%s}]", a1, b1, c1, a2, b2, c2), writer.toString());
     }
 
     @Test

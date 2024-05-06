@@ -31,7 +31,6 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -167,35 +166,5 @@ public class CollectionsTest {
         var j = Collections.lastIndexWhere(list, element -> element.equals("e"));
 
         assertEquals(-1, j);
-    }
-
-    @Test
-    public void testValueAt() {
-        var map = mapOf(
-            entry("a", mapOf(
-                entry("b", mapOf(
-                    entry("c", listOf(1, 2, 3))
-                ))
-            )),
-            entry(4, "abc"),
-            entry(true, "def")
-        );
-
-        assertEquals(map, Collections.valueAt(map));
-
-        assertEquals(2, Collections.valueAt(map, "a", "b", "c", 1));
-
-        assertEquals("abc", Collections.valueAt(map, 4));
-        assertEquals("def", Collections.valueAt(map, true));
-
-        assertNull(Collections.valueAt(map, "a", "b", "d", 1));
-        assertNull(Collections.valueAt(map, "e"));
-        assertNull(Collections.valueAt(null));
-
-        var path = listOf("a", "b", "c", 4);
-
-        assertThrows(IndexOutOfBoundsException.class, () -> Collections.valueAt(map, "a", "b", "c", 4));
-
-        assertEquals(4, path.size());
     }
 }

@@ -39,7 +39,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -850,10 +849,10 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private Object getMarkerValue(String name) {
-        List<String> path = new LinkedList<>(Arrays.asList(name.split("/")));
+        var path = new LinkedList<>(Arrays.asList(name.split("/")));
 
         for (var dictionary : dictionaries) {
-            if (!dictionary.containsKey(path.get(0))) {
+            if (!dictionary.containsKey(path.peek())) {
                 continue;
             }
 
@@ -863,8 +862,8 @@ public class TemplateEncoder extends Encoder<Object> {
         return null;
     }
 
-    private static Object valueAt(Map<?, ?> root, List<?> path) {
-        var value = root.get(path.remove(0));
+    private static Object valueAt(Map<?, ?> root, Deque<?> path) {
+        var value = root.get(path.pop());
 
         if (path.isEmpty()) {
             return value;

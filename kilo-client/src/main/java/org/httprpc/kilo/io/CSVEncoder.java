@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  * Encodes a sequence of map values to CSV.
  */
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
-    private List<String> keys;
+    private Iterable<String> keys;
     private char delimiter;
 
     private ResourceBundle resourceBundle = null;
@@ -54,7 +54,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * @param delimiter
      * The character to use as a field delimiter.
      */
-    public CSVEncoder(List<String> keys, char delimiter) {
+    public CSVEncoder(Iterable<String> keys, char delimiter) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }

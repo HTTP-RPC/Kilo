@@ -1191,20 +1191,6 @@ var i = Collections.firstIndexWhere(list, element -> element.equals("b")); // 1
 var j = Collections.lastIndexWhere(list, element -> element.equals("e")); // -1
 ```
 
-Finally, the `valueAt()` method can be used to access nested values in an object hierarchy. For example:
-
-```java
-var map = mapOf(
-    entry("a", mapOf(
-        entry("b", mapOf(
-            entry("c", listOf(1, 2, 3))
-        ))
-    ))
-);
-
-var value = Collections.valueAt(map, "a", "b", "c", 1); // 2
-```
-
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 
 ```java

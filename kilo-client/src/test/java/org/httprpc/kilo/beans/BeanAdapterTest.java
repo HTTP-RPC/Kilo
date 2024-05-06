@@ -15,7 +15,6 @@
 package org.httprpc.kilo.beans;
 
 import org.httprpc.kilo.Name;
-import org.httprpc.kilo.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
@@ -45,9 +44,11 @@ import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Collections.setOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BeanAdapterTest {
     public static class ReadOnly {
@@ -447,16 +448,17 @@ public class BeanAdapterTest {
 
         testInterface.getNestedBean().setFlag(true);
 
-        assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
+        assertTrue(testInterface.getNestedBean().getFlag());
 
         var nestedBean = new TestBean.NestedBean();
 
-        nestedBean.setFlag(true);
+        nestedBean.setFlag(false);
 
         testInterface.setNestedBean(nestedBean);
 
         assertInstanceOf(Map.class, map.get("nestedBean"));
-        assertEquals(true, Collections.valueAt(map, "nestedBean", "flag"));
+
+        assertFalse(testInterface.getNestedBean().getFlag());
     }
 
     @Test
@@ -490,6 +492,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testRequired() {
         var testBean = new TestBean();
 
@@ -498,8 +501,11 @@ public class BeanAdapterTest {
         var beanAdapter = new BeanAdapter(testBean);
 
         assertEquals(0L, beanAdapter.get("long"));
-        assertEquals(false, Collections.valueAt(beanAdapter, "nestedBean", "flag"));
-        assertEquals('x', Collections.valueAt(beanAdapter, "nestedBean", "character"));
+
+        var nestedBeanAdapter = (Map<String, ?>)beanAdapter.get("nestedBean");
+
+        assertEquals(false, nestedBeanAdapter.get("flag"));
+        assertEquals('x', nestedBeanAdapter.get("character"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.get("string"));
         assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("string", null));

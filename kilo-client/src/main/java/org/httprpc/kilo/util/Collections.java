@@ -16,7 +16,6 @@ package org.httprpc.kilo.util;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -307,62 +306,5 @@ public class Collections {
         }
 
         return -1;
-    }
-
-    /**
-     * Returns the value at a given path.
-     *
-     * @param root
-     * The root object.
-     *
-     * @param path
-     * The path to the value.
-     *
-     * @return
-     * The value at the given path, or {@code null} if the value does not
-     * exist.
-     */
-    public static Object valueAt(Object root, Object... path) {
-        return valueAt(root, Arrays.asList(path));
-    }
-
-    /**
-     * Returns the value at a given path.
-     *
-     * @param root
-     * The root object.
-     *
-     * @param path
-     * The path to the value.
-     *
-     * @return
-     * The value at the given path, or {@code null} if the value does not
-     * exist.
-     */
-    public static Object valueAt(Object root, List<?> path) {
-        if (root == null) {
-            return null;
-        } else {
-            if (path == null) {
-                throw new IllegalArgumentException();
-            }
-
-            if (path.isEmpty()) {
-                return root;
-            } else {
-                var component = path.get(0);
-
-                Object value;
-                if (root instanceof List<?> list && component instanceof Number number) {
-                    value = list.get(number.intValue());
-                } else if (root instanceof Map<?, ?> map) {
-                    value = map.get(component);
-                } else {
-                    throw new IllegalArgumentException("Unsupported type.");
-                }
-
-                return valueAt(value, path.subList(1, path.size()));
-            }
-        }
     }
 }
