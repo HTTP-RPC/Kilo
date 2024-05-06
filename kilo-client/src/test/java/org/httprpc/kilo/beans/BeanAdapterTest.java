@@ -450,11 +450,7 @@ public class BeanAdapterTest {
 
         assertTrue(testInterface.getNestedBean().getFlag());
 
-        var nestedBean = new TestBean.NestedBean();
-
-        nestedBean.setFlag(false);
-
-        testInterface.setNestedBean(nestedBean);
+        testInterface.setNestedBean(new TestBean.NestedBean());
 
         assertInstanceOf(Map.class, map.get("nestedBean"));
 
