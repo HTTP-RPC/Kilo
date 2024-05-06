@@ -19,7 +19,6 @@ import java.io.Writer;
 import java.text.Format;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -41,7 +40,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * @param keys
      * The column keys.
      */
-    public CSVEncoder(List<String> keys) {
+    public CSVEncoder(Iterable<String> keys) {
         this(keys, ',');
     }
 
