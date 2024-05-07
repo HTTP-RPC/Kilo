@@ -19,6 +19,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.httprpc.kilo.util.Optionals.coalesce;
+import static org.httprpc.kilo.util.Optionals.map;
+import static org.httprpc.kilo.util.Optionals.perform;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -28,7 +31,7 @@ public class OptionalsTest {
         var value = "xyz";
 
         var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // xyz
-        var b = Optionals.coalesce(null, null, value); // xyz
+        var b = coalesce(null, null, value); // xyz
 
         assertEquals(a, b);
     }
@@ -38,11 +41,11 @@ public class OptionalsTest {
         var value = "hello";
 
         var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
-        var b = Optionals.map(value, String::length); // 5
+        var b = map(value, String::length); // 5
 
         assertEquals(a, b);
 
-        assertNull(Optionals.map(null, String::length));
+        assertNull(map(null, String::length));
     }
 
     @Test
@@ -50,9 +53,9 @@ public class OptionalsTest {
         var value = new AtomicInteger(0);
 
         Optional.ofNullable(value).ifPresent(AtomicInteger::incrementAndGet);
-        Optionals.perform(value, AtomicInteger::incrementAndGet);
+        perform(value, AtomicInteger::incrementAndGet);
 
-        Optionals.perform(null, AtomicInteger::incrementAndGet);
+        perform(null, AtomicInteger::incrementAndGet);
 
         assertEquals(2, value.get());
     }

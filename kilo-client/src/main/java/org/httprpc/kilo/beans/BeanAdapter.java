@@ -54,6 +54,9 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.httprpc.kilo.util.Optionals.coalesce;
+import static org.httprpc.kilo.util.Optionals.map;
+
 /**
  * Provides access to Java bean properties via the {@link Map} interface.
  */
@@ -415,7 +418,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         static String getKey(Method accessor, String propertyName) {
-            return Optionals.coalesce(Optionals.map(accessor.getAnnotation(Name.class), Name::value), propertyName);
+            return coalesce(map(accessor.getAnnotation(Name.class), Name::value), propertyName);
         }
     }
 
@@ -1056,7 +1059,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             var genericType = recordComponent.getGenericType();
 
-            var value = map.get(Optionals.coalesce(Optionals.map(accessor.getAnnotation(Name.class), Name::value), name));
+            var value = map.get(coalesce(map(accessor.getAnnotation(Name.class), Name::value), name));
 
             if (accessor.getAnnotation(Required.class) != null && value == null) {
                 throw new IllegalArgumentException("Required value is not defined.");
@@ -1200,7 +1203,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }).collect(Collectors.toMap(entry -> {
                 var accessor = entry.getValue().getAccessor();
 
-                return Optionals.coalesce(Optionals.map(accessor.getAnnotation(Name.class), Name::value), entry.getKey());
+                return coalesce(map(accessor.getAnnotation(Name.class), Name::value), entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate name.");
             }, TreeMap::new));
