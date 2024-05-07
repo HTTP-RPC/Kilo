@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Provides static utility methods for working with collections.
@@ -240,71 +239,5 @@ public class Collections {
         }
 
         return setOf();
-    }
-
-    /**
-     * Returns the index of the first element in a list that matches the given
-     * predicate.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @param list
-     * The list of elements.
-     *
-     * @param predicate
-     * The predicate.
-     *
-     * @return
-     * The index of the first matching element, or {@code -1} if no match was
-     * found.
-     */
-    public static <E> int firstIndexWhere(List<E> list, Predicate<E> predicate) {
-        var iterator = list.iterator();
-
-        var i = 0;
-
-        while (iterator.hasNext()) {
-            if (predicate.test(iterator.next())) {
-                return i;
-            }
-
-            i++;
-        }
-
-        return -1;
-    }
-
-    /**
-     * Returns the index of the last element in a list that matches the given
-     * predicate.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @param list
-     * The list of elements.
-     *
-     * @param predicate
-     * The predicate.
-     *
-     * @return
-     * The index of the last matching element, or {@code -1} if no match was
-     * found.
-     */
-    public static <E> int lastIndexWhere(List<E> list, Predicate<E> predicate) {
-        var i = list.size();
-
-        var iterator = list.listIterator(i);
-
-        while (iterator.hasPrevious()) {
-            i--;
-
-            if (predicate.test(iterator.previous())) {
-                return i;
-            }
-        }
-
-        return -1;
     }
 }

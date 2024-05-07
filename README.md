@@ -1154,7 +1154,7 @@ public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... 
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
 ```
 
-Additionally, `Collections` includes the following methods for creating empty lists and maps:
+`Collections` also provides methods for declaring empty lists, maps, and sets:
 
 ```java
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
@@ -1162,7 +1162,7 @@ public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) 
 public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
 ```
 
-These provide a slightly more readable alternative to `java.util.Collections#emptyList()` and `java.util.Collections#emptyMap()`, respectively:
+These provide a slightly more readable alternative to `java.util.Collections#emptyList()`, `java.util.Collections#emptyMap()`, and `java.util.Collections#emptySet()`, respectively:
 
 ```java
 var list1 = java.util.Collections.<Integer>emptyList();
@@ -1175,51 +1175,34 @@ var set1 = java.util.Collections.<Integer>emptySet();
 var set2 = emptySetOf(Integer.class);
 ```
 
-The following methods can be used to identify the index of the first or last element in a list that matches a given predicate:
-
-```java
-public static <E> int firstIndexWhere(List<E> list, Predicate<E> predicate) { ... }
-public static <E> int lastIndexWhere(List<E> list, Predicate<E> predicate) { ... }
-```
-
-For example:
-
-```java
-var list = listOf("a", "b", "c", "b", "d");
-
-var i = Collections.firstIndexWhere(list, element -> element.equals("b")); // 1
-var j = Collections.lastIndexWhere(list, element -> element.equals("e")); // -1
-```
-
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 
 ```java
 public static <T> T coalesce(T... values) { ... }
-public static <T, U> U map(T value, Function<? super T, ? extends U> transform) { ... }
-public static <T> void perform(T value, Consumer<? super T> action) { ... }
+public static <T, U> U perform(T value, Function<? super T, ? extends U> action) { ... }
 ```
 
-These methods are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class. For example:
+These are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class. For example:
 
 ```java
-var value = "xyz";
+var value = 123;
 
-var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // xyz
-var b = Optionals.coalesce(null, null, value); // xyz
+var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // 123
+var b = coalesce(null, null, value); // 123
+```
+
+```java
+var stringBuilder = new StringBuilder();
+
+Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
+perform("def", stringBuilder::append); // abcdef
 ```
 
 ```java
 var value = "hello";
 
 var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
-var b = Optionals.map(value, String::length); // 5
-```
-
-```java
-var value = new AtomicInteger(0);
-
-Optional.ofNullable(value).ifPresent(AtomicInteger::incrementAndGet);
-Optionals.perform(value, AtomicInteger::incrementAndGet);
+var b = perform(value, String::length); // 5
 ```
 
 # Kotlin Support

@@ -141,30 +141,4 @@ public class CollectionsTest {
         assertTrue(set2.isEmpty());
         assertEquals(set1, set2);
     }
-
-    @Test
-    public void testFirstIndexWhere() {
-        var list = listOf("a", "b", "c", "b", "d");
-
-        var i = Collections.firstIndexWhere(list, element -> element.equals("b"));
-
-        assertEquals(1, i);
-
-        var j = Collections.firstIndexWhere(list, element -> element.equals("e"));
-
-        assertEquals(-1, j);
-    }
-
-    @Test
-    public void testLastIndexWhere() {
-        var list = listOf("a", "b", "c", "b", "d");
-
-        var i = Collections.lastIndexWhere(list, element -> element.equals("b"));
-
-        assertEquals(3, i);
-
-        var j = Collections.lastIndexWhere(list, element -> element.equals("e"));
-
-        assertEquals(-1, j);
-    }
 }

@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.util;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -25,16 +24,17 @@ public class Optionals {
     }
 
     /**
-     * Returns the first non-{@code null} value in a sequence of values.
+     * Returns the first non-{@code null} argument value.
      *
      * @param <T>
-     * The type of the values in the sequence.
+     * The argument type.
      *
      * @param values
-     * The sequence of values.
+     * The argument values.
      *
      * @return
-     * The first non-{@code null} value in the sequence.
+     * The first non-{@code null} argument value, or {@code null} if only
+     * {@code null} values were provided.
      */
     @SafeVarargs
     public static <T> T coalesce(T... values) {
@@ -50,51 +50,29 @@ public class Optionals {
     }
 
     /**
-     * Applies a mapping function to an optional value.
-     *
-     * @param <T>
-     * The source type.
-     *
-     * @param <U>
-     * The target type.
-     *
-     * @param value
-     * The source value.
-     *
-     * @param transform
-     * The mapping function to apply.
-     *
-     * @return
-     * The result of applying the mapping function to the source value, or
-     * {@code null} if the source value was {@code null}.
-     */
-    public static <T, U> U map(T value, Function<? super T, ? extends U> transform) {
-        if (transform == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return (value == null) ? null : transform.apply(value);
-    }
-
-    /**
      * Performs an action on an optional value.
      *
      * @param <T>
-     * The source type.
+     * The value type.
+     *
+     * @param <U>
+     * The type produced by the action, which may be {@link Void}.
      *
      * @param value
-     * The source value.
+     * The optional value.
      *
      * @param action
-     * The action to perform if the source value is not {@code null}.
+     * The action to perform.
+     *
+     * @return
+     * The result of performing the action on the provided value, or
+     * {@code null} if the value was {@code null}.
      */
-    public static <T> void perform(T value, Consumer<? super T> action) {
+    public static <T, U> U perform(T value, Function<? super T, ? extends U> action) {
         if (action == null) {
             throw new IllegalArgumentException();
         }
 
-        if (value != null) {
-            action.accept(value);
-        }
+        return (value == null) ? null : action.apply(value);
     }
 }

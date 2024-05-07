@@ -225,7 +225,7 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     private void remove(String key) {
         if (key.equals(SELF_REFERENCE) || isList(key)) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Cannot delete self or list reference.");
         }
 
         if (isAttribute(key)) {

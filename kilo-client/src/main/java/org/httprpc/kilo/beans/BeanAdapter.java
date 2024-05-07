@@ -16,7 +16,6 @@ package org.httprpc.kilo.beans;
 
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
-import org.httprpc.kilo.util.Optionals;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -55,7 +54,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Optionals.coalesce;
-import static org.httprpc.kilo.util.Optionals.map;
+import static org.httprpc.kilo.util.Optionals.perform;
 
 /**
  * Provides access to Java bean properties via the {@link Map} interface.
@@ -418,7 +417,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         static String getKey(Method accessor, String propertyName) {
-            return coalesce(map(accessor.getAnnotation(Name.class), Name::value), propertyName);
+            return coalesce(perform(accessor.getAnnotation(Name.class), Name::value), propertyName);
         }
     }
 
@@ -478,7 +477,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var interfaces = type.getInterfaces();
 
             if (interfaces.length == 0) {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Type does not implement any interfaces.");
             }
 
             type = interfaces[0];
@@ -529,8 +528,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null || property.mutator == null) {
-            throw new UnsupportedOperationException();
+        if (property == null) {
+            throw new UnsupportedOperationException("Invalid property.");
+        }
+
+        if (property.mutator == null) {
+            throw new UnsupportedOperationException("Property is not writable.");
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {
@@ -1059,7 +1062,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             var genericType = recordComponent.getGenericType();
 
-            var value = map.get(coalesce(map(accessor.getAnnotation(Name.class), Name::value), name));
+            var value = map.get(coalesce(perform(accessor.getAnnotation(Name.class), Name::value), name));
 
             if (accessor.getAnnotation(Required.class) != null && value == null) {
                 throw new IllegalArgumentException("Required value is not defined.");
@@ -1203,7 +1206,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }).collect(Collectors.toMap(entry -> {
                 var accessor = entry.getValue().getAccessor();
 
-                return coalesce(map(accessor.getAnnotation(Name.class), Name::value), entry.getKey());
+                return coalesce(perform(accessor.getAnnotation(Name.class), Name::value), entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate name.");
             }, TreeMap::new));
