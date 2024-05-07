@@ -33,7 +33,6 @@ import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
@@ -86,28 +85,22 @@ public class TemplateEncoder extends Encoder<Object> {
         /**
          * Markup content type.
          */
-        MARKUP(new MarkupModifier()),
+        MARKUP,
 
         /**
          * JSON content type.
          */
-        JSON(new JSONModifier()),
+        JSON,
 
         /**
          * CSV content type.
          */
-        CSV(new CSVModifier()),
+        CSV,
 
         /**
          * Unspecified content type.
          */
-        UNSPECIFIED(null);
-
-        private final Modifier modifier;
-
-        ContentType(Modifier modifier) {
-            this.modifier = modifier;
-        }
+        UNSPECIFIED;
     }
 
     // Markup modifier
@@ -354,8 +347,7 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private URL url;
-
-    private ContentType contentType = ContentType.MARKUP;
+    private Modifier contentTypeModifier;
 
     private ResourceBundle resourceBundle = null;
 
@@ -379,35 +371,31 @@ public class TemplateEncoder extends Encoder<Object> {
      * The URL of the template.
      */
     public TemplateEncoder(URL url) {
-        if (url == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.url = url;
+        this(url, ContentType.MARKUP);
     }
 
     /**
-     * Returns the content type.
+     * Constructs a new template encoder.
      *
-     * @return
-     * The content type.
-     */
-    public ContentType getContentType() {
-        return contentType;
-    }
-
-    /**
-     * Sets the content type.
+     * @param url
+     * The URL of the template.
      *
      * @param contentType
      * The content type.
      */
-    public void setContentType(ContentType contentType) {
-        if (contentType == null) {
+    public TemplateEncoder(URL url, ContentType contentType) {
+        if (url == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        this.contentType = contentType;
+        this.url = url;
+
+        contentTypeModifier = switch (contentType) {
+            case MARKUP -> new MarkupModifier();
+            case JSON -> new JSONModifier();
+            case CSV -> new CSVModifier();
+            case UNSPECIFIED -> null;
+        };
     }
 
     /**
@@ -717,7 +705,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             Iterator<?> iterator;
                             if (value == null) {
-                                iterator = Collections.emptyIterator();
+                                iterator = java.util.Collections.emptyIterator();
                             } else if (value instanceof Iterable<?> iterable) {
                                 iterator = iterable.iterator();
                             } else if (value instanceof Map<?, ?> map) {
@@ -793,8 +781,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                 }
                             }
 
-                            if (contentType.modifier != null) {
-                                value = contentType.modifier.apply(value, null, locale, timeZone);
+                            if (contentTypeModifier != null) {
+                                value = contentTypeModifier.apply(value, null, locale, timeZone);
                             }
 
                             writer.append(value.toString());
@@ -826,8 +814,8 @@ public class TemplateEncoder extends Encoder<Object> {
                                     value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                                 }
 
-                                if (contentType.modifier != null) {
-                                    value = contentType.modifier.apply(value, null, locale, timeZone);
+                                if (contentTypeModifier != null) {
+                                    value = contentTypeModifier.apply(value, null, locale, timeZone);
                                 }
 
                                 writer.append(value.toString());
