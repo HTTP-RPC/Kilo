@@ -1182,7 +1182,7 @@ public static <T> T coalesce(T... values) { ... }
 public static <T, U> U perform(T value, Function<? super T, ? extends U> action) { ... }
 ```
 
-These are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class. For example:
+These are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class:
 
 ```java
 var value = 123;

@@ -233,7 +233,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException("No columns defined.");
+            throw new UnsupportedOperationException("Table does not define any columns.");
         }
 
         sqlBuilder.append(" from ");
@@ -542,7 +542,7 @@ public class QueryBuilder {
         }
 
         if (columnNames.isEmpty()) {
-            throw new UnsupportedOperationException("No columns defined.");
+            throw new UnsupportedOperationException("Table does not define any columns.");
         }
 
         sqlBuilder.append(" (");
@@ -639,7 +639,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException("No columns defined.");
+            throw new UnsupportedOperationException("Table does not define any columns.");
         }
 
         return new QueryBuilder(sqlBuilder, parameters, transforms, type);
