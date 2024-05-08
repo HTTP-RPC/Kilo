@@ -176,7 +176,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty list.
+     * Returns an empty immutable list.
      *
      * @param <E>
      * The element type.
@@ -192,11 +192,11 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return listOf();
+        return immutableListOf();
     }
 
     /**
-     * Returns an empty map.
+     * Returns an empty immutable map.
      *
      * @param <K>
      * The key type.
@@ -218,11 +218,11 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return mapOf();
+        return immutableMapOf();
     }
 
     /**
-     * Returns an empty set.
+     * Returns an empty immutable set.
      *
      * @param <E>
      * The element type.
@@ -238,6 +238,6 @@ public class Collections {
             throw new IllegalArgumentException();
         }
 
-        return setOf();
+        return immutableSetOf();
     }
 }

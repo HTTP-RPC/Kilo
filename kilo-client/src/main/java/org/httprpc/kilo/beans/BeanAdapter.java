@@ -528,12 +528,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         var property = properties.get(key);
 
-        if (property == null) {
-            throw new UnsupportedOperationException("Invalid property.");
-        }
-
-        if (property.mutator == null) {
-            throw new UnsupportedOperationException("Property is not writable.");
+        if (property == null || property.mutator == null) {
+            throw new UnsupportedOperationException("Property is not defined or is not writable.");
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {

@@ -1154,7 +1154,7 @@ public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... 
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
 ```
 
-`Collections` also provides methods for declaring empty lists, maps, and sets:
+`Collections` also provides support for declaring empty lists, maps, and sets:
 
 ```java
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
@@ -1162,7 +1162,7 @@ public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) 
 public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
 ```
 
-These provide a slightly more readable alternative to `java.util.Collections#emptyList()`, `java.util.Collections#emptyMap()`, and `java.util.Collections#emptySet()`, respectively:
+These methods can be used in place of similar methods defined by the `java.util.Collections` class:
 
 ```java
 var list1 = java.util.Collections.<Integer>emptyList();
