@@ -176,7 +176,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty immutable list.
+     * Returns an empty list.
      *
      * @param <E>
      * The element type.
@@ -196,7 +196,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty immutable map.
+     * Returns an empty map.
      *
      * @param <K>
      * The key type.
@@ -222,7 +222,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty immutable set.
+     * Returns an empty set.
      *
      * @param <E>
      * The element type.
