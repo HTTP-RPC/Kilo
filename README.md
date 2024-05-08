@@ -1154,7 +1154,7 @@ public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... 
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
 ```
 
-`Collections` also provides support for declaring empty lists, maps, and sets:
+`Collections` also includes support for declaring empty lists, maps, and sets:
 
 ```java
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
