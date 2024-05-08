@@ -16,7 +16,9 @@ package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,6 +32,7 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ResultSetAdapterTest {
     private static final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23000";
@@ -130,6 +133,50 @@ public class ResultSetAdapterTest {
                 entry("id", id)
             ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class)).orElseThrow();
+        }
+    }
+
+    @Test
+    public void testXML() throws Exception {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setIgnoringComments(true);
+
+        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+        Document document;
+        try (var inputStream = getClass().getResourceAsStream("test.xml")) {
+            document = documentBuilder.parse(inputStream);
+        }
+
+        var id = insertXMLTest(document);
+
+        var xmlTest = selectXMLTest(id);
+
+        assertTrue(document.isEqualNode(xmlTest.getDocument()));
+    }
+
+    private int insertXMLTest(Document document) throws SQLException {
+        var queryBuilder = QueryBuilder.insert(XMLTest.class);
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("document", document)
+            ));
+        }
+
+        return queryBuilder.getGeneratedKey(0, Integer.class);
+    }
+
+    private XMLTest selectXMLTest(int id) throws SQLException {
+        var queryBuilder = QueryBuilder.select(XMLTest.class).filterByPrimaryKey("id");
+
+        try (var statement = queryBuilder.prepare(getConnection());
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("id", id)
+            ))) {
+            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, XMLTest.class)).orElseThrow();
         }
     }
 

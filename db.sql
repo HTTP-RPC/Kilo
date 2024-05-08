@@ -69,6 +69,12 @@ create table json_test (
     primary key (id)
 );
 
+create table xml_test (
+    id int not null auto_increment,
+    xml varchar(1024) not null,
+    primary key (id)
+);
+
 drop user if exists 'demo'@'%';
 
 create user 'demo'@'%' identified by 'demo123!';

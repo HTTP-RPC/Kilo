@@ -17,10 +17,23 @@ package org.httprpc.kilo.sql;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -84,6 +97,45 @@ public class QueryBuilder {
         }
     };
 
+    private static final Function<Object, Object> toXML = value -> {
+        Transformer transformer;
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } catch (TransformerConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var documentWriter = new StringWriter();
+
+        try {
+            transformer.transform(new DOMSource((Document)value), new StreamResult(documentWriter));
+        } catch (TransformerException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        return documentWriter.toString();
+    };
+
+    private static final Function<Object, Object> fromXML = value -> {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setIgnoringComments(true);
+
+        DocumentBuilder documentBuilder;
+        try {
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        try {
+            return documentBuilder.parse(new InputSource(new StringReader((String)value)));
+        } catch (SAXException | IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    };
+
     /**
      * Constructs a new query builder.
      */
@@ -117,6 +169,8 @@ public class QueryBuilder {
      * @param types
      * The types representing the tables to select from. Properties annotated
      * with {@link JSON} will be automatically deserialized from a JSON string.
+     * Properties of type {@link Document} will be automatically deserialized
+     * from an XML string.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -168,8 +222,10 @@ public class QueryBuilder {
                     sqlBuilder.append(propertyName);
                 }
 
-                if (accessor.getAnnotation(JSON.class) != null) {
-                    transforms.put(propertyName, fromJSON);
+                var transform = getReadTransform(accessor);
+
+                if (transform != null) {
+                    transforms.put(propertyName, transform);
                 }
 
                 i++;
@@ -257,6 +313,16 @@ public class QueryBuilder {
         }
 
         return table.value();
+    }
+
+    private static Function<Object, Object> getReadTransform(Method accessor) {
+        if (accessor.getAnnotation(JSON.class) != null) {
+            return fromJSON;
+        } else if (accessor.getReturnType() == Document.class) {
+            return fromXML;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -424,6 +490,8 @@ public class QueryBuilder {
      * @param type
      * The type representing the table to insert into. Properties annotated
      * with {@link JSON} will be automatically serialized to a JSON string.
+     * Properties of type {@link Document} will be automatically serialized to
+     * an XML string.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -466,8 +534,10 @@ public class QueryBuilder {
 
             parameters.add(propertyName);
 
-            if (accessor.getAnnotation(JSON.class) != null) {
-                transforms.put(propertyName, toJSON);
+            var transform = getWriteTransform(accessor);
+
+            if (transform != null) {
+                transforms.put(propertyName, transform);
             }
         }
 
@@ -510,6 +580,8 @@ public class QueryBuilder {
      * @param type
      * The type representing the table to update. Properties annotated with
      * {@link JSON} will be automatically serialized to a JSON string.
+     * Properties of type {@link Document} will be automatically serialized to
+     * an XML string.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -557,8 +629,10 @@ public class QueryBuilder {
 
             parameters.add(propertyName);
 
-            if (accessor.getAnnotation(JSON.class) != null) {
-                transforms.put(propertyName, toJSON);
+            var transform = getWriteTransform(accessor);
+
+            if (transform != null) {
+                transforms.put(propertyName, transform);
             }
 
             i++;
@@ -605,6 +679,16 @@ public class QueryBuilder {
         parameters.add(key);
 
         return new QueryBuilder(sqlBuilder, parameters, new HashMap<>(), type);
+    }
+
+    private static Function<Object, Object> getWriteTransform(Method accessor) {
+        if (accessor.getAnnotation(JSON.class) != null) {
+            return toJSON;
+        } else if (accessor.getReturnType() == Document.class) {
+            return toXML;
+        } else {
+            return null;
+        }
     }
 
     /**
