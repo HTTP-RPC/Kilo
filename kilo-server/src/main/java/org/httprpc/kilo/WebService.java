@@ -1191,7 +1191,7 @@ public abstract class WebService extends HttpServlet {
      * The servlet response.
      *
      * @param result
-     * The method result.
+     * The operation result.
      *
      * @throws IOException
      * If an exception occurs while encoding the result.
