@@ -1179,7 +1179,8 @@ The `Optionals` class contains methods for working with optional (or "nullable")
 
 ```java
 public static <T> T coalesce(T... values) { ... }
-public static <T, U> U perform(T value, Function<? super T, ? extends U> action) { ... }
+public static <T, U> U map(T value, Function<? super T, ? extends U> action) { ... }
+public static <T> void perform(T value, Consumer<? super T> action) { ... }
 ```
 
 These are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class:
@@ -1192,17 +1193,17 @@ var b = coalesce(null, null, value); // 123
 ```
 
 ```java
+var value = "hello";
+
+var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
+var b = map(value, String::length); // 5
+```
+
+```java
 var stringBuilder = new StringBuilder();
 
 Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
 perform("def", stringBuilder::append); // abcdef
-```
-
-```java
-var value = "hello";
-
-var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
-var b = perform(value, String::length); // 5
 ```
 
 # Kotlin Support

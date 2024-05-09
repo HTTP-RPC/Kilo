@@ -49,7 +49,7 @@ import java.util.function.Function;
 import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Optionals.coalesce;
-import static org.httprpc.kilo.util.Optionals.perform;
+import static org.httprpc.kilo.util.Optionals.map;
 
 /**
  * Client-side invocation proxy for web services.
@@ -213,7 +213,7 @@ public class WebServiceProxy {
                 throw new UnsupportedOperationException("Missing or invalid exception declaration.");
             }
 
-            var argumentList = coalesce(perform(arguments, Arrays::asList), listOf());
+            var argumentList = coalesce(map(arguments, Arrays::asList), listOf());
 
             var pathBuilder = new StringBuilder();
             var keyCount = 0;
@@ -295,7 +295,7 @@ public class WebServiceProxy {
                     throw new IllegalArgumentException("Required argument is not defined.");
                 }
 
-                var name = coalesce(perform(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
                 argumentMap.put(name, value);
             }
@@ -839,7 +839,7 @@ public class WebServiceProxy {
             }
 
             try (var errorStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(perform(errorStream, MonitoredInputStream::new), contentType, statusCode);
+                errorHandler.handleResponse(map(errorStream, MonitoredInputStream::new), contentType, statusCode);
             } finally {
                 if (monitorStream != null) {
                     monitorStream.println();

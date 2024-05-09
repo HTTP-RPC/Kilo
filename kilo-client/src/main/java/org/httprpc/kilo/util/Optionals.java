@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.util;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -50,29 +51,49 @@ public class Optionals {
     }
 
     /**
-     * Performs an action on an optional value.
+     * Applies a mapping function to an optional value.
      *
      * @param <T>
      * The value type.
      *
      * @param <U>
-     * The type produced by the action, which may be {@link Void}.
+     * The type produced by the action.
      *
      * @param value
      * The optional value.
      *
      * @param action
-     * The action to perform.
+     * The mapping function to apply.
      *
      * @return
-     * The result of performing the action on the provided value, or
+     * The result of applying the mapping function to the provided value, or
      * {@code null} if the value was {@code null}.
      */
-    public static <T, U> U perform(T value, Function<? super T, ? extends U> action) {
+    public static <T, U> U map(T value, Function<? super T, ? extends U> action) {
         if (action == null) {
             throw new IllegalArgumentException();
         }
 
         return (value == null) ? null : action.apply(value);
+    }
+
+    /**
+     * Performs an action on an optional value.
+     *
+     * @param <T>
+     * The value type.
+     *
+     * @param value
+     * The optional value.
+     *
+     * @param action
+     * The action to perform if the provided value is not {@code null}.
+     */
+    public static <T> void perform(T value, Consumer<? super T> action) {
+        if (action == null) {
+            throw new IllegalArgumentException();
+        }
+
+        action.accept(value);
     }
 }

@@ -63,7 +63,7 @@ import static org.httprpc.kilo.util.Collections.listOf;
 import static org.httprpc.kilo.util.Collections.mapOf;
 import static org.httprpc.kilo.util.Collections.setOf;
 import static org.httprpc.kilo.util.Optionals.coalesce;
-import static org.httprpc.kilo.util.Optionals.perform;
+import static org.httprpc.kilo.util.Optionals.map;
 
 /**
  * Abstract base class for web services.
@@ -85,7 +85,7 @@ public abstract class WebService extends HttpServlet {
         private ServiceDescriptor(String path, Class<? extends WebService> type) {
             this.path = path;
 
-            description = perform(type.getAnnotation(Description.class), Description::value);
+            description = map(type.getAnnotation(Description.class), Description::value);
 
             deprecated = type.getAnnotation(Deprecated.class) != null;
         }
@@ -200,7 +200,7 @@ public abstract class WebService extends HttpServlet {
         private OperationDescriptor(String method, Method handler) {
             this.method = method;
 
-            description = perform(handler.getAnnotation(Description.class), Description::value);
+            description = map(handler.getAnnotation(Description.class), Description::value);
 
             empty = handler.getAnnotation(Empty.class) != null;
             deprecated = handler.getAnnotation(Deprecated.class) != null;
@@ -277,9 +277,9 @@ public abstract class WebService extends HttpServlet {
         private TypeDescriptor type = null;
 
         private VariableDescriptor(Parameter parameter) {
-            name = coalesce(perform(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+            name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
-            description = perform(parameter.getAnnotation(Description.class), Description::value);
+            description = map(parameter.getAnnotation(Description.class), Description::value);
 
             required = parameter.getAnnotation(Required.class) != null;
         }
@@ -287,7 +287,7 @@ public abstract class WebService extends HttpServlet {
         private VariableDescriptor(String name, Method accessor) {
             this.name = name;
 
-            description = perform(accessor.getAnnotation(Description.class), Description::value);
+            description = map(accessor.getAnnotation(Description.class), Description::value);
 
             required = accessor.getAnnotation(Required.class) != null;
         }
@@ -345,7 +345,7 @@ public abstract class WebService extends HttpServlet {
         private EnumerationDescriptor(Class<?> type) {
             name = getTypeName(type);
 
-            description = perform(type.getAnnotation(Description.class), Description::value);
+            description = map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -396,7 +396,7 @@ public abstract class WebService extends HttpServlet {
 
             name = constant.toString();
 
-            description = perform(field.getAnnotation(Description.class), Description::value);
+            description = map(field.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -433,7 +433,7 @@ public abstract class WebService extends HttpServlet {
         private StructureDescriptor(Class<?> type) {
             name = getTypeName(type);
 
-            description = perform(type.getAnnotation(Description.class), Description::value);
+            description = map(type.getAnnotation(Description.class), Description::value);
         }
 
         /**
@@ -739,7 +739,7 @@ public abstract class WebService extends HttpServlet {
     public void init() throws ServletException {
         var type = getClass();
 
-        var urlPatterns = coalesce(perform(type.getAnnotation(WebServlet.class), WebServlet::urlPatterns), new String[0]);
+        var urlPatterns = coalesce(map(type.getAnnotation(WebServlet.class), WebServlet::urlPatterns), new String[0]);
 
         if (urlPatterns.length == 0) {
             throw new ServletException("At least one URL pattern is required.");
@@ -1045,7 +1045,7 @@ public abstract class WebService extends HttpServlet {
             for (var i = keyCount; i < n; i++) {
                 var parameter = parameters[i];
 
-                var name = coalesce(perform(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
                 if (argumentNames.contains(name) && ++c == argumentCount) {
                     return handler;
@@ -1073,7 +1073,7 @@ public abstract class WebService extends HttpServlet {
             if (i < keyCount) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
-                var name = coalesce(perform(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
                 var type = parameter.getType();
 
                 var values = argumentMap.get(name);
