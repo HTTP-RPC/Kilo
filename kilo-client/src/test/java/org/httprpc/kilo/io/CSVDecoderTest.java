@@ -14,18 +14,14 @@
 
 package org.httprpc.kilo.io;
 
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CSVDecoderTest {
     @Test

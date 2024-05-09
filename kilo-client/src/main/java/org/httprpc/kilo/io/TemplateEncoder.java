@@ -45,9 +45,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.*;
 
 /**
  * Encodes an object hierarchy using a template document.

@@ -15,12 +15,11 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
+import java.util.List;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
-
-import java.util.List;
 
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
 @Description("Math example service.")

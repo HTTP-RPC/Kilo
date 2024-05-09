@@ -14,14 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.WebServiceException;
-import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.TextDecoder;
-import org.httprpc.kilo.io.TextEncoder;
-import org.junit.jupiter.api.Test;
-
-import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
@@ -38,16 +30,16 @@ import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.imageio.ImageIO;
+import org.httprpc.kilo.WebServiceException;
+import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.TextDecoder;
+import org.httprpc.kilo.io.TextEncoder;
+import org.junit.jupiter.api.Test;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.httprpc.kilo.util.Collections.setOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class WebServiceProxyTest extends AbstractTest {
     public static class CustomException extends IOException {

@@ -14,12 +14,11 @@
 
 package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.Name;
-import org.httprpc.kilo.Required;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
 
 @Table("temporal_accessor_test")
 public interface TemporalAccessorTest {

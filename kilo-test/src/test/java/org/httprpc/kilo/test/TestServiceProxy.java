@@ -14,18 +14,17 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Empty;
-import org.httprpc.kilo.FormData;
-import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.Required;
-import org.httprpc.kilo.ResourcePath;
-
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.httprpc.kilo.Empty;
+import org.httprpc.kilo.FormData;
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.Required;
+import org.httprpc.kilo.ResourcePath;
 
 public interface TestServiceProxy {
     @RequestMethod("GET")

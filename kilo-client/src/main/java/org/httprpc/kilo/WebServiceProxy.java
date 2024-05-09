@@ -14,11 +14,6 @@
 
 package org.httprpc.kilo;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.JSONDecoder;
-import org.httprpc.kilo.io.JSONEncoder;
-import org.httprpc.kilo.io.TextDecoder;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,11 +40,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONDecoder;
+import org.httprpc.kilo.io.JSONEncoder;
+import org.httprpc.kilo.io.TextDecoder;
 
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.httprpc.kilo.util.Optionals.coalesce;
-import static org.httprpc.kilo.util.Optionals.map;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 /**
  * Client-side invocation proxy for web services.

@@ -14,25 +14,13 @@
 
 package org.httprpc.kilo.util;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import org.junit.jupiter.api.Test;
 
-import static org.httprpc.kilo.util.Collections.emptyListOf;
-import static org.httprpc.kilo.util.Collections.emptyMapOf;
-import static org.httprpc.kilo.util.Collections.emptySetOf;
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.immutableListOf;
-import static org.httprpc.kilo.util.Collections.immutableMapOf;
-import static org.httprpc.kilo.util.Collections.immutableSetOf;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.httprpc.kilo.util.Collections.setOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CollectionsTest {
     @Test

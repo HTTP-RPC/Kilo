@@ -14,11 +14,6 @@
 
 package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
-
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -26,13 +21,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ResultSetAdapterTest {
     private static final String INTEGRITY_CONSTRAINT_VIOLATION_CODE = "23000";

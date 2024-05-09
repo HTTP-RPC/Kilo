@@ -15,6 +15,9 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
@@ -22,12 +25,7 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.mapOf;
+import static org.httprpc.kilo.util.Collections.*;
 
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
 @Description("Catalog example service.")

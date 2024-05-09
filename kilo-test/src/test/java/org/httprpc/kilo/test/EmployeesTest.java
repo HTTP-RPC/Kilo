@@ -14,11 +14,10 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.WebServiceProxy;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import org.httprpc.kilo.WebServiceProxy;
 
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {

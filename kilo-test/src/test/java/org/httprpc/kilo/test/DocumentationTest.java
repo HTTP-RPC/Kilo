@@ -14,16 +14,14 @@
 
 package org.httprpc.kilo.test;
 
+import java.io.IOException;
+import java.util.Map;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.Map;
-
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentationTest extends AbstractTest {
     @Test

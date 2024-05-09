@@ -14,9 +14,6 @@
 
 package org.httprpc.kilo.beans;
 
-import org.httprpc.kilo.Name;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -37,18 +34,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.httprpc.kilo.Name;
+import org.junit.jupiter.api.Test;
 
-import static org.httprpc.kilo.util.Collections.entry;
-import static org.httprpc.kilo.util.Collections.listOf;
-import static org.httprpc.kilo.util.Collections.mapOf;
-import static org.httprpc.kilo.util.Collections.setOf;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.httprpc.kilo.util.Collections.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BeanAdapterTest {
     public static class ReadOnly {

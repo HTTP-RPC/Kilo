@@ -14,11 +14,10 @@
 
 package org.httprpc.kilo.test;
 
+import java.time.LocalDate;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
-
-import java.time.LocalDate;
 
 @Table("employees")
 public interface Employee {

@@ -14,15 +14,14 @@
 
 package org.httprpc.kilo.xml;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Provides access to the contents of an XML DOM element via the {@link Map}

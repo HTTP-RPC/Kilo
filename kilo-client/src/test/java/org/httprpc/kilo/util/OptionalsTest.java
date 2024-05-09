@@ -14,15 +14,11 @@
 
 package org.httprpc.kilo.util;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.httprpc.kilo.util.Optionals.coalesce;
-import static org.httprpc.kilo.util.Optionals.map;
-import static org.httprpc.kilo.util.Optionals.perform;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.httprpc.kilo.util.Optionals.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OptionalsTest {
     @Test
