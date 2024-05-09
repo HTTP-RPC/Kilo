@@ -41,13 +41,9 @@ Classes provided by the Kilo framework include:
 Each is discussed in more detail below.
 
 ## WebService
-`WebService` is an abstract base class for web services. It extends `HttpServlet` and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/5.0/).
+`WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/5.0/). 
 
-Service operations are defined by adding public methods to a concrete service implementation. Methods are invoked by submitting an HTTP request for a path associated with a service instance. Arguments may be provided via the query string, resource path, or request body. `WebService` converts the values to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
-
-The `RequestMethod` annotation is used to associate a service method with an HTTP verb such as `GET` or `POST`. The optional `ResourcePath` annotation can be used to associate the method with a specific path relative to the servlet. If unspecified, the method is associated with the servlet itself.
-
-Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, the following service class implements some simple mathematical operations:
+For example, the following service class implements some simple mathematical operations:
 
 ```java
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
@@ -80,23 +76,23 @@ public class MathService extends WebService {
 }
 ```
 
-This request would cause the first method to be invoked:
+The `RequestMethod` annotation associates an HTTP verb such as `GET` or `POST` with a service method, or "handler". The optional `ResourcePath` annotation associates a handler with a specific path, or "endpoint", relative to the servlet. If unspecified, the handler is associated with the servlet itself. The optional `Description` annotation is used to document a service implementation and is discussed in more detail [later](#api-documentation).
+
+Arguments may be provided via the query string, resource path, or request body. They may also be submitted as [form data](https://www.w3.org/TR/2014/REC-html5-20141028/forms.html#attr-fs-enctype). `WebService` converts the values to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
+
+Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, this request would invoke the first method:
 
 ```
 GET /math/sum?a=2&b=4
 ```
  
-while this request would invoke the second method:
+while this would invoke the second:
 
 ```
 GET /math/sum?values=1&values=2&values=3
 ```
 
 In either case, the service would return the value 6 in response. 
-
-Arguments may also be submitted as [form data](https://www.w3.org/TR/2014/REC-html5-20141028/forms.html#attr-fs-enctype). If no matching handler method is found for a given request, the default handler (e.g. `doGet()`) will be called.
-
-At least one URL pattern is required, and it must be a path mapping (i.e. begin with a leading slash and end with a trailing slash and asterisk). It is recommended that services be configured to load automatically on startup. This ensures that they will be immediately available to [other services](#inter-service-communication) and included in the [generated documentation](#api-documentation).
 
 ### Method Parameters
 Method parameters may be any of the following types:
@@ -174,7 +170,7 @@ GET /members?first_name=foo*&last_name=bar*
 ```
 
 ### Path Variables
-Path variables (or "keys") are specified by a "?" character in an endpoint's resource path. For example, the `itemID` argument in the method below is provided by a path variable:
+Path variables (or "keys") are specified by a "?" character in a handler's resource path. For example, the `itemID` argument in the method below is provided by a path variable:
 
 ```java
 @RequestMethod("GET")
@@ -245,7 +241,7 @@ For example, a service might use the request to get the name of the current user
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
 
 ### Exceptions
-If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is returned as shown below:
+If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is determined as shown below:
 
 * `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
 * `NoSuchElementException` - HTTP 404 (not found)
@@ -274,7 +270,7 @@ GET http://localhost:8080/kilo-test/catalog?api
 
 <img src="README/catalog-api.png" width="640px"/>
 
-Endpoints are grouped by resource path. Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
+Implementations can provide additional information about service types and operations using the `Description` annotation. For example:
 
 ```java
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
@@ -357,7 +353,7 @@ The first version accepts a string representing the HTTP method to execute and t
 
 Request arguments are specified via a map passed to the `setArguments()` method. Argument values for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
 
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML forms.
+Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
 
 Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
@@ -384,7 +380,9 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. A custom error handler can be supplied via `setErrorHandler()`:
+If a service returns an error response, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. 
+
+A custom error handler can be supplied via `setErrorHandler()`:
 
 ```java
 public interface ErrorHandler {
@@ -392,7 +390,7 @@ public interface ErrorHandler {
 }
 ```
 
-The following code demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed earlier:
+The following code demonstrates how `WebServiceProxy` might be used to access the operations of the simple math service discussed [earlier](#webservice):
 
 ```java
 // GET /math/sum?a=2&b=4
@@ -852,7 +850,7 @@ vehicleAdapter.get("manufacturer"); // throws
 ```
 
 ### Custom Property Names
-The `Name` annotation introduced [previously](#custom-parameter-names) can also be used with properties. For example:
+The `Name` annotation introduced [previously](#custom-parameter-names) can also be used with bean properties. For example:
 
 ```java
 public class Person {
@@ -1049,7 +1047,7 @@ var id = accountAdapter.get("@id");
 System.out.println(id); // 101
 ```
 
-Individual sub-elements can be accessed by name. The text content of an element can be obtained by calling `toString()` on the returned adapter instance; for example:
+Individual sub-elements can be accessed by name. The text content of an element can be obtained by calling `toString()` on the returned value; for example:
 
 ```java
 var holder = (Map<String, Object>)accountAdapter.get("holder");
@@ -1110,7 +1108,7 @@ try (var connection = getConnection();
 }
 ```
 
-All rows are processed and added to the list before anything is returned to the caller. For small result sets, the latency and memory implications associated with this approach might be acceptable. However, for larger data volumes the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
+All of the rows are read and added to the list before anything is returned to the caller. For small result sets, the latency and memory implications associated with this approach might be acceptable. However, for larger data volumes the following alternative may be preferable. The query is executed on a background thread, and the transformed results are streamed back to the caller via a pipe:
 
 ```java
 var pipe = new Pipe<Employee>(4096, 15000);
