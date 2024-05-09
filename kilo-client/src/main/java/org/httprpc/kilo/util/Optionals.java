@@ -94,6 +94,8 @@ public class Optionals {
             throw new IllegalArgumentException();
         }
 
-        action.accept(value);
+        if (value != null) {
+            action.accept(value);
+        }
     }
 }
