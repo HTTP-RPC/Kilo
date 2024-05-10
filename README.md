@@ -43,7 +43,7 @@ Each is discussed in more detail below.
 ## WebService
 `WebService` is an abstract base class for web services. It extends the similarly abstract `HttpServlet` class and provides a thin, REST-oriented layer on top of the standard [servlet API](https://jakarta.ee/specifications/servlet/5.0/). 
 
-For example, the following service class implements some simple mathematical operations:
+For example, the following service implements some simple mathematical operations:
 
 ```java
 @WebServlet(urlPatterns = {"/math/*"}, loadOnStartup = 1)
