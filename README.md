@@ -989,7 +989,7 @@ the preceding query could be written as follows:
 var queryBuilder = QueryBuilder.select(Pet.class).filterByForeignKey(Owner.class, "owner").ordered(true);
 ```
 
-Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
+Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java) and [catalog](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
@@ -1219,7 +1219,7 @@ class GreetingService: WebService() {
 }
 ```
 
-An example of a [typed invocation](#typed-invocation) proxy implemented in Kotlin can be found [here](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/test/java/org/httprpc/kilo/test/UserTest.kt).
+An example of a [typed invocation](#typed-invocation) proxy implemented in Kotlin can be found [here](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/test/kotlin/org/httprpc/kilo/test/UserTest.kt).
 
 Note that Kotlin code should be compiled with the `-java-parameters` flag so that method parameter names are available at runtime. 
 
