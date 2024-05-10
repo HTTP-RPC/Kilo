@@ -98,7 +98,7 @@ public class TemplateEncoder extends Encoder<Object> {
         /**
          * Unspecified content type.
          */
-        UNSPECIFIED;
+        UNSPECIFIED
     }
 
     // Markup modifier
