@@ -14,10 +14,11 @@
 
 package org.httprpc.kilo.test;
 
-import java.io.IOException;
-import java.util.List;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface CatalogServiceProxy {
     @RequestMethod("GET")

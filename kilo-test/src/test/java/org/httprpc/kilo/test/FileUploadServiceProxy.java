@@ -14,13 +14,14 @@
 
 package org.httprpc.kilo.test;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 public interface FileUploadServiceProxy {
     @RequestMethod("POST")

@@ -14,6 +14,9 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
+
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -27,8 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.httprpc.kilo.Name;
-import org.httprpc.kilo.Required;
 
 public class TestBean implements TestInterface {
     public static class NestedBean implements NestedInterface {

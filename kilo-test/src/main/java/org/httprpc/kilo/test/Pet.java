@@ -14,12 +14,13 @@
 
 package org.httprpc.kilo.test;
 
-import java.time.LocalDate;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.ForeignKey;
 import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
+
+import java.time.LocalDate;
 
 @Table("pet")
 public interface Pet {

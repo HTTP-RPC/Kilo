@@ -14,6 +14,11 @@
 
 package org.httprpc.kilo.sql;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,10 +26,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

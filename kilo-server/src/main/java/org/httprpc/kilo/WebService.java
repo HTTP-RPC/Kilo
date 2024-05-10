@@ -20,6 +20,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.JSONDecoder;
+import org.httprpc.kilo.io.JSONEncoder;
+import org.httprpc.kilo.io.TemplateEncoder;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -52,10 +57,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.JSONDecoder;
-import org.httprpc.kilo.io.JSONEncoder;
-import org.httprpc.kilo.io.TemplateEncoder;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;

@@ -14,12 +14,13 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
-import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

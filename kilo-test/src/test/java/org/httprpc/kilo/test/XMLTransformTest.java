@@ -14,16 +14,17 @@
 
 package org.httprpc.kilo.test;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import org.httprpc.kilo.io.TemplateEncoder;
+import org.httprpc.kilo.xml.ElementAdapter;
+import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.httprpc.kilo.io.TemplateEncoder;
-import org.httprpc.kilo.xml.ElementAdapter;
-import org.w3c.dom.Document;
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class XMLTransformTest {
     public static void main(String[] args) throws Exception {

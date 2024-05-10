@@ -14,13 +14,14 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.io.CSVEncoder;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
-import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.io.CSVEncoder;
 
 import static org.httprpc.kilo.util.Collections.*;
 

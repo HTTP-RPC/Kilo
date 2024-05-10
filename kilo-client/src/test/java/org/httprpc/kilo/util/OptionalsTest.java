@@ -14,8 +14,9 @@
 
 package org.httprpc.kilo.util;
 
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.httprpc.kilo.util.Optionals.*;
 import static org.junit.jupiter.api.Assertions.*;

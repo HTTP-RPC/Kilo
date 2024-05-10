@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
@@ -26,7 +28,6 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.Date;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

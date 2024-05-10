@@ -14,6 +14,9 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
+import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -34,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.httprpc.kilo.Name;
-import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

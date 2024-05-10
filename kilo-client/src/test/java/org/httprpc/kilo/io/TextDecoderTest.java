@@ -14,9 +14,10 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringReader;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
@@ -25,7 +27,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.ResourceBundle;
-import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

@@ -14,12 +14,13 @@
 
 package org.httprpc.kilo.sql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

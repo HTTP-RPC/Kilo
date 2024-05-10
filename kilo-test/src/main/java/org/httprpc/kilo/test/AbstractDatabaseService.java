@@ -17,13 +17,14 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.httprpc.kilo.WebService;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import org.httprpc.kilo.WebService;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public abstract class AbstractDatabaseService extends WebService {
     private static ThreadLocal<Connection> connection = new ThreadLocal<>();

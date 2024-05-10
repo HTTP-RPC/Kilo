@@ -15,10 +15,6 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.ResourceBundle;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
@@ -27,6 +23,11 @@ import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.sql.QueryBuilder;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 

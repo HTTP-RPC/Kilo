@@ -14,6 +14,14 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.WebServiceException;
+import org.httprpc.kilo.WebServiceProxy;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.TextDecoder;
+import org.httprpc.kilo.io.TextEncoder;
+import org.junit.jupiter.api.Test;
+
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
@@ -30,13 +38,6 @@ import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import javax.imageio.ImageIO;
-import org.httprpc.kilo.WebServiceException;
-import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.TextDecoder;
-import org.httprpc.kilo.io.TextEncoder;
-import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

@@ -14,6 +14,9 @@
 
 package org.httprpc.kilo.beans;
 
+import org.httprpc.kilo.Name;
+import org.httprpc.kilo.Required;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -49,8 +52,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.httprpc.kilo.Name;
-import org.httprpc.kilo.Required;
 
 import static org.httprpc.kilo.util.Optionals.*;
 

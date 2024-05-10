@@ -14,11 +14,12 @@
 
 package org.httprpc.kilo.test;
 
-import java.io.IOException;
-import java.net.URL;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.net.URL;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;

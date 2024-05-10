@@ -14,9 +14,10 @@
 
 package org.httprpc.kilo.beans;
 
-import java.time.LocalDate;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
+
+import java.time.LocalDate;
 
 public record TestRecord(
     int i,

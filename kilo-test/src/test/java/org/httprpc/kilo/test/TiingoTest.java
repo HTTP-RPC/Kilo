@@ -14,10 +14,11 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.WebServiceProxy;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import org.httprpc.kilo.WebServiceProxy;
 
 import static org.httprpc.kilo.util.Collections.*;
 
