@@ -368,11 +368,11 @@ Service operations are invoked via one of the following methods:
 
 ```java
 public Object invoke() throws IOException { ... }
-public <T> T invoke(Function<Object, ? extends T> resultHandler) throws IOException { ... }
+public <T> T invoke(Function<Object, ? extends T> transform) throws IOException { ... }
 public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version deserializes a successful JSON response (if any). The second applies a result handler to the deserialized response. The third version allows a caller to provide a custom response handler:
+The first version deserializes a successful JSON response (if any). The second applies a transform to the deserialized response. The third version allows a caller to provide a custom response handler:
 
 ```java
 public interface ResponseHandler<T> {
