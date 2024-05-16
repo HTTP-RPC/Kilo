@@ -64,6 +64,8 @@ public class QueryBuilder {
 
     private Deque<Class<?>> types = new LinkedList<>();
 
+    private boolean whitespaceAllowed = false;
+
     private int filterCount = 0;
 
     private List<Object> generatedKeys = null;
@@ -161,6 +163,26 @@ public class QueryBuilder {
         if (type != null) {
             types.add(type);
         }
+    }
+
+    /**
+     * Indicates that whitespace is allowed.
+     *
+     * @return
+     * {@code true} if whitespace is allowed; {@code false}, otherwise.
+     */
+    public boolean isWhitespaceAllowed() {
+        return whitespaceAllowed;
+    }
+
+    /**
+     * Toggles whitespace support.
+     *
+     * @param whitespaceAllowed
+     * {@code true} if whitespace is allowed; {@code false}, otherwise.
+     */
+    public void setWhitespaceAllowed(boolean whitespaceAllowed) {
+        this.whitespaceAllowed = whitespaceAllowed;
     }
 
     /**
@@ -1399,6 +1421,14 @@ public class QueryBuilder {
                 if (transform != null && argument != null) {
                     value = transform.apply(argument);
                 } else {
+                    if (!whitespaceAllowed && argument instanceof String text) {
+                        var n = text.length();
+
+                        if (n > 0 && (Character.isWhitespace(text.charAt(0)) || Character.isWhitespace(text.charAt(n - 1)))) {
+                            throw new IllegalArgumentException("Value contains leading or trailing whitespace.");
+                        }
+                    }
+
                     value = argument;
                 }
             }

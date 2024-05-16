@@ -661,10 +661,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     /**
      * <p>Coerces a value to a given type. If the value is already an instance
-     * of the requested type, it is returned as is. Otherwise, if the requested
-     * type is one of the following, the return value is obtained via an
-     * appropriate conversion method; for example, {@link Number#intValue()},
-     * {@link Object#toString()}, or {@link LocalDate#parse(CharSequence)}:</p>
+     * of the target type, it is returned as is. Otherwise, if the type is one
+     * of the following, the return value is obtained via an appropriate
+     * conversion method:</p>
      *
      * <ul>
      * <li>{@link Byte} or {@code byte}</li>
@@ -688,9 +687,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * </ul>
      *
      * <p>If the target type is an array, the provided value must be an array
-     * or {@link List}. The return value is an array of the same length as the
-     * source value whose elements have been coerced to the array's component
-     * type.</p>
+     * or {@link Collection}. The return value is an array of the same length
+     * as the source value whose elements have been coerced to the array's
+     * component type.</p>
      *
      * <p>If the target type is an {@link Enum}, the resulting value is the
      * first constant whose string representation matches the value's string
@@ -712,8 +711,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * </ul>
      *
      * <p>For reference types, {@code null} values are returned as is. For
-     * numeric or boolean primitives, they are converted to 0 or
-     * {@code false}, respectively.</p>
+     * numeric, boolean, or character primitives, they are converted to 0,
+     * {@code false}, or the null character, respectively.</p>
      *
      * @param <T>
      * The target type.
