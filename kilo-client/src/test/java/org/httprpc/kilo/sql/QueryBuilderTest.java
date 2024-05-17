@@ -519,6 +519,18 @@ public class QueryBuilderTest {
         }
 
         try (var statement = queryBuilder.prepare(getConnection())) {
+            assertThrows(IllegalArgumentException.class, () -> queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", "  ")
+            )));
+        }
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            assertThrows(IllegalArgumentException.class, () -> queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", " ")
+            )));
+        }
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
             assertEquals(1, queryBuilder.executeUpdate(statement, mapOf(
                 entry("value", "")
             )));
