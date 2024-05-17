@@ -55,6 +55,10 @@ create table bulk_upload_test (
     primary key (id)
 );
 
+create table whitespace_test (
+    value varchar(32) not null
+);
+
 create table temporal_accessor_test (
     id int not null auto_increment,
     local_date date not null,

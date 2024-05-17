@@ -18,6 +18,9 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -201,6 +204,12 @@ public class QueryBuilderTest {
         public void setY(String y) {
             this.y = y;
         }
+    }
+
+    @Table("whitespace_test")
+    public interface WhitespaceTest {
+        @Column("value")
+        String getValue();
     }
 
     @Test
@@ -487,6 +496,54 @@ public class QueryBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> queryBuilder.appendLine("select * from xyz where foo = :@ and bar is null"));
     }
 
+    @Test
+    public void testWhitespaceNotAllowed() throws SQLException {
+        var queryBuilder = QueryBuilder.insert(WhitespaceTest.class);
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            assertThrows(IllegalArgumentException.class, () -> queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", "abc ")
+            )));
+        }
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            assertThrows(IllegalArgumentException.class, () -> queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", " abc")
+            )));
+        }
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            assertThrows(IllegalArgumentException.class, () -> queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", " abc ")
+            )));
+        }
+
+        int count;
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            count = queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", "a b c")
+            ));
+        }
+
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testWhitespaceAllowed() throws SQLException {
+        var queryBuilder = QueryBuilder.insert(WhitespaceTest.class);
+
+        queryBuilder.setWhitespaceAllowed(true);
+
+        int count;
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            count = queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", " abc ")
+            ));
+        }
+
+        assertEquals(1, count);
+    }
+
     private static List<String> getParameters(QueryBuilder queryBuilder) {
         var n = queryBuilder.getParameterCount();
 
@@ -497,5 +554,9 @@ public class QueryBuilderTest {
         }
 
         return parameters;
+    }
+
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection("jdbc:mariadb://db.local:3306/demo", "demo", "demo123!");
     }
 }
