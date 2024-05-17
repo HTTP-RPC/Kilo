@@ -335,7 +335,7 @@ public class WebServiceProxy {
                 && equals(typedInvocationHandler));
         }
 
-        private boolean equals(TypedInvocationHandler typedInvocationHandler) {
+        boolean equals(TypedInvocationHandler typedInvocationHandler) {
             try {
                 return baseURL.toURI().equals(typedInvocationHandler.baseURL.toURI());
             } catch (URISyntaxException exception) {

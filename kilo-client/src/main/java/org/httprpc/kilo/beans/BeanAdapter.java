@@ -390,7 +390,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 && equals(typedInvocationHandler));
         }
 
-        private boolean equals(TypedInvocationHandler typedInvocationHandler) {
+        boolean equals(TypedInvocationHandler typedInvocationHandler) {
             if (type != typedInvocationHandler.type) {
                 return false;
             }
