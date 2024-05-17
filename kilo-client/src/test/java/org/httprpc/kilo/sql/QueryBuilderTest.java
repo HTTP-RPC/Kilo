@@ -518,14 +518,17 @@ public class QueryBuilderTest {
             )));
         }
 
-        int count;
         try (var statement = queryBuilder.prepare(getConnection())) {
-            count = queryBuilder.executeUpdate(statement, mapOf(
-                entry("value", "a b c")
-            ));
+            assertEquals(1, queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", "")
+            )));
         }
 
-        assertEquals(1, count);
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            assertEquals(1, queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", "a b c")
+            )));
+        }
     }
 
     @Test
@@ -534,14 +537,11 @@ public class QueryBuilderTest {
 
         queryBuilder.setWhitespaceAllowed(true);
 
-        int count;
         try (var statement = queryBuilder.prepare(getConnection())) {
-            count = queryBuilder.executeUpdate(statement, mapOf(
+            assertEquals(1, queryBuilder.executeUpdate(statement, mapOf(
                 entry("value", " abc ")
-            ));
+            )));
         }
-
-        assertEquals(1, count);
     }
 
     private static List<String> getParameters(QueryBuilder queryBuilder) {
