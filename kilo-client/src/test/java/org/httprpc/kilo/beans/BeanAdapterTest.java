@@ -488,6 +488,19 @@ public class BeanAdapterTest {
     }
 
     @Test
+    public void testDefaultMethod() {
+        var defaultMethod = BeanAdapter.coerce(mapOf(
+            entry("x", 1)
+        ), DefaultMethod.class);
+
+        assertEquals(2, defaultMethod.getY());
+
+        var beanAdapter = new BeanAdapter(defaultMethod);
+
+        assertEquals(2, beanAdapter.get("z"));
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void testRequired() {
         var testBean = new TestBean();
@@ -621,18 +634,5 @@ public class BeanAdapterTest {
     @Test
     public void testPropertyTypeMismatch() {
         assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new PropertyTypeMismatch()));
-    }
-
-    @Test
-    public void testDefaultMethod() {
-        var defaultMethod = BeanAdapter.coerce(mapOf(
-            entry("x", 1)
-        ), DefaultMethod.class);
-
-        assertEquals(2, defaultMethod.getY());
-
-        var beanAdapter = new BeanAdapter(defaultMethod);
-
-        assertEquals(2, beanAdapter.get("z"));
     }
 }

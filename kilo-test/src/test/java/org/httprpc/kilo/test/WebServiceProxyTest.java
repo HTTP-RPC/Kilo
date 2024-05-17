@@ -972,4 +972,13 @@ public class WebServiceProxyTest extends AbstractTest {
 
         assertEquals(baseURL.toURI().toString(), testServiceProxy2.toString());
     }
+
+    @Test
+    public void testDefaultMethod() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+
+        var result = testServiceProxy.getFibonacciSum(8);
+
+        assertEquals(33, result);
+    }
 }

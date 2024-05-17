@@ -71,4 +71,12 @@ public interface TestServiceProxy {
 
     @RequestMethod("GET")
     Map<String, String> testInvalidException() throws ParseException;
+
+    @RequestMethod("GET")
+    @ResourcePath("fibonacci")
+    List<Number> getFibonacciSequence(int count) throws IOException;
+
+    default int getFibonacciSum(int count) throws IOException {
+        return getFibonacciSequence(count).stream().mapToInt(Number::intValue).sum();
+    }
 }
