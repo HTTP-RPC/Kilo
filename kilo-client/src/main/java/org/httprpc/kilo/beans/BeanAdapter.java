@@ -330,13 +330,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public Object invoke(Object proxy, Method method, Object[] arguments) {
+        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
             if (method.getDeclaringClass() == Object.class) {
                 try {
                     return method.invoke(this, arguments);
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new RuntimeException(exception);
                 }
+            } else if (method.isDefault()) {
+                return InvocationHandler.invokeDefault(proxy, method, arguments);
             } else {
                 var propertyName = getPropertyName(method);
 
@@ -383,11 +385,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public boolean equals(Object object) {
-            if (object instanceof Proxy) {
-                object = Proxy.getInvocationHandler(object);
-            }
+            return (object instanceof Proxy
+                && Proxy.getInvocationHandler(object) instanceof TypedInvocationHandler typedInvocationHandler
+                && equals(typedInvocationHandler));
+        }
 
-            if (!(object instanceof TypedInvocationHandler typedInvocationHandler) || type != typedInvocationHandler.type) {
+        private boolean equals(TypedInvocationHandler typedInvocationHandler) {
+            if (type != typedInvocationHandler.type) {
                 return false;
             }
 
@@ -413,10 +417,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public String toString() {
             return map.toString();
-        }
-
-        static String getKey(Method accessor, String propertyName) {
-            return coalesce(map(accessor.getAnnotation(Name.class), Name::value), propertyName);
         }
     }
 
@@ -1056,7 +1056,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             var genericType = recordComponent.getGenericType();
 
-            var value = map.get(coalesce(map(accessor.getAnnotation(Name.class), Name::value), name));
+            var value = map.get(getKey(accessor, name));
 
             if (accessor.getAnnotation(Required.class) != null && value == null) {
                 throw new IllegalArgumentException("Required value is not defined.");
@@ -1200,7 +1200,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }).collect(Collectors.toMap(entry -> {
                 var accessor = entry.getValue().getAccessor();
 
-                return coalesce(map(accessor.getAnnotation(Name.class), Name::value), entry.getKey());
+                return getKey(accessor, entry.getKey());
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate name.");
             }, TreeMap::new));
@@ -1255,5 +1255,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         return c + methodName.substring(j);
+    }
+
+    private static String getKey(Method accessor, String propertyName) {
+        return coalesce(map(accessor.getAnnotation(Name.class), Name::value), propertyName);
     }
 }

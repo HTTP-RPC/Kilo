@@ -137,15 +137,15 @@ public class TemplateEncoder extends Encoder<Object> {
 
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var stringWriter = new StringWriter();
+            var writer = new StringWriter();
 
             try {
-                jsonEncoder.encode(value, stringWriter);
+                jsonEncoder.encode(value, writer);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
 
-            return stringWriter.toString();
+            return writer.toString();
         }
     }
 
@@ -155,15 +155,15 @@ public class TemplateEncoder extends Encoder<Object> {
 
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var stringWriter = new StringWriter();
+            var writer = new StringWriter();
 
             try {
-                csvEncoder.encode(value, stringWriter);
+                csvEncoder.encode(value, writer);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
 
-            return stringWriter.toString();
+            return writer.toString();
         }
     }
 

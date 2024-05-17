@@ -884,14 +884,6 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testMathProxy() throws IOException {
-        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL(baseURL, "math/"));
-
-        assertEquals(6.0, mathServiceProxy.getSum(4, 2));
-        assertEquals(6.0, mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0)));
-    }
-
-    @Test
     public void testFileUpload1() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "file-upload");
 
@@ -964,5 +956,20 @@ public class WebServiceProxyTest extends AbstractTest {
         var result = webServiceProxy.invoke();
 
         assertEquals("Hello, World!", result);
+    }
+
+    @Test
+    public void testObjectMethods() throws Exception {
+        var baseURL = new URL(this.baseURL, "test/");
+
+        var testServiceProxy1 = WebServiceProxy.of(TestServiceProxy.class, baseURL);
+
+        assertEquals(0, testServiceProxy1.hashCode());
+
+        var testServiceProxy2 = WebServiceProxy.of(TestServiceProxy.class, baseURL);
+
+        assertEquals(testServiceProxy1, testServiceProxy2);
+
+        assertEquals(baseURL.toURI().toString(), testServiceProxy2.toString());
     }
 }

@@ -102,6 +102,15 @@ public class BeanAdapterTest {
         }
     }
 
+    public interface DefaultMethod {
+        int getX();
+
+        @Name("z")
+        default int getY() {
+            return getX() * 2;
+        }
+    }
+
     @Test
     public void testBeanAdapter() throws MalformedURLException {
         var now = LocalDate.now();
@@ -449,7 +458,7 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testInterfaceEquality() {
+    public void testObjectMethods() {
         var map1 = new HashMap<String, Object>();
 
         map1.put("flag", true);
@@ -612,5 +621,18 @@ public class BeanAdapterTest {
     @Test
     public void testPropertyTypeMismatch() {
         assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new PropertyTypeMismatch()));
+    }
+
+    @Test
+    public void testDefaultMethod() {
+        var defaultMethod = BeanAdapter.coerce(mapOf(
+            entry("x", 1)
+        ), DefaultMethod.class);
+
+        assertEquals(2, defaultMethod.getY());
+
+        var beanAdapter = new BeanAdapter(defaultMethod);
+
+        assertEquals(2, beanAdapter.get("z"));
     }
 }

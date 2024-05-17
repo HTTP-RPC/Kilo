@@ -26,11 +26,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -199,78 +201,88 @@ public class WebServiceProxy {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
-            var requestMethod = method.getAnnotation(RequestMethod.class);
+            if (method.getDeclaringClass() == Object.class) {
+                try {
+                    return method.invoke(this, arguments);
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new RuntimeException(exception);
+                }
+            } else if (method.isDefault()) {
+                return InvocationHandler.invokeDefault(proxy, method, arguments);
+            } else {
+                var requestMethod = method.getAnnotation(RequestMethod.class);
 
-            if (requestMethod == null) {
-                throw new UnsupportedOperationException("Request method is not defined.");
-            }
+                if (requestMethod == null) {
+                    throw new UnsupportedOperationException("Request method is not defined.");
+                }
 
-            var exceptionTypes = method.getExceptionTypes();
+                var exceptionTypes = method.getExceptionTypes();
 
-            if (exceptionTypes.length != 1 || !exceptionTypes[0].isAssignableFrom(IOException.class)) {
-                throw new UnsupportedOperationException("Missing or invalid exception declaration.");
-            }
+                if (exceptionTypes.length != 1 || !exceptionTypes[0].isAssignableFrom(IOException.class)) {
+                    throw new UnsupportedOperationException("Missing or invalid exception declaration.");
+                }
 
-            var argumentList = coalesce(map(arguments, Arrays::asList), listOf());
+                var argumentList = coalesce(map(arguments, Arrays::asList), listOf());
 
-            var pathBuilder = new StringBuilder();
-            var keyCount = 0;
+                var pathBuilder = new StringBuilder();
+                var keyCount = 0;
 
-            var resourcePath = method.getAnnotation(ResourcePath.class);
+                var resourcePath = method.getAnnotation(ResourcePath.class);
 
-            if (resourcePath != null) {
-                var components = resourcePath.value().split("/");
+                if (resourcePath != null) {
+                    var components = resourcePath.value().split("/");
 
-                for (var i = 0; i < components.length; i++) {
-                    if (i > 0) {
-                        pathBuilder.append("/");
-                    }
-
-                    var component = components[i];
-
-                    if (component.isEmpty()) {
-                        throw new UnsupportedOperationException("Invalid resource path.");
-                    }
-
-                    if (component.equals("?")) {
-                        var parameterValue = getParameterValue(argumentList.get(keyCount));
-
-                        if (parameterValue == null) {
-                            throw new IllegalArgumentException("Path variable is required.");
+                    for (var i = 0; i < components.length; i++) {
+                        if (i > 0) {
+                            pathBuilder.append("/");
                         }
 
-                        component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
+                        var component = components[i];
 
-                        keyCount++;
-                    }
+                        if (component.isEmpty()) {
+                            throw new UnsupportedOperationException("Invalid resource path.");
+                        }
 
-                    pathBuilder.append(component);
-                }
-            }
+                        if (component.equals("?")) {
+                            var parameterValue = getParameterValue(argumentList.get(keyCount));
 
-            var webServiceProxy = new WebServiceProxy(requestMethod.value().toUpperCase(), new URL(baseURL, pathBuilder.toString()));
+                            if (parameterValue == null) {
+                                throw new IllegalArgumentException("Path variable is required.");
+                            }
 
-            if (initializer != null) {
-                initializer.accept(webServiceProxy);
-            }
+                            component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
 
-            var empty = method.getAnnotation(Empty.class) != null;
+                            keyCount++;
+                        }
 
-            if (empty) {
-                var formData = method.getAnnotation(FormData.class);
-
-                if (formData != null) {
-                    if (formData.multipart()) {
-                        webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
-                    } else {
-                        webServiceProxy.setEncoding(Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+                        pathBuilder.append(component);
                     }
                 }
+
+                var webServiceProxy = new WebServiceProxy(requestMethod.value().toUpperCase(), new URL(baseURL, pathBuilder.toString()));
+
+                if (initializer != null) {
+                    initializer.accept(webServiceProxy);
+                }
+
+                var empty = method.getAnnotation(Empty.class) != null;
+
+                if (empty) {
+                    var formData = method.getAnnotation(FormData.class);
+
+                    if (formData != null) {
+                        if (formData.multipart()) {
+                            webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+                        } else {
+                            webServiceProxy.setEncoding(Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+                        }
+                    }
+                }
+
+                configure(webServiceProxy, method.getParameters(), keyCount, argumentList, empty);
+
+                return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
             }
-
-            configure(webServiceProxy, method.getParameters(), keyCount, argumentList, empty);
-
-            return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
         }
 
         static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList, boolean empty) {
@@ -309,6 +321,31 @@ public class WebServiceProxy {
 
                 webServiceProxy.setBody(body);
             }
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            return (object instanceof Proxy
+                && Proxy.getInvocationHandler(object) instanceof TypedInvocationHandler typedInvocationHandler
+                && equals(typedInvocationHandler));
+        }
+
+        private boolean equals(TypedInvocationHandler typedInvocationHandler) {
+            try {
+                return baseURL.toURI().equals(typedInvocationHandler.baseURL.toURI());
+            } catch (URISyntaxException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return baseURL.toString();
         }
     }
 

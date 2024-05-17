@@ -438,6 +438,10 @@ public interface MathServiceProxy {
     @RequestMethod("GET")
     @ResourcePath("sum")
     double getSum(List<Double> values) throws IOException;
+
+    default double getAverage(List<Double> values) throws IOException {
+        return getSum(values) / values.size();
+    }
 }
 ```
 
@@ -446,6 +450,8 @@ var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http:
 
 System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
+
+System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
 ```
 
 The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used in conjunction with `Empty` to submit `POST` requests using either the URL or multi-part form encoding.
@@ -797,7 +803,7 @@ System.out.println(assetPricing.getLow()); // 168.24
 System.out.println(assetPricing.getVolume()); // 37216858
 ```
 
-Mutator methods are also supported.
+Mutator and default methods are also supported.
 
 ### Required Properties
 The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a property must contain a value. For example:

@@ -106,6 +106,8 @@ public class Examples {
 
         System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
         System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
+
+        System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
     }
 
     public static void jsonEncoder() throws IOException {

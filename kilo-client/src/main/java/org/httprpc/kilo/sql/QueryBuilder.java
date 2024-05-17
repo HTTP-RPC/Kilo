@@ -78,15 +78,15 @@ public class QueryBuilder {
     private static final Function<Object, Object> toJSON = value -> {
         var jsonEncoder = new JSONEncoder(true);
 
-        var valueWriter = new StringWriter();
+        var writer = new StringWriter();
 
         try {
-            jsonEncoder.write(BeanAdapter.adapt(value), valueWriter);
+            jsonEncoder.write(BeanAdapter.adapt(value), writer);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
 
-        return valueWriter.toString();
+        return writer.toString();
     };
 
     private static final Function<Object, Object> fromJSON = value -> {
@@ -107,15 +107,15 @@ public class QueryBuilder {
             throw new RuntimeException(exception);
         }
 
-        var documentWriter = new StringWriter();
+        var writer = new StringWriter();
 
         try {
-            transformer.transform(new DOMSource((Document)value), new StreamResult(documentWriter));
+            transformer.transform(new DOMSource((Document)value), new StreamResult(writer));
         } catch (TransformerException exception) {
             throw new RuntimeException(exception);
         }
 
-        return documentWriter.toString();
+        return writer.toString();
     };
 
     private static final Function<Object, Object> fromXML = value -> {
