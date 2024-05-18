@@ -32,7 +32,6 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -321,31 +320,6 @@ public class WebServiceProxy {
 
                 webServiceProxy.setBody(body);
             }
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return (object instanceof Proxy
-                && Proxy.getInvocationHandler(object) instanceof TypedInvocationHandler typedInvocationHandler
-                && equals(typedInvocationHandler));
-        }
-
-        boolean equals(TypedInvocationHandler typedInvocationHandler) {
-            try {
-                return baseURL.toURI().equals(typedInvocationHandler.baseURL.toURI());
-            } catch (URISyntaxException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return baseURL.toString();
         }
     }
 

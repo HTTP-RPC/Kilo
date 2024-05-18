@@ -959,21 +959,6 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testObjectMethods() throws Exception {
-        var baseURL = new URL(this.baseURL, "test/");
-
-        var testServiceProxy1 = WebServiceProxy.of(TestServiceProxy.class, baseURL);
-
-        assertEquals(0, testServiceProxy1.hashCode());
-
-        var testServiceProxy2 = WebServiceProxy.of(TestServiceProxy.class, baseURL);
-
-        assertEquals(testServiceProxy1, testServiceProxy2);
-
-        assertEquals(baseURL.toURI().toString(), testServiceProxy2.toString());
-    }
-
-    @Test
     public void testDefaultMethod() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 

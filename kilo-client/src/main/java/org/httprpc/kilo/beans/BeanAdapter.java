@@ -385,33 +385,29 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         @Override
         public boolean equals(Object object) {
-            return (object instanceof Proxy
+            if (object instanceof Proxy
                 && Proxy.getInvocationHandler(object) instanceof TypedInvocationHandler typedInvocationHandler
-                && equals(typedInvocationHandler));
-        }
+                && type == typedInvocationHandler.type) {
+                for (var entry : accessors.entrySet()) {
+                    var propertyName = entry.getKey();
+                    var accessor = entry.getValue();
 
-        boolean equals(TypedInvocationHandler typedInvocationHandler) {
-            if (type != typedInvocationHandler.type) {
+                    var key = getKey(accessor, propertyName);
+
+                    var type = accessor.getGenericReturnType();
+
+                    var value1 = toGenericType(map.get(key), type);
+                    var value2 = toGenericType(typedInvocationHandler.map.get(key), type);
+
+                    if (!Objects.equals(value1, value2)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            } else {
                 return false;
             }
-
-            for (var entry : accessors.entrySet()) {
-                var propertyName = entry.getKey();
-                var accessor = entry.getValue();
-
-                var key = getKey(accessor, propertyName);
-
-                var type = accessor.getGenericReturnType();
-
-                var value1 = toGenericType(map.get(key), type);
-                var value2 = toGenericType(typedInvocationHandler.map.get(key), type);
-
-                if (!Objects.equals(value1, value2)) {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         @Override
