@@ -62,19 +62,19 @@ public class Optionals {
      * @param value
      * The optional value.
      *
-     * @param action
+     * @param transform
      * The mapping function to apply.
      *
      * @return
      * The result of applying the mapping function to the provided value, or
      * {@code null} if the value was {@code null}.
      */
-    public static <T, U> U map(T value, Function<? super T, ? extends U> action) {
-        if (action == null) {
+    public static <T, U> U map(T value, Function<? super T, ? extends U> transform) {
+        if (transform == null) {
             throw new IllegalArgumentException();
         }
 
-        return (value == null) ? null : action.apply(value);
+        return (value == null) ? null : transform.apply(value);
     }
 
     /**

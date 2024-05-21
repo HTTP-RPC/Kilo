@@ -1185,7 +1185,7 @@ The `Optionals` class contains methods for working with optional (or "nullable")
 
 ```java
 public static <T> T coalesce(T... values) { ... }
-public static <T, U> U map(T value, Function<? super T, ? extends U> action) { ... }
+public static <T, U> U map(T value, Function<? super T, ? extends U> transform) { ... }
 public static <T> void perform(T value, Consumer<? super T> action) { ... }
 ```
 
