@@ -361,6 +361,11 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testSelectPartialInvalidProperty() {
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.selectPartial(A.class, "z"));
+    }
+
+    @Test
     public void testSelectDistinctIndex() {
         var queryBuilder = QueryBuilder.selectDistinctIndex(I.class);
 
@@ -466,6 +471,11 @@ public class QueryBuilderTest {
 
         assertEquals("update B set e = ?, f = ? where B.a = ?", queryBuilder.toString());
         assertEquals(listOf("e", "y", "a"), getParameters(queryBuilder));
+    }
+
+    @Test
+    public void testUpdatePartialInvalidProperty() {
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.updatePartial(B.class, "z"));
     }
 
     @Test

@@ -759,7 +759,7 @@ public class QueryBuilder {
      * described for {@link #update(Class)}.
      *
      * @param propertyNames
-     * The names of the properties to select.
+     * The names of the properties to update.
      *
      * @return
      * A new {@link QueryBuilder} instance.
