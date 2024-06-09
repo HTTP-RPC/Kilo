@@ -22,9 +22,7 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.kilo.sql.Table;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
 import javax.naming.InitialContext;
@@ -102,50 +100,17 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("stream-custom")
-    public Iterable<List<Object>> getEmployeesStreamCustom(List<String> fields) {
-        if (fields.isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
-
+    public Iterable<List<Object>> getEmployeesStreamCustom(String... fields) {
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
-            var properties = BeanAdapter.getProperties(Employee.class);
-
-            var queryBuilder = new QueryBuilder();
-
-            queryBuilder.append("select ");
-
-            var i = 0;
-
-            for (var field : fields) {
-                var property = properties.get(field);
-
-                if (property == null) {
-                    throw new IllegalArgumentException();
-                }
-
-                if (i > 0) {
-                    queryBuilder.append(", ");
-                }
-
-                queryBuilder.append(property.getAccessor().getAnnotation(Column.class).value());
-                queryBuilder.append(" as ");
-                queryBuilder.append(field);
-
-                i++;
-            }
-
-            queryBuilder.append(" from ");
-            queryBuilder.append(Employee.class.getAnnotation(Table.class).value());
-
-            var n = fields.size();
+            var queryBuilder = QueryBuilder.selectPartial(Employee.class, fields);
 
             try (var connection = getConnection();
                 var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
                 pipe.accept(results.stream().map(result -> {
-                    var row = new ArrayList<>(n);
+                    var row = new ArrayList<>(fields.length);
 
                     for (var field : fields) {
                         row.add(result.get(field));
@@ -207,11 +172,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("hibernate-stream-custom")
-    public Iterable<List<Object>> getEmployeesHibernateCustomStream(List<String> fields) {
-        if (fields.isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
-
+    public Iterable<List<Object>> getEmployeesHibernateCustomStream(String... fields) {
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
@@ -226,10 +187,10 @@ public class EmployeeService extends WebService {
                 var criteriaQuery = criteriaBuilder.createQuery(Object[].class);
                 var root = criteriaQuery.from(HibernateEmployee.class);
 
-                var selection = new ArrayList<Selection<?>>(fields.size());
+                var selection = new ArrayList<Selection<?>>(fields.length);
 
-                for (var field : fields) {
-                    selection.add(root.get(field));
+                for (var i = 0; i < fields.length; i++) {
+                    selection.add(root.get(fields[i]));
                 }
 
                 var query = session.createQuery(criteriaQuery.multiselect(selection));

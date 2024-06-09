@@ -211,6 +211,10 @@ public class QueryBuilder {
         for (var j = 0; j < types.length; j++) {
             var type = types[j];
 
+            if (type == null) {
+                throw new IllegalArgumentException();
+            }
+
             var tableName = getTableName(type);
 
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
@@ -262,6 +266,88 @@ public class QueryBuilder {
         sqlBuilder.append(getTableName(types[0]));
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), transforms, types[0]);
+    }
+
+    /**
+     * Creates a "select" query.
+     *
+     * @param type
+     * The type representing the table to select from. Properties are handled
+     * as described for {@link #select(Class[])}.
+     *
+     * @param fields
+     * The fields to select.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder selectPartial(Class<?> type, String... fields) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (fields.length == 0) {
+            throw new UnsupportedOperationException();
+        }
+
+        var sqlBuilder = new StringBuilder("select ");
+
+        var transforms = new HashMap<String, Function<Object, Object>>();
+
+        var tableName = getTableName(type);
+
+        var properties = BeanAdapter.getProperties(type);
+
+        var i = 0;
+
+        for (var field : fields) {
+            if (field == null) {
+                throw new IllegalArgumentException();
+            }
+
+            var property = properties.get(field);
+
+            if (property == null) {
+                throw new IllegalArgumentException();
+            }
+
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                throw new IllegalArgumentException();
+            }
+
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+
+            var columnName = column.value();
+
+            sqlBuilder.append(columnName);
+
+            if (!columnName.equals(field)) {
+                sqlBuilder.append(" as ");
+                sqlBuilder.append(field);
+            }
+
+            var transform = getReadTransform(accessor);
+
+            if (transform != null) {
+                transforms.put(field, transform);
+            }
+
+            i++;
+        }
+
+        sqlBuilder.append(" from ");
+        sqlBuilder.append(tableName);
+
+        return new QueryBuilder(sqlBuilder, new LinkedList<>(), transforms, type);
     }
 
     /**
@@ -642,9 +728,7 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            var columnName = column.value();
-
-            sqlBuilder.append(columnName);
+            sqlBuilder.append(column.value());
             sqlBuilder.append(" = ?");
 
             var propertyName = entry.getKey();
@@ -662,6 +746,84 @@ public class QueryBuilder {
 
         if (i == 0) {
             throw new UnsupportedOperationException("Table does not define any columns.");
+        }
+
+        return new QueryBuilder(sqlBuilder, parameters, transforms, type);
+    }
+
+    /**
+     * Creates an "update" query.
+     *
+     * @param type
+     * The type representing the table to update. Properties are handled as
+     * described for {@link #update(Class)}.
+     *
+     * @param fields
+     * The fields to update.
+     *
+     * @return
+     * A new {@link QueryBuilder} instance.
+     */
+    public static QueryBuilder updatePartial(Class<?> type, String... fields) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (fields.length == 0) {
+            throw new UnsupportedOperationException();
+        }
+
+        var tableName = getTableName(type);
+
+        var sqlBuilder = new StringBuilder("update ");
+
+        sqlBuilder.append(tableName);
+        sqlBuilder.append(" set ");
+
+        var i = 0;
+
+        var parameters = new LinkedList<String>();
+        var transforms = new HashMap<String, Function<Object, Object>>();
+
+        var properties = BeanAdapter.getProperties(type);
+
+        for (var field : fields) {
+            if (field == null) {
+                throw new IllegalArgumentException();
+            }
+
+            var property = properties.get(field);
+
+            if (property == null) {
+                throw new IllegalArgumentException();
+            }
+
+            var accessor = property.getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null
+                || accessor.getAnnotation(PrimaryKey.class) != null
+                || accessor.getAnnotation(Final.class) != null) {
+                throw new IllegalArgumentException();
+            }
+
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            sqlBuilder.append(column.value());
+            sqlBuilder.append(" = ?");
+
+            parameters.add(field);
+
+            var transform = getWriteTransform(accessor);
+
+            if (transform != null) {
+                transforms.put(field, transform);
+            }
+
+            i++;
         }
 
         return new QueryBuilder(sqlBuilder, parameters, transforms, type);
