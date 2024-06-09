@@ -32,6 +32,7 @@ public class EmployeesTest {
 
         logTiming(baseURL, "employees/stream-partial", mapOf(
             entry("propertyNames", listOf(
+                "employeeNumber",
                 "firstName",
                 "lastName",
                 "gender",
@@ -42,6 +43,7 @@ public class EmployeesTest {
 
         logTiming(baseURL, "employees/stream-partial", mapOf(
             entry("propertyNames", listOf(
+                "employeeNumber",
                 "firstName",
                 "lastName"
             ))
@@ -52,6 +54,7 @@ public class EmployeesTest {
 
         logTiming(baseURL, "employees/hibernate-stream-partial", mapOf(
             entry("propertyNames", listOf(
+                "employeeNumber",
                 "firstName",
                 "lastName",
                 "gender",
@@ -62,6 +65,7 @@ public class EmployeesTest {
 
         logTiming(baseURL, "employees/hibernate-stream-partial", mapOf(
             entry("propertyNames", listOf(
+                "employeeNumber",
                 "firstName",
                 "lastName"
             ))

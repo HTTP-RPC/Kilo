@@ -199,7 +199,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testVarargs() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", new URL(baseURL, "test/varargs"));
+        var webServiceProxy = new WebServiceProxy("POST", baseURL, "test/varargs");
 
         webServiceProxy.setArguments(mapOf(
             entry("numbers", listOf(1, 2, 3))
@@ -839,7 +839,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testCustomException() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "test/error"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "test/error");
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
             var textDecoder = new TextDecoder();
@@ -934,7 +934,7 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testMembers() throws IOException {
+    public void testMembersProxy() throws IOException {
         var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, new URL(baseURL, "members/"));
 
         var members = memberServiceProxy.getMembers("foo", "bar");
@@ -951,7 +951,7 @@ public class WebServiceProxyTest extends AbstractTest {
     public void testGreeting() throws IOException {
         var contextPath = baseURL.getPath();
 
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, contextPath.substring(0, contextPath.length() - 1)));
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, contextPath.substring(0, contextPath.length() - 1));
 
         var result = webServiceProxy.invoke();
 
@@ -959,7 +959,50 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testDefaultMethod() throws IOException {
+    public void testEmployeeDetails() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d", 10004);
+
+        var employeeDetails = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, EmployeeDetails.class));
+
+        assertNull(employeeDetails.getTitles());
+        assertNull(employeeDetails.getSalaries());
+    }
+
+    @Test
+    public void testEmployeeDetailsExpanded() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d", 10004);
+
+        webServiceProxy.setArguments(mapOf(
+            entry("titles", true),
+            entry("salaries", true)
+        ));
+
+        var employeeDetails = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, EmployeeDetails.class));
+
+        assertNotNull(employeeDetails.getTitles());
+        assertNotNull(employeeDetails.getSalaries());
+    }
+
+    @Test
+    public void testEmployeeTitles() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d/titles", 10004);
+
+        var employeeTitles = webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, EmployeeDetails.Title.class));
+
+        assertFalse(employeeTitles.isEmpty());
+    }
+
+    @Test
+    public void testEmployeeSalaries() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d/salaries", 10004);
+
+        var employeeSalaries = webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, EmployeeDetails.Salary.class));
+
+        assertFalse(employeeSalaries.isEmpty());
+    }
+
+    @Test
+    public void testDefaultProxyMethod() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.getFibonacciSum(8);
