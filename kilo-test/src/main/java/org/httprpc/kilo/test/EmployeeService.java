@@ -100,20 +100,20 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("stream-custom")
-    public Iterable<List<Object>> getEmployeesStreamCustom(String... fields) {
+    public Iterable<List<Object>> getEmployeesStreamCustom(String... propertyNames) {
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
-            var queryBuilder = QueryBuilder.selectPartial(Employee.class, fields);
+            var queryBuilder = QueryBuilder.selectPartial(Employee.class, propertyNames);
 
             try (var connection = getConnection();
                 var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
                 pipe.accept(results.stream().map(result -> {
-                    var row = new ArrayList<>(fields.length);
+                    var row = new ArrayList<>(propertyNames.length);
 
-                    for (var field : fields) {
-                        row.add(result.get(field));
+                    for (var propertyName : propertyNames) {
+                        row.add(result.get(propertyName));
                     }
 
                     return row;
@@ -172,7 +172,7 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("hibernate-stream-custom")
-    public Iterable<List<Object>> getEmployeesHibernateCustomStream(String... fields) {
+    public Iterable<List<Object>> getEmployeesHibernateCustomStream(String... propertyNames) {
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
@@ -187,10 +187,10 @@ public class EmployeeService extends WebService {
                 var criteriaQuery = criteriaBuilder.createQuery(Object[].class);
                 var root = criteriaQuery.from(HibernateEmployee.class);
 
-                var selection = new ArrayList<Selection<?>>(fields.length);
+                var selection = new ArrayList<Selection<?>>(propertyNames.length);
 
-                for (var i = 0; i < fields.length; i++) {
-                    selection.add(root.get(fields[i]));
+                for (var i = 0; i < propertyNames.length; i++) {
+                    selection.add(root.get(propertyNames[i]));
                 }
 
                 var query = session.createQuery(criteriaQuery.multiselect(selection));

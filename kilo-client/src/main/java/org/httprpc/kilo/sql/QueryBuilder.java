@@ -275,18 +275,18 @@ public class QueryBuilder {
      * The type representing the table to select from. Properties are handled
      * as described for {@link #select(Class[])}.
      *
-     * @param fields
-     * The fields to select.
+     * @param propertyNames
+     * The names of the properties to select.
      *
      * @return
      * A new {@link QueryBuilder} instance.
      */
-    public static QueryBuilder selectPartial(Class<?> type, String... fields) {
+    public static QueryBuilder selectPartial(Class<?> type, String... propertyNames) {
         if (type == null) {
             throw new IllegalArgumentException();
         }
 
-        if (fields.length == 0) {
+        if (propertyNames.length == 0) {
             throw new UnsupportedOperationException();
         }
 
@@ -300,12 +300,12 @@ public class QueryBuilder {
 
         var i = 0;
 
-        for (var field : fields) {
-            if (field == null) {
+        for (var propertyName : propertyNames) {
+            if (propertyName == null) {
                 throw new IllegalArgumentException();
             }
 
-            var property = properties.get(field);
+            var property = properties.get(propertyName);
 
             if (property == null) {
                 throw new IllegalArgumentException();
@@ -330,15 +330,15 @@ public class QueryBuilder {
 
             sqlBuilder.append(columnName);
 
-            if (!columnName.equals(field)) {
+            if (!columnName.equals(propertyName)) {
                 sqlBuilder.append(" as ");
-                sqlBuilder.append(field);
+                sqlBuilder.append(propertyName);
             }
 
             var transform = getReadTransform(accessor);
 
             if (transform != null) {
-                transforms.put(field, transform);
+                transforms.put(propertyName, transform);
             }
 
             i++;
@@ -758,18 +758,18 @@ public class QueryBuilder {
      * The type representing the table to update. Properties are handled as
      * described for {@link #update(Class)}.
      *
-     * @param fields
-     * The fields to update.
+     * @param propertyNames
+     * The names of the properties to select.
      *
      * @return
      * A new {@link QueryBuilder} instance.
      */
-    public static QueryBuilder updatePartial(Class<?> type, String... fields) {
+    public static QueryBuilder updatePartial(Class<?> type, String... propertyNames) {
         if (type == null) {
             throw new IllegalArgumentException();
         }
 
-        if (fields.length == 0) {
+        if (propertyNames.length == 0) {
             throw new UnsupportedOperationException();
         }
 
@@ -787,12 +787,12 @@ public class QueryBuilder {
 
         var properties = BeanAdapter.getProperties(type);
 
-        for (var field : fields) {
-            if (field == null) {
+        for (var propertyName : propertyNames) {
+            if (propertyName == null) {
                 throw new IllegalArgumentException();
             }
 
-            var property = properties.get(field);
+            var property = properties.get(propertyName);
 
             if (property == null) {
                 throw new IllegalArgumentException();
@@ -815,12 +815,12 @@ public class QueryBuilder {
             sqlBuilder.append(column.value());
             sqlBuilder.append(" = ?");
 
-            parameters.add(field);
+            parameters.add(propertyName);
 
             var transform = getWriteTransform(accessor);
 
             if (transform != null) {
-                transforms.put(field, transform);
+                transforms.put(propertyName, transform);
             }
 
             i++;
