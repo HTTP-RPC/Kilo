@@ -42,7 +42,7 @@ public interface EmployeeDetails extends Employee {
         @ForeignKey(Employee.class)
         Integer getEmployeeNumber();
         @Column("salary")
-        String getTitle();
+        String getSalary();
         @Column("from_date")
         LocalDate getFromDate();
         @Column("to_date")
