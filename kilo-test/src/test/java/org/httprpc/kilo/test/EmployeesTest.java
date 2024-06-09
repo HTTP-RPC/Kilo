@@ -24,30 +24,25 @@ public class EmployeesTest {
     public static void main(String[] args) throws IOException {
         var baseURL = new URL("http://localhost:8080/kilo-test/");
 
-        var t0 = System.currentTimeMillis();
-
-        logTiming(baseURL, "employees", t0);
-
-        var t1 = System.currentTimeMillis();
-
-        logTiming(baseURL, "employees/stream", t1);
-
-        var t2 = System.currentTimeMillis();
-
-        logTiming(baseURL, "employees/hibernate", t2);
-
-        var t3 = System.currentTimeMillis();
-
-        logTiming(baseURL, "employees/hibernate-stream", t3);
+        logTiming(baseURL, "employees");
+        logTiming(baseURL, "employees/stream");
+        logTiming(baseURL, "employees/stream-custom?fields=lastName&fields=firstName&fields=gender&fields=birthDate&fields=hireDate");
+        logTiming(baseURL, "employees/stream-custom?fields=lastName&fields=firstName");
+        logTiming(baseURL, "employees/hibernate");
+        logTiming(baseURL, "employees/hibernate-stream");
+        logTiming(baseURL, "employees/hibernate-stream-custom?fields=lastName&fields=firstName&fields=gender&fields=birthDate&fields=hireDate");
+        logTiming(baseURL, "employees/hibernate-stream-custom?fields=lastName&fields=firstName");
     }
 
-    private static void logTiming(URL baseURL, String path, long start) throws IOException {
+    private static void logTiming(URL baseURL, String path) throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, path);
+
+        var t0 = System.currentTimeMillis();
 
         var result = (List<?>)webServiceProxy.invoke();
 
-        var current = System.currentTimeMillis();
+        var t1 = System.currentTimeMillis();
 
-        System.out.println(String.format("Retrieved %d rows from %s in %.1fs", result.size(), path, (current - start) / 1000.0));
+        System.out.println(String.format("Retrieved %d rows from %s in %.1fs", result.size(), path, (t1 - t0) / 1000.0));
     }
 }

@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.persistence.criteria.Selection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import org.hibernate.cfg.Configuration;
@@ -21,7 +22,9 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.kilo.sql.Table;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
 import javax.naming.InitialContext;
@@ -29,6 +32,8 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -96,6 +101,67 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
+    @ResourcePath("stream-custom")
+    public Iterable<List<Object>> getEmployeesStreamCustom(List<String> fields) {
+        if (fields.isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+
+        var pipe = new Pipe<List<Object>>(4096, 15000);
+
+        executorService.submit(() -> {
+            var properties = BeanAdapter.getProperties(Employee.class);
+
+            var queryBuilder = new QueryBuilder();
+
+            queryBuilder.append("select ");
+
+            var i = 0;
+
+            for (var field : fields) {
+                var property = properties.get(field);
+
+                if (property == null) {
+                    throw new IllegalArgumentException();
+                }
+
+                if (i > 0) {
+                    queryBuilder.append(", ");
+                }
+
+                queryBuilder.append(property.getAccessor().getAnnotation(Column.class).value());
+                queryBuilder.append(" as ");
+                queryBuilder.append(field);
+
+                i++;
+            }
+
+            queryBuilder.append(" from ");
+            queryBuilder.append(Employee.class.getAnnotation(Table.class).value());
+
+            var n = fields.size();
+
+            try (var connection = getConnection();
+                var statement = queryBuilder.prepare(connection);
+                var results = queryBuilder.executeQuery(statement)) {
+                pipe.accept(results.stream().map(result -> {
+                    var row = new ArrayList<>(n);
+
+                    for (var field : fields) {
+                        row.add(result.get(field));
+                    }
+
+                    return row;
+                }));
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        });
+
+        return pipe;
+    }
+
+    @RequestMethod("GET")
     @ResourcePath("hibernate")
     public List<Employee> getEmployeesHibernate() throws SQLException {
         var configuration = new Configuration();
@@ -130,6 +196,46 @@ public class EmployeeService extends WebService {
 
                 try (var stream = query.stream()) {
                     pipe.accept(stream);
+                }
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        });
+
+        return pipe;
+    }
+
+    @RequestMethod("GET")
+    @ResourcePath("hibernate-stream-custom")
+    public Iterable<List<Object>> getEmployeesHibernateCustomStream(List<String> fields) {
+        if (fields.isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+
+        var pipe = new Pipe<List<Object>>(4096, 15000);
+
+        executorService.submit(() -> {
+            var configuration = new Configuration();
+
+            configuration.addAnnotatedClass(HibernateEmployee.class);
+
+            try (var connection = getConnection();
+                var sessionFactory = configuration.configure().buildSessionFactory();
+                var session = sessionFactory.withOptions().connection(connection).openSession()) {
+                var criteriaBuilder = session.getCriteriaBuilder();
+                var criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+                var root = criteriaQuery.from(HibernateEmployee.class);
+
+                var selection = new ArrayList<Selection<?>>(fields.size());
+
+                for (var field : fields) {
+                    selection.add(root.get(field));
+                }
+
+                var query = session.createQuery(criteriaQuery.multiselect(selection));
+
+                try (var stream = query.stream()) {
+                    pipe.accept(stream.map(Arrays::asList));
                 }
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
