@@ -21,6 +21,7 @@ import org.httprpc.kilo.sql.Table;
 import java.time.LocalDate;
 import java.util.List;
 
+@Table("employees")
 public interface EmployeeDetails extends Employee {
     @Table("titles")
     interface Title {

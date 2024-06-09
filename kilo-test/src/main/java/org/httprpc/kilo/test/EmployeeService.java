@@ -219,7 +219,7 @@ public class EmployeeService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("?")
     public Employee getEmployeeDetails(Integer employeeNumber, boolean titles, boolean salaries) throws SQLException {
-        var queryBuilder = QueryBuilder.select(Employee.class).filterByPrimaryKey("employeeNumber");
+        var queryBuilder = QueryBuilder.select(EmployeeDetails.class).filterByPrimaryKey("employeeNumber");
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
