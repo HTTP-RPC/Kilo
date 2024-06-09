@@ -30,7 +30,7 @@ public class EmployeesTest {
         logTiming(baseURL, "employees");
         logTiming(baseURL, "employees/stream");
 
-        logTiming(baseURL, "employees/stream-custom", mapOf(
+        logTiming(baseURL, "employees/stream-partial", mapOf(
             entry("propertyNames", listOf(
                 "firstName",
                 "lastName",
@@ -40,7 +40,7 @@ public class EmployeesTest {
             ))
         ));
 
-        logTiming(baseURL, "employees/stream-custom", mapOf(
+        logTiming(baseURL, "employees/stream-partial", mapOf(
             entry("propertyNames", listOf(
                 "firstName",
                 "lastName"
@@ -50,7 +50,7 @@ public class EmployeesTest {
         logTiming(baseURL, "employees/hibernate");
         logTiming(baseURL, "employees/hibernate-stream");
 
-        logTiming(baseURL, "employees/hibernate-stream-custom", mapOf(
+        logTiming(baseURL, "employees/hibernate-stream-partial", mapOf(
             entry("propertyNames", listOf(
                 "firstName",
                 "lastName",
@@ -60,7 +60,7 @@ public class EmployeesTest {
             ))
         ));
 
-        logTiming(baseURL, "employees/hibernate-stream-custom", mapOf(
+        logTiming(baseURL, "employees/hibernate-stream-partial", mapOf(
             entry("propertyNames", listOf(
                 "firstName",
                 "lastName"

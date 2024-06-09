@@ -99,8 +99,8 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("stream-custom")
-    public Iterable<List<Object>> getEmployeesStreamCustom(String... propertyNames) {
+    @ResourcePath("stream-partial")
+    public Iterable<List<Object>> getEmployeesStreamPartial(String... propertyNames) {
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
@@ -171,8 +171,8 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("hibernate-stream-custom")
-    public Iterable<List<Object>> getEmployeesHibernateCustomStream(String... propertyNames) {
+    @ResourcePath("hibernate-stream-partial")
+    public Iterable<List<Object>> getEmployeesHibernateCustomPartial(String... propertyNames) {
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
