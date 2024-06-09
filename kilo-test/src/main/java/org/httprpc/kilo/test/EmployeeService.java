@@ -101,6 +101,10 @@ public class EmployeeService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("stream-partial")
     public Iterable<List<Object>> getEmployeesStreamPartial(String... propertyNames) {
+        if (propertyNames.length == 0) {
+            throw new UnsupportedOperationException();
+        }
+
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
@@ -173,6 +177,10 @@ public class EmployeeService extends WebService {
     @RequestMethod("GET")
     @ResourcePath("hibernate-stream-partial")
     public Iterable<List<Object>> getEmployeesHibernateCustomPartial(String... propertyNames) {
+        if (propertyNames.length == 0) {
+            throw new UnsupportedOperationException();
+        }
+
         var pipe = new Pipe<List<Object>>(4096, 15000);
 
         executorService.submit(() -> {
