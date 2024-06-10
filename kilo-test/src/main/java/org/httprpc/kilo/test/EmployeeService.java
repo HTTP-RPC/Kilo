@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.httprpc.kilo.util.Collections.*;
-
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
     private static ExecutorService executorService = null;
@@ -214,69 +212,5 @@ public class EmployeeService extends WebService {
         });
 
         return pipe;
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("?")
-    public Employee getEmployeeDetails(Integer employeeNumber, boolean titles, boolean salaries) throws SQLException {
-        var queryBuilder = QueryBuilder.select(EmployeeDetails.class).filterByPrimaryKey("employeeNumber");
-
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("employeeNumber", employeeNumber)
-            ))) {
-            return results.stream().findFirst().map(result -> {
-                var employeeDetails = BeanAdapter.coerce(result, EmployeeDetails.class);
-
-                if (titles) {
-                    try {
-                        employeeDetails.setTitles(getEmployeeTitles(employeeNumber));
-                    } catch (SQLException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                }
-
-                if (salaries) {
-                    try {
-                        employeeDetails.setSalaries(getEmployeeSalaries(employeeNumber));
-                    } catch (SQLException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                }
-
-                return employeeDetails;
-            }).orElse(null);
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("?/titles")
-    public List<EmployeeDetails.Title> getEmployeeTitles(Integer employeeNumber) throws SQLException {
-        var queryBuilder = QueryBuilder.select(EmployeeDetails.Title.class)
-            .filterByForeignKey(Employee.class, "employeeNumber");
-
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("employeeNumber", employeeNumber)
-            ))) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, EmployeeDetails.Title.class)).toList();
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("?/salaries")
-    public List<EmployeeDetails.Salary> getEmployeeSalaries(Integer employeeNumber) throws SQLException {
-        var queryBuilder = QueryBuilder.select(EmployeeDetails.Salary.class)
-            .filterByForeignKey(Employee.class, "employeeNumber");
-
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("employeeNumber", employeeNumber)
-            ))) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, EmployeeDetails.Salary.class)).toList();
-        }
     }
 }

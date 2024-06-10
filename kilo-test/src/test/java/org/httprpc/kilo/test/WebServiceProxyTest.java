@@ -959,49 +959,6 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testEmployeeDetails() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d", 10004);
-
-        var employeeDetails = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, EmployeeDetails.class));
-
-        assertNull(employeeDetails.getTitles());
-        assertNull(employeeDetails.getSalaries());
-    }
-
-    @Test
-    public void testEmployeeDetailsExpanded() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d", 10004);
-
-        webServiceProxy.setArguments(mapOf(
-            entry("titles", true),
-            entry("salaries", true)
-        ));
-
-        var employeeDetails = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, EmployeeDetails.class));
-
-        assertNotNull(employeeDetails.getTitles());
-        assertNotNull(employeeDetails.getSalaries());
-    }
-
-    @Test
-    public void testEmployeeTitles() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d/titles", 10004);
-
-        var employeeTitles = webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, EmployeeDetails.Title.class));
-
-        assertFalse(employeeTitles.isEmpty());
-    }
-
-    @Test
-    public void testEmployeeSalaries() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "employees/%d/salaries", 10004);
-
-        var employeeSalaries = webServiceProxy.invoke(result -> BeanAdapter.coerceList((List<?>)result, EmployeeDetails.Salary.class));
-
-        assertFalse(employeeSalaries.isEmpty());
-    }
-
-    @Test
     public void testDefaultProxyMethod() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
