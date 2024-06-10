@@ -609,11 +609,9 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var tableName = getTableName(type);
-
         var sqlBuilder = new StringBuilder("insert into ");
 
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
 
         var columnNames = new LinkedList<String>();
         var parameters = new LinkedList<String>();
@@ -699,11 +697,9 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var tableName = getTableName(type);
-
         var sqlBuilder = new StringBuilder("update ");
 
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
         sqlBuilder.append(" set ");
 
         var i = 0;
@@ -773,11 +769,9 @@ public class QueryBuilder {
             throw new UnsupportedOperationException();
         }
 
-        var tableName = getTableName(type);
-
         var sqlBuilder = new StringBuilder("update ");
 
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
         sqlBuilder.append(" set ");
 
         var i = 0;
@@ -849,11 +843,9 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var tableName = getTableName(type);
-
         var sqlBuilder = new StringBuilder("update ");
 
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
         sqlBuilder.append(" set ");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
         sqlBuilder.append(" = ?");
@@ -889,11 +881,9 @@ public class QueryBuilder {
             throw new IllegalArgumentException();
         }
 
-        var tableName = getTableName(type);
-
         var sqlBuilder = new StringBuilder("delete from ");
 
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
 
         return new QueryBuilder(sqlBuilder, new LinkedList<>(), new HashMap<>(), type);
     }
