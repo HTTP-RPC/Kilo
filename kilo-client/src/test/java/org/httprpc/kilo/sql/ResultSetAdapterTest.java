@@ -77,29 +77,22 @@ public class ResultSetAdapterTest {
     }
 
     @Test
-    public void testJSONArray() throws SQLException {
+    public void testJSON() throws SQLException {
         var list = listOf(1, 2, 3);
 
         var id = insertJSONTest(list);
 
-        var jsonTest = selectJSONTest(id);
+        assertEquals(list, selectJSONTest(id).getValue());
 
-        assertEquals(list, jsonTest.getValue());
-    }
-
-    @Test
-    public void testJSONObject() throws SQLException {
         var map = mapOf(
             entry("a", 1),
             entry("b", 2),
             entry("c", 3)
         );
 
-        var id = insertJSONTest(map);
+        updateJSONTest(id, map);
 
-        var jsonTest = selectJSONTest(id);
-
-        assertEquals(map, jsonTest.getValue());
+        assertEquals(map, selectJSONTest(id).getValue());
     }
 
     @Test
@@ -119,6 +112,17 @@ public class ResultSetAdapterTest {
         }
 
         return queryBuilder.getGeneratedKey(0, Integer.class);
+    }
+
+    private void updateJSONTest(int id, Object value) throws SQLException {
+        var queryBuilder = QueryBuilder.update(JSONTest.class).filterByPrimaryKey("id");
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("value", value),
+                entry("id", id)
+            ));
+        }
     }
 
     private JSONTest selectJSONTest(int id) throws SQLException {
@@ -141,16 +145,30 @@ public class ResultSetAdapterTest {
 
         var documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-        Document document;
-        try (var inputStream = getClass().getResourceAsStream("test.xml")) {
-            document = documentBuilder.parse(inputStream);
+        Document document1;
+        try (var inputStream = getClass().getResourceAsStream("test1.xml")) {
+            document1 = documentBuilder.parse(inputStream);
         }
 
-        var id = insertXMLTest(document);
+        var id = insertXMLTest(document1);
 
-        var xmlTest = selectXMLTest(id);
+        assertTrue(document1.isEqualNode(selectXMLTest(id).getDocument()));
 
-        assertTrue(document.isEqualNode(xmlTest.getDocument()));
+        Document document2;
+        try (var inputStream = getClass().getResourceAsStream("test2.xml")) {
+            document2 = documentBuilder.parse(inputStream);
+        }
+
+        updateXMLTest(id, document2);
+
+        assertTrue(document2.isEqualNode(selectXMLTest(id).getDocument()));
+    }
+
+    @Test
+    public void testXMLNull() {
+        var exception = assertThrows(SQLException.class, () -> insertXMLTest(null));
+
+        assertEquals(INTEGRITY_CONSTRAINT_VIOLATION_CODE, exception.getSQLState());
     }
 
     private int insertXMLTest(Document document) throws SQLException {
@@ -165,8 +183,19 @@ public class ResultSetAdapterTest {
         return queryBuilder.getGeneratedKey(0, Integer.class);
     }
 
+    private void updateXMLTest(int id, Document document) throws SQLException {
+        var queryBuilder = QueryBuilder.updatePartial(XMLTest.class, "document");
+
+        try (var statement = queryBuilder.prepare(getConnection())) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("document", document),
+                entry("id", id)
+            ));
+        }
+    }
+
     private XMLTest selectXMLTest(int id) throws SQLException {
-        var queryBuilder = QueryBuilder.select(XMLTest.class).filterByPrimaryKey("id");
+        var queryBuilder = QueryBuilder.selectPartial(XMLTest.class, "document").filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
