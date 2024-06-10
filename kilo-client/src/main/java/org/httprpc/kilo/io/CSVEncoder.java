@@ -101,8 +101,8 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     }
 
     @Override
-    public void write(Iterable<? extends Map<String, ?>> values, Writer writer) throws IOException {
-        if (values == null || writer == null) {
+    public void write(Iterable<? extends Map<String, ?>> records, Writer writer) throws IOException {
+        if (records == null || writer == null) {
             throw new IllegalArgumentException();
         }
 
@@ -137,7 +137,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         writer.write("\r\n");
 
-        for (var map : values) {
+        for (var record : records) {
             i = 0;
 
             for (var key : keys) {
@@ -149,7 +149,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                     writer.write(delimiter);
                 }
 
-                var value = map.get(key);
+                var value = record.get(key);
 
                 if (value != null) {
                     var format = formats.get(key);
