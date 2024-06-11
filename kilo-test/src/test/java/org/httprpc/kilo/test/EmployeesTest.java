@@ -19,9 +19,6 @@ import org.httprpc.kilo.WebServiceProxy;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
-
-import static org.httprpc.kilo.util.Collections.*;
 
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {
@@ -29,57 +26,12 @@ public class EmployeesTest {
 
         logTiming(baseURL, "employees");
         logTiming(baseURL, "employees/stream");
-
-        logTiming(baseURL, "employees/stream-partial", mapOf(
-            entry("propertyNames", listOf(
-                "employeeNumber",
-                "firstName",
-                "lastName",
-                "gender",
-                "birthDate",
-                "hireDate"
-            ))
-        ));
-
-        logTiming(baseURL, "employees/stream-partial", mapOf(
-            entry("propertyNames", listOf(
-                "employeeNumber",
-                "firstName",
-                "lastName"
-            ))
-        ));
-
         logTiming(baseURL, "employees/hibernate");
         logTiming(baseURL, "employees/hibernate-stream");
-
-        logTiming(baseURL, "employees/hibernate-stream-partial", mapOf(
-            entry("propertyNames", listOf(
-                "employeeNumber",
-                "firstName",
-                "lastName",
-                "gender",
-                "birthDate",
-                "hireDate"
-            ))
-        ));
-
-        logTiming(baseURL, "employees/hibernate-stream-partial", mapOf(
-            entry("propertyNames", listOf(
-                "employeeNumber",
-                "firstName",
-                "lastName"
-            ))
-        ));
     }
 
     private static void logTiming(URL baseURL, String path) throws IOException {
-        logTiming(baseURL, path, mapOf());
-    }
-
-    private static void logTiming(URL baseURL, String path, Map<String, Object> arguments) throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURL, path);
-
-        webServiceProxy.setArguments(arguments);
 
         var t0 = System.currentTimeMillis();
 

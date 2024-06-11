@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import jakarta.persistence.criteria.Selection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import org.hibernate.cfg.Configuration;
@@ -30,8 +29,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -99,38 +96,6 @@ public class EmployeeService extends WebService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("stream-partial")
-    public Iterable<List<Object>> getEmployeesStreamPartial(List<String> propertyNames) {
-        if (propertyNames.isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
-
-        var pipe = new Pipe<List<Object>>(4096, 15000);
-
-        executorService.submit(() -> {
-            var queryBuilder = QueryBuilder.selectPartial(Employee.class, propertyNames);
-
-            try (var connection = getConnection();
-                var statement = queryBuilder.prepare(connection);
-                var results = queryBuilder.executeQuery(statement)) {
-                pipe.accept(results.stream().map(result -> {
-                    var row = new ArrayList<>(propertyNames.size());
-
-                    for (var propertyName : propertyNames) {
-                        row.add(result.get(propertyName));
-                    }
-
-                    return row;
-                }));
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-        });
-
-        return pipe;
-    }
-
-    @RequestMethod("GET")
     @ResourcePath("hibernate")
     public List<Employee> getEmployeesHibernate() throws SQLException {
         var configuration = new Configuration();
@@ -165,46 +130,6 @@ public class EmployeeService extends WebService {
 
                 try (var stream = query.stream()) {
                     pipe.accept(stream);
-                }
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-        });
-
-        return pipe;
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("hibernate-stream-partial")
-    public Iterable<List<Object>> getEmployeesHibernateCustomPartial(List<String> propertyNames) {
-        if (propertyNames.isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
-
-        var pipe = new Pipe<List<Object>>(4096, 15000);
-
-        executorService.submit(() -> {
-            var configuration = new Configuration();
-
-            configuration.addAnnotatedClass(HibernateEmployee.class);
-
-            try (var connection = getConnection();
-                var sessionFactory = configuration.configure().buildSessionFactory();
-                var session = sessionFactory.withOptions().connection(connection).openSession()) {
-                var criteriaBuilder = session.getCriteriaBuilder();
-                var criteriaQuery = criteriaBuilder.createQuery(Object[].class);
-                var root = criteriaQuery.from(HibernateEmployee.class);
-
-                var selection = new ArrayList<Selection<?>>(propertyNames.size());
-
-                for (var propertyName : propertyNames) {
-                    selection.add(root.get(propertyName));
-                }
-
-                var query = session.createQuery(criteriaQuery.multiselect(selection));
-
-                try (var stream = query.stream()) {
-                    pipe.accept(stream.map(Arrays::asList));
                 }
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
