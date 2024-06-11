@@ -281,12 +281,12 @@ public class QueryBuilder {
      * @return
      * A new {@link QueryBuilder} instance.
      */
-    public static QueryBuilder selectPartial(Class<?> type, String... propertyNames) {
-        if (type == null) {
+    public static QueryBuilder selectPartial(Class<?> type, List<String> propertyNames) {
+        if (type == null || propertyNames == null) {
             throw new IllegalArgumentException();
         }
 
-        if (propertyNames.length == 0) {
+        if (propertyNames.isEmpty()) {
             throw new UnsupportedOperationException();
         }
 
@@ -760,12 +760,12 @@ public class QueryBuilder {
      * @return
      * A new {@link QueryBuilder} instance.
      */
-    public static QueryBuilder updatePartial(Class<?> type, String... propertyNames) {
-        if (type == null) {
+    public static QueryBuilder updatePartial(Class<?> type, List<String> propertyNames) {
+        if (type == null || propertyNames == null) {
             throw new IllegalArgumentException();
         }
 
-        if (propertyNames.length == 0) {
+        if (propertyNames.isEmpty()) {
             throw new UnsupportedOperationException();
         }
 

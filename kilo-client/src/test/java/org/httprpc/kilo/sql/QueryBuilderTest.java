@@ -354,7 +354,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectPartial() {
-        var queryBuilder = QueryBuilder.selectPartial(A.class, "a", "x").filterByPrimaryKey("a");
+        var queryBuilder = QueryBuilder.selectPartial(A.class, listOf("a", "x")).filterByPrimaryKey("a");
 
         assertEquals("select A.a, A.d as x from A where A.a = ?", queryBuilder.toString());
         assertEquals(listOf("a"), getParameters(queryBuilder));
@@ -362,7 +362,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectPartialInvalidProperty() {
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.selectPartial(A.class, "z"));
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.selectPartial(A.class, listOf("z")));
     }
 
     @Test
@@ -467,7 +467,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdatePartial() {
-        var queryBuilder = QueryBuilder.updatePartial(B.class, "e", "y").filterByPrimaryKey("a");
+        var queryBuilder = QueryBuilder.updatePartial(B.class, listOf("e", "y")).filterByPrimaryKey("a");
 
         assertEquals("update B set e = ?, f = ? where B.a = ?", queryBuilder.toString());
         assertEquals(listOf("e", "y", "a"), getParameters(queryBuilder));
@@ -475,7 +475,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testUpdatePartialInvalidProperty() {
-        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.updatePartial(B.class, "z"));
+        assertThrows(IllegalArgumentException.class, () -> QueryBuilder.updatePartial(B.class, listOf("z")));
     }
 
     @Test

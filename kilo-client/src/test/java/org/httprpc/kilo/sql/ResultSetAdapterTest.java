@@ -184,7 +184,7 @@ public class ResultSetAdapterTest {
     }
 
     private void updateXMLTest(int id, Document document) throws SQLException {
-        var queryBuilder = QueryBuilder.updatePartial(XMLTest.class, "document");
+        var queryBuilder = QueryBuilder.updatePartial(XMLTest.class, listOf("document"));
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
@@ -195,7 +195,7 @@ public class ResultSetAdapterTest {
     }
 
     private XMLTest selectXMLTest(int id) throws SQLException {
-        var queryBuilder = QueryBuilder.selectPartial(XMLTest.class, "document").filterByPrimaryKey("id");
+        var queryBuilder = QueryBuilder.selectPartial(XMLTest.class, listOf("document")).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(

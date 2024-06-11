@@ -100,8 +100,8 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("stream-partial")
-    public Iterable<List<Object>> getEmployeesStreamPartial(String... propertyNames) {
-        if (propertyNames.length == 0) {
+    public Iterable<List<Object>> getEmployeesStreamPartial(List<String> propertyNames) {
+        if (propertyNames.isEmpty()) {
             throw new UnsupportedOperationException();
         }
 
@@ -114,7 +114,7 @@ public class EmployeeService extends WebService {
                 var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
                 pipe.accept(results.stream().map(result -> {
-                    var row = new ArrayList<>(propertyNames.length);
+                    var row = new ArrayList<>(propertyNames.size());
 
                     for (var propertyName : propertyNames) {
                         row.add(result.get(propertyName));
@@ -176,8 +176,8 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("hibernate-stream-partial")
-    public Iterable<List<Object>> getEmployeesHibernateCustomPartial(String... propertyNames) {
-        if (propertyNames.length == 0) {
+    public Iterable<List<Object>> getEmployeesHibernateCustomPartial(List<String> propertyNames) {
+        if (propertyNames.isEmpty()) {
             throw new UnsupportedOperationException();
         }
 
@@ -195,10 +195,10 @@ public class EmployeeService extends WebService {
                 var criteriaQuery = criteriaBuilder.createQuery(Object[].class);
                 var root = criteriaQuery.from(HibernateEmployee.class);
 
-                var selection = new ArrayList<Selection<?>>(propertyNames.length);
+                var selection = new ArrayList<Selection<?>>(propertyNames.size());
 
-                for (var i = 0; i < propertyNames.length; i++) {
-                    selection.add(root.get(propertyNames[i]));
+                for (var propertyName : propertyNames) {
+                    selection.add(root.get(propertyName));
                 }
 
                 var query = session.createQuery(criteriaQuery.multiselect(selection));
