@@ -1,4 +1,5 @@
 .gradle
+.idea/dataSources.local.xml
 .idea/dataSources
 .idea/sonarlint
 **/build
