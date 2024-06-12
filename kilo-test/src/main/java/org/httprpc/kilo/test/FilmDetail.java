@@ -14,36 +14,28 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Required;
+import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
-import java.time.LocalDate;
+import java.util.List;
 
-@Table("employees")
-public interface Employee {
-    @Column("emp_no")
-    @PrimaryKey
-    Integer getEmployeeNumber();
+@Table("film")
+@Description("Represents detailed information about a film.")
+public interface FilmDetail extends Film {
+    @Column("description")
+    @Description("A description of the film.")
+    String getDescription();
 
-    @Column("first_name")
-    @Required
-    String getFirstName();
+    @Column("length")
+    @Description("The length of the film, in minutes.")
+    Integer getLength();
 
-    @Column("last_name")
-    @Required
-    String getLastName();
+    @Description("The actors that appeared in the film.")
+    List<Actor> getActors();
+    void setActors(List<Actor> actors);
 
-    @Column("gender")
-    @Required
-    String getGender();
-
-    @Column("birth_date")
-    @Required
-    LocalDate getBirthDate();
-
-    @Column("hire_date")
-    @Required
-    LocalDate getHireDate();
+    @Description("The categories associated with the film.")
+    List<Category> getCategories();
+    void setCategories(List<Category> categories);
 }

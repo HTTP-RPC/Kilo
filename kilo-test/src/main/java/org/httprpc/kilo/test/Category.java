@@ -14,36 +14,24 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Required;
+import org.httprpc.kilo.Description;
+import org.httprpc.kilo.Name;
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
-import java.time.LocalDate;
-
-@Table("employees")
-public interface Employee {
-    @Column("emp_no")
+@Table("category")
+@Description("Represents a film category.")
+public interface Category {
+    @Name("id")
+    @Column("category_id")
     @PrimaryKey
-    Integer getEmployeeNumber();
+    @Description("The category's ID.")
+    Integer getID();
 
-    @Column("first_name")
-    @Required
-    String getFirstName();
-
-    @Column("last_name")
-    @Required
-    String getLastName();
-
-    @Column("gender")
-    @Required
-    String getGender();
-
-    @Column("birth_date")
-    @Required
-    LocalDate getBirthDate();
-
-    @Column("hire_date")
-    @Required
-    LocalDate getHireDate();
+    @Column("name")
+    @Index
+    @Description("The name of the category.")
+    String getName();
 }
