@@ -1094,14 +1094,19 @@ public interface Employee {
     @PrimaryKey
     Integer getEmployeeNumber();
     @Column("first_name")
+    @Required
     String getFirstName();
     @Column("last_name")
+    @Required
     String getLastName();
     @Column("gender")
+    @Required
     String getGender();
     @Column("birth_date")
+    @Required
     LocalDate getBirthDate();
     @Column("hire_date")
+    @Required
     LocalDate getHireDate();
 }
 ```
