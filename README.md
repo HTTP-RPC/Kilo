@@ -995,7 +995,7 @@ the preceding query could be written as follows:
 var queryBuilder = QueryBuilder.select(Pet.class).filterByForeignKey(Owner.class, "owner").ordered(true);
 ```
 
-The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used by the `filterByForeignKey()` method to create the "where" clause in the example above. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used by the `order()` method to produce the "order by" clause.
+The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to create the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to create the "order by" clause.
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
 
