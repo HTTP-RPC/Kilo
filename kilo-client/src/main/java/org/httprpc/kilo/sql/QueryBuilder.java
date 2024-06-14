@@ -352,7 +352,8 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause linking to the primary key of another table.
+     * Appends a "join" clause linking a foreign key defined by the most
+     * recently joined type to the primary key of another type.
      *
      * @param parentType
      * The type that defines the primary key.
@@ -386,7 +387,8 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause linking to a foreign key in another table.
+     * Appends a "join" clause linking the primary key of the first selected
+     * type to a foreign key in another type.
      *
      * @param type
      * The type that defines the foreign key.
@@ -420,7 +422,8 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause linking to a foreign key in another table.
+     * Appends a "join" clause linking a foreign key defined by the first
+     * selected type to a foreign key in another type.
      *
      * @param type
      * The type that defines the foreign key.
@@ -731,7 +734,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by primary key.
+     * Filters by the primary key of the first selected type.
      *
      * @param key
      * The key of the argument representing the primary key value.
@@ -762,7 +765,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by foreign key.
+     * Filters by a foreign key defined by the first selected type.
      *
      * @param parentType
      * The type that defines the primary key.
@@ -778,7 +781,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by foreign key.
+     * Filters by a foreign key defined by a joined type.
      *
      * @param type
      * The type that defines the foreign key.
@@ -813,7 +816,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by foreign key.
+     * Filters by a foreign key defined by the first selected type.
      *
      * @param parentType
      * The type that defines the primary key.
@@ -826,7 +829,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by foreign key.
+     * Filters by a foreign key defined by a joined type.
      *
      * @param type
      * The type that defines the foreign key.
