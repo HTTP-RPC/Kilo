@@ -23,6 +23,7 @@ public interface XMLTest {
     @Column("id")
     @PrimaryKey
     Integer getID();
+
     @Column("xml")
     Document getDocument();
 }

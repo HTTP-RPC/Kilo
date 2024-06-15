@@ -26,6 +26,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,48 +80,65 @@ public class ResultSetAdapterTest {
 
     @Test
     public void testJSON() throws SQLException {
-        var list = listOf(1, 2, 3);
+        var list1 = listOf(1, 2, 3);
 
-        var id = insertJSONTest(list);
-
-        assertEquals(list, selectJSONTest(id).getValue());
-
-        var map = mapOf(
+        var map1 = mapOf(
             entry("a", 1),
             entry("b", 2),
             entry("c", 3)
         );
 
-        updateJSONTest(id, map);
+        var record1 = new JSONTest.Record(1, 2, 3);
 
-        assertEquals(map, selectJSONTest(id).getValue());
+        var id = insertJSONTest(list1, map1, record1);
+
+        var jsonTest1 = selectJSONTest(id);
+
+        assertEquals(list1, jsonTest1.getList());
+        assertEquals(map1, jsonTest1.getMap());
+        assertEquals(record1, jsonTest1.getRecord());
+
+        var list2 = listOf(4, 5, 6);
+
+        var map2 = mapOf(
+            entry("a", 4),
+            entry("b", 5),
+            entry("c", 6)
+        );
+
+        var record2 = new JSONTest.Record(4, 5, 6);
+
+        updateJSONTest(id, list2, map2, record2);
+
+        var jsonTest2 = selectJSONTest(id);
+
+        assertEquals(list2, jsonTest2.getList());
+        assertEquals(map2, jsonTest2.getMap());
+        assertEquals(record1, jsonTest1.getRecord());
     }
 
-    @Test
-    public void testJSONNull() {
-        var exception = assertThrows(SQLException.class, () -> insertJSONTest(null));
-
-        assertEquals(INTEGRITY_CONSTRAINT_VIOLATION_CODE, exception.getSQLState());
-    }
-
-    private int insertJSONTest(Object value) throws SQLException {
+    private int insertJSONTest(List<?> list, Map<String, ?> map, JSONTest.Record record) throws SQLException {
         var queryBuilder = QueryBuilder.insert(JSONTest.class);
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("value", value)
+                entry("list", list),
+                entry("map", map),
+                entry("record", record)
             ));
         }
 
         return queryBuilder.getGeneratedKey(0, Integer.class);
     }
 
-    private void updateJSONTest(int id, Object value) throws SQLException {
+    private void updateJSONTest(int id, List<?> list, Map<String, ?> map, JSONTest.Record record) throws SQLException {
         var queryBuilder = QueryBuilder.update(JSONTest.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
             queryBuilder.executeUpdate(statement, mapOf(
-                entry("value", value),
+                entry("list", list),
+                entry("map", map),
+                entry("record", record),
                 entry("id", id)
             ));
         }

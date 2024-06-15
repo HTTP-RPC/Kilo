@@ -38,7 +38,7 @@ create table item (
     id int not null auto_increment,
     description varchar(1024) not null,
     price double not null,
-    size enum ('SMALL', 'MEDIUM', 'LARGE') not null,
+    size tinyint not null,
     color varchar(128) not null,
     weight double not null,
     created bigint not null,
@@ -69,7 +69,9 @@ create table temporal_accessor_test (
 
 create table json_test (
     id int not null auto_increment,
-    json varchar(1024) not null,
+    list varchar(1024) not null,
+    map varchar(1024) not null,
+    record varchar(1024) not null,
     primary key (id)
 );
 
