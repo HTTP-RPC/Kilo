@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Optionals.*;
@@ -451,7 +452,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static final String SET_PREFIX = "set";
 
-    private static Map<Class<?>, Map<String, Property>> typeProperties = new HashMap<>();
+    private static Map<Class<?>, Map<String, Property>> typeProperties = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new bean adapter.
@@ -1126,11 +1127,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * The properties defined by the requested type.
      */
-    public synchronized static Map<String, Property> getProperties(Class<?> type) {
-        var properties = typeProperties.get(type);
-
-        if (properties == null) {
-            properties = new HashMap<>();
+    public static Map<String, Property> getProperties(Class<?> type) {
+        return typeProperties.computeIfAbsent(type, key -> {
+            var properties = new HashMap<String, Property>();
 
             if (type.isRecord()) {
                 var recordComponents = type.getRecordComponents();
@@ -1179,7 +1178,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
             }
 
-            properties = properties.entrySet().stream().peek(entry -> {
+            return properties.entrySet().stream().peek(entry -> {
                 var value = entry.getValue();
 
                 var accessor = value.getAccessor();
@@ -1200,11 +1199,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }, Map.Entry::getValue, (v1, v2) -> {
                 throw new UnsupportedOperationException("Duplicate name.");
             }, TreeMap::new));
-
-            typeProperties.put(type, properties);
-        }
-
-        return properties;
+        });
     }
 
     private static String getPropertyName(Method method) {
