@@ -234,7 +234,7 @@ public class QueryBuilder {
      * <p>Creates a "select" query.</p>
      *
      * <p>{@link Enum} properties will be decoded from either a string or
-     * numeric {@link Numeric#value()}.</p>
+     * {@link Numeric#value()}.</p>
      *
      * <p>Properties annotated with {@link JSON} will be automatically
      * deserialized from a JSON string. Properties of type {@link Document}
@@ -1325,7 +1325,7 @@ public class QueryBuilder {
     /**
      * <p>Executes a query.</p>
      *
-     * <p>{@link Enum} values will be encoded to either a string or numeric
+     * <p>{@link Enum} values will be encoded to either a string or
      * {@link Numeric#value()}.</p>
      *
      * <p>Temporal values are converted as follows:</p>
