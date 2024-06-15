@@ -317,13 +317,24 @@ public interface Item {
 
 ```java
 @Description("Represents a size option.")
-public enum Size {
+public enum Size implements Numeric {
     @Description("A small size.")
-    SMALL,
+    SMALL(10),
     @Description("A medium size.")
-    MEDIUM,
+    MEDIUM(20),
     @Description("A large size.")
-    LARGE
+    LARGE(30);
+
+    private final int value;
+
+    Size(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public int value() {
+        return value;
+    }
 }
 ```  
 
