@@ -108,7 +108,7 @@ public class QueryBuilder {
                 if (constant instanceof Numeric numeric) {
                     identifier = numeric.value();
                 } else {
-                    identifier = ((Enum<?>)constant).name();
+                    identifier = constant.toString();
                 }
 
                 if (value.equals(identifier)) {
@@ -233,8 +233,8 @@ public class QueryBuilder {
     /**
      * <p>Creates a "select" query.</p>
      *
-     * <p>{@link Enum} properties will be decoded from either a string
-     * {@link Enum#name()} or numeric {@link Numeric#value()}.</p>
+     * <p>{@link Enum} properties will be decoded from either a string or
+     * numeric {@link Numeric#value()}.</p>
      *
      * <p>Properties annotated with {@link JSON} will be automatically
      * deserialized from a JSON string. Properties of type {@link Document}
@@ -1325,8 +1325,8 @@ public class QueryBuilder {
     /**
      * <p>Executes a query.</p>
      *
-     * <p>{@link Enum} values will be encoded to either a string
-     * {@link Enum#name()} or numeric {@link Numeric#value()}.</p>
+     * <p>{@link Enum} values will be encoded to either a string or numeric
+     * {@link Numeric#value()}.</p>
      *
      * <p>Temporal values are converted as follows:</p>
      *
@@ -1461,7 +1461,7 @@ public class QueryBuilder {
                 if (argument instanceof Numeric numeric) {
                     value = numeric.value();
                 } else {
-                    value = ((Enum<?>)argument).name();
+                    value = argument.toString();
                 }
             } else if (argument instanceof Date date) {
                 value = date.getTime();
