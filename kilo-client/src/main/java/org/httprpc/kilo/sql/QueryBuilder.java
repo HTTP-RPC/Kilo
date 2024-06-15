@@ -75,19 +75,50 @@ public class QueryBuilder {
     private static final String WHERE = "where";
     private static final String AND = "and";
 
-    private static final Function<Object, Object> toJSON = value -> {
-        var jsonEncoder = new JSONEncoder(true);
+    private static class EnumTransform implements Function<Object, Object> {
+        Class<?> type;
 
-        var writer = new StringWriter();
-
-        try {
-            jsonEncoder.write(BeanAdapter.adapt(value), writer);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        EnumTransform(Class<?> type) {
+            this.type = type;
         }
 
-        return writer.toString();
-    };
+        @Override
+        public Object apply(Object value) {
+            if (value instanceof Number number) {
+                value = number.intValue();
+            }
+
+            var fields = type.getDeclaredFields();
+
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+
+                if (!field.isEnumConstant()) {
+                    continue;
+                }
+
+                Object constant;
+                try {
+                    constant = field.get(null);
+                } catch (IllegalAccessException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                Object identifier;
+                if (constant instanceof Numeric numeric) {
+                    identifier = numeric.value();
+                } else {
+                    identifier = ((Enum<?>)constant).name();
+                }
+
+                if (value.equals(identifier)) {
+                    return constant;
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid value.");
+        }
+    }
 
     private static final Function<Object, Object> fromJSON = value -> {
         var jsonDecoder = new JSONDecoder();
@@ -99,19 +130,14 @@ public class QueryBuilder {
         }
     };
 
-    private static final Function<Object, Object> toXML = value -> {
-        Transformer transformer;
-        try {
-            transformer = TransformerFactory.newInstance().newTransformer();
-        } catch (TransformerConfigurationException exception) {
-            throw new RuntimeException(exception);
-        }
+    private static final Function<Object, Object> toJSON = value -> {
+        var jsonEncoder = new JSONEncoder(true);
 
         var writer = new StringWriter();
 
         try {
-            transformer.transform(new DOMSource((Document)value), new StreamResult(writer));
-        } catch (TransformerException exception) {
+            jsonEncoder.write(BeanAdapter.adapt(value), writer);
+        } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
 
@@ -136,6 +162,25 @@ public class QueryBuilder {
         } catch (SAXException | IOException exception) {
             throw new RuntimeException(exception);
         }
+    };
+
+    private static final Function<Object, Object> toXML = value -> {
+        Transformer transformer;
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } catch (TransformerConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var writer = new StringWriter();
+
+        try {
+            transformer.transform(new DOMSource((Document)value), new StreamResult(writer));
+        } catch (TransformerException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        return writer.toString();
     };
 
     /**
@@ -342,9 +387,13 @@ public class QueryBuilder {
     }
 
     private static Function<Object, Object> getReadTransform(Method accessor) {
-        if (accessor.getAnnotation(JSON.class) != null) {
+        var returnType = accessor.getReturnType();
+
+        if (returnType.isEnum()) {
+            return new EnumTransform(returnType);
+        } else if (accessor.getAnnotation(JSON.class) != null) {
             return fromJSON;
-        } else if (accessor.getReturnType() == Document.class) {
+        } else if (returnType == Document.class) {
             return fromXML;
         } else {
             return null;
@@ -1403,7 +1452,11 @@ public class QueryBuilder {
 
             Object value;
             if (argument instanceof Enum<?>) {
-                value = argument.toString();
+                if (argument instanceof Numeric numeric) {
+                    value = numeric.value();
+                } else {
+                    value = ((Enum<?>)argument).name();
+                }
             } else if (argument instanceof Date date) {
                 value = date.getTime();
             } else if (argument instanceof LocalDate localDate) {
