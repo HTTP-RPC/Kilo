@@ -231,13 +231,17 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "select" query.
+     * <p>Creates a "select" query.</p>
+     *
+     * <p>{@link Enum} properties will be decoded from either a string
+     * {@link Enum#name()} or numeric {@link Numeric#value()}.</p>
+     *
+     * <p>Properties annotated with {@link JSON} will be automatically
+     * deserialized from a JSON string. Properties of type {@link Document}
+     * will be automatically deserialized from an XML string.</p>
      *
      * @param types
-     * The types representing the tables to select from. Properties annotated
-     * with {@link JSON} will be automatically deserialized from a JSON string.
-     * Properties of type {@link Document} will be automatically deserialized
-     * from an XML string.
+     * The types representing the tables to select from.
      *
      * @return
      * A new {@link QueryBuilder} instance.
@@ -1321,8 +1325,10 @@ public class QueryBuilder {
     /**
      * <p>Executes a query.</p>
      *
-     * <p>{@link Enum} arguments are converted to strings. Temporal values are
-     * converted as follows:</p>
+     * <p>{@link Enum} values will be encoded to either a string
+     * {@link Enum#name()} or numeric {@link Numeric#value()}.</p>
+     *
+     * <p>Temporal values are converted as follows:</p>
      *
      * <ul>
      * <li>{@link Date} - long value representing epoch time in milliseconds</li>
