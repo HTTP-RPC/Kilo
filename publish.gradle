@@ -46,11 +46,11 @@ publishing {
             pom {
                 name = project.name
                 description = 'Lightweight REST for Java'
-                url = 'http://httprpc.org'
+                url = 'https://github.com/HTTP-RPC/Kilo'
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
                 developers {
