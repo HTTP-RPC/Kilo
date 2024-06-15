@@ -728,7 +728,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces collection values to a list.
+     * Coerces a collection to a list.
      *
      * @param <E>
      * The target element type.
@@ -771,7 +771,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces collection values to a set.
+     * Coerces a collection to a set.
      *
      * @param <E>
      * The target element type.
