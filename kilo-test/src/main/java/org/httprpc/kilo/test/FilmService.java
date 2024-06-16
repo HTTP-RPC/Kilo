@@ -64,7 +64,7 @@ public class FilmService extends WebService {
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("match", map(match, value -> value.replace("*", "%")))
+                entry("match", map(match, value -> value.replace('*', '%')))
             ))) {
             return results.stream().map(result -> BeanAdapter.coerce(result, Film.class)).toList();
         }
