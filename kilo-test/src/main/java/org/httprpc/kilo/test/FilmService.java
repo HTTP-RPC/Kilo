@@ -51,12 +51,12 @@ public class FilmService extends WebService {
     @RequestMethod("GET")
     @Description("Returns a list of all films.")
     public List<Film> getFilms(
-        @Description("An optional name pattern to match. An asterisk may be used as a wildcard.") String name
+        @Description("An optional name pattern to match. An asterisk may be used as a wildcard.") String match
     ) throws SQLException {
         var queryBuilder = QueryBuilder.select(Film.class);
 
-        if (name != null) {
-            queryBuilder.filterByIndexLike("name");
+        if (match != null) {
+            queryBuilder.filterByIndexLike("match");
         }
 
         queryBuilder.ordered(true);
@@ -64,7 +64,7 @@ public class FilmService extends WebService {
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("name", map(name, value -> value.replace("*", "%")))
+                entry("match", map(match, value -> value.replace("*", "%")))
             ))) {
             return results.stream().map(result -> BeanAdapter.coerce(result, Film.class)).toList();
         }

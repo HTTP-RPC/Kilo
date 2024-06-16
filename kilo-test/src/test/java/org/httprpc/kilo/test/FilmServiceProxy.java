@@ -22,7 +22,7 @@ import java.util.List;
 
 public interface FilmServiceProxy {
     @RequestMethod("GET")
-    List<Film> getFilms(String name) throws IOException;
+    List<Film> getFilms(String match) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("?")
