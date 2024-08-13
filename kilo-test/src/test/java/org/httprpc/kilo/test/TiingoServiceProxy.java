@@ -16,11 +16,13 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.ServicePath;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+@ServicePath("tiingo")
 public interface TiingoServiceProxy {
     @RequestMethod("GET")
     @ResourcePath("daily/?")

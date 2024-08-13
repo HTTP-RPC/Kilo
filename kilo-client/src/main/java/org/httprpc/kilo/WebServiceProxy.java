@@ -1032,6 +1032,16 @@ public class WebServiceProxy {
             throw new IllegalArgumentException("Type is not an interface.");
         }
 
+        var servicePath = type.getAnnotation(ServicePath.class);
+
+        if (servicePath != null) {
+            try {
+                baseURL = new URL(baseURL, String.format("%s/", servicePath.value()));
+            } catch (MalformedURLException exception) {
+                throw new UnsupportedOperationException(exception);
+            }
+        }
+
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURL, initializer)));
     }
 }

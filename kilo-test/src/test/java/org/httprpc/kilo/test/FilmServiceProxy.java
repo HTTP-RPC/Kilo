@@ -16,10 +16,12 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.ServicePath;
 
 import java.io.IOException;
 import java.util.List;
 
+@ServicePath("films")
 public interface FilmServiceProxy {
     @RequestMethod("GET")
     List<Film> getFilms(String match) throws IOException;

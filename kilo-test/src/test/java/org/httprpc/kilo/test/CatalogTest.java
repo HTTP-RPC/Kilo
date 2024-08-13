@@ -19,7 +19,6 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URL;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CatalogTest extends AbstractTest {
     @Test
     public void testCatalog() throws IOException {
-        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, new URL(baseURL, "catalog/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var item = BeanAdapter.coerce(mapOf(), ItemDetail.class);
 

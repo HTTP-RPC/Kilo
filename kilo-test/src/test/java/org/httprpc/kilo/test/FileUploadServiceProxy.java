@@ -18,11 +18,13 @@ import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
+import org.httprpc.kilo.ServicePath;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+@ServicePath("file-upload")
 public interface FileUploadServiceProxy {
     @RequestMethod("POST")
     @Empty

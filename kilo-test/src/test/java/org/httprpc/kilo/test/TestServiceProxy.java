@@ -19,6 +19,7 @@ import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.ServicePath;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@ServicePath("test")
 public interface TestServiceProxy {
     @RequestMethod("GET")
     Map<String, Object> testGet(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, char character) throws IOException;

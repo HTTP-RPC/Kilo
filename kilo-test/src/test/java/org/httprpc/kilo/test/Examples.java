@@ -37,6 +37,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,15 @@ import static org.httprpc.kilo.util.Collections.*;
 public class Examples {
     public interface Example {
         void execute() throws Exception;
+    }
+
+    private static final URL baseURL;
+    static {
+        try {
+            baseURL = new URL("http://localhost:8080/kilo-test/");
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public static void main(String[] args) {
@@ -80,7 +90,7 @@ public class Examples {
 
     public static void mathService1() throws IOException {
         // GET /math/sum?a=2&b=4
-        var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 4),
@@ -92,7 +102,7 @@ public class Examples {
 
     public static void mathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
-        var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
 
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
@@ -102,7 +112,7 @@ public class Examples {
     }
 
     public static void mathService3() throws IOException {
-        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http://localhost:8080/kilo-test/math/"));
+        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURL);
 
         System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
         System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0

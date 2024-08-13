@@ -405,7 +405,7 @@ The following code demonstrates how `WebServiceProxy` might be used to access th
 
 ```java
 // GET /math/sum?a=2&b=4
-var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
 
 webServiceProxy.setArguments(mapOf(
     entry("a", 4),
@@ -417,7 +417,7 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 
 ```java
 // GET /math/sum?values=1&values=2&values=3
-var webServiceProxy = new WebServiceProxy("GET", new URL("http://localhost:8080/kilo-test/math/sum"));
+var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
 
 webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))
@@ -438,9 +438,10 @@ public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> ini
 
 Both versions return an implementation of a given interface that submits requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
 
-The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures. For example:
+The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. The optional `ServicePath` annotation can be used to associate a base path with a proxy type. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures. For example:
 
 ```java
+@ServicePath("math")
 public interface MathServiceProxy {
     @RequestMethod("GET")
     @ResourcePath("sum")
@@ -457,7 +458,7 @@ public interface MathServiceProxy {
 ```
 
 ```java
-var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, new URL("http://localhost:8080/kilo-test/math/"));
+var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURL);
 
 System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0

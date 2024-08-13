@@ -17,12 +17,22 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.WebServiceProxy;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 
 import static org.httprpc.kilo.util.Collections.*;
 
 public class TiingoTest {
+    private static final URL baseURL;
+    static {
+        try {
+            baseURL = new URL("https://api.tiingo.com");
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         var token = System.getProperty("token");
 
@@ -39,7 +49,7 @@ public class TiingoTest {
         var ticker = args[0];
 
         // Create service proxy
-        var tiingoServiceProxy = WebServiceProxy.of(TiingoServiceProxy.class, new URL("https://api.tiingo.com/tiingo/"), webServiceProxy -> {
+        var tiingoServiceProxy = WebServiceProxy.of(TiingoServiceProxy.class, baseURL, webServiceProxy -> {
             webServiceProxy.setHeaders(mapOf(
                 entry("Authorization", String.format("Token %s", token))
             ));

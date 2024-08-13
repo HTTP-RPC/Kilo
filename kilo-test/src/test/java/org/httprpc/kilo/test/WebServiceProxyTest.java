@@ -25,7 +25,6 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
@@ -112,7 +111,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testGetProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), 'a');
 
@@ -146,7 +145,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testKeysProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         var result = testServiceProxy.testKeys(123, "héllo", 456,"göodbye");
 
@@ -184,7 +183,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testParametersProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         var result = testServiceProxy.testParameters(1, 2, 3, 4, listOf(5.0, 6.0, 7.0));
 
@@ -219,7 +218,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testVarargsProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testVarargs(new int[] {1, 2, 3}, "abc", "def", "ghi");
 
@@ -296,7 +295,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
@@ -358,7 +357,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testURLEncodedPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testURLEncodedPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
@@ -430,7 +429,7 @@ public class WebServiceProxyTest extends AbstractTest {
         var textTestURL = getClass().getResource("test.txt");
         var imageTestURL = getClass().getResource("test.jpg");
 
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), textTestURL, imageTestURL);
 
@@ -651,7 +650,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testEmptyPutProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         var result = testServiceProxy.testEmptyPut(101);
 
@@ -692,7 +691,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testHeadersProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> {
             webServiceProxy.setHeaders(mapOf(
                 entry("X-Header-A", "abc"),
                 entry("X-Header-B", 123)
@@ -787,21 +786,21 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testMissingRequiredParameterProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, null, null, '\0'));
     }
 
     @Test
     public void testMissingProxyException() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         assertThrows(UnsupportedOperationException.class, testServiceProxy::testMissingException);
     }
 
     @Test
     public void testInvalidProxyException() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         assertThrows(UnsupportedOperationException.class, testServiceProxy::testInvalidException);
     }
@@ -898,7 +897,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testFileUpload1Proxy() throws IOException {
-        var fileUploadServiceProxy = WebServiceProxy.of(FileUploadServiceProxy.class, new URL(baseURL, "file-upload"));
+        var fileUploadServiceProxy = WebServiceProxy.of(FileUploadServiceProxy.class, baseURL);
 
         var result = fileUploadServiceProxy.uploadFile(getClass().getResource("test.txt"));
 
@@ -926,7 +925,7 @@ public class WebServiceProxyTest extends AbstractTest {
         var textTestURL = getClass().getResource("test.txt");
         var imageTestURL = getClass().getResource("test.jpg");
 
-        var fileUploadServiceProxy = WebServiceProxy.of(FileUploadServiceProxy.class, new URL(baseURL, "file-upload"));
+        var fileUploadServiceProxy = WebServiceProxy.of(FileUploadServiceProxy.class, baseURL);
 
         var result = fileUploadServiceProxy.uploadFiles(listOf(textTestURL, imageTestURL));
 
@@ -935,7 +934,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testMembersProxy() throws IOException {
-        var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, new URL(baseURL, "members/"));
+        var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, baseURL);
 
         var members = memberServiceProxy.getMembers("foo", "bar");
 
@@ -960,7 +959,7 @@ public class WebServiceProxyTest extends AbstractTest {
 
     @Test
     public void testDefaultProxyMethod() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, new URL(baseURL, "test/"), webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var result = testServiceProxy.getFibonacciSum(8);
 

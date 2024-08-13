@@ -12,17 +12,21 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test;
+package org.httprpc.kilo;
 
-import org.httprpc.kilo.Name;
-import org.httprpc.kilo.RequestMethod;
-import org.httprpc.kilo.ServicePath;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.io.IOException;
-import java.util.List;
-
-@ServicePath("members")
-public interface MemberServiceProxy {
-    @RequestMethod("GET")
-    List<Person> getMembers(@Name("first_name") String firstName, @Name("last_name") String lastName) throws IOException;
+/**
+ * Associates a service path with a proxy type.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ServicePath {
+    /**
+     * The type's service path.
+     */
+    String value();
 }
