@@ -135,7 +135,6 @@ Parameters that must be provided by the caller can be indicated by the `Required
 ```java
 @RequestMethod("POST")
 @Description("Uploads a single file.")
-@Empty
 public long uploadFile(
     @Description("The file to upload.") @Required URL file
 ) throws IOException {
@@ -144,8 +143,6 @@ public long uploadFile(
 ```
 
 `List`, `Set`, and array parameters are implicitly required, since these values will never be `null` (though they may be empty). For all other parameter types, HTTP 403 will be returned if a required value is not provided.
-
-The `Empty` annotation indicates that the method does not accept a body and is discussed in more detail [later](#body-content).
 
 #### Custom Parameter Names
 The `Name` annotation can be used to associate a custom name with a method parameter. For example:
@@ -197,8 +194,6 @@ public void updateItem(
 ```
 
 Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
-
-The `Empty` annotation can be used to indicate that a service method does not accept a body. It is only required for empty `POST` or `PUT` requests (`GET` and `DELETE` requests are inherently empty). Handlers for `POST` requests submitted as form data must include this annotation.
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -466,7 +461,7 @@ System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used in conjunction with `Empty` to submit `POST` requests using either the URL or multi-part form encoding.
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used to submit `POST` requests using either the URL or multi-part encoding.
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 

@@ -264,19 +264,24 @@ public class WebServiceProxy {
                     initializer.accept(webServiceProxy);
                 }
 
-                var empty = method.getAnnotation(Empty.class) != null;
+                var empty = switch (webServiceProxy.getMethod()) {
+                    case "POST", "PUT" -> {
+                        var formData = method.getAnnotation(FormData.class);
 
-                if (empty) {
-                    var formData = method.getAnnotation(FormData.class);
-
-                    if (formData != null) {
-                        if (formData.multipart()) {
-                            webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+                        if (formData == null) {
+                            yield argumentList.size() == keyCount;
                         } else {
-                            webServiceProxy.setEncoding(Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+                            if (formData.multipart()) {
+                                webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
+                            } else {
+                                webServiceProxy.setEncoding(Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
+                            }
+
+                            yield true;
                         }
                     }
-                }
+                    default -> true;
+                };
 
                 configure(webServiceProxy, method.getParameters(), keyCount, argumentList, empty);
 
@@ -287,9 +292,7 @@ public class WebServiceProxy {
         static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList, boolean empty) {
             var n = parameters.length;
 
-            var method = webServiceProxy.getMethod();
-
-            if ((method.equals("POST") || method.equals("PUT")) && !empty) {
+            if (!empty) {
                 n--;
             }
 

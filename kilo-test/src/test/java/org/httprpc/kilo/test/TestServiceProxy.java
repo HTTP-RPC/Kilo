@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -46,22 +45,15 @@ public interface TestServiceProxy {
     Map<String, Object> testVarargs(int[] numbers, String... strings) throws IOException;
 
     @RequestMethod("POST")
-    @Empty
-    TestService.Response testPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
-
-    @RequestMethod("POST")
-    @Empty
     @FormData
     TestService.Response testURLEncodedPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
 
     @RequestMethod("POST")
-    @Empty
     @FormData(multipart = true)
     TestService.Response testMultipartPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, URL... attachments) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("?")
-    @Empty
     int testEmptyPut(int value) throws IOException;
 
     @RequestMethod("GET")

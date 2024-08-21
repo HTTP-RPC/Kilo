@@ -294,20 +294,6 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
-
-        var result = testServiceProxy.testPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
-
-        assertEquals("héllo&gøod+bye?", result.getString());
-        assertEquals(listOf("a", "b", "c"), result.getStrings());
-        assertEquals(123, result.getNumber());
-        assertEquals(setOf(1, 2, 3), result.getNumbers());
-        assertEquals('\0', result.getCharacter());
-        assertEquals(listOf(), result.getAttachmentInfo());
-    }
-
-    @Test
     public void testURLEncodedPost() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "test");
 

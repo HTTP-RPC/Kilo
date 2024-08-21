@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -27,12 +26,10 @@ import java.util.List;
 @ServicePath("file-upload")
 public interface FileUploadServiceProxy {
     @RequestMethod("POST")
-    @Empty
     @FormData(multipart = true)
     long uploadFile(@Required URL file) throws IOException;
 
     @RequestMethod("POST")
-    @Empty
     @FormData(multipart = true)
     long uploadFiles(List<URL> files) throws IOException;
 }

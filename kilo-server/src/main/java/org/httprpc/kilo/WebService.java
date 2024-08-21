@@ -186,7 +186,6 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
-        private boolean empty;
         private boolean deprecated;
 
         private TypeDescriptor produces = null;
@@ -198,7 +197,6 @@ public abstract class WebService extends HttpServlet {
 
             description = map(handler.getAnnotation(Description.class), Description::value);
 
-            empty = handler.getAnnotation(Empty.class) != null;
             deprecated = handler.getAnnotation(Deprecated.class) != null;
         }
 
@@ -220,13 +218,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
-        }
-
-        /**
-         * Indicates that the operation does not accept a body.
-         */
-        public boolean isEmpty() {
-            return empty;
         }
 
         /**
@@ -936,12 +927,6 @@ public abstract class WebService extends HttpServlet {
         var empty = contentType == null
             || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
             || contentType.startsWith(MULTIPART_FORM_DATA);
-
-        if ((method.equals("POST") || method.equals("PUT"))) {
-            handlerList = handlerList.stream()
-                .filter(handler -> empty == (handler.getAnnotation(Empty.class) != null))
-                .toList();
-        }
 
         var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
 

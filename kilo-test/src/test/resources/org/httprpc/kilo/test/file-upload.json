@@ -7,7 +7,6 @@
         {
           "deprecated": false,
           "description": "Uploads a single file.",
-          "empty": true,
           "method": "POST",
           "parameters": [
             {
@@ -38,7 +37,6 @@
         {
           "deprecated": false,
           "description": "Uploads a list of files.",
-          "empty": true,
           "method": "POST",
           "parameters": [
             {

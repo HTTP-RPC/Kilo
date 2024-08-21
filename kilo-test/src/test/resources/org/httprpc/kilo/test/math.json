@@ -7,7 +7,6 @@
         {
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
-          "empty": false,
           "method": "GET",
           "parameters": [
             {
@@ -52,7 +51,6 @@
         {
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
-          "empty": false,
           "method": "GET",
           "parameters": [
             {

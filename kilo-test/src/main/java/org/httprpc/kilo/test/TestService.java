@@ -19,7 +19,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
-import org.httprpc.kilo.Empty;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -290,7 +289,6 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @Creates
-    @Empty
     public Response testPost(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
@@ -391,7 +389,6 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("PUT")
     @ResourcePath("?")
-    @Empty
     public int testEmptyPut(int id) {
         return id;
     }
