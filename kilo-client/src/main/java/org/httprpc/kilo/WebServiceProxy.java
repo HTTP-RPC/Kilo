@@ -28,7 +28,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -283,45 +282,43 @@ public class WebServiceProxy {
                     default -> true;
                 };
 
-                configure(webServiceProxy, method.getParameters(), keyCount, argumentList, empty);
+                var parameters = method.getParameters();
+
+                var n = parameters.length;
+
+                if (!empty) {
+                    n--;
+                }
+
+                var argumentMap = new LinkedHashMap<String, Object>();
+
+                for (var i = keyCount; i < n; i++) {
+                    var parameter = parameters[i];
+
+                    var value = argumentList.get(i);
+
+                    if (parameter.getAnnotation(Required.class) != null && value == null) {
+                        throw new IllegalArgumentException("Required argument is not defined.");
+                    }
+
+                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+
+                    argumentMap.put(name, value);
+                }
+
+                webServiceProxy.setArguments(argumentMap);
+
+                if (n < parameters.length) {
+                    var body = argumentList.get(n);
+
+                    if (body == null) {
+                        throw new IllegalArgumentException("Body is required.");
+                    }
+
+                    webServiceProxy.setBody(body);
+                }
 
                 return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
-            }
-        }
-
-        static void configure(WebServiceProxy webServiceProxy, Parameter[] parameters, int keyCount, List<Object> argumentList, boolean empty) {
-            var n = parameters.length;
-
-            if (!empty) {
-                n--;
-            }
-
-            var argumentMap = new LinkedHashMap<String, Object>();
-
-            for (var i = keyCount; i < n; i++) {
-                var parameter = parameters[i];
-
-                var value = argumentList.get(i);
-
-                if (parameter.getAnnotation(Required.class) != null && value == null) {
-                    throw new IllegalArgumentException("Required argument is not defined.");
-                }
-
-                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
-
-                argumentMap.put(name, value);
-            }
-
-            webServiceProxy.setArguments(argumentMap);
-
-            if (n < parameters.length) {
-                var body = argumentList.get(n);
-
-                if (body == null) {
-                    throw new IllegalArgumentException("Body is required.");
-                }
-
-                webServiceProxy.setBody(body);
             }
         }
     }

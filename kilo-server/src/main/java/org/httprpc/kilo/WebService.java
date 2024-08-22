@@ -900,7 +900,7 @@ public abstract class WebService extends HttpServlet {
             argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
         }
 
-        var contentType = request.getContentType();
+        var contentType = map(request.getContentType(), String::toLowerCase);
 
         if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA)) {
             for (var part : request.getParts()) {
