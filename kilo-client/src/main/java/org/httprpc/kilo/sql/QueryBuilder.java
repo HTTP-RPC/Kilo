@@ -405,21 +405,65 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause linking a foreign key defined by the most
-     * recently joined type to the primary key of another type.
+     * @deprecated
+     * Use {@link #join(Class)} instead.
+     */
+    @Deprecated
+    public QueryBuilder joinOnPrimaryKey(Class<?> parentType) {
+        return join(parentType);
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #join(Class, Class)} instead.
+     */
+    @Deprecated
+    public QueryBuilder joinOnForeignKey(Class<?> type) {
+        return join(type, types.getLast());
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #join(Class, Class)} instead.
+     */
+    @Deprecated
+    public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> parentType) {
+        return join(type, parentType);
+    }
+
+    /**
+     * Appends a "join" clause linking the most recently joined type to a
+     * parent type.
      *
      * @param parentType
-     * The type that defines the primary key.
+     * The parent type.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder joinOnPrimaryKey(Class<?> parentType) {
-        if (parentType == null) {
+    public QueryBuilder join(Class<?> parentType) {
+        return join(parentType, parentType);
+    }
+
+    /**
+     * Appends a "join" clause linking the most recently joined type to another
+     * type.
+     *
+     * @param type
+     * The type to join.
+     *
+     * @param parentType
+     * The parent type.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder join(Class<?> type, Class<?> parentType) {
+        if (type == null || parentType == null) {
             throw new IllegalArgumentException();
         }
 
-        var tableName = getTableName(parentType);
+        var tableName = getTableName(type);
 
         var last = types.getLast();
 
@@ -428,84 +472,22 @@ public class QueryBuilder {
         sqlBuilder.append(" on ");
         sqlBuilder.append(getTableName(last));
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(last, parentType));
-        sqlBuilder.append(" = ");
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(parentType));
 
-        types.add(parentType);
-
-        return this;
-    }
-
-    /**
-     * Appends a "join" clause linking the primary key of the first selected
-     * type to a foreign key in another type.
-     *
-     * @param type
-     * The type that defines the foreign key.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder joinOnForeignKey(Class<?> type) {
-        if (type == null) {
-            throw new IllegalArgumentException();
+        if (parentType == last) {
+            sqlBuilder.append(getPrimaryKeyColumnName(last));
+        } else {
+            sqlBuilder.append(getForeignKeyColumnName(last, parentType));
         }
 
-        var tableName = getTableName(type);
-
-        var first = types.getFirst();
-
-        sqlBuilder.append(" join ");
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(first));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(first));
         sqlBuilder.append(" = ");
         sqlBuilder.append(tableName);
         sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(type, first));
 
-        types.add(type);
-
-        return this;
-    }
-
-    /**
-     * Appends a "join" clause linking a foreign key defined by the first
-     * selected type to a foreign key in another type.
-     *
-     * @param type
-     * The type that defines the foreign key.
-     *
-     * @param parentType
-     * The type that defines the primary key.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> parentType) {
-        if (type == null || parentType == null) {
-            throw new IllegalArgumentException();
+        if (parentType == type) {
+            sqlBuilder.append(getPrimaryKeyColumnName(parentType));
+        } else {
+            sqlBuilder.append(getForeignKeyColumnName(type, parentType));
         }
-
-        var tableName = getTableName(type);
-
-        var first = types.getFirst();
-
-        sqlBuilder.append(" join ");
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(" on ");
-        sqlBuilder.append(getTableName(first));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(first, parentType));
-        sqlBuilder.append(" = ");
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
 
         types.add(type);
 

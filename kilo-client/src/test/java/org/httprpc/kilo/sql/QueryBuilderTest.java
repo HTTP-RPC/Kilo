@@ -316,14 +316,14 @@ public class QueryBuilderTest {
     @Test
     public void testSelectIJK() {
         var queryBuilder = QueryBuilder.select(I.class, J.class, K.class)
-            .joinOnForeignKey(J.class)
-            .joinOnForeignKey(K.class)
+            .joinOnForeignKey(J.class, I.class)
+            .joinOnForeignKey(K.class, I.class)
             .filterByPrimaryKey("i")
             .ordered(false);
 
         assertEquals("select I.h, I.i, I.t, I.u, J.v, K.w from I "
             + "join J on I.i = J.i "
-            + "join K on I.i = K.i "
+            + "join K on J.i = K.i "
             + "where I.i = ? "
             + "order by I.t desc, I.u desc", queryBuilder.toString());
 
