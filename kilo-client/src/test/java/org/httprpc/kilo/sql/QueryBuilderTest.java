@@ -239,7 +239,7 @@ public class QueryBuilderTest {
     @Test
     public void testSelectAtoD() {
         var queryBuilder = QueryBuilder.select(A.class, E.class)
-            .joinOnForeignKey(E.class)
+            .join(E.class, A.class)
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
@@ -254,7 +254,7 @@ public class QueryBuilderTest {
     @Test
     public void testSelectBtoD() {
         var queryBuilder = QueryBuilder.select(B.class, E.class)
-            .joinOnForeignKey(E.class)
+            .join(E.class, B.class)
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
@@ -269,7 +269,7 @@ public class QueryBuilderTest {
     @Test
     public void testSelectCtoD() {
         var queryBuilder = QueryBuilder.select(C.class)
-            .joinOnForeignKey(E.class, A.class)
+            .join(E.class, A.class)
             .filterByForeignKey(A.class, "a")
             .filterByForeignKey(E.class, D.class, "d");
 
@@ -284,7 +284,7 @@ public class QueryBuilderTest {
     @Test
     public void testSelectDtoA() {
         var queryBuilder = QueryBuilder.select(D.class)
-            .joinOnForeignKey(E.class)
+            .join(E.class, D.class)
             .filterByForeignKey(E.class, A.class, "a")
             .filterByPrimaryKey("d");
 
@@ -299,8 +299,8 @@ public class QueryBuilderTest {
     @Test
     public void testSelectIHGF() {
         var queryBuilder = QueryBuilder.select(I.class, H.class, G.class)
-            .joinOnPrimaryKey(H.class)
-            .joinOnPrimaryKey(G.class)
+            .join(H.class)
+            .join(G.class)
             .filterByForeignKey(G.class, F.class, "f")
             .ordered(true);
 
@@ -316,8 +316,8 @@ public class QueryBuilderTest {
     @Test
     public void testSelectIJK() {
         var queryBuilder = QueryBuilder.select(I.class, J.class, K.class)
-            .joinOnForeignKey(J.class, I.class)
-            .joinOnForeignKey(K.class, I.class)
+            .join(J.class, I.class)
+            .join(K.class, I.class)
             .filterByPrimaryKey("i")
             .ordered(false);
 
@@ -339,7 +339,7 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectIH() {
-        var queryBuilder = QueryBuilder.select(I.class).joinOnPrimaryKey(H.class).filterByForeignKeyIsNull(H.class, G.class);
+        var queryBuilder = QueryBuilder.select(I.class).join(H.class).filterByForeignKeyIsNull(H.class, G.class);
 
         assertEquals("select I.h, I.i, I.t, I.u from I join H on I.h = H.h where H.g is null", queryBuilder.toString());
     }
@@ -361,11 +361,11 @@ public class QueryBuilderTest {
 
     @Test
     public void testInvalidJoin() {
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(String.class));
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(String.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class));
 
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnPrimaryKey(Runnable.class));
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).joinOnForeignKey(Runnable.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(Runnable.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(Runnable.class));
     }
 
     @Test
@@ -479,7 +479,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("x", "y"), getParameters(queryBuilder));
 
-        assertThrows(NoSuchElementException.class, () -> queryBuilder.joinOnPrimaryKey(A.class));
+        assertThrows(NoSuchElementException.class, () -> queryBuilder.join(A.class));
     }
 
     @Test

@@ -405,33 +405,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated
-     * Use {@link #join(Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder joinOnPrimaryKey(Class<?> parentType) {
-        return join(parentType);
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #join(Class, Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder joinOnForeignKey(Class<?> type) {
-        return join(type, types.getLast());
-    }
-
-    /**
-     * @deprecated
-     * Use {@link #join(Class, Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder joinOnForeignKey(Class<?> type, Class<?> parentType) {
-        return join(type, parentType);
-    }
-
-    /**
      * Appends a "join" clause linking the most recently joined type to a
      * parent type.
      *
