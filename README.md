@@ -1007,7 +1007,9 @@ public interface Pet {
 the preceding query could be written as follows:
 
 ```java
-var queryBuilder = QueryBuilder.select(Pet.class).filterByForeignKey(Owner.class, "owner").ordered(true);
+var queryBuilder = QueryBuilder.select(Pet.class)
+    .filterByForeignKey(Owner.class, "owner")
+    .ordered(true);
 ```
 
 The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to create the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to create the "order by" clause.

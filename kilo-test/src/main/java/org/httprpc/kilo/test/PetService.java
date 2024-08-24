@@ -58,7 +58,9 @@ public class PetService extends AbstractDatabaseService {
             throw new UnsupportedOperationException();
         }
 
-        var queryBuilder = QueryBuilder.select(Pet.class).filterByForeignKey(Owner.class, "owner").ordered(true);
+        var queryBuilder = QueryBuilder.select(Pet.class)
+            .filterByForeignKey(Owner.class, "owner")
+            .ordered(true);
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
