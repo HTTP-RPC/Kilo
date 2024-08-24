@@ -719,7 +719,7 @@ public class WebServiceProxy {
             var query = encodeQuery();
 
             if (!query.isEmpty()) {
-                url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), this.url.getFile() + "?" + query);
+                url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), String.format("%s?%s", this.url.getFile(), query));
             }
 
             if (body != null) {

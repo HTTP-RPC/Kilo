@@ -1245,7 +1245,7 @@ public abstract class WebService extends HttpServlet {
         }
 
         for (var entry : resource.resources.entrySet()) {
-            describeResource(path + "/" + entry.getKey(), entry.getValue());
+            describeResource(String.format("%s/%s", path, entry.getKey()), entry.getValue());
         }
     }
 
