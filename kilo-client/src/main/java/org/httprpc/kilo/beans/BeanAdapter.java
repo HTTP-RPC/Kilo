@@ -1128,78 +1128,73 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The properties defined by the requested type.
      */
     public static Map<String, Property> getProperties(Class<?> type) {
-        return typeProperties.computeIfAbsent(type, key -> {
-            var properties = new HashMap<String, Property>();
+        return typeProperties.computeIfAbsent(type, BeanAdapter::computeProperties);
+    }
 
-            if (type.isRecord()) {
-                var recordComponents = type.getRecordComponents();
+    private static Map<String, Property> computeProperties(Class<?> type) {
+        var properties = new HashMap<String, Property>();
 
-                for (var i = 0; i < recordComponents.length; i++) {
-                    var recordComponent = recordComponents[i];
+        if (type.isRecord()) {
+            var recordComponents = type.getRecordComponents();
 
-                    var property = new Property();
+            for (var i = 0; i < recordComponents.length; i++) {
+                var recordComponent = recordComponents[i];
 
-                    property.accessor = recordComponent.getAccessor();
+                var property = new Property();
 
-                    properties.put(recordComponent.getName(), property);
+                property.accessor = recordComponent.getAccessor();
+
+                properties.put(recordComponent.getName(), property);
+            }
+        } else {
+            var methods = type.getMethods();
+
+            for (var i = 0; i < methods.length; i++) {
+                var method = methods[i];
+
+                if (method.getDeclaringClass() == Object.class) {
+                    continue;
                 }
-            } else {
-                var methods = type.getMethods();
 
-                for (var i = 0; i < methods.length; i++) {
-                    var method = methods[i];
+                var propertyName = getPropertyName(method);
 
-                    if (method.getDeclaringClass() == Object.class) {
-                        continue;
-                    }
+                if (propertyName == null) {
+                    continue;
+                }
 
-                    var propertyName = getPropertyName(method);
+                var property = properties.computeIfAbsent(propertyName, key -> new Property());
 
-                    if (propertyName == null) {
-                        continue;
-                    }
-
-                    var property = properties.get(propertyName);
-
-                    if (property == null) {
-                        property = new Property();
-
-                        properties.put(propertyName, property);
-                    }
-
-
-                    if (method.getParameterCount() == 0) {
-                        property.accessor = method;
-                    } else if (property.mutator == null) {
-                        property.mutator = method;
-                    } else {
-                        throw new UnsupportedOperationException("Duplicate mutator.");
-                    }
+                if (method.getParameterCount() == 0) {
+                    property.accessor = method;
+                } else if (property.mutator == null) {
+                    property.mutator = method;
+                } else {
+                    throw new UnsupportedOperationException("Duplicate mutator.");
                 }
             }
+        }
 
-            return properties.entrySet().stream().peek(entry -> {
-                var value = entry.getValue();
+        return properties.entrySet().stream().peek(entry -> {
+            var value = entry.getValue();
 
-                var accessor = value.getAccessor();
+            var accessor = value.getAccessor();
 
-                if (accessor == null) {
-                    throw new UnsupportedOperationException("Missing accessor.");
-                }
+            if (accessor == null) {
+                throw new UnsupportedOperationException("Missing accessor.");
+            }
 
-                var mutator = value.getMutator();
+            var mutator = value.getMutator();
 
-                if (mutator != null && !accessor.getGenericReturnType().equals(mutator.getGenericParameterTypes()[0])) {
-                    throw new UnsupportedOperationException("Property type mismatch.");
-                }
-            }).collect(Collectors.toMap(entry -> {
-                var accessor = entry.getValue().getAccessor();
+            if (mutator != null && !accessor.getGenericReturnType().equals(mutator.getGenericParameterTypes()[0])) {
+                throw new UnsupportedOperationException("Property type mismatch.");
+            }
+        }).collect(Collectors.toMap(entry -> {
+            var accessor = entry.getValue().getAccessor();
 
-                return getKey(accessor, entry.getKey());
-            }, Map.Entry::getValue, (v1, v2) -> {
-                throw new UnsupportedOperationException("Duplicate name.");
-            }, TreeMap::new));
-        });
+            return getKey(accessor, entry.getKey());
+        }, Map.Entry::getValue, (v1, v2) -> {
+            throw new UnsupportedOperationException("Duplicate name.");
+        }, TreeMap::new));
     }
 
     private static String getPropertyName(Method method) {
