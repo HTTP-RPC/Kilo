@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is about 150KB in size, making it an ideal choice for applications where a minimal footprint is desired.
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The entire framework is less than 150KB in size, making it an ideal choice for applications where a minimal footprint is desired.
 
 The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
@@ -461,7 +461,15 @@ System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. The `FormData` annotation can be used to submit `POST` requests using either the URL or multi-part encoding.
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. 
+
+The `FormData` annotation can be used to submit `POST` requests using the URL or multi-part encoding. For example:
+
+```java
+@RequestMethod("POST")
+@FormData(multipart = true)
+long uploadFile(@Required URL file) throws IOException;
+```
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
