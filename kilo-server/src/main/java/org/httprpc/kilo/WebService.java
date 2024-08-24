@@ -726,7 +726,9 @@ public abstract class WebService extends HttpServlet {
     public void init() throws ServletException {
         var type = getClass();
 
-        var urlPatterns = coalesce(map(type.getAnnotation(WebServlet.class), WebServlet::urlPatterns), new String[0]);
+        var webServlet = type.getAnnotation(WebServlet.class);
+
+        var urlPatterns = webServlet.urlPatterns();
 
         if (urlPatterns.length == 0) {
             throw new ServletException("At least one URL pattern is required.");
@@ -740,9 +742,19 @@ public abstract class WebService extends HttpServlet {
 
         path = path.substring(0, path.length() - 2);
 
-        root = new Resource();
+        root = index(type.getMethods());
 
-        var methods = getClass().getMethods();
+        serviceDescriptor = new ServiceDescriptor(path, type);
+
+        describeResource(path, root);
+
+        synchronized (WebService.class) {
+            instances.put(type, this);
+        }
+    }
+
+    private static Resource index(Method[] methods) throws ServletException {
+        var root = new Resource();
 
         for (var i = 0; i < methods.length; i++) {
             var handler = methods[i];
@@ -750,6 +762,8 @@ public abstract class WebService extends HttpServlet {
             var requestMethod = handler.getAnnotation(RequestMethod.class);
 
             if (requestMethod != null) {
+                var method = requestMethod.value().toUpperCase();
+
                 var resource = root;
 
                 var resourcePath = handler.getAnnotation(ResourcePath.class);
@@ -764,43 +778,17 @@ public abstract class WebService extends HttpServlet {
                             throw new ServletException("Invalid resource path.");
                         }
 
-                        var child = resource.resources.get(component);
-
-                        if (child == null) {
-                            child = new Resource();
-
-                            resource.resources.put(component, child);
-                        }
-
-                        resource = child;
+                        resource = resource.resources.computeIfAbsent(component, key -> new Resource());
                     }
                 }
 
-                var method = requestMethod.value().toUpperCase();
-
-                var handlerList = resource.handlerMap.get(method);
-
-                if (handlerList == null) {
-                    handlerList = new LinkedList<>();
-
-                    resource.handlerMap.put(method, handlerList);
-                }
-
-                handlerList.add(handler);
+                resource.handlerMap.computeIfAbsent(method, key -> new LinkedList<>()).add(handler);
             }
         }
 
         sort(root);
 
-        serviceDescriptor = new ServiceDescriptor(path, type);
-
-        describeResource(path, root);
-
-        if (getClass().getAnnotation(WebServlet.class) != null) {
-            synchronized (WebService.class) {
-                instances.put(type, this);
-            }
-        }
+        return root;
     }
 
     private static void sort(Resource root) {
