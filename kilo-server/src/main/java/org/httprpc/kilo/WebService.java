@@ -728,6 +728,10 @@ public abstract class WebService extends HttpServlet {
 
         var webServlet = type.getAnnotation(WebServlet.class);
 
+        if (webServlet == null) {
+            throw new ServletException("Missing web servlet annotation.");
+        }
+
         var urlPatterns = webServlet.urlPatterns();
 
         if (urlPatterns.length == 0) {
