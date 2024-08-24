@@ -762,6 +762,8 @@ public abstract class WebService extends HttpServlet {
             var requestMethod = handler.getAnnotation(RequestMethod.class);
 
             if (requestMethod != null) {
+                var method = requestMethod.value().toUpperCase();
+
                 var resource = root;
 
                 var resourcePath = handler.getAnnotation(ResourcePath.class);
@@ -776,19 +778,11 @@ public abstract class WebService extends HttpServlet {
                             throw new ServletException("Invalid resource path.");
                         }
 
-                        var child = resource.resources.get(component);
-
-                        if (child == null) {
-                            child = new Resource();
-
-                            resource.resources.put(component, child);
-                        }
-
-                        resource = child;
+                        resource = resource.resources.computeIfAbsent(component, key -> new Resource());
                     }
                 }
 
-                resource.handlerMap.computeIfAbsent(requestMethod.value().toUpperCase(), key -> new LinkedList<>()).add(handler);
+                resource.handlerMap.computeIfAbsent(method, key -> new LinkedList<>()).add(handler);
             }
         }
 
