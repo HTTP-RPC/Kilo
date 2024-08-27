@@ -21,7 +21,11 @@ import java.util.Map;
 
 @Table("json_test")
 public interface JSONTest {
-    record Record(int a, int b, int c) {
+    record Record(
+        int a,
+        int b,
+        int c
+    ) {
     }
 
     @Name("id")

@@ -59,13 +59,9 @@ public class QueryBuilderTest {
 
     @Table("C")
     public record C(
-        @Column("a")
-        @ForeignKey(A.class)
-        String a,
-        @Column("b")
-        Double b,
-        @Column("c")
-        Boolean c
+        @Column("a") @ForeignKey(A.class) String a,
+        @Column("b") Double b,
+        @Column("c") Boolean c
     ) {
     }
 
@@ -80,14 +76,9 @@ public class QueryBuilderTest {
 
     @Table("E")
     public record E(
-        @Column("a")
-        @ForeignKey(A.class)
-        String a,
-        @Column("d")
-        @ForeignKey(D.class)
-        String d,
-        @Column("z")
-        Boolean z
+        @Column("a") @ForeignKey(A.class) String a,
+        @Column("d") @ForeignKey(D.class) String d,
+        @Column("z") Boolean z
     ) {
     }
 
