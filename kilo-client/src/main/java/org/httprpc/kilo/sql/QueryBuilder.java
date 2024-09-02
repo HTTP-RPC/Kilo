@@ -405,11 +405,12 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "join" clause linking the most recently joined type to a
-     * parent type.
+     * Appends a "join" clause linking the most recently joined type to another
+     * type.
      *
      * @param parentType
-     * The parent type.
+     * The type representing both the table to join and the table that defines
+     * the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -423,10 +424,10 @@ public class QueryBuilder {
      * type.
      *
      * @param type
-     * The type to join.
+     * The type representing the table to join.
      *
      * @param parentType
-     * The parent type.
+     * The type representing the table that defines the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -683,7 +684,7 @@ public class QueryBuilder {
      * The type representing the table to update.
      *
      * @param parentType
-     * The type that defines the primary key.
+     * The type representing the table that defines the primary key.
      *
      * @param key
      * The key of the argument representing the foreign key value.
