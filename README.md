@@ -1012,17 +1012,17 @@ var queryBuilder = QueryBuilder.select(Pet.class)
     .ordered(true);
 ```
 
-The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to create the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to create the "order by" clause.
+The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to construct the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to construct the "order by" clause.
 
-This example uses primary and foreign keys to select all actors that appear in a particular film, identified by the "filmID" parameter:
+This code creates a query that selects all actors appearing in a particular film, identified by the "filmID" parameter:
 
-```
+```java
 var queryBuilder = QueryBuilder.select(Actor.class)
     .join(FilmActor.class, Actor.class)
     .filterByForeignKey(FilmActor.class, Film.class, "filmID");
 ```
 
-It produces a query that is functionally equivalent to the following:
+Primary and foreign key annotations associated with the `Actor`, `Film`, and `FilmActor` types are used to construct the "join" clause. The resulting query is functionally equivalent to the following:
 
 ```sql
 select actor.* from actor 
