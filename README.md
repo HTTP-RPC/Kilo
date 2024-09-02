@@ -1014,6 +1014,22 @@ var queryBuilder = QueryBuilder.select(Pet.class)
 
 The `Table` annotation associates an entity type with a database table. Similarly, the `Column` annotation associates a property with a column in the table. Both are used to create the "select" statement in the preceding example. The `PrimaryKey` and `ForeignKey` annotations represent relationships between entity types and are used to create the "where" clause. The `Index` annotation indicates that a property is part of the default sort order for an entity and is used to create the "order by" clause.
 
+This example uses primary and foreign keys to select all actors that appear in a particular film, identified by the "filmID" parameter:
+
+```
+var queryBuilder = QueryBuilder.select(Actor.class)
+    .join(FilmActor.class, Actor.class)
+    .filterByForeignKey(FilmActor.class, Film.class, "filmID");
+```
+
+It produces a query that is functionally equivalent to the following:
+
+```sql
+select actor.* from actor 
+join film_actor on actor.actor_id = film_actor.actor_id 
+where film_actor.film_id = :filmID
+```
+
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
 
 ## ElementAdapter
