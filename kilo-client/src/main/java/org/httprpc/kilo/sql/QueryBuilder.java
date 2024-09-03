@@ -409,8 +409,8 @@ public class QueryBuilder {
      * type.
      *
      * @param parentType
-     * The type representing both the table to join and the table that defines
-     * the primary key.
+     * The type representing the table to join and the table that defines the
+     * primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
@@ -448,7 +448,7 @@ public class QueryBuilder {
         sqlBuilder.append(".");
 
         if (parentType == last) {
-            sqlBuilder.append(getPrimaryKeyColumnName(last));
+            sqlBuilder.append(getPrimaryKeyColumnName(parentType));
         } else {
             sqlBuilder.append(getForeignKeyColumnName(last, parentType));
         }
