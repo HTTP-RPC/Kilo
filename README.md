@@ -1022,7 +1022,7 @@ var queryBuilder = QueryBuilder.select(Actor.class)
     .filterByForeignKey(FilmActor.class, Film.class, "filmID");
 ```
 
-Primary and foreign key annotations associated with the `Actor`, `Film`, and `FilmActor` types are used to construct the "join" clause. The resulting query is functionally equivalent to the following:
+Primary and foreign key annotations associated with the `Actor`, `Film`, and `FilmActor` types are used to construct the "join" clause. The resulting query is functionally equivalent to the following SQL:
 
 ```sql
 select actor.* from actor 
