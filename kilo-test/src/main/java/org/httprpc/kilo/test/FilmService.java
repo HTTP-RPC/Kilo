@@ -96,7 +96,8 @@ public class FilmService extends WebService {
     private List<Actor> getActors(Integer filmID) throws SQLException {
         var queryBuilder = QueryBuilder.select(Actor.class)
             .join(FilmActor.class, Actor.class)
-            .filterByForeignKey(FilmActor.class, Film.class, "filmID");
+            .filterByForeignKey(FilmActor.class, Film.class, "filmID")
+            .ordered(true);
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);
@@ -110,7 +111,8 @@ public class FilmService extends WebService {
     private List<Category> getCategories(Integer filmID) throws SQLException {
         var queryBuilder = QueryBuilder.select(Category.class)
             .join(FilmCategory.class, Category.class)
-            .filterByForeignKey(FilmCategory.class, Film.class, "filmID");
+            .filterByForeignKey(FilmCategory.class, Film.class, "filmID")
+            .ordered(true);
 
         try (var connection = getConnection();
             var statement = queryBuilder.prepare(connection);

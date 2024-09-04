@@ -1019,15 +1019,17 @@ This code creates a query that selects all actors appearing in a particular film
 ```java
 var queryBuilder = QueryBuilder.select(Actor.class)
     .join(FilmActor.class, Actor.class)
-    .filterByForeignKey(FilmActor.class, Film.class, "filmID");
+    .filterByForeignKey(FilmActor.class, Film.class, "filmID")
+    .ordered(true);
 ```
 
-Primary and foreign key annotations associated with the `Actor`, `Film`, and `FilmActor` types are used to construct the "join" clause. The resulting query is functionally equivalent to the following SQL:
+Primary and foreign key annotations associated with the [`Actor`](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/Actor.java), [`Film`](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/Film.java), and [`FilmActor`](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FilmActor.java) types are used to construct the "join" clause. The resulting query is functionally equivalent to the following SQL:
 
 ```sql
 select actor.* from actor 
 join film_actor on actor.actor_id = film_actor.actor_id 
 where film_actor.film_id = :filmID
+order by actor.last_name asc, actor.first_name asc
 ```
 
 Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
