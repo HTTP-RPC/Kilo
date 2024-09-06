@@ -41,9 +41,9 @@ public class MathService extends WebService {
     public double getSum(
         @Description("The numbers to add.") List<Double> values
     ) {
-        double total = 0;
+        var total = 0.0;
 
-        for (double value : values) {
+        for (var value : values) {
             total += value;
         }
 

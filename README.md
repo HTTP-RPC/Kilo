@@ -63,9 +63,9 @@ public class MathService extends WebService {
     public double getSum(
         @Description("The numbers to add.") List<Double> values
     ) {
-        double total = 0;
+        var total = 0.0;
 
-        for (double value : values) {
+        for (var value : values) {
             total += value;
         }
 
@@ -117,7 +117,7 @@ Method parameters may be any of the following types:
 
 Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
 
-Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are parsed from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
+Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
 `List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
 
@@ -218,7 +218,6 @@ By default, an HTTP 200 (OK) response is returned when a service method complete
 
 If a service method returns `null`, an HTTP 404 (not found) response will be returned.
 
-#### Custom Result Encodings
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative representations. See the method documentation for more information.
 
 ### Request and Repsonse Properties
@@ -342,7 +341,6 @@ public record Coordinates(
 
 Types or methods tagged with the `Deprecated` annotation will be identified as such in the output.
 
-#### JSON Documentation
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
 ## WebServiceProxy
