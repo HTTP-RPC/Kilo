@@ -771,21 +771,21 @@ public class WebServiceProxyTest extends AbstractTest {
     }
 
     @Test
-    public void testMissingRequiredParameterProxy() throws IOException {
+    public void testMissingRequiredParameterProxy() {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         assertThrows(IllegalArgumentException.class, () -> testServiceProxy.testGet(null, null, null, null, '\0'));
     }
 
     @Test
-    public void testMissingProxyException() throws IOException {
+    public void testMissingProxyException() {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         assertThrows(UnsupportedOperationException.class, testServiceProxy::testMissingException);
     }
 
     @Test
-    public void testInvalidProxyException() throws IOException {
+    public void testInvalidProxyException() {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURL);
 
         assertThrows(UnsupportedOperationException.class, testServiceProxy::testInvalidException);

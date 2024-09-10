@@ -605,16 +605,16 @@ public abstract class WebService extends HttpServlet {
     }
 
     private static class Resource {
-        static List<String> order = listOf("GET", "POST", "PUT", "DELETE");
+        Map<String, Resource> resources = new TreeMap<>();
 
-        final Map<String, List<Method>> handlerMap = new TreeMap<>((method1, method2) -> {
-            var i1 = order.indexOf(method1);
-            var i2 = order.indexOf(method2);
+        Map<String, List<Method>> handlerMap = new TreeMap<>((method1, method2) -> {
+            var i1 = methodOrder.indexOf(method1);
+            var i2 = methodOrder.indexOf(method2);
 
-            return Integer.compare((i1 == -1) ? order.size() : i1, (i2 == -1) ? order.size() : i2);
+            return Integer.compare((i1 == -1) ? methodOrder.size() : i1, (i2 == -1) ? methodOrder.size() : i2);
         });
 
-        final Map<String, Resource> resources = new TreeMap<>();
+        static final List<String> methodOrder = immutableListOf("GET", "POST", "PUT", "DELETE");
     }
 
     private static class PartURLConnection extends URLConnection {
