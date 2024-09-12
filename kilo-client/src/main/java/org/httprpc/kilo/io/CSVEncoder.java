@@ -112,7 +112,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         for (var key : keys) {
             if (key == null) {
-                continue;
+                throw new IllegalStateException();
             }
 
             if (i > 0) {
@@ -141,10 +141,6 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
             i = 0;
 
             for (var key : keys) {
-                if (key == null) {
-                    continue;
-                }
-
                 if (i > 0) {
                     writer.write(delimiter);
                 }

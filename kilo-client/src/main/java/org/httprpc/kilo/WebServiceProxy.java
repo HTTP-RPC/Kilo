@@ -814,13 +814,7 @@ public class WebServiceProxy {
             monitorStream.println(String.format("HTTP %d", statusCode));
 
             for (var entry : connection.getHeaderFields().entrySet()) {
-                var key = entry.getKey();
-
-                if (key == null) {
-                    continue;
-                }
-
-                monitorStream.println(String.format("%s: %s", key, String.join(", ", entry.getValue())));
+                monitorStream.println(String.format("%s: %s", entry.getKey(), String.join(", ", entry.getValue())));
             }
         }
 
@@ -871,7 +865,7 @@ public class WebServiceProxy {
             var key = entry.getKey();
 
             if (key == null) {
-                continue;
+                throw new IllegalStateException();
             }
 
             for (var value : getParameterValues(entry.getValue())) {

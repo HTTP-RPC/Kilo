@@ -145,8 +145,8 @@ public class JSONEncoder extends Encoder<Object> {
             for (var entry : map.entrySet()) {
                 var key = entry.getKey();
 
-                if (key == null) {
-                    continue;
+                if (!(key instanceof String)) {
+                    throw new IllegalArgumentException("Invalid key.");
                 }
 
                 if (i > 0) {
@@ -159,7 +159,7 @@ public class JSONEncoder extends Encoder<Object> {
                     indent(writer);
                 }
 
-                encode(key.toString(), writer);
+                encode(key, writer);
 
                 writer.write(":");
 
