@@ -407,7 +407,7 @@ public class WebServiceProxy {
         try {
             url = url.toURI().resolve(String.format(path, arguments)).toURL();
         } catch (URISyntaxException exception) {
-            throw new MalformedURLException();
+            throw new MalformedURLException(exception.getMessage());
         }
     }
 
@@ -733,7 +733,7 @@ public class WebServiceProxy {
                 try {
                     uri = new URI(String.format("%s?%s", url, query));
                 } catch (URISyntaxException exception) {
-                    throw new MalformedURLException();
+                    throw new MalformedURLException(exception.getMessage());
                 }
 
                 url = uri.toURL();

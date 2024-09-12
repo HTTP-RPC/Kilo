@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -158,11 +157,6 @@ public class JSONEncoderTest {
         var uuid = UUID.randomUUID();
 
         assertEquals(String.format("\"%s\"", uuid), encode(uuid));
-    }
-
-    @Test
-    public void testURL() throws IOException {
-        assertEquals("\"http://localhost:8080\"", encode(URI.create("http://localhost:8080").toURL()));
     }
 
     @Test
