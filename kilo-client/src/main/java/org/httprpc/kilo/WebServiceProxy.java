@@ -814,7 +814,13 @@ public class WebServiceProxy {
             monitorStream.println(String.format("HTTP %d", statusCode));
 
             for (var entry : connection.getHeaderFields().entrySet()) {
-                monitorStream.println(String.format("%s: %s", entry.getKey(), String.join(", ", entry.getValue())));
+                var key = entry.getKey();
+
+                if (key == null) {
+                    continue;
+                }
+
+                monitorStream.println(String.format("%s: %s", key, String.join(", ", entry.getValue())));
             }
         }
 
