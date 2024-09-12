@@ -21,7 +21,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -360,6 +360,8 @@ public class TemplateEncoder extends Encoder<Object> {
     private Deque<String> sectionNames = new LinkedList<>();
 
     private static final int EOF = -1;
+
+    private static final String JAR_SCHEME = "jar";
 
     private static final String KEY_REFERENCE = "~";
     private static final String SELF_REFERENCE = ".";
@@ -789,14 +791,34 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
                         case INCLUDE -> {
                             if (root != null) {
-                                URL url;
+                                URI uri;
                                 try {
-                                    url = this.url.toURI().resolve(marker).toURL();
+                                    uri = url.toURI();
                                 } catch (URISyntaxException exception) {
-                                    throw new MalformedURLException();
+                                    throw new IllegalStateException(exception);
                                 }
 
-                                try (var inputStream = url.openStream()) {
+                                var jar = uri.getScheme().equals(JAR_SCHEME);
+
+                                if (jar) {
+                                    try {
+                                        uri = new URI(uri.toString().substring(JAR_SCHEME.length() + 1));
+                                    } catch (URISyntaxException exception) {
+                                        throw new IllegalStateException(exception);
+                                    }
+                                }
+
+                                uri = uri.resolve(marker);
+
+                                if (jar) {
+                                    try {
+                                        uri = new URI(String.format("%s:%s", JAR_SCHEME, uri));
+                                    } catch (URISyntaxException exception) {
+                                        throw new IllegalStateException(exception);
+                                    }
+                                }
+
+                                try (var inputStream = uri.toURL().openStream()) {
                                     write(dictionary, writer, locale, timeZone, new PagedReader(new InputStreamReader(inputStream)));
                                 }
                             }
