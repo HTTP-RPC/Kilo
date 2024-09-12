@@ -18,6 +18,7 @@ import org.httprpc.kilo.WebServiceProxy;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.LocalDate;
 
@@ -27,7 +28,7 @@ public class TiingoTest {
     private static final URL baseURL;
     static {
         try {
-            baseURL = new URL("https://api.tiingo.com");
+            baseURL = URI.create("https://api.tiingo.com").toURL();
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }

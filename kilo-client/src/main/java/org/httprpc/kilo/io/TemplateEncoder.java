@@ -21,6 +21,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -787,7 +789,12 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
                         case INCLUDE -> {
                             if (root != null) {
-                                var url = new URL(this.url, marker);
+                                URL url;
+                                try {
+                                    url = this.url.toURI().resolve(marker).toURL();
+                                } catch (URISyntaxException exception) {
+                                    throw new MalformedURLException();
+                                }
 
                                 try (var inputStream = url.openStream()) {
                                     write(dictionary, writer, locale, timeZone, new PagedReader(new InputStreamReader(inputStream)));

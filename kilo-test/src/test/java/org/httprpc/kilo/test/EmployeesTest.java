@@ -17,12 +17,13 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.WebServiceProxy;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {
-        var baseURL = new URL("http://localhost:8080/kilo-test/");
+        var baseURL = URI.create("http://localhost:8080/kilo-test/").toURL();
 
         logTiming(baseURL, "employees");
         logTiming(baseURL, "employees/stream");

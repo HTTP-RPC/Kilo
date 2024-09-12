@@ -15,6 +15,7 @@
 package org.httprpc.kilo.test;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 public abstract class AbstractTest {
@@ -22,7 +23,7 @@ public abstract class AbstractTest {
 
     protected AbstractTest() {
         try {
-            baseURL = new URL("http://localhost:8080/kilo-test/");
+            baseURL = URI.create("http://localhost:8080/kilo-test/").toURL();
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }

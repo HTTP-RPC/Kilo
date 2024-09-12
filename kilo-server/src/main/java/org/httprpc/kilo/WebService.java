@@ -34,6 +34,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -912,7 +914,14 @@ public abstract class WebService extends HttpServlet {
                     argumentMap.put(name, values);
                 }
 
-                values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
+                URI uri;
+                try {
+                    uri = new URI(String.format("part:/%s", submittedFileName));
+                } catch (URISyntaxException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                values.add(URL.of(uri, new PartURLStreamHandler(part)));
             }
         }
 

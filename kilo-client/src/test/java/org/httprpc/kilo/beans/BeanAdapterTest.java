@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -112,7 +110,7 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testBeanAdapter() throws MalformedURLException {
+    public void testBeanAdapter() {
         var now = LocalDate.now();
 
         var map = mapOf(
@@ -130,7 +128,6 @@ public class BeanAdapterTest {
             entry("duration", Duration.parse("PT2H30M")),
             entry("period", Period.parse("P3Y2M")),
             entry("UUID", UUID.randomUUID()),
-            entry("URL", new URL("http://localhost:8080")),
             entry("nestedBean", mapOf(
                 entry("flag", true),
                 entry("character", 'y')
@@ -287,11 +284,6 @@ public class BeanAdapterTest {
         var uuid = UUID.randomUUID();
 
         assertEquals(uuid, BeanAdapter.coerce(uuid.toString(), UUID.class));
-    }
-
-    @Test
-    public void testURLCoercion() throws MalformedURLException {
-        assertEquals(new URL("http://localhost:8080"), BeanAdapter.coerce("http://localhost:8080", URL.class));
     }
 
     @Test
@@ -572,7 +564,7 @@ public class BeanAdapterTest {
         assertEquals(LocalDateTime.class, properties.get("localDateTime"));
         assertEquals(Duration.class, properties.get("duration"));
         assertEquals(Period.class, properties.get("period"));
-        assertEquals(URL.class, properties.get("URL"));
+        assertEquals(UUID.class, properties.get("UUID"));
 
         assertEquals(TestInterface.NestedInterface.class, properties.get("nestedBean"));
 

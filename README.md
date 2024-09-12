@@ -210,7 +210,6 @@ Additionally, instances of the following types are automatically converted to th
 * `java.time.TemporalAccessor`
 * `java.time.TemporalAmount`
 * `java.util.UUID`
-* `java.net.URL`
 
 All other values are assumed to be beans and are serialized as objects.
 
@@ -396,7 +395,7 @@ The following code demonstrates how `WebServiceProxy` might be used to access th
 
 ```java
 // GET /math/sum?a=2&b=4
-var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
 
 webServiceProxy.setArguments(mapOf(
     entry("a", 4),
@@ -408,7 +407,7 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 
 ```java
 // GET /math/sum?values=1&values=2&values=3
-var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
 
 webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))

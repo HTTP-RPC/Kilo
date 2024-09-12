@@ -19,6 +19,7 @@ import org.httprpc.kilo.io.CSVEncoder;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class BulkUploadTest {
     }
 
     public static void main(String[] args) throws IOException {
-        var baseURL = new URL("http://localhost:8080/kilo-test/bulk-upload/");
+        var baseURL = URI.create("http://localhost:8080/kilo-test/bulk-upload/").toURL();
 
         var t0 = System.currentTimeMillis();
 

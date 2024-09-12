@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
+import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -162,7 +162,7 @@ public class JSONEncoderTest {
 
     @Test
     public void testURL() throws IOException {
-        assertEquals("\"http://localhost:8080\"", encode(new URL("http://localhost:8080")));
+        assertEquals("\"http://localhost:8080\"", encode(URI.create("http://localhost:8080").toURL()));
     }
 
     @Test

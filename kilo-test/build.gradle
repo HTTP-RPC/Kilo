@@ -40,18 +40,24 @@ compileTestJava {
 }
 
 compileKotlin {
+    kotlinOptions {
+        jvmTarget = 17
+    }
+
     compilerOptions {
         freeCompilerArgs = [
-            '-jvm-target', '17',
             '-java-parameters'
         ]
     }
 }
 
 compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = 17
+    }
+
     compilerOptions {
         freeCompilerArgs = [
-            '-jvm-target', '17',
             '-java-parameters'
         ]
     }

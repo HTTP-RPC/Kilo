@@ -31,6 +31,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -257,7 +259,9 @@ public class WebServiceProxy {
                     }
                 }
 
-                var webServiceProxy = new WebServiceProxy(requestMethod.value().toUpperCase(), new URL(baseURL, pathBuilder.toString()));
+                var url = baseURL.toURI().resolve(pathBuilder.toString()).toURL();
+
+                var webServiceProxy = new WebServiceProxy(requestMethod.value().toUpperCase(), url);
 
                 if (initializer != null) {
                     initializer.accept(webServiceProxy);
@@ -398,7 +402,13 @@ public class WebServiceProxy {
      * If a URL cannot be constructed from the base URL and path.
      */
     public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) throws MalformedURLException {
-        this(method, new URL(baseURL, String.format(path, arguments)));
+        this(method, baseURL);
+
+        try {
+            url = url.toURI().resolve(String.format(path, arguments)).toURL();
+        } catch (URISyntaxException exception) {
+            throw new MalformedURLException();
+        }
     }
 
     /**
@@ -719,7 +729,14 @@ public class WebServiceProxy {
             var query = encodeQuery();
 
             if (!query.isEmpty()) {
-                url = new URL(this.url.getProtocol(), this.url.getHost(), this.url.getPort(), String.format("%s?%s", this.url.getFile(), query));
+                URI uri;
+                try {
+                    uri = new URI(String.format("%s?%s", url, query));
+                } catch (URISyntaxException exception) {
+                    throw new MalformedURLException();
+                }
+
+                url = uri.toURL();
             }
 
             if (body != null) {
@@ -1036,8 +1053,8 @@ public class WebServiceProxy {
 
         if (servicePath != null) {
             try {
-                baseURL = new URL(baseURL, String.format("%s/", servicePath.value()));
-            } catch (MalformedURLException exception) {
+                baseURL = baseURL.toURI().resolve(String.format("%s/", servicePath.value())).toURL();
+            } catch (URISyntaxException | MalformedURLException exception) {
                 throw new UnsupportedOperationException(exception);
             }
         }

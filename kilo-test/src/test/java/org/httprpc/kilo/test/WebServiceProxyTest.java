@@ -872,6 +872,8 @@ public class WebServiceProxyTest extends AbstractTest {
     public void testFileUpload1() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "file-upload");
 
+        webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
+
         webServiceProxy.setArguments(mapOf(
             entry("file", getClass().getResource("test.txt"))
         ));
@@ -896,6 +898,8 @@ public class WebServiceProxyTest extends AbstractTest {
         var imageTestURL = getClass().getResource("test.jpg");
 
         var webServiceProxy = new WebServiceProxy("POST", baseURL, "file-upload");
+
+        webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
 
         webServiceProxy.setArguments(mapOf(
             entry("files", listOf(textTestURL, imageTestURL))

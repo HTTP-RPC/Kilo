@@ -38,6 +38,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class Examples {
     private static final URL baseURL;
     static {
         try {
-            baseURL = new URL("http://localhost:8080/kilo-test/");
+            baseURL = URI.create("http://localhost:8080/kilo-test/").toURL();
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }
@@ -90,7 +91,7 @@ public class Examples {
 
     public static void mathService1() throws IOException {
         // GET /math/sum?a=2&b=4
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 4),
@@ -102,7 +103,7 @@ public class Examples {
 
     public static void mathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
-        var webServiceProxy = new WebServiceProxy("GET", new URL(baseURL, "math/sum"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
 
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
