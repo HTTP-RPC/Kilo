@@ -18,21 +18,20 @@ import org.httprpc.kilo.WebServiceProxy;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 
 public class EmployeesTest {
     public static void main(String[] args) throws IOException {
-        var baseURL = URI.create("http://localhost:8080/kilo-test/").toURL();
+        var baseURI = URI.create("http://localhost:8080/kilo-test/");
 
-        logTiming(baseURL, "employees");
-        logTiming(baseURL, "employees/stream");
-        logTiming(baseURL, "employees/hibernate");
-        logTiming(baseURL, "employees/hibernate-stream");
+        logTiming(baseURI, "employees");
+        logTiming(baseURI, "employees/stream");
+        logTiming(baseURI, "employees/hibernate");
+        logTiming(baseURI, "employees/hibernate-stream");
     }
 
-    private static void logTiming(URL baseURL, String path) throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, path);
+    private static void logTiming(URI baseURI, String path) throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, path);
 
         var t0 = System.currentTimeMillis();
 

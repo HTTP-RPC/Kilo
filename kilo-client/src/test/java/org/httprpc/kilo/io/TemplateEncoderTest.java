@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TemplateEncoderTest {
     @Test
     public void testNull() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "dictionary.txt");
 
         var writer = new StringWriter();
 
@@ -45,7 +45,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMap() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("dictionary.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "dictionary.txt");
 
         var a = "abc";
         var b = 123;
@@ -66,7 +66,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testPath() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("path.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "path.txt");
 
         var dictionary = mapOf(
             entry("a", mapOf(
@@ -86,7 +86,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection1() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -97,7 +97,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection2a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -108,7 +108,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection2b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -119,7 +119,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection3a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -130,7 +130,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection3b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -141,7 +141,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection4a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -152,7 +152,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection4b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -163,7 +163,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testConditionalSection5() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("conditional.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
@@ -174,7 +174,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testEmptyRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating1.txt");
 
         var writer = new StringWriter();
 
@@ -185,7 +185,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testSingleElementRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating1.txt");
 
         var a = "hello";
         var b = 1L;
@@ -205,7 +205,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMultiElementRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating1.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating1.txt");
 
         var a1 = "hello";
         var b1 = 1L;
@@ -234,7 +234,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNestedRepeatingSection1() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating2.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating2.txt");
 
         var dictionary = mapOf(
             entry("abc", "ABC"),
@@ -257,7 +257,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNestedRepeatingSection2() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating3.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating3.txt");
 
         var value = listOf(listOf(listOf(mapOf(entry("a", "hello")))));
 
@@ -270,7 +270,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testNestedEmptyRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating3.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating3.txt");
 
         var writer = new StringWriter();
 
@@ -281,7 +281,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testPrimitiveRepeatingSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating4.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating4.txt");
 
         var value = listOf("hello", 42, false);
 
@@ -294,7 +294,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testRepeatingSectionSeparator() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating5.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating5.txt");
 
         var value = listOf("a", "b", "c");
 
@@ -307,7 +307,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMapRepeatingSection1() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating6.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating6.txt");
 
         var value = mapOf(
             entry("entries", mapOf(
@@ -326,7 +326,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testMapRepeatingSection2() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("repeating7.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "repeating7.txt");
 
         var value = mapOf(
             entry("entries", mapOf(
@@ -345,7 +345,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection1() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -356,7 +356,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection2a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -367,7 +367,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection2b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -378,7 +378,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection3a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -389,7 +389,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection3b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -400,7 +400,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection4a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -411,7 +411,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvertedSection4b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inverted.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();
 
@@ -422,7 +422,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testResources() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("resource1.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "resource1.txt");
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".resource"));
 
@@ -435,7 +435,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInheritance() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("inheritance.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "inheritance.txt");
 
         var dictionary = mapOf(
             entry("a", "$"),
@@ -464,7 +464,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testComment() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("comment.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "comment.txt");
 
         var writer = new StringWriter();
 
@@ -475,7 +475,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testFloatFormatModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("format1.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "format1.txt");
 
         var writer = new StringWriter();
 
@@ -486,7 +486,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testDateFormatModifiers() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("format2.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "format2.txt");
 
         var date = new Date();
         var instant = date.toInstant();
@@ -529,7 +529,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testDefaultContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("xml.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "xml.txt");
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -544,7 +544,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testJSONContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("json.txt"), TemplateEncoder.ContentType.JSON);
+        var templateEncoder = new TemplateEncoder(getClass(), "json.txt", TemplateEncoder.ContentType.JSON);
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -561,7 +561,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testCSVContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("csv.txt"), TemplateEncoder.ContentType.CSV);
+        var templateEncoder = new TemplateEncoder(getClass(), "csv.txt", TemplateEncoder.ContentType.CSV);
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -581,7 +581,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testUnspecifiedContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("unspecified.txt"), TemplateEncoder.ContentType.UNSPECIFIED);
+        var templateEncoder = new TemplateEncoder(getClass(), "unspecified.txt", TemplateEncoder.ContentType.UNSPECIFIED);
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -594,7 +594,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testSimpleInclude() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("master1.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "master1.txt");
 
         var writer = new StringWriter();
 
@@ -605,7 +605,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testSectionInclude() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("master2.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "master2.txt");
 
         var writer = new StringWriter();
 
@@ -616,7 +616,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testRecursion() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("recursion.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "recursion.txt");
 
         var list = listOf(
             listOf(
@@ -639,7 +639,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testEmptyRecursion() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("recursion.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "recursion.txt");
 
         var list = listOf();
 
@@ -652,7 +652,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvalidPath1() {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("invalid-path.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "invalid-path.txt");
 
         var root = mapOf(
             entry("a", "xyz")
@@ -663,7 +663,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvalidPath2() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("invalid-path.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "invalid-path.txt");
 
         var root = mapOf(
             entry("a", null)
@@ -678,7 +678,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testUppercaseModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("upper.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "upper.txt");
 
         templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
 
@@ -691,7 +691,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testInvalidModifier() {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("invalid-modifier.txt"));
+        var templateEncoder = new TemplateEncoder(getClass(), "invalid-modifier.txt");
 
         var root = mapOf(
             entry("a", "xyz")

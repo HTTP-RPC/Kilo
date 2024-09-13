@@ -346,7 +346,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    private URL url;
+    private URI uri;
     private Modifier contentTypeModifier;
 
     private ResourceBundle resourceBundle = null;
@@ -367,30 +367,77 @@ public class TemplateEncoder extends Encoder<Object> {
     private static final String SELF_REFERENCE = ".";
 
     /**
-     * Constructs a new template encoder.
-     *
-     * @param url
-     * The URL of the template.
+     * @deprecated Use {@link #TemplateEncoder(URI)} or
+     * {@link #TemplateEncoder(Class, String)} instead.
      */
+    @Deprecated
     public TemplateEncoder(URL url) {
-        this(url, ContentType.MARKUP);
+        this(toURI(url));
     }
 
     /**
      * Constructs a new template encoder.
      *
-     * @param url
-     * The URL of the template.
+     * @param type
+     * The type used to resolve the template resource.
+     *
+     * @param name
+     * The name of the template resource.
+     */
+    public TemplateEncoder(Class<?> type, String name) {
+        this(toURI(type, name));
+    }
+
+    /**
+     * Constructs a new template encoder.
+     *
+     * @param uri
+     * The URI of the template.
+     */
+    public TemplateEncoder(URI uri) {
+        this(uri, ContentType.MARKUP);
+    }
+
+    /**
+     * @deprecated Use {@link #TemplateEncoder(URI, ContentType)} or
+     * {@link #TemplateEncoder(Class, String, ContentType)} instead.
+     */
+    @Deprecated
+    public TemplateEncoder(URL url, ContentType contentType) {
+        this(toURI(url), contentType);
+    }
+
+    /**
+     * Constructs a new template encoder.
+     *
+     * @param type
+     * The type used to resolve the template resource.
+     *
+     * @param name
+     * The name of the template resource.
      *
      * @param contentType
-     * The content type.
+     * The template's content type.
      */
-    public TemplateEncoder(URL url, ContentType contentType) {
-        if (url == null || contentType == null) {
+    public TemplateEncoder(Class<?> type, String name, ContentType contentType) {
+        this(toURI(type, name), contentType);
+    }
+
+    /**
+     * Constructs a new template encoder.
+     *
+     * @param uri
+     * The URI of the template.
+     *
+     * @param contentType
+     * The template's content type.
+     */
+    public TemplateEncoder(URI uri, ContentType contentType) {
+        if (uri == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
-        this.url = url;
+        this.uri = uri;
 
         contentTypeModifier = switch (contentType) {
             case MARKUP -> new MarkupModifier();
@@ -398,6 +445,30 @@ public class TemplateEncoder extends Encoder<Object> {
             case CSV -> new CSVModifier();
             case UNSPECIFIED -> null;
         };
+    }
+
+    private static URI toURI(URL url) {
+        if (url == null) {
+            throw new IllegalArgumentException();
+        }
+
+        try {
+            return url.toURI();
+        } catch (URISyntaxException exception) {
+            throw new IllegalArgumentException(exception);
+        }
+    }
+
+    private static URI toURI(Class<?> type, String resourceName) {
+        if (type == null || resourceName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        try {
+            return type.getResource(resourceName).toURI();
+        } catch (URISyntaxException exception) {
+            throw new IllegalArgumentException(exception);
+        }
     }
 
     /**
@@ -540,7 +611,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         if (value != null) {
-            try (var inputStream = url.openStream()) {
+            try (var inputStream = uri.toURL().openStream()) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
                 writer = new BufferedWriter(writer);
@@ -791,12 +862,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         }
                         case INCLUDE -> {
                             if (root != null) {
-                                URI uri;
-                                try {
-                                    uri = url.toURI();
-                                } catch (URISyntaxException exception) {
-                                    throw new IllegalStateException(exception);
-                                }
+                                var uri = this.uri;
 
                                 var jar = uri.getScheme().equals(JAR_SCHEME);
 

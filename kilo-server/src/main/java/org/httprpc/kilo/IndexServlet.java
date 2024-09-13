@@ -51,7 +51,7 @@ public class IndexServlet extends HttpServlet {
         } else {
             response.setContentType("text/html;charset=UTF-8");
 
-            var templateEncoder = new TemplateEncoder(IndexServlet.class.getResource("index.html"));
+            var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
             templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), request.getLocale()));
 

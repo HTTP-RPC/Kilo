@@ -191,11 +191,11 @@ public class WebServiceProxy {
     }
 
     private static class TypedInvocationHandler implements InvocationHandler {
-        URL baseURL;
+        URI baseURI;
         Consumer<WebServiceProxy> initializer;
 
-        TypedInvocationHandler(URL baseURL, Consumer<WebServiceProxy> initializer) {
-            this.baseURL = baseURL;
+        TypedInvocationHandler(URI baseURI, Consumer<WebServiceProxy> initializer) {
+            this.baseURI = baseURI;
             this.initializer = initializer;
         }
 
@@ -259,15 +259,13 @@ public class WebServiceProxy {
                     }
                 }
 
-                var url = baseURL.toURI().resolve(pathBuilder.toString()).toURL();
-
-                var webServiceProxy = new WebServiceProxy(requestMethod.value().toUpperCase(), url);
+                var webServiceProxy = new WebServiceProxy(requestMethod.value(), baseURI.resolve(pathBuilder.toString()));
 
                 if (initializer != null) {
                     initializer.accept(webServiceProxy);
                 }
 
-                var empty = switch (webServiceProxy.getMethod()) {
+                var empty = switch (webServiceProxy.method) {
                     case "POST", "PUT" -> {
                         var formData = method.getAnnotation(FormData.class);
 
@@ -328,7 +326,7 @@ public class WebServiceProxy {
     }
 
     private String method;
-    private URL url;
+    private URI uri;
 
     private Encoding encoding = null;
 
@@ -366,21 +364,11 @@ public class WebServiceProxy {
     };
 
     /**
-     * Constructs a new web service proxy.
-     *
-     * @param method
-     * The HTTP method.
-     *
-     * @param url
-     * The resource URL.
+     * @deprecated Use {@link #WebServiceProxy(String, URI)} instead.
      */
+    @Deprecated
     public WebServiceProxy(String method, URL url) {
-        if (method == null || url == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.method = method.toUpperCase();
-        this.url = url;
+        this(method, toURI(url));
     }
 
     /**
@@ -389,46 +377,75 @@ public class WebServiceProxy {
      * @param method
      * The HTTP method.
      *
-     * @param baseURL
-     * The base URL.
+     * @param uri
+     * The resource URI.
+     */
+    public WebServiceProxy(String method, URI uri) {
+        if (method == null || uri == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.method = method.toUpperCase();
+        this.uri = uri;
+    }
+
+    /**
+     * @deprecated Use {@link #WebServiceProxy(String, URI, String, Object...)} instead.
+     */
+    @Deprecated
+    public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) {
+        this(method, toURI(baseURL), path, arguments);
+    }
+
+    /**
+     * Constructs a new web service proxy.
+     *
+     * @param method
+     * The HTTP method.
+     *
+     * @param baseURI
+     * The base URI.
      *
      * @param path
      * The path to the resource, relative to the base URL.
      *
      * @param arguments
      * Path format specifier arguments.
-     *
-     * @throws MalformedURLException
-     * If a URL cannot be constructed from the base URL and path.
      */
-    public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) throws MalformedURLException {
-        this(method, baseURL);
+    public WebServiceProxy(String method, URI baseURI, String path, Object... arguments) {
+        this(method, baseURI.resolve(String.format(path, arguments)));
+    }
+
+    private static URI toURI(URL url) {
+        if (url == null) {
+            throw new IllegalArgumentException();
+        }
 
         try {
-            url = url.toURI().resolve(String.format(path, arguments)).toURL();
+            return url.toURI();
         } catch (URISyntaxException exception) {
-            throw new MalformedURLException(exception.getMessage());
+            throw new IllegalArgumentException(exception);
         }
     }
 
     /**
-     * Returns the HTTP method.
-     *
-     * @return
-     * The HTTP method.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public String getMethod() {
         return method;
     }
 
     /**
-     * Returns the resource URL.
-     *
-     * @return
-     * The resource URL.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public URL getURL() {
-        return url;
+        try {
+            return uri.toURL();
+        } catch (MalformedURLException exception) {
+            throw new IllegalStateException(exception);
+        }
     }
 
     /**
@@ -700,7 +717,7 @@ public class WebServiceProxy {
             throw new IllegalArgumentException();
         }
 
-        var url = this.url;
+        var uri = this.uri;
 
         RequestHandler requestHandler;
         if (method.equals("POST") && encoding != null) {
@@ -729,14 +746,11 @@ public class WebServiceProxy {
             var query = encodeQuery();
 
             if (!query.isEmpty()) {
-                URI uri;
                 try {
-                    uri = new URI(String.format("%s?%s", url, query));
+                    uri = new URI(String.format("%s?%s", uri, query));
                 } catch (URISyntaxException exception) {
                     throw new MalformedURLException(exception.getMessage());
                 }
-
-                url = uri.toURL();
             }
 
             if (body != null) {
@@ -763,11 +777,11 @@ public class WebServiceProxy {
         }
 
         if (monitorStream != null) {
-            monitorStream.println(String.format("%s %s", method, url));
+            monitorStream.println(String.format("%s %s", method, uri));
         }
 
         // Open URL connection
-        var connection = (HttpURLConnection)url.openConnection();
+        var connection = (HttpURLConnection)uri.toURL().openConnection();
 
         connection.setRequestMethod(method);
 
@@ -1003,22 +1017,11 @@ public class WebServiceProxy {
     }
 
     /**
-     * Creates a typed proxy for web service invocation.
-     *
-     * @param <T>
-     * The proxy type.
-     *
-     * @param type
-     * The proxy type.
-     *
-     * @param baseURL
-     * The base URL.
-     *
-     * @return
-     * The typed service proxy.
+     * @deprecated Use {@link #of(Class, URI)} instead.
      */
+    @Deprecated
     public static <T> T of(Class<T> type, URL baseURL) {
-        return of(type, baseURL, null);
+        return of(type, toURI(baseURL));
     }
 
     /**
@@ -1030,8 +1033,35 @@ public class WebServiceProxy {
      * @param type
      * The proxy type.
      *
-     * @param baseURL
-     * The base URL.
+     * @param baseURI
+     * The base URI.
+     *
+     * @return
+     * The typed service proxy.
+     */
+    public static <T> T of(Class<T> type, URI baseURI) {
+        return of(type, baseURI, null);
+    }
+
+    /**
+     * @deprecated Use {@link #of(Class, URI, Consumer)} instead.
+     */
+    @Deprecated
+    public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
+        return of(type, toURI(baseURL), initializer);
+    }
+
+    /**
+     * Creates a typed proxy for web service invocation.
+     *
+     * @param <T>
+     * The proxy type.
+     *
+     * @param type
+     * The proxy type.
+     *
+     * @param baseURI
+     * The base URI.
      *
      * @param initializer
      * An initializer that will be called prior to each service invocation, or
@@ -1040,8 +1070,8 @@ public class WebServiceProxy {
      * @return
      * The typed web service proxy.
      */
-    public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
-        if (type == null || baseURL == null) {
+    public static <T> T of(Class<T> type, URI baseURI, Consumer<WebServiceProxy> initializer) {
+        if (type == null || baseURI == null) {
             throw new IllegalArgumentException();
         }
 
@@ -1052,13 +1082,9 @@ public class WebServiceProxy {
         var servicePath = type.getAnnotation(ServicePath.class);
 
         if (servicePath != null) {
-            try {
-                baseURL = baseURL.toURI().resolve(String.format("%s/", servicePath.value())).toURL();
-            } catch (URISyntaxException | MalformedURLException exception) {
-                throw new UnsupportedOperationException(exception);
-            }
+            baseURI = baseURI.resolve(String.format("%s/", servicePath.value()));
         }
 
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURL, initializer)));
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURI, initializer)));
     }
 }

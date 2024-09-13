@@ -21,12 +21,15 @@ import org.httprpc.kilo.io.TextDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PetsTest extends AbstractTest {
+public class PetsTest {
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+
     @Test
     public void testPets() throws IOException {
         testPetsJSON();
@@ -45,7 +48,7 @@ public class PetsTest extends AbstractTest {
             expected = (List<?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets");
 
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
@@ -66,7 +69,7 @@ public class PetsTest extends AbstractTest {
             expected = (List<?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets/stream");
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "application/json")
@@ -91,7 +94,7 @@ public class PetsTest extends AbstractTest {
             expected = csvDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets/stream");
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "text/csv")
@@ -129,7 +132,7 @@ public class PetsTest extends AbstractTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "pets/stream");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets/stream");
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", mimeType)

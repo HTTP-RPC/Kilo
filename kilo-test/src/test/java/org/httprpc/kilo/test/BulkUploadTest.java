@@ -20,7 +20,6 @@ import org.httprpc.kilo.io.CSVEncoder;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -63,19 +62,19 @@ public class BulkUploadTest {
     }
 
     public static void main(String[] args) throws IOException {
-        var baseURL = URI.create("http://localhost:8080/kilo-test/bulk-upload/").toURL();
+        var baseURI = URI.create("http://localhost:8080/kilo-test/bulk-upload/");
 
         var t0 = System.currentTimeMillis();
 
-        logTiming(baseURL, "upload", 25000, t0);
+        logTiming(baseURI, "upload", 25000, t0);
 
         var t1 = System.currentTimeMillis();
 
-        logTiming(baseURL, "upload-batch", 500000, t1);
+        logTiming(baseURI, "upload-batch", 500000, t1);
     }
 
-    private static void logTiming(URL baseURL, String path, int count, long start) throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURL, path);
+    private static void logTiming(URI baseURI, String path, int count, long start) throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURI, path);
 
         webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override

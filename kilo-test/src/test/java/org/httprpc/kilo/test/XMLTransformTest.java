@@ -73,7 +73,7 @@ public class XMLTransformTest {
             document = documentBuilder.parse(inputStream);
         }
 
-        var templateEncoder = new TemplateEncoder(getClass().getResource("breakfast-menu.html"));
+        var templateEncoder = new TemplateEncoder(getClass(), "breakfast-menu.html");
 
         var homeDirectory = new File(System.getProperty("user.home"));
         var outputFile = new File(homeDirectory, "breakfast-menu-2.html");

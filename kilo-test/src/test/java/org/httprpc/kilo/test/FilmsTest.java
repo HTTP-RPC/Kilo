@@ -18,13 +18,16 @@ import org.httprpc.kilo.WebServiceProxy;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FilmsTest extends AbstractTest {
+public class FilmsTest {
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+
     @Test
     public void testFilms() throws IOException {
-        var filmServiceProxy = WebServiceProxy.of(FilmServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var filmServiceProxy = WebServiceProxy.of(FilmServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var films = filmServiceProxy.getFilms("n*");
 

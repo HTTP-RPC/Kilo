@@ -37,9 +37,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -50,14 +48,7 @@ public class Examples {
         void execute() throws Exception;
     }
 
-    private static final URL baseURL;
-    static {
-        try {
-            baseURL = URI.create("http://localhost:8080/kilo-test/").toURL();
-        } catch (MalformedURLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
 
     public static void main(String[] args) {
         execute("Math Service 1", Examples::mathService1);
@@ -91,7 +82,7 @@ public class Examples {
 
     public static void mathService1() throws IOException {
         // GET /math/sum?a=2&b=4
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 4),
@@ -103,7 +94,7 @@ public class Examples {
 
     public static void mathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
 
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
@@ -113,7 +104,7 @@ public class Examples {
     }
 
     public static void mathService3() throws IOException {
-        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURL);
+        var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURI);
 
         System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
         System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
@@ -204,14 +195,14 @@ public class Examples {
         }
     }
 
-    public static void templateEncoder() throws IOException {
+    public static void templateEncoder() throws Exception {
         var map = mapOf(
             entry("a", "hello"),
             entry("b", 123),
             entry("c", true)
         );
 
-        var templateEncoder = new TemplateEncoder(Examples.class.getResource("example.html"));
+        var templateEncoder = new TemplateEncoder(Examples.class.getResource("example.html").toURI());
 
         templateEncoder.write(map, System.out);
     }

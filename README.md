@@ -76,9 +76,9 @@ public class MathService extends WebService {
 
 The `RequestMethod` annotation associates an HTTP verb such as `GET` or `POST` with a service method, or "handler". The optional `ResourcePath` annotation associates a handler with a specific path, or "endpoint", relative to the servlet. If unspecified, the handler is associated with the servlet itself. The optional `Description` annotation is used to document a service implementation and is discussed in more detail [later](#api-documentation).
 
-Arguments may be provided via the query string, resource path, or request body. They may also be submitted as [form data](https://www.w3.org/TR/2014/REC-html5-20141028/forms.html#attr-fs-enctype). `WebService` converts the values to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
+Arguments may be provided via the query string, resource path, or request body. `WebService` converts the values to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
 
-Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided argument values. For example, this request would invoke the first method:
+Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided values. For example, this request would invoke the first method:
 
 ```
 GET /math/sum?a=2&b=4
@@ -113,7 +113,6 @@ Method parameters may be any of the following types:
 * `java.time.Period`
 * `java.util.UUID`
 * `java.util.List`, `java.util.Set`, array/varargs
-* `java.net.URL`
 
 Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
 
@@ -121,22 +120,17 @@ Unspecified values are automatically converted to `0`, `false`, or the null char
 
 `List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
 
-`URL` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding. See the [file upload](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FileUploadService.java) example for more information.
-
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
 Note that service classes must be compiled with the `-parameters` flag so that parameter names are available at runtime.
 
 #### Required Parameters
-Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `file` argument:
+Parameters that must be provided by the caller can be indicated by the `Required` annotation. For example, the following service method accepts a single required `owner` argument:
 
 ```java
-@RequestMethod("POST")
-@Description("Uploads a single file.")
-public long uploadFile(
-    @Description("The file to upload.") @Required URL file
-) throws IOException {
-    ...
+@RequestMethod("GET")
+public List<Pet> getPets(@Required String owner) throws SQLException { 
+    ... 
 }
 ```
 
@@ -346,15 +340,13 @@ A JSON version of the generated documentation can be obtained by specifying an "
 The `WebServiceProxy` class is used to submit API requests to a server. It provides the following two constructors:
 
 ```java
-public WebServiceProxy(String method, URL url) { ... }
-public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) throws MalformedURLException { ... }
+public WebServiceProxy(String method, URI uri) { ... }
+public WebServiceProxy(String method, URI baseURI, String path, Object... arguments) throws MalformedURLException { ... }
 ```
 
-The first version accepts a string representing the HTTP method to execute and the URL of the requested resource. The second accepts the HTTP method, a base URL, and a relative path (as a format string, to which the optional trailing arguments are applied).
+The first version accepts a string representing the HTTP method to execute and the URI of the requested resource. The second accepts the HTTP method, a base URI, and a relative path (as a format string, to which the optional trailing arguments are applied).
 
-Request arguments are specified via a map passed to the `setArguments()` method. Argument values for `GET`, `PUT`, and `DELETE` requests are always sent in the query string. `POST` arguments are typically sent in the request body, and may be submitted as either "application/x-www-form-urlencoded" or "multipart/form-data" (specified via the proxy's `setEncoding()` method).
-
-Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are automatically converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms. When using the multi-part encoding, instances of `URL` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
+Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
 Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
 
@@ -381,7 +373,7 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the content type of the error response is "text/*", the deserialized response body will be provided in the exception message. 
+If a service returns an error response, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the type of the error response is "text/plain", the deserialized response body will be provided in the exception message. 
 
 A custom error handler can be supplied via `setErrorHandler()`:
 
@@ -395,7 +387,7 @@ The following code demonstrates how `WebServiceProxy` might be used to access th
 
 ```java
 // GET /math/sum?a=2&b=4
-var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
+var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
 
 webServiceProxy.setArguments(mapOf(
     entry("a", 4),
@@ -407,7 +399,7 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 
 ```java
 // GET /math/sum?values=1&values=2&values=3
-var webServiceProxy = new WebServiceProxy("GET", baseURL, "math/sum");
+var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
 
 webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))
@@ -422,11 +414,11 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 `WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
 
 ```java
-public static <T> T of(Class<T> type, URL baseURL) { ... }
-public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) { ... }
+public static <T> T of(Class<T> type, URI baseURI) { ... }
+public static <T> T of(Class<T> type, URI baseURI, Consumer<WebServiceProxy> initializer) { ... }
 ```
 
-Both versions return an implementation of a given interface that submits requests to the provided URL. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
+Both versions return an implementation of a given interface that submits requests to the provided URI. An optional initializer accepted by the second version will be called prior to each service invocation; for example, to apply common request headers.
 
 The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. The optional `ServicePath` annotation can be used to associate a base path with a proxy type. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures. For example:
 
@@ -448,7 +440,7 @@ public interface MathServiceProxy {
 ```
 
 ```java
-var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURL);
+var mathServiceProxy = WebServiceProxy.of(MathServiceProxy.class, baseURI);
 
 System.out.println(mathServiceProxy.getSum(4, 2)); // 6.0
 System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
@@ -457,14 +449,6 @@ System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0)))
 ```
 
 The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for `WebService`. 
-
-The `FormData` annotation can be used to submit `POST` requests using the URL or multi-part encoding. For example:
-
-```java
-@RequestMethod("POST")
-@FormData(multipart = true)
-long uploadFile(@Required URL file) throws IOException;
-```
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
@@ -605,11 +589,23 @@ System.out.println(text); // Hello, World!
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
 
-`TemplateEncoder` provides the following constructor, which accepts the location of a template document (typically as a resource on the application's classpath):
+`TemplateEncoder` provides two constructors that accept the location of a template document as a `URI`:
 
 ```java
-public TemplateEncoder(URL url) { ... }
+public TemplateEncoder(URI uri) { ... }
+public TemplateEncoder(URI uri, ContentType contentType) { ... }
 ```
+
+The optional `contentType` argument is used to apply an appropriate escape modifier, when applicable.
+
+The following constructors are also provided:
+
+```java
+public TemplateEncoder(Class<?> type, String name) { ... }
+public TemplateEncoder(Class<?> type, String name, ContentType contentType) { ... }
+```
+
+These determine the location of the template document via the provided type and resource name.
 
 Templates are applied via one of the following methods:
 

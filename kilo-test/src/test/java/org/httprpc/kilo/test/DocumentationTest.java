@@ -19,12 +19,15 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DocumentationTest extends AbstractTest {
+public class DocumentationTest {
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+
     @Test
     public void testDocumentation() throws IOException {
         testDocumentation("math");
@@ -40,7 +43,7 @@ public class DocumentationTest extends AbstractTest {
             expected = (Map<?, ?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURL, name);
+        var webServiceProxy = new WebServiceProxy("GET", baseURI, name);
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "application/json")

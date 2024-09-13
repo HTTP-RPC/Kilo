@@ -832,7 +832,7 @@ public abstract class WebService extends HttpServlet {
                 } else {
                     response.setContentType(String.format("%s;charset=%s", TEXT_HTML, UTF_8));
 
-                    var templateEncoder = new TemplateEncoder(WebService.class.getResource("api.html"));
+                    var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
 
                     templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), request.getLocale()));
 

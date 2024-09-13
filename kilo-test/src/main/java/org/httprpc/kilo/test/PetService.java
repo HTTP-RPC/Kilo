@@ -83,7 +83,7 @@ public class PetService extends AbstractDatabaseService {
             } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
                 response.setContentType(TEXT_HTML);
 
-                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"));
+                var templateEncoder = new TemplateEncoder(getClass(), "pets.html");
 
                 templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
@@ -91,7 +91,7 @@ public class PetService extends AbstractDatabaseService {
             } else if (accept.equalsIgnoreCase(TEXT_XML)) {
                 response.setContentType(TEXT_XML);
 
-                var templateEncoder = new TemplateEncoder(getClass().getResource("pets.xml"));
+                var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
 
                 templateEncoder.write(results, response.getOutputStream());
             } else {

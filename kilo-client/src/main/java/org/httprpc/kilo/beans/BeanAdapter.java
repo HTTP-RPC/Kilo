@@ -232,14 +232,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     // Record adapter
     private static class RecordAdapter extends AbstractMap<String, Object> {
-        Object object;
+        Object value;
 
         Map<String, Property> properties;
 
-        RecordAdapter(Object object) {
-            this.object = object;
+        RecordAdapter(Object value) {
+            this.value = value;
 
-            properties = getProperties(object.getClass());
+            properties = getProperties(value.getClass());
         }
 
         @Override
@@ -251,7 +251,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
 
             try {
-                return adapt(property.accessor.invoke(object));
+                return adapt(property.accessor.invoke(value));
             } catch (IllegalAccessException | InvocationTargetException exception) {
                 throw new RuntimeException(exception);
             }
@@ -284,7 +284,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             try {
                                 var property = entry.getValue();
 
-                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(object)));
+                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(value)));
                             } catch (IllegalAccessException | InvocationTargetException exception) {
                                 throw new RuntimeException(exception);
                             }
@@ -441,7 +441,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    private Object object;
+    private Object bean;
 
     private Map<String, Property> properties;
 
@@ -455,17 +455,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     /**
      * Constructs a new bean adapter.
      *
-     * @param object
+     * @param bean
      * The bean instance.
      */
-    public BeanAdapter(Object object) {
-        if (object == null) {
+    public BeanAdapter(Object bean) {
+        if (bean == null) {
             throw new IllegalArgumentException();
         }
 
-        this.object = object;
+        this.bean = bean;
 
-        var type = object.getClass();
+        var type = bean.getClass();
 
         if (Proxy.class.isAssignableFrom(type)) {
             var interfaces = type.getInterfaces();
@@ -498,7 +498,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         Object value;
         try {
-            value = property.accessor.invoke(object);
+            value = property.accessor.invoke(bean);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException(exception);
         }
@@ -531,7 +531,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         try {
-            property.mutator.invoke(object, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
+            property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException(exception);
         }
@@ -570,7 +570,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         try {
                             var property = entry.getValue();
 
-                            var value = property.accessor.invoke(object);
+                            var value = property.accessor.invoke(bean);
 
                             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
                                 throw new UnsupportedOperationException("Required value is not defined.");
@@ -1076,9 +1076,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 throw new RuntimeException(exception);
             }
 
-            Object object;
+            Object bean;
             try {
-                object = constructor.newInstance();
+                bean = constructor.newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
                 throw new RuntimeException(exception);
             }
@@ -1097,13 +1097,13 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
 
                 try {
-                    property.mutator.invoke(object, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
+                    property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new RuntimeException(exception);
                 }
             }
 
-            return object;
+            return bean;
         }
     }
 

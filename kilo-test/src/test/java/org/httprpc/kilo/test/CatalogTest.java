@@ -19,14 +19,17 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CatalogTest extends AbstractTest {
+public class CatalogTest {
+    private static final URI baseURI = URI.create("http://localhost:8080/kilo-test/");
+
     @Test
     public void testCatalog() throws IOException {
-        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, baseURL, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
 
         var item = BeanAdapter.coerce(mapOf(), ItemDetail.class);
 
