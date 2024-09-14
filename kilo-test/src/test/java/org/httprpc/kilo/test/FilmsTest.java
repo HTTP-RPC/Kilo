@@ -27,7 +27,7 @@ public class FilmsTest {
 
     @Test
     public void testFilms() throws IOException {
-        var filmServiceProxy = WebServiceProxy.of(FilmServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var filmServiceProxy = WebServiceProxy.of(FilmServiceProxy.class, baseURI);
 
         var films = filmServiceProxy.getFilms("n*");
 

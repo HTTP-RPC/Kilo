@@ -638,21 +638,17 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the monitor stream.
-     *
-     * @return
-     * The monitor stream, or {@code null} if no monitor stream is set.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public PrintStream getMonitorStream() {
         return monitorStream;
     }
 
     /**
-     * Sets the monitor stream.
-     *
-     * @param monitorStream
-     * The monitor stream, or {@code null} for no monitor.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public void setMonitorStream(PrintStream monitorStream) {
         this.monitorStream = monitorStream;
     }
@@ -1040,11 +1036,11 @@ public class WebServiceProxy {
      * The typed service proxy.
      */
     public static <T> T of(Class<T> type, URI baseURI) {
-        return of(type, baseURI, null);
+        return of(type, baseURI, mapOf());
     }
 
     /**
-     * @deprecated Use {@link #of(Class, URI, Consumer)} instead.
+     * @deprecated Use {@link #of(Class, URI, Map)} instead.
      */
     @Deprecated
     public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
@@ -1063,13 +1059,24 @@ public class WebServiceProxy {
      * @param baseURI
      * The base URI.
      *
-     * @param initializer
-     * An initializer that will be called prior to each service invocation, or
-     * {@code null} for no initializer.
+     * @param headers
+     * The header map.
      *
      * @return
      * The typed web service proxy.
      */
+    public static <T> T of(Class<T> type, URI baseURI, Map<String, Object> headers) {
+        if (headers == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return of(type, baseURI, webServiceProxy -> webServiceProxy.setHeaders(headers));
+    }
+
+    /**
+     * @deprecated Use {@link #of(Class, URI, Map)} instead.
+     */
+    @Deprecated
     public static <T> T of(Class<T> type, URI baseURI, Consumer<WebServiceProxy> initializer) {
         if (type == null || baseURI == null) {
             throw new IllegalArgumentException();

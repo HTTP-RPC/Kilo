@@ -29,7 +29,7 @@ public class CatalogTest {
 
     @Test
     public void testCatalog() throws IOException {
-        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var catalogServiceProxy = WebServiceProxy.of(CatalogServiceProxy.class, baseURI);
 
         var item = BeanAdapter.coerce(mapOf(), ItemDetail.class);
 

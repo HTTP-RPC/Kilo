@@ -54,8 +54,6 @@ public class PetsTest {
             entry("owner", "Gwen")
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);
@@ -79,8 +77,6 @@ public class PetsTest {
             entry("owner", "Gwen")
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);
@@ -103,8 +99,6 @@ public class PetsTest {
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var actual = webServiceProxy.invoke((inputStream, contentType) -> {
             var csvDecoder = new CSVDecoder();
@@ -141,8 +135,6 @@ public class PetsTest {
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var actual = webServiceProxy.invoke((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();

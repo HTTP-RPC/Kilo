@@ -41,13 +41,9 @@ public class TiingoTest {
         var ticker = args[0];
 
         // Create service proxy
-        var tiingoServiceProxy = WebServiceProxy.of(TiingoServiceProxy.class, baseURI, webServiceProxy -> {
-            webServiceProxy.setHeaders(mapOf(
-                entry("Authorization", String.format("Token %s", token))
-            ));
-
-            webServiceProxy.setMonitorStream(System.out);
-        });
+        var tiingoServiceProxy = WebServiceProxy.of(TiingoServiceProxy.class, baseURI, mapOf(
+            entry("Authorization", String.format("Token %s", token))
+        ));
 
         // Get asset details
         var asset = tiingoServiceProxy.getAsset(ticker);

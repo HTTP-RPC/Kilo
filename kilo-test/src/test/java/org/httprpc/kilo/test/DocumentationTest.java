@@ -53,8 +53,6 @@ public class DocumentationTest {
             entry("api", "json")
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);

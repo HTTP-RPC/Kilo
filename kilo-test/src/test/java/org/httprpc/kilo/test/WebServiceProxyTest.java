@@ -86,8 +86,6 @@ public class WebServiceProxyTest {
             entry("uuid", uuid)
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var result = webServiceProxy.invoke();
 
         assertEquals(200, webServiceProxy.getStatusCode());
@@ -114,7 +112,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), 'a');
 
@@ -133,8 +131,6 @@ public class WebServiceProxyTest {
             456,
             URLEncoder.encode("göodbye", StandardCharsets.UTF_8)
         );
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -170,8 +166,6 @@ public class WebServiceProxyTest {
         ));
 
         webServiceProxy.setBody(listOf(5.0, 6.0, 7.0));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -209,8 +203,6 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(listOf("abc", "def", "ghi"));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
@@ -221,7 +213,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testVarargsProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         var result = testServiceProxy.testVarargs(new int[] {1, 2, 3}, "abc", "def", "ghi");
 
@@ -238,8 +230,6 @@ public class WebServiceProxyTest {
         webServiceProxy.setArguments(mapOf(
             entry("count", 8)
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -268,8 +258,6 @@ public class WebServiceProxyTest {
             entry("period", period),
             entry("uuid", uuid)
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -321,8 +309,6 @@ public class WebServiceProxyTest {
             entry("uuid", uuid)
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var response = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
 
         assertTrue(response.getString().equals("héllo&gøod+bye?")
@@ -346,7 +332,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testURLEncodedPostProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         var result = testServiceProxy.testURLEncodedPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3));
 
@@ -387,8 +373,6 @@ public class WebServiceProxyTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var response = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
 
         assertTrue(response.getString().equals("héllo&gøod+bye?")
@@ -418,7 +402,7 @@ public class WebServiceProxyTest {
         var textTestURL = getClass().getResource("test.txt");
         var imageTestURL = getClass().getResource("test.jpg");
 
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         var result = testServiceProxy.testMultipartPost("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), textTestURL, imageTestURL);
 
@@ -441,8 +425,6 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(body);
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var result = webServiceProxy.invoke();
 
         assertEquals(body, BeanAdapter.coerceList((List<?>)result, Integer.class));
@@ -458,8 +440,6 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(listOf(4, 5, 6));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
         assertEquals(405, exception.getStatusCode());
@@ -470,8 +450,6 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
 
         webServiceProxy.setBody("xyz");
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
@@ -496,8 +474,6 @@ public class WebServiceProxyTest {
             }
         });
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
         assertEquals(403, exception.getStatusCode());
@@ -514,8 +490,6 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/map");
 
         webServiceProxy.setBody(body);
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -536,8 +510,6 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(request);
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var body = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Body.class));
 
         assertEquals("héllo&gøod+bye?", body.getString());
@@ -557,8 +529,6 @@ public class WebServiceProxyTest {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/coordinates");
 
         webServiceProxy.setBody(request);
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var coordinates = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, Coordinates.class));
 
@@ -617,8 +587,6 @@ public class WebServiceProxyTest {
             }
         });
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var text = webServiceProxy.invoke((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();
 
@@ -652,8 +620,6 @@ public class WebServiceProxyTest {
 
         var webServiceProxy = new WebServiceProxy("DELETE", baseURI, "test/%d", id);
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var result = webServiceProxy.invoke();
 
         assertEquals(id, result);
@@ -668,8 +634,6 @@ public class WebServiceProxyTest {
             entry("X-Header-B", 123)
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
@@ -680,14 +644,10 @@ public class WebServiceProxyTest {
 
     @Test
     public void testHeadersProxy() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, webServiceProxy -> {
-            webServiceProxy.setHeaders(mapOf(
-                entry("X-Header-A", "abc"),
-                entry("X-Header-B", 123)
-            ));
-
-            webServiceProxy.setMonitorStream(System.out);
-        });
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, mapOf(
+            entry("X-Header-A", "abc"),
+            entry("X-Header-B", 123)
+        ));
 
         var result = testServiceProxy.testHeaders();
 
@@ -700,8 +660,6 @@ public class WebServiceProxyTest {
     @Test
     public void testException() throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/error");
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
@@ -718,8 +676,6 @@ public class WebServiceProxyTest {
             entry("number", "x")
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
         assertEquals(403, exception.getStatusCode());
@@ -733,8 +689,6 @@ public class WebServiceProxyTest {
             entry("string", "abc"),
             entry("dayOfWeek", "y")
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
@@ -750,8 +704,6 @@ public class WebServiceProxyTest {
             entry("localDate", "z")
         ));
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
         assertEquals(403, exception.getStatusCode());
@@ -764,8 +716,6 @@ public class WebServiceProxyTest {
         webServiceProxy.setArguments(mapOf(
             entry("string", null)
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
@@ -800,8 +750,6 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(mapOf());
 
-        webServiceProxy.setMonitorStream(System.out);
-
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
         assertNotNull(exception.getMessage());
@@ -820,8 +768,6 @@ public class WebServiceProxyTest {
         webServiceProxy.setConnectTimeout(500);
         webServiceProxy.setReadTimeout(4000);
 
-        webServiceProxy.setMonitorStream(System.out);
-
         assertThrows(SocketTimeoutException.class, webServiceProxy::invoke);
     }
 
@@ -835,8 +781,6 @@ public class WebServiceProxyTest {
             throw new CustomException(textDecoder.read(errorStream));
         });
 
-        webServiceProxy.setMonitorStream(System.out);
-
         assertThrows(CustomException.class, webServiceProxy::invoke);
     }
 
@@ -848,8 +792,6 @@ public class WebServiceProxyTest {
             entry("a", 4),
             entry("b", 2)
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -863,8 +805,6 @@ public class WebServiceProxyTest {
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
         ));
-
-        webServiceProxy.setMonitorStream(System.out);
 
         var result = webServiceProxy.invoke();
 
@@ -952,7 +892,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testDefaultProxyMethod() throws IOException {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI, webServiceProxy -> webServiceProxy.setMonitorStream(System.out));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         var result = testServiceProxy.getFibonacciSum(8);
 
