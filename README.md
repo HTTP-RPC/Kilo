@@ -185,7 +185,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. However, subclasses can override the `decodeBody()` method to perform custom conversions.
+Like path parameters, body parameters are implicitly required. If a handler method declares any query parameters, a body parameter must also be declared. A body parameter of type `Void` may be used to indicate that the handler either does not accept a body or will process the input stream directly, as discussed [below](#request-and-repsonse-properties).
+
+By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. Subclasses can override the `decodeBody()` method to perform custom conversions.
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -221,7 +223,7 @@ protected HttpServletRequest getRequest() { ... }
 protected HttpServletResponse getResponse() { ... }
 ```
 
-For example, a service might use the request to get the name of the current user, or use the response to return a custom header.
+For example, a service might use the request to read directly from the input stream, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
 
@@ -373,7 +375,7 @@ public interface ResponseHandler<T> {
 }
 ```
 
-If a service returns an error response, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the type of the error response is "text/plain", the deserialized response body will be provided in the exception message. 
+If an operation does not complete successfully, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the type of the error response is "text/plain", the response content will be provided in the exception message. 
 
 A custom error handler can be supplied via `setErrorHandler()`:
 

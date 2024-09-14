@@ -15,7 +15,6 @@
 package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -23,7 +22,6 @@ import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.sql.SQLException;
 
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
@@ -37,11 +35,6 @@ public class BulkUploadService extends AbstractDatabaseService {
     }
 
     private static final int BATCH_SIZE = 25000;
-
-    @Override
-    protected Object decodeBody(HttpServletRequest request, Type type) {
-        return null;
-    }
 
     @RequestMethod("POST")
     @ResourcePath("upload")

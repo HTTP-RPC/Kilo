@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
@@ -26,7 +25,6 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -173,17 +171,6 @@ public class TestService extends AbstractDatabaseService {
                     return next;
                 }
             };
-        }
-    }
-
-    @Override
-    protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
-        var contentType = request.getContentType();
-
-        if (contentType != null && contentType.equals("application/octet-stream")) {
-            return null;
-        } else {
-            return super.decodeBody(request, type);
         }
     }
 
