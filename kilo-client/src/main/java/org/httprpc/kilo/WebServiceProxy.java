@@ -95,28 +95,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * Represents a response handler.
-     */
-    public interface ResponseHandler<T> {
-        /**
-         * Decodes a response from an input stream.
-         *
-         * @param inputStream
-         * The input stream to read from.
-         *
-         * @param contentType
-         * The content type, or {@code null} if the content type is not known.
-         *
-         * @return
-         * The decoded value.
-         *
-         * @throws IOException
-         * If an exception occurs.
-         */
-        T decodeResponse(InputStream inputStream, String contentType) throws IOException;
-    }
-
-    /**
      * Represents an error handler.
      */
     public interface ErrorHandler {
@@ -137,6 +115,28 @@ public class WebServiceProxy {
          * handling the error.
          */
         void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
+    }
+
+    /**
+     * Represents a response handler.
+     */
+    public interface ResponseHandler<T> {
+        /**
+         * Decodes a response from an input stream.
+         *
+         * @param inputStream
+         * The input stream to read from.
+         *
+         * @param contentType
+         * The content type, or {@code null} if the content type is not known.
+         *
+         * @return
+         * The decoded value.
+         *
+         * @throws IOException
+         * If an exception occurs.
+         */
+        T decodeResponse(InputStream inputStream, String contentType) throws IOException;
     }
 
     private class MonitoredInputStream extends InputStream {
