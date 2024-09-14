@@ -591,23 +591,14 @@ System.out.println(text); // Hello, World!
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
 
-`TemplateEncoder` provides two constructors that accept the location of a template document as a `URI`:
+`TemplateEncoder` provides the following constructors:
 
 ```java
 public TemplateEncoder(URI uri) { ... }
-public TemplateEncoder(URI uri, ContentType contentType) { ... }
-```
-
-The optional `contentType` argument is used to apply an appropriate escape modifier, when applicable.
-
-The following constructors are also provided:
-
-```java
 public TemplateEncoder(Class<?> type, String name) { ... }
-public TemplateEncoder(Class<?> type, String name, ContentType contentType) { ... }
 ```
 
-These determine the location of the template document via the provided type and resource name.
+The first accepts the location of a template document as a `URI`. The second determines the location of the template via the provided type and resource name.
 
 Templates are applied via one of the following methods:
 
@@ -631,38 +622,9 @@ var map = mapOf(
     entry("c", true)
 );
 
-var templateEncoder = new TemplateEncoder(getClass().getResource("example.html"));
+var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 
 templateEncoder.write(map, System.out);
-```
-
-### Custom Modifiers
-Custom modifiers can be associated with a template encoder instance via the `bind()` method:
-
-```java
-public void bind(String name, Modifier modifier) { ... }
-```
-
-This method accepts a name for the modifier and an implementation of the `TemplateEncoder.Modifer` interface:
-
-```java
-public interface Modifier {
-    Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
-}
-```
- 
-The first argument to the `apply()` method represents the value to be modified. The second is the optional argument text that follows the "=" character in the modifier string. If an argument is not specified, this value will be `null`. The third argument contains the encoder's locale.
-
-For example, this code creates a modifier named "upper" that converts values to uppercase:
-
-```java
-templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
-```
-
-The modifier can be applied as shown below:
-
-```
-{{.:upper}}
 ```
 
 ## BeanAdapter
@@ -951,16 +913,10 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
+The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances as shown below:
 
 ```java
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
-```
-
-```java
-var templateEncoder = new TemplateEncoder(getClass().getResource("pets.html"), resourceBundle);
-
-templateEncoder.write(results, response.getOutputStream());
 ```
 
 ### Schema Annotations

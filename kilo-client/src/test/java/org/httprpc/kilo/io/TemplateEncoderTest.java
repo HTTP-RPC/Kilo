@@ -544,7 +544,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testJSONContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "json.txt", TemplateEncoder.ContentType.JSON);
+        var templateEncoder = new TemplateEncoder(getClass().getResource("json.txt"), TemplateEncoder.ContentType.JSON);
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -561,7 +561,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testCSVContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "csv.txt", TemplateEncoder.ContentType.CSV);
+        var templateEncoder = new TemplateEncoder(getClass().getResource("csv.txt"), TemplateEncoder.ContentType.CSV);
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -581,7 +581,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testUnspecifiedContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "unspecified.txt", TemplateEncoder.ContentType.UNSPECIFIED);
+        var templateEncoder = new TemplateEncoder(getClass().getResource("unspecified.txt"), TemplateEncoder.ContentType.UNSPECIFIED);
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 

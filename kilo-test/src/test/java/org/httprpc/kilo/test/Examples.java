@@ -202,7 +202,7 @@ public class Examples {
             entry("c", true)
         );
 
-        var templateEncoder = new TemplateEncoder(Examples.class.getResource("example.html").toURI());
+        var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 
         templateEncoder.write(map, System.out);
     }

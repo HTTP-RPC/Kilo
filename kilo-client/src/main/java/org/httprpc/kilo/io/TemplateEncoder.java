@@ -79,8 +79,9 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     /**
-     * Content type options.
+     * @deprecated This type will be removed in a future release.
      */
+    @Deprecated
     public enum ContentType {
         /**
          * Markup content type.
@@ -347,9 +348,10 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     private URI uri;
-    private Modifier contentTypeModifier;
 
     private ResourceBundle resourceBundle = null;
+
+    private Modifier defaultModifier;
 
     private Map<String, Modifier> modifiers = mapOf(
         entry("format", new FormatModifier())
@@ -378,6 +380,16 @@ public class TemplateEncoder extends Encoder<Object> {
     /**
      * Constructs a new template encoder.
      *
+     * @param uri
+     * The URI of the template.
+     */
+    public TemplateEncoder(URI uri) {
+        this(uri, ContentType.MARKUP);
+    }
+
+    /**
+     * Constructs a new template encoder.
+     *
      * @param type
      * The type used to resolve the template resource.
      *
@@ -389,61 +401,26 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     /**
-     * Constructs a new template encoder.
-     *
-     * @param uri
-     * The URI of the template.
-     */
-    public TemplateEncoder(URI uri) {
-        this(uri, ContentType.MARKUP);
-    }
-
-    /**
-     * @deprecated Use {@link #TemplateEncoder(URI, ContentType)} or
-     * {@link #TemplateEncoder(Class, String, ContentType)} instead.
+     * @deprecated Use {@link #TemplateEncoder(URI)} and
+     * {@link #setDefaultModifier(Modifier)} instead.
      */
     @Deprecated
     public TemplateEncoder(URL url, ContentType contentType) {
         this(toURI(url), contentType);
     }
 
-    /**
-     * Constructs a new template encoder.
-     *
-     * @param type
-     * The type used to resolve the template resource.
-     *
-     * @param name
-     * The name of the template resource.
-     *
-     * @param contentType
-     * The template's content type.
-     */
-    public TemplateEncoder(Class<?> type, String name, ContentType contentType) {
-        this(toURI(type, name), contentType);
-    }
-
-    /**
-     * Constructs a new template encoder.
-     *
-     * @param uri
-     * The URI of the template.
-     *
-     * @param contentType
-     * The template's content type.
-     */
-    public TemplateEncoder(URI uri, ContentType contentType) {
+    private TemplateEncoder(URI uri, ContentType contentType) {
         if (uri == null || contentType == null) {
             throw new IllegalArgumentException();
         }
 
         this.uri = uri;
 
-        contentTypeModifier = switch (contentType) {
+        defaultModifier = switch (contentType) {
             case MARKUP -> new MarkupModifier();
             case JSON -> new JSONModifier();
             case CSV -> new CSVModifier();
-            case UNSPECIFIED -> null;
+            case UNSPECIFIED -> (value, argument, locale, timeZone) -> value;
         };
     }
 
@@ -490,6 +467,30 @@ public class TemplateEncoder extends Encoder<Object> {
      */
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * Returns the default modifier.
+     *
+     * @return
+     * The default modifier.
+     */
+    public Modifier getDefaultModifier() {
+        return defaultModifier;
+    }
+
+    /**
+     * Sets the default modifier.
+     *
+     * @param defaultModifier
+     * The default modifier.
+     */
+    public void setDefaultModifier(Modifier defaultModifier) {
+        if (defaultModifier == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.defaultModifier = defaultModifier;
     }
 
     /**
@@ -854,9 +855,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                 }
                             }
 
-                            if (contentTypeModifier != null) {
-                                value = contentTypeModifier.apply(value, null, locale, timeZone);
-                            }
+                            value = defaultModifier.apply(value, null, locale, timeZone);
 
                             writer.append(value.toString());
                         }
@@ -907,9 +906,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                                 }
 
-                                if (contentTypeModifier != null) {
-                                    value = contentTypeModifier.apply(value, null, locale, timeZone);
-                                }
+                                value = defaultModifier.apply(value, null, locale, timeZone);
 
                                 writer.append(value.toString());
                             }
