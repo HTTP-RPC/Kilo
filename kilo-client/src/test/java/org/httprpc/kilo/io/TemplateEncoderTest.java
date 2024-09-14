@@ -543,6 +543,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testJSONContentType() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("json.txt"), TemplateEncoder.ContentType.JSON);
 
@@ -560,6 +561,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testCSVContentType() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("csv.txt"), TemplateEncoder.ContentType.CSV);
 
@@ -580,6 +582,7 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testUnspecifiedContentType() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass().getResource("unspecified.txt"), TemplateEncoder.ContentType.UNSPECIFIED);
 
