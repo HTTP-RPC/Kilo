@@ -313,7 +313,7 @@ public class WebServiceProxy {
                 if (n < parameters.length) {
                     var body = argumentList.get(n);
 
-                    if (body == null) {
+                    if (body == null && parameters[n].getType() != Void.class) {
                         throw new IllegalArgumentException("Body is required.");
                     }
 
