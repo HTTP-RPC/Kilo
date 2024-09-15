@@ -431,7 +431,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testUnsupportedListPost() throws IOException {
+    public void testUnsupportedListPost() {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
 
         webServiceProxy.setArguments(mapOf(
@@ -446,7 +446,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testInvalidListPost() throws IOException {
+    public void testInvalidListPost() {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
 
         webServiceProxy.setBody("xyz");
@@ -600,6 +600,10 @@ public class WebServiceProxyTest {
     public void testEmptyPut() throws IOException {
         var webServiceProxy = new WebServiceProxy("PUT", baseURI, "test/%d", 101);
 
+        webServiceProxy.setArguments(mapOf(
+            entry("value", "abc")
+        ));
+
         var result = webServiceProxy.invoke();
 
         assertEquals(101, result);
@@ -609,7 +613,7 @@ public class WebServiceProxyTest {
     public void testEmptyPutProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        var result = testServiceProxy.testEmptyPut(101);
+        var result = testServiceProxy.testEmptyPut(101, "abc", null);
 
         assertEquals(101, result);
     }
@@ -658,7 +662,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testException() throws IOException {
+    public void testException() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/error");
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
@@ -668,7 +672,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testInvalidNumberArgument() throws IOException {
+    public void testInvalidNumberArgument() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
 
         webServiceProxy.setArguments(mapOf(
@@ -682,7 +686,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testInvalidDayOfWeekArgument() throws IOException {
+    public void testInvalidDayOfWeekArgument() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
 
         webServiceProxy.setArguments(mapOf(
@@ -696,7 +700,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testInvalidLocalDateArgument() throws IOException {
+    public void testInvalidLocalDateArgument() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
 
         webServiceProxy.setArguments(mapOf(
@@ -710,7 +714,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMissingRequiredParameter() throws IOException {
+    public void testMissingRequiredParameter() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
 
         webServiceProxy.setArguments(mapOf(
@@ -745,7 +749,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testMissingRequiredProperty() throws IOException {
+    public void testMissingRequiredProperty() {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/body");
 
         webServiceProxy.setBody(mapOf());
@@ -757,7 +761,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testTimeout() throws IOException {
+    public void testTimeout() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
 
         webServiceProxy.setArguments(mapOf(
@@ -772,7 +776,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomException() throws IOException {
+    public void testCustomException() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/error");
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {

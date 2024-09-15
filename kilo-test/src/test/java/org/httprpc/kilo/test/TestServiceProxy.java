@@ -54,7 +54,7 @@ public interface TestServiceProxy {
 
     @RequestMethod("PUT")
     @ResourcePath("?")
-    int testEmptyPut(int value) throws IOException;
+    int testEmptyPut(int id, String value, Void body) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("headers")
