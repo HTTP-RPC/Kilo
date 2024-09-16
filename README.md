@@ -913,10 +913,16 @@ try (var statement = queryBuilder.prepare(getConnection());
 }
 ```
 
-The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances as shown below:
+The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
 return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+```
+
+```java
+var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
+
+templateEncoder.write(results, response.getOutputStream());
 ```
 
 ### Schema Annotations
