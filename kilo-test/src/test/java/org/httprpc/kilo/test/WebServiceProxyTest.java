@@ -309,7 +309,7 @@ public class WebServiceProxyTest {
             entry("uuid", uuid)
         ));
 
-        var response = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
+        var response = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Response.class);
 
         assertTrue(response.getString().equals("héllo&gøod+bye?")
             && response.getStrings().equals(listOf("a", "b", "c"))
@@ -373,7 +373,7 @@ public class WebServiceProxyTest {
             entry("attachments", listOf(textTestURL, imageTestURL))
         ));
 
-        var response = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Response.class));
+        var response = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Response.class);
 
         assertTrue(response.getString().equals("héllo&gøod+bye?")
             && response.getStrings().equals(listOf("a", "b", "c"))
@@ -510,7 +510,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(request);
 
-        var body = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, TestService.Body.class));
+        var body = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Body.class);
 
         assertEquals("héllo&gøod+bye?", body.getString());
         assertEquals(listOf("a", "b", "c"), body.getStrings());
@@ -530,7 +530,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(request);
 
-        var coordinates = webServiceProxy.invoke(result -> BeanAdapter.coerce(result, Coordinates.class));
+        var coordinates = BeanAdapter.coerce(webServiceProxy.invoke(), Coordinates.class);
 
         assertEquals(request.get("x"), coordinates.x());
         assertEquals(request.get("y"), coordinates.y());

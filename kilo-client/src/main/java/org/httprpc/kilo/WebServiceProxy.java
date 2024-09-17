@@ -667,20 +667,10 @@ public class WebServiceProxy {
     }
 
     /**
-     * Invokes the service operation.
-     *
-     * @param <T>
-     * The result type.
-     *
-     * @param transform
-     * The mapping function to apply.
-     *
-     * @return
-     * The result of the operation.
-     *
-     * @throws IOException
-     * If an exception occurs while executing the operation.
+     * @deprecated Use {@link #invoke()} or {@link #invoke(ResponseHandler)}
+     * instead.
      */
+    @Deprecated
     public <T> T invoke(Function<Object, ? extends T> transform) throws IOException {
         if (transform == null) {
             throw new IllegalArgumentException();
