@@ -19,11 +19,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -78,32 +76,6 @@ public class TemplateEncoder extends Encoder<Object> {
         Object apply(Object value, String argument, Locale locale, TimeZone timeZone);
     }
 
-    /**
-     * @deprecated This type will be removed in a future release.
-     */
-    @Deprecated
-    public enum ContentType {
-        /**
-         * Markup content type.
-         */
-        MARKUP,
-
-        /**
-         * JSON content type.
-         */
-        JSON,
-
-        /**
-         * CSV content type.
-         */
-        CSV,
-
-        /**
-         * Unspecified content type.
-         */
-        UNSPECIFIED
-    }
-
     // Markup modifier
     private static class MarkupModifier implements Modifier {
         @Override
@@ -131,42 +103,6 @@ public class TemplateEncoder extends Encoder<Object> {
             } else {
                 return value;
             }
-        }
-    }
-
-    // JSON modifier
-    private static class JSONModifier implements Modifier {
-        JSONEncoder jsonEncoder = new JSONEncoder(true);
-
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var writer = new StringWriter();
-
-            try {
-                jsonEncoder.encode(value, writer);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return writer.toString();
-        }
-    }
-
-    // CSV modifier
-    private static class CSVModifier implements Modifier {
-        CSVEncoder csvEncoder = new CSVEncoder(listOf());
-
-        @Override
-        public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
-            var writer = new StringWriter();
-
-            try {
-                csvEncoder.encode(value, writer);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            return writer.toString();
         }
     }
 
@@ -351,7 +287,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private ResourceBundle resourceBundle = null;
 
-    private Modifier defaultModifier;
+    private Modifier defaultModifier = new MarkupModifier();
 
     private Map<String, Modifier> modifiers = mapOf(
         entry("format", new FormatModifier())
@@ -369,22 +305,17 @@ public class TemplateEncoder extends Encoder<Object> {
     private static final String SELF_REFERENCE = ".";
 
     /**
-     * @deprecated Use {@link #TemplateEncoder(URI)} or
-     * {@link #TemplateEncoder(Class, String)} instead.
-     */
-    @Deprecated
-    public TemplateEncoder(URL url) {
-        this(toURI(url));
-    }
-
-    /**
      * Constructs a new template encoder.
      *
      * @param uri
      * The URI of the template.
      */
     public TemplateEncoder(URI uri) {
-        this(uri, ContentType.MARKUP);
+        if (uri == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.uri = uri;
     }
 
     /**
@@ -397,52 +328,18 @@ public class TemplateEncoder extends Encoder<Object> {
      * The name of the template resource.
      */
     public TemplateEncoder(Class<?> type, String name) {
-        this(toURI(type, name));
-    }
-
-    /**
-     * @deprecated Use {@link #TemplateEncoder(URI)} and
-     * {@link #setDefaultModifier(Modifier)} instead.
-     */
-    @Deprecated
-    public TemplateEncoder(URL url, ContentType contentType) {
-        this(toURI(url), contentType);
-    }
-
-    private TemplateEncoder(URI uri, ContentType contentType) {
-        if (uri == null || contentType == null) {
+        if (type == null || name == null) {
             throw new IllegalArgumentException();
         }
 
-        this.uri = uri;
+        var url = type.getResource(name);
 
-        defaultModifier = switch (contentType) {
-            case MARKUP -> new MarkupModifier();
-            case JSON -> new JSONModifier();
-            case CSV -> new CSVModifier();
-            case UNSPECIFIED -> (value, argument, locale, timeZone) -> value;
-        };
-    }
-
-    private static URI toURI(URL url) {
         if (url == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid resource name.");
         }
 
         try {
-            return url.toURI();
-        } catch (URISyntaxException exception) {
-            throw new IllegalArgumentException(exception);
-        }
-    }
-
-    private static URI toURI(Class<?> type, String resourceName) {
-        if (type == null || resourceName == null) {
-            throw new IllegalArgumentException();
-        }
-
-        try {
-            return type.getResource(resourceName).toURI();
+            uri = url.toURI();
         } catch (URISyntaxException exception) {
             throw new IllegalArgumentException(exception);
         }

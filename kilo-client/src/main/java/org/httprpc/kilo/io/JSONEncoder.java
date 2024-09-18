@@ -58,7 +58,7 @@ public class JSONEncoder extends Encoder<Object> {
         writer.flush();
     }
 
-    void encode(Object value, Writer writer) throws IOException {
+    private void encode(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
         } else if (value instanceof CharSequence text) {

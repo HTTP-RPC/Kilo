@@ -543,59 +543,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testJSONContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("json.txt"), TemplateEncoder.ContentType.JSON);
-
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(
-            entry("b", mapOf(
-                entry("c", 1)
-            ))
-        ), writer);
-
-        assertEquals("{\"b\": {\"c\":1}, \"d\": \"\\\"klm\\n\\\"\"}", writer.toString());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testCSVContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("csv.txt"), TemplateEncoder.ContentType.CSV);
-
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(
-            entry("g", listOf(
-                mapOf(
-                    entry("h", 1),
-                    entry("i", true)
-                )
-            ))
-        ), writer);
-
-        assertEquals("\"\"\"n,\top\"\"\",f\n1,true\n", writer.toString());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testUnspecifiedContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass().getResource("unspecified.txt"), TemplateEncoder.ContentType.UNSPECIFIED);
-
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(), writer);
-
-        assertEquals("f<g>h&i\"j\"klm\n\"\"n,\top\"", writer.toString());
-    }
-
-    @Test
     public void testSimpleInclude() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "master1.txt");
 

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -45,8 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
@@ -139,64 +136,13 @@ public class WebServiceProxy {
         T decodeResponse(InputStream inputStream, String contentType) throws IOException;
     }
 
-    private class MonitoredInputStream extends InputStream {
-        InputStream inputStream;
-
-        MonitoredInputStream(InputStream inputStream) {
-            this.inputStream = inputStream;
-        }
-
-        @Override
-        public int read() throws IOException {
-            var b = inputStream.read();
-
-            if (monitorStream != null && b != -1) {
-                monitorStream.write(b);
-            }
-
-            return b;
-        }
-
-        @Override
-        public void close() throws IOException {
-            inputStream.close();
-        }
-    }
-
-    private class MonitoredOutputStream extends OutputStream {
-        OutputStream outputStream;
-
-        MonitoredOutputStream(OutputStream outputStream) {
-            this.outputStream = outputStream;
-        }
-
-        @Override
-        public void write(int b) throws IOException {
-            outputStream.write(b);
-
-            if (monitorStream != null) {
-                monitorStream.write(b);
-            }
-        }
-
-        @Override
-        public void flush() throws IOException {
-            outputStream.flush();
-        }
-
-        @Override
-        public void close() throws IOException {
-            outputStream.close();
-        }
-    }
-
     private static class TypedInvocationHandler implements InvocationHandler {
         URI baseURI;
-        Consumer<WebServiceProxy> initializer;
+        Map<String, Object> headers;
 
-        TypedInvocationHandler(URI baseURI, Consumer<WebServiceProxy> initializer) {
+        TypedInvocationHandler(URI baseURI, Map<String, Object> headers) {
             this.baseURI = baseURI;
-            this.initializer = initializer;
+            this.headers = headers;
         }
 
         @Override
@@ -261,9 +207,7 @@ public class WebServiceProxy {
 
                 var webServiceProxy = new WebServiceProxy(requestMethod.value(), baseURI.resolve(pathBuilder.toString()));
 
-                if (initializer != null) {
-                    initializer.accept(webServiceProxy);
-                }
+                webServiceProxy.setHeaders(headers);
 
                 var empty = switch (webServiceProxy.method) {
                     case "POST", "PUT" -> {
@@ -342,8 +286,6 @@ public class WebServiceProxy {
     private int readTimeout = 60000;
     private int chunkSize = 4096;
 
-    private PrintStream monitorStream = null;
-
     private String multipartBoundary = UUID.randomUUID().toString();
 
     private int statusCode = -1;
@@ -364,14 +306,6 @@ public class WebServiceProxy {
     };
 
     /**
-     * @deprecated Use {@link #WebServiceProxy(String, URI)} instead.
-     */
-    @Deprecated
-    public WebServiceProxy(String method, URL url) {
-        this(method, toURI(url));
-    }
-
-    /**
      * Constructs a new web service proxy.
      *
      * @param method
@@ -387,14 +321,6 @@ public class WebServiceProxy {
 
         this.method = method.toUpperCase();
         this.uri = uri;
-    }
-
-    /**
-     * @deprecated Use {@link #WebServiceProxy(String, URI, String, Object...)} instead.
-     */
-    @Deprecated
-    public WebServiceProxy(String method, URL baseURL, String path, Object... arguments) {
-        this(method, toURI(baseURL), path, arguments);
     }
 
     /**
@@ -414,38 +340,6 @@ public class WebServiceProxy {
      */
     public WebServiceProxy(String method, URI baseURI, String path, Object... arguments) {
         this(method, baseURI.resolve(String.format(path, arguments)));
-    }
-
-    private static URI toURI(URL url) {
-        if (url == null) {
-            throw new IllegalArgumentException();
-        }
-
-        try {
-            return url.toURI();
-        } catch (URISyntaxException exception) {
-            throw new IllegalArgumentException(exception);
-        }
-    }
-
-    /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public String getMethod() {
-        return method;
-    }
-
-    /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public URL getURL() {
-        try {
-            return uri.toURL();
-        } catch (MalformedURLException exception) {
-            throw new IllegalStateException(exception);
-        }
     }
 
     /**
@@ -638,22 +532,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public PrintStream getMonitorStream() {
-        return monitorStream;
-    }
-
-    /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public void setMonitorStream(PrintStream monitorStream) {
-        this.monitorStream = monitorStream;
-    }
-
-    /**
      * Invokes the service operation.
      *
      * @return
@@ -663,23 +541,10 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public Object invoke() throws IOException {
-        return invoke(result -> result);
-    }
-
-    /**
-     * @deprecated Use {@link #invoke()} or {@link #invoke(ResponseHandler)}
-     * instead.
-     */
-    @Deprecated
-    public <T> T invoke(Function<Object, ? extends T> transform) throws IOException {
-        if (transform == null) {
-            throw new IllegalArgumentException();
-        }
-
         return invoke((inputStream, contentType) -> {
             var jsonDecoder = new JSONDecoder();
 
-            return transform.apply(jsonDecoder.read(inputStream));
+            return jsonDecoder.read(inputStream);
         });
     }
 
@@ -762,10 +627,6 @@ public class WebServiceProxy {
             }
         }
 
-        if (monitorStream != null) {
-            monitorStream.println(String.format("%s %s", method, uri));
-        }
-
         // Open URL connection
         var connection = (HttpURLConnection)uri.toURL().openConnection();
 
@@ -792,12 +653,6 @@ public class WebServiceProxy {
             connection.setRequestProperty(key, value.toString());
         }
 
-        if (monitorStream != null) {
-            for (var entry : connection.getRequestProperties().entrySet()) {
-                monitorStream.println(String.format("%s: %s", entry.getKey(), String.join(", ", entry.getValue())));
-            }
-        }
-
         // Write request body
         if (requestHandler != null) {
             connection.setDoOutput(true);
@@ -814,45 +669,21 @@ public class WebServiceProxy {
 
             connection.setRequestProperty("Content-Type", contentType);
 
-            try (OutputStream outputStream = new MonitoredOutputStream(connection.getOutputStream())) {
+            try (var outputStream = connection.getOutputStream()) {
                 requestHandler.encodeRequest(outputStream);
-            } finally {
-                if (monitorStream != null) {
-                    monitorStream.println();
-                    monitorStream.flush();
-                }
             }
         }
 
         // Read response
         statusCode = connection.getResponseCode();
 
-        if (monitorStream != null) {
-            monitorStream.println(String.format("HTTP %d", statusCode));
-
-            for (var entry : connection.getHeaderFields().entrySet()) {
-                var key = entry.getKey();
-
-                if (key == null) {
-                    continue;
-                }
-
-                monitorStream.println(String.format("%s: %s", key, String.join(", ", entry.getValue())));
-            }
-        }
-
         var contentType = connection.getContentType();
 
         T result;
         if (statusCode / 100 == 2) {
             if (statusCode % 100 < 4) {
-                try (InputStream inputStream = new MonitoredInputStream(connection.getInputStream())) {
+                try (var inputStream = connection.getInputStream()) {
                     result = responseHandler.decodeResponse(inputStream, contentType);
-                } finally {
-                    if (monitorStream != null) {
-                        monitorStream.println();
-                        monitorStream.flush();
-                    }
                 }
             } else {
                 result = null;
@@ -865,12 +696,7 @@ public class WebServiceProxy {
             }
 
             try (var errorStream = connection.getErrorStream()) {
-                errorHandler.handleResponse(map(errorStream, MonitoredInputStream::new), contentType, statusCode);
-            } finally {
-                if (monitorStream != null) {
-                    monitorStream.println();
-                    monitorStream.flush();
-                }
+                errorHandler.handleResponse(errorStream, contentType, statusCode);
             }
 
             return null;
@@ -1003,14 +829,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * @deprecated Use {@link #of(Class, URI)} instead.
-     */
-    @Deprecated
-    public static <T> T of(Class<T> type, URL baseURL) {
-        return of(type, toURI(baseURL));
-    }
-
-    /**
      * Creates a typed proxy for web service invocation.
      *
      * @param <T>
@@ -1027,14 +845,6 @@ public class WebServiceProxy {
      */
     public static <T> T of(Class<T> type, URI baseURI) {
         return of(type, baseURI, mapOf());
-    }
-
-    /**
-     * @deprecated Use {@link #of(Class, URI, Map)} instead.
-     */
-    @Deprecated
-    public static <T> T of(Class<T> type, URL baseURL, Consumer<WebServiceProxy> initializer) {
-        return of(type, toURI(baseURL), initializer);
     }
 
     /**
@@ -1056,19 +866,7 @@ public class WebServiceProxy {
      * The typed web service proxy.
      */
     public static <T> T of(Class<T> type, URI baseURI, Map<String, Object> headers) {
-        if (headers == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return of(type, baseURI, webServiceProxy -> webServiceProxy.setHeaders(headers));
-    }
-
-    /**
-     * @deprecated Use {@link #of(Class, URI, Map)} instead.
-     */
-    @Deprecated
-    public static <T> T of(Class<T> type, URI baseURI, Consumer<WebServiceProxy> initializer) {
-        if (type == null || baseURI == null) {
+        if (type == null || baseURI == null || headers == null) {
             throw new IllegalArgumentException();
         }
 
@@ -1082,6 +880,6 @@ public class WebServiceProxy {
             baseURI = baseURI.resolve(String.format("%s/", servicePath.value()));
         }
 
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURI, initializer)));
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURI, headers)));
     }
 }
