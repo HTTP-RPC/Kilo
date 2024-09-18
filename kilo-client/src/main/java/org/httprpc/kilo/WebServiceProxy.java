@@ -485,9 +485,13 @@ public class WebServiceProxy {
      * Sets the connect timeout.
      *
      * @param connectTimeout
-     * The connect timeout, in milliseconds.
+     * The connect timeout, in milliseconds, or 0 for no timeout.
      */
     public void setConnectTimeout(int connectTimeout) {
+        if (connectTimeout < 0) {
+            throw new IllegalArgumentException();
+        }
+
         this.connectTimeout = connectTimeout;
     }
 
@@ -505,9 +509,13 @@ public class WebServiceProxy {
      * Sets the read timeout.
      *
      * @param readTimeout
-     * The read timeout, in milliseconds.
+     * The read timeout, in milliseconds, or 0 for no timeout.
      */
     public void setReadTimeout(int readTimeout) {
+        if (readTimeout < 0) {
+            throw new IllegalArgumentException();
+        }
+
         this.readTimeout = readTimeout;
     }
 
@@ -525,9 +533,13 @@ public class WebServiceProxy {
      * Sets the chunk size.
      *
      * @param chunkSize
-     * The chunk size, or a negative value to disable chunked streaming.
+     * The chunk size, or 0 to disable chunked streaming.
      */
     public void setChunkSize(int chunkSize) {
+        if (chunkSize < 0) {
+            throw new IllegalArgumentException();
+        }
+
         this.chunkSize = chunkSize;
     }
 
@@ -657,7 +669,7 @@ public class WebServiceProxy {
         if (requestHandler != null) {
             connection.setDoOutput(true);
 
-            if (chunkSize >= 0) {
+            if (chunkSize > 0) {
                 connection.setChunkedStreamingMode(chunkSize);
             }
 
