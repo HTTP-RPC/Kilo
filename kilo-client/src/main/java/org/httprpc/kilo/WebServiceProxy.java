@@ -284,7 +284,7 @@ public class WebServiceProxy {
 
     private int connectTimeout = 15000;
     private int readTimeout = 60000;
-    private int chunkSize = 4096;
+    private int chunkSize = 0;
 
     private String multipartBoundary = UUID.randomUUID().toString();
 
