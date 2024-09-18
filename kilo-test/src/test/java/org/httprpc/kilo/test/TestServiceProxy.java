@@ -17,14 +17,19 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.Configuration;
 import org.httprpc.kilo.ErrorHandler;
 import org.httprpc.kilo.FormData;
+import org.httprpc.kilo.RequestHandler;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.ResponseHandler;
 import org.httprpc.kilo.ServicePath;
 import org.httprpc.kilo.io.TextDecoder;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
@@ -33,6 +38,32 @@ import java.util.Set;
 
 @ServicePath("test")
 public interface TestServiceProxy {
+    class CustomRequestHandler implements RequestHandler {
+        private static final int EOF = -1;
+
+        @Override
+        public String getContentType() {
+            return null;
+        }
+
+        @Override
+        public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+            try (var inputStream = ((URL)body).openStream()) {
+                int b;
+                while ((b = inputStream.read()) != EOF) {
+                    outputStream.write(b);
+                }
+            }
+        }
+    }
+
+    class CustomResponseHandler implements ResponseHandler {
+        @Override
+        public Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+            return ImageIO.read(inputStream);
+        }
+    }
+
     class CustomErrorHandler implements ErrorHandler {
         @Override
         public void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException {
@@ -66,6 +97,11 @@ public interface TestServiceProxy {
     @FormData(multipart = true)
     @SuppressWarnings("deprecation")
     TestService.Response testMultipartPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, URL... attachments) throws IOException;
+
+    @RequestMethod("POST")
+    @ResourcePath("image")
+    @Configuration(requestHandler = CustomRequestHandler.class, responseHandler = CustomResponseHandler.class, chunkSize = 4096)
+    BufferedImage testImagePost(URL body) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("?")

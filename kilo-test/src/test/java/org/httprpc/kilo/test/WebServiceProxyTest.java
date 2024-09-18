@@ -573,6 +573,15 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testImagePostProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
+
+        var image = testServiceProxy.testImagePost(getClass().getResource("test.jpg"));
+
+        assertNotNull(image);
+    }
+
+    @Test
     public void testPut() throws IOException {
         var webServiceProxy = new WebServiceProxy("PUT", baseURI, "test");
 
