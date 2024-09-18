@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.RequestHandler;
 import org.httprpc.kilo.WebServiceException;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
@@ -285,6 +287,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testURLEncodedPost() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test");
 
@@ -345,6 +348,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testMultipartPost() throws IOException {
         var textTestURL = getClass().getResource("test.txt");
         var imageTestURL = getClass().getResource("test.jpg");
@@ -460,17 +464,19 @@ public class WebServiceProxyTest {
     public void testMalformedListPost() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+        webServiceProxy.setBody("xyz");
+
+        webServiceProxy.setRequestHandler(new RequestHandler() {
             @Override
             public String getContentType() {
                 return "application/json";
             }
 
             @Override
-            public void encodeRequest(OutputStream outputStream) throws IOException {
+            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
                 var textEncoder = new TextEncoder();
 
-                textEncoder.write("xyz", outputStream);
+                textEncoder.write(body, outputStream);
             }
         });
 
@@ -538,19 +544,19 @@ public class WebServiceProxyTest {
 
     @Test
     public void testImagePost() throws IOException {
-        var imageTestURL = getClass().getResource("test.jpg");
-
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/image");
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+        webServiceProxy.setBody(getClass().getResource("test.jpg"));
+
+        webServiceProxy.setRequestHandler(new RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
             }
 
             @Override
-            public void encodeRequest(OutputStream outputStream) throws IOException {
-                try (var inputStream = imageTestURL.openStream()) {
+            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+                try (var inputStream = ((URL)body).openStream()) {
                     int b;
                     while ((b = inputStream.read()) != EOF) {
                         outputStream.write(b);
@@ -559,26 +565,28 @@ public class WebServiceProxyTest {
             }
         });
 
-        var image = webServiceProxy.invoke((inputStream, contentType) -> ImageIO.read(inputStream));
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));
+
+        var image = webServiceProxy.invoke();
 
         assertNotNull(image);
     }
 
     @Test
     public void testPut() throws IOException {
-        var textTestURL = getClass().getResource("test.txt");
-
         var webServiceProxy = new WebServiceProxy("PUT", baseURI, "test");
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
+        webServiceProxy.setBody(getClass().getResource("test.txt"));
+
+        webServiceProxy.setRequestHandler(new RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
             }
 
             @Override
-            public void encodeRequest(OutputStream outputStream) throws IOException {
-                try (var inputStream = textTestURL.openStream()) {
+            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+                try (var inputStream = ((URL)body).openStream()) {
                     int b;
                     while ((b = inputStream.read()) != EOF) {
                         outputStream.write(b);
@@ -587,11 +595,13 @@ public class WebServiceProxyTest {
             }
         });
 
-        var text = webServiceProxy.invoke((inputStream, contentType) -> {
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();
 
             return textDecoder.read(inputStream);
         });
+
+        var text = webServiceProxy.invoke();
 
         assertNotNull(text);
     }
@@ -776,7 +786,14 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testCustomException() {
+    public void testTimeoutProxy() {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
+
+        assertThrows(SocketTimeoutException.class, () -> testServiceProxy.testTimeout(123, 6000));
+    }
+
+    @Test
+    public void testCustomErrorHandler() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/error");
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
@@ -786,6 +803,13 @@ public class WebServiceProxyTest {
         });
 
         assertThrows(CustomException.class, webServiceProxy::invoke);
+    }
+
+    @Test
+    public void testCustomErrorHandlerProxy() {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
+
+        assertThrows(CustomException.class, testServiceProxy::testCustomErrorHandler);
     }
 
     @Test
@@ -816,6 +840,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testFileUpload1() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURI, "file-upload");
 
@@ -840,6 +865,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testFileUpload2() throws IOException {
         var textTestURL = getClass().getResource("test.txt");
         var imageTestURL = getClass().getResource("test.jpg");

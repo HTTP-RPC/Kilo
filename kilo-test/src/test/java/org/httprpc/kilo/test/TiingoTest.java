@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import static org.httprpc.kilo.util.Collections.*;
 
 public class TiingoTest {
-    private static final URI baseURI = URI.create("https://api.tiingo.com");
+    private static final URI baseURI = URI.create("https://api.tiingo.com/");
 
     public static void main(String[] args) throws IOException {
         var token = System.getProperty("token");

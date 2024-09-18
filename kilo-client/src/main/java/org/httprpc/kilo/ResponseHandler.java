@@ -14,21 +14,27 @@
 
 package org.httprpc.kilo;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * @deprecated This type will be removed in a future release.
+ * Represents a response handler.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@Deprecated
-public @interface FormData {
+public interface ResponseHandler {
     /**
-     * {@code true} if the multi-part encoding should be used; {@code false},
-     * otherwise.
+     * Decodes a response from an input stream.
+     *
+     * @param inputStream
+     * The input stream to read from.
+     *
+     * @param contentType
+     * The content type, or {@code null} if the content type is not known.
+     *
+     * @return
+     * The decoded body content.
+     *
+     * @throws IOException
+     * If an exception occurs.
      */
-    boolean multipart() default false;
+    Object decodeResponse(InputStream inputStream, String contentType) throws IOException;
 }

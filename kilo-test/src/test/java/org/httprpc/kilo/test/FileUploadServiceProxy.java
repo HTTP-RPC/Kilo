@@ -27,9 +27,11 @@ import java.util.List;
 public interface FileUploadServiceProxy {
     @RequestMethod("POST")
     @FormData(multipart = true)
+    @SuppressWarnings("deprecation")
     long uploadFile(@Required URL file) throws IOException;
 
     @RequestMethod("POST")
     @FormData(multipart = true)
+    @SuppressWarnings("deprecation")
     long uploadFiles(List<URL> files) throws IOException;
 }

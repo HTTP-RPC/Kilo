@@ -20,7 +20,6 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
@@ -53,8 +52,9 @@ import static org.httprpc.kilo.util.Optionals.*;
  */
 public class WebServiceProxy {
     /**
-     * Encoding options for POST requests.
+     * @deprecated This type will be removed in a future release.
      */
+    @Deprecated
     public enum Encoding {
         /**
          * The "application/x-www-form-urlencoded" encoding.
@@ -65,75 +65,6 @@ public class WebServiceProxy {
          * The "multipart/form-data" encoding.
          */
         MULTIPART_FORM_DATA
-    }
-
-    /**
-     * Represents a request handler.
-     */
-    public interface RequestHandler {
-        /**
-         * Returns the content type produced by the handler.
-         *
-         * @return
-         * The content type produced by the handler.
-         */
-        String getContentType();
-
-        /**
-         * Encodes a request to an output stream.
-         *
-         * @param outputStream
-         * The output stream to write to.
-         *
-         * @throws IOException
-         * If an exception occurs.
-         */
-        void encodeRequest(OutputStream outputStream) throws IOException;
-    }
-
-    /**
-     * Represents an error handler.
-     */
-    public interface ErrorHandler {
-        /**
-         * Handles an error response.
-         *
-         * @param errorStream
-         * The error stream.
-         *
-         * @param contentType
-         * The content type, or {@code null} if the content type is not known.
-         *
-         * @param statusCode
-         * The status code.
-         *
-         * @throws IOException
-         * Representing the error that occurred, or if an exception occurs while
-         * handling the error.
-         */
-        void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
-    }
-
-    /**
-     * Represents a response handler.
-     */
-    public interface ResponseHandler<T> {
-        /**
-         * Decodes a response from an input stream.
-         *
-         * @param inputStream
-         * The input stream to read from.
-         *
-         * @param contentType
-         * The content type, or {@code null} if the content type is not known.
-         *
-         * @return
-         * The decoded value.
-         *
-         * @throws IOException
-         * If an exception occurs.
-         */
-        T decodeResponse(InputStream inputStream, String contentType) throws IOException;
     }
 
     private static class TypedInvocationHandler implements InvocationHandler {
@@ -211,6 +142,7 @@ public class WebServiceProxy {
 
                 var empty = switch (webServiceProxy.method) {
                     case "POST", "PUT" -> {
+                        @SuppressWarnings("deprecation")
                         var formData = method.getAnnotation(FormData.class);
 
                         if (formData == null) {
@@ -264,7 +196,59 @@ public class WebServiceProxy {
                     webServiceProxy.setBody(body);
                 }
 
+                var configuration = method.getAnnotation(Configuration.class);
+
+                if (configuration != null) {
+                    configure(webServiceProxy, configuration);
+                }
+
                 return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
+            }
+        }
+
+        private static void configure(WebServiceProxy webServiceProxy, Configuration configuration) {
+            var requestHandler = configuration.requestHandler();
+
+            if (requestHandler != RequestHandler.class) {
+                webServiceProxy.setRequestHandler(instantiate(requestHandler));
+            }
+
+            var responseHandler = configuration.responseHandler();
+
+            if (responseHandler != ResponseHandler.class) {
+                webServiceProxy.setResponseHandler(instantiate(responseHandler));
+            }
+
+            var errorHandler = configuration.errorHandler();
+
+            if (errorHandler != ErrorHandler.class) {
+                webServiceProxy.setErrorHandler(instantiate(errorHandler));
+            }
+
+            var connectTimeout = configuration.connectTimeout();
+
+            if (connectTimeout >= 0) {
+                webServiceProxy.setConnectTimeout(connectTimeout);
+            }
+
+            var readTimeout = configuration.readTimeout();
+
+            if (readTimeout >= 0) {
+                webServiceProxy.setReadTimeout(readTimeout);
+            }
+
+            var chunkSize = configuration.chunkSize();
+
+            if (chunkSize >= 0) {
+                webServiceProxy.setChunkSize(chunkSize);
+            }
+        }
+
+        private static <T> T instantiate(Class<T> type) {
+            try {
+                return type.getDeclaredConstructor().newInstance();
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException  | InvocationTargetException exception) {
+                throw new UnsupportedOperationException(exception);
             }
         }
     }
@@ -279,20 +263,27 @@ public class WebServiceProxy {
 
     private Object body = null;
 
-    private RequestHandler requestHandler = null;
-    private ErrorHandler errorHandler = null;
+    private RequestHandler requestHandler = new RequestHandler() {
+        @Override
+        public String getContentType() {
+            return "application/json";
+        }
 
-    private int connectTimeout = 15000;
-    private int readTimeout = 60000;
-    private int chunkSize = 0;
+        @Override
+        public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+            var jsonEncoder = new JSONEncoder();
 
-    private String multipartBoundary = UUID.randomUUID().toString();
+            jsonEncoder.write(BeanAdapter.adapt(body), outputStream);
+        }
+    };
 
-    private int statusCode = -1;
+    private ResponseHandler responseHandler = (inputStream, contentType) -> {
+        var jsonDecoder = new JSONDecoder();
 
-    private static final int EOF = -1;
+        return jsonDecoder.read(inputStream);
+    };
 
-    private static final ErrorHandler defaultErrorHandler = (errorStream, contentType, statusCode) -> {
+    private ErrorHandler errorHandler = (errorStream, contentType, statusCode) -> {
         String message;
         if (errorStream != null && contentType != null && contentType.toLowerCase().startsWith("text/plain")) {
             var textDecoder = new TextDecoder();
@@ -304,6 +295,16 @@ public class WebServiceProxy {
 
         throw new WebServiceException(message, statusCode);
     };
+
+    private int connectTimeout = 15000;
+    private int readTimeout = 60000;
+    private int chunkSize = 0;
+
+    private String multipartBoundary = UUID.randomUUID().toString();
+
+    private int statusCode = -1;
+
+    private static final int EOF = -1;
 
     /**
      * Constructs a new web service proxy.
@@ -343,21 +344,17 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the encoding used for POST requests.
-     *
-     * @return
-     * The encoding used for POST requests.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public Encoding getEncoding() {
         return encoding;
     }
 
     /**
-     * Sets the encoding used for POST requests.
-     *
-     * @param encoding
-     * The encoding used for POST requests.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public void setEncoding(Encoding encoding) {
         this.encoding = encoding;
     }
@@ -435,7 +432,7 @@ public class WebServiceProxy {
      * Returns the request handler.
      *
      * @return
-     * The request handler, or {@code null} if no request handler has been set.
+     * The request handler.
      */
     public RequestHandler getRequestHandler() {
         return requestHandler;
@@ -445,17 +442,45 @@ public class WebServiceProxy {
      * Sets the request handler.
      *
      * @param requestHandler
-     * The request handler, or {@code null} for the default request handler.
+     * The request handler.
      */
     public void setRequestHandler(RequestHandler requestHandler) {
+        if (requestHandler == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.requestHandler = requestHandler;
+    }
+
+    /**
+     * Returns the response handler.
+     *
+     * @return
+     * The response handler.
+     */
+    public ResponseHandler getResponseHandler() {
+        return responseHandler;
+    }
+
+    /**
+     * Sets the response handler.
+     *
+     * @param responseHandler
+     * The response handler.
+     */
+    public void setResponseHandler(ResponseHandler responseHandler) {
+        if (responseHandler == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.responseHandler = responseHandler;
     }
 
     /**
      * Returns the error handler.
      *
      * @return
-     * The error handler, or {@code null} if no error handler has been set.
+     * The error handler.
      */
     public ErrorHandler getErrorHandler() {
         return errorHandler;
@@ -465,9 +490,13 @@ public class WebServiceProxy {
      * Sets the error handler.
      *
      * @param errorHandler
-     * The error handler, or {@code null} for the default error handler.
+     * The error handler.
      */
     public void setErrorHandler(ErrorHandler errorHandler) {
+        if (errorHandler == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.errorHandler = errorHandler;
     }
 
@@ -553,41 +582,10 @@ public class WebServiceProxy {
      * If an exception occurs while executing the operation.
      */
     public Object invoke() throws IOException {
-        return invoke((inputStream, contentType) -> {
-            var jsonDecoder = new JSONDecoder();
-
-            return jsonDecoder.read(inputStream);
-        });
-    }
-
-    /**
-     * Invokes the service operation.
-     *
-     * @param <T>
-     * The result type.
-     *
-     * @param responseHandler
-     * The response handler.
-     *
-     * @return
-     * The result of the operation.
-     *
-     * @throws IOException
-     * If an exception occurs while executing the operation.
-     */
-    public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException {
-        if (responseHandler == null) {
-            throw new IllegalArgumentException();
-        }
-
         var uri = this.uri;
 
         RequestHandler requestHandler;
         if (method.equals("POST") && encoding != null) {
-            if (body != null || this.requestHandler != null) {
-                throw new IllegalStateException("Encoding already specified.");
-            }
-
             requestHandler = new RequestHandler() {
                 @Override
                 public String getContentType() {
@@ -598,7 +596,7 @@ public class WebServiceProxy {
                 }
 
                 @Override
-                public void encodeRequest(OutputStream outputStream) throws IOException {
+                public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
                     switch (encoding) {
                         case APPLICATION_X_WWW_FORM_URLENCODED -> encodeApplicationXWWWFormURLEncodedRequest(outputStream);
                         case MULTIPART_FORM_DATA -> encodeMultipartFormDataRequest(outputStream);
@@ -616,27 +614,7 @@ public class WebServiceProxy {
                 }
             }
 
-            if (body != null) {
-                if (this.requestHandler != null) {
-                    throw new IllegalStateException("Body already specified.");
-                }
-
-                requestHandler = new RequestHandler() {
-                    @Override
-                    public String getContentType() {
-                        return "application/json";
-                    }
-
-                    @Override
-                    public void encodeRequest(OutputStream outputStream) throws IOException {
-                        var jsonEncoder = new JSONEncoder();
-
-                        jsonEncoder.write(BeanAdapter.adapt(body), outputStream);
-                    }
-                };
-            } else {
-                requestHandler = this.requestHandler;
-            }
+            requestHandler = this.requestHandler;
         }
 
         // Open URL connection
@@ -666,23 +644,17 @@ public class WebServiceProxy {
         }
 
         // Write request body
-        if (requestHandler != null) {
+        if (body != null || encoding != null) {
             connection.setDoOutput(true);
 
             if (chunkSize > 0) {
                 connection.setChunkedStreamingMode(chunkSize);
             }
 
-            var contentType = requestHandler.getContentType();
-
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
-
-            connection.setRequestProperty("Content-Type", contentType);
+            connection.setRequestProperty("Content-Type", requestHandler.getContentType());
 
             try (var outputStream = connection.getOutputStream()) {
-                requestHandler.encodeRequest(outputStream);
+                requestHandler.encodeRequest(body, outputStream);
             }
         }
 
@@ -691,7 +663,7 @@ public class WebServiceProxy {
 
         var contentType = connection.getContentType();
 
-        T result;
+        Object result;
         if (statusCode / 100 == 2) {
             if (statusCode % 100 < 4) {
                 try (var inputStream = connection.getInputStream()) {
@@ -701,12 +673,6 @@ public class WebServiceProxy {
                 result = null;
             }
         } else {
-            var errorHandler = this.errorHandler;
-
-            if (errorHandler == null) {
-                errorHandler = defaultErrorHandler;
-            }
-
             try (var errorStream = connection.getErrorStream()) {
                 errorHandler.handleResponse(errorStream, contentType, statusCode);
             }

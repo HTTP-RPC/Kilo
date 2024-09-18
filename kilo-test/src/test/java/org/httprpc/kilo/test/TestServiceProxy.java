@@ -14,13 +14,17 @@
 
 package org.httprpc.kilo.test;
 
+import org.httprpc.kilo.Configuration;
+import org.httprpc.kilo.ErrorHandler;
 import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.ServicePath;
+import org.httprpc.kilo.io.TextDecoder;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
@@ -29,6 +33,15 @@ import java.util.Set;
 
 @ServicePath("test")
 public interface TestServiceProxy {
+    class CustomErrorHandler implements ErrorHandler {
+        @Override
+        public void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException {
+            var textDecoder = new TextDecoder();
+
+            throw new WebServiceProxyTest.CustomException(textDecoder.read(errorStream));
+        }
+    }
+
     @RequestMethod("GET")
     Map<String, Object> testGet(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, char character) throws IOException;
 
@@ -46,15 +59,26 @@ public interface TestServiceProxy {
 
     @RequestMethod("POST")
     @FormData
+    @SuppressWarnings("deprecation")
     TestService.Response testURLEncodedPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
 
     @RequestMethod("POST")
     @FormData(multipart = true)
+    @SuppressWarnings("deprecation")
     TestService.Response testMultipartPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, URL... attachments) throws IOException;
 
     @RequestMethod("PUT")
     @ResourcePath("?")
     int testEmptyPut(int id, String value, Void body) throws IOException;
+
+    @RequestMethod("GET")
+    @Configuration(connectTimeout = 500, readTimeout = 4000)
+    int testTimeout(int value, int delay) throws IOException;
+
+    @RequestMethod("GET")
+    @ResourcePath("error")
+    @Configuration(errorHandler = CustomErrorHandler.class)
+    void testCustomErrorHandler() throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("headers")

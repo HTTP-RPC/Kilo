@@ -19,7 +19,7 @@ import org.httprpc.kilo.beans.BeanAdapter
 import org.httprpc.kilo.io.JSONEncoder
 import java.net.URI
 
-val baseURI: URI = URI.create("https://jsonplaceholder.typicode.com")
+val baseURI: URI = URI.create("https://jsonplaceholder.typicode.com/")
 
 fun main() {
     val userServiceProxy = WebServiceProxy.of(UserServiceProxy::class.java, baseURI)

@@ -350,34 +350,32 @@ The first version accepts a string representing the HTTP method to execute and t
 
 Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
-Body content can be provided via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate arbitrary encodings:
+Body content is supplied via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate alternate encodings:
 
 ```java
 public interface RequestHandler {
     String getContentType();
-    void encodeRequest(OutputStream outputStream) throws IOException;
+    void encodeRequest(Object body, OutputStream outputStream) throws IOException;
 }
 ```
 
-Service operations are invoked via one of the following methods:
+Service operations are invoked via the following method:
 
 ```java
 public Object invoke() throws IOException { ... }
-public <T> T invoke(Function<Object, ? extends T> transform) throws IOException { ... }
-public <T> T invoke(ResponseHandler<T> responseHandler) throws IOException { ... }
 ```
 
-The first version deserializes a successful JSON response (if any). The second applies a transform to the deserialized response. The third version allows a caller to provide a custom response handler:
+By default, response content is assumed to be JSON. The `setResponseHandler()` method can be used to decode alternate representations:
 
 ```java
-public interface ResponseHandler<T> {
-    T decodeResponse(InputStream inputStream, String contentType) throws IOException;
+public interface ResponseHandler {
+    Object decodeResponse(InputStream inputStream, String contentType) throws IOException;
 }
 ```
 
 If an operation does not complete successfully, the default error handler will throw a `WebServiceException` (a subclass of `IOException`). If the type of the error response is "text/plain", the response content will be provided in the exception message. 
 
-A custom error handler can be supplied via `setErrorHandler()`:
+A custom error handler can be provided via `setErrorHandler()`:
 
 ```java
 public interface ErrorHandler {

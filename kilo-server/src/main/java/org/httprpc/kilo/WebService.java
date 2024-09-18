@@ -682,6 +682,11 @@ public abstract class WebService extends HttpServlet {
      */
     protected static final String TEXT_XML = "text/xml";
 
+    /**
+     * Plain text type.
+     */
+    protected static final String TEXT_PLAIN = "text/plain";
+
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
@@ -1201,7 +1206,7 @@ public abstract class WebService extends HttpServlet {
      * The cause of the error.
      */
     protected void reportError(HttpServletResponse response, Throwable cause) throws IOException {
-        response.setContentType(String.format("text/plain;charset=%s", UTF_8));
+        response.setContentType(String.format("%s;charset=%s", TEXT_PLAIN, UTF_8));
 
         if (cause != null) {
             var message = cause.getMessage();

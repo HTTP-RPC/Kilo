@@ -20,15 +20,38 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @deprecated This type will be removed in a future release.
+ * Specifies proxy configuration.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Deprecated
-public @interface FormData {
+public @interface Configuration {
     /**
-     * {@code true} if the multi-part encoding should be used; {@code false},
-     * otherwise.
+     * The request handler.
      */
-    boolean multipart() default false;
+    Class<? extends RequestHandler> requestHandler() default RequestHandler.class;
+
+    /**
+     * The response handler.
+     */
+    Class<? extends ResponseHandler> responseHandler() default ResponseHandler.class;
+
+    /**
+     * The error handler.
+     */
+    Class<? extends ErrorHandler> errorHandler() default ErrorHandler.class;
+
+    /**
+     * The connect timeout.
+     */
+    int connectTimeout() default -1;
+
+    /**
+     * The read timeout.
+     */
+    int readTimeout() default -1;
+
+    /**
+     * The chunk size.
+     */
+    int chunkSize() default -1;
 }

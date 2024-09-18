@@ -100,11 +100,13 @@ public class PetsTest {
             entry("owner", "Gwen")
         ));
 
-        var actual = webServiceProxy.invoke((inputStream, contentType) -> {
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var csvDecoder = new CSVDecoder();
 
             return csvDecoder.read(inputStream);
         });
+
+        var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);
 
@@ -136,11 +138,13 @@ public class PetsTest {
             entry("owner", "Gwen")
         ));
 
-        var actual = webServiceProxy.invoke((inputStream, contentType) -> {
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var textDecoder = new TextDecoder();
 
             return textDecoder.read(inputStream);
         });
+
+        var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);
     }
