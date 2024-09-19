@@ -43,7 +43,7 @@ public class DocumentationTest {
             expected = (Map<?, ?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, name);
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(name));
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "application/json")

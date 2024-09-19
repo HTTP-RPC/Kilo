@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.RequestHandler;
 import org.httprpc.kilo.WebServiceException;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -67,7 +66,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGet() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -127,12 +126,12 @@ public class WebServiceProxyTest {
 
     @Test
     public void testKeys() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/a/%d/b/%s/c/%d/d/%s",
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("test/a/%d/b/%s/c/%d/d/%s",
             123,
             URLEncoder.encode("héllo", StandardCharsets.UTF_8),
             456,
             URLEncoder.encode("göodbye", StandardCharsets.UTF_8)
-        );
+        )));
 
         var result = webServiceProxy.invoke();
 
@@ -160,7 +159,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testParameters() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/foo/%d/bar/%d", 1, 2);
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("test/foo/%d/bar/%d", 1, 2)));
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 3),
@@ -197,7 +196,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testVarargs() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/varargs");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/varargs"));
 
         webServiceProxy.setArguments(mapOf(
             entry("numbers", listOf(1, 2, 3))
@@ -227,7 +226,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testGetFibonacci() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/fibonacci");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/fibonacci"));
 
         webServiceProxy.setArguments(mapOf(
             entry("count", 8)
@@ -240,7 +239,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -425,7 +424,7 @@ public class WebServiceProxyTest {
     public void testListPost() throws IOException {
         var body = listOf(1, 2, 3);
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/list"));
 
         webServiceProxy.setBody(body);
 
@@ -436,7 +435,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testUnsupportedListPost() {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/list"));
 
         webServiceProxy.setArguments(mapOf(
             entry("list", listOf(1, 2, 3))
@@ -451,7 +450,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testInvalidListPost() {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/list"));
 
         webServiceProxy.setBody("xyz");
 
@@ -462,11 +461,11 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMalformedListPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/list");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/list"));
 
         webServiceProxy.setBody("xyz");
 
-        webServiceProxy.setRequestHandler(new RequestHandler() {
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return "application/json";
@@ -493,7 +492,7 @@ public class WebServiceProxyTest {
             entry("c", 3.0)
         );
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/map");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/map"));
 
         webServiceProxy.setBody(body);
 
@@ -512,7 +511,7 @@ public class WebServiceProxyTest {
             entry("flag", true)
         );
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/body");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/body"));
 
         webServiceProxy.setBody(request);
 
@@ -532,7 +531,7 @@ public class WebServiceProxyTest {
             entry("y", 2)
         );
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/coordinates");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/coordinates"));
 
         webServiceProxy.setBody(request);
 
@@ -544,11 +543,11 @@ public class WebServiceProxyTest {
 
     @Test
     public void testImagePost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/image");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/image"));
 
         webServiceProxy.setBody(getClass().getResource("test.jpg"));
 
-        webServiceProxy.setRequestHandler(new RequestHandler() {
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
@@ -583,11 +582,11 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPut() throws IOException {
-        var webServiceProxy = new WebServiceProxy("PUT", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("PUT", baseURI.resolve("test"));
 
         webServiceProxy.setBody(getClass().getResource("test.txt"));
 
-        webServiceProxy.setRequestHandler(new RequestHandler() {
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return null;
@@ -617,7 +616,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testEmptyPut() throws IOException {
-        var webServiceProxy = new WebServiceProxy("PUT", baseURI, "test/%d", 101);
+        var webServiceProxy = new WebServiceProxy("PUT", baseURI.resolve(String.format("test/%d", 101)));
 
         webServiceProxy.setArguments(mapOf(
             entry("value", "abc")
@@ -641,7 +640,7 @@ public class WebServiceProxyTest {
     public void testDelete() throws IOException {
         var id = 101;
 
-        var webServiceProxy = new WebServiceProxy("DELETE", baseURI, "test/%d", id);
+        var webServiceProxy = new WebServiceProxy("DELETE", baseURI.resolve(String.format("test/%d", id)));
 
         var result = webServiceProxy.invoke();
 
@@ -650,7 +649,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testHeaders() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/headers");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/headers"));
 
         webServiceProxy.setHeaders(mapOf(
             entry("X-Header-A", "abc"),
@@ -682,7 +681,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testException() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/error");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/error"));
 
         var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
@@ -692,7 +691,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testInvalidNumberArgument() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "abc"),
@@ -706,7 +705,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testInvalidDayOfWeekArgument() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "abc"),
@@ -720,7 +719,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testInvalidLocalDateArgument() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "abc"),
@@ -734,7 +733,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMissingRequiredParameter() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", null)
@@ -769,7 +768,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMissingRequiredProperty() {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/body");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/body"));
 
         webServiceProxy.setBody(mapOf());
 
@@ -781,7 +780,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testTimeout() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
             entry("value", 123),
@@ -803,7 +802,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testCustomErrorHandler() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/error");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/error"));
 
         webServiceProxy.setErrorHandler((errorStream, contentType, statusCode) -> {
             var textDecoder = new TextDecoder();
@@ -823,7 +822,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMathDelegation1() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/math/sum");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/math/sum"));
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 4),
@@ -837,7 +836,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testMathDelegation2() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "test/math/sum");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/math/sum"));
 
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))
@@ -922,7 +921,7 @@ public class WebServiceProxyTest {
     public void testGreeting() throws IOException {
         var contextPath = baseURI.getPath();
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, contextPath.substring(0, contextPath.length() - 1));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(contextPath.substring(0, contextPath.length() - 1)));
 
         var result = webServiceProxy.invoke();
 

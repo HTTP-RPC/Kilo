@@ -48,7 +48,7 @@ public class PetsTest {
             expected = (List<?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets"));
 
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
@@ -67,7 +67,7 @@ public class PetsTest {
             expected = (List<?>)jsonDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets/stream");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "application/json")
@@ -90,7 +90,7 @@ public class PetsTest {
             expected = csvDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets/stream");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", "text/csv")
@@ -128,7 +128,7 @@ public class PetsTest {
             expected = textDecoder.read(inputStream);
         }
 
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "pets/stream");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
         webServiceProxy.setHeaders(mapOf(
             entry("Accept", mimeType)

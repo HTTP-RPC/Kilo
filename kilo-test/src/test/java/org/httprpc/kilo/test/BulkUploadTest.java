@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.RequestHandler;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.io.CSVEncoder;
 
@@ -75,11 +74,11 @@ public class BulkUploadTest {
     }
 
     private static void logTiming(URI baseURI, String path, int count, long start) throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, path);
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve(path));
 
         webServiceProxy.setBody(new Rows(count));
 
-        webServiceProxy.setRequestHandler(new RequestHandler() {
+        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
             @Override
             public String getContentType() {
                 return "text/csv";

@@ -339,18 +339,15 @@ Types or methods tagged with the `Deprecated` annotation will be identified as s
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
 ## WebServiceProxy
-The `WebServiceProxy` class is used to submit API requests to a server. It provides the following two constructors:
+The `WebServiceProxy` class is used to submit API requests to a server. It provides the following constructor, which accepts a string representing the HTTP method to execute and the URI of the requested resource:
 
 ```java
 public WebServiceProxy(String method, URI uri) { ... }
-public WebServiceProxy(String method, URI baseURI, String path, Object... arguments) throws MalformedURLException { ... }
 ```
-
-The first version accepts a string representing the HTTP method to execute and the URI of the requested resource. The second accepts the HTTP method, a base URI, and a relative path (as a format string, to which the optional trailing arguments are applied).
 
 Query arguments are specified via a map passed to the `setArguments()` method. Any value may be used as an argument and will generally be encoded using its string representation. However, `Date` instances are first converted to a long value representing epoch time in milliseconds. Additionally, `Collection` or array instances represent multi-value parameters and behave similarly to `<select multiple>` tags in HTML forms.
 
-Body content is supplied via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate alternate encodings:
+Body content is specified via the `setBody()` method. By default, it will be serialized as JSON; however, the `setRequestHandler()` method can be used to facilitate alternate encodings:
 
 ```java
 public interface RequestHandler {
@@ -387,7 +384,7 @@ The following code demonstrates how `WebServiceProxy` might be used to access th
 
 ```java
 // GET /math/sum?a=2&b=4
-var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
+var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/sum"));
 
 webServiceProxy.setArguments(mapOf(
     entry("a", 4),
@@ -399,7 +396,7 @@ System.out.println(webServiceProxy.invoke()); // 6.0
 
 ```java
 // GET /math/sum?values=1&values=2&values=3
-var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
+var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/sum"));
 
 webServiceProxy.setArguments(mapOf(
     entry("values", listOf(1, 2, 3))

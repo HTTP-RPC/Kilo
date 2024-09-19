@@ -20,8 +20,13 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -65,6 +70,115 @@ public class WebServiceProxy {
          * The "multipart/form-data" encoding.
          */
         MULTIPART_FORM_DATA
+    }
+
+    /**
+     * Represents a request handler.
+     */
+    public interface RequestHandler {
+        /**
+         * Returns the handler's content type.
+         *
+         * @return
+         * The content type produced by the handler.
+         */
+        String getContentType();
+
+        /**
+         * Encodes a request to an output stream.
+         *
+         * @param body
+         * A value representing the body content.
+         *
+         * @param outputStream
+         * The output stream to write to.
+         *
+         * @throws IOException
+         * If an exception occurs.
+         */
+        void encodeRequest(Object body, OutputStream outputStream) throws IOException;
+    }
+
+    /**
+     * Represents a response handler.
+     */
+    public interface ResponseHandler {
+        /**
+         * Decodes a response from an input stream.
+         *
+         * @param inputStream
+         * The input stream to read from.
+         *
+         * @param contentType
+         * The content type, or {@code null} if the content type is not known.
+         *
+         * @return
+         * The decoded body content.
+         *
+         * @throws IOException
+         * If an exception occurs.
+         */
+        Object decodeResponse(InputStream inputStream, String contentType) throws IOException;
+    }
+
+    /**
+     * Represents an error handler.
+     */
+    public interface ErrorHandler {
+        /**
+         * Handles an error response.
+         *
+         * @param errorStream
+         * The error stream.
+         *
+         * @param contentType
+         * The content type, or {@code null} if the content type is not known.
+         *
+         * @param statusCode
+         * The status code.
+         *
+         * @throws IOException
+         * Representing the error that occurred, or if an exception occurs while
+         * handling the error.
+         */
+        void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException;
+    }
+
+    /**
+     * Specifies proxy configuration.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface Configuration {
+        /**
+         * The request handler.
+         */
+        Class<? extends RequestHandler> requestHandler() default RequestHandler.class;
+
+        /**
+         * The response handler.
+         */
+        Class<? extends ResponseHandler> responseHandler() default ResponseHandler.class;
+
+        /**
+         * The error handler.
+         */
+        Class<? extends ErrorHandler> errorHandler() default ErrorHandler.class;
+
+        /**
+         * The connect timeout.
+         */
+        int connectTimeout() default -1;
+
+        /**
+         * The read timeout.
+         */
+        int readTimeout() default -1;
+
+        /**
+         * The chunk size.
+         */
+        int chunkSize() default -1;
     }
 
     private static class TypedInvocationHandler implements InvocationHandler {
@@ -325,20 +439,9 @@ public class WebServiceProxy {
     }
 
     /**
-     * Constructs a new web service proxy.
-     *
-     * @param method
-     * The HTTP method.
-     *
-     * @param baseURI
-     * The base URI.
-     *
-     * @param path
-     * The path to the resource, relative to the base URL.
-     *
-     * @param arguments
-     * Path format specifier arguments.
+     * @deprecated Use {@link #WebServiceProxy(String, URI)} instead.
      */
+    @Deprecated
     public WebServiceProxy(String method, URI baseURI, String path, Object... arguments) {
         this(method, baseURI.resolve(String.format(path, arguments)));
     }

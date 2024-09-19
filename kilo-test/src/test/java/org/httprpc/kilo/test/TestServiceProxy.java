@@ -14,15 +14,12 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.Configuration;
-import org.httprpc.kilo.ErrorHandler;
 import org.httprpc.kilo.FormData;
-import org.httprpc.kilo.RequestHandler;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.ResponseHandler;
 import org.httprpc.kilo.ServicePath;
+import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.io.TextDecoder;
 
 import javax.imageio.ImageIO;
@@ -38,7 +35,7 @@ import java.util.Set;
 
 @ServicePath("test")
 public interface TestServiceProxy {
-    class CustomRequestHandler implements RequestHandler {
+    class CustomRequestHandler implements WebServiceProxy.RequestHandler {
         private static final int EOF = -1;
 
         @Override
@@ -57,14 +54,14 @@ public interface TestServiceProxy {
         }
     }
 
-    class CustomResponseHandler implements ResponseHandler {
+    class CustomResponseHandler implements WebServiceProxy.ResponseHandler {
         @Override
         public Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
             return ImageIO.read(inputStream);
         }
     }
 
-    class CustomErrorHandler implements ErrorHandler {
+    class CustomErrorHandler implements WebServiceProxy.ErrorHandler {
         @Override
         public void handleResponse(InputStream errorStream, String contentType, int statusCode) throws IOException {
             var textDecoder = new TextDecoder();
@@ -100,7 +97,7 @@ public interface TestServiceProxy {
 
     @RequestMethod("POST")
     @ResourcePath("image")
-    @Configuration(requestHandler = CustomRequestHandler.class, responseHandler = CustomResponseHandler.class, chunkSize = 4096)
+    @WebServiceProxy.Configuration(requestHandler = CustomRequestHandler.class, responseHandler = CustomResponseHandler.class, chunkSize = 4096)
     BufferedImage testImagePost(URL body) throws IOException;
 
     @RequestMethod("PUT")
@@ -108,12 +105,12 @@ public interface TestServiceProxy {
     int testEmptyPut(int id, String value, Void body) throws IOException;
 
     @RequestMethod("GET")
-    @Configuration(connectTimeout = 500, readTimeout = 4000)
+    @WebServiceProxy.Configuration(connectTimeout = 500, readTimeout = 4000)
     int testTimeout(int value, int delay) throws IOException;
 
     @RequestMethod("GET")
     @ResourcePath("error")
-    @Configuration(errorHandler = CustomErrorHandler.class)
+    @WebServiceProxy.Configuration(errorHandler = CustomErrorHandler.class)
     void testCustomErrorHandler() throws IOException;
 
     @RequestMethod("GET")

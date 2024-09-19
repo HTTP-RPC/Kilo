@@ -82,7 +82,7 @@ public class Examples {
 
     public static void mathService1() throws IOException {
         // GET /math/sum?a=2&b=4
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/sum"));
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 4),
@@ -94,7 +94,7 @@ public class Examples {
 
     public static void mathService2() throws IOException {
         // GET /math/sum?values=1&values=2&values=3
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, "math/sum");
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("math/sum"));
 
         webServiceProxy.setArguments(mapOf(
             entry("values", listOf(1, 2, 3))

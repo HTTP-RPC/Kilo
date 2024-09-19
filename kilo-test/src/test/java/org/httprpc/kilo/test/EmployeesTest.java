@@ -31,7 +31,7 @@ public class EmployeesTest {
     }
 
     private static void logTiming(URI baseURI, String path) throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI, path);
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(path));
 
         var t0 = System.currentTimeMillis();
 
