@@ -27,8 +27,6 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -126,20 +124,15 @@ public class WebServiceProxyTest {
 
     @Test
     public void testKeys() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("test/a/%d/b/%s/c/%d/d/%s",
-            123,
-            URLEncoder.encode("héllo", StandardCharsets.UTF_8),
-            456,
-            URLEncoder.encode("göodbye", StandardCharsets.UTF_8)
-        )));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/a/123/b/h%2Bllo/c/456/d/g%3Fodbye"));
 
         var result = webServiceProxy.invoke();
 
         assertEquals(mapOf(
             entry("a", 123),
-            entry("b", "héllo"),
+            entry("b", "h+llo"),
             entry("c", 456),
-            entry("d", "göodbye")
+            entry("d", "g?odbye")
         ), result);
     }
 
@@ -147,19 +140,19 @@ public class WebServiceProxyTest {
     public void testKeysProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        var result = testServiceProxy.testKeys(123, "héllo", 456,"göodbye");
+        var result = testServiceProxy.testKeys(123, "h+llo", 456,"g?odbye");
 
         assertEquals(mapOf(
             entry("a", 123),
-            entry("b", "héllo"),
+            entry("b", "h+llo"),
             entry("c", 456),
-            entry("d", "göodbye")
+            entry("d", "g?odbye")
         ), result);
     }
 
     @Test
     public void testParameters() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(String.format("test/foo/%d/bar/%d", 1, 2)));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/foo/1/bar/2"));
 
         webServiceProxy.setArguments(mapOf(
             entry("a", 3),
@@ -616,7 +609,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testEmptyPut() throws IOException {
-        var webServiceProxy = new WebServiceProxy("PUT", baseURI.resolve(String.format("test/%d", 101)));
+        var webServiceProxy = new WebServiceProxy("PUT", baseURI.resolve("test/101"));
 
         webServiceProxy.setArguments(mapOf(
             entry("value", "abc")
@@ -638,13 +631,11 @@ public class WebServiceProxyTest {
 
     @Test
     public void testDelete() throws IOException {
-        var id = 101;
-
-        var webServiceProxy = new WebServiceProxy("DELETE", baseURI.resolve(String.format("test/%d", id)));
+        var webServiceProxy = new WebServiceProxy("DELETE", baseURI.resolve("test/101"));
 
         var result = webServiceProxy.invoke();
 
-        assertEquals(id, result);
+        assertEquals(101, result);
     }
 
     @Test

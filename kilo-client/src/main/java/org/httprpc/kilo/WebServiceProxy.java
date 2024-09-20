@@ -33,7 +33,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -215,7 +214,13 @@ public class WebServiceProxy {
 
                 var argumentList = coalesce(map(arguments, Arrays::asList), listOf());
 
-                var pathBuilder = new StringBuilder();
+                var scheme = baseURI.getScheme();
+                var userInfo = baseURI.getUserInfo();
+                var host = baseURI.getHost();
+                var port = baseURI.getPort();
+
+                var pathBuilder = new StringBuilder(baseURI.getPath());
+
                 var keyCount = 0;
 
                 var resourcePath = method.getAnnotation(ResourcePath.class);
@@ -241,7 +246,7 @@ public class WebServiceProxy {
                                 throw new IllegalArgumentException("Path variable is required.");
                             }
 
-                            component = URLEncoder.encode(parameterValue.toString(), StandardCharsets.UTF_8);
+                            component = parameterValue.toString();
 
                             keyCount++;
                         }
@@ -250,7 +255,14 @@ public class WebServiceProxy {
                     }
                 }
 
-                var webServiceProxy = new WebServiceProxy(requestMethod.value(), baseURI.resolve(pathBuilder.toString()));
+                URI uri;
+                try {
+                    uri = new URI(scheme, userInfo, host, port, pathBuilder.toString(), null, null);
+                } catch (URISyntaxException exception) {
+                    throw new UnsupportedOperationException(exception);
+                }
+
+                var webServiceProxy = new WebServiceProxy(requestMethod.value(), uri);
 
                 webServiceProxy.setHeaders(headers);
 
@@ -707,13 +719,11 @@ public class WebServiceProxy {
                 }
             };
         } else {
-            var query = encodeQuery();
-
-            if (!query.isEmpty()) {
+            if (!arguments.isEmpty()) {
                 try {
-                    uri = new URI(String.format("%s?%s", uri, query));
+                    uri = new URI(String.format("%s?%s", uri, encodeQuery()));
                 } catch (URISyntaxException exception) {
-                    throw new MalformedURLException(exception.getMessage());
+                    throw new IllegalStateException(exception.getMessage());
                 }
             }
 
@@ -958,7 +968,21 @@ public class WebServiceProxy {
         var servicePath = type.getAnnotation(ServicePath.class);
 
         if (servicePath != null) {
-            baseURI = baseURI.resolve(String.format("%s/", servicePath.value()));
+            var scheme = baseURI.getScheme();
+            var userInfo = baseURI.getUserInfo();
+            var host = baseURI.getHost();
+            var port = baseURI.getPort();
+
+            var pathBuilder = new StringBuilder(baseURI.getPath());
+
+            pathBuilder.append(servicePath.value());
+            pathBuilder.append("/");
+
+            try {
+                baseURI = new URI(scheme, userInfo, host, port, pathBuilder.toString(), null, null);
+            } catch (URISyntaxException exception) {
+                throw new UnsupportedOperationException(exception);
+            }
         }
 
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, new TypedInvocationHandler(baseURI, headers)));
