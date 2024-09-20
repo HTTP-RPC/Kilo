@@ -74,7 +74,7 @@ public interface TestServiceProxy {
     Map<String, Object> testGet(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, char character) throws IOException;
 
     @RequestMethod("GET")
-    @ResourcePath("a/?/b/?/c/?/d/?")
+    @ResourcePath("a#/?/b*/?/c@/?/d=/?")
     Map<String, Object> testKeys(int a, String b, int c, String d) throws IOException;
 
     @RequestMethod("POST")

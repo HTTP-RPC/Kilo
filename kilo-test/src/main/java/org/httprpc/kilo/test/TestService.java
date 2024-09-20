@@ -202,7 +202,7 @@ public class TestService extends AbstractDatabaseService {
     }
 
     @RequestMethod("GET")
-    @ResourcePath("a/?/b/?/c/?/d/?")
+    @ResourcePath("a#/?/b*/?/c@/?/d=/?")
     public Map<String, Object> testKeys(
         @Description("First key.") int a,
         @Description("Second key.") String b,

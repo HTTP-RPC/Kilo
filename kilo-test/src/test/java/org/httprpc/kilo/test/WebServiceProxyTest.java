@@ -124,7 +124,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testKeys() throws IOException {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/a/123/b/h%2Bllo/c/456/d/g%3Fodbye"));
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/a%23/123/b*/h%2Bllo/c@/456/d=/g%3Fodbye"));
 
         var result = webServiceProxy.invoke();
 
