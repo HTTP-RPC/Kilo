@@ -282,8 +282,9 @@ public class TestService extends AbstractDatabaseService {
     }
 
     @RequestMethod("POST")
+    @ResourcePath("form-data")
     @Creates
-    public Response testPost(@Required String string, List<String> strings,
+    public Response testPostFormData(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,

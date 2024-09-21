@@ -245,7 +245,7 @@ public class WebServiceProxyTest {
 
     @Test
     public void testPostQuery() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test"));
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/form-data"));
 
         webServiceProxy.setArguments(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -294,7 +294,7 @@ public class WebServiceProxyTest {
     @Test
     @SuppressWarnings("deprecation")
     public void testURLEncodedPost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/form-data");
 
         webServiceProxy.setEncoding(WebServiceProxy.Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
 
@@ -358,7 +358,7 @@ public class WebServiceProxyTest {
         var textTestURL = getClass().getResource("test.txt");
         var imageTestURL = getClass().getResource("test.jpg");
 
-        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test");
+        var webServiceProxy = new WebServiceProxy("POST", baseURI, "test/form-data");
 
         webServiceProxy.setEncoding(WebServiceProxy.Encoding.MULTIPART_FORM_DATA);
 
