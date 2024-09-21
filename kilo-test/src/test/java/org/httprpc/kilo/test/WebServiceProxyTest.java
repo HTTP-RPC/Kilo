@@ -496,42 +496,39 @@ public class WebServiceProxyTest {
 
     @Test
     public void testBodyPost() throws IOException {
-        var request = mapOf(
+        var body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("numbers", listOf(1, 2, 2, 3, 3, 3)),
             entry("flag", true)
-        );
+        ), TestService.Body.class);
 
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/body"));
 
-        webServiceProxy.setBody(request);
+        webServiceProxy.setBody(body);
 
-        var body = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Body.class);
+        var result = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Body.class);
 
-        assertEquals("héllo&gøod+bye?", body.getString());
-        assertEquals(listOf("a", "b", "c"), body.getStrings());
-        assertEquals(123, body.getNumber());
-        assertEquals(setOf(1, 2, 3), body.getNumbers());
-        assertTrue(body.getFlag());
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
+        assertEquals(setOf(1, 2, 3), result.getNumbers());
+        assertTrue(result.getFlag());
     }
 
     @Test
     public void testCoordinatesPost() throws IOException {
-        var request = mapOf(
-            entry("x", 1),
-            entry("y", 2)
-        );
+        var body = new Coordinates(1, 2);
 
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/coordinates"));
 
-        webServiceProxy.setBody(request);
+        webServiceProxy.setBody(body);
 
-        var coordinates = BeanAdapter.coerce(webServiceProxy.invoke(), Coordinates.class);
+        var result = BeanAdapter.coerce(webServiceProxy.invoke(), Coordinates.class);
 
-        assertEquals(request.get("x"), coordinates.x());
-        assertEquals(request.get("y"), coordinates.y());
+        assertEquals(body.x(), result.x());
+        assertEquals(body.y(), result.y());
     }
 
     @Test
@@ -559,18 +556,18 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));
 
-        var image = webServiceProxy.invoke();
+        var result = webServiceProxy.invoke();
 
-        assertNotNull(image);
+        assertNotNull(result);
     }
 
     @Test
     public void testImagePostProxy() throws IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        var image = testServiceProxy.testImagePost(getClass().getResource("test.jpg"));
+        var result = testServiceProxy.testImagePost(getClass().getResource("test.jpg"));
 
-        assertNotNull(image);
+        assertNotNull(result);
     }
 
     @Test
@@ -602,9 +599,9 @@ public class WebServiceProxyTest {
             return textDecoder.read(inputStream);
         });
 
-        var text = webServiceProxy.invoke();
+        var result = webServiceProxy.invoke();
 
-        assertNotNull(text);
+        assertNotNull(result);
     }
 
     @Test
@@ -898,14 +895,14 @@ public class WebServiceProxyTest {
     public void testMembersProxy() throws IOException {
         var memberServiceProxy = WebServiceProxy.of(MemberServiceProxy.class, baseURI);
 
-        var members = memberServiceProxy.getMembers("foo", "bar");
+        var result = memberServiceProxy.getMembers("foo", "bar");
 
-        assertFalse(members.isEmpty());
+        assertFalse(result.isEmpty());
 
-        var member = members.get(0);
+        var first = result.get(0);
 
-        assertEquals("foo", member.getFirstName());
-        assertEquals("bar", member.getLastName());
+        assertEquals("foo", first.getFirstName());
+        assertEquals("bar", first.getLastName());
     }
 
     @Test
