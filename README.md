@@ -445,7 +445,7 @@ System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for [`WebService`](#webservice). The `Configuration` annotation can be used to associate additional configuration information with a proxy method. 
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for [`WebService`](#webservice).
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
