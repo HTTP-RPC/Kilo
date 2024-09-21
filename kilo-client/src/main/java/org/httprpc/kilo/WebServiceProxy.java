@@ -804,7 +804,7 @@ public class WebServiceProxy {
         for (Map.Entry<String, ?> entry : arguments.entrySet()) {
             var key = entry.getKey();
 
-            if (key == null) {
+            if (key == null || key.isEmpty()) {
                 throw new IllegalStateException();
             }
 
