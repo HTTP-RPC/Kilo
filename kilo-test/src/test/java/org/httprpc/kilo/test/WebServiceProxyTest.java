@@ -229,7 +229,22 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testPost() throws IOException {
+    public void testPost() {
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test"));
+
+        var body = listOf("a", "b", "c");
+
+        webServiceProxy.setArguments(mapOf(
+            entry("number", 0)
+        ));
+
+        webServiceProxy.setBody(body);
+
+        assertThrows(WebServiceException.class, webServiceProxy::invoke);
+    }
+
+    @Test
+    public void testPostQuery() throws IOException {
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test"));
 
         webServiceProxy.setArguments(mapOf(
@@ -507,6 +522,8 @@ public class WebServiceProxyTest {
         webServiceProxy.setBody(body);
 
         var result = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Body.class);
+
+        assertEquals(201, webServiceProxy.getStatusCode());
 
         assertEquals("héllo&gøod+bye?", result.getString());
         assertEquals(listOf("a", "b", "c"), result.getStrings());

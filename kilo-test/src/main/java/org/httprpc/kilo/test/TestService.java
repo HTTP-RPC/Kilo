@@ -275,6 +275,13 @@ public class TestService extends AbstractDatabaseService {
     }
 
     @RequestMethod("POST")
+    public void testPost(@Required Integer number, List<String> strings) {
+        if (strings.size() != number) {
+            throw new IllegalArgumentException("Invalid number.");
+        }
+    }
+
+    @RequestMethod("POST")
     @Creates
     public Response testPost(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
@@ -339,6 +346,7 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("body")
+    @Creates
     public Body testPostBody(Body body) {
         body.getString();
 
