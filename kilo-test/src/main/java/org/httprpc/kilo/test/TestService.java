@@ -175,13 +175,13 @@ public class TestService extends AbstractDatabaseService {
     }
 
     @RequestMethod("GET")
-    public Map<String, Object> testGet(@Required String string, List<String> strings,
+    public Response testGet(@Required String string, List<String> strings,
         Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
         Date date, List<Date> dates,
         Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
         Duration duration, Period period,
         UUID uuid) {
-        return mapOf(
+        return BeanAdapter.coerce(mapOf(
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
@@ -198,7 +198,7 @@ public class TestService extends AbstractDatabaseService {
             entry("duration", duration),
             entry("period", period),
             entry("uuid", uuid)
-        );
+        ), Response.class);
     }
 
     @RequestMethod("GET")

@@ -85,28 +85,26 @@ public class WebServiceProxyTest {
             entry("uuid", uuid)
         ));
 
-        var result = webServiceProxy.invoke();
+        var result = BeanAdapter.coerce(webServiceProxy.invoke(), TestService.Response.class);
 
         assertEquals(200, webServiceProxy.getStatusCode());
 
-        assertEquals(mapOf(
-            entry("string", "héllo&gøod+bye?"),
-            entry("strings", listOf("a", "b", "c")),
-            entry("number", 123),
-            entry("numbers", listOf(1, 2, 3)),
-            entry("flag", true),
-            entry("character", "a"),
-            entry("dayOfWeek", dayOfWeek.toString()),
-            entry("date", date.getTime()),
-            entry("dates", listOf(date.getTime())),
-            entry("instant", instant.toString()),
-            entry("localDate", localDate.toString()),
-            entry("localTime", localTime.toString()),
-            entry("localDateTime", localDateTime.toString()),
-            entry("duration", duration.toString()),
-            entry("period", period.toString()),
-            entry("uuid", uuid.toString())
-        ), result);
+        assertEquals(result.getString(), "héllo&gøod+bye?");
+        assertEquals(result.getStrings(), listOf("a", "b", "c"));
+        assertEquals(result.getNumber(), 123);
+        assertEquals(result.getNumbers(), setOf(1, 2, 3));
+        assertTrue(result.getFlag());
+        assertEquals(result.getCharacter(), 'a');
+        assertEquals(result.getDayOfWeek(), dayOfWeek);
+        assertEquals(result.getDate(), date);
+        assertEquals(result.getDates(), listOf(date));
+        assertEquals(result.getInstant(), instant);
+        assertEquals(result.getLocalDate(), localDate);
+        assertEquals(result.getLocalTime(), localTime);
+        assertEquals(result.getLocalDateTime(), localDateTime);
+        assertEquals(result.getDuration(), duration);
+        assertEquals(result.getPeriod(), period);
+        assertEquals(result.getUUID(), uuid);
     }
 
     @Test
@@ -115,11 +113,11 @@ public class WebServiceProxyTest {
 
         var result = testServiceProxy.testGet("héllo&gøod+bye?", listOf("a", "b", "c"), 123, setOf(1, 2, 3), 'a');
 
-        assertEquals("héllo&gøod+bye?", result.get("string"));
-        assertEquals(listOf("a", "b", "c"), result.get("strings"));
-        assertEquals(123, result.get("number"));
-        assertEquals("a", result.get("character"));
-        assertEquals(listOf(1, 2, 3), result.get("numbers"));
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
+        assertEquals(setOf(1, 2, 3), result.getNumbers());
+        assertEquals('a', result.getCharacter());
     }
 
     @Test
