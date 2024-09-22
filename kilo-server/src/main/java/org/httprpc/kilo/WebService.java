@@ -856,9 +856,9 @@ public abstract class WebService extends HttpServlet {
             argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
         }
 
-        var contentType = map(request.getContentType(), String::toLowerCase);
+        var empty = request.getContentType() == null;
 
-        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), contentType);
+        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -867,7 +867,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler.getParameters(), keys, argumentMap, contentType, request);
+            arguments = getArguments(handler.getParameters(), keys, argumentMap, empty, request);
         } catch (Exception exception) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
@@ -931,13 +931,13 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static Method getHandler(List<Method> handlerList, int keyCount, Set<String> argumentNames, String contentType) {
+    private static Method getHandler(List<Method> handlerList, int keyCount, Set<String> argumentNames, boolean empty) {
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
             var n = parameters.length;
 
-            if (contentType != null) {
+            if (!empty) {
                 n--;
             }
 
@@ -967,12 +967,12 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, String contentType, HttpServletRequest request) {
+    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, boolean empty, HttpServletRequest request) {
         var n = parameters.length;
 
         var arguments = new Object[n];
 
-        if (contentType != null) {
+        if (!empty) {
             n--;
         }
 
