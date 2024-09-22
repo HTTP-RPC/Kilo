@@ -19,14 +19,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,8 +33,6 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -617,39 +613,6 @@ public abstract class WebService extends HttpServlet {
         static final List<String> methodOrder = immutableListOf("GET", "POST", "PUT", "DELETE");
     }
 
-    private static class PartURLConnection extends URLConnection {
-        Part part;
-
-        PartURLConnection(URL url, Part part) {
-            super(url);
-
-            this.part = part;
-        }
-
-        @Override
-        public void connect() {
-            // No-op
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return part.getInputStream();
-        }
-    }
-
-    private static class PartURLStreamHandler extends URLStreamHandler {
-        Part part;
-
-        PartURLStreamHandler(Part part) {
-            this.part = part;
-        }
-
-        @Override
-        protected URLConnection openConnection(URL url) {
-            return new PartURLConnection(url, part);
-        }
-    }
-
     private Resource root = null;
 
     private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
@@ -686,9 +649,6 @@ public abstract class WebService extends HttpServlet {
      * Plain text type.
      */
     protected static final String TEXT_PLAIN = "text/plain";
-
-    private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
-    private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
     private static final String UTF_8 = "UTF-8";
 
@@ -815,7 +775,6 @@ public abstract class WebService extends HttpServlet {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var method = request.getMethod().toUpperCase();
         var pathInfo = request.getPathInfo();
@@ -899,33 +858,7 @@ public abstract class WebService extends HttpServlet {
 
         var contentType = map(request.getContentType(), String::toLowerCase);
 
-        if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA)) {
-            for (var part : request.getParts()) {
-                var submittedFileName = part.getSubmittedFileName();
-
-                if (submittedFileName == null || submittedFileName.isEmpty()) {
-                    continue;
-                }
-
-                var name = part.getName();
-
-                var values = (List<URL>)argumentMap.get(name);
-
-                if (values == null) {
-                    values = new ArrayList<>();
-
-                    argumentMap.put(name, values);
-                }
-
-                values.add(new URL("part", null, -1, submittedFileName, new PartURLStreamHandler(part)));
-            }
-        }
-
-        var empty = contentType == null
-            || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
-            || contentType.startsWith(MULTIPART_FORM_DATA);
-
-        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
+        var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), contentType);
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -934,7 +867,7 @@ public abstract class WebService extends HttpServlet {
 
         Object[] arguments;
         try {
-            arguments = getArguments(handler.getParameters(), keys, argumentMap, empty, request);
+            arguments = getArguments(handler.getParameters(), keys, argumentMap, contentType, request);
         } catch (Exception exception) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
@@ -998,13 +931,13 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    private static Method getHandler(List<Method> handlerList, int keyCount, Set<String> argumentNames, boolean empty) {
+    private static Method getHandler(List<Method> handlerList, int keyCount, Set<String> argumentNames, String contentType) {
         for (var handler : handlerList) {
             var parameters = handler.getParameters();
 
             var n = parameters.length;
 
-            if (!empty) {
+            if (contentType != null) {
                 n--;
             }
 
@@ -1034,12 +967,12 @@ public abstract class WebService extends HttpServlet {
         return null;
     }
 
-    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, boolean empty, HttpServletRequest request) {
+    private Object[] getArguments(Parameter[] parameters, List<String> keys, Map<String, List<?>> argumentMap, String contentType, HttpServletRequest request) {
         var n = parameters.length;
 
         var arguments = new Object[n];
 
-        if (!empty) {
+        if (contentType != null) {
             n--;
         }
 
