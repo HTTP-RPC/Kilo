@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
@@ -26,7 +25,6 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -40,7 +38,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -50,7 +47,6 @@ import java.util.UUID;
 import static org.httprpc.kilo.util.Collections.*;
 
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 0)
-@MultipartConfig
 public class TestService extends AbstractDatabaseService {
     public interface A {
         int getA();
@@ -109,12 +105,6 @@ public class TestService extends AbstractDatabaseService {
         Period getPeriod();
         @Name("uuid")
         UUID getUUID();
-        List<AttachmentInfo> getAttachmentInfo();
-    }
-
-    public interface AttachmentInfo {
-        int getBytes();
-        int getChecksum();
     }
 
     public interface Body {
@@ -279,58 +269,6 @@ public class TestService extends AbstractDatabaseService {
         if (strings.size() != number) {
             throw new IllegalArgumentException("Invalid number.");
         }
-    }
-
-    @RequestMethod("POST")
-    @ResourcePath("form-data")
-    @Creates
-    public Response testPostFormData(@Required String string, List<String> strings,
-        Integer number, Set<Integer> numbers, boolean flag, char character, DayOfWeek dayOfWeek,
-        Date date, List<Date> dates,
-        Instant instant, LocalDate localDate, LocalTime localTime, LocalDateTime localDateTime,
-        Duration duration, Period period,
-        UUID uuid, URL... attachments) throws IOException {
-        List<Map<String, ?>> attachmentInfo = new LinkedList<>();
-
-        for (var i = 0; i < attachments.length; i++) {
-            var attachment = attachments[i];
-
-            long bytes = 0;
-            long checksum = 0;
-
-            try (var inputStream = attachment.openStream()) {
-                int b;
-                while ((b = inputStream.read()) != -1) {
-                    bytes++;
-                    checksum += b;
-                }
-            }
-
-            attachmentInfo.add(mapOf(
-                entry("bytes", bytes),
-                entry("checksum", checksum)
-            ));
-        }
-
-        return BeanAdapter.coerce(mapOf(
-            entry("string", string),
-            entry("strings", strings),
-            entry("number", number),
-            entry("numbers", numbers),
-            entry("flag", flag),
-            entry("character", character),
-            entry("dayOfWeek", dayOfWeek),
-            entry("date", date),
-            entry("dates", dates),
-            entry("instant", instant),
-            entry("localDate", localDate),
-            entry("localTime", localTime),
-            entry("localDateTime", localDateTime),
-            entry("duration", duration),
-            entry("period", period),
-            entry("uuid", uuid),
-            entry("attachmentInfo", attachmentInfo)
-        ), Response.class);
     }
 
     @RequestMethod("POST")

@@ -22,7 +22,6 @@ import org.httprpc.kilo.io.TextDecoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,7 +34,6 @@ import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -46,7 +44,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
@@ -55,22 +52,6 @@ import static org.httprpc.kilo.util.Optionals.*;
  * Client-side invocation proxy for web services.
  */
 public class WebServiceProxy {
-    /**
-     * @deprecated This type will be removed in a future release.
-     */
-    @Deprecated
-    public enum Encoding {
-        /**
-         * The "application/x-www-form-urlencoded" encoding.
-         */
-        APPLICATION_X_WWW_FORM_URLENCODED,
-
-        /**
-         * The "multipart/form-data" encoding.
-         */
-        MULTIPART_FORM_DATA
-    }
-
     /**
      * Represents a request handler.
      */
@@ -267,22 +248,7 @@ public class WebServiceProxy {
                 webServiceProxy.setHeaders(headers);
 
                 var empty = switch (webServiceProxy.method) {
-                    case "POST", "PUT" -> {
-                        @SuppressWarnings("deprecation")
-                        var formData = method.getAnnotation(FormData.class);
-
-                        if (formData == null) {
-                            yield argumentList.size() == keyCount;
-                        } else {
-                            if (formData.multipart()) {
-                                webServiceProxy.setEncoding(Encoding.MULTIPART_FORM_DATA);
-                            } else {
-                                webServiceProxy.setEncoding(Encoding.APPLICATION_X_WWW_FORM_URLENCODED);
-                            }
-
-                            yield true;
-                        }
-                    }
+                    case "POST", "PUT" -> argumentList.size() == keyCount;
                     default -> true;
                 };
 
@@ -382,8 +348,6 @@ public class WebServiceProxy {
     private String method;
     private URI uri;
 
-    private Encoding encoding = null;
-
     private Map<String, Object> headers = mapOf();
     private Map<String, Object> arguments = mapOf();
 
@@ -426,11 +390,7 @@ public class WebServiceProxy {
     private int readTimeout = 60000;
     private int chunkSize = 0;
 
-    private String multipartBoundary = UUID.randomUUID().toString();
-
     private int statusCode = -1;
-
-    private static final int EOF = -1;
 
     /**
      * Constructs a new web service proxy.
@@ -448,30 +408,6 @@ public class WebServiceProxy {
 
         this.method = method.toUpperCase();
         this.uri = uri;
-    }
-
-    /**
-     * @deprecated Use {@link #WebServiceProxy(String, URI)} instead.
-     */
-    @Deprecated
-    public WebServiceProxy(String method, URI baseURI, String path, Object... arguments) {
-        this(method, baseURI.resolve(String.format(path, arguments)));
-    }
-
-    /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public Encoding getEncoding() {
-        return encoding;
-    }
-
-    /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public void setEncoding(Encoding encoding) {
-        this.encoding = encoding;
     }
 
     /**
@@ -699,35 +635,13 @@ public class WebServiceProxy {
     public Object invoke() throws IOException {
         var uri = this.uri;
 
-        RequestHandler requestHandler;
-        if (method.equals("POST") && encoding != null) {
-            requestHandler = new RequestHandler() {
-                @Override
-                public String getContentType() {
-                    return switch (encoding) {
-                        case APPLICATION_X_WWW_FORM_URLENCODED -> "application/x-www-form-urlencoded";
-                        case MULTIPART_FORM_DATA -> String.format("multipart/form-data; boundary=%s", multipartBoundary);
-                    };
-                }
-
-                @Override
-                public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
-                    switch (encoding) {
-                        case APPLICATION_X_WWW_FORM_URLENCODED -> encodeApplicationXWWWFormURLEncodedRequest(outputStream);
-                        case MULTIPART_FORM_DATA -> encodeMultipartFormDataRequest(outputStream);
-                    }
-                }
-            };
-        } else {
-            if (!arguments.isEmpty()) {
-                try {
-                    uri = new URI(String.format("%s?%s", uri, encodeQuery()));
-                } catch (URISyntaxException exception) {
-                    throw new IllegalStateException(exception.getMessage());
-                }
+        // Append query
+        if (!arguments.isEmpty()) {
+            try {
+                uri = new URI(String.format("%s?%s", uri, encodeQuery()));
+            } catch (URISyntaxException exception) {
+                throw new IllegalStateException(exception.getMessage());
             }
-
-            requestHandler = this.requestHandler;
         }
 
         // Open URL connection
@@ -757,7 +671,7 @@ public class WebServiceProxy {
         }
 
         // Write request body
-        if (body != null || encoding != null) {
+        if (body != null) {
             connection.setDoOutput(true);
 
             if (chunkSize > 0) {
@@ -826,61 +740,6 @@ public class WebServiceProxy {
         }
 
         return queryBuilder.toString();
-    }
-
-    private void encodeApplicationXWWWFormURLEncodedRequest(OutputStream outputStream) throws IOException {
-        var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-
-        writer.append(encodeQuery());
-
-        writer.flush();
-    }
-
-    private void encodeMultipartFormDataRequest(OutputStream outputStream) throws IOException {
-        var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-
-        for (Map.Entry<String, ?> entry : arguments.entrySet()) {
-            var name = entry.getKey();
-
-            if (name == null) {
-                continue;
-            }
-
-            for (var value : getParameterValues(entry.getValue())) {
-                if (value == null) {
-                    continue;
-                }
-
-                writer.append(String.format("--%s\r\n", multipartBoundary));
-                writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", name));
-
-                if (value instanceof URL url) {
-                    var path = url.getPath();
-                    var filename = path.substring(path.lastIndexOf('/') + 1);
-
-                    writer.append(String.format("; filename=\"%s\"\r\n", filename));
-                    writer.append("Content-Type: application/octet-stream\r\n\r\n");
-
-                    writer.flush();
-
-                    try (var inputStream = ((URL)value).openStream()) {
-                        int b;
-                        while ((b = inputStream.read()) != EOF) {
-                            outputStream.write(b);
-                        }
-                    }
-                } else {
-                    writer.append("\r\n\r\n");
-                    writer.append(value.toString());
-                }
-
-                writer.append("\r\n");
-            }
-        }
-
-        writer.append(String.format("--%s--\r\n", multipartBoundary));
-
-        writer.flush();
     }
 
     private static List<Object> getParameterValues(Object argument) {

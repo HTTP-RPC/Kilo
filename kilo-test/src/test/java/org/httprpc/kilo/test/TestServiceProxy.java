@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.test;
 
-import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
@@ -84,18 +83,6 @@ public interface TestServiceProxy {
     @RequestMethod("POST")
     @ResourcePath("varargs")
     Map<String, Object> testVarargs(int[] numbers, String... strings) throws IOException;
-
-    @RequestMethod("POST")
-    @ResourcePath("form-data")
-    @FormData
-    @SuppressWarnings("deprecation")
-    TestService.Response testURLEncodedPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers) throws IOException;
-
-    @RequestMethod("POST")
-    @ResourcePath("form-data")
-    @FormData(multipart = true)
-    @SuppressWarnings("deprecation")
-    TestService.Response testMultipartPost(@Required String string, List<String> strings, Integer number, Set<Integer> numbers, URL... attachments) throws IOException;
 
     @RequestMethod("POST")
     @ResourcePath("image")

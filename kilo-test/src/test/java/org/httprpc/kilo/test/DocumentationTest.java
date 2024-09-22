@@ -31,7 +31,6 @@ public class DocumentationTest {
     @Test
     public void testDocumentation() throws IOException {
         testDocumentation("math");
-        testDocumentation("file-upload");
         testDocumentation("catalog");
     }
 
