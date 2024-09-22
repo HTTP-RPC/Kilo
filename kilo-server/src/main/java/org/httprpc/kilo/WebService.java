@@ -646,7 +646,7 @@ public abstract class WebService extends HttpServlet {
     protected static final String TEXT_XML = "text/xml";
 
     /**
-     * Plain text type.
+     * Plain text MIME type.
      */
     protected static final String TEXT_PLAIN = "text/plain";
 
