@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight (about 150K) and requires only a Java runtime environment and a servlet container. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight (less than 150KB) and requires only a Java runtime environment and a servlet container. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
 ![](kilo.png)
 
