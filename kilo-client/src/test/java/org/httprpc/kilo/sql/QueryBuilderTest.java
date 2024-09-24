@@ -322,6 +322,7 @@ public class QueryBuilderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testSelectI() {
         var queryBuilder = QueryBuilder.select(I.class).filterByForeignKeyIsNull(H.class);
 
@@ -329,6 +330,7 @@ public class QueryBuilderTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testSelectIH() {
         var queryBuilder = QueryBuilder.select(I.class).join(H.class).filterByForeignKeyIsNull(H.class, G.class);
 
@@ -401,10 +403,10 @@ public class QueryBuilderTest {
 
     @Test
     public void testLike() {
-        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t");
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t", "u");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t like ?", queryBuilder.toString());
-        assertEquals(listOf("t"), getParameters(queryBuilder));
+        assertEquals("select I.h, I.i, I.t, I.u from I where I.t like ? and I.u like ?", queryBuilder.toString());
+        assertEquals(listOf("t", "u"), getParameters(queryBuilder));
     }
 
     @Test

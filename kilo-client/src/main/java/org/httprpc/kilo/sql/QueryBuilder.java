@@ -825,30 +825,17 @@ public class QueryBuilder {
     }
 
     /**
-     * Filters by a foreign key defined by the first selected type.
-     *
-     * @param parentType
-     * The type that defines the primary key.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public QueryBuilder filterByForeignKeyIsNull(Class<?> parentType) {
         return filterByForeignKeyIsNull(types.getFirst(), parentType);
     }
 
     /**
-     * Filters by a foreign key defined by a joined type.
-     *
-     * @param type
-     * The type that defines the foreign key.
-     *
-     * @param parentType
-     * The type that defines the primary key.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
+     * @deprecated This method will be removed in a future release.
      */
+    @Deprecated
     public QueryBuilder filterByForeignKeyIsNull(Class<?> type, Class<?> parentType) {
         if (type == null || parentType == null) {
             throw new IllegalArgumentException();
@@ -969,43 +956,51 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "like" filter.
+     * Appends one or more "like" filters.
      *
-     * @param key
-     * The key of the argument value.
+     * @param keys
+     * The keys of the argument values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIndexLike(String key) {
-        return filterByIndex("like", key);
+    public QueryBuilder filterByIndexLike(String... keys) {
+        return filterByIndex("like", keys);
     }
 
-    private QueryBuilder filterByIndex(String operator, String key) {
-        if (key == null) {
-            throw new IllegalArgumentException();
+    private QueryBuilder filterByIndex(String operator, String... keys) {
+        if (keys.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         var first = types.getFirst();
 
         var tableName = getTableName(first);
+        var indexColumnNames = getIndexColumnNames(first);
 
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(".");
-        sqlBuilder.append(getIndexColumnNames(first).get(0));
-        sqlBuilder.append(" ");
-        sqlBuilder.append(operator);
-        sqlBuilder.append(" ?");
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
 
-        parameters.add(key);
+            if (key == null) {
+                throw new IllegalArgumentException();
+            }
 
-        filterCount++;
+            sqlBuilder.append(" ");
+            sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+            sqlBuilder.append(" ");
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+            sqlBuilder.append(indexColumnNames.get(i));
+            sqlBuilder.append(" ");
+            sqlBuilder.append(operator);
+            sqlBuilder.append(" ?");
+
+            parameters.add(key);
+
+            filterCount++;
+        }
 
         return this;
-
     }
 
     /**
