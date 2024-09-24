@@ -60,7 +60,7 @@ public class QueryBuilderTest {
     @Table("C")
     public record C(
         @Column("a") @ForeignKey(A.class) String a,
-        @Column("b") Double b,
+        @Column("b") @Index Double b,
         @Column("c") Boolean c
     ) {
     }
@@ -413,20 +413,22 @@ public class QueryBuilderTest {
     public void testExists() {
         var queryBuilder = QueryBuilder.select(A.class)
             .filterByExists(QueryBuilder.selectAll(C.class)
-                .filterByForeignKey(A.class, "a"));
+                .filterByForeignKey(A.class)
+                .filterByIndexLessThan("b"));
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A where exists (select C.* from C where C.a = ?)", queryBuilder.toString());
-        assertEquals(listOf("a"), getParameters(queryBuilder));
+        assertEquals("select A.a, A.b, A.c, A.d as x from A where exists (select C.* from C where C.a = A.a and C.b < ?)", queryBuilder.toString());
+        assertEquals(listOf("b"), getParameters(queryBuilder));
     }
 
     @Test
     public void testNotExists() {
         var queryBuilder = QueryBuilder.select(A.class)
             .filterByNotExists(QueryBuilder.selectAll(C.class)
-                .filterByForeignKey(A.class, "a"));
+                .filterByForeignKey(A.class)
+                .filterByIndexGreaterThan("b"));
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A where not exists (select C.* from C where C.a = ?)", queryBuilder.toString());
-        assertEquals(listOf("a"), getParameters(queryBuilder));
+        assertEquals("select A.a, A.b, A.c, A.d as x from A where not exists (select C.* from C where C.a = A.a and C.b > ?)", queryBuilder.toString());
+        assertEquals(listOf("b"), getParameters(queryBuilder));
     }
 
     @Test
