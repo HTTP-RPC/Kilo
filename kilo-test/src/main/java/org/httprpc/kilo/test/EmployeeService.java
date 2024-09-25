@@ -41,7 +41,7 @@ public class EmployeeService extends WebService {
     public void init() throws ServletException {
         super.init();
 
-        executorService = Executors.newSingleThreadExecutor();
+        executorService = Executors.newCachedThreadPool();
     }
 
     @Override
