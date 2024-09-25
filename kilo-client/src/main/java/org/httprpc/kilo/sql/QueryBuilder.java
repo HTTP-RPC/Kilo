@@ -825,6 +825,36 @@ public class QueryBuilder {
     }
 
     /**
+     * @deprecated This method will be removed in a future release.
+     */
+    @Deprecated
+    public QueryBuilder filterByForeignKeyIsNull(Class<?> parentType) {
+        return filterByForeignKeyIsNull(types.getFirst(), parentType);
+    }
+
+    /**
+     * @deprecated This method will be removed in a future release.
+     */
+    @Deprecated
+    public QueryBuilder filterByForeignKeyIsNull(Class<?> type, Class<?> parentType) {
+        if (type == null || parentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" ");
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
+        sqlBuilder.append(" is null");
+
+        filterCount++;
+
+        return this;
+    }
+
+    /**
      * Filters by a foreign key defined by the first selected type.
      *
      * @param parentType
@@ -833,8 +863,8 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByForeignKeyIsNull(Class<?> parentType) {
-        return filterByForeignKeyIsNull(types.getFirst(), parentType);
+    public QueryBuilder filterByForeignKey(Class<?> parentType) {
+        return filterByForeignKey(types.getFirst(), parentType);
     }
 
     /**
@@ -849,7 +879,7 @@ public class QueryBuilder {
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByForeignKeyIsNull(Class<?> type, Class<?> parentType) {
+    public QueryBuilder filterByForeignKey(Class<?> type, Class<?> parentType) {
         if (type == null || parentType == null) {
             throw new IllegalArgumentException();
         }
@@ -860,7 +890,10 @@ public class QueryBuilder {
         sqlBuilder.append(getTableName(type));
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
-        sqlBuilder.append(" is null");
+        sqlBuilder.append(" = ");
+        sqlBuilder.append(getTableName(parentType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getPrimaryKeyColumnName(parentType));
 
         filterCount++;
 
@@ -969,43 +1002,51 @@ public class QueryBuilder {
     }
 
     /**
-     * Appends a "like" filter.
+     * Appends one or more "like" filters.
      *
-     * @param key
-     * The key of the argument value.
+     * @param keys
+     * The keys of the argument values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIndexLike(String key) {
-        return filterByIndex("like", key);
+    public QueryBuilder filterByIndexLike(String... keys) {
+        return filterByIndex("like", keys);
     }
 
-    private QueryBuilder filterByIndex(String operator, String key) {
-        if (key == null) {
-            throw new IllegalArgumentException();
+    private QueryBuilder filterByIndex(String operator, String... keys) {
+        if (keys.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         var first = types.getFirst();
 
         var tableName = getTableName(first);
+        var indexColumnNames = getIndexColumnNames(first);
 
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
-        sqlBuilder.append(tableName);
-        sqlBuilder.append(".");
-        sqlBuilder.append(getIndexColumnNames(first).get(0));
-        sqlBuilder.append(" ");
-        sqlBuilder.append(operator);
-        sqlBuilder.append(" ?");
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
 
-        parameters.add(key);
+            if (key == null) {
+                throw new IllegalArgumentException();
+            }
 
-        filterCount++;
+            sqlBuilder.append(" ");
+            sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+            sqlBuilder.append(" ");
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+            sqlBuilder.append(indexColumnNames.get(i));
+            sqlBuilder.append(" ");
+            sqlBuilder.append(operator);
+            sqlBuilder.append(" ?");
+
+            parameters.add(key);
+
+            filterCount++;
+        }
 
         return this;
-
     }
 
     /**

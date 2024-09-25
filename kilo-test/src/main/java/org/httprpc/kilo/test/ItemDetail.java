@@ -24,24 +24,24 @@ import java.util.Date;
 @Table("item")
 @Description("Represents detailed information about an item in the catalog.")
 public interface ItemDetail extends Item {
-    @Description("The item's size.")
     @Column("size")
+    @Description("The item's size.")
     Size getSize();
     void setSize(Size size);
 
-    @Description("The item's color.")
     @Column("color")
+    @Description("The item's color.")
     String getColor();
     void setColor(String color);
 
-    @Description("The item's weight.")
     @Column("weight")
+    @Description("The item's weight.")
     Double getWeight();
     void setWeight(Double weight);
 
     @Column("created")
-    @Description("The date the item was created.")
     @Final
+    @Description("The date the item was created.")
     Date getCreated();
     void setCreated(Date created);
 }
