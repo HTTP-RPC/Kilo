@@ -779,38 +779,6 @@ public class QueryBuilder {
      * @param parentType
      * The type that defines the primary key.
      *
-     * @return
-     * The {@link QueryBuilder} instance.
-     */
-    public QueryBuilder filterByForeignKey(Class<?> parentType) {
-        if (parentType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var first = types.getFirst();
-
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
-        sqlBuilder.append(getTableName(first));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(first, parentType));
-        sqlBuilder.append(" = ");
-        sqlBuilder.append(getTableName(parentType));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getPrimaryKeyColumnName(parentType));
-
-        filterCount++;
-
-        return this;
-    }
-
-    /**
-     * Filters by a foreign key defined by the first selected type.
-     *
-     * @param parentType
-     * The type that defines the primary key.
-     *
      * @param key
      * The key of the argument representing the foreign key value.
      *
@@ -880,6 +848,52 @@ public class QueryBuilder {
         sqlBuilder.append(".");
         sqlBuilder.append(getForeignKeyColumnName(type, parentType));
         sqlBuilder.append(" is null");
+
+        filterCount++;
+
+        return this;
+    }
+
+    /**
+     * Filters by a foreign key defined by the first selected type.
+     *
+     * @param parentType
+     * The type that defines the primary key.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByForeignKey(Class<?> parentType) {
+        return filterByForeignKey(types.getFirst(), parentType);
+    }
+
+    /**
+     * Filters by a foreign key defined by a joined type.
+     *
+     * @param type
+     * The type that defines the foreign key.
+     *
+     * @param parentType
+     * The type that defines the primary key.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByForeignKey(Class<?> type, Class<?> parentType) {
+        if (type == null || parentType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" ");
+        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+        sqlBuilder.append(" ");
+        sqlBuilder.append(getTableName(type));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
+        sqlBuilder.append(" = ");
+        sqlBuilder.append(getTableName(parentType));
+        sqlBuilder.append(".");
+        sqlBuilder.append(getPrimaryKeyColumnName(parentType));
 
         filterCount++;
 
