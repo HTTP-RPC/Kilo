@@ -322,22 +322,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testSelectI() {
-        var queryBuilder = QueryBuilder.select(I.class).filterByForeignKeyIsNull(H.class);
-
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.h is null", queryBuilder.toString());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testSelectIH() {
-        var queryBuilder = QueryBuilder.select(I.class).join(H.class).filterByForeignKeyIsNull(H.class, G.class);
-
-        assertEquals("select I.h, I.i, I.t, I.u from I join H on I.h = H.h where H.g is null", queryBuilder.toString());
-    }
-
-    @Test
     public void testSelectM() {
         var queryBuilder = QueryBuilder.select(M.class).filterByForeignKey(M.class, "m");
 

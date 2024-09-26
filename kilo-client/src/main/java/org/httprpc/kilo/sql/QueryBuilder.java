@@ -825,36 +825,6 @@ public class QueryBuilder {
     }
 
     /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public QueryBuilder filterByForeignKeyIsNull(Class<?> parentType) {
-        return filterByForeignKeyIsNull(types.getFirst(), parentType);
-    }
-
-    /**
-     * @deprecated This method will be removed in a future release.
-     */
-    @Deprecated
-    public QueryBuilder filterByForeignKeyIsNull(Class<?> type, Class<?> parentType) {
-        if (type == null || parentType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
-        sqlBuilder.append(getTableName(type));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getForeignKeyColumnName(type, parentType));
-        sqlBuilder.append(" is null");
-
-        filterCount++;
-
-        return this;
-    }
-
-    /**
      * Filters by a foreign key defined by the first selected type.
      *
      * @param parentType
