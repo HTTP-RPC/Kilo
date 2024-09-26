@@ -3,7 +3,7 @@
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
-Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight (less than 150KB) and requires only a Java runtime environment and a servlet container. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
+Kilo is an open-source framework for creating and consuming RESTful and REST-like web services in Java. It is extremely lightweight and requires only a Java runtime environment and a servlet container. The project's name comes from the nautical _K_ or _Kilo_ flag, which means "I wish to communicate with you":
 
 ![](kilo.png)
 
@@ -74,11 +74,7 @@ public class MathService extends WebService {
 }
 ```
 
-The `RequestMethod` annotation associates an HTTP verb such as `GET` or `POST` with a service method, or "handler". The optional `ResourcePath` annotation associates a handler with a specific path, or "endpoint", relative to the servlet. If unspecified, the handler is associated with the servlet itself. The optional `Description` annotation is used to document a service implementation and is discussed in more detail [later](#api-documentation).
-
-Arguments may be provided via the query string, resource path, or request body. `WebService` converts the values to the expected types, invokes the method, and writes the return value (if any) to the output stream as JSON.
-
-Multiple methods may be associated with the same verb and path. `WebService` selects the best method to execute based on the provided values. For example, this request would invoke the first method:
+The `RequestMethod` annotation associates an HTTP verb such as `GET` or `POST` with a service method, or "handler". The optional `ResourcePath` annotation associates a handler with a specific path, or "endpoint", relative to the servlet.`WebService` selects the best method to execute based on the values provided by the caller. For example, this request would invoke the first method:
 
 ```
 GET /math/sum?a=2&b=4
@@ -91,6 +87,8 @@ GET /math/sum?values=1&values=2&values=3
 ```
 
 In either case, the service would return the value 6 in response. 
+
+The optional `Description` annotation is used to document a service implementation and is discussed in more detail [later](#api-documentation).
 
 ### Method Parameters
 Method parameters may be any of the following types:
