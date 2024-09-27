@@ -34,9 +34,9 @@ public interface Film {
     Integer getID();
 
     @Column("title")
-    @Required
-    @Description("The title of the film.")
     @Index
+    @Description("The title of the film.")
+    @Required
     String getTitle();
 
     @Column("rating")

@@ -35,10 +35,11 @@ public class QueryBuilderTest {
         @PrimaryKey
         String getA();
         @Column("b")
+        @Identifier(1)
         @Required
-        @Identifier
         Double getB();
         @Column("c")
+        @Identifier(2)
         @Required
         Boolean getC();
         @Name("x")
@@ -363,10 +364,10 @@ public class QueryBuilderTest {
 
     @Test
     public void testIdentifier() {
-        var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b");
+        var queryBuilder = QueryBuilder.select(A.class).filterByIdentifier("b", "c");
 
-        assertEquals("select A.a, A.b, A.c, A.d as x from A where A.b = ?", queryBuilder.toString());
-        assertEquals(listOf("b"), getParameters(queryBuilder));
+        assertEquals("select A.a, A.b, A.c, A.d as x from A where A.b = ? and A.c = ?", queryBuilder.toString());
+        assertEquals(listOf("b", "c"), getParameters(queryBuilder));
     }
 
     @Test
