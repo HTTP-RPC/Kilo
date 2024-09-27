@@ -74,7 +74,7 @@ public class MathService extends WebService {
 }
 ```
 
-The `RequestMethod` annotation associates an HTTP verb such as `GET` or `POST` with a service method, or "handler". The optional `ResourcePath` annotation associates a handler with a specific path, or "endpoint", relative to the servlet.`WebService` selects the best method to execute based on the values provided by the caller. For example, this request would invoke the first method:
+The `RequestMethod` annotation associates an HTTP verb such as `GET` or `POST` with a service method, or "handler". The optional `ResourcePath` annotation associates a handler with a specific path, or "endpoint", relative to the servlet. `WebService` selects the best method to execute based on the values provided by the caller. For example, this request would invoke the first method:
 
 ```
 GET /math/sum?a=2&b=4
