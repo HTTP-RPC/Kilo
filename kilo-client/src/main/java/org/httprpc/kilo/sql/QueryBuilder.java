@@ -873,50 +873,61 @@ public class QueryBuilder {
     /**
      * Filters by identifier.
      *
-     * @param key
-     * The key of the argument representing the identifier value.
+     * @param keys
+     * The keys of the arguments representing the identifier values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIdentifier(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException();
+    public QueryBuilder filterByIdentifier(String... keys) {
+        if (keys.length == 0) {
+            throw new UnsupportedOperationException();
         }
 
         var first = types.getFirst();
 
-        sqlBuilder.append(" ");
-        sqlBuilder.append(filterCount == 0 ? WHERE : AND);
-        sqlBuilder.append(" ");
-        sqlBuilder.append(getTableName(first));
-        sqlBuilder.append(".");
-        sqlBuilder.append(getIdentifierColumnName(first));
-        sqlBuilder.append(" = ?");
+        var tableName = getTableName(first);
+        var identifierColumnNames = getIdentifierColumnNames(first);
 
-        parameters.add(key);
+        for (var i = 0; i < keys.length; i++) {
+            sqlBuilder.append(" ");
+            sqlBuilder.append(filterCount == 0 ? WHERE : AND);
+            sqlBuilder.append(" ");
+            sqlBuilder.append(tableName);
+            sqlBuilder.append(".");
+            sqlBuilder.append(identifierColumnNames.get(i));
+            sqlBuilder.append(" = ?");
 
-        filterCount++;
+            parameters.add(keys[i]);
+
+            filterCount++;
+        }
 
         return this;
     }
 
-    private static String getIdentifierColumnName(Class<?> type) {
+    private static List<String> getIdentifierColumnNames(Class<?> type) {
+        var identifierColumnNames = new TreeMap<Integer, String>();
+
         for (var property : BeanAdapter.getProperties(type).values()) {
             var accessor = property.getAccessor();
 
             var column = accessor.getAnnotation(Column.class);
 
             if (column != null) {
-                var primaryKey = accessor.getAnnotation(Identifier.class);
+                var identifier = accessor.getAnnotation(Identifier.class);
 
-                if (primaryKey != null) {
-                    return column.value();
+                if (identifier != null) {
+                    identifierColumnNames.put(identifier.value(), column.value());
                 }
             }
         }
 
-        throw new UnsupportedOperationException("Identifier is not defined.");
+        if (identifierColumnNames.isEmpty()) {
+            throw new UnsupportedOperationException("Identifier is not defined.");
+        }
+
+        return new ArrayList<>(identifierColumnNames.values());
     }
 
     /**
