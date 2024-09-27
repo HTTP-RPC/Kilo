@@ -904,7 +904,7 @@ public class QueryBuilder {
      * Filters by identifier.
      *
      * @param keys
-     * The keys of the arguments representing the identifier value.
+     * The keys of the arguments representing the identifier values.
      *
      * @return
      * The {@link QueryBuilder} instance.
