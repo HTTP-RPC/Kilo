@@ -247,16 +247,11 @@ public class WebServiceProxy {
 
                 webServiceProxy.setHeaders(headers);
 
-                var empty = switch (webServiceProxy.method) {
-                    case "POST", "PUT" -> argumentList.size() == keyCount;
-                    default -> true;
-                };
-
                 var parameters = method.getParameters();
 
                 var n = parameters.length;
 
-                if (!empty) {
+                if (webServiceProxy.method.equals("POST") || webServiceProxy.method.equals("PUT")) {
                     n--;
                 }
 

@@ -183,9 +183,9 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. If a handler method declares any query parameters, a body parameter must also be declared. A body parameter of type `Void` may be used to indicate that the handler either does not accept a body or will process the input stream directly, as discussed [below](#request-and-repsonse-properties).
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. Subclasses can override the `decodeBody()` method to perform custom conversions.
 
-By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. Subclasses can override the `decodeBody()` method to perform custom conversions.
+A body parameter of type `Void` may be used to indicate that the handler will process the input stream directly, as discussed [below](#request-and-repsonse-properties).
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -443,7 +443,9 @@ System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. Path variables and body content are handled as described for [`WebService`](#webservice).
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. 
+
+Path variables and body content are handled as described for [`WebService`](#webservice). Body parameters are required for `POST` and `PUT` methods. A body parameter of type `Void` may be used to indicate that a method does not accept a body.
 
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
