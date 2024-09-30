@@ -189,7 +189,7 @@ public class WebServiceProxy {
 
                 var exceptionTypes = method.getExceptionTypes();
 
-                if (exceptionTypes.length != 1 || !exceptionTypes[0].isAssignableFrom(IOException.class)) {
+                if (exceptionTypes.length != 1 || exceptionTypes[0] != IOException.class) {
                     throw new UnsupportedOperationException("Missing or invalid exception declaration.");
                 }
 
