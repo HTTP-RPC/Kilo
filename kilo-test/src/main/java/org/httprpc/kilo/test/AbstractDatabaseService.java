@@ -27,7 +27,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public abstract class AbstractDatabaseService extends WebService {
-    private static ThreadLocal<Connection> connection = new ThreadLocal<>();
+    private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

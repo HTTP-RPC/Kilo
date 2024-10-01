@@ -615,15 +615,15 @@ public abstract class WebService extends HttpServlet {
 
     private Resource root = null;
 
-    private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
-    private ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
-
     private ServiceDescriptor serviceDescriptor = null;
 
     private static final Map<Class<? extends WebService>, WebService> instances = new HashMap<>();
 
     private static final Comparator<Method> methodNameComparator = Comparator.comparing(Method::getName);
     private static final Comparator<Method> methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
+
+    private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
+    private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
     /**
      * JSON MIME type.
@@ -876,8 +876,8 @@ public abstract class WebService extends HttpServlet {
             return;
         }
 
-        this.request.set(request);
-        this.response.set(response);
+        WebService.request.set(request);
+        WebService.response.set(response);
 
         Object result;
         try {
@@ -906,8 +906,8 @@ public abstract class WebService extends HttpServlet {
 
             return;
         } finally {
-            this.request.remove();
-            this.response.remove();
+            WebService.request.remove();
+            WebService.response.remove();
         }
 
         if (response.isCommitted()) {
@@ -1071,7 +1071,7 @@ public abstract class WebService extends HttpServlet {
      * @return
      * The servlet request.
      */
-    protected HttpServletRequest getRequest() {
+    protected static HttpServletRequest getRequest() {
         return request.get();
     }
 
@@ -1081,7 +1081,7 @@ public abstract class WebService extends HttpServlet {
      * @return
      * The servlet response.
      */
-    protected HttpServletResponse getResponse() {
+    protected static HttpServletResponse getResponse() {
         return response.get();
     }
 
