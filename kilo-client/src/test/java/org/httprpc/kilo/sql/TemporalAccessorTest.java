@@ -27,12 +27,15 @@ public interface TemporalAccessorTest {
     @Column("id")
     @PrimaryKey
     Integer getID();
+
     @Column("local_date")
     @Required
     LocalDate getDate();
+
     @Column("local_time")
     @Required
     LocalTime getTime();
+
     @Column("instant")
     @Required
     Instant getInstant();

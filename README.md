@@ -940,15 +940,20 @@ public interface Pet {
     @PrimaryKey
     @Index
     String getName();
+
     @Column("owner")
     @ForeignKey(Owner.class)
     String getOwner();
+
     @Column("species")
     String getSpecies();
+
     @Column("sex")
     String getSex();
+
     @Column("birth")
     LocalDate getBirth();
+
     @Column("death")
     LocalDate getDeath();
 }
@@ -1078,18 +1083,23 @@ public interface Employee {
     @Column("emp_no")
     @PrimaryKey
     Integer getEmployeeNumber();
+
     @Column("first_name")
     @Required
     String getFirstName();
+
     @Column("last_name")
     @Required
     String getLastName();
+
     @Column("gender")
     @Required
     String getGender();
+
     @Column("birth_date")
     @Required
     LocalDate getBirthDate();
+
     @Column("hire_date")
     @Required
     LocalDate getHireDate();
@@ -1099,8 +1109,7 @@ public interface Employee {
 ```java
 var queryBuilder = QueryBuilder.select(Employee.class);
 
-try (var connection = getConnection();
-    var statement = queryBuilder.prepare(connection);
+try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
     return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
 }
@@ -1111,11 +1120,12 @@ All of the rows are read and added to the list before anything is returned to th
 ```java
 var pipe = new Pipe<Employee>(4096, 15000);
 
+var connection = getConnection();
+
 executorService.submit(() -> {
     var queryBuilder = QueryBuilder.select(Employee.class);
 
-    try (var connection = getConnection();
-        var statement = queryBuilder.prepare(connection);
+    try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
         pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
     } catch (SQLException exception) {

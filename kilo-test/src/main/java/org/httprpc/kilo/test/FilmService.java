@@ -18,7 +18,6 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
@@ -34,8 +33,9 @@ import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/films/*"}, loadOnStartup = 1)
 @Description("Film example service.")
-public class FilmService extends WebService {
-    private Connection getConnection() throws SQLException {
+public class FilmService extends AbstractDatabaseService {
+    @Override
+    protected Connection openConnection() throws SQLException {
         DataSource dataSource;
         try {
             var initialContext = new InitialContext();
@@ -61,8 +61,7 @@ public class FilmService extends WebService {
 
         queryBuilder.ordered(true);
 
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
+        try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("match", map(match, value -> value.replace('*', '%')))
             ))) {
@@ -79,8 +78,7 @@ public class FilmService extends WebService {
         var queryBuilder = QueryBuilder.select(FilmDetail.class).filterByPrimaryKey("filmID");
 
         FilmDetail film;
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
+        try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
@@ -99,8 +97,7 @@ public class FilmService extends WebService {
             .filterByForeignKey(FilmActor.class, Film.class, "filmID")
             .ordered(true);
 
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
+        try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
@@ -114,8 +111,7 @@ public class FilmService extends WebService {
             .filterByForeignKey(FilmCategory.class, Film.class, "filmID")
             .ordered(true);
 
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
+        try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {

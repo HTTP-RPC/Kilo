@@ -31,16 +31,7 @@ public abstract class AbstractDatabaseService extends WebService {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        DataSource dataSource;
-        try {
-            var initialContext = new InitialContext();
-
-            dataSource = (DataSource)initialContext.lookup("java:comp/env/jdbc/DemoDB");
-        } catch (NamingException exception) {
-            throw new ServletException(exception);
-        }
-
-        try (var connection = dataSource.getConnection()) {
+        try (var connection = openConnection()) {
             connection.setAutoCommit(false);
 
             AbstractDatabaseService.connection.set(connection);
@@ -67,6 +58,19 @@ public abstract class AbstractDatabaseService extends WebService {
         } catch (SQLException exception) {
             throw new ServletException(exception);
         }
+    }
+
+    protected Connection openConnection() throws SQLException {
+        DataSource dataSource;
+        try {
+            var initialContext = new InitialContext();
+
+            dataSource = (DataSource)initialContext.lookup("java:comp/env/jdbc/DemoDB");
+        } catch (NamingException exception) {
+            throw new IllegalStateException(exception);
+        }
+
+        return dataSource.getConnection();
     }
 
     protected static Connection getConnection() {

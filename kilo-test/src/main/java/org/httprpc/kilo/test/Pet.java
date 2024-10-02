@@ -28,15 +28,20 @@ public interface Pet {
     @PrimaryKey
     @Index
     String getName();
+
     @Column("owner")
     @ForeignKey(Owner.class)
     String getOwner();
+
     @Column("species")
     String getSpecies();
+
     @Column("sex")
     String getSex();
+
     @Column("birth")
     LocalDate getBirth();
+
     @Column("death")
     LocalDate getDeath();
 }

@@ -23,6 +23,7 @@ public interface FilmActor {
     @Column("film_id")
     @ForeignKey(Film.class)
     Integer getFilmID();
+
     @Column("actor_id")
     @ForeignKey(Actor.class)
     Integer getActorID();

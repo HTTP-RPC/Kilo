@@ -19,7 +19,6 @@ import jakarta.servlet.annotation.WebServlet;
 import org.hibernate.cfg.Configuration;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
-import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.util.concurrent.Pipe;
@@ -34,7 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
-public class EmployeeService extends WebService {
+public class EmployeeService extends AbstractDatabaseService {
     private static ExecutorService executorService = null;
 
     @Override
@@ -51,7 +50,8 @@ public class EmployeeService extends WebService {
         super.destroy();
     }
 
-    private Connection getConnection() throws SQLException {
+    @Override
+    protected Connection openConnection() throws SQLException {
         DataSource dataSource;
         try {
             var initialContext = new InitialContext();
@@ -68,8 +68,7 @@ public class EmployeeService extends WebService {
     public List<Employee> getEmployees() throws SQLException {
         var queryBuilder = QueryBuilder.select(Employee.class);
 
-        try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
+        try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
             return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
         }
@@ -80,11 +79,12 @@ public class EmployeeService extends WebService {
     public Iterable<Employee> getEmployeesStream() {
         var pipe = new Pipe<Employee>(4096, 15000);
 
+        var connection = getConnection();
+
         executorService.submit(() -> {
             var queryBuilder = QueryBuilder.select(Employee.class);
 
-            try (var connection = getConnection();
-                var statement = queryBuilder.prepare(connection);
+            try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
                 pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
             } catch (SQLException exception) {
@@ -97,14 +97,13 @@ public class EmployeeService extends WebService {
 
     @RequestMethod("GET")
     @ResourcePath("hibernate")
-    public List<Employee> getEmployeesHibernate() throws SQLException {
+    public List<Employee> getEmployeesHibernate() {
         var configuration = new Configuration();
 
         configuration.addAnnotatedClass(HibernateEmployee.class);
 
-        try (var connection = getConnection();
-            var sessionFactory = configuration.configure().buildSessionFactory();
-            var session = sessionFactory.withOptions().connection(connection).openSession()) {
+        try (var sessionFactory = configuration.configure().buildSessionFactory();
+            var session = sessionFactory.withOptions().connection(getConnection()).openSession()) {
             var criteriaQuery = session.getCriteriaBuilder().createQuery(Employee.class);
             var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
 
@@ -117,13 +116,14 @@ public class EmployeeService extends WebService {
     public Iterable<Employee> getEmployeesHibernateStream() {
         var pipe = new Pipe<Employee>(4096, 15000);
 
+        var connection = getConnection();
+
         executorService.submit(() -> {
             var configuration = new Configuration();
 
             configuration.addAnnotatedClass(HibernateEmployee.class);
 
-            try (var connection = getConnection();
-                var sessionFactory = configuration.configure().buildSessionFactory();
+            try (var sessionFactory = configuration.configure().buildSessionFactory();
                 var session = sessionFactory.withOptions().connection(connection).openSession()) {
                 var criteriaQuery = session.getCriteriaBuilder().createQuery(Employee.class);
                 var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
@@ -131,8 +131,6 @@ public class EmployeeService extends WebService {
                 try (var stream = query.stream()) {
                     pipe.accept(stream);
                 }
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
             }
         });
 

@@ -21,10 +21,10 @@ dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
     implementation project(':kilo-server')
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
-    implementation 'org.hibernate.orm:hibernate-core:6.5.0.Final'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+    implementation 'org.hibernate.orm:hibernate-core:6.6.1.Final'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.1'
 }
 
 compileJava {

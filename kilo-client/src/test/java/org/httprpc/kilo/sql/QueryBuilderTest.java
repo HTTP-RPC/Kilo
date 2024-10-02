@@ -34,14 +34,17 @@ public class QueryBuilderTest {
         @Column("a")
         @PrimaryKey
         String getA();
+
         @Column("b")
         @Identifier(1)
         @Required
         Double getB();
+
         @Column("c")
         @Identifier(2)
         @Required
         Boolean getC();
+
         @Name("x")
         @Column("d")
         @Final
@@ -52,6 +55,7 @@ public class QueryBuilderTest {
     public interface B extends A {
         @Column("e")
         Double getE();
+
         @Name("y")
         @Column("f")
         Boolean getF();
@@ -71,6 +75,7 @@ public class QueryBuilderTest {
         @Column("d")
         @PrimaryKey
         String getD();
+
         @Column("g")
         Integer getG();
     }
@@ -88,6 +93,7 @@ public class QueryBuilderTest {
         @Column("f")
         @PrimaryKey
         Integer getF();
+
         @Column("q")
         String getQ();
     }
@@ -97,9 +103,11 @@ public class QueryBuilderTest {
         @Column("g")
         @PrimaryKey
         Integer getG();
+
         @Column("f")
         @ForeignKey(F.class)
         Integer getF();
+
         @Column("r")
         String getR();
     }
@@ -109,9 +117,11 @@ public class QueryBuilderTest {
         @Column("h")
         @PrimaryKey
         Integer getH();
+
         @Column("g")
         @ForeignKey(G.class)
         Integer getG();
+
         @Column("s")
         String getS();
     }
@@ -121,12 +131,15 @@ public class QueryBuilderTest {
         @Column("i")
         @PrimaryKey
         Integer getI();
+
         @Column("h")
         @ForeignKey(H.class)
         Integer getH();
+
         @Column("t")
         @Index(1)
         String getT();
+
         @Column("u")
         @Index(2)
         String getU();
@@ -138,6 +151,7 @@ public class QueryBuilderTest {
         @PrimaryKey
         @ForeignKey(I.class)
         Integer getI();
+
         @Column("v")
         String getV();
     }
@@ -148,6 +162,7 @@ public class QueryBuilderTest {
         @PrimaryKey
         @ForeignKey(I.class)
         Integer getI();
+
         @Column("w")
         String getW();
     }
