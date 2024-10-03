@@ -855,9 +855,9 @@ public abstract class WebService extends HttpServlet {
         var parameterNames = request.getParameterNames();
 
         while (parameterNames.hasMoreElements()) {
-            var parameterName = parameterNames.nextElement();
+            var name = parameterNames.nextElement();
 
-            argumentMap.put(parameterName, Arrays.asList(request.getParameterValues(parameterName)));
+            argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
         }
 
         var contentType = map(request.getContentType(), String::toLowerCase);
@@ -1259,7 +1259,8 @@ public abstract class WebService extends HttpServlet {
             || type == LocalDateTime.class
             || type == Duration.class
             || type == Period.class
-            || type == UUID.class) {
+            || type == UUID.class
+            || type == Part.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
             return new IterableTypeDescriptor(describeRawType(type.getComponentType()));
