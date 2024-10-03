@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Creates;
@@ -302,9 +303,28 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("form-data")
-    public Map<String, Object> testPostFormData(Void body) {
-        // TODO Read parts
-        return null;
+    public Map<String, Object> testPostFormData(Void body) throws IOException, ServletException {
+        String string = null;
+        List<String> strings = null;
+        Integer number = null;
+        Set<Integer> numbers = null;
+
+        var fileSize = 0;
+        var totalFileSize = 0;
+
+        for (var part : getRequest().getParts()) {
+            // TODO
+            var name = part.getName();
+        }
+
+        return mapOf(
+            entry("string", string),
+            entry("strings", strings),
+            entry("number", number),
+            entry("numbers", numbers),
+            entry("fileSize", fileSize),
+            entry("totalFileSize", totalFileSize)
+        );
     }
 
     @RequestMethod("POST")

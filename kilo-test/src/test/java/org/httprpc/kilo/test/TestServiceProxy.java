@@ -37,8 +37,10 @@ import java.util.Set;
 @ServicePath("test")
 public interface TestServiceProxy {
     interface FormData {
+        @Required
         String getString();
-        List<Integer> getNumbers();
+        List<String> getStrings();
+        Integer getNumber();
         Date getDate();
         Path getFile();
         List<Path> getFiles();
