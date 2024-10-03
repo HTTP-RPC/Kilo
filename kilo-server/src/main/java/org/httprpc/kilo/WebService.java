@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -1229,8 +1228,7 @@ public abstract class WebService extends HttpServlet {
             || type == LocalDateTime.class
             || type == Duration.class
             || type == Period.class
-            || type == UUID.class
-            || type == URL.class) {
+            || type == UUID.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
             return new IterableTypeDescriptor(describeRawType(type.getComponentType()));

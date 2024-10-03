@@ -22,6 +22,7 @@ import org.httprpc.kilo.io.TextDecoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,6 +37,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +47,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
@@ -77,6 +81,73 @@ public class WebServiceProxy {
          * If an exception occurs.
          */
         void encodeRequest(Object body, OutputStream outputStream) throws IOException;
+    }
+
+    /**
+     * Form data request handler.
+     */
+    public static class FormDataRequestHandler implements RequestHandler {
+        private final String multipartBoundary = UUID.randomUUID().toString();
+
+        private static final int EOF = -1;
+
+        @Override
+        public String getContentType() {
+            return String.format("multipart/form-data; boundary=%s", multipartBoundary);
+        }
+
+        @Override
+        public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+            body = BeanAdapter.adapt(body);
+
+            if (!(body instanceof Map<?, ?> map)) {
+                throw new UnsupportedOperationException("Unsupported body type.");
+            }
+
+            var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+
+            for (var entry : map.entrySet()) {
+                var key = entry.getKey();
+
+                if (!(key instanceof String)) {
+                    throw new IllegalArgumentException("Invalid key.");
+                }
+
+                for (var value : getParameterValues(entry.getValue())) {
+                    if (value == null) {
+                        continue;
+                    }
+
+                    writer.append(String.format("--%s\r\n", multipartBoundary));
+                    writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", key));
+
+                    if (value instanceof Path path) {
+                        var filename = path.getName(path.getNameCount() - 1);
+
+                        writer.append(String.format("; filename=\"%s\"\r\n", filename));
+                        writer.append("Content-Type: application/octet-stream\r\n\r\n");
+
+                        writer.flush();
+
+                        try (var inputStream = Files.newInputStream(path)) {
+                            int b;
+                            while ((b = inputStream.read()) != EOF) {
+                                outputStream.write(b);
+                            }
+                        }
+                    } else {
+                        writer.append("\r\n\r\n");
+                        writer.append(value.toString());
+                    }
+
+                    writer.append("\r\n");
+                }
+            }
+
+            writer.append(String.format("--%s--\r\n", multipartBoundary));
+
+            writer.flush();
+        }
     }
 
     /**

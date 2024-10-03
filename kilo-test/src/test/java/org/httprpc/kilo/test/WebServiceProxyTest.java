@@ -325,6 +325,16 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testFormDataPost() throws IOException {
+        // TODO
+    }
+
+    @Test
+    public void testFormDataPostProxy() throws IOException {
+        // TODO
+    }
+
+    @Test
     public void testBodyPost() throws IOException {
         var body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),

@@ -86,6 +86,11 @@ public interface TestServiceProxy {
 
     @RequestMethod("POST")
     @ResourcePath("image")
+    @WebServiceProxy.Configuration(requestHandler = WebServiceProxy.FormDataRequestHandler.class)
+    BufferedImage testPostFormData(FormData formData) throws IOException;
+
+    @RequestMethod("POST")
+    @ResourcePath("image")
     @WebServiceProxy.Configuration(requestHandler = CustomRequestHandler.class, responseHandler = CustomResponseHandler.class, chunkSize = 4096)
     BufferedImage testImagePost(URL body) throws IOException;
 

@@ -14,6 +14,7 @@
 
 package org.httprpc.kilo.test;
 
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
@@ -47,6 +48,7 @@ import java.util.UUID;
 import static org.httprpc.kilo.util.Collections.*;
 
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 0)
+@MultipartConfig
 public class TestService extends AbstractDatabaseService {
     public interface A {
         int getA();
@@ -296,6 +298,12 @@ public class TestService extends AbstractDatabaseService {
     @ResourcePath("coordinates")
     public Coordinates testPostCoordinates(Coordinates coordinates) {
         return coordinates;
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("form-data")
+    public void testPostFormData(Void body) {
+        // TODO Read parts
     }
 
     @RequestMethod("POST")
