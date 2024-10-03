@@ -325,16 +325,6 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testFormDataPost() throws IOException {
-        // TODO
-    }
-
-    @Test
-    public void testFormDataPostProxy() throws IOException {
-        // TODO
-    }
-
-    @Test
     public void testBodyPost() throws IOException {
         var body = BeanAdapter.coerce(mapOf(
             entry("string", "héllo&gøod+bye?"),
@@ -371,6 +361,48 @@ public class WebServiceProxyTest {
 
         assertEquals(body.x(), result.x());
         assertEquals(body.y(), result.y());
+    }
+
+    @Test
+    public void testFormDataPost() throws IOException {
+        var textURL = getClass().getResource("test.txt");
+        var imageURL = getClass().getResource("test.jpg");
+
+        var body = mapOf(
+            entry("string", "abc"),
+            entry("numbers", listOf(1, 2, 3)),
+            entry("date", new Date()),
+            entry("file", textURL.getPath()),
+            entry("files", listOf(textURL.getPath(), imageURL.getPath()))
+        );
+
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/form-data"));
+
+        webServiceProxy.setBody(body);
+
+        var result = webServiceProxy.invoke();
+
+        // TODO
+    }
+
+    @Test
+    public void testFormDataPostProxy() throws IOException {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
+
+        var textURL = getClass().getResource("test.txt");
+        var imageURL = getClass().getResource("test.jpg");
+
+        var formData = BeanAdapter.coerce(mapOf(
+            entry("string", "abc"),
+            entry("numbers", listOf(1, 2, 3)),
+            entry("date", new Date()),
+            entry("file", textURL.getPath()),
+            entry("files", listOf(textURL.getPath(), imageURL.getPath()))
+        ), TestServiceProxy.FormData.class);
+
+        var result = testServiceProxy.testFormDataPost(formData);
+
+        // TODO
     }
 
     @Test

@@ -27,13 +27,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @ServicePath("test")
 public interface TestServiceProxy {
+    interface FormData {
+        String getString();
+        List<Integer> getNumbers();
+        Date getDate();
+        Path getFile();
+        List<Path> getFiles();
+    }
+
     class CustomRequestHandler implements WebServiceProxy.RequestHandler {
         private static final int EOF = -1;
 
@@ -85,9 +95,9 @@ public interface TestServiceProxy {
     Map<String, Object> testVarargs(int[] numbers, String... strings) throws IOException;
 
     @RequestMethod("POST")
-    @ResourcePath("image")
+    @ResourcePath("form-data")
     @WebServiceProxy.Configuration(requestHandler = WebServiceProxy.FormDataRequestHandler.class)
-    BufferedImage testPostFormData(FormData formData) throws IOException;
+    Map<String, Object> testFormDataPost(FormData formData) throws IOException;
 
     @RequestMethod("POST")
     @ResourcePath("image")

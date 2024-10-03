@@ -302,8 +302,9 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("form-data")
-    public void testPostFormData(Void body) {
+    public Map<String, Object> testPostFormData(Void body) {
         // TODO Read parts
+        return null;
     }
 
     @RequestMethod("POST")
