@@ -33,6 +33,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -1260,6 +1262,8 @@ public abstract class WebService extends HttpServlet {
             || type == Duration.class
             || type == Period.class
             || type == UUID.class
+            || type == URI.class
+            || type == Path.class
             || type == Part.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {

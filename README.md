@@ -110,6 +110,8 @@ Method parameters may be any of the following types:
 * `java.time.Duration`
 * `java.time.Period`
 * `java.util.UUID`
+* `java.net.URI`
+* `java.nio.file.Path`
 * `java.util.List`, `java.util.Set`, array/varargs
 * `jakarta.servlet.http.Part`
 
