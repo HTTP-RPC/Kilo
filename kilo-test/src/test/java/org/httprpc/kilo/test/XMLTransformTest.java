@@ -23,8 +23,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class XMLTransformTest {
     public static void main(String[] args) throws Exception {
@@ -52,10 +52,9 @@ public class XMLTransformTest {
 
         var xmlSource = new StreamSource(getClass().getResourceAsStream("breakfast-menu.xml"));
 
-        var homeDirectory = new File(System.getProperty("user.home"));
-        var outputFile = new File(homeDirectory, "breakfast-menu-1.html");
+        var outputFile = Paths.get(System.getProperty("user.home"), "breakfast-menu-1.html");
 
-        try (var outputStream = new FileOutputStream(outputFile)) {
+        try (var outputStream = Files.newOutputStream(outputFile)) {
             transformer.transform(xmlSource, new StreamResult(outputStream));
         }
     }
@@ -75,10 +74,9 @@ public class XMLTransformTest {
 
         var templateEncoder = new TemplateEncoder(getClass(), "breakfast-menu.html");
 
-        var homeDirectory = new File(System.getProperty("user.home"));
-        var outputFile = new File(homeDirectory, "breakfast-menu-2.html");
+        var outputFile = Paths.get(System.getProperty("user.home"), "breakfast-menu-2.html");
 
-        try (var outputStream = new FileOutputStream(outputFile)) {
+        try (var outputStream = Files.newOutputStream(outputFile)) {
             templateEncoder.write(new ElementAdapter(document.getDocumentElement()), outputStream);
         }
     }

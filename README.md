@@ -572,14 +572,14 @@ for (var month : months) {
 The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
 
 ```java
-try (var outputStream = new FileOutputStream(file)) {
+try (var outputStream = Files.newOutputStream(file)) {
     var textEncoder = new TextEncoder();
-    
+
     textEncoder.write("Hello, World!", outputStream);
 }
 
 String text;
-try (var inputStream = new FileInputStream(file)) {
+try (var inputStream = Files.newInputStream(file)) {
     var textDecoder = new TextDecoder();
 
     text = textDecoder.read(inputStream);

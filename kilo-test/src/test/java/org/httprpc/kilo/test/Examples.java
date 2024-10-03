@@ -29,15 +29,13 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -173,17 +171,17 @@ public class Examples {
     }
 
     public static void textEncoderAndDecoder() throws IOException {
-        var file = File.createTempFile("kilo", ".txt");
+        var file = Files.createTempFile("kilo", ".txt");
 
         try {
-            try (var outputStream = new FileOutputStream(file)) {
+            try (var outputStream = Files.newOutputStream(file)) {
                 var textEncoder = new TextEncoder();
 
                 textEncoder.write("Hello, World!", outputStream);
             }
 
             String text;
-            try (var inputStream = new FileInputStream(file)) {
+            try (var inputStream = Files.newInputStream(file)) {
                 var textDecoder = new TextDecoder();
 
                 text = textDecoder.read(inputStream);
@@ -191,7 +189,7 @@ public class Examples {
 
             System.out.println(text);
         } finally {
-            file.delete();
+            Files.delete(file);
         }
     }
 
