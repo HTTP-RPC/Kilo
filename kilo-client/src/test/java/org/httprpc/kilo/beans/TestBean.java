@@ -18,6 +18,7 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 
 import java.math.BigInteger;
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -72,6 +73,7 @@ public class TestBean implements TestInterface {
     private Duration duration = null;
     private Period period = null;
     private UUID uuid = null;
+    private URI uri = null;
     private Path path = null;
 
     private NestedInterface nestedBean = null;
@@ -214,6 +216,15 @@ public class TestBean implements TestInterface {
 
     public void setUUID(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    @Override
+    public URI getURI() {
+        return uri;
+    }
+
+    public void setURI(URI uri) {
+        this.uri = uri;
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -602,6 +603,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link TemporalAccessor}</li>
      * <li>{@link TemporalAmount}</li>
      * <li>{@link UUID}</li>
+     * <li>{@link URI}</li>
      * <li>{@link Path}</li>
      * </ul>
      *
@@ -641,6 +643,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof TemporalAccessor
             || value instanceof TemporalAmount
             || value instanceof UUID
+            || value instanceof URI
             || value instanceof Path) {
             return value;
         } else if (value.getClass().isArray()) {
@@ -680,6 +683,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Duration}</li>
      * <li>{@link Period}</li>
      * <li>{@link UUID}</li>
+     * <li>{@link URI}</li>
      * <li>{@link Path}</li>
      * </ul>
      *
@@ -968,6 +972,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 return Period.parse(value.toString());
             } else if (type == UUID.class) {
                 return UUID.fromString(value.toString());
+            } else if (type == URI.class) {
+                return URI.create(value.toString());
             } else if (type == Path.class) {
                 return Paths.get(value.toString());
             } else if (type.isArray()) {

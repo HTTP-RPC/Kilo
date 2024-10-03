@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
+import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -129,6 +131,7 @@ public class BeanAdapterTest {
             entry("duration", Duration.parse("PT2H30M")),
             entry("period", Period.parse("P3Y2M")),
             entry("UUID", UUID.randomUUID()),
+            entry("URI", URI.create("http://localhost:8080")),
             entry("path", Paths.get(System.getProperty("user.home"))),
             entry("nestedBean", mapOf(
                 entry("flag", true),
@@ -286,6 +289,20 @@ public class BeanAdapterTest {
         var uuid = UUID.randomUUID();
 
         assertEquals(uuid, BeanAdapter.coerce(uuid.toString(), UUID.class));
+    }
+
+    @Test
+    public void testURICoercion() {
+        var uri = URI.create("http://localhost:8080");
+
+        assertEquals(uri, BeanAdapter.coerce(uri.toString(), URI.class));
+    }
+
+    @Test
+    public void testPathCoercion() {
+        var path = Paths.get(System.getProperty("user.home"));
+
+        assertEquals(path, BeanAdapter.coerce(path.toString(), Path.class));
     }
 
     @Test

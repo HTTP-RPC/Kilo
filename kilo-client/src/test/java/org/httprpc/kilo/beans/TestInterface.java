@@ -18,6 +18,7 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
 
 import java.math.BigInteger;
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -62,6 +63,7 @@ public interface TestInterface {
     Duration getDuration();
     Period getPeriod();
     UUID getUUID();
+    URI getURI();
     Path getPath();
 
     NestedInterface getNestedBean();
