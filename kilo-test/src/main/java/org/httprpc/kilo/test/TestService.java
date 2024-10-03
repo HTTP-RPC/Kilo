@@ -14,9 +14,9 @@
 
 package org.httprpc.kilo.test;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Part;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.Name;
@@ -303,25 +303,28 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("form-data")
-    public Map<String, Object> testPostFormData(Void body) throws IOException, ServletException {
-        String string = null;
-        List<String> strings = null;
-        Integer number = null;
-        Set<Integer> numbers = null;
+    public Map<String, Object> testPostFormData(@Required String string, List<String> strings,
+        Integer number, Date date,
+        Part file, List<Part> files) {
+        var fileSize = 0L;
 
-        var fileSize = 0;
-        var totalFileSize = 0;
+        if (file != null) {
+            fileSize += file.getSize();
+        }
 
-        for (var part : getRequest().getParts()) {
-            // TODO
-            var name = part.getName();
+        var totalFileSize = fileSize;
+
+        if (files != null) {
+            for (var part : files) {
+                totalFileSize += part.getSize();
+            }
         }
 
         return mapOf(
             entry("string", string),
             entry("strings", strings),
             entry("number", number),
-            entry("numbers", numbers),
+            entry("date", date),
             entry("fileSize", fileSize),
             entry("totalFileSize", totalFileSize)
         );

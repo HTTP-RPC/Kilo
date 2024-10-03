@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -368,31 +369,27 @@ public class WebServiceProxyTest {
     public void testFormDataPost() throws IOException {
         var now = new Date();
 
-        var textURL = getClass().getResource("test.txt");
-        var imageURL = getClass().getResource("test.jpg");
-
         var body = mapOf(
             entry("string", "héllo&gøod+bye?"),
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
-            entry("date", now),
-            entry("file", textURL.getPath()),
-            entry("files", listOf(textURL.getPath(), imageURL.getPath()))
+            entry("date", now)
         );
 
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/form-data"));
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.FormDataRequestHandler());
+        webServiceProxy.setRequestHandler(new WebServiceProxy.FormDataRequestHandler(false));
         webServiceProxy.setBody(body);
 
         var result = (Map<?, ?>)webServiceProxy.invoke();
 
-        assertEquals(result.get("string"), "héllo&gøod+bye?");
-        assertEquals(result.get("strings"), listOf("a", "b", "c"));
-        assertEquals(result.get("number"), 123);
-        assertEquals(result.get("date"), now.getTime());
-        assertEquals(result.get("fileSize"), 0);
-        assertEquals(result.get("totalFileSize"), 0);
+        assertEquals("héllo&gøod+bye?", result.get("string"));
+        assertEquals(listOf("a", "b", "c"), result.get("strings"));
+        assertEquals(123, result.get("number"));
+        assertEquals(now.getTime(), result.get("date"));
+
+        assertEquals(0, result.get("fileSize"));
+        assertEquals(0, result.get("totalFileSize"));
     }
 
     @Test
@@ -409,18 +406,19 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("date", now),
-            entry("file", textURL.getPath()),
-            entry("files", listOf(textURL.getPath(), imageURL.getPath()))
+            entry("file", Paths.get(textURL.getPath())),
+            entry("files", listOf(Paths.get(textURL.getPath()), Paths.get(imageURL.getPath())))
         ), TestServiceProxy.FormData.class);
 
         var result = testServiceProxy.testFormDataPost(formData);
 
-        assertEquals(result.get("string"), "héllo&gøod+bye?");
-        assertEquals(result.get("strings"), listOf("a", "b", "c"));
-        assertEquals(result.get("number"), 123);
-        assertEquals(result.get("date"), now.getTime());
-        assertEquals(result.get("fileSize"), 0);
-        assertEquals(result.get("totalFileSize"), 0);
+        assertEquals("héllo&gøod+bye?", result.get("string"));
+        assertEquals(listOf("a", "b", "c"), result.get("strings"));
+        assertEquals(123, result.get("number"));
+        assertEquals(now.getTime(), result.get("date"));
+
+        assertEquals(26, result.get("fileSize"));
+        assertEquals(10444, result.get("totalFileSize"));
     }
 
     @Test

@@ -19,6 +19,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
@@ -649,6 +650,9 @@ public abstract class WebService extends HttpServlet {
      */
     protected static final String TEXT_PLAIN = "text/plain";
 
+    private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+    private static final String MULTIPART_FORM_DATA = "multipart/form-data";
+
     private static final String UTF_8 = "UTF-8";
 
     /**
@@ -774,6 +778,7 @@ public abstract class WebService extends HttpServlet {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var method = request.getMethod().toUpperCase();
         var pathInfo = request.getPathInfo();
@@ -850,12 +855,38 @@ public abstract class WebService extends HttpServlet {
         var parameterNames = request.getParameterNames();
 
         while (parameterNames.hasMoreElements()) {
-            var name = parameterNames.nextElement();
+            var parameterName = parameterNames.nextElement();
 
-            argumentMap.put(name, Arrays.asList(request.getParameterValues(name)));
+            argumentMap.put(parameterName, Arrays.asList(request.getParameterValues(parameterName)));
         }
 
-        var empty = request.getContentType() == null;
+        var contentType = map(request.getContentType(), String::toLowerCase);
+
+        if (contentType != null && contentType.startsWith(MULTIPART_FORM_DATA)) {
+            for (var part : request.getParts()) {
+                var submittedFileName = part.getSubmittedFileName();
+
+                if (submittedFileName == null || submittedFileName.isEmpty()) {
+                    continue;
+                }
+
+                var name = part.getName();
+
+                var values = (List<Part>)argumentMap.get(name);
+
+                if (values == null) {
+                    values = new ArrayList<>();
+
+                    argumentMap.put(name, values);
+                }
+
+                values.add(part);
+            }
+        }
+
+        var empty = contentType == null
+            || contentType.startsWith(APPLICATION_X_WWW_FORM_URLENCODED)
+            || contentType.startsWith(MULTIPART_FORM_DATA);
 
         var handler = getHandler(handlerList, keys.size(), argumentMap.keySet(), empty);
 

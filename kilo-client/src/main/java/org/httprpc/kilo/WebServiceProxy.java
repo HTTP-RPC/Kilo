@@ -87,64 +87,90 @@ public class WebServiceProxy {
      * Form data request handler.
      */
     public static class FormDataRequestHandler implements RequestHandler {
-        private final String multipartBoundary = UUID.randomUUID().toString();
+        private String multipartBoundary;
 
         private static final int EOF = -1;
 
+        /**
+         * Constructs a new form data request handler.
+         */
+        public FormDataRequestHandler() {
+            this(true);
+        }
+
+        /**
+         * Constructs a new form data request handler.
+         *
+         * @param multipart
+         * {@code true} if the multi-part encoding should be used;
+         * {@code false}, otherwise.
+         */
+        public FormDataRequestHandler(boolean multipart) {
+            if (multipart) {
+                multipartBoundary = UUID.randomUUID().toString();
+            } else {
+                multipartBoundary = null;
+            }
+        }
+
         @Override
         public String getContentType() {
-            return String.format("multipart/form-data; boundary=%s", multipartBoundary);
+            if (multipartBoundary == null) {
+                return "application/x-www-form-urlencoded";
+            } else {
+                return String.format("multipart/form-data; boundary=%s", multipartBoundary);
+            }
         }
 
         @Override
         public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
-            body = BeanAdapter.adapt(body);
-
-            if (!(body instanceof Map<?, ?> map)) {
+            if (!(BeanAdapter.adapt(body) instanceof Map<?, ?> map)) {
                 throw new UnsupportedOperationException("Unsupported body type.");
             }
 
             var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
 
-            for (var entry : map.entrySet()) {
-                var key = entry.getKey();
-
-                if (!(key instanceof String)) {
-                    throw new IllegalArgumentException("Invalid key.");
-                }
-
-                for (var value : getParameterValues(entry.getValue())) {
-                    if (value == null) {
-                        continue;
+            if (multipartBoundary == null) {
+                writer.append(encodeQuery(map));
+            } else {
+                for (var entry : map.entrySet()) {
+                    if (!(entry.getKey() instanceof String key) || key.isEmpty()) {
+                        throw new IllegalStateException();
                     }
 
-                    writer.append(String.format("--%s\r\n", multipartBoundary));
-                    writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", key));
-
-                    if (value instanceof Path path) {
-                        var filename = path.getName(path.getNameCount() - 1);
-
-                        writer.append(String.format("; filename=\"%s\"\r\n", filename));
-                        writer.append("Content-Type: application/octet-stream\r\n\r\n");
-
-                        writer.flush();
-
-                        try (var inputStream = Files.newInputStream(path)) {
-                            int b;
-                            while ((b = inputStream.read()) != EOF) {
-                                outputStream.write(b);
-                            }
+                    for (var value : getParameterValues(entry.getValue())) {
+                        if (value == null) {
+                            continue;
                         }
-                    } else {
-                        writer.append("\r\n\r\n");
-                        writer.append(value.toString());
+
+                        writer.append(String.format("--%s\r\n", multipartBoundary));
+                        writer.append(String.format("Content-Disposition: form-data; name=\"%s\"", key));
+
+                        if (value instanceof Path path) {
+                            var filename = path.getName(path.getNameCount() - 1);
+
+                            writer.append(String.format("; filename=\"%s\"\r\n", filename));
+                            writer.append("Content-Type: application/octet-stream\r\n\r\n");
+
+                            writer.flush();
+
+                            try (var inputStream = Files.newInputStream(path)) {
+                                int b;
+                                while ((b = inputStream.read()) != EOF) {
+                                    outputStream.write(b);
+                                }
+                            }
+                        } else {
+                            writer.append("\r\n\r\n");
+                            writer.append(value.toString());
+                        }
+
+                        writer.append("\r\n");
                     }
-
-                    writer.append("\r\n");
                 }
-            }
 
-            writer.append(String.format("--%s--\r\n", multipartBoundary));
+                writer.append(String.format("--%s--\r\n", multipartBoundary));
+            }
 
             writer.flush();
         }
@@ -704,7 +730,7 @@ public class WebServiceProxy {
         // Append query
         if (!arguments.isEmpty()) {
             try {
-                uri = new URI(String.format("%s?%s", uri, encodeQuery()));
+                uri = new URI(String.format("%s?%s", uri, encodeQuery(arguments)));
             } catch (URISyntaxException exception) {
                 throw new IllegalStateException(exception.getMessage());
             }
@@ -776,15 +802,13 @@ public class WebServiceProxy {
         return result;
     }
 
-    private String encodeQuery() {
+    private static String encodeQuery(Map<?, ?> arguments) {
         var queryBuilder = new StringBuilder(256);
 
         var i = 0;
 
-        for (Map.Entry<String, ?> entry : arguments.entrySet()) {
-            var key = entry.getKey();
-
-            if (key == null || key.isEmpty()) {
+        for (var entry : arguments.entrySet()) {
+            if (!(entry.getKey() instanceof String key) || key.isEmpty()) {
                 throw new IllegalStateException();
             }
 

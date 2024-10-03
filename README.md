@@ -111,12 +111,15 @@ Method parameters may be any of the following types:
 * `java.time.Period`
 * `java.util.UUID`
 * `java.util.List`, `java.util.Set`, array/varargs
+* `jakarta.servlet.http.Part`
 
 Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
 
 Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
 `List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
+
+`Part` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
@@ -353,6 +356,8 @@ public interface RequestHandler {
     void encodeRequest(Object body, OutputStream outputStream) throws IOException;
 }
 ```
+
+The `WebServiceProxy.FormDataRequestHandler` class can be used to submit requests as form data. When using the multi-part encoding, instances of `java.nio.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
 
 Service operations are invoked via the following method:
 

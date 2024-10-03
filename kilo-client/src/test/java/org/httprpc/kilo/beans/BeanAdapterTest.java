@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -128,6 +129,7 @@ public class BeanAdapterTest {
             entry("duration", Duration.parse("PT2H30M")),
             entry("period", Period.parse("P3Y2M")),
             entry("UUID", UUID.randomUUID()),
+            entry("path", Paths.get(System.getProperty("user.home"))),
             entry("nestedBean", mapOf(
                 entry("flag", true),
                 entry("character", 'y')
