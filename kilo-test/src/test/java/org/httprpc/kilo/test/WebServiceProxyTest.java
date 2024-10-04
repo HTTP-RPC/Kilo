@@ -378,8 +378,9 @@ public class WebServiceProxyTest {
 
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/form-data"));
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.FormDataRequestHandler(false));
         webServiceProxy.setBody(body);
+
+        webServiceProxy.setRequestHandler(new WebServiceProxy.FormDataRequestHandler(false));
 
         var result = (Map<?, ?>)webServiceProxy.invoke();
 
