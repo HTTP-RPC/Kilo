@@ -359,7 +359,7 @@ public interface RequestHandler {
 }
 ```
 
-The `WebServiceProxy.FormDataRequestHandler` class can be used to submit requests as form data. When using the multi-part encoding, instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
+For example, the `WebServiceProxy.FormDataRequestHandler` class submits requests as form data. When using the multi-part encoding (the default), instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
 
 Service operations are invoked via the following method:
 
