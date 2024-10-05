@@ -697,6 +697,13 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testInvalidResult() {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/invalid-result"));
+
+        assertThrowsExactly(IOException.class, webServiceProxy::invoke);
+    }
+
+    @Test
     public void testTimeout() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 

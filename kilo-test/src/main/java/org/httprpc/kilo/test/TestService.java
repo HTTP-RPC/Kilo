@@ -397,6 +397,12 @@ public class TestService extends AbstractDatabaseService {
     }
 
     @RequestMethod("GET")
+    @ResourcePath("invalid-result")
+    public List<Double> testInvalidResult() {
+        return listOf(1.0, 2.0, 3.0, Double.NaN);
+    }
+
+    @RequestMethod("GET")
     public int testTimeout(int value, int delay) throws InterruptedException {
         Thread.sleep(delay);
 
