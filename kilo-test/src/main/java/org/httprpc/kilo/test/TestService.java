@@ -24,6 +24,7 @@ import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.TextEncoder;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -385,7 +386,13 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("GET")
     @ResourcePath("error")
-    public void testError() throws Exception {
+    public void testError(boolean committed) throws Exception {
+        if (committed) {
+            var textEncoder = new TextEncoder();
+
+            textEncoder.write("abc", getResponse().getOutputStream());
+        }
+
         throw new Exception("Sample error message.");
     }
 

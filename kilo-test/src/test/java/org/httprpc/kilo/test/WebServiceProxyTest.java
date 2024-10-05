@@ -559,16 +559,6 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testException() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/error"));
-
-        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
-
-        assertNotNull(exception.getMessage());
-        assertEquals(500, exception.getStatusCode());
-    }
-
-    @Test
     public void testInvalidNumberArgument() {
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
 
@@ -658,25 +648,13 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testTimeout() {
-        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
+    public void testError() {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/error"));
 
-        webServiceProxy.setArguments(mapOf(
-            entry("value", 123),
-            entry("delay", 6000)
-        ));
+        var exception = assertThrows(WebServiceException.class, webServiceProxy::invoke);
 
-        webServiceProxy.setConnectTimeout(500);
-        webServiceProxy.setReadTimeout(4000);
-
-        assertThrows(SocketTimeoutException.class, webServiceProxy::invoke);
-    }
-
-    @Test
-    public void testTimeoutProxy() {
-        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
-
-        assertThrows(SocketTimeoutException.class, () -> testServiceProxy.testTimeout(123, 6000));
+        assertNotNull(exception.getMessage());
+        assertEquals(500, exception.getStatusCode());
     }
 
     @Test
@@ -697,6 +675,47 @@ public class WebServiceProxyTest {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         assertThrows(CustomException.class, testServiceProxy::testCustomErrorHandler);
+    }
+
+    @Test
+    public void testErrorCommitted() throws IOException {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test/error"));
+
+        webServiceProxy.setArguments(mapOf(
+            entry("committed", true)
+        ));
+
+        webServiceProxy.setResponseHandler((inputStream, contentType) -> {
+            var textDecoder = new TextDecoder();
+
+            return textDecoder.read(inputStream);
+        });
+
+        var result = webServiceProxy.invoke();
+
+        assertEquals("abc", result);
+    }
+
+    @Test
+    public void testTimeout() {
+        var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("test"));
+
+        webServiceProxy.setArguments(mapOf(
+            entry("value", 123),
+            entry("delay", 6000)
+        ));
+
+        webServiceProxy.setConnectTimeout(500);
+        webServiceProxy.setReadTimeout(4000);
+
+        assertThrows(SocketTimeoutException.class, webServiceProxy::invoke);
+    }
+
+    @Test
+    public void testTimeoutProxy() {
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
+
+        assertThrows(SocketTimeoutException.class, () -> testServiceProxy.testTimeout(123, 6000));
     }
 
     @Test

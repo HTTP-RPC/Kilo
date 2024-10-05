@@ -915,11 +915,15 @@ public abstract class WebService extends HttpServlet {
         try {
             result = handler.invoke(this, arguments);
         } catch (IllegalAccessException | InvocationTargetException exception) {
+            var cause = exception.getCause();
+
             if (response.isCommitted()) {
+                if (cause != null) {
+                    log(cause.getMessage(), cause);
+                }
+
                 return;
             }
-
-            var cause = exception.getCause();
 
             int status;
             if (cause instanceof IllegalArgumentException || cause instanceof UnsupportedOperationException) {
@@ -951,7 +955,11 @@ public abstract class WebService extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_CREATED);
             }
 
-            encodeResult(request, response, result);
+            try {
+                encodeResult(request, response, result);
+            } catch (Exception exception) {
+                log(exception.getMessage(), exception);
+            }
         } else {
             var returnType = handler.getReturnType();
 
