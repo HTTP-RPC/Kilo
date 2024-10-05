@@ -514,9 +514,11 @@ public class TemplateEncoder extends Encoder<Object> {
 
                 writer = new BufferedWriter(writer);
 
-                write(value, writer, locale, timeZone, reader);
-
-                writer.flush();
+                try {
+                    write(value, writer, locale, timeZone, reader);
+                } finally {
+                    writer.flush();
+                }
             }
         }
     }

@@ -29,13 +29,15 @@ public class TextEncoder extends Encoder<Object> {
 
         writer = new BufferedWriter(writer);
 
-        if (value instanceof CharSequence text) {
-            write(text, writer);
-        } else {
-            write(value.toString(), writer);
+        try {
+            if (value instanceof CharSequence text) {
+                write(text, writer);
+            } else {
+                write(value.toString(), writer);
+            }
+        } finally {
+            writer.flush();
         }
-
-        writer.flush();
     }
 
     private void write(CharSequence text, Writer writer) throws IOException {

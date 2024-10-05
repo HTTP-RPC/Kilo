@@ -53,9 +53,11 @@ public class JSONEncoder extends Encoder<Object> {
 
         writer = new BufferedWriter(writer);
 
-        encode(value, writer);
-
-        writer.flush();
+        try {
+            encode(value, writer);
+        } finally {
+            writer.flush();
+        }
     }
 
     private void encode(Object value, Writer writer) throws IOException {
