@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +28,11 @@ public class JSONDecoderTest {
         assertEquals("abcdéfg", decode("\"abcdéfg\""));
         assertEquals("\b\f\r\n\t", decode("\"\\b\\f\\r\\n\\t\""));
         assertEquals("\0é", decode("\"\\u0000\\u00E9\""));
+    }
+
+    @Test
+    public void testUnterminatedString() {
+        assertThrows(IOException.class, () -> decode("\"abc"));
     }
 
     @Test
@@ -77,6 +80,12 @@ public class JSONDecoderTest {
     }
 
     @Test
+    public void testUnterminatedArray() {
+        assertThrows(IOException.class, () -> decode("[1, 2, 3"));
+        assertThrows(IOException.class, () -> decode("[1, 2, 3, "));
+    }
+
+    @Test
     public void testObject() throws IOException {
         var expected = mapOf(
             entry("a", "abc"),
@@ -94,13 +103,19 @@ public class JSONDecoderTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testSorted() throws IOException {
-        var text = "{\"c\": 3, \"b\": 2, \"a\": 1}";
+    public void testUnterminatedObject() {
+        assertThrows(IOException.class, () -> decode("{\"a\": 1, \"b\": 2, \"c\": 3"));
+        assertThrows(IOException.class, () -> decode("{\"a\": 1, \"b\": 2, \"c\": 3, "));
+    }
 
-        var map = (Map<String, Object>)decode(text, true);
+    @Test
+    public void testInvalidKey() {
+        assertThrows(IOException.class, () -> decode("{a: 1}"));
+    }
 
-        assertEquals(listOf("a", "b", "c"), new ArrayList<>(map.keySet()));
+    @Test
+    public void testMissingColon() {
+        assertThrows(IOException.class, () -> decode("{\"a\"}"));
     }
 
     @Test
@@ -109,11 +124,7 @@ public class JSONDecoderTest {
     }
 
     private static Object decode(String text) throws IOException {
-        return decode(text, false);
-    }
-
-    private static Object decode(String text, boolean sorted) throws IOException {
-        var jsonDecoder = new JSONDecoder(sorted);
+        var jsonDecoder = new JSONDecoder();
 
         return jsonDecoder.read(new StringReader(text));
     }

@@ -22,14 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Decodes an object hierarchy from JSON.
  */
 public class JSONDecoder extends Decoder<Object> {
-    private boolean sorted;
-
     private int c = EOF;
 
     private Deque<Object> containers = new LinkedList<>();
@@ -39,24 +36,6 @@ public class JSONDecoder extends Decoder<Object> {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String NULL = "null";
-
-    /**
-     * Constructs a new JSON decoder.
-     */
-    public JSONDecoder() {
-        this(false);
-    }
-
-    /**
-     * Constructs a new JSON decoder.
-     *
-     * @param sorted
-     * {@code true} if the decoded output should be sorted by key;
-     * {@code false}, otherwise.
-     */
-    public JSONDecoder(boolean sorted) {
-        this.sorted = sorted;
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -129,11 +108,7 @@ public class JSONDecoder extends Decoder<Object> {
 
                     c = reader.read();
                 } else if (c == '{') {
-                    if (sorted) {
-                        value = new TreeMap<>();
-                    } else {
-                        value = new LinkedHashMap<>();
-                    }
+                    value = new LinkedHashMap<>();
 
                     containers.push(value);
 
@@ -153,6 +128,10 @@ public class JSONDecoder extends Decoder<Object> {
             }
 
             skipWhitespace(reader);
+        }
+
+        if (!containers.isEmpty()) {
+            throw new IOException("Unterminated container.");
         }
 
         return value;
