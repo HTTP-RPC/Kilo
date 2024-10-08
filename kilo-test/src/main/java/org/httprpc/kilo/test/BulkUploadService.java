@@ -47,7 +47,7 @@ public class BulkUploadService extends AbstractDatabaseService {
         try (var statement = queryBuilder.prepare(getConnection())) {
             var csvDecoder = new CSVDecoder();
 
-            for (var row : csvDecoder.iterate(getRequest().getInputStream())) {
+            for (var row : csvDecoder.read(getRequest().getInputStream())) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
             }
         }
@@ -66,7 +66,7 @@ public class BulkUploadService extends AbstractDatabaseService {
 
             var csvDecoder = new CSVDecoder();
 
-            for (var row : csvDecoder.iterate(getRequest().getInputStream())) {
+            for (var row : csvDecoder.read(getRequest().getInputStream())) {
                 queryBuilder.addBatch(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
 
                 if (++i % BATCH_SIZE == 0) {

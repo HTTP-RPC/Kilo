@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,39 +52,6 @@ public class CSVDecoderTest {
         var csvDecoder = new CSVDecoder();
 
         var actual = csvDecoder.read(new StringReader(text));
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testIterate() throws IOException {
-        var expected = listOf(
-            mapOf(
-                entry("a", "1"),
-                entry("b", "2"),
-                entry("c", "3")
-            ),
-            mapOf(
-                entry("a", "4"),
-                entry("b", "5"),
-                entry("c", "6")
-            ),
-            mapOf(
-                entry("a", "7"),
-                entry("b", "8"),
-                entry("c", "9")
-            )
-        );
-
-        var actual = new ArrayList<Map<String, String>>(expected.size());
-
-        try (var inputStream = getClass().getResourceAsStream("iterate.csv")) {
-            var csvDecoder = new CSVDecoder();
-
-            for (var row : csvDecoder.iterate(inputStream)) {
-                actual.add(row);
-            }
-        }
 
         assertEquals(expected, actual);
     }

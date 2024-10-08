@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CSVEncoderTest {
     @Test
     public void testWrite() throws IOException {
-        var expected = "\"a\",\"b\",\"c\",\"d\",\"e\",\"F\"\r\n"
+        var expected = "\"a\",\"b\",\"c\",\"d\",\"É\",\"F\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,0,\"12%\"\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
