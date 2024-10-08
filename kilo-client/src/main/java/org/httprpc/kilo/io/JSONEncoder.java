@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Encodes an object hierarchy to JSON.
+ * Encodes JSON content.
  */
 public class JSONEncoder extends Encoder<Object> {
     private boolean compact;

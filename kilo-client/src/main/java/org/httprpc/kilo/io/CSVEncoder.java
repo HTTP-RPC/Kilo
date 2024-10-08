@@ -24,12 +24,12 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * Encodes a sequence of map values to CSV.
+ * Encodes CSV content.
  */
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private Iterable<String> keys;
-    private char delimiter;
 
+    private char delimiter = ',';
     private ResourceBundle resourceBundle = null;
 
     private Map<String, Format> formats = new HashMap<>();
@@ -41,24 +41,30 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * The column keys.
      */
     public CSVEncoder(Iterable<String> keys) {
-        this(keys, ',');
-    }
-
-    /**
-     * Constructs a new CSV encoder.
-     *
-     * @param keys
-     * The column keys.
-     *
-     * @param delimiter
-     * The character to use as a field delimiter.
-     */
-    public CSVEncoder(Iterable<String> keys, char delimiter) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }
 
         this.keys = keys;
+    }
+
+    /**
+     * Returns the delimiter character.
+     *
+     * @return
+     * The delimiter character.
+     */
+    public char getDelimiter() {
+        return delimiter;
+    }
+
+    /**
+     * Sets the delimiter character.
+     *
+     * @param delimiter
+     * The delimiter character.
+     */
+    public void setDelimiter(char delimiter) {
         this.delimiter = delimiter;
     }
 

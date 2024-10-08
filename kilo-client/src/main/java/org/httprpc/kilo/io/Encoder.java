@@ -31,7 +31,7 @@ public abstract class Encoder<T> {
     private Charset charset = StandardCharsets.UTF_8;
 
     /**
-     * Returns the character set to use when encoding an output stream.
+     * Returns the character set to use when encoding to an output stream.
      *
      * @return
      * The output stream's character set.
@@ -41,7 +41,7 @@ public abstract class Encoder<T> {
     }
 
     /**
-     * Sets the character set to use when encoding an output stream.
+     * Sets the character set to use when encoding to an output stream.
      *
      * @param charset
      * The output stream's character set.

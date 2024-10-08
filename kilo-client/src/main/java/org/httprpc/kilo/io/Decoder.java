@@ -36,7 +36,7 @@ public abstract class Decoder<T> {
     protected static final int EOF = -1;
 
     /**
-     * Returns the character set to use when decoding an input stream.
+     * Returns the character set to use when decoding from an input stream.
      *
      * @return
      * The input stream's character set.
@@ -46,7 +46,7 @@ public abstract class Decoder<T> {
     }
 
     /**
-     * Sets the character set to use when decoding an input stream.
+     * Sets the character set to use when decoding from an input stream.
      *
      * @param charset
      * The input stream's character set.

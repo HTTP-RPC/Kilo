@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Decodes an object hierarchy from JSON.
+ * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
     private int c = EOF;

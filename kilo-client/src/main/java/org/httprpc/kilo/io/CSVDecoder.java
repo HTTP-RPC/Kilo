@@ -23,25 +23,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Decodes a sequence of map values from CSV.
+ * Decodes CSV content.
  */
 public class CSVDecoder extends Decoder<List<Map<String, String>>> {
-    private char delimiter;
+    private char delimiter = ',';
 
     /**
-     * Constructs a new CSV decoder.
+     * Returns the delimiter character.
+     *
+     * @return
+     * The delimiter character.
      */
-    public CSVDecoder() {
-        this(',');
+    public char getDelimiter() {
+        return delimiter;
     }
 
     /**
-     * Constructs a new CSV decoder.
+     * Sets the delimiter character.
      *
      * @param delimiter
-     * The character to use as a field delimiter.
+     * The delimiter character.
      */
-    public CSVDecoder(char delimiter) {
+    public void setDelimiter(char delimiter) {
         this.delimiter = delimiter;
     }
 

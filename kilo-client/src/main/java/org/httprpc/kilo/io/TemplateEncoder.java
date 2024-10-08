@@ -48,7 +48,7 @@ import java.util.TimeZone;
 import static org.httprpc.kilo.util.Collections.*;
 
 /**
- * Encodes an object hierarchy using a template document.
+ * Applies a template document.
  */
 public class TemplateEncoder extends Encoder<Object> {
     /**
