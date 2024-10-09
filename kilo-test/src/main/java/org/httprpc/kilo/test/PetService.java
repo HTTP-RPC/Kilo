@@ -75,9 +75,9 @@ public class PetService extends AbstractDatabaseService {
             } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
                 response.setContentType(TEXT_CSV);
 
-                var keys = listOf("name", "species", "sex", "birth", "death");
+                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-                var csvEncoder = new CSVEncoder(keys, ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
+                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
                 csvEncoder.write(results, response.getOutputStream());
             } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
