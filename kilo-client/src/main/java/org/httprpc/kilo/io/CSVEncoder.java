@@ -19,6 +19,7 @@ import java.io.Writer;
 import java.text.Format;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -27,12 +28,13 @@ import java.util.ResourceBundle;
  * Encodes CSV content.
  */
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
-    private Iterable<String> keys;
+    private List<String> keys;
 
-    private char delimiter = ',';
     private ResourceBundle resourceBundle = null;
 
     private Map<String, Format> formats = new HashMap<>();
+
+    private static final char DELIMITER = ',';
 
     /**
      * Constructs a new CSV encoder.
@@ -40,32 +42,12 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * @param keys
      * The column keys.
      */
-    public CSVEncoder(Iterable<String> keys) {
+    public CSVEncoder(List<String> keys) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }
 
         this.keys = keys;
-    }
-
-    /**
-     * Returns the delimiter character.
-     *
-     * @return
-     * The delimiter character.
-     */
-    public char getDelimiter() {
-        return delimiter;
-    }
-
-    /**
-     * Sets the delimiter character.
-     *
-     * @param delimiter
-     * The delimiter character.
-     */
-    public void setDelimiter(char delimiter) {
-        this.delimiter = delimiter;
     }
 
     /**
@@ -123,7 +105,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                 }
 
                 if (i > 0) {
-                    writer.write(delimiter);
+                    writer.write(DELIMITER);
                 }
 
                 String heading;
@@ -149,7 +131,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
                 for (var key : keys) {
                     if (i > 0) {
-                        writer.write(delimiter);
+                        writer.write(DELIMITER);
                     }
 
                     var value = record.get(key);

@@ -26,27 +26,7 @@ import java.util.Map;
  * Decodes CSV content.
  */
 public class CSVDecoder extends Decoder<List<Map<String, String>>> {
-    private char delimiter = ',';
-
-    /**
-     * Returns the delimiter character.
-     *
-     * @return
-     * The delimiter character.
-     */
-    public char getDelimiter() {
-        return delimiter;
-    }
-
-    /**
-     * Sets the delimiter character.
-     *
-     * @param delimiter
-     * The delimiter character.
-     */
-    public void setDelimiter(char delimiter) {
-        this.delimiter = delimiter;
-    }
+    private static final char DELIMITER = ',';
 
     @Override
     public List<Map<String, String>> read(Reader reader) throws IOException {
@@ -108,7 +88,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
                 c = reader.read();
             }
 
-            while ((quoted || (c != delimiter && c != '\r' && c != '\n')) && c != EOF) {
+            while ((quoted || (c != DELIMITER && c != '\r' && c != '\n')) && c != EOF) {
                 valueBuilder.append((char)c);
 
                 c = reader.read();
@@ -128,7 +108,7 @@ public class CSVDecoder extends Decoder<List<Map<String, String>>> {
 
             values.add(valueBuilder.toString());
 
-            if (c == delimiter) {
+            if (c == DELIMITER) {
                 c = reader.read();
             }
         }
