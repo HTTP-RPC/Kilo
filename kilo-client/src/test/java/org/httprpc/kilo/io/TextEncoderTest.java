@@ -33,7 +33,7 @@ public class TextEncoderTest {
         assertEquals("2024-03-31", encode(LocalDate.of(2024, 3, 31)));
     }
 
-    private String encode(Object value) throws IOException {
+    private static String encode(Object value) throws IOException {
         var textEncoder = new TextEncoder();
 
         var writer = new StringWriter();

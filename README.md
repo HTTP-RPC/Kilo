@@ -12,7 +12,6 @@ This guide introduces the Kilo framework and provides an overview of its key fea
 # Contents
 * [Getting Kilo](#getting-kilo)
 * [Kilo Classes](#kilo-classes)
-* [Kotlin Support](#kotlin-support)
 * [Additional Information](#additional-information)
 
 # Getting Kilo
@@ -27,8 +26,8 @@ Classes provided by the Kilo framework include:
 * [WebService](#webservice)
 * [WebServiceProxy](#webserviceproxy)
 * [JSONEncoder and JSONDecoder](#jsonencoder-and-jsondecoder)
-* [CSVEncoder and CSVDecoder](#csvencoder-and-csvdecoder)
 * [TextEncoder and TextDecoder](#textencoder-and-textdecoder)
+* [CSVEncoder](#csvencoder)
 * [TemplateEncoder](#templateencoder)
 * [BeanAdapter](#beanadapter)
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
@@ -102,18 +101,22 @@ Method parameters may be any of the following types:
 * `Boolean`/`boolean`
 * `Character`/`char`
 * `String`
-* `java.util.Date`
+* `java.net.URI`
+* `java.nio.file.Path`
 * `java.time.Instant`
 * `java.time.LocalDate`
 * `java.time.LocalTime`
 * `java.time.LocalDateTime`
 * `java.time.Duration`
 * `java.time.Period`
+* `java.util.Date`
 * `java.util.UUID`
-* `java.net.URI`
-* `java.nio.file.Path`
-* `java.util.List`, `java.util.Set`, array/varargs
-* `jakarta.servlet.http.Part`
+
+The following multi-value types are also supported:
+
+* `java.util.List`
+* `java.util.Set`
+* array/varargs
 
 Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
 
@@ -121,7 +124,7 @@ Unspecified values are automatically converted to `0`, `false`, or the null char
 
 `List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
 
-`Part` parameters represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding.
+Arguments of type `jakarta.servlet.http.Part` represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
@@ -537,39 +540,6 @@ for (var month : months) {
 }
 ```
 
-## CSVEncoder and CSVDecoder
-The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. For example, the month/day-count list from the previous section could be exported to CSV as shown below. The string values passed to the constructor represent both the columns in the output document and the map keys to which those columns correspond:
-
-```java
-var csvEncoder = new CSVEncoder(listOf("name", "days"));
-
-csvEncoder.write(months, System.out);
-```
-
-This code would produce the following output:
-
-```csv
-"name","days"
-"January",31
-"February",28
-"March",31
-...
-```
-
-String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time in milliseconds. All other values are encoded via `toString()`. 
-
-`CSVDecoder` deserializes a CSV document into a list of map values. For example, given the preceding document as input, this code would produce the same output as the `JSONDecoder` example:
-
-```java
-var csvDecoder = new CSVDecoder();
-
-var months = csvDecoder.read(inputStream);
-
-for (var month : months) {
-    System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
-}
-```
-
 ## TextEncoder and TextDecoder
 The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
 
@@ -590,8 +560,40 @@ try (var inputStream = Files.newInputStream(file)) {
 System.out.println(text); // Hello, World!
 ```
 
+## CSVEncoder
+The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. The values passed to the constructor represent both the names of the columns in the output document and the map keys to which those columns correspond. For example:
+
+```java
+var list = listOf(
+    mapOf(
+        entry("a", "hello"),
+        entry("b", 123),
+        entry("c", true)
+    ),
+    mapOf(
+        entry("a", "goodbye"),
+        entry("b", 456),
+        entry("c", false)
+    )
+);
+
+var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+csvEncoder.write(list, System.out);
+```
+
+This code would produce the following output:
+
+```csv
+"a","b","c"
+"hello",123,true
+"goodbye",456,false
+```
+
+String values are automatically wrapped in double-quotes and escaped. Instances of `java.util.Date` are encoded as a long value representing epoch time in milliseconds. All other values are encoded via `toString()`. 
+
 ## TemplateEncoder
-The `TemplateEncoder` class transforms an object hierarchy into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
+The `TemplateEncoder` class transforms an object hierarchy (known as a "data dictionary") into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
 
 `TemplateEncoder` provides the following constructors:
 
@@ -600,20 +602,7 @@ public TemplateEncoder(URI uri) { ... }
 public TemplateEncoder(Class<?> type, String name) { ... }
 ```
 
-The first accepts the location of a template document as a `URI`. The second determines the location of the template via the provided type and resource name.
-
-Templates are applied via one of the following methods:
-
-```java
-public void write(Object value, OutputStream outputStream) { ... }
-public void write(Object value, OutputStream outputStream, Locale locale) { ... }
-public void write(Object value, OutputStream outputStream, Locale locale, TimeZone timeZone) { ... }
-public void write(Object value, Writer writer) { ... }
-public void write(Object value, Writer writer, Locale locale) { ... }
-public void write(Object value, Writer writer, Locale locale, TimeZone timeZone) { ... }
-```
-
-The first argument represents the value to write (i.e. the "data dictionary"), and the second the output destination. The optional third and fourth arguments represent the target locale and time zone, respectively. If unspecified, system defaults are used.
+The first accepts the location of a template document as a `URI`. The second determines the location of the template via the provided type and resource name. 
 
 For example, this code applies a template named "example.html" to a map instance:
 
@@ -627,6 +616,30 @@ var map = mapOf(
 var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 
 templateEncoder.write(map, System.out);
+```
+
+Given the following as input:
+
+```html
+<html>
+    <body>
+        <p>{{a}}</p>
+        <p>{{b}}</p>
+        <p>{{c}}</p>
+    </body>
+</html>
+```
+
+the code would produce this output:
+
+```html
+<html>
+    <body>
+        <p>hello</p>
+        <p>123</p>
+        <p>true</p>
+    </body>
+</html>
 ```
 
 ## BeanAdapter
@@ -1218,25 +1231,6 @@ var stringBuilder = new StringBuilder();
 Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
 perform("def", stringBuilder::append); // abcdef
 ```
-
-# Kotlin Support
-Kilo-based web services and consumers can be also implemented using the [Kotlin](https://kotlinlang.org) programming language. For example, the following is a simple web service written in Kotlin:
-
-```kotlin
-@WebServlet(urlPatterns = ["/*"], loadOnStartup = 1)
-@Description("Greeting example service.")
-class GreetingService: WebService() {
-    @RequestMethod("GET")
-    @Description("Returns a friendly greeting.")
-    fun getGreeting(): String {
-        return "Hello, World!"
-    }
-}
-```
-
-An example of a [typed invocation](#typed-invocation) proxy implemented in Kotlin can be found [here](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/test/kotlin/org/httprpc/kilo/test/UserTest.kt).
-
-Note that Kotlin code should be compiled with the `-java-parameters` flag so that method parameter names are available at runtime. 
 
 # Additional Information
 This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).

@@ -15,10 +15,8 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.io.CSVEncoder;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.Map;
@@ -77,20 +75,6 @@ public class BulkUploadTest {
         var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve(path));
 
         webServiceProxy.setBody(new Rows(count));
-
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
-            @Override
-            public String getContentType() {
-                return "text/csv";
-            }
-
-            @Override
-            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
-                var csvEncoder = new CSVEncoder(listOf("text1", "text2", "number1", "number2", "number3"));
-
-                csvEncoder.write((Rows)body, outputStream);
-            }
-        });
 
         webServiceProxy.setReadTimeout(120000);
         webServiceProxy.setChunkSize(65536);

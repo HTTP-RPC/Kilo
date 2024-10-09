@@ -16,8 +16,6 @@ package org.httprpc.kilo.io;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
@@ -287,6 +285,9 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private ResourceBundle resourceBundle = null;
 
+    private Locale locale = Locale.getDefault();
+    private TimeZone timeZone = TimeZone.getDefault();
+
     private Modifier defaultModifier = new MarkupModifier();
 
     private Map<String, Modifier> modifiers = mapOf(
@@ -367,6 +368,54 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     /**
+     * Returns the locale.
+     *
+     * @return
+     * The locale.
+     */
+    public Locale getLocale() {
+        return locale;
+    }
+
+    /**
+     * Sets the locale.
+     *
+     * @param locale
+     * The locale.
+     */
+    public void setLocale(Locale locale) {
+        if (locale == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.locale = locale;
+    }
+
+    /**
+     * Returns the time zone.
+     *
+     * @return
+     * The time zone.
+     */
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    /**
+     * Sets the time zone.
+     *
+     * @param timeZone
+     * The time zone.
+     */
+    public void setTimeZone(TimeZone timeZone) {
+        if (timeZone == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.timeZone = timeZone;
+    }
+
+    /**
      * Returns the default modifier.
      *
      * @return
@@ -408,103 +457,8 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     @Override
-    public void write(Object value, OutputStream outputStream) throws IOException {
-        write(value, outputStream, Locale.getDefault());
-    }
-
-    /**
-     * Writes a value to an output stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @param locale
-     * The locale to use when writing the value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void write(Object value, OutputStream outputStream, Locale locale) throws IOException {
-        write(value, outputStream, locale, TimeZone.getDefault());
-    }
-
-    /**
-     * Writes a value to an output stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param outputStream
-     * The output stream to write to.
-     *
-     * @param locale
-     * The locale to use when writing the value.
-     *
-     * @param timeZone
-     * The time zone to use when writing the value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void write(Object value, OutputStream outputStream, Locale locale, TimeZone timeZone) throws IOException {
-        if (outputStream == null) {
-            throw new IllegalArgumentException();
-        }
-
-        Writer writer = new OutputStreamWriter(outputStream, getCharset());
-
-        write(value, writer, locale, timeZone);
-
-        writer.flush();
-    }
-
-    @Override
     public void write(Object value, Writer writer) throws IOException {
-        write(value, writer, Locale.getDefault());
-    }
-
-    /**
-     * Writes a value to a character stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @param locale
-     * The locale to use when writing the value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void write(Object value, Writer writer, Locale locale) throws IOException {
-        write(value, writer, locale, TimeZone.getDefault());
-    }
-
-    /**
-     * Writes a value to a character stream.
-     *
-     * @param value
-     * The value to encode.
-     *
-     * @param writer
-     * The character stream to write to.
-     *
-     * @param locale
-     * The locale to use when writing the value.
-     *
-     * @param timeZone
-     * The time zone to use when writing the value.
-     *
-     * @throws IOException
-     * If an exception occurs.
-     */
-    public void write(Object value, Writer writer, Locale locale, TimeZone timeZone) throws IOException {
-        if (writer == null || locale == null || timeZone == null) {
+        if (writer == null) {
             throw new IllegalArgumentException();
         }
 

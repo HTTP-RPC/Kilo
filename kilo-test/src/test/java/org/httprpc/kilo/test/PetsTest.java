@@ -15,7 +15,6 @@
 package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
-import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.junit.jupiter.api.Test;
@@ -83,11 +82,11 @@ public class PetsTest {
     }
 
     private void testPetsStreamCSV() throws IOException {
-        List<?> expected;
+        String expected;
         try (var inputStream = getClass().getResourceAsStream("pets.csv")) {
-            var csvDecoder = new CSVDecoder();
+            var textDecoder = new TextDecoder();
 
-            expected = csvDecoder.read(inputStream);
+            expected = textDecoder.read(inputStream);
         }
 
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
@@ -101,9 +100,9 @@ public class PetsTest {
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
-            var csvDecoder = new CSVDecoder();
+            var textDecoder = new TextDecoder();
 
-            return csvDecoder.read(inputStream);
+            return textDecoder.read(inputStream);
         });
 
         var actual = webServiceProxy.invoke();

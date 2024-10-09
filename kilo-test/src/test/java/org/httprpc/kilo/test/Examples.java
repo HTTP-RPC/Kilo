@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.CSVDecoder;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
@@ -54,9 +53,8 @@ public class Examples {
         execute("Math Service 3", Examples::mathService3);
         execute("JSON Encoder", Examples::jsonEncoder);
         execute("JSON Decoder", Examples::jsonDecoder);
-        execute("CSV Encoder", Examples::csvEncoder);
-        execute("CSV Decoder", Examples::csvDecoder);
         execute("Text Encoder/Decoder", Examples::textEncoderAndDecoder);
+        execute("CSV Encoder", Examples::csvEncoder);
         execute("Template Encoder", Examples::templateEncoder);
         execute("Custom Property Keys", Examples::customPropertyKeys);
         execute("Required Property 1", Examples::requiredProperty1);
@@ -144,32 +142,6 @@ public class Examples {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void csvEncoder() throws IOException {
-        List<Map<String, Object>> months;
-        try (var inputStream = Examples.class.getResourceAsStream("months.json")) {
-            var jsonDecoder = new JSONDecoder();
-
-            months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
-        }
-
-        var csvEncoder = new CSVEncoder(listOf("name", "days"));
-
-        csvEncoder.write(months, System.out);
-    }
-
-    public static void csvDecoder() throws IOException {
-        try (var inputStream = Examples.class.getResourceAsStream("months.csv")) {
-            var csvDecoder = new CSVDecoder();
-
-            var months = csvDecoder.read(inputStream);
-
-            for (var month : months) {
-                System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
-            }
-        }
-    }
-
     public static void textEncoderAndDecoder() throws IOException {
         var file = Files.createTempFile("kilo", ".txt");
 
@@ -191,6 +163,25 @@ public class Examples {
         } finally {
             Files.delete(file);
         }
+    }
+
+    public static void csvEncoder() throws IOException {
+        var list = listOf(
+            mapOf(
+                entry("a", "hello"),
+                entry("b", 123),
+                entry("c", true)
+            ),
+            mapOf(
+                entry("a", "goodbye"),
+                entry("b", 456),
+                entry("c", false)
+            )
+        );
+
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        csvEncoder.write(list, System.out);
     }
 
     public static void templateEncoder() throws Exception {

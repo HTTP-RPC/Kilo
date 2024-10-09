@@ -18,11 +18,12 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.CSVDecoder;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
@@ -45,9 +46,9 @@ public class BulkUploadService extends AbstractDatabaseService {
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
-            var csvDecoder = new CSVDecoder();
+            var jsonDecoder = new JSONDecoder();
 
-            for (var row : csvDecoder.read(getRequest().getInputStream())) {
+            for (var row : (List<?>)jsonDecoder.read(getRequest().getInputStream())) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
             }
         }
@@ -64,9 +65,9 @@ public class BulkUploadService extends AbstractDatabaseService {
         try (var statement = queryBuilder.prepare(getConnection())) {
             var i = 0;
 
-            var csvDecoder = new CSVDecoder();
+            var jsonDecoder = new JSONDecoder();
 
-            for (var row : csvDecoder.read(getRequest().getInputStream())) {
+            for (var row : (List<?>)jsonDecoder.read(getRequest().getInputStream())) {
                 queryBuilder.addBatch(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
 
                 if (++i % BATCH_SIZE == 0) {
