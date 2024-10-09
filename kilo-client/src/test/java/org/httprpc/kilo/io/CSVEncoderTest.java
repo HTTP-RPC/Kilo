@@ -49,9 +49,9 @@ public class CSVEncoderTest {
             )
         );
 
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f"));
+        var keys = listOf("a", "b", "c", "d", "e", "f");
 
-        csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
+        var csvEncoder = new CSVEncoder(keys, ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
 
         csvEncoder.format("f", NumberFormat.getPercentInstance());
 

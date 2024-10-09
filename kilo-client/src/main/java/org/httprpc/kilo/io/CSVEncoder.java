@@ -29,8 +29,7 @@ import java.util.ResourceBundle;
  */
 public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     private List<String> keys;
-
-    private ResourceBundle resourceBundle = null;
+    private ResourceBundle resourceBundle;
 
     private Map<String, Format> formats = new HashMap<>();
 
@@ -43,31 +42,24 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
      * The column keys.
      */
     public CSVEncoder(List<String> keys) {
+        this(keys, null);
+    }
+
+    /**
+     * Constructs a new CSV encoder.
+     *
+     * @param keys
+     * The column keys.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public CSVEncoder(List<String> keys, ResourceBundle resourceBundle) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }
 
         this.keys = keys;
-    }
-
-    /**
-     * Returns the resource bundle.
-     *
-     * @return
-     * The resource bundle, or {@code null} if a resource bundle has not been
-     * set.
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    /**
-     * Sets the resource bundle.
-     *
-     * @param resourceBundle
-     * The resource bundle, or {@code null} for no resource bundle.
-     */
-    public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
     }
 
