@@ -469,7 +469,7 @@ public class TemplateEncoder extends Encoder<Object> {
                 writer = new BufferedWriter(writer);
 
                 try {
-                    write(value, writer, locale, timeZone, reader);
+                    write(value, writer, reader);
                 } finally {
                     writer.flush();
                 }
@@ -477,7 +477,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    private void write(Object root, Writer writer, Locale locale, TimeZone timeZone, Reader reader) throws IOException {
+    private void write(Object root, Writer writer, Reader reader) throws IOException {
         Map<?, ?> dictionary;
         if (root instanceof Map<?, ?> map) {
             dictionary = map;
@@ -603,9 +603,9 @@ public class TemplateEncoder extends Encoder<Object> {
                                 && (!(value instanceof Boolean flag) || flag)
                                 && (!(value instanceof String string) || !string.isEmpty())
                                 && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())) {
-                                write(value, writer, locale, timeZone, reader);
+                                write(value, writer, reader);
                             } else {
-                                write(null, new NullWriter(), locale, timeZone, reader);
+                                write(null, new NullWriter(), reader);
                             }
 
                             sectionNames.pop();
@@ -655,7 +655,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                         writer.append(separator);
                                     }
 
-                                    write(element, writer, locale, timeZone, reader);
+                                    write(element, writer, reader);
 
                                     if (iterator.hasNext()) {
                                         reader.reset();
@@ -664,7 +664,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                     i++;
                                 }
                             } else {
-                                write(null, new NullWriter(), locale, timeZone, reader);
+                                write(null, new NullWriter(), reader);
                             }
 
                             sectionNames.pop();
@@ -679,9 +679,9 @@ public class TemplateEncoder extends Encoder<Object> {
                                 || (value instanceof Boolean flag && !flag)
                                 || (value instanceof String string && string.isEmpty())
                                 || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())) {
-                                write(value, writer, locale, timeZone, reader);
+                                write(value, writer, reader);
                             } else {
-                                write(null, new NullWriter(), locale, timeZone, reader);
+                                write(null, new NullWriter(), reader);
                             }
 
                             sectionNames.pop();
@@ -737,7 +737,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                 }
 
                                 try (var inputStream = uri.toURL().openStream()) {
-                                    write(dictionary, writer, locale, timeZone, new PagedReader(new InputStreamReader(inputStream)));
+                                    write(dictionary, writer, new PagedReader(new InputStreamReader(inputStream)));
                                 }
                             }
 
