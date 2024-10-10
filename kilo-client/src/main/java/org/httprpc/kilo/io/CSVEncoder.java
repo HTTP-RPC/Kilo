@@ -97,62 +97,66 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
         writer = new BufferedWriter(writer);
 
         try {
-            var i = 0;
+            encode(records, writer);
+        } finally {
+            writer.flush();
+        }
+    }
+
+    private void encode(Iterable<? extends Map<String, ?>> records, Writer writer) throws IOException {
+        var i = 0;
+
+        for (var key : keys) {
+            if (key == null) {
+                throw new IllegalStateException();
+            }
+
+            if (i > 0) {
+                writer.write(DELIMITER);
+            }
+
+            String heading;
+            if (resourceBundle == null) {
+                heading = key;
+            } else {
+                try {
+                    heading = resourceBundle.getObject(key).toString();
+                } catch (MissingResourceException exception) {
+                    heading = key;
+                }
+            }
+
+            encode(heading, writer);
+
+            i++;
+        }
+
+        writer.write("\r\n");
+
+        for (var record : records) {
+            i = 0;
 
             for (var key : keys) {
-                if (key == null) {
-                    throw new IllegalStateException();
-                }
-
                 if (i > 0) {
                     writer.write(DELIMITER);
                 }
 
-                String heading;
-                if (resourceBundle == null) {
-                    heading = key;
-                } else {
-                    try {
-                        heading = resourceBundle.getObject(key).toString();
-                    } catch (MissingResourceException exception) {
-                        heading = key;
+                var value = record.get(key);
+
+                if (value != null) {
+                    var format = formats.get(key);
+
+                    if (format != null) {
+                        value = format.format(value);
                     }
                 }
 
-                encode(heading, writer);
+                encode(value, writer);
 
                 i++;
             }
 
             writer.write("\r\n");
-
-            for (var record : records) {
-                i = 0;
-
-                for (var key : keys) {
-                    if (i > 0) {
-                        writer.write(DELIMITER);
-                    }
-
-                    var value = record.get(key);
-
-                    if (value != null) {
-                        var format = formats.get(key);
-
-                        if (format != null) {
-                            value = format.format(value);
-                        }
-                    }
-
-                    encode(value, writer);
-
-                    i++;
-                }
-
-                writer.write("\r\n");
-            }
-        } finally {
-            writer.flush();
         }
     }
 

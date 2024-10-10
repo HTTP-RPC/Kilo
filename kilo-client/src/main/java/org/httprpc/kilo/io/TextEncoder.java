@@ -31,16 +31,16 @@ public class TextEncoder extends Encoder<Object> {
 
         try {
             if (value instanceof CharSequence text) {
-                write(text, writer);
+                encode(text, writer);
             } else {
-                write(value.toString(), writer);
+                encode(value.toString(), writer);
             }
         } finally {
             writer.flush();
         }
     }
 
-    private void write(CharSequence text, Writer writer) throws IOException {
+    private void encode(CharSequence text, Writer writer) throws IOException {
         for (int i = 0, n = text.length(); i < n; i++) {
             writer.write(text.charAt(i));
         }
