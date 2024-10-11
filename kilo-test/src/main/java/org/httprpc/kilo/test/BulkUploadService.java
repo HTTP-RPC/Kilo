@@ -18,10 +18,8 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -39,24 +37,22 @@ public class BulkUploadService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("upload")
-    public void upload(Void body) throws SQLException, IOException {
+    public void upload(List<Row> rows) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
         queryBuilder.appendLine("values (:text1, :text2, :number1, :number2, :number3)");
 
         try (var statement = queryBuilder.prepare(getConnection())) {
-            var jsonDecoder = new JSONDecoder();
-
-            for (var row : (List<?>)jsonDecoder.read(getRequest().getInputStream())) {
-                queryBuilder.executeUpdate(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
+            for (var row : rows) {
+                queryBuilder.executeUpdate(statement, new BeanAdapter(row));
             }
         }
     }
 
     @RequestMethod("POST")
     @ResourcePath("upload-batch")
-    public void uploadBatch(Void body) throws SQLException, IOException {
+    public void uploadBatch(List<Row> rows) throws SQLException {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.appendLine("insert into bulk_upload_test (text1, text2, number1, number2, number3)");
@@ -65,10 +61,8 @@ public class BulkUploadService extends AbstractDatabaseService {
         try (var statement = queryBuilder.prepare(getConnection())) {
             var i = 0;
 
-            var jsonDecoder = new JSONDecoder();
-
-            for (var row : (List<?>)jsonDecoder.read(getRequest().getInputStream())) {
-                queryBuilder.addBatch(statement, new BeanAdapter(BeanAdapter.coerce(row, Row.class)));
+            for (var row : rows) {
+                queryBuilder.addBatch(statement, new BeanAdapter(row));
 
                 if (++i % BATCH_SIZE == 0) {
                     statement.executeBatch();
