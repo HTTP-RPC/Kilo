@@ -733,27 +733,27 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a list.
+     * Coerces a collection to a list.
      *
      * @param <E>
      * The target element type.
      *
-     * @param list
-     * The list to coerce.
+     * @param collection
+     * The collection to coerce.
      *
      * @param elementType
      * The target element type.
      *
      * @return
-     * The coerced list.
+     * A list containing the coerced elements.
      */
     @SuppressWarnings("unchecked")
-    public static <E> List<E> coerceList(List<?> list, Class<E> elementType) {
-        return (List<E>)toGenericType(list, new ContainerType(new Type[] {elementType}, List.class));
+    public static <E> List<E> coerceList(Collection<?> collection, Class<E> elementType) {
+        return (List<E>)toGenericType(collection, new ContainerType(new Type[] {elementType}, List.class));
     }
 
     /**
-     * Coerces a map.
+     * Coerces map values.
      *
      * @param <K>
      * The key type.
@@ -768,7 +768,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The target value type.
      *
      * @return
-     * The coerced map.
+     * A map containing the coerced values.
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<K, ?> map, Class<V> valueType) {
@@ -788,7 +788,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The target element type.
      *
      * @return
-     * The coerced set.
+     * A set containing the coerced elements.
      */
     @SuppressWarnings("unchecked")
     public static <E> Set<E> coerceSet(Collection<?> collection, Class<E> elementType) {
