@@ -333,19 +333,19 @@ public class BeanAdapterTest {
             entry("a", "1.0"),
             entry("b", "2.0"),
             entry("c", "3.0")
-        ), Double.class));
+        ), String.class, Double.class));
 
         assertEquals(mapOf(
             entry(1, 1.0),
             entry(2, 2.0),
             entry(3, 3.0)
         ), BeanAdapter.coerceMap(mapOf(
-            entry(1, "1.0"),
-            entry(2, "2.0"),
-            entry(3, "3.0")
-        ), Double.class));
+            entry("1", "1.0"),
+            entry("2", "2.0"),
+            entry("3", "3.0")
+        ), Integer.class, Double.class));
 
-        assertNull(BeanAdapter.coerceMap(null, Object.class));
+        assertNull(BeanAdapter.coerceMap(null, Object.class, Object.class));
 
         assertInstanceOf(Map.class, BeanAdapter.coerce(mapOf(), Map.class));
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Map.class));
@@ -400,7 +400,7 @@ public class BeanAdapterTest {
         strings.put(3, "3.0");
         strings.put(4, null);
 
-        var doubles = BeanAdapter.coerceMap(strings, Double.class);
+        var doubles = BeanAdapter.coerceMap(strings, Integer.class, Double.class);
 
         assertEquals(mapOf(
             entry(1, 1.0),
