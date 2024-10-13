@@ -26,13 +26,37 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CSVEncoderTest {
+    public static class Row {
+        private String a;
+        private int b;
+        private boolean c;
+
+        public Row(String a, int b, boolean c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+
+        public String getA() {
+            return a;
+        }
+
+        public int getB() {
+            return b;
+        }
+
+        public boolean isC() {
+            return c;
+        }
+    }
+
     @Test
-    public void testWrite() throws IOException {
+    public void testMaps() throws IOException {
         var expected = "\"a\",\"b\",\"c\",\"d\",\"É\",\"F\"\r\n"
             + "\"A,B,\"\"C\"\" \",1,2.0,true,0,\"12%\"\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
 
-        var values = listOf(
+        var rows = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
@@ -57,7 +81,29 @@ public class CSVEncoderTest {
 
         var writer = new StringWriter();
 
-        csvEncoder.write(values, writer);
+        csvEncoder.write(rows, writer);
+
+        var actual = writer.toString();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testBeans() throws IOException {
+        var expected =  "\"a\",\"b\",\"c\"\r\n"
+            + "\"hello\",123,true\r\n"
+            + "\"goodbye\",456,false\r\n";
+
+        var rows = listOf(
+            new Row("hello", 123, true),
+            new Row("goodbye", 456, false)
+        );
+
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(rows, writer);
 
         var actual = writer.toString();
 

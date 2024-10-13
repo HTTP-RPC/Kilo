@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.text.Format;
@@ -27,7 +29,7 @@ import java.util.ResourceBundle;
 /**
  * Encodes CSV content.
  */
-public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
+public class CSVEncoder extends Encoder<Iterable<?>> {
     private List<String> keys;
 
     private ResourceBundle resourceBundle = null;
@@ -89,21 +91,21 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
     }
 
     @Override
-    public void write(Iterable<? extends Map<String, ?>> records, Writer writer) throws IOException {
-        if (records == null || writer == null) {
+    public void write(Iterable<?> rows, Writer writer) throws IOException {
+        if (rows == null || writer == null) {
             throw new IllegalArgumentException();
         }
 
         writer = new BufferedWriter(writer);
 
         try {
-            encode(records, writer);
+            encode(rows, writer);
         } finally {
             writer.flush();
         }
     }
 
-    private void encode(Iterable<? extends Map<String, ?>> records, Writer writer) throws IOException {
+    private void encode(Iterable<?> rows, Writer writer) throws IOException {
         var i = 0;
 
         for (var key : keys) {
@@ -133,7 +135,14 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
         writer.write("\r\n");
 
-        for (var record : records) {
+        for (var row : rows) {
+            Map<?, ?> map;
+            if (row instanceof Map<?, ?>) {
+                map = (Map<?, ?>)row;
+            } else {
+                map = new BeanAdapter(row);
+            }
+
             i = 0;
 
             for (var key : keys) {
@@ -141,7 +150,7 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
                     writer.write(DELIMITER);
                 }
 
-                var value = record.get(key);
+                var value = map.get(key);
 
                 if (value != null) {
                     var format = formats.get(key);
