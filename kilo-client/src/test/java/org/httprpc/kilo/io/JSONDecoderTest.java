@@ -104,13 +104,7 @@ public class JSONDecoderTest {
 
         var text = "[{\"a\": \"hello\", \"b\": 123, \"c\": true}, {\"a\": \"goodbye\", \"b\": 456, \"c\": false}]";
 
-        var actual = decode(text, () -> {
-            var jsonDecoder = new JSONDecoder();
-
-            jsonDecoder.setElementType(Row.class);
-
-            return jsonDecoder;
-        });
+        var actual = decode(text, () -> new JSONDecoder(Row.class));
 
         assertEquals(expected, actual);
     }
@@ -121,13 +115,7 @@ public class JSONDecoderTest {
 
         var text = "[1, 2, 3]";
 
-        var actual = decode(text, () -> {
-            var jsonDecoder = new JSONDecoder();
-
-            jsonDecoder.setElementType(String.class);
-
-            return jsonDecoder;
-        });
+        var actual = decode(text, () -> new JSONDecoder(String.class));
 
         assertEquals(expected, actual);
     }
