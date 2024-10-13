@@ -1232,5 +1232,19 @@ Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
 perform("def", stringBuilder::append); // abcdef
 ```
 
+`Optionals` additionally provides the follwing method, which performs a "safe" cast:
+
+```java
+public static <T> T cast(Object value, Class<T> type) {
+```
+
+If the provided value is an instance of the requested type, the cast will succeed. Otherwise, the method will return `null`. For example:
+
+```java
+var text = cast("abc", String.class); // abc
+
+var number = cast("abc", Double.class); // null
+```
+
 # Additional Information
 This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).

@@ -55,4 +55,15 @@ public class OptionalsTest {
 
         assertEquals("abcdef", stringBuilder.toString());
     }
+
+    @Test
+    public void testCast() {
+        var text = cast("abc", String.class); // abc
+
+        assertNotNull(text);
+
+        var number = cast("abc", Double.class); // null
+
+        assertNull(number);
+    }
 }
