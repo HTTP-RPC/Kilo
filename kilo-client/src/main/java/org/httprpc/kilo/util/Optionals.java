@@ -98,4 +98,32 @@ public class Optionals {
             action.accept(value);
         }
     }
+
+    /**
+     * Casts an optional value to a given type.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param value
+     * The optional value.
+     *
+     * @param type
+     * The target type.
+     *
+     * @return
+     * The value as an instance of the target type, or {@code null} if the
+     * value is {@code null} or cannot be cast to the target type.
+     */
+    public static <T> T cast(Object value, Class<T> type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (value != null && type.isAssignableFrom(value.getClass())) {
+            return type.cast(value);
+        } else {
+            return null;
+        }
+    }
 }

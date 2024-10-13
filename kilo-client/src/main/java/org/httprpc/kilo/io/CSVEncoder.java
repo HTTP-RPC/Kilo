@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.util.Optionals.*;
+
 /**
  * Encodes CSV content.
  */
@@ -136,12 +138,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         writer.write("\r\n");
 
         for (var row : rows) {
-            Map<?, ?> map;
-            if (row instanceof Map<?, ?>) {
-                map = (Map<?, ?>)row;
-            } else {
-                map = new BeanAdapter(row);
-            }
+            var map = coalesce(cast(row, Map.class), new BeanAdapter(row));
 
             i = 0;
 
