@@ -705,7 +705,7 @@ var root = new TreeNode("Seasons", listOf(
 
 var jsonEncoder = new JSONEncoder();
 
-jsonEncoder.write(new BeanAdapter(root), writer);
+jsonEncoder.write(root, writer);
 ```
 
 The resulting output would look something like this (`BeanAdapter` traverses properties in alphabetical order):
