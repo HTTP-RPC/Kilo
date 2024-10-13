@@ -204,7 +204,7 @@ public class Examples {
 
         var jsonEncoder = new JSONEncoder();
 
-        jsonEncoder.write(new BeanAdapter(person), System.out);
+        jsonEncoder.write(person, System.out);
 
         System.out.println();
     }
@@ -274,7 +274,7 @@ public class Examples {
 
         var jsonEncoder = new JSONEncoder();
 
-        jsonEncoder.write(new BeanAdapter(root), writer);
+        jsonEncoder.write(root, writer);
     }
 
     private static void decodeTreeNode(Reader reader) throws IOException {

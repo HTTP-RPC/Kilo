@@ -796,7 +796,7 @@ public abstract class WebService extends HttpServlet {
 
                     var jsonEncoder = new JSONEncoder();
 
-                    jsonEncoder.write(new BeanAdapter(serviceDescriptor), response.getOutputStream());
+                    jsonEncoder.write(serviceDescriptor, response.getOutputStream());
                 } else {
                     response.setContentType(String.format("%s;charset=%s", TEXT_HTML, UTF_8));
 
@@ -806,7 +806,7 @@ public abstract class WebService extends HttpServlet {
 
                     templateEncoder.write(mapOf(
                         entry("contextPath", request.getContextPath()),
-                        entry("service", new BeanAdapter(serviceDescriptor))
+                        entry("service", serviceDescriptor)
                     ), response.getOutputStream());
                 }
 
@@ -1166,7 +1166,7 @@ public abstract class WebService extends HttpServlet {
 
         var jsonEncoder = new JSONEncoder();
 
-        jsonEncoder.write(BeanAdapter.adapt(result), response.getOutputStream());
+        jsonEncoder.write(result, response.getOutputStream());
     }
 
     /**

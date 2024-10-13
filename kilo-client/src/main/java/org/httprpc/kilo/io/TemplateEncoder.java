@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -469,7 +471,7 @@ public class TemplateEncoder extends Encoder<Object> {
                 writer = new BufferedWriter(writer);
 
                 try {
-                    encode(value, writer, reader);
+                    encode(BeanAdapter.adapt(value), writer, reader);
                 } finally {
                     writer.flush();
                 }

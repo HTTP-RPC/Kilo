@@ -15,7 +15,6 @@
 package org.httprpc.kilo.test
 
 import org.httprpc.kilo.WebServiceProxy
-import org.httprpc.kilo.beans.BeanAdapter
 import org.httprpc.kilo.io.JSONEncoder
 import java.net.URI
 
@@ -50,7 +49,7 @@ fun main() {
 
     val jsonEncoder = JSONEncoder()
 
-    jsonEncoder.write(BeanAdapter.adapt(users), System.out)
+    jsonEncoder.write(users, System.out)
 
     println()
 }

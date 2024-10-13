@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
@@ -54,7 +56,7 @@ public class JSONEncoder extends Encoder<Object> {
         writer = new BufferedWriter(writer);
 
         try {
-            encode(value, writer);
+            encode(BeanAdapter.adapt(value), writer);
         } finally {
             writer.flush();
         }

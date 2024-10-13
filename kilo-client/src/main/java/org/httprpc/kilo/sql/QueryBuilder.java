@@ -136,7 +136,7 @@ public class QueryBuilder {
         var writer = new StringWriter();
 
         try {
-            jsonEncoder.write(BeanAdapter.adapt(value), writer);
+            jsonEncoder.write(value, writer);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }

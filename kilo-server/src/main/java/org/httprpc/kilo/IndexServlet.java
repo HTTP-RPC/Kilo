@@ -18,7 +18,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
@@ -38,7 +37,7 @@ public class IndexServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var serviceDescriptors = BeanAdapter.adapt(WebService.getServiceDescriptors());
+        var serviceDescriptors = WebService.getServiceDescriptors();
 
         var accept = request.getHeader("Accept");
 
