@@ -162,25 +162,35 @@ public class CSVEncoder extends Encoder<Iterable<? extends Map<String, ?>>> {
 
     private void encode(Object value, Writer writer) throws IOException {
         if (value == null) {
-            writer.write("");
-        } else if (value instanceof CharSequence text) {
-            writer.write('"');
+            return;
+        }
 
-            for (int i = 0, n = text.length(); i < n; i++) {
-                var c = text.charAt(i);
-
-                if (c == '"') {
-                    writer.append("\"\"");
-                } else {
-                    writer.append(c);
-                }
-            }
-
-            writer.write('"');
+        if (value instanceof CharSequence text) {
+            encode(text, writer);
         } else if (value instanceof Date date) {
-            writer.write(String.valueOf(date.getTime()));
+            encode(date, writer);
         } else {
             writer.write(value.toString());
         }
+    }
+
+    private void encode(CharSequence text, Writer writer) throws IOException {
+        writer.write('"');
+
+        for (int i = 0, n = text.length(); i < n; i++) {
+            var c = text.charAt(i);
+
+            if (c == '"') {
+                writer.append("\"\"");
+            } else {
+                writer.append(c);
+            }
+        }
+
+        writer.write('"');
+    }
+
+    private void encode(Date date, Writer writer) throws IOException {
+        writer.write(String.valueOf(date.getTime()));
     }
 }
