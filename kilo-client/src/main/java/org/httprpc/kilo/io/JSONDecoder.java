@@ -14,6 +14,8 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.Map;
  * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
+    private Class<?> elementType = null;
+
     private int c = EOF;
 
     private Deque<Object> containers = new LinkedList<>();
@@ -36,6 +40,26 @@ public class JSONDecoder extends Decoder<Object> {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String NULL = "null";
+
+    /**
+     * Returns the element type.
+     *
+     * @return
+     * The element type, or {@code null} if no element type is set.
+     */
+    public Class<?> getElementType() {
+        return elementType;
+    }
+
+    /**
+     * Sets the element type.
+     *
+     * @param elementType
+     * The element type, or {@code null} for no element type.
+     */
+    public void setElementType(Class<?> elementType) {
+        this.elementType = elementType;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -53,8 +77,20 @@ public class JSONDecoder extends Decoder<Object> {
         skipWhitespace(reader);
 
         while (c != EOF) {
-            if (c == ']' || c == '}') {
+            if (c == ']') {
                 value = containers.pop();
+
+                c = reader.read();
+            } else if (c == '}') {
+                value = containers.pop();
+
+                if (elementType != null
+                    && containers.size() == 1
+                    && containers.peek() instanceof List<?> list) {
+                    value = BeanAdapter.coerce(value, elementType);
+
+                    ((List<Object>)list).set(list.size() - 1, value);
+                }
 
                 c = reader.read();
             } else if (c == ',') {
@@ -122,6 +158,10 @@ public class JSONDecoder extends Decoder<Object> {
                     if (key != null) {
                         ((Map<String, Object>)container).put(key, value);
                     } else {
+                        if (elementType != null && !(value instanceof Map<?, ?>)) {
+                            value = BeanAdapter.coerce(value, elementType);
+                        }
+
                         ((List<Object>)container).add(value);
                     }
                 }

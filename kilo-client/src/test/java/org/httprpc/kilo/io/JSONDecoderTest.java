@@ -14,15 +14,23 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.function.Supplier;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONDecoderTest {
+    public interface Row {
+        String getA();
+        int getB();
+        boolean isC();
+    }
+
     @Test
     public void testString() throws IOException {
         assertEquals("abcdéfg", decode("\"abcdéfg\""));
@@ -80,6 +88,51 @@ public class JSONDecoderTest {
     }
 
     @Test
+    public void testRowArray() throws IOException {
+        var expected = BeanAdapter.coerceList(listOf(
+            mapOf(
+                entry("a", "hello"),
+                entry("b", 123),
+                entry("c", true)
+            ),
+            mapOf(
+                entry("a", "goodbye"),
+                entry("b", 456),
+                entry("c", false)
+            )
+        ), Row.class);
+
+        var text = "[{\"a\": \"hello\", \"b\": 123, \"c\": true}, {\"a\": \"goodbye\", \"b\": 456, \"c\": false}]";
+
+        var actual = decode(text, () -> {
+            var jsonDecoder = new JSONDecoder();
+
+            jsonDecoder.setElementType(Row.class);
+
+            return jsonDecoder;
+        });
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testStringArray() throws IOException {
+        var expected = listOf("1", "2", "3");
+
+        var text = "[1, 2, 3]";
+
+        var actual = decode(text, () -> {
+            var jsonDecoder = new JSONDecoder();
+
+            jsonDecoder.setElementType(String.class);
+
+            return jsonDecoder;
+        });
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testUnterminatedArray() {
         assertThrows(IOException.class, () -> decode("[1, 2, 3"));
         assertThrows(IOException.class, () -> decode("[1, 2, 3, "));
@@ -124,7 +177,11 @@ public class JSONDecoderTest {
     }
 
     private static Object decode(String text) throws IOException {
-        var jsonDecoder = new JSONDecoder();
+        return decode(text, JSONDecoder::new);
+    }
+
+    private static Object decode(String text, Supplier<JSONDecoder> factory) throws IOException {
+        var jsonDecoder = factory.get();
 
         return jsonDecoder.read(new StringReader(text));
     }
