@@ -418,32 +418,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
-    // Container type
-    private static class ContainerType implements ParameterizedType {
-        Type[] actualTypeArguments;
-        Type rawType;
-
-        ContainerType(Type[] actualTypeArguments, Type rawType) {
-            this.actualTypeArguments = actualTypeArguments;
-            this.rawType = rawType;
-        }
-
-        @Override
-        public Type[] getActualTypeArguments() {
-            return actualTypeArguments;
-        }
-
-        @Override
-        public Type getRawType() {
-            return rawType;
-        }
-
-        @Override
-        public Type getOwnerType() {
-            return null;
-        }
-    }
-
     private Object bean;
 
     private Map<String, Property> properties;
@@ -749,7 +723,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(Collection<?> collection, Class<E> elementType) {
-        return (List<E>)toGenericType(collection, new ContainerType(new Type[] {elementType}, List.class));
+        return (List<E>)toGenericType(collection, new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return new Type[] {elementType};
+            }
+
+            @Override
+            public Type getRawType() {
+                return List.class;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        });
     }
 
     /**
@@ -775,7 +764,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<?, ?> map, Class<K> keyType, Class<V> valueType) {
-        return (Map<K, V>)toGenericType(map, new ContainerType(new Type[] {keyType, valueType}, Map.class));
+        return (Map<K, V>)toGenericType(map, new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return new Type[] {keyType, valueType};
+            }
+
+            @Override
+            public Type getRawType() {
+                return Map.class;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        });
     }
 
     /**
@@ -795,7 +799,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <E> Set<E> coerceSet(Collection<?> collection, Class<E> elementType) {
-        return (Set<E>)toGenericType(collection, new ContainerType(new Type[] {elementType}, Set.class));
+        return (Set<E>)toGenericType(collection, new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return new Type[] {elementType};
+            }
+
+            @Override
+            public Type getRawType() {
+                return Set.class;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        });
     }
 
     /**
