@@ -506,39 +506,11 @@ Values are converted to their JSON equivalents as described [earlier](#return-va
 * number: `Number`
 * boolean: `Boolean`
 * array: `java.util.List`
-* object: `java.util.Map`
+* object: `java.util.Map`, bean, or record type
 
-For example, given the following document:
+For example, given the output of the previous example...
 
-```json
-[
-  {
-    "name": "January",
-    "days": 31
-  },
-  {
-    "name": "February",
-    "days": 28
-  },
-  {
-    "name": "March",
-    "days": 31
-  },
-  ...
-]
-```
-
-`JSONDecoder` could be used to parse the data into a list of maps as shown below:
-
-```java
-var jsonDecoder = new JSONDecoder();
-
-var months = (List<Map<String, Object>>)jsonDecoder.read(inputStream);
-
-for (var month : months) {
-    System.out.println(String.format("%s has %s days", month.get("name"), month.get("days")));
-}
-```
+TODO
 
 ## TextEncoder and TextDecoder
 The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
@@ -561,7 +533,7 @@ System.out.println(text); // Hello, World!
 ```
 
 ## CSVEncoder
-The `CSVEncoder` class can be used to serialize a sequence of map values to CSV. The values passed to the constructor represent both the names of the columns in the output document and the map keys to which those columns correspond. For example:
+The `CSVEncoder` class can be used to serialize a sequence of map, bean, or record values to CSV. The values passed to the constructor represent both the names of the columns in the output document and the keys, properties, or components to which those columns correspond. For example:
 
 ```java
 var list = listOf(
@@ -643,98 +615,15 @@ the code would produce this output:
 ```
 
 ## BeanAdapter
-The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. For example, the following class might be used to represent a node in a hierarchical object graph:
+The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. 
 
-```java
-public class TreeNode {
-    private String name;
-    private List<TreeNode> children;
+For example...
 
-    public TreeNode() {
-        this(null, null);
-    }
-
-    public TreeNode(String name, List<TreeNode> children) {
-        this.name = name;
-        this.children = children;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<TreeNode> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<TreeNode> children) {
-        this.children = children;
-    }
-}
-```
-
-A simple tree structure could be created and serialized to JSON as shown below:
-
-```java
-var root = new TreeNode("Seasons", listOf(
-    new TreeNode("Winter", listOf(
-        new TreeNode("January", null),
-        new TreeNode("February", null),
-        new TreeNode("March", null)
-    )),
-    new TreeNode("Spring", listOf(
-        new TreeNode("April", null),
-        new TreeNode("May", null),
-        new TreeNode("June", null)
-    )),
-    new TreeNode("Summer", listOf(
-        new TreeNode("July", null),
-        new TreeNode("August", null),
-        new TreeNode("September", null)
-    )),
-    new TreeNode("Fall", listOf(
-        new TreeNode("October", null),
-        new TreeNode("November", null),
-        new TreeNode("December", null)
-    ))
-));
-
-var jsonEncoder = new JSONEncoder();
-
-jsonEncoder.write(root, writer);
-```
+TODO
 
 The resulting output would look something like this (`BeanAdapter` traverses properties in alphabetical order):
 
-```json
-{
-  "children": [
-    {
-      "children": [
-        {
-          "children": null,
-          "name": "January"
-        },
-        {
-          "children": null,
-          "name": "February"
-        },
-        {
-          "children": null,
-          "name": "March"
-        }
-      ],
-      "name": "Winter"
-    },
-    ...
-  ],
-  "name": "Seasons"
-}
-```
+TODO
 
 ### Type Coercion
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures, such as decoded JSON objects:
@@ -743,17 +632,9 @@ The resulting output would look something like this (`BeanAdapter` traverses pro
 public static <T> T coerce(Object value, Class<T> type) { ... }
 ```
 
-For example, the following code could be used to deserialize the JSON produced by the previous example back into a collection of `TreeNode` instances:
+For example...
 
-```java
-var jsonDecoder = new JSONDecoder();
-
-var root = BeanAdapter.coerce(jsonDecoder.read(reader), TreeNode.class);
-
-System.out.println(root.getName()); // Seasons
-System.out.println(root.getChildren().get(0).getName()); // Winter
-System.out.println(root.getChildren().get(0).getChildren().get(0).getName()); // January
-```
+TODO
 
 Note that an interface can be used instead of a class to provide a strongly typed "view" of the underlying map data. For example:
 
