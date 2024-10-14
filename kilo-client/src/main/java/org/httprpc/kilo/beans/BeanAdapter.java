@@ -753,7 +753,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * Coerces a map.
+     * Coerces a map to a given type.
      *
      * @param <K>
      * The target key type.

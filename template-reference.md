@@ -111,15 +111,15 @@ For example, a data dictionary that contains information about homes for sale mi
 {
   "properties": [
     {
-      "streetAddress": "27 Crescent St.",
-      "listPrice": 925000,
-      "numberOfBedrooms": 4,
-      "numberOfBathrooms": 3
+      "streetAddress": "217 Botshabelo Place",
+      "listPrice": 695000,
+      "numberOfBedrooms": 3,
+      "numberOfBathrooms": 1
     },
     {
-      "streetAddress": "390 North Elm St.",
-      "listPrice": 7650000,
-      "numberOfBedrooms": 3,
+      "streetAddress": "1531 Salé Drive",
+      "listPrice": 475000,
+      "numberOfBedrooms": 2,
       "numberOfBathrooms": 1.5
     },
     ...

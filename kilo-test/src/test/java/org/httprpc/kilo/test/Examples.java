@@ -17,6 +17,7 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
+import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.io.TextDecoder;
@@ -50,6 +51,8 @@ public class Examples {
         execute("Text Encoder/Decoder", Examples::textEncoderAndDecoder);
         execute("CSV Encoder", Examples::csvEncoder);
         execute("Template Encoder", Examples::templateEncoder);
+        execute("Adapt Bean", Examples::adaptBean);
+        execute("Coerce Bean", Examples::coerceBean);
         execute("Interface Proxy", Examples::interfaceProxy);
         execute("Required Property 1", Examples::requiredProperty1);
         execute("Required Property 2", Examples::requiredProperty2);
@@ -101,7 +104,10 @@ public class Examples {
         System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
     }
 
+    @SuppressWarnings("unchecked")
     public static void jsonEncoderAndDecoder() throws IOException {
+        var file = Files.createTempFile("kilo", ".json");
+
         var map = mapOf(
             entry("vegetables", listOf(
                 "carrots",
@@ -115,40 +121,51 @@ public class Examples {
             ))
         );
 
-        var jsonEncoder = new JSONEncoder();
+        try {
+            try (var outputStream = Files.newOutputStream(file)) {
+                var jsonEncoder = new JSONEncoder();
 
-        jsonEncoder.write(map, System.out);
+                jsonEncoder.write(map, outputStream);
+            }
 
-        System.out.println();
+            try (var inputStream = Files.newInputStream(file)) {
+                var jsonDecoder = new JSONDecoder();
 
-        // TODO
+                map = (Map<String, List<String>>)jsonDecoder.read(inputStream);
+            }
+
+            System.out.println(map.get("vegetables").get(0)); // carrots
+        } finally {
+            Files.delete(file);
+        }
     }
 
     public static void textEncoderAndDecoder() throws IOException {
         var file = Files.createTempFile("kilo", ".txt");
 
+        var text = "Hello, World!";
+
         try {
             try (var outputStream = Files.newOutputStream(file)) {
                 var textEncoder = new TextEncoder();
 
-                textEncoder.write("Hello, World!", outputStream);
+                textEncoder.write(text, outputStream);
             }
 
-            String text;
             try (var inputStream = Files.newInputStream(file)) {
                 var textDecoder = new TextDecoder();
 
                 text = textDecoder.read(inputStream);
             }
 
-            System.out.println(text);
+            System.out.println(text); // Hello, World!
         } finally {
             Files.delete(file);
         }
     }
 
     public static void csvEncoder() throws IOException {
-        var list = listOf(
+        var maps = listOf(
             mapOf(
                 entry("a", "hello"),
                 entry("b", 123),
@@ -163,7 +180,7 @@ public class Examples {
 
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
-        csvEncoder.write(list, System.out);
+        csvEncoder.write(maps, System.out);
     }
 
     public static void templateEncoder() throws Exception {
@@ -176,6 +193,30 @@ public class Examples {
         var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 
         templateEncoder.write(map, System.out);
+    }
+
+    public static void adaptBean() {
+        var course = new Course();
+
+        course.setName("CS 101");
+        course.setBuilding("Technology Lab");
+        course.setRoomNumber(210);
+
+        var courseAdapter = new BeanAdapter(course);
+
+        System.out.println(courseAdapter.get("name")); // CS 101
+    }
+
+    public static void coerceBean() {
+        var map = mapOf(
+            entry("name", "CS 101"),
+            entry("building", "Technology Lab"),
+            entry("roomNumber", 210)
+        );
+
+        var course = BeanAdapter.coerce(map, Course.class);
+
+        System.out.println(course.getName()); // CS 101
     }
 
     public static void interfaceProxy() {

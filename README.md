@@ -118,13 +118,11 @@ The following multi-value types are also supported:
 * `java.util.Set`
 * array/varargs
 
-Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content).
+Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted using the multi-part form data encoding.
 
 Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
-`List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty value (not `null`) will be passed to the method.
-
-Arguments of type `jakarta.servlet.http.Part` represent file uploads. They may be used only with `POST` requests submitted using the multi-part form data encoding.
+`List`, `Set`, and array elements are automatically converted to their declared types. If no values are provided for a list, set, or array parameter, an empty instance (not `null`) will be passed to the method.
 
 If a provided value cannot be coerced to the expected type, an HTTP 403 (forbidden) response will be returned. If no method is found that matches the provided arguments, HTTP 405 (method not allowed) will be returned.
 
@@ -191,7 +189,7 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically [converted](#type-coercion) to the specified type. Subclasses can override the `decodeBody()` method to perform custom conversions.
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. Subclasses can override the `decodeBody()` method to perform custom conversions.
 
 A body parameter of type `Void` may be used to indicate that the handler will process the input stream directly, as discussed [below](#request-and-repsonse-properties).
 
@@ -209,11 +207,11 @@ Additionally, instances of the following types are automatically converted to th
 
 * `Character`/`char`
 * `Enum`
+* `java.net.URI`
+* `java.nio.file.Path`
 * `java.time.TemporalAccessor`
 * `java.time.TemporalAmount`
 * `java.util.UUID`
-
-All other values are assumed to be beans and are serialized as objects.
 
 By default, an HTTP 200 (OK) response is returned when a service method completes successfully. However, if the handler method is annotated with `Creates`, HTTP 201 (created) will be returned instead. If the handler's return type is `void` or `Void`, HTTP 204 (no content) will be returned.
 
@@ -460,7 +458,7 @@ Path variables and body content are handled as described for [`WebService`](#web
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` class is used internally by `WebService` and `WebServiceProxy` to serialize request and response data. However, it can also be used directly by application logic. For example: 
+The `JSONEncoder` and `JSONDecoder` classes are used internally by `WebService` and `WebServiceProxy` to serialize and deserialize request and response data. However, they can also be used directly by application logic. For example:
 
 ```java
 var map = mapOf(
@@ -476,53 +474,33 @@ var map = mapOf(
     ))
 );
 
-var jsonEncoder = new JSONEncoder();
+try (var outputStream = Files.newOutputStream(file)) {
+    var jsonEncoder = new JSONEncoder();
 
-jsonEncoder.write(map, System.out);
+    jsonEncoder.write(map, outputStream);
+}
+
+try (var inputStream = Files.newInputStream(file)) {
+    var jsonDecoder = new JSONDecoder();
+
+    map = (Map<String, List<String>>)jsonDecoder.read(inputStream);
+}
+
+System.out.println(map.get("vegetables").get(0)); // carrots
 ```
 
-This code would produce the following output:
-
-```json
-{
-  "vegetables": [
-    "carrots",
-    "peas",
-    "potatoes"
-  ],
-  "desserts": [
-    "cookies",
-    "cake",
-    "ice cream"
-  ]
-}
-``` 
-
-Values are converted to their JSON equivalents as described [earlier](#return-values).
-
-`JSONDecoder` deserializes a JSON document into an object hierarchy. JSON values are mapped to their Java equivalents as follows:
-
-* string: `String`
-* number: `Number`
-* boolean: `Boolean`
-* array: `java.util.List`
-* object: `java.util.Map`, bean, or record type
-
-For example, given the output of the previous example...
-
-TODO
-
 ## TextEncoder and TextDecoder
-The `TextEncoder` and `TextDecoder` classes can be used to serialize and deserialize plain text content, respectively. For example:
+The `TextEncoder` and `TextDecoder` classes can be used to write and read plain text content, respectively. For example:
 
 ```java
+var text = "Hello, World!";
+
 try (var outputStream = Files.newOutputStream(file)) {
     var textEncoder = new TextEncoder();
 
-    textEncoder.write("Hello, World!", outputStream);
+    textEncoder.write(text, outputStream);
 }
 
-String text;
 try (var inputStream = Files.newInputStream(file)) {
     var textDecoder = new TextDecoder();
 
@@ -533,10 +511,10 @@ System.out.println(text); // Hello, World!
 ```
 
 ## CSVEncoder
-The `CSVEncoder` class can be used to serialize a sequence of map, bean, or record values to CSV. The values passed to the constructor represent both the names of the columns in the output document and the keys, properties, or components to which those columns correspond. For example:
+The `CSVEncoder` class serializes a sequence of map or bean values to CSV. The list passed to the constructor represents both the names of the columns in the output document and the keys or properties to which those columns correspond. For example:
 
 ```java
-var list = listOf(
+var maps = listOf(
     mapOf(
         entry("a", "hello"),
         entry("b", 123),
@@ -551,7 +529,7 @@ var list = listOf(
 
 var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
-csvEncoder.write(list, System.out);
+csvEncoder.write(maps, System.out);
 ```
 
 This code would produce the following output:
@@ -615,28 +593,35 @@ the code would produce this output:
 ```
 
 ## BeanAdapter
-The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. 
-
-For example...
-
-TODO
-
-The resulting output would look something like this (`BeanAdapter` traverses properties in alphabetical order):
-
-TODO
-
-### Type Coercion
-`BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures, such as decoded JSON objects:
+The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. For example:
 
 ```java
-public static <T> T coerce(Object value, Class<T> type) { ... }
+var course = new Course();
+
+course.setName("CS 101");
+course.setBuilding("Technology Lab");
+course.setRoomNumber(210);
+
+var courseAdapter = new BeanAdapter(course);
+
+System.out.println(courseAdapter.get("name")); // CS 101
 ```
 
-For example...
+`BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
 
-TODO
+```java
+var map = mapOf(
+    entry("name", "CS 101"),
+    entry("building", "Technology Lab"),
+    entry("roomNumber", 210)
+);
 
-Note that an interface can be used instead of a class to provide a strongly typed "view" of the underlying map data. For example:
+var course = BeanAdapter.coerce(map, Course.class);
+
+System.out.println(course.getName()); // CS 101
+```
+
+An interface can be used instead of a class to provide a strongly typed "view" of the underlying data. For example:
 
 ```java
 public interface AssetPricing {
@@ -668,8 +653,6 @@ System.out.println(assetPricing.getHigh()); // 169.2
 System.out.println(assetPricing.getLow()); // 168.24
 System.out.println(assetPricing.getVolume()); // 37216858
 ```
-
-Mutator and default methods are also supported.
 
 ### Required Properties
 The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a property must contain a value. For example:

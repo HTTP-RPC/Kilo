@@ -14,20 +14,10 @@
 
 package org.httprpc.kilo.test;
 
-import java.util.List;
-
-public class TreeNode {
+public class Course {
     private String name;
-    private List<TreeNode> children;
-
-    public TreeNode() {
-        this(null, null);
-    }
-
-    public TreeNode(String name, List<TreeNode> children) {
-        this.name = name;
-        this.children = children;
-    }
+    private String building;
+    private int roomNumber;
 
     public String getName() {
         return name;
@@ -37,11 +27,19 @@ public class TreeNode {
         this.name = name;
     }
 
-    public List<TreeNode> getChildren() {
-        return children;
+    public String getBuilding() {
+        return building;
     }
 
-    public void setChildren(List<TreeNode> children) {
-        this.children = children;
+    public void setBuilding(String building) {
+        this.building = building;
+    }
+
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(int roomNumber) {
+        this.roomNumber = roomNumber;
     }
 }
