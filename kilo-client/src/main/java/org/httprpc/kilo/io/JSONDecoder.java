@@ -14,8 +14,11 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -27,6 +30,8 @@ import java.util.Map;
  * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
+    private Type type;
+
     private int c = EOF;
 
     private Deque<Object> containers = new LinkedList<>();
@@ -36,6 +41,27 @@ public class JSONDecoder extends Decoder<Object> {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String NULL = "null";
+
+    /**
+     * Constructs a new JSON decoder.
+     */
+    public JSONDecoder() {
+        this(Object.class);
+    }
+
+    /**
+     * Constructs a new JSON decoder.
+     *
+     * @param type
+     * The result type.
+     */
+    public JSONDecoder(Type type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.type = type;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -134,7 +160,7 @@ public class JSONDecoder extends Decoder<Object> {
             throw new IOException("Unterminated container.");
         }
 
-        return value;
+        return BeanAdapter.toGenericType(value, type);
     }
 
     private void skipWhitespace(Reader reader) throws IOException {

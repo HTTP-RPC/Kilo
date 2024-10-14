@@ -1141,9 +1141,9 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
-        var jsonDecoder = new JSONDecoder();
+        var jsonDecoder = new JSONDecoder(type);
 
-        return BeanAdapter.toGenericType(jsonDecoder.read(request.getInputStream()), type);
+        return jsonDecoder.read(request.getInputStream());
     }
 
     /**

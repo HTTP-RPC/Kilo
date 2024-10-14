@@ -203,7 +203,7 @@ Return values are converted to JSON as follows:
 * `Boolean`/`boolean`: boolean
 * `java.util.Date`: number representing epoch time in milliseconds
 * `Iterable`: array
-* `java.util.Map`: object
+* `java.util.Map`, bean, or record type: object
 
 Additionally, instances of the following types are automatically converted to their string representations:
 
@@ -498,7 +498,7 @@ This code would produce the following output:
 }
 ``` 
 
-Values are converted to their JSON equivalents as described [earlier](#return-values). Note that Java bean values must first be wrapped in an instance of `BeanAdapter`, which is discussed in more detail [later](#beanadapter). `BeanAdapter` implements the `Map` interface, which allows `JSONEncoder` to serialize the values as JSON objects. `ResultSetAdapter` (also discussed [later](#querybuilder-and-resultsetadapter)) provides a similar capability for JDBC result sets. 
+Values are converted to their JSON equivalents as described [earlier](#return-values).
 
 `JSONDecoder` deserializes a JSON document into an object hierarchy. JSON values are mapped to their Java equivalents as follows:
 

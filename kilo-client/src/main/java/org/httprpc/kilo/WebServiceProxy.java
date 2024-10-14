@@ -380,13 +380,19 @@ public class WebServiceProxy {
                     webServiceProxy.setBody(body);
                 }
 
+                webServiceProxy.setResponseHandler((inputStream, contentType) -> {
+                    var jsonDecoder = new JSONDecoder(method.getGenericReturnType());
+
+                    return jsonDecoder.read(inputStream);
+                });
+
                 var configuration = method.getAnnotation(Configuration.class);
 
                 if (configuration != null) {
                     configure(webServiceProxy, configuration);
                 }
 
-                return BeanAdapter.toGenericType(webServiceProxy.invoke(), method.getGenericReturnType());
+                return webServiceProxy.invoke();
             }
         }
 

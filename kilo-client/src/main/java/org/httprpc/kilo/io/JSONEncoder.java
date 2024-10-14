@@ -81,10 +81,10 @@ public class JSONEncoder extends Encoder<Object> {
             encode(number, writer);
         } else if (value instanceof Number number) {
             encode(number, writer);
-        } else if (value instanceof Date date) {
-            encode(date, writer);
         } else if (value instanceof Boolean flag) {
             encode(flag, writer);
+        } else if (value instanceof Date date) {
+            encode(date, writer);
         } else if (value instanceof Iterable<?> iterable) {
             encode(iterable, writer);
         } else if (value instanceof Map<?, ?> map) {
@@ -126,12 +126,12 @@ public class JSONEncoder extends Encoder<Object> {
         writer.write(number.toString());
     }
 
-    private void encode(Date date, Writer writer) throws IOException {
-        writer.write(String.valueOf(date.getTime()));
-    }
-
     private void encode(Boolean flag, Writer writer) throws IOException {
         writer.write(flag.toString());
+    }
+
+    private void encode(Date date, Writer writer) throws IOException {
+        writer.write(String.valueOf(date.getTime()));
     }
 
     private void encode(Iterable<?> iterable, Writer writer) throws IOException {
