@@ -14,11 +14,8 @@
 
 package org.httprpc.kilo.io;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -30,8 +27,6 @@ import java.util.Map;
  * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
-    private Type elementType;
-
     private int c = EOF;
 
     private Deque<Object> containers = new LinkedList<>();
@@ -41,23 +36,6 @@ public class JSONDecoder extends Decoder<Object> {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String NULL = "null";
-
-    /**
-     * Constructs a new JSON decoder.
-     */
-    public JSONDecoder() {
-        this(null);
-    }
-
-    /**
-     * Constructs a new JSON decoder.
-     *
-     * @param elementType
-     * The element type, or {@code null} for no element type.
-     */
-    public JSONDecoder(Type elementType) {
-        this.elementType = elementType;
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -75,20 +53,8 @@ public class JSONDecoder extends Decoder<Object> {
         skipWhitespace(reader);
 
         while (c != EOF) {
-            if (c == ']') {
+            if (c == ']' || c == '}') {
                 value = containers.pop();
-
-                c = reader.read();
-            } else if (c == '}') {
-                value = containers.pop();
-
-                if (elementType != null
-                    && containers.size() == 1
-                    && containers.peek() instanceof List<?> list) {
-                    value = BeanAdapter.toGenericType(value, elementType);
-
-                    ((List<Object>)list).set(list.size() - 1, value);
-                }
 
                 c = reader.read();
             } else if (c == ',') {
@@ -156,10 +122,6 @@ public class JSONDecoder extends Decoder<Object> {
                     if (key != null) {
                         ((Map<String, Object>)container).put(key, value);
                     } else {
-                        if (elementType != null && !(value instanceof Map<?, ?>)) {
-                            value = BeanAdapter.toGenericType(value, elementType);
-                        }
-
                         ((List<Object>)container).add(value);
                     }
                 }

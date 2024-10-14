@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.io;
 
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -83,39 +82,6 @@ public class JSONDecoderTest {
         var text = "[\"abc\",\t123,,,  true,\n[1, 2.0, 3.0],\n{\"x\": 1, \"y\": 2.0, \"z\": 3.0}]";
 
         var actual = decode(text);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testRowArray() throws IOException {
-        var expected = BeanAdapter.coerceList(listOf(
-            mapOf(
-                entry("a", "hello"),
-                entry("b", 123),
-                entry("c", true)
-            ),
-            mapOf(
-                entry("a", "goodbye"),
-                entry("b", 456),
-                entry("c", false)
-            )
-        ), Row.class);
-
-        var text = "[{\"a\": \"hello\", \"b\": 123, \"c\": true}, {\"a\": \"goodbye\", \"b\": 456, \"c\": false}]";
-
-        var actual = decode(text, () -> new JSONDecoder(Row.class));
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testStringArray() throws IOException {
-        var expected = listOf("1", "2", "3");
-
-        var text = "[1, 2, 3]";
-
-        var actual = decode(text, () -> new JSONDecoder(String.class));
 
         assertEquals(expected, actual);
     }
