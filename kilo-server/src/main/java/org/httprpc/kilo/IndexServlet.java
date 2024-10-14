@@ -22,6 +22,7 @@ import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -41,14 +42,14 @@ public class IndexServlet extends HttpServlet {
 
         var accept = request.getHeader("Accept");
 
-        if (accept != null && accept.equalsIgnoreCase("application/json")) {
-            response.setContentType("application/json;charset=UTF-8");
+        if (accept != null && accept.equalsIgnoreCase(WebService.APPLICATION_JSON)) {
+            response.setContentType(String.format("%s;charset=%s", WebService.APPLICATION_JSON, StandardCharsets.UTF_8));
 
             var jsonEncoder = new JSONEncoder();
 
             jsonEncoder.write(serviceDescriptors, response.getOutputStream());
         } else {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(String.format("%s;charset=%s", WebService.TEXT_HTML, StandardCharsets.UTF_8));
 
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 

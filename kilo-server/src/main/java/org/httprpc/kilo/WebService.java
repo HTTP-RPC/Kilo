@@ -34,6 +34,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -655,8 +656,6 @@ public abstract class WebService extends HttpServlet {
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
-    private static final String UTF_8 = "UTF-8";
-
     /**
      * Returns a service instance.
      *
@@ -792,13 +791,13 @@ public abstract class WebService extends HttpServlet {
                 var accept = request.getHeader("Accept");
 
                 if (accept != null && accept.equalsIgnoreCase(APPLICATION_JSON)) {
-                    response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, UTF_8));
+                    response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, StandardCharsets.UTF_8));
 
                     var jsonEncoder = new JSONEncoder();
 
                     jsonEncoder.write(serviceDescriptor, response.getOutputStream());
                 } else {
-                    response.setContentType(String.format("%s;charset=%s", TEXT_HTML, UTF_8));
+                    response.setContentType(String.format("%s;charset=%s", TEXT_HTML, StandardCharsets.UTF_8));
 
                     var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
 
@@ -849,7 +848,7 @@ public abstract class WebService extends HttpServlet {
         }
 
         if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding(UTF_8);
+            request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         }
 
         Map<String, List<?>> argumentMap = new HashMap<>();
@@ -1162,7 +1161,7 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
-        response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, UTF_8));
+        response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, StandardCharsets.UTF_8));
 
         var jsonEncoder = new JSONEncoder();
 
@@ -1179,7 +1178,7 @@ public abstract class WebService extends HttpServlet {
      * The cause of the error.
      */
     protected void reportError(HttpServletResponse response, Throwable cause) throws IOException {
-        response.setContentType(String.format("%s;charset=%s", TEXT_PLAIN, UTF_8));
+        response.setContentType(String.format("%s;charset=%s", TEXT_PLAIN, StandardCharsets.UTF_8));
 
         if (cause != null) {
             var message = cause.getMessage();
