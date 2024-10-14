@@ -18,6 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -31,6 +32,7 @@ import java.util.Map;
  */
 public class JSONDecoder extends Decoder<Object> {
     private Type type;
+    private Type elementType;
 
     private int c = EOF;
 
@@ -61,6 +63,12 @@ public class JSONDecoder extends Decoder<Object> {
         }
 
         this.type = type;
+
+        if (type instanceof ParameterizedType parameterizedType && parameterizedType.getRawType() == List.class) {
+            elementType = parameterizedType.getActualTypeArguments()[0];
+        } else {
+            elementType = null;
+        }
     }
 
     @Override
@@ -81,6 +89,10 @@ public class JSONDecoder extends Decoder<Object> {
         while (c != EOF) {
             if (c == ']' || c == '}') {
                 value = containers.pop();
+
+                if (elementType != null && containers.size() == 1 && containers.peek() instanceof List<?> list) {
+                    ((List<Object>)list).set(list.size() - 1, BeanAdapter.toGenericType(value, elementType));
+                }
 
                 c = reader.read();
             } else if (c == ',') {
@@ -148,6 +160,10 @@ public class JSONDecoder extends Decoder<Object> {
                     if (key != null) {
                         ((Map<String, Object>)container).put(key, value);
                     } else {
+                        if (elementType != null && containers.size() == 1) {
+                            value = BeanAdapter.toGenericType(value, elementType);
+                        }
+
                         ((List<Object>)container).add(value);
                     }
                 }
@@ -158,6 +174,14 @@ public class JSONDecoder extends Decoder<Object> {
 
         if (!containers.isEmpty()) {
             throw new IOException("Unterminated container.");
+        }
+
+        if (elementType != null) {
+            if (!(value instanceof List<?>)) {
+                throw new IOException("Value is not a list.");
+            }
+
+            return value;
         }
 
         return BeanAdapter.toGenericType(value, type);
