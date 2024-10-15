@@ -205,6 +205,8 @@ public class Examples {
         var courseAdapter = new BeanAdapter(course);
 
         System.out.println(courseAdapter.get("name")); // CS 101
+        System.out.println(courseAdapter.get("building")); // Technology Lab
+        System.out.println(courseAdapter.get("roomNumber")); // 210
     }
 
     public static void coerceBean() {
@@ -217,6 +219,8 @@ public class Examples {
         var course = BeanAdapter.coerce(map, Course.class);
 
         System.out.println(course.getName()); // CS 101
+        System.out.println(course.getBuilding()); // Technology Lab
+        System.out.println(course.getRoomNumber()); // 210
     }
 
     public static void interfaceProxy() {

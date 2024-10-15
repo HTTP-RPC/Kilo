@@ -118,7 +118,7 @@ The following multi-value types are also supported:
 * `java.util.Set`
 * array/varargs
 
-Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted using the multi-part form data encoding.
+Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted as [multi-part form data](https://jakarta.ee/specifications/servlet/5.0/jakarta-servlet-spec-5.0#_MultipartConfig).
 
 Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
@@ -360,7 +360,7 @@ public interface RequestHandler {
 }
 ```
 
-For example, the `WebServiceProxy.FormDataRequestHandler` class submits requests as form data. When using the multi-part encoding (the default), instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
+For example, the `WebServiceProxy.FormDataRequestHandler` class submits requests as [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). When using the multi-part encoding (the default), instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
 
 Service operations are invoked via the following method:
 
@@ -423,7 +423,7 @@ public static <T> T of(Class<T> type, URI baseURI, Map<String, Object> headers) 
 
 Both versions return an implementation of a given interface that submits requests to the provided URI. An optional map accepted by the second version can be used to provide common request headers.
 
-The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. The optional `ServicePath` annotation can be used to associate a base path with a proxy type. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures. For example:
+The optional `ServicePath` annotation can be used to associate a base path with a proxy type. The `RequestMethod` and `ResourcePath` annotations are used as described [earlier](#webservice) for `WebService`. Proxy methods must include a throws clause that declares `IOException`, so that callers can handle unexpected failures. For example:
 
 ```java
 @ServicePath("math")
@@ -605,6 +605,8 @@ course.setRoomNumber(210);
 var courseAdapter = new BeanAdapter(course);
 
 System.out.println(courseAdapter.get("name")); // CS 101
+System.out.println(courseAdapter.get("building")); // Technology Lab
+System.out.println(courseAdapter.get("roomNumber")); // 210
 ```
 
 `BeanAdapter` can also be used to facilitate type-safe access to loosely typed data structures:
@@ -619,6 +621,8 @@ var map = mapOf(
 var course = BeanAdapter.coerce(map, Course.class);
 
 System.out.println(course.getName()); // CS 101
+System.out.println(course.getBuilding()); // Technology Lab
+System.out.println(course.getRoomNumber()); // 210
 ```
 
 An interface can be used instead of a class to provide a strongly typed "view" of the underlying data. For example:

@@ -25,14 +25,6 @@ import java.util.List;
 
 @WebServlet(urlPatterns = {"/bulk-upload/*"}, loadOnStartup = 1)
 public class BulkUploadService extends AbstractDatabaseService {
-    public interface Row {
-        String getText1();
-        String getText2();
-        Double getNumber1();
-        Double getNumber2();
-        Double getNumber3();
-    }
-
     private static final int BATCH_SIZE = 25000;
 
     @RequestMethod("POST")

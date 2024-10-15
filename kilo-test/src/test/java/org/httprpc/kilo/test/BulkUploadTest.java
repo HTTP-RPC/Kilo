@@ -19,12 +19,9 @@ import org.httprpc.kilo.WebServiceProxy;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
-import java.util.Map;
-
-import static org.httprpc.kilo.util.Collections.*;
 
 public class BulkUploadTest {
-    public static class Rows implements Iterable<Map<String, Object>> {
+    public static class Rows implements Iterable<Row> {
         private int count;
 
         private int i = 0;
@@ -33,16 +30,10 @@ public class BulkUploadTest {
             this.count = count;
         }
 
-        private Map<String, Object> row = mapOf(
-            entry("text1", "abcdefghijklmnopqrstuvwxyz"),
-            entry("text2", "ABCDEFG"),
-            entry("number1", 123456),
-            entry("number2", 101.05),
-            entry("number3", 2002.0125)
-        );
+        private Row row = new Row("abcdefghijklmnopqrstuvwxyz", "ABCDEFG", 123456, 101.05, 2002.0125);
 
         @Override
-        public Iterator<Map<String, Object>> iterator() {
+        public Iterator<Row> iterator() {
             return new Iterator<>() {
                 @Override
                 public boolean hasNext() {
@@ -50,7 +41,7 @@ public class BulkUploadTest {
                 }
 
                 @Override
-                public Map<String, Object> next() {
+                public Row next() {
                     i++;
 
                     return row;
