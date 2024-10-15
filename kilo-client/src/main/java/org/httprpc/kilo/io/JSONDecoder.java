@@ -178,7 +178,7 @@ public class JSONDecoder extends Decoder<Object> {
 
         if (elementType != null) {
             if (!(value instanceof List<?>)) {
-                throw new IOException("Value is not a list.");
+                throw new UnsupportedOperationException("Value is not a list.");
             }
 
             return value;

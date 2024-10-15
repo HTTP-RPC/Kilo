@@ -169,7 +169,7 @@ public class JSONDecoderTest {
 
     @Test
     public void testInvalidArray() {
-        assertThrows(IOException.class, () -> decode("abc", () -> new JSONDecoder(new ListType(Double.class))));
+        assertThrows(UnsupportedOperationException.class, () -> decode("\"abc\"", () -> new JSONDecoder(new ListType(Double.class))));
     }
 
     @Test
