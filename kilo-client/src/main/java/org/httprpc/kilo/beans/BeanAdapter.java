@@ -885,7 +885,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else {
                     throw new IllegalArgumentException("Value is not a collection.");
                 }
-
             } else {
                 throw new UnsupportedOperationException("Unsupported parameterized type.");
             }
