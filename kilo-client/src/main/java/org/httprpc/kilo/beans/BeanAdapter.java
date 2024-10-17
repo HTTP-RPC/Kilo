@@ -131,6 +131,76 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
     }
 
+    // Record adapter
+    private static class RecordAdapter extends AbstractMap<String, Object> {
+        Object value;
+
+        Map<String, Property> properties;
+
+        RecordAdapter(Object value) {
+            this.value = value;
+
+            properties = getProperties(value.getClass());
+        }
+
+        @Override
+        public Object get(Object key) {
+            var property = properties.get(key);
+
+            if (property == null) {
+                return null;
+            }
+
+            try {
+                return adapt(property.accessor.invoke(value));
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return properties.containsKey(key);
+        }
+
+        @Override
+        public Set<Entry<String, Object>> entrySet() {
+            return new AbstractSet<>() {
+                @Override
+                public int size() {
+                    return properties.size();
+                }
+
+                @Override
+                public Iterator<Entry<String, Object>> iterator() {
+                    return new Iterator<>() {
+                        Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
+
+                        @Override
+                        public boolean hasNext() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Entry<String, Object> next() {
+                            var entry = iterator.next();
+
+                            var key = entry.getKey();
+
+                            try {
+                                var property = entry.getValue();
+
+                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(value)));
+                            } catch (IllegalAccessException | InvocationTargetException exception) {
+                                throw new RuntimeException(exception);
+                            }
+                        }
+                    };
+                }
+            };
+        }
+    }
+
     // Iterable adapter
     private static class IterableAdapter extends AbstractList<Object> {
         Iterable<?> iterable;
@@ -189,6 +259,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         @Override
+        public boolean containsKey(Object key) {
+            return map.containsKey(key);
+        }
+
+        @Override
         public Set<Entry<Object, Object>> entrySet() {
             return new AbstractSet<>() {
                 @Override
@@ -231,70 +306,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
             };
         }
-    }
-
-    // Record adapter
-    private static class RecordAdapter extends AbstractMap<String, Object> {
-        Object value;
-
-        Map<String, Property> properties;
-
-        RecordAdapter(Object value) {
-            this.value = value;
-
-            properties = getProperties(value.getClass());
-        }
 
         @Override
-        public Object get(Object key) {
-            var property = properties.get(key);
-
-            if (property == null) {
-                return null;
-            }
-
-            try {
-                return adapt(property.accessor.invoke(value));
-            } catch (IllegalAccessException | InvocationTargetException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
-
-        @Override
-        public Set<Entry<String, Object>> entrySet() {
-            return new AbstractSet<>() {
-                @Override
-                public int size() {
-                    return properties.size();
-                }
-
-                @Override
-                public Iterator<Entry<String, Object>> iterator() {
-                    return new Iterator<>() {
-                        Iterator<Entry<String, Property>> iterator = properties.entrySet().iterator();
-
-                        @Override
-                        public boolean hasNext() {
-                            return iterator.hasNext();
-                        }
-
-                        @Override
-                        public Entry<String, Object> next() {
-                            var entry = iterator.next();
-
-                            var key = entry.getKey();
-
-                            try {
-                                var property = entry.getValue();
-
-                                return new SimpleImmutableEntry<>(key, adapt(property.accessor.invoke(value)));
-                            } catch (IllegalAccessException | InvocationTargetException exception) {
-                                throw new RuntimeException(exception);
-                            }
-                        }
-                    };
-                }
-            };
+        public String toString() {
+            return map.toString();
         }
     }
 
@@ -517,6 +532,15 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
+     * Tests for the existence of a property.
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean containsKey(Object key) {
+        return properties.containsKey(key);
+    }
+
+    /**
      * Enumerates property values.
      * {@inheritDoc}
      */
@@ -584,6 +608,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <p>If the value is an array, it is wrapped in a {@link List} that will
      * recursively adapt the array's elements.</p>
      *
+     * <p>If the value is a {@link Record}, it is wrapped in a {@link Map} that
+     * will recursively adapt the record's fields.</p>
+     *
      * <p>If the value is an {@link Iterable}, it is wrapped in a {@link List}
      * that will recursively adapt the iterable's elements. If the iterable
      * implements {@link Collection}, the adapter will support the
@@ -593,9 +620,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      *
      * <p>If the value is a {@link Map}, it is wrapped in a {@link Map} that
      * will recursively adapt the map's values. Map keys are not adapted.</p>
-     *
-     * <p>If the value is a {@link Record}, it is wrapped in a {@link Map} that
-     * will recursively adapt the record's fields.</p>
      *
      * <p>If none of the previous conditions apply, the value is assumed to be
      * a bean and is wrapped in a {@link BeanAdapter}.</p>
@@ -622,12 +646,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return value;
         } else if (value.getClass().isArray()) {
             return new ArrayAdapter(value);
+        } else if (value instanceof Record) {
+            return new RecordAdapter(value);
         } else if (value instanceof Iterable<?> iterable) {
             return new IterableAdapter(iterable);
         } else if (value instanceof Map<?, ?> map) {
             return new MapAdapter(map);
-        } else if (value instanceof Record) {
-            return new RecordAdapter(value);
         } else {
             return new BeanAdapter(value);
         }

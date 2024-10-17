@@ -14,12 +14,14 @@
 
 package org.httprpc.kilo.xml;
 
+import org.httprpc.kilo.io.TemplateEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -194,5 +196,21 @@ public class ElementAdapterTest {
         elementAdapter.put("item*", listOf(1, 2, 3));
 
         assertEquals("3", elementAdapter.get("item").toString());
+    }
+
+    @Test
+    public void testTemplate() throws Exception {
+        Document document;
+        try (var inputStream = getClass().getResourceAsStream("test.xml")) {
+            document = documentBuilder.parse(inputStream);
+        }
+
+        var templateEncoder = new TemplateEncoder(ElementAdapterTest.class, "test.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(new ElementAdapter(document.getDocumentElement()), writer);
+
+        assertEquals("1 abc, 2 déf, 3 ghi", writer.toString());
     }
 }

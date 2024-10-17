@@ -1,1 +1,1 @@
-{{@a}}{{>resource2.txt}}
+{{$a}}{{>resource2.txt}}

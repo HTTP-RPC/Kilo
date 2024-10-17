@@ -513,7 +513,7 @@ public class TemplateEncoder extends Encoder<Object> {
                         markerType = MarkerType.INVERTED_SECTION_START;
                     } else if (c == '/') {
                         markerType = MarkerType.SECTION_END;
-                    } else if (c == '@') {
+                    } else if (c == '$') {
                         markerType = MarkerType.RESOURCE;
                     } else if (c == '>') {
                         markerType = MarkerType.INCLUDE;

@@ -172,9 +172,9 @@
 <body>
 <!-- {{?service}} -->
 <div id="toc">
-  <p><a href="{{contextPath}}/">{{@services}}</a></p>
+  <p><a href="{{contextPath}}/">{{$services}}</a></p>
   <ol>
-    <li><a href="#endpoints">{{@endpoints}}</a>
+    <li><a href="#endpoints">{{$endpoints}}</a>
       <ol>
         <!-- {{#endpoints}} -->
         <li><a href="#{{path}}">{{path}}</a></li>
@@ -183,7 +183,7 @@
     </li>
 
     <!-- {{?enumerations}} -->
-    <li><a href="#enumerations">{{@enumerations}}</a>
+    <li><a href="#enumerations">{{$enumerations}}</a>
       <ol>
         <!-- {{#.}} -->
         <li><a href="#{{name}}">{{name}}</a></li>
@@ -193,7 +193,7 @@
     <!-- {{/enumerations}} -->
 
     <!-- {{?structures}} -->
-    <li><a href="#structures">{{@structures}}</a>
+    <li><a href="#structures">{{$structures}}</a>
       <ol>
         <!-- {{#.}} -->
         <li><a href="#{{name}}">{{name}}</a></li>
@@ -209,18 +209,18 @@
   <!-- {{/description}} -->
 
   <div id="endpoints">
-    <h1>{{@endpoints}}</h1>
+    <h1>{{$endpoints}}</h1>
     <!-- {{#endpoints}} -->
     <section id="{{path}}">
       <h2><code>{{path}}</code></h2>
       <!-- {{#operations}} -->
-      <pre><span class="method {{method}}">{{method}}</span>{{?produces}} : {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{@deprecated}}</strong>{{/deprecated}}</pre>
+      <pre><span class="method {{method}}">{{method}}</span>{{?produces}} : {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{$deprecated}}</strong>{{/deprecated}}</pre>
       <!-- {{?description}} -->
       <p>{{.}}</p>
       <!-- {{/description}} -->
       <!-- {{?parameters}} -->
       <table>
-        <tr><th>{{@parameter}}</th><th>{{@type}}</th><th>{{@description}}</th></tr>
+        <tr><th>{{$parameter}}</th><th>{{$type}}</th><th>{{$description}}</th></tr>
         <!-- {{#.}} -->
         <tr><td><code>{{name}}</code></td><td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td><td>{{description}}</td></tr>
         <!-- {{/.}} -->
@@ -233,7 +233,7 @@
 
   <!-- {{?enumerations}} -->
   <div id="enumerations">
-    <h1>{{@enumerations}}</h1>
+    <h1>{{$enumerations}}</h1>
     <!-- {{#.}} -->
     <section id="{{name}}">
       <h2><a id="{{name}}">{{name}}</a></h2>
@@ -241,7 +241,7 @@
       <p>{{.}}</p>
       <!-- {{/description}} -->
       <table>
-        <tr><th>{{@name}}</th><th style="width: 84%">{{@description}}</th></tr>
+        <tr><th>{{$name}}</th><th style="width: 84%">{{$description}}</th></tr>
         <!-- {{#values}} -->
         <tr><td><code>{{name}}</code></td><td style="width: 84%">{{description}}</td></tr>
         <!-- {{/values}} -->
@@ -253,7 +253,7 @@
 
   <!-- {{?structures}} -->
   <div id="structures">
-    <h1>{{@structures}}</h1>
+    <h1>{{$structures}}</h1>
     <!-- {{#.}} -->
     <section id="{{name}}">
       <h2><a id="{{name}}">{{name}}</a>{{?supertypes}} : {{#.[, ]}}{{>type.html}}{{/.}}{{/supertypes}}</h2>
@@ -261,7 +261,7 @@
       <p>{{.}}</p>
       <!-- {{/description}} -->
       <table>
-        <tr><th>{{@property}}</th><th>{{@type}}</th><th>{{@description}}</th></tr>
+        <tr><th>{{$property}}</th><th>{{$type}}</th><th>{{$description}}</th></tr>
         <!-- {{#properties}} -->
         <tr><td><code>{{name}}</code></td><td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td><td>{{description}}</td></tr>
         <!-- {{/properties}} -->
