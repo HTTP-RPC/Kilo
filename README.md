@@ -572,11 +572,11 @@ Given the following template as input:
 
 ```html
 <html>
-    <body>
-        <p>{{a}}</p>
-        <p>{{b}}</p>
-        <p>{{c}}</p>
-    </body>
+<body>
+<p>{{a}}</p>
+<p>{{b}}</p>
+<p>{{c}}</p>
+</body>
 </html>
 ```
 
@@ -584,11 +584,11 @@ the code would produce this output:
 
 ```html
 <html>
-    <body>
-        <p>hello</p>
-        <p>123</p>
-        <p>true</p>
-    </body>
+<body>
+<p>hello</p>
+<p>123</p>
+<p>true</p>
+</body>
 </html>
 ```
 
@@ -889,19 +889,19 @@ The `ElementAdapter` class provides access to the contents of an XML DOM `Elemen
     <transactions>
         <credit>
             <amount>100.00</amount>
-            <date>10/5/2020</date>
+            <date>10/5/2024</date>
         </credit>
         <credit>
             <amount>50.00</amount>
-            <date>10/12/2020</date>
+            <date>10/12/2024</date>
         </credit>
         <debit>
             <amount>25.00</amount>
-            <date>10/14/2020</date>
+            <date>10/14/2024</date>
         </debit>
         <credit>
             <amount>75.00</amount>
-            <date>10/19/2020</date>
+            <date>10/19/2024</date>
         </credit>
     </transactions>
 </account>
