@@ -458,7 +458,7 @@ Path variables and body content are handled as described for [`WebService`](#web
 Note that proxy types must be compiled with the `-parameters` flag so their method parameter names are available at runtime.
 
 ## JSONEncoder and JSONDecoder
-The `JSONEncoder` and `JSONDecoder` classes are used internally by `WebService` and `WebServiceProxy` to serialize and deserialize request and response data. However, they can also be used directly by application logic. For example:
+The `JSONEncoder` and `JSONDecoder` classes are used internally by `WebService` and `WebServiceProxy` to process request and response data. However, they can also be used directly by application logic. For example:
 
 ```java
 var map = mapOf(
@@ -568,7 +568,7 @@ var templateEncoder = new TemplateEncoder(Examples.class, "example.html");
 templateEncoder.write(map, System.out);
 ```
 
-Given the following as input:
+Given the following template as input:
 
 ```html
 <html>

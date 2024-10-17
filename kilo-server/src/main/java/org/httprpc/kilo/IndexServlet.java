@@ -30,7 +30,7 @@ import static org.httprpc.kilo.util.Collections.*;
 /**
  * Generates an index of all active services.
  */
-@WebServlet(urlPatterns = {""}, loadOnStartup = 1)
+@WebServlet(urlPatterns = {""}, loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
     /**
      * Generates the service index.
