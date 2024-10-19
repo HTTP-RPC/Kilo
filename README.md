@@ -196,9 +196,9 @@ A body parameter of type `Void` may be used to indicate that the handler will pr
 ### Return Values
 Return values are converted to JSON as follows:
 
-* `String`: string
 * `Number`/numeric primitive: number
 * `Boolean`/`boolean`: boolean
+* `CharSequence`: string
 * `java.util.Date`: number representing epoch time in milliseconds
 * `Iterable`: array
 * `java.util.Map`, bean, or record type: object
