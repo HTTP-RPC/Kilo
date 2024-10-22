@@ -189,7 +189,12 @@ public abstract class WebService extends HttpServlet {
 
         private TypeDescriptor produces = null;
 
-        private List<VariableDescriptor> parameters = new LinkedList<>();
+        private boolean parameters = false;
+
+        private List<VariableDescriptor> pathParameters = new LinkedList<>();
+        private List<VariableDescriptor> queryParameters = new LinkedList<>();
+
+        private VariableDescriptor bodyParameter = null;
 
         private OperationDescriptor(String method, Method handler) {
             this.method = method;
@@ -242,13 +247,44 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Returns the parameters defined by the operation.
+         * Indicates that the operation defines at least one parameter.
          *
          * @return
-         * The operation's parameters.
+         * {@code true} if the operation defines at least one parameter;
+         * {@code false}, otherwise.
          */
-        public List<VariableDescriptor> getParameters() {
+        public boolean getParameters() {
             return parameters;
+        }
+
+        /**
+         * Returns the path parameters defined by the operation.
+         *
+         * @return
+         * The operation's path parameters.
+         */
+        public List<VariableDescriptor> getPathParameters() {
+            return pathParameters;
+        }
+
+        /**
+         * Returns the query parameters defined by the operation.
+         *
+         * @return
+         * The operation's query parameters.
+         */
+        public List<VariableDescriptor> getQueryParameters() {
+            return queryParameters;
+        }
+
+        /**
+         * Returns the body parameter defined by the operation.
+         *
+         * @return
+         * The operation's body parameter.
+         */
+        public VariableDescriptor getBodyParameter() {
+            return bodyParameter;
         }
     }
 
@@ -1203,6 +1239,16 @@ public abstract class WebService extends HttpServlet {
         if (!resource.handlerMap.isEmpty()) {
             var endpoint = new EndpointDescriptor(path);
 
+            var keyCount = 0;
+
+            var components = path.split("/");
+
+            for (var j = 0; j < components.length; j++) {
+                if (components[j].equals("?")) {
+                    keyCount++;
+                }
+            }
+
             for (var entry : resource.handlerMap.entrySet()) {
                 for (var handler : entry.getValue()) {
                     var operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
@@ -1213,6 +1259,14 @@ public abstract class WebService extends HttpServlet {
 
                     var parameters = handler.getParameters();
 
+                    var n = parameters.length;
+
+                    operation.parameters = n > 0;
+
+                    if (operation.method.equals("POST") || operation.method.equals("PUT")) {
+                        n--;
+                    }
+
                     for (var i = 0; i < parameters.length; i++) {
                         var parameter = parameters[i];
 
@@ -1220,7 +1274,13 @@ public abstract class WebService extends HttpServlet {
 
                         parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
 
-                        operation.parameters.add(parameterDescriptor);
+                        if (i < keyCount) {
+                            operation.pathParameters.add(parameterDescriptor);
+                        } else if (i < n) {
+                            operation.queryParameters.add(parameterDescriptor);
+                        } else {
+                            operation.bodyParameter = parameterDescriptor;
+                        }
                     }
 
                     endpoint.operations.add(operation);

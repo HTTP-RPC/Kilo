@@ -220,18 +220,46 @@
             <!-- {{/description}} -->
             <!-- {{?parameters}} -->
             <table>
-                <tr>
-                    <th>{{$parameter}}</th>
-                    <th>{{$type}}</th>
-                    <th>{{$description}}</th>
-                </tr>
-                <!-- {{#.}} -->
-                <tr>
-                    <td><code>{{name}}</code></td>
-                    <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
-                    <td>{{description}}</td>
-                </tr>
-                <!-- {{/.}} -->
+                <thead>
+                    <tr>
+                        <th>{{$parameter}}</th>
+                        <th>{{$type}}</th>
+                        <th>{{$description}}</th>
+                    </tr>
+                </thead>
+                <!-- {{?pathParameters}} -->
+                <tbody>
+                    <!-- {{#.}} -->
+                    <tr>
+                        <td><code>{{name}}</code></td>
+                        <td><code>{{?type}}{{>type.html}}{{/type}}&nbsp;•</code></td>
+                        <td>{{description}}</td>
+                    </tr>
+                    <!-- {{/.}} -->
+                </tbody>
+                <!-- {{/pathParameters}} -->
+
+                <!-- {{?queryParameters}} -->
+                <tbody>
+                    <!-- {{#.}} -->
+                    <tr>
+                        <td><code>{{name}}</code></td>
+                        <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                        <td>{{description}}</td>
+                    </tr>
+                    <!-- {{/.}} -->
+                </tbody>
+                <!-- {{/queryParameters}} -->
+
+                <!-- {{?bodyParameter}} -->
+                <tbody>
+                    <tr>
+                        <td><code>{{name}}</code></td>
+                        <td><code>{{?type}}{{>type.html}}{{/type}}&nbsp;•</code></td>
+                        <td>{{description}}</td>
+                    </tr>
+                </tbody>
+                <!-- {{/bodyParameter}} -->
             </table>
             <!-- {{/parameters}} -->
             <!-- {{/operations}} -->
