@@ -302,8 +302,6 @@ public abstract class WebService extends HttpServlet {
             name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
 
             description = map(parameter.getAnnotation(Description.class), Description::value);
-
-            required = parameter.getAnnotation(Required.class) != null;
         }
 
         private VariableDescriptor(String name, Method accessor) {
@@ -1275,10 +1273,16 @@ public abstract class WebService extends HttpServlet {
                         parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
 
                         if (i < keyCount) {
+                            parameterDescriptor.required = true;
+
                             operation.pathParameters.add(parameterDescriptor);
                         } else if (i < n) {
+                            parameterDescriptor.required = parameter.getAnnotation(Required.class) != null;
+
                             operation.queryParameters.add(parameterDescriptor);
                         } else {
+                            parameterDescriptor.required = true;
+
                             operation.bodyParameter = parameterDescriptor;
                         }
                     }
