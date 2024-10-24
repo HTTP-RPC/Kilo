@@ -604,8 +604,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             if (value != null
                                 && (!(value instanceof Boolean flag) || flag)
                                 && (!(value instanceof String string) || !string.isEmpty())
-                                && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())
-                                && (!(value instanceof Map<?, ?> map) || !map.isEmpty())) {
+                                && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())) {
                                 encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);
@@ -681,8 +680,7 @@ public class TemplateEncoder extends Encoder<Object> {
                             if (value == null
                                 || (value instanceof Boolean flag && !flag)
                                 || (value instanceof String string && string.isEmpty())
-                                || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())
-                                || (value instanceof Map<?, ?> map && map.isEmpty())) {
+                                || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())) {
                                 encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);
