@@ -602,9 +602,8 @@ public class TemplateEncoder extends Encoder<Object> {
                             var value = getMarkerValue(marker);
 
                             if (value != null
-                                && (!(value instanceof Boolean flag) || flag)
-                                && (!(value instanceof String string) || !string.isEmpty())
-                                && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())) {
+                                && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())
+                                && (!(value instanceof Boolean flag) || flag)) {
                                 encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);
@@ -678,9 +677,8 @@ public class TemplateEncoder extends Encoder<Object> {
                             var value = getMarkerValue(marker);
 
                             if (value == null
-                                || (value instanceof Boolean flag && !flag)
-                                || (value instanceof String string && string.isEmpty())
-                                || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())) {
+                                || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())
+                                || (value instanceof Boolean flag && !flag)) {
                                 encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);

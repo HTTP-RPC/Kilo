@@ -123,7 +123,7 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        templateEncoder.write(mapOf(entry("a", "A")), writer);
+        templateEncoder.write(mapOf(entry("a", true)), writer);
 
         assertEquals("found", writer.toString());
     }
@@ -134,42 +134,9 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        templateEncoder.write(mapOf(entry("a", "")), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSection4a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", true)), writer);
-
-        assertEquals("found", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSection4b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
         templateEncoder.write(mapOf(entry("a", false)), writer);
 
         assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSection5() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", true)), writer);
-
-        assertEquals("found", writer.toString());
     }
 
     @Test
@@ -382,35 +349,13 @@ public class TemplateEncoderTest {
 
         var writer = new StringWriter();
 
-        templateEncoder.write(mapOf(entry("a", "A")), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testInvertedSection3b() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", "")), writer);
-
-        assertEquals("not found", writer.toString());
-    }
-
-    @Test
-    public void testInvertedSection4a() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
-
-        var writer = new StringWriter();
-
         templateEncoder.write(mapOf(entry("a", true)), writer);
 
         assertEquals("", writer.toString());
     }
 
     @Test
-    public void testInvertedSection4b() throws IOException {
+    public void testInvertedSection3b() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "inverted.txt");
 
         var writer = new StringWriter();

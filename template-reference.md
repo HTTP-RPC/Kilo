@@ -77,7 +77,7 @@ Date/time values may be represented by one of the following:
 * an instance of `java.util.time.TemporalAccessor`
 
 ## Conditional Sections
-Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. Additionally, for `Iterable` content, the named sequence must contain at least one value. For strings, the named value must be non-empty. For booleans, the named value must be `true`.
+Conditional section markers define a section of content that is only rendered if the named value exists in the data dictionary. When the value exists, it is used as the data dictionary for the section. Additionally, for `Iterable` content, the named sequence must contain at least one value. For booleans, the value must be `true`.
 
 For example, given the following data dictionary:
 
@@ -177,7 +177,7 @@ This template could be used to generate a comma-separated list of name/value pai
 ``` 
 
 ## Inverted Sections
-Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary. Additionally, for `Iterable` content, the named sequence must be empty. For booleans, the named value must be `false`.
+Inverted section markers define a section of content that is only rendered if the named value does not exist in the data dictionary. Additionally, for `Iterable` content, the named sequence must be empty. For booleans, the value must be `false`.
 
 For example, given the following data dictionary:
 
