@@ -4,39 +4,38 @@
     <meta charset="utf-8">
     <title>{{$title}}</title>
     <style>
-        :root {
-          font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-          font-size: 14px;
-          scroll-behavior: smooth;
-          color: #393939;
-          --color-link: hsl(214, 83%, 43%);
-        }
-        body {
-          margin: 0;
-          padding: 0;
-          line-height: 1.2;
-        }
-        #toc {
-          padding: 1em;
-        }
-        ol {
-          padding-left: 1rem;
-          display: grid;
-          grid-gap: .5rem 1rem;
-          grid-template-columns: max-content auto;
-        }
-        ol li {
-          list-style: none;
-          display: contents;
-        }
-        #toc a {
-          display: block;
-          text-decoration: none;
-          border-bottom: 1px solid transparent;
-        }
-        a {
-          color: var(--color-link);
-        }
+    :root {
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      scroll-behavior: smooth;
+      color: #393939;
+      --color-link: hsl(214, 83%, 43%);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      line-height: 1.2;
+    }
+    #toc {
+      padding: 1em;
+    }
+    ol {
+      padding-left: 1rem;
+      display: grid;
+      grid-gap: .5rem 1rem;
+      grid-template-columns: max-content auto;
+    }
+    ol li {
+      list-style: none;
+      display: contents;
+    }
+    #toc a {
+      display: block;
+      text-decoration: none;
+    }
+    a {
+      color: var(--color-link);
+    }
     </style>
 </head>
 <body>

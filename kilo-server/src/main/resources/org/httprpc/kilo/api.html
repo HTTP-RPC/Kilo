@@ -4,176 +4,176 @@
     <meta charset="utf-8">
     <title>{{service/path}}</title>
     <style>
-        :root {
-          font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-          font-size: 14px;
-          scroll-behavior: smooth;
-          color: #393939;
-          --color-neutral: hsl(0, 0%, 60%);
-          --color-neutral-medium: hsl(0, 0%, 80%);
-          --color-neutral-light: hsl(0, 0%, 97%);
-          --color-get: hsl(194, 65%, 50%);
-          --color-post: hsl(150, 65%, 50%);
-          --color-put: hsl(31, 95%, 66%);
-          --color-delete: hsl(0, 94%, 76%);
-          --color-link: hsl(214, 83%, 43%);
-        }
-        body {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          grid-template-columns: 1fr 3fr;
-          height: 100vh;
-          line-height: 1.2;
-        }
-        #toc {
-          padding: 1em;
-          background: var(--color-neutral-light);
-          border-right: 1px solid var(--color-neutral-medium);
-          max-height: 100vh;
-          overflow: scroll;
-        }
-        ol {
-          padding-left: 1em;
-        }
-        ol li {
-          list-style: none;
-        }
-        #toc > ol > li + li {
-          margin-top: 1rem;
-        }
-        #toc a {
-          display: block;
-          padding: .25rem;
-          text-decoration: none;
-          border-bottom: 1px solid transparent;
-        }
-        #toc a.active {
-          border-bottom-color: var(--color-neutral-medium);
-        }
-        #docs {
-          padding: 1em;
-          scroll-behavior: smooth;
-          overflow-y: scroll;
-        }
-        #docs > div {
-          border-top: 1px solid #FFF;
-        }
-        section {
-          padding: 1rem;
-        }
-        :is(h1, h2, h3) a {
-          text-decoration-thickness: 1px;
-        }
-        table {
-          border-collapse: collapse;
-          width: calc(100% - 1rem);
-        }
-        table + table {
-          margin-top: 1rem;
-        }
-        thead tr {
-          border-bottom: 1px solid var(--color-neutral-medium);
-        }
-        tbody tr:has(+ tr) {
-          border-bottom: 1px solid var(--color-neutral-light);
-        }
-        tbody + tbody {
-          border-top: 1px solid var(--color-neutral-medium);
-        }
-        td {
-          padding: .5rem;
-        }
-        th {
-          padding: .25rem .5rem;
-          font-size: .8rem;
-          font-weight: normal;
-          text-transform: uppercase;
-          text-align: left;
-          color: var(--color-neutral);
-        }
-        :first-child:is(td,th) {
-          padding-left: 0;
-        }
-        th:nth-child(1) {
-          width: 22%;
-        }
-        th:nth-child(2) {
-          width: 22%;
-        }
-        th:nth-child(3) {
-          width: 68%;
-        }
-        td:nth-child(3) {
-          display: flex;
-          gap: .5rem;
-          align-items: start;
-        }
-        code, pre {
-          font-family: monospace;
-          font-size: .9em;
-        }
-        pre {
-          padding: 1rem;
-          background: var(--color-neutral-light);
-        }
-        :is(table, p) + :is(pre, h2) {
-          margin-top: 2rem;
-        }
-        section :is(table,p) {
-          margin-left: 1rem;
-        }
-        a {
-          color: var(--color-link);
-        }
-        .method {
-          padding: .25rem .5rem;
-          border-radius: .25em;
-          color: #FFF;
-          background: var(--color-neutral);
-        }
-        .method.GET {
-          background: var(--color-get);
-        }
-        .method.PUT {
-          background: var(--color-put);
-        }
-        .method.POST {
-          background: var(--color-post);
-        }
-        .method.DELETE {
-          background: var(--color-delete);
-        }
-        .label {
-          padding: .2em .4em;
-          border-radius: .25em;
-          font-size: .8rem;
-          text-transform: uppercase;
-          background: var(--color-neutral-light);
-        }
-        strong.deprecated {
-          text-transform: uppercase;
-          color: var(--color-neutral);
-        }
+    :root {
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      scroll-behavior: smooth;
+      color: #393939;
+      --color-neutral: hsl(0, 0%, 60%);
+      --color-neutral-medium: hsl(0, 0%, 80%);
+      --color-neutral-light: hsl(0, 0%, 97%);
+      --color-get: hsl(194, 65%, 50%);
+      --color-post: hsl(150, 65%, 50%);
+      --color-put: hsl(31, 95%, 66%);
+      --color-delete: hsl(0, 94%, 76%);
+      --color-link: hsl(214, 83%, 43%);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+      height: 100vh;
+      line-height: 1.2;
+    }
+    #toc {
+      padding: 1em;
+      background: var(--color-neutral-light);
+      border-right: 1px solid var(--color-neutral-medium);
+      max-height: 100vh;
+      overflow: scroll;
+    }
+    ol {
+      padding-left: 1em;
+    }
+    ol li {
+      list-style: none;
+    }
+    #toc > ol > li + li {
+      margin-top: 1rem;
+    }
+    #toc a {
+      display: block;
+      padding: .25rem;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    #toc a.active {
+      border-bottom-color: var(--color-neutral-medium);
+    }
+    #docs {
+      padding: 1em;
+      scroll-behavior: smooth;
+      overflow-y: scroll;
+    }
+    #docs > div {
+      border-top: 1px solid #FFF;
+    }
+    section {
+      padding: 1rem;
+    }
+    :is(h1, h2, h3) a {
+      text-decoration-thickness: 1px;
+    }
+    table {
+      border-collapse: collapse;
+      width: calc(100% - 1rem);
+    }
+    table + table {
+      margin-top: 1rem;
+    }
+    thead tr {
+      border-bottom: 1px solid var(--color-neutral-medium);
+    }
+    tbody tr:has(+ tr) {
+      border-bottom: 1px solid var(--color-neutral-light);
+    }
+    tbody + tbody {
+      border-top: 1px solid var(--color-neutral-medium);
+    }
+    td {
+      padding: .5rem;
+    }
+    th {
+      padding: .25rem .5rem;
+      font-size: .8rem;
+      font-weight: normal;
+      text-transform: uppercase;
+      text-align: left;
+      color: var(--color-neutral);
+    }
+    :first-child:is(td,th) {
+      padding-left: 0;
+    }
+    th:nth-child(1) {
+      width: 22%;
+    }
+    th:nth-child(2) {
+      width: 22%;
+    }
+    th:nth-child(3) {
+      width: 66%;
+    }
+    td:nth-child(3) {
+      display: flex;
+      gap: .5rem;
+      align-items: start;
+    }
+    code, pre {
+      font-family: monospace;
+      font-size: .9em;
+    }
+    pre {
+      padding: 1rem;
+      background: var(--color-neutral-light);
+    }
+    :is(table, p) + :is(pre, h2) {
+      margin-top: 2rem;
+    }
+    section :is(table,p) {
+      margin-left: 1rem;
+    }
+    a {
+      color: var(--color-link);
+    }
+    .method {
+      padding: .25rem .5rem;
+      border-radius: .25em;
+      color: #FFF;
+      background: var(--color-neutral);
+    }
+    .method.GET {
+      background: var(--color-get);
+    }
+    .method.PUT {
+      background: var(--color-put);
+    }
+    .method.POST {
+      background: var(--color-post);
+    }
+    .method.DELETE {
+      background: var(--color-delete);
+    }
+    .label {
+      padding: .2em .4em;
+      border-radius: .25em;
+      font-size: .8rem;
+      text-transform: uppercase;
+      background: var(--color-neutral-light);
+    }
+    strong.deprecated {
+      text-transform: uppercase;
+      color: var(--color-neutral);
+    }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const tocLinks = document.querySelectorAll('#toc a');
-          const highlightActive = function() {
-            var hash = window.location.hash;
-            if (hash) {
-              tocLinks.forEach(link => {
-                if (link.getAttribute('href') === hash) {
-                  link.classList.add('active');
-                } else {
-                  link.classList.remove('active');
-                }
-              });
+    document.addEventListener('DOMContentLoaded', function() {
+      const tocLinks = document.querySelectorAll('#toc a');
+      const highlightActive = function() {
+        var hash = window.location.hash;
+        if (hash) {
+          tocLinks.forEach(link => {
+            if (link.getAttribute('href') === hash) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
             }
-          }
-          window.addEventListener('load', highlightActive, false);
-          window.addEventListener('hashchange', highlightActive, false);
-        });
+          });
+        }
+      }
+      window.addEventListener('load', highlightActive, false);
+      window.addEventListener('hashchange', highlightActive, false);
+    });
     </script>
 </head>
 <body>
@@ -228,43 +228,43 @@
             <!-- {{?parameters}} -->
             <table>
                 <thead>
-                    <tr>
-                        <th>{{$parameter}}</th>
-                        <th>{{$type}}</th>
-                        <th>{{$description}}</th>
-                    </tr>
+                <tr>
+                    <th>{{$parameter}}</th>
+                    <th>{{$type}}</th>
+                    <th>{{$description}}</th>
+                </tr>
                 </thead>
                 <!-- {{?pathParameters}} -->
                 <tbody>
-                    <!-- {{#.}} -->
-                    <tr>
-                        <td><code>{{name}}</code></td>
-                        <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
-                        <td>{{description}}</td>
-                    </tr>
-                    <!-- {{/.}} -->
+                <!-- {{#.}} -->
+                <tr>
+                    <td><code>{{name}}</code></td>
+                    <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
+                    <td>{{description}}</td>
+                </tr>
+                <!-- {{/.}} -->
                 </tbody>
                 <!-- {{/pathParameters}} -->
 
                 <!-- {{?queryParameters}} -->
                 <tbody>
-                    <!-- {{#.}} -->
-                    <tr>
-                        <td><code>{{name}}</code></td>
-                        <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
-                        <td>{{description}}</td>
-                    </tr>
-                    <!-- {{/.}} -->
+                <!-- {{#.}} -->
+                <tr>
+                    <td><code>{{name}}</code></td>
+                    <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                    <td>{{description}}</td>
+                </tr>
+                <!-- {{/.}} -->
                 </tbody>
                 <!-- {{/queryParameters}} -->
 
                 <!-- {{?bodyParameter}} -->
                 <tbody>
-                    <tr>
-                        <td><code>{{name}}</code></td>
-                        <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
-                        <td>{{description}}</td>
-                    </tr>
+                <tr>
+                    <td><code>{{name}}</code></td>
+                    <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
+                    <td>{{description}}</td>
+                </tr>
                 </tbody>
                 <!-- {{/bodyParameter}} -->
             </table>
@@ -285,18 +285,18 @@
             <!-- {{/description}} -->
             <table>
                 <thead>
-                    <tr>
-                        <th>{{$name}}</th>
-                        <th style="width: 84%">{{$description}}</th>
-                    </tr>
+                <tr>
+                    <th>{{$name}}</th>
+                    <th style="width: 88%">{{$description}}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <!-- {{#values}} -->
-                    <tr>
-                        <td><code>{{name}}</code></td>
-                        <td style="width: 84%">{{description}}</td>
-                    </tr>
-                    <!-- {{/values}} -->
+                <!-- {{#values}} -->
+                <tr>
+                    <td><code>{{name}}</code></td>
+                    <td style="width: 88%">{{description}}</td>
+                </tr>
+                <!-- {{/values}} -->
                 </tbody>
             </table>
         </section>
@@ -315,20 +315,20 @@
             <!-- {{/description}} -->
             <table>
                 <thead>
-                    <tr>
-                        <th>{{$property}}</th>
-                        <th>{{$type}}</th>
-                        <th>{{$description}}</th>
-                    </tr>
+                <tr>
+                    <th>{{$property}}</th>
+                    <th>{{$type}}</th>
+                    <th>{{$description}}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <!-- {{#properties}} -->
-                    <tr>
-                        <td><code>{{name}}</code></td>
-                        <td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
-                        <td>{{description}}</td>
-                    </tr>
-                    <!-- {{/properties}} -->
+                <!-- {{#properties}} -->
+                <tr>
+                    <td><code>{{name}}</code></td>
+                    <td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                    <td>{{description}}</td>
+                </tr>
+                <!-- {{/properties}} -->
                 </tbody>
             </table>
         </section>
