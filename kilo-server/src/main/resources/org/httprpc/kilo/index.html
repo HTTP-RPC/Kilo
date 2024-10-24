@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
     <title>{{$title}}</title>
     <style>
         :root {
@@ -44,7 +45,7 @@
     <ol>
         <!-- {{#services}} -->
         <li>
-            <a href="{{contextPath}}{{path}}?api">{{?path}}{{.}}{{/path}}{{^path}}{{$default}}{{/path}}</a><span>{{description}}</span>
+            <a href="{{contextPath}}{{path}}?api">{{contextPath}}{{path}}</a><span>{{description}}</span>
         </li>
         <!-- {{/services}} -->
     </ol>

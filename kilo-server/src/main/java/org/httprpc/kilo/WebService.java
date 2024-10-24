@@ -294,9 +294,9 @@ public abstract class WebService extends HttpServlet {
     public static class VariableDescriptor {
         private String name;
         private String description;
-        private boolean required;
 
         private TypeDescriptor type = null;
+        private Boolean required = null;
 
         private VariableDescriptor(Parameter parameter) {
             name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
@@ -333,16 +333,6 @@ public abstract class WebService extends HttpServlet {
         }
 
         /**
-         * Indicates that the variable is required.
-         *
-         * @return
-         * {@code true} if the variable is required; {@code false}, otherwise.
-         */
-        public boolean isRequired() {
-            return required;
-        }
-
-        /**
          * Returns the type of the variable.
          *
          * @return
@@ -350,6 +340,16 @@ public abstract class WebService extends HttpServlet {
          */
         public TypeDescriptor getType() {
             return type;
+        }
+
+        /**
+         * Indicates that the variable is required.
+         *
+         * @return
+         * {@code true} if the variable is required; {@code false}, otherwise.
+         */
+        public Boolean isRequired() {
+            return required;
         }
     }
 
@@ -1273,16 +1273,12 @@ public abstract class WebService extends HttpServlet {
                         parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
 
                         if (i < keyCount) {
-                            parameterDescriptor.required = true;
-
                             operation.pathParameters.add(parameterDescriptor);
                         } else if (i < n) {
                             parameterDescriptor.required = parameter.getAnnotation(Required.class) != null;
 
                             operation.queryParameters.add(parameterDescriptor);
                         } else {
-                            parameterDescriptor.required = true;
-
                             operation.bodyParameter = parameterDescriptor;
                         }
                     }

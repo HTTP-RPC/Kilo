@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
     <title>{{service/path}}</title>
     <style>
         :root {
@@ -66,13 +67,19 @@
         }
         table {
           border-collapse: collapse;
-          width: 100%;
+          width: calc(100% - 1rem);
         }
         table + table {
           margin-top: 1rem;
         }
-        tr {
+        thead tr {
+          border-bottom: 1px solid var(--color-neutral-medium);
+        }
+        tbody tr:has(+ tr) {
           border-bottom: 1px solid var(--color-neutral-light);
+        }
+        tbody + tbody {
+          border-top: 1px solid var(--color-neutral-medium);
         }
         td {
           padding: .5rem;
@@ -232,7 +239,7 @@
                     <!-- {{#.}} -->
                     <tr>
                         <td><code>{{name}}</code></td>
-                        <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                        <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
                         <td>{{description}}</td>
                     </tr>
                     <!-- {{/.}} -->
@@ -255,7 +262,7 @@
                 <tbody>
                     <tr>
                         <td><code>{{name}}</code></td>
-                        <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                        <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
                         <td>{{description}}</td>
                     </tr>
                 </tbody>
@@ -277,16 +284,20 @@
             <p>{{.}}</p>
             <!-- {{/description}} -->
             <table>
-                <tr>
-                    <th>{{$name}}</th>
-                    <th style="width: 84%">{{$description}}</th>
-                </tr>
-                <!-- {{#values}} -->
-                <tr>
-                    <td><code>{{name}}</code></td>
-                    <td style="width: 84%">{{description}}</td>
-                </tr>
-                <!-- {{/values}} -->
+                <thead>
+                    <tr>
+                        <th>{{$name}}</th>
+                        <th style="width: 84%">{{$description}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- {{#values}} -->
+                    <tr>
+                        <td><code>{{name}}</code></td>
+                        <td style="width: 84%">{{description}}</td>
+                    </tr>
+                    <!-- {{/values}} -->
+                </tbody>
             </table>
         </section>
         <!-- {{/.}} -->
@@ -303,18 +314,22 @@
             <p>{{.}}</p>
             <!-- {{/description}} -->
             <table>
-                <tr>
-                    <th>{{$property}}</th>
-                    <th>{{$type}}</th>
-                    <th>{{$description}}</th>
-                </tr>
-                <!-- {{#properties}} -->
-                <tr>
-                    <td><code>{{name}}</code></td>
-                    <td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
-                    <td>{{description}}</td>
-                </tr>
-                <!-- {{/properties}} -->
+                <thead>
+                    <tr>
+                        <th>{{$property}}</th>
+                        <th>{{$type}}</th>
+                        <th>{{$description}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- {{#properties}} -->
+                    <tr>
+                        <td><code>{{name}}</code></td>
+                        <td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                        <td>{{description}}</td>
+                    </tr>
+                    <!-- {{/properties}} -->
+                </tbody>
             </table>
         </section>
         <!-- {{/.}} -->

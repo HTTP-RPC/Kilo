@@ -5,10 +5,23 @@
     {
       "operations": [
         {
+          "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
           "method": "GET",
-          "parameters": [
+          "parameters": true,
+          "pathParameters": [
+          ],
+          "produces": {
+            "elementType": null,
+            "intrinsic": true,
+            "iterable": false,
+            "keyType": null,
+            "map": false,
+            "name": "double",
+            "valueType": null
+          },
+          "queryParameters": [
             {
               "description": "The first number.",
               "name": "a",
@@ -37,6 +50,15 @@
                 "valueType": null
               }
             }
+          ]
+        },
+        {
+          "bodyParameter": null,
+          "deprecated": false,
+          "description": "Calculates the sum of a list of numbers.",
+          "method": "GET",
+          "parameters": true,
+          "pathParameters": [
           ],
           "produces": {
             "elementType": null,
@@ -46,13 +68,8 @@
             "map": false,
             "name": "double",
             "valueType": null
-          }
-        },
-        {
-          "deprecated": false,
-          "description": "Calculates the sum of a list of numbers.",
-          "method": "GET",
-          "parameters": [
+          },
+          "queryParameters": [
             {
               "description": "The numbers to add.",
               "name": "values",
@@ -75,16 +92,7 @@
                 "valueType": null
               }
             }
-          ],
-          "produces": {
-            "elementType": null,
-            "intrinsic": true,
-            "iterable": false,
-            "keyType": null,
-            "map": false,
-            "name": "double",
-            "valueType": null
-          }
+          ]
         }
       ],
       "path": "/math/sum"
