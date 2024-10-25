@@ -185,6 +185,7 @@ public abstract class WebService extends HttpServlet {
     public static class OperationDescriptor {
         private String method;
         private String description;
+        private boolean formData;
         private boolean deprecated;
 
         private TypeDescriptor produces = null;
@@ -201,6 +202,7 @@ public abstract class WebService extends HttpServlet {
 
             description = map(handler.getAnnotation(Description.class), Description::value);
 
+            formData = handler.getAnnotation(FormData.class) != null;
             deprecated = handler.getAnnotation(Deprecated.class) != null;
         }
 
@@ -222,6 +224,13 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * Indicates that the operation accepts form data.
+         */
+        public boolean isFormData() {
+            return formData;
         }
 
         /**
@@ -296,7 +305,8 @@ public abstract class WebService extends HttpServlet {
         private String description;
 
         private TypeDescriptor type = null;
-        private Boolean required = null;
+
+        private boolean required = false;
 
         private VariableDescriptor(Parameter parameter) {
             name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
@@ -348,7 +358,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * {@code true} if the variable is required; {@code false}, otherwise.
          */
-        public Boolean isRequired() {
+        public boolean isRequired() {
             return required;
         }
     }
@@ -1261,7 +1271,7 @@ public abstract class WebService extends HttpServlet {
 
                     operation.parameters = n > 0;
 
-                    if (operation.method.equals("POST") || operation.method.equals("PUT")) {
+                    if ((operation.method.equals("POST") || operation.method.equals("PUT")) && handler.getAnnotation(FormData.class) == null) {
                         n--;
                     }
 
@@ -1273,12 +1283,16 @@ public abstract class WebService extends HttpServlet {
                         parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
 
                         if (i < keyCount) {
+                            parameterDescriptor.required = true;
+
                             operation.pathParameters.add(parameterDescriptor);
                         } else if (i < n) {
                             parameterDescriptor.required = parameter.getAnnotation(Required.class) != null;
 
                             operation.queryParameters.add(parameterDescriptor);
                         } else {
+                            parameterDescriptor.required = true;
+
                             operation.bodyParameter = parameterDescriptor;
                         }
                     }

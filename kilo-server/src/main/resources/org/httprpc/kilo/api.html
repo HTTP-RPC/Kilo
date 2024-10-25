@@ -188,7 +188,6 @@
                 <!-- {{/endpoints}} -->
             </ol>
         </li>
-
         <!-- {{?enumerations}} -->
         <li><a href="#enumerations">{{$enumerations}}</a>
             <ol>
@@ -198,7 +197,6 @@
             </ol>
         </li>
         <!-- {{/enumerations}} -->
-
         <!-- {{?structures}} -->
         <li><a href="#structures">{{$structures}}</a>
             <ol>
@@ -214,14 +212,13 @@
     <!-- {{?description}} -->
     <p>{{.}}</p>
     <!-- {{/description}} -->
-
     <div id="endpoints">
         <h1>{{$endpoints}}</h1>
         <!-- {{#endpoints}} -->
         <section id="{{path}}">
             <h2><code>{{path}}</code></h2>
             <!-- {{#operations}} -->
-            <pre><span class="method {{method}}">{{method}}</span>{{?produces}} : {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{$deprecated}}</strong>{{/deprecated}}</pre>
+            <pre><span class="method {{method}}">{{method}}{{?formData}}°{{/formData}}</span>{{?produces}} : {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{$deprecated}}</strong>{{/deprecated}}</pre>
             <!-- {{?description}} -->
             <p>{{.}}</p>
             <!-- {{/description}} -->
@@ -239,30 +236,28 @@
                 <!-- {{#.}} -->
                 <tr>
                     <td><code>{{name}}</code></td>
-                    <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
+                    <td><code>{{>variable.html}}</code></td>
                     <td>{{description}}</td>
                 </tr>
                 <!-- {{/.}} -->
                 </tbody>
                 <!-- {{/pathParameters}} -->
-
                 <!-- {{?queryParameters}} -->
                 <tbody>
                 <!-- {{#.}} -->
                 <tr>
                     <td><code>{{name}}</code></td>
-                    <td><code>{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                    <td><code>{{>variable.html}}</code></td>
                     <td>{{description}}</td>
                 </tr>
                 <!-- {{/.}} -->
                 </tbody>
                 <!-- {{/queryParameters}} -->
-
                 <!-- {{?bodyParameter}} -->
                 <tbody>
                 <tr>
                     <td><code>{{name}}</code></td>
-                    <td><code>{{?type}}{{>type.html}}{{/type}}</code></td>
+                    <td><code>{{>variable.html}}</code></td>
                     <td>{{description}}</td>
                 </tr>
                 </tbody>
@@ -273,7 +268,6 @@
         </section>
         <!-- {{/endpoints}} -->
     </div>
-
     <!-- {{?enumerations}} -->
     <div id="enumerations">
         <h1>{{$enumerations}}</h1>
@@ -303,7 +297,6 @@
         <!-- {{/.}} -->
     </div>
     <!-- {{/enumerations}} -->
-
     <!-- {{?structures}} -->
     <div id="structures">
         <h1>{{$structures}}</h1>
@@ -325,7 +318,7 @@
                 <!-- {{#properties}} -->
                 <tr>
                     <td><code>{{name}}</code></td>
-                    <td><code class="type">{{?type}}{{>type.html}}{{/type}}{{?required}}&nbsp;•{{/required}}</code></td>
+                    <td><code>{{>variable.html}}</code></td>
                     <td>{{description}}</td>
                 </tr>
                 <!-- {{/properties}} -->

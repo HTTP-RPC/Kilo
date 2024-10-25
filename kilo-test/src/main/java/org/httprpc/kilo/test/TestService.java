@@ -19,6 +19,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Part;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
+import org.httprpc.kilo.FormData;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
@@ -304,6 +305,7 @@ public class TestService extends AbstractDatabaseService {
 
     @RequestMethod("POST")
     @ResourcePath("form-data")
+    @FormData
     public Map<String, Object> testPostFormData(@Required String string, List<String> strings,
         Integer number, Date date,
         Part file, List<Part> files) {

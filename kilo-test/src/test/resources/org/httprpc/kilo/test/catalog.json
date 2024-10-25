@@ -8,6 +8,7 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Returns a list of all items in the catalog.",
+          "formData": false,
           "method": "GET",
           "parameters": false,
           "pathParameters": [
@@ -36,7 +37,7 @@
           "bodyParameter": {
             "description": "The item to add.",
             "name": "item",
-            "required": null,
+            "required": true,
             "type": {
               "elementType": null,
               "intrinsic": false,
@@ -49,6 +50,7 @@
           },
           "deprecated": false,
           "description": "Adds an item to the catalog.",
+          "formData": false,
           "method": "POST",
           "parameters": true,
           "pathParameters": [
@@ -74,13 +76,14 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Returns detailed information about a specific item.",
+          "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
             {
               "description": "The item ID.",
               "name": "itemID",
-              "required": null,
+              "required": true,
               "type": {
                 "elementType": null,
                 "intrinsic": true,
@@ -108,7 +111,7 @@
           "bodyParameter": {
             "description": "The updated item.",
             "name": "item",
-            "required": null,
+            "required": true,
             "type": {
               "elementType": null,
               "intrinsic": false,
@@ -121,13 +124,14 @@
           },
           "deprecated": false,
           "description": "Updates an item.",
+          "formData": false,
           "method": "PUT",
           "parameters": true,
           "pathParameters": [
             {
               "description": "The item ID.",
               "name": "itemID",
-              "required": null,
+              "required": true,
               "type": {
                 "elementType": null,
                 "intrinsic": true,
@@ -155,13 +159,14 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Deletes an item.",
+          "formData": false,
           "method": "DELETE",
           "parameters": true,
           "pathParameters": [
             {
               "description": "The item ID.",
               "name": "itemID",
-              "required": null,
+              "required": true,
               "type": {
                 "elementType": null,
                 "intrinsic": true,

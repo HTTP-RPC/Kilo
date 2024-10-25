@@ -8,6 +8,7 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of two numbers.",
+          "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
@@ -56,6 +57,7 @@
           "bodyParameter": null,
           "deprecated": false,
           "description": "Calculates the sum of a list of numbers.",
+          "formData": false,
           "method": "GET",
           "parameters": true,
           "pathParameters": [
