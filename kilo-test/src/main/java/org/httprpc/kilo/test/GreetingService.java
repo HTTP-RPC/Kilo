@@ -12,19 +12,19 @@
  * limitations under the License.
  */
 
-package org.httprpc.kilo.test
+package org.httprpc.kilo.test;
 
-import jakarta.servlet.annotation.WebServlet
-import org.httprpc.kilo.Description
-import org.httprpc.kilo.RequestMethod
-import org.httprpc.kilo.WebService
+import jakarta.servlet.annotation.WebServlet;
+import org.httprpc.kilo.Description;
+import org.httprpc.kilo.RequestMethod;
+import org.httprpc.kilo.WebService;
 
-@WebServlet(urlPatterns = ["/*"], loadOnStartup = 1)
+@WebServlet(urlPatterns = {"/*"}, loadOnStartup = 1)
 @Description("Greeting example service.")
-class GreetingService: WebService() {
+public class GreetingService extends WebService {
     @RequestMethod("GET")
     @Description("Returns a friendly greeting.")
-    fun getGreeting(): String {
-        return "Hello, World!"
+    public String getGreeting() {
+        return "Hello, World!";
     }
 }
