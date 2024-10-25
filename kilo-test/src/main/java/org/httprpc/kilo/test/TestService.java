@@ -17,6 +17,7 @@ package org.httprpc.kilo.test;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Part;
+import org.httprpc.kilo.Accepts;
 import org.httprpc.kilo.Creates;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.FormData;
@@ -337,6 +338,12 @@ public class TestService extends AbstractDatabaseService {
     @ResourcePath("image")
     public void testPostImage(Void body) throws IOException {
         echo();
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("deferred")
+    @Accepts
+    public void testPostDeferred(Void body) {
     }
 
     @RequestMethod("PUT")

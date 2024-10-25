@@ -462,6 +462,15 @@ public class WebServiceProxyTest {
     }
 
     @Test
+    public void testDeferredPost() throws IOException {
+        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/deferred"));
+
+        webServiceProxy.invoke();
+
+        assertEquals(202, webServiceProxy.getStatusCode());
+    }
+
+    @Test
     public void testPut() throws IOException {
         var webServiceProxy = new WebServiceProxy("PUT", baseURI.resolve("test"));
 

@@ -853,6 +853,7 @@ public abstract class WebService extends HttpServlet {
                     var locale = request.getLocale();
 
                     templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
+                    templateEncoder.setLocale(locale);
 
                     templateEncoder.write(mapOf(
                         entry("language", locale.getLanguage()),
@@ -1004,6 +1005,8 @@ public abstract class WebService extends HttpServlet {
         if (result != null) {
             if (handler.getAnnotation(Creates.class) != null) {
                 response.setStatus(HttpServletResponse.SC_CREATED);
+            } else {
+                response.setStatus(HttpServletResponse.SC_OK);
             }
 
             try {
@@ -1015,7 +1018,11 @@ public abstract class WebService extends HttpServlet {
             var returnType = handler.getReturnType();
 
             if (returnType == Void.TYPE || returnType == Void.class) {
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                if (handler.getAnnotation(Accepts.class) != null) {
+                    response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
