@@ -290,7 +290,8 @@ public abstract class WebService extends HttpServlet {
          * Returns the body parameter defined by the operation.
          *
          * @return
-         * The operation's body parameter.
+         * The operation's body parameter, or {@code null} if the operation
+         * does not define a body parameter.
          */
         public VariableDescriptor getBodyParameter() {
             return bodyParameter;
