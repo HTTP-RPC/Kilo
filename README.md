@@ -340,7 +340,7 @@ public record Coordinates(
 }
 ```
 
-The `FormData` annotation can be used to document methods that accept form data. Types or methods annotated as `Deprecated` will be identified as such in the output.
+The `FormData` annotation can be used to indicate that a method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Types or methods annotated as `Deprecated` will be identified as such in the output.
 
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 
@@ -362,7 +362,7 @@ public interface RequestHandler {
 }
 ```
 
-For example, the `WebServiceProxy.FormDataRequestHandler` class submits requests as [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). When using the multi-part encoding (the default), instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
+For example, the `WebServiceProxy.FormDataRequestHandler` class submits requests as form data. When using the multi-part encoding (the default), instances of `java.nio.file.Path` represent file uploads and behave similarly to `<input type="file">` tags in HTML.
 
 Service operations are invoked via the following method:
 
