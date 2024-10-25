@@ -850,9 +850,12 @@ public abstract class WebService extends HttpServlet {
 
                     var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
 
-                    templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), request.getLocale()));
+                    var locale = request.getLocale();
+
+                    templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
 
                     templateEncoder.write(mapOf(
+                        entry("language", locale.getLanguage()),
                         entry("contextPath", request.getContextPath()),
                         entry("service", serviceDescriptor)
                     ), response.getOutputStream());

@@ -53,9 +53,12 @@ public class IndexServlet extends HttpServlet {
 
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
-            templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), request.getLocale()));
+            var locale = request.getLocale();
+
+            templateEncoder.setResourceBundle(ResourceBundle.getBundle(IndexServlet.class.getName(), locale));
 
             templateEncoder.write(mapOf(
+                entry("language", locale.getLanguage()),
                 entry("contextPath", request.getContextPath()),
                 entry("services", serviceDescriptors)
             ), response.getOutputStream());
