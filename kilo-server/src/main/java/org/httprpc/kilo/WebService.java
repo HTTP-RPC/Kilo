@@ -697,6 +697,11 @@ public abstract class WebService extends HttpServlet {
      */
     protected static final String TEXT_PLAIN = "text/plain";
 
+    /**
+     * Content type format.
+     */
+    protected static final String CONTENT_TYPE_FORMAT = "%s;charset=%s";
+
     private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
     private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
@@ -835,13 +840,13 @@ public abstract class WebService extends HttpServlet {
                 var accept = request.getHeader("Accept");
 
                 if (accept != null && accept.equalsIgnoreCase(APPLICATION_JSON)) {
-                    response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, StandardCharsets.UTF_8));
+                    response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
 
                     var jsonEncoder = new JSONEncoder();
 
                     jsonEncoder.write(serviceDescriptor, response.getOutputStream());
                 } else {
-                    response.setContentType(String.format("%s;charset=%s", TEXT_HTML, StandardCharsets.UTF_8));
+                    response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_HTML, StandardCharsets.UTF_8));
 
                     var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
 
@@ -1205,7 +1210,7 @@ public abstract class WebService extends HttpServlet {
      * If an exception occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
-        response.setContentType(String.format("%s;charset=%s", APPLICATION_JSON, StandardCharsets.UTF_8));
+        response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
 
         var jsonEncoder = new JSONEncoder();
 
@@ -1222,7 +1227,7 @@ public abstract class WebService extends HttpServlet {
      * The cause of the error.
      */
     protected void reportError(HttpServletResponse response, Throwable cause) throws IOException {
-        response.setContentType(String.format("%s;charset=%s", TEXT_PLAIN, StandardCharsets.UTF_8));
+        response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_PLAIN, StandardCharsets.UTF_8));
 
         if (cause != null) {
             var message = cause.getMessage();

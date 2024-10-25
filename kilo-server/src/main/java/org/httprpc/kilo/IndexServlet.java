@@ -43,13 +43,13 @@ public class IndexServlet extends HttpServlet {
         var accept = request.getHeader("Accept");
 
         if (accept != null && accept.equalsIgnoreCase(WebService.APPLICATION_JSON)) {
-            response.setContentType(String.format("%s;charset=%s", WebService.APPLICATION_JSON, StandardCharsets.UTF_8));
+            response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.APPLICATION_JSON, StandardCharsets.UTF_8));
 
             var jsonEncoder = new JSONEncoder();
 
             jsonEncoder.write(serviceDescriptors, response.getOutputStream());
         } else {
-            response.setContentType(String.format("%s;charset=%s", WebService.TEXT_HTML, StandardCharsets.UTF_8));
+            response.setContentType(String.format(WebService.CONTENT_TYPE_FORMAT, WebService.TEXT_HTML, StandardCharsets.UTF_8));
 
             var templateEncoder = new TemplateEncoder(IndexServlet.class, "index.html");
 
