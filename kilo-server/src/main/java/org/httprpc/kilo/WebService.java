@@ -1004,7 +1004,9 @@ public abstract class WebService extends HttpServlet {
         }
 
         if (result != null) {
-            if (handler.getAnnotation(Creates.class) != null) {
+            if (handler.getAnnotation(Accepts.class) != null) {
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            } else if (handler.getAnnotation(Creates.class) != null) {
                 response.setStatus(HttpServletResponse.SC_CREATED);
             } else {
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -1019,11 +1021,7 @@ public abstract class WebService extends HttpServlet {
             var returnType = handler.getReturnType();
 
             if (returnType == Void.TYPE || returnType == Void.class) {
-                if (handler.getAnnotation(Accepts.class) != null) {
-                    response.setStatus(HttpServletResponse.SC_ACCEPTED);
-                } else {
-                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                }
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }

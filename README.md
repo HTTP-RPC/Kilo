@@ -213,9 +213,7 @@ Additionally, instances of the following types are automatically converted to th
 * `java.time.TemporalAmount`
 * `java.util.UUID`
 
-By default, an HTTP 200 (OK) response is returned when a service method completes successfully. However, if the method is annotated with `Creates`, HTTP 201 (created) will be returned instead. 
-
-If a service method returns `void` or `Void`, HTTP 204 (no content) will be returned by default. However, if the method is annotated with `Accepts`, HTTP 202 (accepted) will be returned instead. 
+By default, an HTTP 200 (OK) response is returned when a service method completes successfully. However, if the method is annotated with `Creates`, HTTP 201 (created) will be returned instead. If the method is annotated with `Accepts`, HTTP 202 (accepted) will be returned. If the handler's return type is `void` or `Void`, HTTP 204 (no content) will be returned.
 
 If a service method returns `null`, an HTTP 404 (not found) response will be returned.
 

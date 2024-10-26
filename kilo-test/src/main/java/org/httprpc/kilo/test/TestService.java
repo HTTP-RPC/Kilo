@@ -343,7 +343,8 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("POST")
     @ResourcePath("deferred")
     @Accepts
-    public void testPostDeferred(Void body) {
+    public int testPostDeferred(Void body) {
+        return 0;
     }
 
     @RequestMethod("PUT")
