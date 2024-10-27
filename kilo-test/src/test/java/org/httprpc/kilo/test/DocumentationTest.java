@@ -44,12 +44,12 @@ public class DocumentationTest {
 
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve(name));
 
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "application/json")
-        ));
-
         webServiceProxy.setArguments(mapOf(
             entry("api", "json")
+        ));
+
+        webServiceProxy.setHeaders(mapOf(
+            entry("Accept", "application/json")
         ));
 
         var actual = webServiceProxy.invoke();

@@ -342,8 +342,6 @@ public class WebServiceProxy {
 
                 var webServiceProxy = new WebServiceProxy(requestMethod.value(), uri);
 
-                webServiceProxy.setHeaders(headers);
-
                 var parameters = method.getParameters();
 
                 var n = parameters.length;
@@ -369,6 +367,8 @@ public class WebServiceProxy {
                 }
 
                 webServiceProxy.setArguments(argumentMap);
+
+                webServiceProxy.setHeaders(headers);
 
                 if (n < parameters.length) {
                     var body = argumentList.get(n);
@@ -446,8 +446,8 @@ public class WebServiceProxy {
     private String method;
     private URI uri;
 
-    private Map<String, Object> headers = mapOf();
     private Map<String, Object> arguments = mapOf();
+    private Map<String, Object> headers = mapOf();
 
     private Object body = null;
 
@@ -509,30 +509,6 @@ public class WebServiceProxy {
     }
 
     /**
-     * Returns the header map.
-     *
-     * @return
-     * The header map.
-     */
-    public Map<String, Object> getHeaders() {
-        return headers;
-    }
-
-    /**
-     * Sets the header map.
-     *
-     * @param headers
-     * The header map.
-     */
-    public void setHeaders(Map<String, Object> headers) {
-        if (headers == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.headers = headers;
-    }
-
-    /**
      * Returns the argument map.
      *
      * @return
@@ -554,6 +530,30 @@ public class WebServiceProxy {
         }
 
         this.arguments = arguments;
+    }
+
+    /**
+     * Returns the header map.
+     *
+     * @return
+     * The header map.
+     */
+    public Map<String, Object> getHeaders() {
+        return headers;
+    }
+
+    /**
+     * Sets the header map.
+     *
+     * @param headers
+     * The header map.
+     */
+    public void setHeaders(Map<String, Object> headers) {
+        if (headers == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.headers = headers;
     }
 
     /**
@@ -735,6 +735,10 @@ public class WebServiceProxy {
 
         // Append query
         if (!arguments.isEmpty()) {
+            if (uri.getRawQuery() != null || uri.getRawFragment() != null) {
+                throw new IllegalStateException("Query or fragment is already defined.");
+            }
+
             try {
                 uri = new URI(String.format("%s?%s", uri, encodeQuery(arguments)));
             } catch (URISyntaxException exception) {
@@ -742,7 +746,7 @@ public class WebServiceProxy {
             }
         }
 
-        // Open URL connection
+        // Open connection
         var connection = (HttpURLConnection)uri.toURL().openConnection();
 
         connection.setRequestMethod(method);
@@ -756,7 +760,7 @@ public class WebServiceProxy {
             locale.getLanguage().toLowerCase(),
             locale.getCountry().toLowerCase()));
 
-        // Apply custom headers
+        // Apply headers
         for (Map.Entry<String, ?> entry : headers.entrySet()) {
             var key = entry.getKey();
             var value = entry.getValue();

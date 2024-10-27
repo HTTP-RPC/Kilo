@@ -68,12 +68,12 @@ public class PetsTest {
 
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "application/json")
-        ));
-
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
+        ));
+
+        webServiceProxy.setHeaders(mapOf(
+            entry("Accept", "application/json")
         ));
 
         var actual = webServiceProxy.invoke();
@@ -91,12 +91,12 @@ public class PetsTest {
 
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", "text/csv")
-        ));
-
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
+        ));
+
+        webServiceProxy.setHeaders(mapOf(
+            entry("Accept", "text/csv")
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
@@ -129,12 +129,12 @@ public class PetsTest {
 
         var webServiceProxy = new WebServiceProxy("GET", baseURI.resolve("pets/stream"));
 
-        webServiceProxy.setHeaders(mapOf(
-            entry("Accept", mimeType)
-        ));
-
         webServiceProxy.setArguments(mapOf(
             entry("owner", "Gwen")
+        ));
+
+        webServiceProxy.setHeaders(mapOf(
+            entry("Accept", mimeType)
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
