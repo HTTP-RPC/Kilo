@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
@@ -394,7 +395,7 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testFormDataPostProxy() throws IOException {
+    public void testFormDataPostProxy() throws URISyntaxException, IOException {
         var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
         var now = new Date();
@@ -407,8 +408,8 @@ public class WebServiceProxyTest {
             entry("strings", listOf("a", "b", "c")),
             entry("number", 123),
             entry("date", now),
-            entry("file", Paths.get(textURL.getPath())),
-            entry("files", listOf(Paths.get(textURL.getPath()), Paths.get(imageURL.getPath())))
+            entry("file", Paths.get(textURL.toURI())),
+            entry("files", listOf(Paths.get(textURL.toURI()), Paths.get(imageURL.toURI())))
         ), TestServiceProxy.FormData.class);
 
         var result = testServiceProxy.testFormDataPost(formData);
