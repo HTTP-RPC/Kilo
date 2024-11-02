@@ -219,6 +219,27 @@ If a service method returns `null`, an HTTP 404 (not found) response will be ret
 
 Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative representations. See the method documentation for more information.
 
+### Exceptions
+If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is determined as follows:
+
+* `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
+* `NoSuchElementException` - HTTP 404 (not found)
+* `IllegalStateException` - HTTP 409 (conflict)
+* Any other exception - HTTP 500 (internal server error)
+
+Subclasses can override the `reportError()` method to perform custom error handling.
+
+### Database Connectivity
+For services that require database connectivity, the following method can be used to obtain a JDBC connection object associated with the current invocation:
+
+```java
+protected static Connection getConnection() { ... }
+```
+
+The connection is opened via a data source identified by `getDataSourceName()`, which returns `null` by default. Service classes must override this method to provide the name of a valid data source.
+
+Auto-commit is disabled so an entire request will be processed within a single transaction. If the request completes successfully, the transaction is committed. Otherwise, it is rolled back.
+
 ### Request and Repsonse Properties
 The following methods provide access to the request and response objects associated with the current invocation:
 
@@ -230,16 +251,6 @@ protected HttpServletResponse getResponse() { ... }
 For example, a service might use the request to read directly from the input stream, or use the response to return a custom header.
 
 The response object can also be used to produce a custom result. If a service method commits the response by writing to the output stream, the method's return value (if any) will be ignored by `WebService`. This allows a service to return content that cannot be easily represented as JSON, such as image data.
-
-### Exceptions
-If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is determined as follows:
-
-* `IllegalArgumentException` or `UnsupportedOperationException` - HTTP 403 (forbidden)
-* `NoSuchElementException` - HTTP 404 (not found)
-* `IllegalStateException` - HTTP 409 (conflict)
-* Any other exception - HTTP 500 (internal server error)
-
-Subclasses can override the `reportError()` method to perform custom error handling.
 
 ### Inter-Service Communication
 A reference to any active service can be obtained via the `getInstance()` method of the `WebService` class. This can be useful when the implementation of one service depends on functionality provided by another service, for example.

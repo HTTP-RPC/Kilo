@@ -25,6 +25,9 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -36,6 +39,8 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -670,6 +675,8 @@ public abstract class WebService extends HttpServlet {
     private static final Comparator<Method> methodNameComparator = Comparator.comparing(Method::getName);
     private static final Comparator<Method> methodParameterCountComparator = Comparator.comparing(Method::getParameterCount);
 
+    private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
+
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static final ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
 
@@ -829,8 +836,92 @@ public abstract class WebService extends HttpServlet {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try (var connection = openConnection()) {
+            if (connection != null) {
+                connection.setAutoCommit(false);
+            }
+
+            setConnection(connection);
+
+            try {
+                invoke(request, response);
+
+                if (connection != null) {
+                    if (response.getStatus() / 100 == 2) {
+                        connection.commit();
+                    } else {
+                        connection.rollback();
+                    }
+                }
+            } catch (Exception exception) {
+                if (connection != null) {
+                    connection.rollback();
+                }
+
+                log(exception.getMessage(), exception);
+
+                throw exception;
+            } finally {
+                if (connection != null) {
+                    connection.setAutoCommit(true);
+                }
+
+                setConnection(null);
+            }
+        } catch (SQLException exception) {
+            throw new ServletException(exception);
+        }
+    }
+
+    /**
+     * Opens a database connection.
+     *
+     * @return
+     * A database connection, or {@code null} if the service does not require a
+     * database connection.
+     */
+    protected Connection openConnection() throws SQLException {
+        var dataSourceName = getDataSourceName();
+
+        if (dataSourceName != null) {
+            DataSource dataSource;
+            try {
+                var initialContext = new InitialContext();
+
+                dataSource = (DataSource)initialContext.lookup(dataSourceName);
+            } catch (NamingException exception) {
+                throw new IllegalStateException(exception);
+            }
+
+            return dataSource.getConnection();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the data source name.
+     *
+     * @return
+     * The data source name, or {@code null} if the service does not require a
+     * data source.
+     */
+    protected String getDataSourceName() {
+        return null;
+    }
+
+    /**
+     * Invokes a service method.
+     *
+     * @param request
+     * The HTTP servlet request.
+     *
+     * @param response
+     * The HTTP servlet response.
+     */
+    @SuppressWarnings("unchecked")
+    protected void invoke(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var method = request.getMethod().toUpperCase();
         var pathInfo = request.getPathInfo();
 
@@ -883,7 +974,7 @@ public abstract class WebService extends HttpServlet {
                     child = resource.resources.get("?");
 
                     if (child == null) {
-                        super.service(request, response);
+                        response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                         return;
                     }
 
@@ -897,7 +988,7 @@ public abstract class WebService extends HttpServlet {
         var handlerList = resource.handlerMap.get(method);
 
         if (handlerList == null) {
-            super.service(request, response);
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
 
@@ -1121,7 +1212,7 @@ public abstract class WebService extends HttpServlet {
                             throw new UnsupportedOperationException("Unsupported collection type.");
                         }
                     } else {
-                        throw new UnsupportedOperationException("Invalid element type.");
+                        throw new UnsupportedOperationException("Unsupported element type.");
                     }
                 } else {
                     Object value;
@@ -1160,6 +1251,30 @@ public abstract class WebService extends HttpServlet {
         }
 
         return arguments;
+    }
+
+    /**
+     * Returns the database connection.
+     *
+     * @return
+     * The database connection.
+     */
+    protected static Connection getConnection() {
+        return connection.get();
+    }
+
+    /**
+     * Sets the database connection.
+     *
+     * @param connection
+     * The database connection.
+     */
+    protected static void setConnection(Connection connection) {
+        if (connection != null) {
+            WebService.connection.set(connection);
+        } else {
+            WebService.connection.remove();
+        }
     }
 
     /**
@@ -1221,9 +1336,18 @@ public abstract class WebService extends HttpServlet {
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
 
-        var jsonEncoder = new JSONEncoder();
+        var jsonEncoder = new JSONEncoder(isCompact());
 
         jsonEncoder.write(result, response.getOutputStream());
+    }
+
+    /**
+     * Enables compact output.
+     *
+     * {@code true} if compact output is enabled; {@code false}, otherwise.
+     */
+    protected boolean isCompact() {
+        return false;
     }
 
     /**
@@ -1324,7 +1448,7 @@ public abstract class WebService extends HttpServlet {
     }
 
     private TypeDescriptor describeGenericType(Type type) {
-        if (type instanceof Class) {
+        if (type instanceof Class<?>) {
             return describeRawType((Class<?>)type);
         } else if (type instanceof ParameterizedType parameterizedType) {
             var rawType = (Class<?>)parameterizedType.getRawType();
@@ -1335,10 +1459,10 @@ public abstract class WebService extends HttpServlet {
             } else if (Map.class.isAssignableFrom(rawType)) {
                 return new MapTypeDescriptor(describeGenericType(actualTypeArguments[0]), describeGenericType(actualTypeArguments[1]));
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported parameterized type.");
             }
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Unsupported type.");
         }
     }
 

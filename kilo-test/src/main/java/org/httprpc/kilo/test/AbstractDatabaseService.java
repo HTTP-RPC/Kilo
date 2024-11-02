@@ -14,66 +14,11 @@
 
 package org.httprpc.kilo.test;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.httprpc.kilo.WebService;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 public abstract class AbstractDatabaseService extends WebService {
-    private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
-
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (var connection = openConnection()) {
-            connection.setAutoCommit(false);
-
-            AbstractDatabaseService.connection.set(connection);
-
-            try {
-                super.service(request, response);
-
-                if (response.getStatus() / 100 == 2) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
-            } catch (Exception exception) {
-                connection.rollback();
-
-                log(exception.getMessage(), exception);
-
-                throw exception;
-            } finally {
-                connection.setAutoCommit(true);
-
-                AbstractDatabaseService.connection.remove();
-            }
-        } catch (SQLException exception) {
-            throw new ServletException(exception);
-        }
-    }
-
-    protected Connection openConnection() throws SQLException {
-        DataSource dataSource;
-        try {
-            var initialContext = new InitialContext();
-
-            dataSource = (DataSource)initialContext.lookup("java:comp/env/jdbc/DemoDB");
-        } catch (NamingException exception) {
-            throw new IllegalStateException(exception);
-        }
-
-        return dataSource.getConnection();
-    }
-
-    protected static Connection getConnection() {
-        return connection.get();
+    protected String getDataSourceName() {
+        return "java:comp/env/jdbc/DemoDB";
     }
 }

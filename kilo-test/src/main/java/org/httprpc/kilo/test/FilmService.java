@@ -18,13 +18,10 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.WebService;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -33,19 +30,10 @@ import static org.httprpc.kilo.util.Optionals.*;
 
 @WebServlet(urlPatterns = {"/films/*"}, loadOnStartup = 1)
 @Description("Film example service.")
-public class FilmService extends AbstractDatabaseService {
+public class FilmService extends WebService {
     @Override
-    protected Connection openConnection() throws SQLException {
-        DataSource dataSource;
-        try {
-            var initialContext = new InitialContext();
-
-            dataSource = (DataSource)initialContext.lookup("java:comp/env/jdbc/SakilaDB");
-        } catch (NamingException exception) {
-            throw new IllegalStateException(exception);
-        }
-
-        return dataSource.getConnection();
+    protected String getDataSourceName() {
+        return "java:comp/env/jdbc/SakilaDB";
     }
 
     @RequestMethod("GET")
