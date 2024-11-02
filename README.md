@@ -240,6 +240,15 @@ The connection is opened via a data source identified by `getDataSourceName()`, 
 
 Auto-commit is disabled so an entire request will be processed within a single transaction. If the request completes successfully, the transaction is committed. Otherwise, it is rolled back.
 
+### Authentication
+Services that require authentication can override the following method, which returns `true` by default:
+
+```java
+protected boolean authenticate(HttpServletRequest request, HttpServletResponse response) { ... }
+```
+
+If this method returns `false`, the requested operation will not be performed.
+
 ### Request and Repsonse Properties
 The following methods provide access to the request and response objects associated with the current invocation:
 
