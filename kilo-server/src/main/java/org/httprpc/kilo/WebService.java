@@ -744,10 +744,6 @@ public abstract class WebService extends HttpServlet {
             .toList();
     }
 
-    /**
-     * Initializes the service instance.
-     * {@inheritDoc}
-     */
     @Override
     public void init() throws ServletException {
         var type = getClass();
@@ -831,10 +827,6 @@ public abstract class WebService extends HttpServlet {
         }
     }
 
-    /**
-     * Processes a service request.
-     * {@inheritDoc}
-     */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try (var connection = openConnection()) {
@@ -845,7 +837,7 @@ public abstract class WebService extends HttpServlet {
             setConnection(connection);
 
             try {
-                invoke(request, response);
+                process(request, response);
 
                 if (connection != null) {
                     if (response.getStatus() / 100 == 2) {
@@ -912,55 +904,58 @@ public abstract class WebService extends HttpServlet {
     }
 
     /**
-     * Invokes a service method.
+     * Processes a service request.
      *
      * @param request
-     * The HTTP servlet request.
+     * The servlet request.
      *
      * @param response
-     * The HTTP servlet response.
+     * The servlet response.
+     *
+     * @throws ServletException
+     * If an unexpected error occurs.
+     *
+     * @throws IOException
+     * If an error occurs while decoding the request or encoding the response.
      */
-    @SuppressWarnings("unchecked")
-    protected void invoke(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        var method = request.getMethod().toUpperCase();
-        var pathInfo = request.getPathInfo();
+    protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getMethod().equalsIgnoreCase("GET") && request.getPathInfo() == null && request.getParameter("api") != null) {
+            var accept = request.getHeader("Accept");
 
-        if (method.equals("GET") && pathInfo == null) {
-            var api = request.getParameter("api");
+            if (accept != null && accept.equalsIgnoreCase(APPLICATION_JSON)) {
+                response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
 
-            if (api != null) {
-                var accept = request.getHeader("Accept");
+                var jsonEncoder = new JSONEncoder();
 
-                if (accept != null && accept.equalsIgnoreCase(APPLICATION_JSON)) {
-                    response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
+                jsonEncoder.write(serviceDescriptor, response.getOutputStream());
+            } else {
+                response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_HTML, StandardCharsets.UTF_8));
 
-                    var jsonEncoder = new JSONEncoder();
+                var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
 
-                    jsonEncoder.write(serviceDescriptor, response.getOutputStream());
-                } else {
-                    response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_HTML, StandardCharsets.UTF_8));
+                var locale = request.getLocale();
 
-                    var templateEncoder = new TemplateEncoder(WebService.class, "api.html");
+                templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
+                templateEncoder.setLocale(locale);
 
-                    var locale = request.getLocale();
-
-                    templateEncoder.setResourceBundle(ResourceBundle.getBundle(WebService.class.getName(), locale));
-                    templateEncoder.setLocale(locale);
-
-                    templateEncoder.write(mapOf(
-                        entry("language", locale.getLanguage()),
-                        entry("contextPath", request.getContextPath()),
-                        entry("service", serviceDescriptor)
-                    ), response.getOutputStream());
-                }
-
-                return;
+                templateEncoder.write(mapOf(
+                    entry("language", locale.getLanguage()),
+                    entry("contextPath", request.getContextPath()),
+                    entry("service", serviceDescriptor)
+                ), response.getOutputStream());
             }
+        } else {
+            invoke(request, response);
         }
+    }
 
+    @SuppressWarnings("unchecked")
+    private void invoke(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var resource = root;
 
         List<String> keys = new ArrayList<>();
+
+        var pathInfo = request.getPathInfo();
 
         if (pathInfo != null) {
             var components = pathInfo.split("/");
@@ -985,7 +980,7 @@ public abstract class WebService extends HttpServlet {
             }
         }
 
-        var handlerList = resource.handlerMap.get(method);
+        var handlerList = resource.handlerMap.get(request.getMethod().toUpperCase());
 
         if (handlerList == null) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -1310,7 +1305,7 @@ public abstract class WebService extends HttpServlet {
      * The decoded body.
      *
      * @throws IOException
-     * If an exception occurs while decoding the content.
+     * If an error occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
         var jsonDecoder = new JSONDecoder(type);
@@ -1331,7 +1326,7 @@ public abstract class WebService extends HttpServlet {
      * The operation result.
      *
      * @throws IOException
-     * If an exception occurs while encoding the result.
+     * If an error occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));

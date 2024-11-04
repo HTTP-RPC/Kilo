@@ -32,10 +32,6 @@ import static org.httprpc.kilo.util.Collections.*;
  */
 @WebServlet(urlPatterns = {""}, loadOnStartup = Integer.MAX_VALUE)
 public class IndexServlet extends HttpServlet {
-    /**
-     * Generates the service index.
-     * {@inheritDoc}
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var serviceDescriptors = WebService.getServiceDescriptors();
