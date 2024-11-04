@@ -845,11 +845,7 @@ public abstract class WebService extends HttpServlet {
             setConnection(connection);
 
             try {
-                if (authenticate(request, response)) {
-                    invoke(request, response);
-                }
-
-                response.flushBuffer();
+                invoke(request, response);
 
                 if (connection != null) {
                     if (response.getStatus() / 100 == 2) {
@@ -913,22 +909,6 @@ public abstract class WebService extends HttpServlet {
      */
     protected String getDataSourceName() {
         return null;
-    }
-
-    /**
-     * Authenticates a service request.
-     *
-     * @param request
-     * The HTTP servlet request.
-     *
-     * @param response
-     * The HTTP servlet response.
-     *
-     * @return
-     * {@code true} if the request was authenticated; {@code false}, otherwise.
-     */
-    protected boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
-        return true;
     }
 
     /**
