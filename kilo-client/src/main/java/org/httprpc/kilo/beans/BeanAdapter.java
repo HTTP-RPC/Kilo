@@ -473,6 +473,16 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
+     * Returns the bean instance.
+     *
+     * @return
+     * The bean instance.
+     */
+    public Object getBean() {
+        return bean;
+    }
+
+    /**
      * Gets a property value.
      * {@inheritDoc}
      */

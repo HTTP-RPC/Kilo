@@ -104,6 +104,16 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
+     * Returns the result set.
+     *
+     * @return
+     * The result set.
+     */
+    public ResultSet getResultSet() {
+        return resultSet;
+    }
+
+    /**
      * <p>Returns an iterator over the results.</p>
      *
      * <p>Temporal values are converted as follows:</p>
