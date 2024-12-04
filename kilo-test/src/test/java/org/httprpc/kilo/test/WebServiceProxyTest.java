@@ -29,13 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -92,22 +86,22 @@ public class WebServiceProxyTest {
 
         assertEquals(200, webServiceProxy.getStatusCode());
 
-        assertEquals(result.getString(), "héllo&gøod+bye?");
-        assertEquals(result.getStrings(), listOf("a", "b", "c"));
-        assertEquals(result.getNumber(), 123);
-        assertEquals(result.getNumbers(), setOf(1, 2, 3));
+        assertEquals("héllo&gøod+bye?", result.getString());
+        assertEquals(listOf("a", "b", "c"), result.getStrings());
+        assertEquals(123, result.getNumber());
+        assertEquals(setOf(1, 2, 3), result.getNumbers());
         assertTrue(result.getFlag());
-        assertEquals(result.getCharacter(), 'a');
-        assertEquals(result.getDayOfWeek(), dayOfWeek);
-        assertEquals(result.getDate(), date);
-        assertEquals(result.getDates(), listOf(date));
-        assertEquals(result.getInstant(), instant);
-        assertEquals(result.getLocalDate(), localDate);
-        assertEquals(result.getLocalTime(), localTime);
-        assertEquals(result.getLocalDateTime(), localDateTime);
-        assertEquals(result.getDuration(), duration);
-        assertEquals(result.getPeriod(), period);
-        assertEquals(result.getUUID(), uuid);
+        assertEquals('a', result.getCharacter());
+        assertEquals(dayOfWeek, result.getDayOfWeek());
+        assertEquals(date, result.getDate());
+        assertEquals(listOf(date), result.getDates());
+        assertEquals(instant, result.getInstant());
+        assertEquals(localDate, result.getLocalDate());
+        assertEquals(localTime, result.getLocalTime());
+        assertEquals(localDateTime, result.getLocalDateTime());
+        assertEquals(duration, result.getDuration());
+        assertEquals(period, result.getPeriod());
+        assertEquals(uuid, result.getUUID());
     }
 
     @Test
