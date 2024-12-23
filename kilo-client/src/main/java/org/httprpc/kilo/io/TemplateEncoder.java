@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
@@ -697,18 +696,11 @@ public class TemplateEncoder extends Encoder<Object> {
                             return;
                         }
                         case RESOURCE -> {
-                            Object value;
                             if (resourceBundle == null) {
-                                value = marker;
-                            } else {
-                                try {
-                                    value = resourceBundle.getObject(marker);
-                                } catch (MissingResourceException exception) {
-                                    value = marker;
-                                }
+                                throw new IllegalStateException("Resource bundle not specified.");
                             }
 
-                            value = defaultModifier.apply(value, null, locale, timeZone);
+                            var value = defaultModifier.apply(resourceBundle.getObject(marker), null, locale, timeZone);
 
                             writer.append(value.toString());
                         }

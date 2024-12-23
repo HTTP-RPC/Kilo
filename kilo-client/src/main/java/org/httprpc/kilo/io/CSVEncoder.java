@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Optionals.*;
@@ -123,11 +122,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             if (resourceBundle == null) {
                 heading = key;
             } else {
-                try {
-                    heading = resourceBundle.getObject(key).toString();
-                } catch (MissingResourceException exception) {
-                    heading = key;
-                }
+                heading = resourceBundle.getObject(key).toString();
             }
 
             encode(heading, writer);
