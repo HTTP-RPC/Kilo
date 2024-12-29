@@ -108,8 +108,10 @@ public class JSONEncoder extends Encoder<Object> {
         for (int i = 0, n = text.length(); i < n; i++) {
             var c = text.charAt(i);
 
-            if (c == '"' || c == '\\') {
-                writer.write("\\" + c);
+            if (c == '"') {
+                writer.write("\\\"");
+            } else if (c == '\\') {
+                writer.write("\\\\");
             } else if (c == '\b') {
                 writer.write("\\b");
             } else if (c == '\f') {

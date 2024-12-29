@@ -41,7 +41,14 @@ public class JSONEncoderTest {
     @Test
     public void testString() throws IOException {
         assertEquals("\"abcdéfg\"", encode("abcdéfg"));
-        assertEquals("\"\\b\\f\\r\\n\\t\\u0000\"", encode("\b\f\r\n\t\0"));
+        assertEquals("\"\\\"\"", encode("\""));
+        assertEquals("\"\\\\\"", encode("\\"));
+        assertEquals("\"\\b\"", encode("\b"));
+        assertEquals("\"\\f\"", encode("\f"));
+        assertEquals("\"\\r\"", encode("\r"));
+        assertEquals("\"\\n\"", encode("\n"));
+        assertEquals("\"\\t\"", encode("\t"));
+        assertEquals("\"\\u0000\"", encode("\0"));
     }
 
     @Test
