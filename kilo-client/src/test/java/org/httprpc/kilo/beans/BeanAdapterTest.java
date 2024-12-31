@@ -59,28 +59,6 @@ public class BeanAdapterTest {
         }
     }
 
-    public static class MissingAccessor {
-        public void setX(int value) {
-            // No-op
-        }
-    }
-
-    public static class DuplicateMutator {
-        private double x;
-
-        public double getX() {
-            return x;
-        }
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public void setX(String x) {
-            // No-op
-        }
-    }
-
     public static class DuplicateName {
         @Name("x")
         public String getFoo() {
@@ -90,16 +68,6 @@ public class BeanAdapterTest {
         @Name("x")
         public String getBar() {
             return "bar";
-        }
-    }
-
-    public static class PropertyTypeMismatch {
-        public int getX() {
-            return 0;
-        }
-
-        public void setX(String x) {
-            // No-op
         }
     }
 
@@ -499,19 +467,6 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testDefaultMethod() {
-        var defaultMethod = BeanAdapter.coerce(mapOf(
-            entry("x", 1)
-        ), DefaultMethod.class);
-
-        assertEquals(2, defaultMethod.getY());
-
-        var beanAdapter = new BeanAdapter(defaultMethod);
-
-        assertEquals(2, beanAdapter.get("z"));
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
     public void testRequired() {
         var testBean = new TestBean();
@@ -631,22 +586,20 @@ public class BeanAdapterTest {
     }
 
     @Test
-    public void testMissingAccessor() {
-        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new MissingAccessor()));
-    }
-
-    @Test
-    public void testDuplicateMutator() {
-        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateMutator()));
-    }
-
-    @Test
     public void testDuplicateName() {
         assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new DuplicateName()));
     }
 
     @Test
-    public void testPropertyTypeMismatch() {
-        assertThrows(UnsupportedOperationException.class, () -> new BeanAdapter(new PropertyTypeMismatch()));
+    public void testDefaultMethod() {
+        var defaultMethod = BeanAdapter.coerce(mapOf(
+            entry("x", 1)
+        ), DefaultMethod.class);
+
+        assertEquals(2, defaultMethod.getY());
+
+        var beanAdapter = new BeanAdapter(defaultMethod);
+
+        assertEquals(2, beanAdapter.get("z"));
     }
 }

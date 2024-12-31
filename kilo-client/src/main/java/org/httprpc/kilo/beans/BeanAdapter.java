@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,7 +54,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -65,10 +65,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * Represents a bean property or record component.
      */
     public static class Property {
-        private Method accessor = null;
-        private Method mutator = null;
+        private Method accessor;
+        private Method mutator;
 
-        private Property() {
+        private Property(Method accessor, Method mutator) {
+            this.accessor = accessor;
+            this.mutator = mutator;
         }
 
         /**
@@ -1189,7 +1191,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static Map<String, Property> computeProperties(Class<?> type) {
-        var properties = new HashMap<String, Property>();
+        var accessors = new HashMap<String, Method>();
+        var mutatorMap = new HashMap<String, List<Method>>();
 
         if (type.isRecord()) {
             var recordComponents = type.getRecordComponents();
@@ -1197,11 +1200,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             for (var i = 0; i < recordComponents.length; i++) {
                 var recordComponent = recordComponents[i];
 
-                var property = new Property();
-
-                property.accessor = recordComponent.getAccessor();
-
-                properties.put(recordComponent.getName(), property);
+                accessors.put(recordComponent.getName(), recordComponent.getAccessor());
             }
         } else {
             var methods = type.getMethods();
@@ -1219,39 +1218,42 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     continue;
                 }
 
-                var property = properties.computeIfAbsent(propertyName, key -> new Property());
-
                 if (method.getParameterCount() == 0) {
-                    property.accessor = method;
-                } else if (property.mutator == null) {
-                    property.mutator = method;
+                    accessors.put(propertyName, method);
                 } else {
-                    throw new UnsupportedOperationException("Duplicate mutator.");
+                    mutatorMap.computeIfAbsent(propertyName, key -> new LinkedList<>()).add(method);
                 }
             }
         }
 
-        return java.util.Collections.unmodifiableMap(properties.entrySet().stream().peek(entry -> {
-            var value = entry.getValue();
+        var properties = new TreeMap<String, Property>();
 
-            var accessor = value.getAccessor();
+        for (var entry : accessors.entrySet()) {
+            var propertyName = entry.getKey();
 
-            if (accessor == null) {
-                throw new UnsupportedOperationException("Missing accessor.");
+            var accessor = entry.getValue();
+
+            var propertyType = accessor.getReturnType();
+
+            var mutatorList = mutatorMap.get(propertyName);
+
+            Method mutator;
+            if (mutatorList != null) {
+                mutator = mutatorList.stream()
+                    .filter(method -> method.getParameterTypes()[0] == propertyType)
+                    .findFirst().orElse(null);
+            } else {
+                mutator = null;
             }
 
-            var mutator = value.getMutator();
+            var key = getKey(accessor, propertyName);
 
-            if (mutator != null && !accessor.getGenericReturnType().equals(mutator.getGenericParameterTypes()[0])) {
-                throw new UnsupportedOperationException("Property type mismatch.");
+            if (properties.put(key, new Property(accessor, mutator)) != null) {
+                throw new UnsupportedOperationException("Duplicate name.");
             }
-        }).collect(Collectors.toMap(entry -> {
-            var accessor = entry.getValue().getAccessor();
+        }
 
-            return getKey(accessor, entry.getKey());
-        }, Map.Entry::getValue, (v1, v2) -> {
-            throw new UnsupportedOperationException("Duplicate name.");
-        }, TreeMap::new)));
+        return java.util.Collections.unmodifiableMap(properties);
     }
 
     private static String getPropertyName(Method method) {
