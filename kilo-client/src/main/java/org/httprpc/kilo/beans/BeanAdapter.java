@@ -1231,7 +1231,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             }
         }
 
-        return properties.entrySet().stream().peek(entry -> {
+        return java.util.Collections.unmodifiableMap(properties.entrySet().stream().peek(entry -> {
             var value = entry.getValue();
 
             var accessor = value.getAccessor();
@@ -1251,7 +1251,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             return getKey(accessor, entry.getKey());
         }, Map.Entry::getValue, (v1, v2) -> {
             throw new UnsupportedOperationException("Duplicate name.");
-        }, TreeMap::new));
+        }, TreeMap::new)));
     }
 
     private static String getPropertyName(Method method) {

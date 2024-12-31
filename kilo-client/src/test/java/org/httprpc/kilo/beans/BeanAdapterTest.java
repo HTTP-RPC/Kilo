@@ -568,52 +568,55 @@ public class BeanAdapterTest {
 
     @Test
     public void testGetProperties() {
-        var properties = BeanAdapter.getProperties(TestBean.class).entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));
+        var properties = BeanAdapter.getProperties(TestBean.class);
 
-        assertEquals(Integer.TYPE, properties.get("i"));
-        assertEquals(Long.TYPE, properties.get("long"));
-        assertEquals(Double.TYPE, properties.get("double"));
-        assertEquals(String.class, properties.get("string"));
-        assertEquals(BigInteger.class, properties.get("bigInteger"));
-        assertEquals(DayOfWeek.class, properties.get("dayOfWeek"));
-        assertEquals(Date.class, properties.get("date"));
-        assertEquals(LocalDate.class, properties.get("localDate"));
-        assertEquals(LocalTime.class, properties.get("localTime"));
-        assertEquals(LocalDateTime.class, properties.get("localDateTime"));
-        assertEquals(Duration.class, properties.get("duration"));
-        assertEquals(Period.class, properties.get("period"));
-        assertEquals(UUID.class, properties.get("UUID"));
+        var propertyTypes = properties.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));
 
-        assertEquals(TestInterface.NestedInterface.class, properties.get("nestedBean"));
+        assertEquals(Integer.TYPE, propertyTypes.get("i"));
+        assertEquals(Long.TYPE, propertyTypes.get("long"));
+        assertEquals(Double.TYPE, propertyTypes.get("double"));
+        assertEquals(String.class, propertyTypes.get("string"));
+        assertEquals(BigInteger.class, propertyTypes.get("bigInteger"));
+        assertEquals(DayOfWeek.class, propertyTypes.get("dayOfWeek"));
+        assertEquals(Date.class, propertyTypes.get("date"));
+        assertEquals(LocalDate.class, propertyTypes.get("localDate"));
+        assertEquals(LocalTime.class, propertyTypes.get("localTime"));
+        assertEquals(LocalDateTime.class, propertyTypes.get("localDateTime"));
+        assertEquals(Duration.class, propertyTypes.get("duration"));
+        assertEquals(Period.class, propertyTypes.get("period"));
+        assertEquals(UUID.class, propertyTypes.get("UUID"));
 
-        assertInstanceOf(ParameterizedType.class, properties.get("integerList"));
+        assertEquals(TestInterface.NestedInterface.class, propertyTypes.get("nestedBean"));
 
-        var integerListTypeArguments = ((ParameterizedType)properties.get("integerList")).getActualTypeArguments();
+        assertInstanceOf(ParameterizedType.class, propertyTypes.get("integerList"));
+
+        var integerListTypeArguments = ((ParameterizedType)propertyTypes.get("integerList")).getActualTypeArguments();
 
         assertEquals(1, integerListTypeArguments.length);
         assertEquals(Integer.class, integerListTypeArguments[0]);
 
-        var nestedBeanListTypeArguments = ((ParameterizedType)properties.get("nestedBeanList")).getActualTypeArguments();
+        var nestedBeanListTypeArguments = ((ParameterizedType)propertyTypes.get("nestedBeanList")).getActualTypeArguments();
 
         assertEquals(1, nestedBeanListTypeArguments.length);
         assertEquals(TestInterface.NestedInterface.class, nestedBeanListTypeArguments[0]);
 
-        assertInstanceOf(ParameterizedType.class, properties.get("doubleMap"));
+        assertInstanceOf(ParameterizedType.class, propertyTypes.get("doubleMap"));
 
-        var doubleMapTypeArguments = ((ParameterizedType)properties.get("doubleMap")).getActualTypeArguments();
+        var doubleMapTypeArguments = ((ParameterizedType)propertyTypes.get("doubleMap")).getActualTypeArguments();
 
         assertEquals(2, doubleMapTypeArguments.length);
         assertEquals(String.class, doubleMapTypeArguments[0]);
         assertEquals(Double.class, doubleMapTypeArguments[1]);
 
-        var nestedBeanMapTypeArguments = ((ParameterizedType)properties.get("nestedBeanMap")).getActualTypeArguments();
+        var nestedBeanMapTypeArguments = ((ParameterizedType)propertyTypes.get("nestedBeanMap")).getActualTypeArguments();
 
         assertEquals(2, nestedBeanMapTypeArguments.length);
         assertEquals(String.class, nestedBeanMapTypeArguments[0]);
         assertEquals(TestInterface.NestedInterface.class, nestedBeanMapTypeArguments[1]);
 
-        assertNull(properties.get("xyz"));
+        assertNull(propertyTypes.get("xyz"));
+
+        assertThrows(UnsupportedOperationException.class, () -> properties.remove("i"));
     }
 
     @Test
