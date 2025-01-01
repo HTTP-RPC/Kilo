@@ -31,8 +31,8 @@ publishing {
             url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
 
             credentials {
-                username project.properties['nexusUsername'] ?: ''
-                password project.properties['nexusPassword'] ?: ''
+                username = project.properties['nexusUsername'] ?: ''
+                password = project.properties['nexusPassword'] ?: ''
             }
         }
     }
