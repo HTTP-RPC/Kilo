@@ -16,11 +16,9 @@ package org.httprpc.kilo.test;
 
 import java.time.LocalDate;
 
-public interface Asset {
-    String getTicker();
-    String getName();
-    String getExchangeCode();
-    String getDescription();
-    LocalDate getStartDate();
-    LocalDate getEndDate();
+public interface Weather {
+    LocalDate getDate();
+    String getConditions();
+    double getHigh();
+    double getLow();
 }

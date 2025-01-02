@@ -225,22 +225,18 @@ public class Examples {
 
     public static void interfaceProxy() {
         var map = mapOf(
-            entry("date", "2024-04-08T00:00:00Z"),
-            entry("open", 169.03),
-            entry("close", 168.45),
-            entry("high", 169.20),
-            entry("low", 168.24),
-            entry("volume", 37216858)
+            entry("date", "2024-04-08"),
+            entry("conditions", "cloudy"),
+            entry("high", 52.1),
+            entry("low", 43.5)
         );
 
-        var assetPricing = BeanAdapter.coerce(map, AssetPricing.class);
+        var weather = BeanAdapter.coerce(map, Weather.class);
 
-        System.out.println(assetPricing.getDate()); // 2024-04-08T00:00:00Z
-        System.out.println(assetPricing.getOpen()); // 169.03
-        System.out.println(assetPricing.getClose()); // 168.45
-        System.out.println(assetPricing.getHigh()); // 169.2
-        System.out.println(assetPricing.getLow()); // 168.24
-        System.out.println(assetPricing.getVolume()); // 37216858
+        System.out.println(weather.getDate()); // 2024-04-08
+        System.out.println(weather.getConditions()); // cloudy
+        System.out.println(weather.getHigh()); // 52.1
+        System.out.println(weather.getLow()); // 43.5
     }
 
     public static void requiredProperty1() {
