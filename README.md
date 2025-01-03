@@ -9,11 +9,6 @@ Kilo is an open-source framework for creating and consuming RESTful and REST-lik
 
 This guide introduces the Kilo framework and provides an overview of its key features.
 
-# Contents
-* [Getting Kilo](#getting-kilo)
-* [Kilo Classes](#kilo-classes)
-* [Additional Information](#additional-information)
-
 # Getting Kilo
 Kilo is distributed via Maven Central: 
 
@@ -1118,6 +1113,3 @@ var text = cast("abc", String.class); // abc
 
 var number = cast("abc", Double.class); // null
 ```
-
-# Additional Information
-This guide introduced the Kilo framework and provided an overview of its key features. For additional information, see the [examples](https://github.com/HTTP-RPC/Kilo/tree/master/kilo-test/src/main/java/org/httprpc/kilo/test).
