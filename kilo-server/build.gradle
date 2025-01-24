@@ -15,7 +15,7 @@
 apply from: rootProject.file('publish.gradle')
 
 dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
 
     api project(':kilo-client')
 }

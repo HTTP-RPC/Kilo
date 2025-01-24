@@ -14,17 +14,17 @@
 
 plugins {
     id 'war'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.23'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.25'
 }
 
 dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
 
     implementation project(':kilo-server')
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
-    implementation 'org.hibernate.orm:hibernate-core:6.6.1.Final'
+    implementation "org.mariadb.jdbc:mariadb-java-client:${connectorJVersion}"
+    implementation 'org.hibernate.orm:hibernate-core:6.6.5.Final'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.1'
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
 }
 
 compileJava {
