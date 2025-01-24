@@ -866,7 +866,7 @@ var queryBuilder = QueryBuilder.select(Actor.class)
     .ordered(true);
 ```
 
-Primary and foreign key annotations associated with the [`Actor`](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/Actor.java), [`Film`](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/Film.java), and [`FilmActor`](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FilmActor.java) types are used to construct the "join" clause. The resulting query is functionally equivalent to the following SQL:
+Primary and foreign key annotations associated with the [`Actor`](kilo-test/src/main/java/org/httprpc/kilo/test/Actor.java), [`Film`](kilo-test/src/main/java/org/httprpc/kilo/test/Film.java), and [`FilmActor`](kilo-test/src/main/java/org/httprpc/kilo/test/FilmActor.java) types are used to construct the "join" clause. The resulting query is functionally equivalent to the following SQL:
 
 ```sql
 select actor.* from actor 
@@ -875,7 +875,7 @@ where film_actor.film_id = :filmID
 order by actor.last_name asc, actor.first_name asc
 ```
 
-Insert, update, and delete operations are also supported. See the [pet](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
+Insert, update, and delete operations are also supported. See the [pet](kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.
 
 ## ElementAdapter
 The `ElementAdapter` class provides access to the contents of an XML DOM `Element` via the `Map` interface. For example, the following markup might be used to represent the status of a bank account:
@@ -1028,7 +1028,7 @@ The pipe is configured with a capacity of 4K elements and a timeout of 15s. Limi
 
 This implementation is slightly more verbose than the first one. However, because no intermediate buffering is required, results are available to the caller sooner, and CPU and memory load is reduced.
 
-For more information, see the [employee service](https://github.com/HTTP-RPC/Kilo/blob/master/kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
+For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
 ## Collections and Optionals
 The `Collections` class provides a set of static utility methods for declaratively instantiating list, map, and set values:
