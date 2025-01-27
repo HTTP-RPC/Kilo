@@ -224,7 +224,7 @@ public class QueryBuilder {
      * Toggles whitespace support.
      *
      * @param whitespaceAllowed
-     * {@code true} if whitespace is allowed; {@code false}, otherwise.
+     * {@code true} to enable whitespace support; {@code false} to disable it.
      */
     public void setWhitespaceAllowed(boolean whitespaceAllowed) {
         this.whitespaceAllowed = whitespaceAllowed;
