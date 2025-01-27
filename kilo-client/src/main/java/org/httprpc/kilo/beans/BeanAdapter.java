@@ -1044,14 +1044,14 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type.isEnum()) {
                 return toEnum(value.toString(), type);
             } else {
-                if (value instanceof Map<?, ?> map) {
-                    if (type.isRecord()) {
-                        return toRecord(map, type);
-                    } else {
-                        return toBean(map, type);
-                    }
-                } else {
+                if (!(value instanceof Map<?, ?> map)) {
                     throw new IllegalArgumentException("Value is not a map.");
+                }
+
+                if (type.isRecord()) {
+                    return toRecord(map, type);
+                } else {
+                    return toBean(map, type);
                 }
             }
         }
@@ -1267,7 +1267,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
         String prefix;
         if (methodName.startsWith(GET_PREFIX)
-            && !(returnType == Void.TYPE || returnType == Void.class)
+            && returnType != Void.TYPE && returnType != Void.class
             && parameterCount == 0) {
             prefix = GET_PREFIX;
         } else if (methodName.startsWith(IS_PREFIX)
@@ -1279,10 +1279,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             && parameterCount == 1) {
             prefix = SET_PREFIX;
         } else {
-            prefix = null;
-        }
-
-        if (prefix == null) {
             return null;
         }
 

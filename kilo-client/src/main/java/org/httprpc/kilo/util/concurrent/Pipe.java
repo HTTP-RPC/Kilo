@@ -145,7 +145,9 @@ public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
             if (timeout == 0) {
                 queue.put(value);
             } else {
-                if (!queue.offer(value, timeout, TimeUnit.MILLISECONDS)) {
+                var result = queue.offer(value, timeout, TimeUnit.MILLISECONDS);
+
+                if (!result) {
                     throw new TimeoutException("Offer timed out.");
                 }
             }
