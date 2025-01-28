@@ -523,6 +523,28 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends a "union" operation.
+     *
+     * @param queryBuilder
+     * A "select" query.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder union(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
+        sqlBuilder.append(" union ");
+        sqlBuilder.append(queryBuilder);
+
+        parameters.addAll(queryBuilder.parameters);
+
+        return this;
+    }
+
+    /**
      * Creates an "insert" query.
      *
      * @param type
@@ -1040,6 +1062,10 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder filterByExists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
         sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" exists (");
@@ -1063,6 +1089,10 @@ public class QueryBuilder {
      * The {@link QueryBuilder} instance.
      */
     public QueryBuilder filterByNotExists(QueryBuilder queryBuilder) {
+        if (queryBuilder == null) {
+            throw new IllegalArgumentException();
+        }
+
         sqlBuilder.append(" ");
         sqlBuilder.append(filterCount == 0 ? WHERE : AND);
         sqlBuilder.append(" not exists (");
@@ -1088,8 +1118,6 @@ public class QueryBuilder {
     public QueryBuilder ordered(boolean ascending) {
         var first = types.getFirst();
 
-        var tableName = getTableName(first);
-
         sqlBuilder.append(" order by ");
 
         var i = 0;
@@ -1099,8 +1127,6 @@ public class QueryBuilder {
                 sqlBuilder.append(", ");
             }
 
-            sqlBuilder.append(tableName);
-            sqlBuilder.append(".");
             sqlBuilder.append(indexColumnName);
             sqlBuilder.append(" ");
             sqlBuilder.append(ascending ? "asc" : "desc");

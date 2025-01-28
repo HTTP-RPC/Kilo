@@ -872,7 +872,7 @@ Primary and foreign key annotations associated with the [`Actor`](kilo-test/src/
 select actor.* from actor 
 join film_actor on actor.actor_id = film_actor.actor_id 
 where film_actor.film_id = :filmID
-order by actor.last_name asc, actor.first_name asc
+order by last_name asc, first_name asc
 ```
 
 Insert, update, and delete operations are also supported. See the [pet](kilo-test/src/main/java/org/httprpc/kilo/test/PetService.java), [catalog](kilo-test/src/main/java/org/httprpc/kilo/test/CatalogService.java), and [film](kilo-test/src/main/java/org/httprpc/kilo/test/FilmService.java) service examples for more information.

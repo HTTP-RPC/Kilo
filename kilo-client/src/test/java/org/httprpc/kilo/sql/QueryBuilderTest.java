@@ -315,7 +315,7 @@ public class QueryBuilderTest {
             + "join H on I.h = H.h "
             + "join G on H.g = G.g "
             + "where G.f = ? "
-            + "order by I.t asc, I.u asc", queryBuilder.toString());
+            + "order by t asc, u asc", queryBuilder.toString());
 
         assertEquals(listOf("f"), getParameters(queryBuilder));
     }
@@ -332,7 +332,7 @@ public class QueryBuilderTest {
             + "join J on I.i = J.i "
             + "join K on J.i = K.i "
             + "where I.i = ? "
-            + "order by I.t desc, I.u desc", queryBuilder.toString());
+            + "order by t desc, u desc", queryBuilder.toString());
 
         assertEquals(listOf("i"), getParameters(queryBuilder));
     }
@@ -429,6 +429,14 @@ public class QueryBuilderTest {
 
         assertEquals("select A.a, A.b, A.c, A.d as x from A where not exists (select C.* from C where C.a = A.a and C.b > ?)", queryBuilder.toString());
         assertEquals(listOf("b"), getParameters(queryBuilder));
+    }
+
+    @Test
+    public void testUnion() {
+        var queryBuilder = QueryBuilder.select(A.class).filterByPrimaryKey("a1").union(QueryBuilder.select(A.class).filterByPrimaryKey("a2"));
+
+        assertEquals("select A.a, A.b, A.c, A.d as x from A where A.a = ? union select A.a, A.b, A.c, A.d as x from A where A.a = ?", queryBuilder.toString());
+        assertEquals(listOf("a1", "a2"), getParameters(queryBuilder));
     }
 
     @Test
