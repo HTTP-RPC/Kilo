@@ -239,6 +239,7 @@ public class BeanAdapterTest {
         assertEquals(LocalDate.parse("2018-06-28"), BeanAdapter.coerce("2018-06-28", LocalDate.class));
         assertEquals(LocalTime.parse("10:45"), BeanAdapter.coerce("10:45", LocalTime.class));
         assertEquals(LocalDateTime.parse("2018-06-28T10:45"), BeanAdapter.coerce("2018-06-28T10:45", LocalDateTime.class));
+        assertEquals(LocalDateTime.of(LocalDate.of(2018, 6, 28), LocalTime.MIDNIGHT), BeanAdapter.coerce("2018-06-28", LocalDateTime.class));
     }
 
     @Test
