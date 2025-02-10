@@ -34,7 +34,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalAmount;
 import java.util.AbstractList;
@@ -1019,13 +1018,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             } else if (type == LocalTime.class) {
                 return LocalTime.parse(value.toString());
             } else if (type == LocalDateTime.class) {
-                var text = value.toString();
-
-                try {
-                    return LocalDateTime.parse(text);
-                } catch (DateTimeParseException exception) {
-                    return LocalDateTime.of(LocalDate.parse(text), LocalTime.MIDNIGHT);
-                }
+                return LocalDateTime.parse(value.toString());
             } else if (type == Duration.class) {
                 if (value instanceof Number number) {
                     return Duration.ofMillis(number.longValue());
