@@ -269,13 +269,13 @@ public class QueryBuilder {
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
                 var accessor = entry.getValue().getAccessor();
 
-                var column = accessor.getAnnotation(Column.class);
-
-                if (column == null) {
+                if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
                     continue;
                 }
 
-                if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
+                var column = accessor.getAnnotation(Column.class);
+
+                if (column == null) {
                     continue;
                 }
 
@@ -586,13 +586,13 @@ public class QueryBuilder {
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
 
-            var column = accessor.getAnnotation(Column.class);
-
-            if (column == null) {
+            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
                 continue;
             }
 
-            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
                 continue;
             }
 
@@ -682,13 +682,13 @@ public class QueryBuilder {
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
 
-            var column = accessor.getAnnotation(Column.class);
-
-            if (column == null) {
+            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
                 continue;
             }
 
-            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
                 continue;
             }
 
