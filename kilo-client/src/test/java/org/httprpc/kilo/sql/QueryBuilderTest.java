@@ -173,7 +173,6 @@ public class QueryBuilderTest {
         String getW();
     }
 
-    @Table("K")
     public interface L extends K {
         @Column("z")
         String getZ();

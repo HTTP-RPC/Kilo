@@ -16,11 +16,9 @@ package org.httprpc.kilo.test;
 
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.Table;
 
 import java.util.List;
 
-@Table("film")
 @Description("Represents detailed information about a film.")
 public interface FilmDetail extends Film {
     @Column("description")

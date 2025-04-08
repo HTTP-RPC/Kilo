@@ -17,11 +17,9 @@ package org.httprpc.kilo.test;
 import org.httprpc.kilo.Description;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Final;
-import org.httprpc.kilo.sql.Table;
 
 import java.util.Date;
 
-@Table("item")
 @Description("Represents detailed information about an item in the catalog.")
 public interface ItemDetail extends Item {
     @Column("size")

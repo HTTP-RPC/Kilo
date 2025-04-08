@@ -269,13 +269,13 @@ public class QueryBuilder {
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
                 var accessor = entry.getValue().getAccessor();
 
-                if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
-                    continue;
-                }
-
                 var column = accessor.getAnnotation(Column.class);
 
                 if (column == null) {
+                    continue;
+                }
+
+                if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
                     continue;
                 }
 
@@ -385,13 +385,31 @@ public class QueryBuilder {
     }
 
     private static String getTableName(Class<?> type) {
-        var table = type.getAnnotation(Table.class);
+        while (type != null) {
+            var table = type.getAnnotation(Table.class);
 
-        if (table == null) {
-            throw new UnsupportedOperationException("Table name is not defined.");
+            if (table != null) {
+                return table.value();
+            }
+
+            type = getSupertype(type);
         }
 
-        return table.value();
+        throw new UnsupportedOperationException("Table name is not defined.");
+    }
+
+    private static Class<?> getSupertype(Class<?> type) {
+        if (type.isInterface()) {
+            var interfaces = type.getInterfaces();
+
+            if (interfaces.length > 0) {
+                return interfaces[0];
+            } else {
+                return null;
+            }
+        } else {
+            return type.getSuperclass();
+        }
     }
 
     private static Function<Object, Object> getReadTransform(Method accessor) {
@@ -507,17 +525,7 @@ public class QueryBuilder {
                             return column.value();
                         }
 
-                        if (type.isInterface()) {
-                            var interfaces = type.getInterfaces();
-
-                            if (interfaces.length > 0) {
-                                type = interfaces[0];
-                            } else {
-                                type = null;
-                            }
-                        } else {
-                            type = type.getSuperclass();
-                        }
+                        type = getSupertype(type);
                     }
                 }
             }
@@ -578,13 +586,13 @@ public class QueryBuilder {
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
 
-            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
-                continue;
-            }
-
             var column = accessor.getAnnotation(Column.class);
 
             if (column == null) {
+                continue;
+            }
+
+            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
                 continue;
             }
 
@@ -674,13 +682,13 @@ public class QueryBuilder {
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
 
-            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
-                continue;
-            }
-
             var column = accessor.getAnnotation(Column.class);
 
             if (column == null) {
+                continue;
+            }
+
+            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
                 continue;
             }
 
