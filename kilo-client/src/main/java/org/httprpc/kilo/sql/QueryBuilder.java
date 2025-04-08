@@ -269,6 +269,10 @@ public class QueryBuilder {
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
                 var accessor = entry.getValue().getAccessor();
 
+                if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
+                    continue;
+                }
+
                 var column = accessor.getAnnotation(Column.class);
 
                 if (column == null) {
@@ -563,7 +567,9 @@ public class QueryBuilder {
 
         var sqlBuilder = new StringBuilder("insert into ");
 
-        sqlBuilder.append(getTableName(type));
+        var tableName = getTableName(type);
+
+        sqlBuilder.append(tableName);
 
         var columnNames = new LinkedList<String>();
         var parameters = new LinkedList<String>();
@@ -571,6 +577,10 @@ public class QueryBuilder {
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
+
+            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
+                continue;
+            }
 
             var column = accessor.getAnnotation(Column.class);
 
@@ -651,7 +661,9 @@ public class QueryBuilder {
 
         var sqlBuilder = new StringBuilder("update ");
 
-        sqlBuilder.append(getTableName(type));
+        var tableName = getTableName(type);
+
+        sqlBuilder.append(tableName);
         sqlBuilder.append(" set ");
 
         var i = 0;
@@ -661,6 +673,10 @@ public class QueryBuilder {
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
+
+            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
+                continue;
+            }
 
             var column = accessor.getAnnotation(Column.class);
 

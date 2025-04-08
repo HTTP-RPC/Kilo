@@ -53,6 +53,12 @@ public class QueryBuilderTest {
 
     @Table("B")
     public interface B extends A {
+        @Column("a")
+        @PrimaryKey
+        @ForeignKey(A.class)
+        @Override
+        String getA();
+
         @Column("e")
         Double getE();
 
@@ -167,6 +173,12 @@ public class QueryBuilderTest {
         String getW();
     }
 
+    @Table("K")
+    public interface L extends K {
+        @Column("z")
+        String getZ();
+    }
+
     @Table("M")
     public static class M {
         private Integer m;
@@ -229,9 +241,11 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectB() {
-        var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a").limit(10);
+        var queryBuilder = QueryBuilder.select(A.class, B.class)
+            .join(B.class, A.class)
+            .filterByPrimaryKey("a").limit(10);
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B where B.a = ? limit 10", queryBuilder.toString());
+        assertEquals("select A.a, A.b, A.c, A.d as x, B.e, B.f as y from A join B on A.a = B.a where A.a = ? limit 10", queryBuilder.toString());
         assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
@@ -265,7 +279,7 @@ public class QueryBuilderTest {
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
-        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y, E.z from B "
+        assertEquals("select B.a, B.e, B.f as y, E.z from B "
             + "join E on B.a = E.a "
             + "where B.a = ? "
             + "and E.d = ?", queryBuilder.toString());
@@ -333,6 +347,15 @@ public class QueryBuilderTest {
             + "join K on J.i = K.i "
             + "where I.i = ? "
             + "order by t desc, u desc", queryBuilder.toString());
+
+        assertEquals(listOf("i"), getParameters(queryBuilder));
+    }
+
+    @Test
+    public void testSelectL() {
+        var queryBuilder = QueryBuilder.select(L.class).filterByPrimaryKey("i");
+
+        assertEquals("select K.i, K.w, K.z from K where K.i = ?", queryBuilder.toString());
 
         assertEquals(listOf("i"), getParameters(queryBuilder));
     }
