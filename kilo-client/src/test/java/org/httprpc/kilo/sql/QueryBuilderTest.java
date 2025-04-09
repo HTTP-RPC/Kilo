@@ -53,12 +53,6 @@ public class QueryBuilderTest {
 
     @Table("B")
     public interface B extends A {
-        @Column("a")
-        @PrimaryKey
-        @ForeignKey(A.class)
-        @Override
-        String getA();
-
         @Column("e")
         Double getE();
 
@@ -224,6 +218,22 @@ public class QueryBuilderTest {
         }
     }
 
+    public interface P {
+        String getR();
+    }
+
+    @Table("Q")
+    public interface Q extends P {
+        @Column("a")
+        @PrimaryKey
+        @ForeignKey(A.class)
+        String getA();
+
+        @Column("r")
+        @Override
+        String getR();
+    }
+
     @Table("whitespace_test")
     public interface WhitespaceTest {
         @Column("value")
@@ -363,6 +373,16 @@ public class QueryBuilderTest {
 
         assertEquals("select M.m, M.n, M.x, M.y from M where M.n = ?", queryBuilder.toString());
         assertEquals(listOf("m"), getParameters(queryBuilder));
+    }
+
+    @Test
+    public void testSelectAQ() {
+        var queryBuilder = QueryBuilder.select(A.class, Q.class)
+            .join(Q.class, A.class)
+            .filterByPrimaryKey("a");
+
+        assertEquals("select A.a, A.b, A.c, A.d as x, Q.r from A join Q on A.a = Q.a where A.a = ?", queryBuilder.toString());
+        assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
     @Test
