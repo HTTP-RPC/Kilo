@@ -240,11 +240,9 @@ public class QueryBuilderTest {
 
     @Test
     public void testSelectB() {
-        var queryBuilder = QueryBuilder.select(A.class, B.class)
-            .join(B.class, A.class)
-            .filterByPrimaryKey("a").limit(10);
+        var queryBuilder = QueryBuilder.select(B.class).filterByPrimaryKey("a").limit(10);
 
-        assertEquals("select A.a, A.b, A.c, A.d as x, B.e, B.f as y from A join B on A.a = B.a where A.a = ? limit 10", queryBuilder.toString());
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y from B where B.a = ? limit 10", queryBuilder.toString());
         assertEquals(listOf("a"), getParameters(queryBuilder));
     }
 
@@ -278,7 +276,7 @@ public class QueryBuilderTest {
             .filterByPrimaryKey("a")
             .filterByForeignKey(E.class, D.class, "d");
 
-        assertEquals("select B.a, B.e, B.f as y, E.z from B "
+        assertEquals("select B.a, B.b, B.c, B.e, B.d as x, B.f as y, E.z from B "
             + "join E on B.a = E.a "
             + "where B.a = ? "
             + "and E.d = ?", queryBuilder.toString());

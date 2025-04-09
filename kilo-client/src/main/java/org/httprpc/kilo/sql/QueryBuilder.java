@@ -269,10 +269,6 @@ public class QueryBuilder {
             for (var entry : BeanAdapter.getProperties(type).entrySet()) {
                 var accessor = entry.getValue().getAccessor();
 
-                if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
-                    continue;
-                }
-
                 var column = accessor.getAnnotation(Column.class);
 
                 if (column == null) {
@@ -586,10 +582,6 @@ public class QueryBuilder {
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
 
-            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
-                continue;
-            }
-
             var column = accessor.getAnnotation(Column.class);
 
             if (column == null) {
@@ -681,10 +673,6 @@ public class QueryBuilder {
 
         for (var entry : BeanAdapter.getProperties(type).entrySet()) {
             var accessor = entry.getValue().getAccessor();
-
-            if (!getTableName(accessor.getDeclaringClass()).equals(tableName)) {
-                continue;
-            }
 
             var column = accessor.getAnnotation(Column.class);
 
