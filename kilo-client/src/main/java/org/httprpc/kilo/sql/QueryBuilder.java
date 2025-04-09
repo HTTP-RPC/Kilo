@@ -571,9 +571,7 @@ public class QueryBuilder {
 
         var sqlBuilder = new StringBuilder("insert into ");
 
-        var tableName = getTableName(type);
-
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
 
         var columnNames = new LinkedList<String>();
         var parameters = new LinkedList<String>();
@@ -661,9 +659,7 @@ public class QueryBuilder {
 
         var sqlBuilder = new StringBuilder("update ");
 
-        var tableName = getTableName(type);
-
-        sqlBuilder.append(tableName);
+        sqlBuilder.append(getTableName(type));
         sqlBuilder.append(" set ");
 
         var i = 0;
