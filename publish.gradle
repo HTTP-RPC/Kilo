@@ -15,12 +15,12 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-task sourcesJar(type: Jar) {
+tasks.register("sourcesJar", Jar) {
     from sourceSets.main.allJava
     archiveClassifier = 'sources'
 }
 
-task javadocJar(type: Jar) {
+tasks.register("javadocJar", Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }

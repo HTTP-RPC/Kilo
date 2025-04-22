@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +42,11 @@ compileTestJava {
 }
 
 compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = 17
-    }
-
-    compilerOptions {
-        freeCompilerArgs = [
-            '-java-parameters'
-        ]
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            javaParameters.set(true)
+        }
     }
 }
 
