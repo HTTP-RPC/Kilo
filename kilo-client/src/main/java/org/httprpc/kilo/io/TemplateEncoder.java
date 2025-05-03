@@ -284,10 +284,10 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private URI uri;
 
-    private ResourceBundle resourceBundle = null;
-
     private Locale locale = Locale.getDefault();
     private TimeZone timeZone = TimeZone.getDefault();
+
+    private ResourceBundle resourceBundle = null;
 
     private Modifier defaultModifier = new MarkupModifier();
 
@@ -348,27 +348,6 @@ public class TemplateEncoder extends Encoder<Object> {
     }
 
     /**
-     * Returns the resource bundle.
-     *
-     * @return
-     * The resource bundle, or {@code null} if a resource bundle has not been
-     * set.
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    /**
-     * Sets the resource bundle.
-     *
-     * @param resourceBundle
-     * The resource bundle, or {@code null} for no resource bundle.
-     */
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
-    }
-
-    /**
      * Returns the locale.
      *
      * @return
@@ -414,6 +393,27 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         this.timeZone = timeZone;
+    }
+
+    /**
+     * Returns the resource bundle.
+     *
+     * @return
+     * The resource bundle, or {@code null} if a resource bundle has not been
+     * set.
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    /**
+     * Sets the resource bundle.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
     /**

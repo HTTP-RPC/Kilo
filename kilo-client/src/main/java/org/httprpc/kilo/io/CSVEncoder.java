@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.Format;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -33,13 +32,11 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class CSVEncoder extends Encoder<Iterable<?>> {
     private List<String> keys;
 
-    private ResourceBundle resourceBundle = null;
-
     private Format numberFormat = null;
     private Format booleanFormat = null;
     private Format dateFormat = null;
 
-    private Map<String, Format> formats = new HashMap<>();
+    private ResourceBundle resourceBundle = null;
 
     private static final char DELIMITER = ',';
 
@@ -55,27 +52,6 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         }
 
         this.keys = keys;
-    }
-
-    /**
-     * Returns the resource bundle.
-     *
-     * @return
-     * The resource bundle, or {@code null} if a resource bundle has not been
-     * set.
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    /**
-     * Sets the resource bundle.
-     *
-     * @param resourceBundle
-     * The resource bundle, or {@code null} for no resource bundle.
-     */
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
     }
 
     /**
@@ -138,6 +114,27 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         this.dateFormat = dateFormat;
     }
 
+    /**
+     * Returns the resource bundle.
+     *
+     * @return
+     * The resource bundle, or {@code null} if a resource bundle has not been
+     * set.
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    /**
+     * Sets the resource bundle.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
     @Override
     public void write(Iterable<?> rows, Writer writer) throws IOException {
         if (rows == null || writer == null) {
@@ -189,17 +186,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                     writer.write(DELIMITER);
                 }
 
-                var value = map.get(key);
-
-                if (value != null) {
-                    var format = formats.get(key);
-
-                    if (format != null) {
-                        value = format.format(value);
-                    }
-                }
-
-                encode(value, writer);
+                encode(map.get(key), writer);
 
                 i++;
             }
