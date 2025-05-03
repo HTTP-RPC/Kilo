@@ -99,7 +99,7 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var expected =  "\"a\",\"b\",\"c\"\r\n"
+        var expected = "\"a\",\"b\",\"c\"\r\n"
             + "\"hello\",123,true\r\n"
             + "\"goodbye\",456,false\r\n";
 
@@ -146,7 +146,7 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var expected =  "\"a\",\"b\",\"c\"\r\n"
+        var expected = "\"a\",\"b\",\"c\"\r\n"
             + numberFormat.format(1) + ","
             + booleanFormat.format(true) + ","
             + dateFormat.format(new Date(0)) + "\r\n";
