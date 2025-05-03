@@ -65,6 +65,8 @@ public class JSONEncoder extends Encoder<Object> {
     private void encode(Object value, Writer writer) throws IOException {
         if (value == null) {
             writer.append(null);
+        } else if (value instanceof CharSequence text) {
+            encode(text, writer);
         } else if (value instanceof Float number) {
             if (number.isNaN() || number.isInfinite()) {
                 throw new IllegalArgumentException("Invalid float value.");
@@ -81,8 +83,6 @@ public class JSONEncoder extends Encoder<Object> {
             encode(number, writer);
         } else if (value instanceof Boolean flag) {
             encode(flag, writer);
-        } else if (value instanceof CharSequence text) {
-            encode(text, writer);
         } else if (value instanceof Date date) {
             encode(date, writer);
         } else if (value instanceof Iterable<?> iterable) {
@@ -92,14 +92,6 @@ public class JSONEncoder extends Encoder<Object> {
         } else {
             encode(value.toString(), writer);
         }
-    }
-
-    private void encode(Number number, Writer writer) throws IOException {
-        writer.write(number.toString());
-    }
-
-    private void encode(Boolean flag, Writer writer) throws IOException {
-        writer.write(flag.toString());
     }
 
     private void encode(CharSequence text, Writer writer) throws IOException {
@@ -130,6 +122,14 @@ public class JSONEncoder extends Encoder<Object> {
         }
 
         writer.write("\"");
+    }
+
+    private void encode(Number number, Writer writer) throws IOException {
+        writer.write(number.toString());
+    }
+
+    private void encode(Boolean flag, Writer writer) throws IOException {
+        writer.write(flag.toString());
     }
 
     private void encode(Date date, Writer writer) throws IOException {

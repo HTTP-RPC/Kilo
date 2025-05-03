@@ -18,7 +18,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.Format;
 import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -52,48 +56,38 @@ public class CSVEncoderTest {
 
     @Test
     public void testMaps() throws IOException {
-        var expected = "\"a\",\"b\",\"c\",\"d\",\"É\",\"F\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,0,\"12%\"\r\n"
-            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,,\r\n";
-
         var rows = listOf(
             mapOf(
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
                 entry("c", 2.0),
                 entry("d", true),
-                entry("e", new Date(0)),
-                entry("f", 0.12)
+                entry("e", new Date(0))
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),
                 entry("b", 2),
-                entry("c", 4.0),
-                entry("f", null)
+                entry("c", 4.0)
             )
         );
 
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e", "f"));
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e"));
 
         csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
-
-        csvEncoder.format("f", NumberFormat.getPercentInstance());
 
         var writer = new StringWriter();
 
         csvEncoder.write(rows, writer);
 
-        var actual = writer.toString();
+        var expected = "\"a\",\"b\",\"c\",\"D\",\"É\"\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,0\r\n"
+            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,\r\n";
 
-        assertEquals(expected, actual);
+        assertEquals(expected, writer.toString());
     }
 
     @Test
     public void testBeans() throws IOException {
-        var expected =  "\"a\",\"b\",\"c\"\r\n"
-            + "\"hello\",123,true\r\n"
-            + "\"goodbye\",456,false\r\n";
-
         var rows = listOf(
             new Row("hello", 123, true),
             new Row("goodbye", 456, false)
@@ -105,8 +99,58 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var actual = writer.toString();
+        var expected =  "\"a\",\"b\",\"c\"\r\n"
+            + "\"hello\",123,true\r\n"
+            + "\"goodbye\",456,false\r\n";
 
-        assertEquals(expected, actual);
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    public void testFormats() throws IOException {
+        var rows = listOf(
+            mapOf(
+                entry("a", 1),
+                entry("b", true),
+                entry("c", new Date(0))
+            )
+        );
+
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        var numberFormat = NumberFormat.getNumberInstance();
+
+        numberFormat.setMinimumFractionDigits(2);
+
+        csvEncoder.setNumberFormat(numberFormat);
+
+        var booleanFormat = new Format() {
+            @Override
+            public StringBuffer format(Object object, StringBuffer stringBuffer, FieldPosition fieldPosition) {
+                return stringBuffer.append((boolean)object ? "Y" : "N");
+            }
+
+            @Override
+            public Object parseObject(String source, ParsePosition pos) {
+                throw new UnsupportedOperationException();
+            }
+        };
+
+        csvEncoder.setBooleanFormat(booleanFormat);
+
+        var dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
+        csvEncoder.setDateFormat(dateFormat);
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(rows, writer);
+
+        var expected =  "\"a\",\"b\",\"c\"\r\n"
+            + numberFormat.format(1) + ","
+            + booleanFormat.format(true) + ","
+            + dateFormat.format(new Date(0)) + "\r\n";
+
+        assertEquals(expected, writer.toString());
     }
 }

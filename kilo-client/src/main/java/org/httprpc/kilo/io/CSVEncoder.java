@@ -35,6 +35,10 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private ResourceBundle resourceBundle = null;
 
+    private Format numberFormat = null;
+    private Format booleanFormat = null;
+    private Format dateFormat = null;
+
     private Map<String, Format> formats = new HashMap<>();
 
     private static final char DELIMITER = ',';
@@ -75,20 +79,63 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     /**
-     * Associates a format with a column.
+     * Returns the number format.
      *
-     * @param key
-     * The column key.
-     *
-     * @param format
-     * The format to apply.
+     * @return
+     * The number format, or {@code null} if a number format has not been set.
      */
-    public void format(String key, Format format) {
-        if (key == null || format == null) {
-            throw new IllegalArgumentException();
-        }
+    public Format getNumberFormat() {
+        return numberFormat;
+    }
 
-        formats.put(key, format);
+    /**
+     * Sets the number format.
+     *
+     * @param numberFormat
+     * The number format, or {@code null} for no number format.
+     */
+    public void setNumberFormat(Format numberFormat) {
+        this.numberFormat = numberFormat;
+    }
+
+    /**
+     * Returns the boolean format.
+     *
+     * @return
+     * The boolean format, or {@code null} if a boolean format has not been set.
+     */
+    public Format getBooleanFormat() {
+        return booleanFormat;
+    }
+
+    /**
+     * Sets the boolean format.
+     *
+     * @param booleanFormat
+     * The boolean format, or {@code null} for no boolean format.
+     */
+    public void setBooleanFormat(Format booleanFormat) {
+        this.booleanFormat = booleanFormat;
+    }
+
+    /**
+     * Returns the date format.
+     *
+     * @return
+     * The date format, or {@code null} if a date format has not been set.
+     */
+    public Format getDateFormat() {
+        return dateFormat;
+    }
+
+    /**
+     * Sets the date format.
+     *
+     * @param dateFormat
+     * The date format, or {@code null} for no date format.
+     */
+    public void setDateFormat(Format dateFormat) {
+        this.dateFormat = dateFormat;
     }
 
     @Override
@@ -168,10 +215,14 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
         if (value instanceof CharSequence text) {
             encode(text, writer);
+        } else if (value instanceof Number number) {
+            encode(number, writer);
+        } else if (value instanceof Boolean flag) {
+            encode(flag, writer);
         } else if (value instanceof Date date) {
             encode(date, writer);
         } else {
-            writer.write(value.toString());
+            encode(value.toString(), writer);
         }
     }
 
@@ -191,7 +242,27 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         writer.write('"');
     }
 
+    private void encode(Number number, Writer writer) throws IOException {
+        if (numberFormat != null) {
+            writer.write(numberFormat.format(number));
+        } else {
+            writer.write(number.toString());
+        }
+    }
+
+    private void encode(Boolean flag, Writer writer) throws IOException {
+        if (booleanFormat != null) {
+            writer.write(booleanFormat.format(flag));
+        } else {
+            writer.write(flag.toString());
+        }
+    }
+
     private void encode(Date date, Writer writer) throws IOException {
-        writer.write(String.valueOf(date.getTime()));
+        if (dateFormat != null) {
+            writer.write(dateFormat.format(date));
+        } else {
+            writer.write(String.valueOf(date.getTime()));
+        }
     }
 }
