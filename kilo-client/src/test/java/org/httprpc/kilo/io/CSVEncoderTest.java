@@ -147,9 +147,9 @@ public class CSVEncoderTest {
         csvEncoder.write(rows, writer);
 
         var expected = "\"a\",\"b\",\"c\"\r\n"
-            + numberFormat.format(1) + ","
-            + booleanFormat.format(true) + ","
-            + dateFormat.format(new Date(0)) + "\r\n";
+            + "\"" + numberFormat.format(1) + "\","
+            + "\"" + booleanFormat.format(true) + "\","
+            + "\"" + dateFormat.format(new Date(0)) + "\"\r\n";
 
         assertEquals(expected, writer.toString());
     }

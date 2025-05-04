@@ -231,7 +231,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private void encode(Number number, Writer writer) throws IOException {
         if (numberFormat != null) {
-            writer.write(numberFormat.format(number));
+            encode(numberFormat.format(number), writer);
         } else {
             writer.write(number.toString());
         }
@@ -239,7 +239,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private void encode(Boolean flag, Writer writer) throws IOException {
         if (booleanFormat != null) {
-            writer.write(booleanFormat.format(flag));
+            encode(booleanFormat.format(flag), writer);
         } else {
             writer.write(flag.toString());
         }
@@ -247,7 +247,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private void encode(Date date, Writer writer) throws IOException {
         if (dateFormat != null) {
-            writer.write(dateFormat.format(date));
+            encode(dateFormat.format(date), writer);
         } else {
             writer.write(String.valueOf(date.getTime()));
         }
