@@ -209,7 +209,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         } else if (value instanceof Date date) {
             encode(date, writer);
         } else {
-            writer.write(value.toString());
+            encode(value.toString(), writer);
         }
     }
 

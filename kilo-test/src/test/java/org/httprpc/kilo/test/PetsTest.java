@@ -108,7 +108,6 @@ public class PetsTest {
         var actual = webServiceProxy.invoke();
 
         assertEquals(expected, actual);
-
     }
 
     private void testPetsStreamHTML() throws IOException {
