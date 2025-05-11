@@ -18,6 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TextDecoder;
+import org.httprpc.kilo.util.Collections;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -290,7 +291,7 @@ public class WebServiceProxy {
                     throw new UnsupportedOperationException("Missing or invalid exception declaration.");
                 }
 
-                var argumentList = coalesce(map(arguments, Arrays::asList), listOf());
+                var argumentList = coalesce(map(arguments, Arrays::asList), Collections::listOf);
 
                 var scheme = baseURI.getScheme();
                 var userInfo = baseURI.getUserInfo();
@@ -361,7 +362,7 @@ public class WebServiceProxy {
                         throw new IllegalArgumentException("Required argument is not defined.");
                     }
 
-                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+                    var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
 
                     argumentMap.put(name, value);
                 }

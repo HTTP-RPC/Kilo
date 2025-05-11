@@ -177,7 +177,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         writer.write("\r\n");
 
         for (var row : rows) {
-            var map = coalesce(cast(row, Map.class), new BeanAdapter(row));
+            var map = coalesce(cast(row, Map.class), () -> new BeanAdapter(row));
 
             i = 0;
 

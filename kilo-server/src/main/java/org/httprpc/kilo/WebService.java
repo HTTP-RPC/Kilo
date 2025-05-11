@@ -315,7 +315,7 @@ public abstract class WebService extends HttpServlet {
         private boolean required = false;
 
         private VariableDescriptor(Parameter parameter) {
-            name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+            name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
 
             description = map(parameter.getAnnotation(Description.class), Description::value);
         }
@@ -1139,7 +1139,7 @@ public abstract class WebService extends HttpServlet {
             for (var i = keyCount; i < n; i++) {
                 var parameter = parameters[i];
 
-                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
 
                 if (argumentNames.contains(name) && ++c == argumentCount) {
                     return handler;
@@ -1167,7 +1167,7 @@ public abstract class WebService extends HttpServlet {
             if (i < keyCount) {
                 arguments[i] = BeanAdapter.coerce(keys.get(i), parameter.getType());
             } else {
-                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter.getName());
+                var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
                 var type = parameter.getType();
 
                 var values = argumentMap.get(name);

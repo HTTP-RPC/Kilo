@@ -27,7 +27,7 @@ public class OptionalsTest {
         var value = 123;
 
         var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // 123
-        var b = coalesce(null, null, value); // 123
+        var b = coalesce(null, () -> value); // 123
 
         assertEquals(a, b);
     }

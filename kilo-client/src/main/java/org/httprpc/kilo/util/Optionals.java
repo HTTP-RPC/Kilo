@@ -16,6 +16,7 @@ package org.httprpc.kilo.util;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Provides static utility methods for working with optional values.
@@ -25,29 +26,28 @@ public class Optionals {
     }
 
     /**
-     * Returns the first non-{@code null} argument value.
+     * Returns either an optional value or the value produced by the given
+     * supplier.
      *
      * @param <T>
-     * The argument type.
+     * The value type.
      *
-     * @param values
-     * The argument values.
+     * @param value
+     * The optional value.
+     *
+     * @param supplier
+     * The supplier to invoke if the provided value is {@code null}.
      *
      * @return
-     * The first non-{@code null} argument value, or {@code null} if only
-     * {@code null} values were provided.
+     * The provided value, or the value produced by the supplier if the value
+     * was {@code null}.
      */
-    @SafeVarargs
-    public static <T> T coalesce(T... values) {
-        for (var i = 0; i < values.length; i++) {
-            var value = values[i];
-
-            if (value != null) {
-                return value;
-            }
+    public static <T> T coalesce(T value, Supplier<T> supplier) {
+        if (supplier == null) {
+            throw new IllegalArgumentException();
         }
 
-        return null;
+        return (value != null) ? value : supplier.get();
     }
 
     /**
@@ -63,7 +63,7 @@ public class Optionals {
      * The optional value.
      *
      * @param transform
-     * The mapping function to apply.
+     * The mapping function to apply if the provided value is {@code null}.
      *
      * @return
      * The result of applying the mapping function to the provided value, or

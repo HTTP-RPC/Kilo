@@ -504,7 +504,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         try {
             value = property.accessor.invoke(bean);
         } catch (IllegalAccessException | InvocationTargetException exception) {
-            throw new RuntimeException(exception);
+            throw coalesce(cast(exception.getCause(), RuntimeException.class), () -> new RuntimeException(exception));
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {
@@ -537,7 +537,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         try {
             property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
         } catch (IllegalAccessException | InvocationTargetException exception) {
-            throw new RuntimeException(exception);
+            throw coalesce(cast(exception.getCause(), RuntimeException.class), () -> new RuntimeException(exception));
         }
 
         return null;
@@ -591,7 +591,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                             return new SimpleImmutableEntry<>(key, adapt(value));
                         } catch (IllegalAccessException | InvocationTargetException exception) {
-                            throw new RuntimeException(exception);
+                            throw coalesce(cast(exception.getCause(), RuntimeException.class), () -> new RuntimeException(exception));
                         }
                     }
                 };
@@ -1299,6 +1299,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     private static String getKey(Method accessor, String propertyName) {
-        return coalesce(map(accessor.getAnnotation(Name.class), Name::value), propertyName);
+        return coalesce(map(accessor.getAnnotation(Name.class), Name::value), () -> propertyName);
     }
 }
