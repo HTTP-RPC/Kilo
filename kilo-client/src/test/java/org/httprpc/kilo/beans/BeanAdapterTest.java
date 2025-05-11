@@ -513,6 +513,19 @@ public class BeanAdapterTest {
         assertThrows(UnsupportedOperationException.class, testInterface::getIntegerList);
         assertThrows(IllegalArgumentException.class, () -> testInterface.setIntegerList(null));
 
+        var testInterfaceAdapter = new BeanAdapter(testInterface);
+
+        assertThrows(UnsupportedOperationException.class, () -> testInterfaceAdapter.get("string"));
+        assertThrows(IllegalArgumentException.class, () -> testInterfaceAdapter.put("string", null));
+
+        assertThrows(UnsupportedOperationException.class, () -> {
+            var iterator = testInterfaceAdapter.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                iterator.next();
+            }
+        });
+
         var nestedInterface = testInterface.getNestedBean();
 
         assertThrows(UnsupportedOperationException.class, nestedInterface::getFlag);
