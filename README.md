@@ -1070,7 +1070,7 @@ var set2 = emptySetOf(Integer.class);
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 
 ```java
-public static <T> T coalesce(T value, Supplier<T> supplier) { ... }
+public static <T> T coalesce(T value, Supplier<? extends T> supplier) { ... }
 public static <T, U> U map(T value, Function<? super T, ? extends U> transform) { ... }
 public static <T> void perform(T value, Consumer<? super T> action) { ... }
 ```

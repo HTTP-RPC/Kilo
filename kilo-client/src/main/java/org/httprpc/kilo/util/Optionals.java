@@ -42,7 +42,7 @@ public class Optionals {
      * The provided value, or the value produced by the supplier if the value
      * was {@code null}.
      */
-    public static <T> T coalesce(T value, Supplier<T> supplier) {
+    public static <T> T coalesce(T value, Supplier<? extends T> supplier) {
         if (supplier == null) {
             throw new IllegalArgumentException();
         }
@@ -74,7 +74,7 @@ public class Optionals {
             throw new IllegalArgumentException();
         }
 
-        return (value == null) ? null : transform.apply(value);
+        return (value != null) ? transform.apply(value) : null;
     }
 
     /**
