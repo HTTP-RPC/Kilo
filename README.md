@@ -1098,13 +1098,13 @@ Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
 perform("def", stringBuilder::append); // abcdef
 ```
 
-`Optionals` additionally provides the follwing method, which performs a "safe" cast:
+`Optionals` also provides the following method, which performs a "safe" cast:
 
 ```java
 public static <T> T cast(Object value, Class<T> type) {
 ```
 
-If the provided value is an instance of the requested type, the cast will succeed. Otherwise, the method will return `null`. For example:
+If the given value is an instance of the requested type, the cast will succeed; otherwise, the method will return `null`. For example:
 
 ```java
 var text = cast("abc", String.class); // abc

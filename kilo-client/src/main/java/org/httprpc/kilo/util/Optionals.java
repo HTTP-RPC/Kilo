@@ -63,7 +63,7 @@ public class Optionals {
      * The optional value.
      *
      * @param transform
-     * The mapping function to apply if the provided value is {@code null}.
+     * The mapping function to apply if the provided value is not {@code null}.
      *
      * @return
      * The result of applying the mapping function to the provided value, or
