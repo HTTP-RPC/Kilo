@@ -1080,7 +1080,7 @@ These are provided as a less verbose alternative to similar methods defined by t
 ```java
 var value = 123;
 
-var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // 123
+var a = Optional.ofNullable(null).orElse(value); // 123
 var b = coalesce(null, () -> value); // 123
 ```
 

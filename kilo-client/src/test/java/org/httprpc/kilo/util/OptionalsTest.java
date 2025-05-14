@@ -26,7 +26,7 @@ public class OptionalsTest {
     public void testCoalesce() {
         var value = 123;
 
-        var a = Optional.ofNullable(null).orElse(Optional.ofNullable(null).orElse(value)); // 123
+        var a = Optional.ofNullable(null).orElse(value); // 123
         var b = coalesce(null, () -> value); // 123
 
         assertEquals(a, b);
@@ -48,8 +48,8 @@ public class OptionalsTest {
     public void testPerform() {
         var stringBuilder = new StringBuilder();
 
-        Optional.ofNullable("abc").ifPresent(stringBuilder::append);
-        perform("def", stringBuilder::append);
+        Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
+        perform("def", stringBuilder::append); // abcdef
 
         perform(null, stringBuilder::append);
 
