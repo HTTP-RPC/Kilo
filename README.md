@@ -1038,7 +1038,7 @@ public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 public static <E> Set<E> setOf(E... elements) { ... }
 ```
 
-They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable variants are also provided:
+They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable variants are provided as well:
 
 ```java
 public static <E> List<E> immutableListOf(E... elements) { ... }
