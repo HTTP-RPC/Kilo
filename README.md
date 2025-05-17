@@ -1,5 +1,5 @@
 [![Releases](https://img.shields.io/github/release/HTTP-RPC/Kilo.svg)](https://github.com/HTTP-RPC/Kilo/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/kilo-client.svg)](https://repo1.maven.org/maven2/org/httprpc/kilo-client/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.httprpc/kilo-client.svg)](https://central.sonatype.com/artifact/org.httprpc/kilo-client/versions)
 [![javadoc](https://javadoc.io/badge2/org.httprpc/kilo-client/javadoc.svg)](https://javadoc.io/doc/org.httprpc/kilo-client)
 
 # Introduction
