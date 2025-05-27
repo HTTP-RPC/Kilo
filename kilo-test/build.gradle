@@ -27,6 +27,8 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-core:6.6.5.Final'
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 compileJava {

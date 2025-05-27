@@ -17,4 +17,6 @@ apply from: rootProject.file('publish.gradle')
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
     testImplementation "org.mariadb.jdbc:mariadb-java-client:${connectorJVersion}"
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
