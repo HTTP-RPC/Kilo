@@ -1034,7 +1034,6 @@ The `Collections` class provides a set of static utility methods for declarative
 ```java
 public static <E> List<E> listOf(E... elements) { ... }
 public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
-public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 public static <E> Set<E> setOf(E... elements) { ... }
 ```
 
@@ -1044,6 +1043,12 @@ They offer an alternative to similar methods defined by the `List`, `Map`, and `
 public static <E> List<E> immutableListOf(E... elements) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
+```
+
+This method can be used to declare entries for either `mapOf()` or `immutableMapOf()`:
+
+```java
+public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
 `Collections` also includes support for declaring empty lists, maps, and sets:
@@ -1063,8 +1068,8 @@ var list2 = emptyListOf(Integer.class);
 var map1 = java.util.Collections.<String, Integer>emptyMap();
 var map2 = emptyMapOf(String.class, Integer.class);
 
-var set1 = java.util.Collections.<Integer>emptySet();
-var set2 = emptySetOf(Integer.class);
+var set1 = java.util.Collections.<String>emptySet();
+var set2 = emptySetOf(String.class);
 ```
 
 The `Optionals` class contains methods for working with optional (or "nullable") values:

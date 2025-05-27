@@ -124,8 +124,8 @@ public class CollectionsTest {
 
     @Test
     public void testEmptySetOf() {
-        var set1 = java.util.Collections.<Integer>emptySet();
-        var set2 = emptySetOf(Integer.class);
+        var set1 = java.util.Collections.<String>emptySet();
+        var set2 = emptySetOf(String.class);
 
         assertTrue(set2.isEmpty());
         assertEquals(set1, set2);
