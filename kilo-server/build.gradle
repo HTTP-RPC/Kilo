@@ -12,8 +12,6 @@
  * limitations under the License.
  */
 
-apply from: rootProject.file('publish.gradle')
-
 dependencies {
     compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
 

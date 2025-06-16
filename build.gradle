@@ -22,15 +22,6 @@ subprojects {
         mavenCentral()
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    javadoc {
-        options.addStringOption('Xdoclint:none', '-quiet')
-    }
-
     test {
         useJUnitPlatform()
     }
@@ -42,5 +33,16 @@ subprojects {
                 'Implementation-Version': project.version
             )
         }
+    }
+}
+
+configure(subprojects) {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType(Javadoc) {
+        (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:none", true)
     }
 }
