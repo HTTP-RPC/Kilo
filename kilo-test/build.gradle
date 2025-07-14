@@ -12,11 +12,8 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id 'war'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.25'
 }
 
 dependencies {
@@ -24,34 +21,19 @@ dependencies {
 
     implementation project(':kilo-server')
     implementation "org.mariadb.jdbc:mariadb-java-client:${connectorJVersion}"
-    implementation 'org.hibernate.orm:hibernate-core:6.6.5.Final'
+    implementation 'org.hibernate.orm:hibernate-core:6.6.21.Final'
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-compileJava {
-    options.compilerArgs = [
-        '-parameters'
-    ]
-}
-
-compileTestJava {
-    options.compilerArgs = [
-        '-parameters'
-    ]
-}
-
-compileTestKotlin {
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-            javaParameters.set(true)
-        }
-    }
-}
-
 war {
     archiveFileName = "${project.name}.war"
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+        '-parameters'
+    ]
 }

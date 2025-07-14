@@ -16,30 +16,23 @@ subprojects {
     group = 'org.httprpc'
     version = '4.10'
 
-    apply plugin: 'java-library'
-
     repositories {
         mavenCentral()
     }
+}
 
-    test {
+configure(subprojects) {
+    tasks.withType(Test) {
         useJUnitPlatform()
     }
 
-    jar {
+    tasks.withType(Jar) {
         manifest {
             attributes (
                 'Implementation-Title': project.name,
                 'Implementation-Version': project.version
             )
         }
-    }
-}
-
-configure(subprojects) {
-    tasks.withType(JavaCompile) {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     tasks.withType(Javadoc) {

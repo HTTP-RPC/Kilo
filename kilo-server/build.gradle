@@ -12,6 +12,15 @@
  * limitations under the License.
  */
 
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 dependencies {
     compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
 
