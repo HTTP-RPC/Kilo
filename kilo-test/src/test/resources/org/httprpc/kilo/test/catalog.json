@@ -1,5 +1,4 @@
 {
-  "deprecated": false,
   "description": "Catalog example service.",
   "endpoints": [
     {
@@ -200,14 +199,17 @@
       "name": "Size",
       "values": [
         {
+          "deprecated": false,
           "description": "A small size.",
           "name": "SMALL"
         },
         {
+          "deprecated": false,
           "description": "A medium size.",
           "name": "MEDIUM"
         },
         {
+          "deprecated": false,
           "description": "A large size.",
           "name": "LARGE"
         }
@@ -221,6 +223,7 @@
       "name": "Item",
       "properties": [
         {
+          "deprecated": false,
           "description": "The item's description.",
           "name": "description",
           "required": true,
@@ -235,6 +238,7 @@
           }
         },
         {
+          "deprecated": false,
           "description": "The item's ID.",
           "name": "id",
           "required": false,
@@ -249,6 +253,7 @@
           }
         },
         {
+          "deprecated": false,
           "description": "The item's price.",
           "name": "price",
           "required": true,
@@ -271,6 +276,7 @@
       "name": "ItemDetail",
       "properties": [
         {
+          "deprecated": false,
           "description": "The item's color.",
           "name": "color",
           "required": false,
@@ -285,6 +291,7 @@
           }
         },
         {
+          "deprecated": false,
           "description": "The date the item was created.",
           "name": "created",
           "required": false,
@@ -299,6 +306,7 @@
           }
         },
         {
+          "deprecated": false,
           "description": "The item's size.",
           "name": "size",
           "required": false,
@@ -313,6 +321,7 @@
           }
         },
         {
+          "deprecated": false,
           "description": "The item's weight.",
           "name": "weight",
           "required": false,

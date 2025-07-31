@@ -12,6 +12,7 @@
       --color-neutral: hsl(0, 0%, 60%);
       --color-neutral-medium: hsl(0, 0%, 80%);
       --color-neutral-light: hsl(0, 0%, 97%);
+      --color-neutral-dark: hsl(0, 0%, 30%);
       --color-get: hsl(194, 65%, 50%);
       --color-post: hsl(150, 65%, 50%);
       --color-put: hsl(31, 95%, 66%);
@@ -151,10 +152,6 @@
       text-transform: uppercase;
       background: var(--color-neutral-light);
     }
-    strong.deprecated {
-      text-transform: uppercase;
-      color: var(--color-neutral);
-    }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -218,7 +215,7 @@
         <section id="{{path}}">
             <h2><code>{{path}}</code></h2>
             <!-- {{#operations}} -->
-            <pre><span class="method {{method}}">{{method}}{{?formData}}°{{/formData}}</span>{{?produces}} : {{>type.html}}{{/produces}}{{?deprecated}} <strong class="deprecated">{{$deprecated}}</strong>{{/deprecated}}</pre>
+            <pre><span class="method {{method}}">{{?deprecated}}<s style="text-decoration-color: var(--color-neutral-dark)">{{/deprecated}}{{method}}{{?formData}}°{{/formData}}{{?deprecated}}</s>{{/deprecated}}</span>{{?produces}} : {{>type.html}}{{/produces}}</pre>
             <!-- {{?description}} -->
             <p>{{.}}</p>
             <!-- {{/description}} -->
@@ -287,7 +284,7 @@
                 <tbody>
                 <!-- {{#values}} -->
                 <tr>
-                    <td><code>{{name}}</code></td>
+                    <td><code>{{?deprecated}}<s>{{/deprecated}}{{name}}{{?deprecated}}</s>{{/deprecated}}</code></td>
                     <td style="width: 88%">{{description}}</td>
                 </tr>
                 <!-- {{/values}} -->
@@ -317,7 +314,7 @@
                 <tbody>
                 <!-- {{#properties}} -->
                 <tr>
-                    <td><code>{{name}}</code></td>
+                    <td><code>{{?deprecated}}<s>{{/deprecated}}{{name}}{{?deprecated}}</s>{{/deprecated}}</code></td>
                     <td><code>{{>variable.html}}</code></td>
                     <td>{{description}}</td>
                 </tr>

@@ -344,7 +344,7 @@ public record Coordinates(
 }
 ```
 
-The `FormData` annotation can be used to indicate that a method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Types or methods annotated as `Deprecated` will be identified as such in the output.
+The `FormData` annotation can be used to indicate that a method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Deprecated elements will be identified as such in the output.
 
 A JSON version of the generated documentation can be obtained by specifying an "Accept" type of "application/json" in the request headers. The response can be used to process an API definition programatically; for example, to generate client-side stub code. 
 

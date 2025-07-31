@@ -75,7 +75,6 @@ public abstract class WebService extends HttpServlet {
     public static class ServiceDescriptor {
         private String path;
         private String description;
-        private boolean deprecated;
 
         private List<EndpointDescriptor> endpoints = new LinkedList<>();
 
@@ -86,8 +85,6 @@ public abstract class WebService extends HttpServlet {
             this.path = path;
 
             description = map(type.getAnnotation(Description.class), Description::value);
-
-            deprecated = type.getAnnotation(Deprecated.class) != null;
         }
 
         /**
@@ -108,16 +105,6 @@ public abstract class WebService extends HttpServlet {
          */
         public String getDescription() {
             return description;
-        }
-
-        /**
-         * Indicates that the service is deprecated.
-         *
-         * @return
-         * {@code true} if the service is deprecated; {@code false}, otherwise.
-         */
-        public boolean isDeprecated() {
-            return deprecated;
         }
 
         /**
@@ -197,10 +184,10 @@ public abstract class WebService extends HttpServlet {
 
         private boolean parameters = false;
 
-        private List<VariableDescriptor> pathParameters = new LinkedList<>();
-        private List<VariableDescriptor> queryParameters = new LinkedList<>();
+        private List<ParameterDescriptor> pathParameters = new LinkedList<>();
+        private List<ParameterDescriptor> queryParameters = new LinkedList<>();
 
-        private VariableDescriptor bodyParameter = null;
+        private ParameterDescriptor bodyParameter = null;
 
         private OperationDescriptor(String method, Method handler) {
             this.method = method;
@@ -277,7 +264,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The operation's path parameters.
          */
-        public List<VariableDescriptor> getPathParameters() {
+        public List<ParameterDescriptor> getPathParameters() {
             return pathParameters;
         }
 
@@ -287,7 +274,7 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The operation's query parameters.
          */
-        public List<VariableDescriptor> getQueryParameters() {
+        public List<ParameterDescriptor> getQueryParameters() {
             return queryParameters;
         }
 
@@ -298,74 +285,66 @@ public abstract class WebService extends HttpServlet {
          * The operation's body parameter, or {@code null} if the operation
          * does not define a body parameter.
          */
-        public VariableDescriptor getBodyParameter() {
+        public ParameterDescriptor getBodyParameter() {
             return bodyParameter;
         }
     }
 
     /**
-     * Describes a variable.
+     * Describes a parameter.
      */
-    public static class VariableDescriptor {
+    public static class ParameterDescriptor {
         private String name;
         private String description;
 
-        private TypeDescriptor type = null;
-
         private boolean required = false;
 
-        private VariableDescriptor(Parameter parameter) {
+        private TypeDescriptor type = null;
+
+        private ParameterDescriptor(Parameter parameter) {
             name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
 
             description = map(parameter.getAnnotation(Description.class), Description::value);
         }
 
-        private VariableDescriptor(String name, Method accessor) {
-            this.name = name;
-
-            description = map(accessor.getAnnotation(Description.class), Description::value);
-
-            required = accessor.getAnnotation(Required.class) != null;
-        }
-
         /**
-         * Returns the name of the variable.
+         * Returns the name of the parameter.
          *
          * @return
-         * The variable's name.
+         * The parameter's name.
          */
         public String getName() {
             return name;
         }
 
         /**
-         * Returns a description of the variable.
+         * Returns a description of the parameter.
          *
          * @return
-         * The variable's description, or {@code null} for no description.
+         * The parameter's description, or {@code null} for no description.
          */
         public String getDescription() {
             return description;
         }
 
         /**
-         * Returns the type of the variable.
+         * Indicates that the parameter is required.
          *
          * @return
-         * The variable's type.
-         */
-        public TypeDescriptor getType() {
-            return type;
-        }
-
-        /**
-         * Indicates that the variable is required.
-         *
-         * @return
-         * {@code true} if the variable is required; {@code false}, otherwise.
+         * {@code true} if the parameter is required; {@code false}, otherwise.
          */
         public boolean isRequired() {
             return required;
+        }
+
+        /**
+         * Returns the type of the parameter.
+         *
+         * @return
+         * The parameter's type.
+         */
+        public TypeDescriptor getType() {
+            return type;
         }
     }
 
@@ -421,6 +400,7 @@ public abstract class WebService extends HttpServlet {
     public static class ConstantDescriptor {
         private String name;
         private String description;
+        private boolean deprecated;
 
         private ConstantDescriptor(Field field) {
             Object constant;
@@ -433,6 +413,8 @@ public abstract class WebService extends HttpServlet {
             name = constant.toString();
 
             description = map(field.getAnnotation(Description.class), Description::value);
+
+            deprecated = field.getAnnotation(Deprecated.class) != null;
         }
 
         /**
@@ -454,6 +436,17 @@ public abstract class WebService extends HttpServlet {
         public String getDescription() {
             return description;
         }
+
+        /**
+         * Indicates that the constant is deprecated.
+         *
+         * @return
+         * {@code true} if the constant is deprecated; {@code false},
+         * otherwise.
+         */
+        public boolean isDeprecated() {
+            return deprecated;
+        }
     }
 
     /**
@@ -464,7 +457,7 @@ public abstract class WebService extends HttpServlet {
         private String description;
 
         private List<TypeDescriptor> supertypes = new LinkedList<>();
-        private List<VariableDescriptor> properties = new LinkedList<>();
+        private List<PropertyDescriptor> properties = new LinkedList<>();
 
         private StructureDescriptor(Class<?> type) {
             name = getTypeName(type);
@@ -508,8 +501,80 @@ public abstract class WebService extends HttpServlet {
          * @return
          * The structure's properties.
          */
-        public List<VariableDescriptor> getProperties() {
+        public List<PropertyDescriptor> getProperties() {
             return properties;
+        }
+    }
+
+    /**
+     * Describes a property.
+     */
+    public static class PropertyDescriptor {
+        private String name;
+        private String description;
+        private boolean required;
+        private boolean deprecated;
+
+        private TypeDescriptor type = null;
+
+        private PropertyDescriptor(String name, Method accessor) {
+            this.name = name;
+
+            description = map(accessor.getAnnotation(Description.class), Description::value);
+
+            required = accessor.getAnnotation(Required.class) != null;
+            deprecated = accessor.getAnnotation(Deprecated.class) != null;
+        }
+
+        /**
+         * Returns the name of the property.
+         *
+         * @return
+         * The property's name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns a description of the property.
+         *
+         * @return
+         * The property's description, or {@code null} for no description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Indicates that the property is required.
+         *
+         * @return
+         * {@code true} if the property is required; {@code false}, otherwise.
+         */
+        public boolean isRequired() {
+            return required;
+        }
+
+        /**
+         * Indicates that the property is deprecated.
+         *
+         * @return
+         * {@code true} if the property is deprecated; {@code false},
+         * otherwise.
+         */
+        public boolean isDeprecated() {
+            return deprecated;
+        }
+
+        /**
+         * Returns the type of the property.
+         *
+         * @return
+         * The property's type.
+         */
+        public TypeDescriptor getType() {
+            return type;
         }
     }
 
@@ -1394,8 +1459,6 @@ public abstract class WebService extends HttpServlet {
                 for (var handler : entry.getValue()) {
                     var operation = new OperationDescriptor(entry.getKey().toUpperCase(), handler);
 
-                    operation.deprecated |= serviceDescriptor.deprecated;
-
                     operation.produces = describeGenericType(handler.getGenericReturnType());
 
                     var parameters = handler.getParameters();
@@ -1411,9 +1474,7 @@ public abstract class WebService extends HttpServlet {
                     for (var i = 0; i < parameters.length; i++) {
                         var parameter = parameters[i];
 
-                        var parameterDescriptor = new VariableDescriptor(parameter);
-
-                        parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
+                        var parameterDescriptor = new ParameterDescriptor(parameter);
 
                         if (i < keyCount) {
                             parameterDescriptor.required = true;
@@ -1428,6 +1489,8 @@ public abstract class WebService extends HttpServlet {
 
                             operation.bodyParameter = parameterDescriptor;
                         }
+
+                        parameterDescriptor.type = describeGenericType(parameter.getParameterizedType());
                     }
 
                     endpoint.operations.add(operation);
@@ -1536,7 +1599,7 @@ public abstract class WebService extends HttpServlet {
                             continue;
                         }
 
-                        var propertyDescriptor = new VariableDescriptor(entry.getKey(), accessor);
+                        var propertyDescriptor = new PropertyDescriptor(entry.getKey(), accessor);
 
                         propertyDescriptor.type = describeGenericType(accessor.getGenericReturnType());
 

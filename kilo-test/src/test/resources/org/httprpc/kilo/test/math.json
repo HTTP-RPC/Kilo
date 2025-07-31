@@ -1,5 +1,4 @@
 {
-  "deprecated": false,
   "description": "Math example service.",
   "endpoints": [
     {

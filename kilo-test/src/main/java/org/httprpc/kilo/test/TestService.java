@@ -122,6 +122,18 @@ public class TestService extends AbstractDatabaseService {
         boolean getFlag();
     }
 
+    public enum TestEnum {
+        ONE,
+        TWO,
+        @Deprecated THREE;
+    }
+
+    public record TestRecord(
+        int number,
+        @Deprecated TestEnum testEnum
+    ) {
+    }
+
     private static class FibonacciSequence implements Iterable<Number> {
         private int count;
 
@@ -390,8 +402,8 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("deprecated")
     @Deprecated
-    public void testDeprecated() {
-        // No-op
+    public TestRecord testDeprecated() {
+        return null;
     }
 
     @RequestMethod("GET")
