@@ -30,7 +30,6 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAccessor;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Date;
@@ -173,39 +172,34 @@ public class TemplateEncoder extends Encoder<Object> {
 
             var zoneId = timeZone.toZoneId();
 
-            TemporalAccessor temporalAccessor;
-            if (value instanceof Instant instant) {
-                temporalAccessor = ZonedDateTime.ofInstant(instant, zoneId);
-            } else if (value instanceof LocalDate localDate) {
-                temporalAccessor = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
-            } else if (value instanceof LocalTime localTime) {
-                temporalAccessor = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
-            } else if (value instanceof LocalDateTime localDateTime) {
-                temporalAccessor = ZonedDateTime.of(localDateTime, zoneId);
-            } else {
-                throw new UnsupportedOperationException("Value is not a temporal accessor.");
-            }
+            var temporalAccessor = switch (value) {
+                case Instant instant -> ZonedDateTime.ofInstant(instant, zoneId);
+                case LocalDate localDate -> ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
+                case LocalTime localTime -> ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
+                case LocalDateTime localDateTime -> ZonedDateTime.of(localDateTime, zoneId);
+                case null, default -> throw new UnsupportedOperationException("Value is not a temporal accessor.");
+            };
 
             return switch (dateTimeType) {
                 case DATE -> {
                     if (formatStyle != null) {
                         yield DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(locale).format(temporalAccessor);
                     } else {
-                        yield DateTimeFormatter.ISO_OFFSET_DATE.format(ZonedDateTime.from(temporalAccessor));
+                        yield DateTimeFormatter.ISO_OFFSET_DATE.format(temporalAccessor);
                     }
                 }
                 case TIME -> {
                     if (formatStyle != null) {
                         yield DateTimeFormatter.ofLocalizedTime(formatStyle).withLocale(locale).format(temporalAccessor);
                     } else {
-                        yield DateTimeFormatter.ISO_OFFSET_TIME.format(ZonedDateTime.from(temporalAccessor));
+                        yield DateTimeFormatter.ISO_OFFSET_TIME.format(temporalAccessor);
                     }
                 }
                 case DATE_TIME -> {
                     if (formatStyle != null) {
                         yield DateTimeFormatter.ofLocalizedDateTime(formatStyle).withLocale(locale).format(temporalAccessor);
                     } else {
-                        yield DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.from(temporalAccessor));
+                        yield DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(temporalAccessor);
                     }
                 }
             };
@@ -630,16 +624,12 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             var value = getMarkerValue(marker);
 
-                            Iterator<?> iterator;
-                            if (value == null) {
-                                iterator = java.util.Collections.emptyIterator();
-                            } else if (value instanceof Iterable<?> iterable) {
-                                iterator = iterable.iterator();
-                            } else if (value instanceof Map<?, ?> map) {
-                                iterator = new MapIterator(map);
-                            } else {
-                                throw new IOException("Invalid section element.");
-                            }
+                            var iterator = switch (value) {
+                                case null -> java.util.Collections.emptyIterator();
+                                case Iterable<?> iterable -> iterable.iterator();
+                                case Map<?, ?> map -> new MapIterator(map);
+                                default -> throw new IOException("Invalid section element.");
+                            };
 
                             if (iterator.hasNext()) {
                                 var i = 0;

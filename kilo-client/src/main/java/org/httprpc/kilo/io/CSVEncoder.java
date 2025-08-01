@@ -200,17 +200,14 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             return;
         }
 
-        if (value instanceof CharSequence text) {
-            encode(text, writer);
-        } else if (value instanceof Number number) {
-            encode(number, writer);
-        } else if (value instanceof Boolean flag) {
-            encode(flag, writer);
-        } else if (value instanceof Date date) {
-            encode(date, writer);
-        } else {
-            encode(value.toString(), writer);
+        switch (value) {
+            case CharSequence text -> encode(text, writer);
+            case Number number -> encode(number, writer);
+            case Boolean flag -> encode(flag, writer);
+            case Date date -> encode(date, writer);
+            default -> encode(value.toString(), writer);
         }
+
     }
 
     private void encode(CharSequence text, Writer writer) throws IOException {

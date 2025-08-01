@@ -63,34 +63,29 @@ public class JSONEncoder extends Encoder<Object> {
     }
 
     private void encode(Object value, Writer writer) throws IOException {
-        if (value == null) {
-            writer.append(null);
-        } else if (value instanceof CharSequence text) {
-            encode(text, writer);
-        } else if (value instanceof Float number) {
-            if (number.isNaN() || number.isInfinite()) {
-                throw new IllegalArgumentException("Invalid float value.");
-            }
+        switch (value) {
+            case null -> writer.append(null);
+            case CharSequence text -> encode(text, writer);
+            case Float number -> {
+                if (number.isNaN() || number.isInfinite()) {
+                    throw new IllegalArgumentException("Invalid float value.");
+                }
 
-            encode(number, writer);
-        } else if (value instanceof Double number) {
-            if (number.isNaN() || number.isInfinite()) {
-                throw new IllegalArgumentException("Invalid double value.");
+                encode(number, writer);
             }
+            case Double number -> {
+                if (number.isNaN() || number.isInfinite()) {
+                    throw new IllegalArgumentException("Invalid double value.");
+                }
 
-            encode(number, writer);
-        } else if (value instanceof Number number) {
-            encode(number, writer);
-        } else if (value instanceof Boolean flag) {
-            encode(flag, writer);
-        } else if (value instanceof Date date) {
-            encode(date, writer);
-        } else if (value instanceof Iterable<?> iterable) {
-            encode(iterable, writer);
-        } else if (value instanceof Map<?, ?> map) {
-            encode(map, writer);
-        } else {
-            encode(value.toString(), writer);
+                encode(number, writer);
+            }
+            case Number number -> encode(number, writer);
+            case Boolean flag -> encode(flag, writer);
+            case Date date -> encode(date, writer);
+            case Iterable<?> iterable -> encode(iterable, writer);
+            case Map<?, ?> map -> encode(map, writer);
+            default -> encode(value.toString(), writer);
         }
     }
 

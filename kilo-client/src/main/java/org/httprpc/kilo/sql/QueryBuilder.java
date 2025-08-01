@@ -1475,29 +1475,29 @@ public class QueryBuilder {
                 } else {
                     value = argument.toString();
                 }
-            } else if (argument instanceof Date date) {
-                value = date.getTime();
-            } else if (argument instanceof LocalDate localDate) {
-                value = java.sql.Date.valueOf(localDate);
-            } else if (argument instanceof LocalTime localTime) {
-                value = java.sql.Time.valueOf(localTime);
-            } else if (argument instanceof Instant instant) {
-                value = java.sql.Timestamp.from(instant);
             } else {
-                var transform = transforms.get(parameter);
+                switch (argument) {
+                    case Date date -> value = date.getTime();
+                    case LocalDate localDate -> value = java.sql.Date.valueOf(localDate);
+                    case LocalTime localTime -> value = java.sql.Time.valueOf(localTime);
+                    case Instant instant -> value = java.sql.Timestamp.from(instant);
+                    case null, default -> {
+                        var transform = transforms.get(parameter);
 
-                if (transform != null && argument != null) {
-                    value = transform.apply(argument);
-                } else {
-                    if (!whitespaceAllowed && argument instanceof String text) {
-                        var n = text.length();
+                        if (transform != null && argument != null) {
+                            value = transform.apply(argument);
+                        } else {
+                            if (!whitespaceAllowed && argument instanceof String text) {
+                                var n = text.length();
 
-                        if (n > 0 && (Character.isWhitespace(text.charAt(0)) || Character.isWhitespace(text.charAt(n - 1)))) {
-                            throw new IllegalArgumentException("Value contains leading or trailing whitespace.");
+                                if (n > 0 && (Character.isWhitespace(text.charAt(0)) || Character.isWhitespace(text.charAt(n - 1)))) {
+                                    throw new IllegalArgumentException("Value contains leading or trailing whitespace.");
+                                }
+                            }
+
+                            value = argument;
                         }
                     }
-
-                    value = argument;
                 }
             }
 
