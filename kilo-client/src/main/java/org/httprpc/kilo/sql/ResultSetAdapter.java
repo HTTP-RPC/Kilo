@@ -66,15 +66,17 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
                     var value = resultSet.getObject(i);
 
-                    switch (value) {
-                        case java.sql.Date date -> value = date.toLocalDate();
-                        case java.sql.Time time -> value = time.toLocalTime();
-                        case java.sql.Timestamp timestamp -> value = timestamp.toInstant();
-                        default -> {
-                            var transform = transforms.get(key);
+                    if (value != null) {
+                        switch (value) {
+                            case java.sql.Date date -> value = date.toLocalDate();
+                            case java.sql.Time time -> value = time.toLocalTime();
+                            case java.sql.Timestamp timestamp -> value = timestamp.toInstant();
+                            default -> {
+                                var transform = transforms.get(key);
 
-                            if (transform != null && value != null) {
-                                value = transform.apply(value);
+                                if (transform != null) {
+                                    value = transform.apply(value);
+                                }
                             }
                         }
                     }
