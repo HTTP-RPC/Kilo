@@ -60,7 +60,7 @@ class PagedReader extends Reader {
                     pages.add(new char[pageSize]);
                 }
 
-                pages.get(pages.size() - 1)[position % pageSize] = (char)c;
+                pages.getLast()[position % pageSize] = (char)c;
 
                 position++;
                 count++;

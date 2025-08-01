@@ -134,7 +134,7 @@ public class Examples {
                 map = (Map<String, List<String>>)jsonDecoder.read(inputStream);
             }
 
-            System.out.println(map.get("vegetables").get(0)); // carrots
+            System.out.println(map.get("vegetables").getFirst()); // carrots
         } finally {
             Files.delete(file);
         }

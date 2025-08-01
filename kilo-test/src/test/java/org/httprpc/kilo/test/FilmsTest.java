@@ -33,7 +33,7 @@ public class FilmsTest {
 
         assertFalse(films.isEmpty());
 
-        var film = filmServiceProxy.getFilm(films.get(0).getID());
+        var film = filmServiceProxy.getFilm(films.getFirst().getID());
 
         assertEquals('n', Character.toLowerCase(film.getTitle().charAt(0)));
 

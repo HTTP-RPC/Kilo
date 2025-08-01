@@ -1277,7 +1277,7 @@ public abstract class WebService extends HttpServlet {
                 } else {
                     Object value;
                     if (values != null) {
-                        value = values.get(values.size() - 1);
+                        value = values.getLast();
                     } else {
                         value = null;
                     }

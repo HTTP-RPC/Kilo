@@ -764,7 +764,7 @@ public class WebServiceProxyTest {
 
         assertFalse(result.isEmpty());
 
-        var first = result.get(0);
+        var first = result.getFirst();
 
         assertEquals("foo", first.getFirstName());
         assertEquals("bar", first.getLastName());

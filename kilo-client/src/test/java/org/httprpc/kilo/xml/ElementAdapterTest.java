@@ -112,7 +112,7 @@ public class ElementAdapterTest {
 
         assertEquals(3, items.size());
 
-        var item1 = (Map<String, Object>)items.get(0);
+        var item1 = (Map<String, Object>)items.getFirst();
 
         assertEquals("1", item1.get("@d"));
         assertEquals("abc", item1.get("."));
