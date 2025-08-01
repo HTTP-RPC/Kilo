@@ -125,7 +125,7 @@ public class TestService extends AbstractDatabaseService {
     public enum TestEnum {
         ONE,
         TWO,
-        @Deprecated THREE;
+        @Deprecated THREE
     }
 
     public record TestRecord(
