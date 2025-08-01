@@ -14,15 +14,29 @@
 
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 dependencies {
     compileOnly "jakarta.servlet:jakarta.servlet-api:${servletAPIVersion}"
 
     api project(':kilo-client')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.name
+
+            from components.java
+        }
+    }
 }

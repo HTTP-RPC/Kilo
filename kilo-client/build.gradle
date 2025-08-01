@@ -14,11 +14,15 @@
 
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 dependencies {
@@ -26,4 +30,14 @@ dependencies {
     testImplementation "org.mariadb.jdbc:mariadb-java-client:${connectorJVersion}"
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.name
+
+            from components.java
+        }
+    }
 }
