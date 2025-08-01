@@ -21,7 +21,7 @@ dependencies {
 
     implementation project(':kilo-server')
     implementation "org.mariadb.jdbc:mariadb-java-client:${connectorJVersion}"
-    implementation 'org.hibernate.orm:hibernate-core:6.6.21.Final'
+    implementation 'org.hibernate.orm:hibernate-core:6.6.23.Final'
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
 
