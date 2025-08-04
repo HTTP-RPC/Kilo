@@ -186,28 +186,23 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                     writer.write(DELIMITER);
                 }
 
-                encode(map.get(key), writer);
+                var value = map.get(key);
+
+                if (value != null) {
+                    switch (value) {
+                        case CharSequence text -> encode(text, writer);
+                        case Number number -> encode(number, writer);
+                        case Boolean flag -> encode(flag, writer);
+                        case Date date -> encode(date, writer);
+                        default -> encode(value.toString(), writer);
+                    }
+                }
 
                 i++;
             }
 
             writer.write("\r\n");
         }
-    }
-
-    private void encode(Object value, Writer writer) throws IOException {
-        if (value == null) {
-            return;
-        }
-
-        switch (value) {
-            case CharSequence text -> encode(text, writer);
-            case Number number -> encode(number, writer);
-            case Boolean flag -> encode(flag, writer);
-            case Date date -> encode(date, writer);
-            default -> encode(value.toString(), writer);
-        }
-
     }
 
     private void encode(CharSequence text, Writer writer) throws IOException {
