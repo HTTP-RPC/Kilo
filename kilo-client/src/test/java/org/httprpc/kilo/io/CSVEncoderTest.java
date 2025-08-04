@@ -23,6 +23,9 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -61,8 +64,7 @@ public class CSVEncoderTest {
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
                 entry("c", 2.0),
-                entry("d", true),
-                entry("e", new Date(0))
+                entry("d", true)
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),
@@ -80,7 +82,7 @@ public class CSVEncoderTest {
         csvEncoder.write(rows, writer);
 
         var expected = "\"a\",\"b\",\"c\",\"D\",\"É\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,0\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,\r\n";
 
         assertEquals(expected, writer.toString());
@@ -108,21 +110,35 @@ public class CSVEncoderTest {
 
     @Test
     public void testFormats() throws IOException {
+        var number = 1000.0;
+        var integer = 1000;
+        var flag = true;
+        var date = new Date();
+        var localDateTime = LocalDateTime.now();
+
         var rows = listOf(
             mapOf(
-                entry("a", 1),
-                entry("b", true),
-                entry("c", new Date(0))
+                entry("a", number),
+                entry("b", integer),
+                entry("c", flag),
+                entry("d", date),
+                entry("e", localDateTime)
             )
         );
 
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e"));
 
         var numberFormat = NumberFormat.getNumberInstance();
 
         numberFormat.setMinimumFractionDigits(2);
 
-        csvEncoder.setNumberFormat(numberFormat);
+        csvEncoder.format(Number.class, numberFormat::format);
+
+        var integerFormat = NumberFormat.getNumberInstance();
+
+        integerFormat.setGroupingUsed(false);
+
+        csvEncoder.format(Integer.class, integerFormat::format);
 
         var booleanFormat = new Format() {
             @Override
@@ -136,20 +152,26 @@ public class CSVEncoderTest {
             }
         };
 
-        csvEncoder.setBooleanFormat(booleanFormat);
+        csvEncoder.format(Boolean.class, booleanFormat::format);
 
         var dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 
-        csvEncoder.setDateFormat(dateFormat);
+        csvEncoder.format(Date.class, dateFormat::format);
+
+        var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
+
+        csvEncoder.format(LocalDateTime.class, dateTimeFormatter::format);
 
         var writer = new StringWriter();
 
         csvEncoder.write(rows, writer);
 
-        var expected = "\"a\",\"b\",\"c\"\r\n"
-            + "\"" + numberFormat.format(1) + "\","
-            + "\"" + booleanFormat.format(true) + "\","
-            + "\"" + dateFormat.format(new Date(0)) + "\"\r\n";
+        var expected = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
+            + "\"" + numberFormat.format(number) + "\","
+            + "\"" + integerFormat.format(integer) + "\","
+            + "\"" + booleanFormat.format(flag) + "\","
+            + "\"" + dateFormat.format(date) + "\","
+            + "\"" + dateTimeFormatter.format(localDateTime) + "\"\r\n";
 
         assertEquals(expected, writer.toString());
     }

@@ -18,11 +18,11 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.Format;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -32,9 +32,7 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class CSVEncoder extends Encoder<Iterable<?>> {
     private List<String> keys;
 
-    private Format numberFormat = null;
-    private Format booleanFormat = null;
-    private Format dateFormat = null;
+    private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
     private ResourceBundle resourceBundle = null;
 
@@ -55,63 +53,21 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     /**
-     * Returns the number format.
+     * Associates a formatter with a type.
      *
-     * @return
-     * The number format, or {@code null} if a number format has not been set.
+     * @param type
+     * The type to format.
+     *
+     * @param formatter
+     * The formatter to apply to instances of the given type.
      */
-    public Format getNumberFormat() {
-        return numberFormat;
-    }
+    @SuppressWarnings("unchecked")
+    public <T> void format(Class<T> type, Function<? super T, String> formatter) {
+        if (type == null || formatter == null) {
+            throw new IllegalArgumentException();
+        }
 
-    /**
-     * Sets the number format.
-     *
-     * @param numberFormat
-     * The number format, or {@code null} for no number format.
-     */
-    public void setNumberFormat(Format numberFormat) {
-        this.numberFormat = numberFormat;
-    }
-
-    /**
-     * Returns the boolean format.
-     *
-     * @return
-     * The boolean format, or {@code null} if a boolean format has not been set.
-     */
-    public Format getBooleanFormat() {
-        return booleanFormat;
-    }
-
-    /**
-     * Sets the boolean format.
-     *
-     * @param booleanFormat
-     * The boolean format, or {@code null} for no boolean format.
-     */
-    public void setBooleanFormat(Format booleanFormat) {
-        this.booleanFormat = booleanFormat;
-    }
-
-    /**
-     * Returns the date format.
-     *
-     * @return
-     * The date format, or {@code null} if a date format has not been set.
-     */
-    public Format getDateFormat() {
-        return dateFormat;
-    }
-
-    /**
-     * Sets the date format.
-     *
-     * @param dateFormat
-     * The date format, or {@code null} for no date format.
-     */
-    public void setDateFormat(Format dateFormat) {
-        this.dateFormat = dateFormat;
+        formatters.put(type, (Function<Object, String>)formatter);
     }
 
     /**
@@ -189,11 +145,24 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 var value = map.get(key);
 
                 if (value != null) {
+                    var type = value.getClass();
+
+                    while (type != null) {
+                        var formatter = formatters.get(type);
+
+                        if (formatter != null) {
+                            value = formatter.apply(value);
+
+                            break;
+                        }
+
+                        type = type.getSuperclass();
+                    }
+
                     switch (value) {
                         case CharSequence text -> encode(text, writer);
                         case Number number -> encode(number, writer);
                         case Boolean flag -> encode(flag, writer);
-                        case Date date -> encode(date, writer);
                         default -> encode(value.toString(), writer);
                     }
                 }
@@ -222,26 +191,10 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     }
 
     private void encode(Number number, Writer writer) throws IOException {
-        if (numberFormat != null) {
-            encode(numberFormat.format(number), writer);
-        } else {
-            writer.write(number.toString());
-        }
+        writer.write(number.toString());
     }
 
     private void encode(Boolean flag, Writer writer) throws IOException {
-        if (booleanFormat != null) {
-            encode(booleanFormat.format(flag), writer);
-        } else {
-            writer.write(flag.toString());
-        }
-    }
-
-    private void encode(Date date, Writer writer) throws IOException {
-        if (dateFormat != null) {
-            encode(dateFormat.format(date), writer);
-        } else {
-            writer.write(String.valueOf(date.getTime()));
-        }
+        writer.write(flag.toString());
     }
 }
