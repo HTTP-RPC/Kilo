@@ -64,7 +64,8 @@ public class CSVEncoderTest {
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
                 entry("c", 2.0),
-                entry("d", true)
+                entry("d", true),
+                entry("e", new Date(0))
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),
@@ -82,7 +83,7 @@ public class CSVEncoderTest {
         csvEncoder.write(rows, writer);
 
         var expected = "\"a\",\"b\",\"c\",\"D\",\"É\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,0\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,\r\n";
 
         assertEquals(expected, writer.toString());

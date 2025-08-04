@@ -18,6 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,24 +146,27 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 var value = map.get(key);
 
                 if (value != null) {
-                    var type = value.getClass();
+                    if (!formatters.isEmpty()) {
+                        var type = value.getClass();
 
-                    while (type != null) {
-                        var formatter = formatters.get(type);
+                        while (type != null) {
+                            var formatter = formatters.get(type);
 
-                        if (formatter != null) {
-                            value = formatter.apply(value);
+                            if (formatter != null) {
+                                value = formatter.apply(value);
 
-                            break;
+                                break;
+                            }
+
+                            type = type.getSuperclass();
                         }
-
-                        type = type.getSuperclass();
                     }
 
                     switch (value) {
                         case CharSequence text -> encode(text, writer);
                         case Number number -> encode(number, writer);
                         case Boolean flag -> encode(flag, writer);
+                        case Date date -> encode(date, writer);
                         default -> encode(value.toString(), writer);
                     }
                 }
@@ -196,5 +200,9 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private void encode(Boolean flag, Writer writer) throws IOException {
         writer.write(flag.toString());
+    }
+
+    private void encode(Date date, Writer writer) throws IOException {
+        writer.write(String.valueOf(date.getTime()));
     }
 }
