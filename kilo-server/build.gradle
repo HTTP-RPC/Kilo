@@ -15,6 +15,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
 java {
@@ -32,11 +33,48 @@ dependencies {
 }
 
 publishing {
+    repositories {
+        maven {
+            url = "${repositoryURL}"
+
+            credentials {
+                username = project.properties['centralPortalUsername'] ?: ''
+                password = project.properties['centralPortalPassword'] ?: ''
+            }
+        }
+    }
+
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
             artifactId = project.name
 
             from components.java
+
+            pom {
+                name = project.name
+                description = "${projectDescription}"
+                url = "${projectURL}"
+                licenses {
+                    license {
+                        name = "${licenseName}"
+                        url = "${licenseURL}"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "${developerName}"
+                        email = "${developerEmail}"
+                    }
+                }
+                scm {
+                    connection = "${scmConnection}"
+                    url = "${scmURL}"
+                }
+            }
         }
     }
+}
+
+signing {
+    sign publishing.publications
 }
