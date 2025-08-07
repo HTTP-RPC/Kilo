@@ -520,7 +520,7 @@ System.out.println(text); // Hello, World!
 The `CSVEncoder` class serializes a sequence of map or bean values to CSV. The list passed to the constructor represents both the names of the columns in the output document and the keys or properties to which those columns correspond. For example:
 
 ```java
-var maps = listOf(
+var rows = listOf(
     mapOf(
         entry("a", "hello"),
         entry("b", 123),
@@ -535,7 +535,7 @@ var maps = listOf(
 
 var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
-csvEncoder.write(maps, System.out);
+csvEncoder.write(rows, System.out);
 ```
 
 This code would produce the following output:
