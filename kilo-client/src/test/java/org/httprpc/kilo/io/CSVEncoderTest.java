@@ -57,6 +57,13 @@ public class CSVEncoderTest {
         }
     }
 
+    public record Record(
+        String a,
+        int b,
+        boolean c
+    ) {
+    }
+
     @Test
     public void testMaps() throws IOException {
         var rows = listOf(
@@ -94,6 +101,26 @@ public class CSVEncoderTest {
         var rows = listOf(
             new Row("hello", 123, true),
             new Row("goodbye", 456, false)
+        );
+
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(rows, writer);
+
+        var expected = "\"a\",\"b\",\"c\"\r\n"
+            + "\"hello\",123,true\r\n"
+            + "\"goodbye\",456,false\r\n";
+
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    public void testRecords() throws IOException {
+        var rows = listOf(
+            new Record("hello", 123, true),
+            new Record("goodbye", 456, false)
         );
 
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));

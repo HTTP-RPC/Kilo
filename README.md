@@ -517,7 +517,7 @@ System.out.println(text); // Hello, World!
 ```
 
 ## CSVEncoder
-The `CSVEncoder` class serializes a sequence of map or bean values to CSV. The list passed to the constructor represents both the names of the columns in the output document and the keys or properties to which those columns correspond. For example:
+The `CSVEncoder` class serializes a sequence of map, bean, or record values to CSV. The list passed to the constructor represents both the names of the columns in the output document and the keys or properties to which those columns correspond. For example:
 
 ```java
 var rows = listOf(
