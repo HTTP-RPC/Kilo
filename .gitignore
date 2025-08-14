@@ -1,5 +1,7 @@
 .gradle
+.idea/data_source_mapping.xml
 .idea/dataSources
+.idea/dataSources.local.xml
 **/build
 **/out
 **/.DS_Store
