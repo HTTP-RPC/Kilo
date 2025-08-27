@@ -427,8 +427,8 @@ public class QueryBuilder {
      * type.
      *
      * @param parentType
-     * The type representing the table to join and the table that defines the
-     * primary key.
+     * The type representing both the table to join and the table that defines
+     * the primary key.
      *
      * @return
      * The {@link QueryBuilder} instance.
