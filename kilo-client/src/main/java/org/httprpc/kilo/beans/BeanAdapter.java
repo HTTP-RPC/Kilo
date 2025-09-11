@@ -1107,18 +1107,17 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             parameterTypes[i] = recordComponent.getType();
 
-            var name = recordComponent.getName();
             var accessor = recordComponent.getAccessor();
 
-            var genericType = recordComponent.getGenericType();
+            var key = getKey(accessor, recordComponent.getName());
 
-            var value = map.get(getKey(accessor, name));
+            var value = map.get(key);
 
             if (accessor.getAnnotation(Required.class) != null && value == null) {
                 throw new IllegalArgumentException("Required value is not defined.");
             }
 
-            arguments[i] = toGenericType(value, genericType);
+            arguments[i] = toGenericType(value, recordComponent.getGenericType());
         }
 
         Constructor<?> constructor;
