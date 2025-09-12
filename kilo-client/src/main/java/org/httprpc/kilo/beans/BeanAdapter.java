@@ -438,7 +438,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     // Undefined value exception
     private static class UndefinedValueException extends UnsupportedOperationException {
         UndefinedValueException(String name, Class<?> type) {
-            super(String.format("Value for \"%s\" defined by %s is not defined.", name, type.getSimpleName()));
+            super(String.format("Value for \"%s\" in instance of %s is not defined.", name, type.getSimpleName()));
         }
     }
 
