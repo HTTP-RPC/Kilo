@@ -371,7 +371,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = map.get(key);
 
                     if (method.getAnnotation(Required.class) != null && value == null) {
-                        throw new UnsupportedOperationException("Value is not defined.");
+                        throw new UndefinedValueException(key, type);
                     }
 
                     return toGenericType(value, method.getGenericReturnType());
@@ -387,7 +387,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var value = arguments[0];
 
                     if (accessor.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalArgumentException("Value is required.");
+                        throw new RequiredValueException(key, type);
                     }
 
                     ((Map<Object, Object>)map).put(key, adapt(value));
@@ -432,6 +432,20 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         @Override
         public String toString() {
             return map.toString();
+        }
+    }
+
+    // Undefined value exception
+    private static class UndefinedValueException extends UnsupportedOperationException {
+        UndefinedValueException(String name, Class<?> type) {
+            super(String.format("Value for \"%s\" defined by %s is not defined.", name, type.getSimpleName()));
+        }
+    }
+
+    // Required value exception
+    private static class RequiredValueException extends IllegalArgumentException {
+        RequiredValueException(String name, Class<?> type) {
+            super(String.format("Value for \"%s\" defined by %s is required.", name, type.getSimpleName()));
         }
     }
 
@@ -508,7 +522,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-            throw new UnsupportedOperationException("Value is not defined.");
+            throw new UndefinedValueException(key.toString(), bean.getClass());
         }
 
         return adapt(value);
@@ -531,7 +545,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-            throw new IllegalArgumentException("Value is required.");
+            throw new RequiredValueException(key, bean.getClass());
         }
 
         try {
@@ -586,7 +600,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                             var value = property.accessor.invoke(bean);
 
                             if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                                throw new UnsupportedOperationException("Required value is not defined.");
+                                throw new UndefinedValueException(key, bean.getClass());
                             }
 
                             return new SimpleImmutableEntry<>(key, adapt(value));
@@ -1114,7 +1128,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var value = map.get(key);
 
             if (accessor.getAnnotation(Required.class) != null && value == null) {
-                throw new IllegalArgumentException("Required value is not defined.");
+                throw new RequiredValueException(key, type);
             }
 
             arguments[i] = toGenericType(value, recordComponent.getGenericType());
@@ -1159,10 +1173,12 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     continue;
                 }
 
-                var value = map.get(entry.getKey());
+                var key = entry.getKey();
+
+                var value = map.get(key);
 
                 if (property.accessor.getAnnotation(Required.class) != null && value == null) {
-                    throw new IllegalArgumentException("Required value is not defined.");
+                    throw new RequiredValueException(key, type);
                 }
 
                 try {
