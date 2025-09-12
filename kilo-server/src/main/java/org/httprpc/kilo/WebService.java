@@ -1283,7 +1283,7 @@ public abstract class WebService extends HttpServlet {
                     }
 
                     if (parameter.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalArgumentException("Required argument is not defined.");
+                        throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
                     }
 
                     argument = BeanAdapter.coerce(value, type);

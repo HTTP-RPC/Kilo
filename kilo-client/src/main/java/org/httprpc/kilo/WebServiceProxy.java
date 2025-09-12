@@ -359,7 +359,7 @@ public class WebServiceProxy {
                     var value = argumentList.get(i);
 
                     if (parameter.getAnnotation(Required.class) != null && value == null) {
-                        throw new IllegalArgumentException("Required argument is not defined.");
+                        throw new IllegalArgumentException(String.format("Parameter \"%s\" is required.", parameter.getName()));
                     }
 
                     var name = coalesce(map(parameter.getAnnotation(Name.class), Name::value), parameter::getName);
