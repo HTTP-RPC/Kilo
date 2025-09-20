@@ -35,8 +35,6 @@ dependencies {
 publishing {
     repositories {
         maven {
-            url = "${repositoryURL}"
-
             credentials {
                 username = project.properties['centralPortalUsername'] ?: ''
                 password = project.properties['centralPortalPassword'] ?: ''
