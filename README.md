@@ -457,7 +457,7 @@ System.out.println(mathServiceProxy.getSum(listOf(1.0, 2.0, 3.0))); // 6.0
 System.out.println(mathServiceProxy.getAverage(listOf(1.0, 2.0, 3.0, 4.0, 5.0))); // 3.0
 ```
 
-The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. 
+The [`Name`](#custom-parameter-names) and [`Required`](#required-parameters) annotations may also be applied to proxy method parameters. The `WebServiceProxy.Configuration` annotation can be used to further customize request processing.
 
 Path variables and body content are handled as described for [`WebService`](#webservice). Body parameters are required for `POST` and `PUT` methods. A body parameter of type `Void` may be used to indicate that a method does not accept a body.
 
