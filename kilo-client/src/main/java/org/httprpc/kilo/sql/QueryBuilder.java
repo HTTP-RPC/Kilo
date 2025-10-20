@@ -963,53 +963,53 @@ public class QueryBuilder {
     /**
      * Appends a "greater than" filter.
      *
-     * @param key
-     * The key of the argument value.
+     * @param keys
+     * The keys of the argument values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIndexGreaterThan(String key) {
-        return filterByIndex(">", key);
+    public QueryBuilder filterByIndexGreaterThan(String... keys) {
+        return filterByIndex(">", keys);
     }
 
     /**
      * Appends a "greater than or equal to" filter.
      *
-     * @param key
-     * The key of the argument value.
+     * @param keys
+     * The keys of the argument values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIndexGreaterThanOrEqualTo(String key) {
-        return filterByIndex(">=", key);
+    public QueryBuilder filterByIndexGreaterThanOrEqualTo(String... keys) {
+        return filterByIndex(">=", keys);
     }
 
     /**
      * Appends a "less than" filter.
      *
-     * @param key
-     * The key of the argument value.
+     * @param keys
+     * The keys of the argument values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIndexLessThan(String key) {
-        return filterByIndex("<", key);
+    public QueryBuilder filterByIndexLessThan(String... keys) {
+        return filterByIndex("<", keys);
     }
 
     /**
      * Appends a "less than or equal to" filter.
      *
-     * @param key
-     * The key of the argument value.
+     * @param keys
+     * The keys of the argument values.
      *
      * @return
      * The {@link QueryBuilder} instance.
      */
-    public QueryBuilder filterByIndexLessThanOrEqualTo(String key) {
-        return filterByIndex("<=", key);
+    public QueryBuilder filterByIndexLessThanOrEqualTo(String... keys) {
+        return filterByIndex("<=", keys);
     }
 
     /**

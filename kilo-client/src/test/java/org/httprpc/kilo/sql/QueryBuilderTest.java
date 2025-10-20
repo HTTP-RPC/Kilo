@@ -419,10 +419,10 @@ public class QueryBuilderTest {
 
     @Test
     public void testGreaterThanOrEqualTo() {
-        var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThanOrEqualTo("t");
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexGreaterThanOrEqualTo("t", "u");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t >= ?", queryBuilder.toString());
-        assertEquals(listOf("t"), getParameters(queryBuilder));
+        assertEquals("select I.h, I.i, I.t, I.u from I where I.t >= ? and I.u >= ?", queryBuilder.toString());
+        assertEquals(listOf("t", "u"), getParameters(queryBuilder));
     }
 
     @Test
@@ -435,10 +435,10 @@ public class QueryBuilderTest {
 
     @Test
     public void testLessThanOrEqualTo() {
-        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThanOrEqualTo("t");
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexLessThanOrEqualTo("t", "u");
 
-        assertEquals("select I.h, I.i, I.t, I.u from I where I.t <= ?", queryBuilder.toString());
-        assertEquals(listOf("t"), getParameters(queryBuilder));
+        assertEquals("select I.h, I.i, I.t, I.u from I where I.t <= ? and I.u <= ?", queryBuilder.toString());
+        assertEquals(listOf("t", "u"), getParameters(queryBuilder));
     }
 
     @Test
