@@ -19,12 +19,13 @@ import org.httprpc.kilo.sql.ForeignKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("film_category")
-public interface FilmCategory {
+public record FilmCategory (
     @Column("film_id")
     @ForeignKey(Film.class)
-    Integer getFilmID();
+    Integer filmID,
 
     @Column("category_id")
     @ForeignKey(Category.class)
-    Integer getCategoryID();
+    Integer categoryID
+) {
 }
