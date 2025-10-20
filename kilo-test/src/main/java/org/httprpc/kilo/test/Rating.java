@@ -18,16 +18,11 @@ import org.httprpc.kilo.Description;
 
 @Description("Represents a film rating.")
 public enum Rating {
-    @Description("A \"G\" rating.")
-    G("G"),
-    @Description("A \"PG\" rating.")
-    PG("PG"),
-    @Description("A \"PG-13\" rating.")
-    PG_13("PG-13"),
-    @Description("An \"R\" rating.")
-    R("R"),
-    @Description("An \"NC-17\" rating.")
-    NC_17("NC-17");
+    @Description("A \"G\" rating.") G("G"),
+    @Description("A \"PG\" rating.") PG("PG"),
+    @Description("A \"PG-13\" rating.") PG_13("PG-13"),
+    @Description("An \"R\" rating.") R("R"),
+    @Description("An \"NC-17\" rating.") NC_17("NC-17");
 
     private final String value;
 

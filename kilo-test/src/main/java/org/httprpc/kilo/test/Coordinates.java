@@ -19,7 +19,12 @@ import org.httprpc.kilo.Required;
 
 @Description("Represents an x/y coordinate pair.")
 public record Coordinates(
-    @Description("The x-coordinate.") @Required int x,
-    @Description("The y-coordinate.") @Required int y
+    @Description("The x-coordinate.")
+    @Required
+    int x,
+
+    @Description("The y-coordinate.")
+    @Required
+    int y
 ) {
 }

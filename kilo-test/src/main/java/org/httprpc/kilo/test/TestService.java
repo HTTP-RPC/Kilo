@@ -67,6 +67,7 @@ public class TestService extends AbstractDatabaseService {
         @Override
         @Description("C's version of B")
         double getB();
+
         @Description("An array of strings")
         String[] getC();
     }

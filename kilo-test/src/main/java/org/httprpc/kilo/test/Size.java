@@ -19,12 +19,9 @@ import org.httprpc.kilo.sql.Numeric;
 
 @Description("Represents a size option.")
 public enum Size implements Numeric {
-    @Description("A small size.")
-    SMALL(10),
-    @Description("A medium size.")
-    MEDIUM(20),
-    @Description("A large size.")
-    LARGE(30);
+    @Description("A small size.") SMALL(10),
+    @Description("A medium size.") MEDIUM(20),
+    @Description("A large size.") LARGE(30);
 
     private final int value;
 
