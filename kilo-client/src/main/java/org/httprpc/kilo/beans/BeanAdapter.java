@@ -58,7 +58,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.httprpc.kilo.util.Optionals.*;
 
 /**
- * Provides access to Java bean properties via the {@link Map} interface.
+ * Provides access to Java bean properties and record components via the
+ * {@link Map} interface.
  */
 public class BeanAdapter extends AbstractMap<String, Object> {
     /**
@@ -564,9 +565,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <p>If the value is an array, it is wrapped in a {@link List} that will
      * recursively adapt the array's elements.</p>
      *
-     * <p>If the value is a {@link Record}, it is wrapped in a {@link Map} that
-     * will recursively adapt the record's fields.</p>
-     *
      * <p>If the value is an {@link Iterable}, it is wrapped in a {@link List}
      * that will recursively adapt the iterable's elements. If the iterable
      * implements {@link Collection}, the adapter will support the
@@ -651,8 +649,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <p>If none of the previous conditions apply, the provided value is
      * assumed to be a map. If the if the target type is a {@link Record}, the
      * resulting value is instantiated via the type's canonical constructor
-     * using the entries in the map. Otherwise, the target type is assumed to
-     * be a bean:</p>
+     * using the entries in the map. Otherwise:</p>
      *
      * <ul>
      * <li>If the type is an interface, the return value is a proxy that maps

@@ -161,6 +161,10 @@ public class BeanAdapterTest {
         assertThrows(IllegalArgumentException.class, () -> beanAdapter.put("date", "xyz"));
 
         assertThrows(UnsupportedOperationException.class, () -> beanAdapter.put("foo", 101));
+
+        var recordAdapter = new BeanAdapter(new TestRecord(1, 2.0, "three", null));
+
+        assertThrows(UnsupportedOperationException.class, () -> recordAdapter.put("localDate", LocalDate.now()));
     }
 
     @Test
