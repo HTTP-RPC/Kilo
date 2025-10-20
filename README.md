@@ -284,7 +284,7 @@ public class CatalogService extends AbstractDatabaseService {
 }
 ```
 
-Descriptions can also be associated with bean types, enums, and records:
+Descriptions can also be associated with bean types, records, and enums:
 
 ```java
 @Table("item")
@@ -313,6 +313,20 @@ public interface Item {
 ```
 
 ```java
+@Description("Represents an x/y coordinate pair.")
+public record Coordinates(
+    @Description("The x-coordinate.")
+    @Required
+    int x,
+
+    @Description("The y-coordinate.")
+    @Required
+    int y
+) {
+}
+```
+
+```java
 @Description("Represents a size option.")
 public enum Size implements Numeric {
     @Description("A small size.") SMALL(10),
@@ -331,20 +345,6 @@ public enum Size implements Numeric {
     }
 }
 ```  
-
-```java
-@Description("Represents an x/y coordinate pair.")
-public record Coordinates(
-    @Description("The x-coordinate.")
-    @Required
-    int x,
-
-    @Description("The y-coordinate.")
-    @Required
-    int y
-) {
-}
-```
 
 The `FormData` annotation can be used to indicate that a method accepts [form data](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4). Deprecated elements will be identified as such in the output.
 
@@ -599,7 +599,7 @@ the code would produce this output:
 ```
 
 ## BeanAdapter
-The `BeanAdapter` class provides access to Java bean properties via the `Map` interface. For example:
+The `BeanAdapter` class provides access to Java bean properties and record components via the `Map` interface. For example:
 
 ```java
 var course = new Course();
