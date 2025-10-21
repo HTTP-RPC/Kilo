@@ -106,6 +106,12 @@ public class TemplateEncoder extends Encoder<Object> {
 
     // Format modifier
     private static class FormatModifier implements Modifier {
+        enum DateTimeType {
+            DATE,
+            TIME,
+            DATE_TIME
+        }
+
         static final String CURRENCY = "currency";
         static final String PERCENT = "percent";
 
@@ -126,12 +132,6 @@ public class TemplateEncoder extends Encoder<Object> {
         static final String LONG_DATE_TIME = "longDateTime";
         static final String FULL_DATE_TIME = "fullDateTime";
         static final String ISO_DATE_TIME = "isoDateTime";
-
-        enum DateTimeType {
-            DATE,
-            TIME,
-            DATE_TIME
-        }
 
         @Override
         public Object apply(Object value, String argument, Locale locale, TimeZone timeZone) {
@@ -722,7 +722,6 @@ public class TemplateEncoder extends Encoder<Object> {
                                     encode(dictionary, writer, new PagedReader(new InputStreamReader(inputStream)));
                                 }
                             }
-
                         }
                         case COMMENT -> {
                             // No-op
