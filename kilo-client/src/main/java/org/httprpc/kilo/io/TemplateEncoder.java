@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -276,7 +274,8 @@ public class TemplateEncoder extends Encoder<Object> {
         }
     }
 
-    private URI uri;
+    private Class<?> type;
+    private String name;
 
     private Locale locale = Locale.getDefault();
     private TimeZone timeZone = TimeZone.getDefault();
@@ -295,24 +294,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private static final int EOF = -1;
 
-    private static final String JAR_SCHEME = "jar";
-
     private static final String KEY_REFERENCE = "~";
     private static final String SELF_REFERENCE = ".";
-
-    /**
-     * Constructs a new template encoder.
-     *
-     * @param uri
-     * The URI of the template.
-     */
-    public TemplateEncoder(URI uri) {
-        if (uri == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.uri = uri;
-    }
 
     /**
      * Constructs a new template encoder.
@@ -328,17 +311,8 @@ public class TemplateEncoder extends Encoder<Object> {
             throw new IllegalArgumentException();
         }
 
-        var url = type.getResource(name);
-
-        if (url == null) {
-            throw new IllegalArgumentException("Invalid resource name.");
-        }
-
-        try {
-            uri = url.toURI();
-        } catch (URISyntaxException exception) {
-            throw new IllegalArgumentException(exception);
-        }
+        this.type = type;
+        this.name = name;
     }
 
     /**
@@ -458,7 +432,7 @@ public class TemplateEncoder extends Encoder<Object> {
         }
 
         if (value != null) {
-            try (var inputStream = uri.toURL().openStream()) {
+            try (var inputStream = type.getResourceAsStream(name)) {
                 Reader reader = new PagedReader(new InputStreamReader(inputStream, getCharset()));
 
                 writer = new BufferedWriter(writer);
@@ -720,29 +694,7 @@ public class TemplateEncoder extends Encoder<Object> {
                                 break;
                             }
 
-                            var uri = this.uri;
-
-                            var jar = uri.getScheme().equals(JAR_SCHEME);
-
-                            if (jar) {
-                                try {
-                                    uri = new URI(uri.toString().substring(JAR_SCHEME.length() + 1));
-                                } catch (URISyntaxException exception) {
-                                    throw new IllegalStateException(exception);
-                                }
-                            }
-
-                            uri = uri.resolve(marker);
-
-                            if (jar) {
-                                try {
-                                    uri = new URI(String.format("%s:%s", JAR_SCHEME, uri));
-                                } catch (URISyntaxException exception) {
-                                    throw new IllegalStateException(exception);
-                                }
-                            }
-
-                            try (var inputStream = uri.toURL().openStream()) {
+                            try (var inputStream = type.getResourceAsStream(marker)) {
                                 encode(dictionary, writer, new PagedReader(new InputStreamReader(inputStream)));
                             }
                         }
