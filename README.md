@@ -551,15 +551,6 @@ This code would produce the following output:
 ## TemplateEncoder
 The `TemplateEncoder` class transforms an object hierarchy (known as a "data dictionary") into an output format using a [template document](template-reference.md). Template syntax is based loosely on the [Mustache](https://mustache.github.io) specification and supports most Mustache features. 
 
-`TemplateEncoder` provides the following constructors:
-
-```java
-public TemplateEncoder(URI uri) { ... }
-public TemplateEncoder(Class<?> type, String name) { ... }
-```
-
-The first accepts the location of a template document as a `URI`. The second determines the location of the template via the provided type and resource name. 
-
 For example, this code applies a template named "example.html" to a map instance:
 
 ```java
