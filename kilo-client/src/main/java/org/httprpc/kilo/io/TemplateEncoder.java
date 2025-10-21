@@ -208,14 +208,14 @@ public class TemplateEncoder extends Encoder<Object> {
 
     // Marker type enumeration
     private enum MarkerType {
+        VARIABLE,
         CONDITIONAL_SECTION_START,
         REPEATING_SECTION_START,
         INVERTED_SECTION_START,
         SECTION_END,
         RESOURCE,
         INCLUDE,
-        COMMENT,
-        VARIABLE
+        COMMENT
     }
 
     // Map iterator
@@ -589,6 +589,27 @@ public class TemplateEncoder extends Encoder<Object> {
                     }
 
                     switch (markerType) {
+                        case VARIABLE -> {
+                            var value = getMarkerValue(marker);
+
+                            if (value == null) {
+                                break;
+                            }
+
+                            for (var modifierName : modifierNames) {
+                                var modifier = modifiers.get(modifierName);
+
+                                if (modifier == null) {
+                                    throw new IOException("Invalid modifier.");
+                                }
+
+                                value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
+                            }
+
+                            value = defaultModifier.apply(value, null, locale, timeZone);
+
+                            writer.append(value.toString());
+                        }
                         case CONDITIONAL_SECTION_START -> {
                             sectionNames.push(marker);
 
@@ -695,55 +716,38 @@ public class TemplateEncoder extends Encoder<Object> {
                             writer.append(value.toString());
                         }
                         case INCLUDE -> {
-                            if (root != null) {
-                                var uri = this.uri;
+                            if (root == null) {
+                                break;
+                            }
 
-                                var jar = uri.getScheme().equals(JAR_SCHEME);
+                            var uri = this.uri;
 
-                                if (jar) {
-                                    try {
-                                        uri = new URI(uri.toString().substring(JAR_SCHEME.length() + 1));
-                                    } catch (URISyntaxException exception) {
-                                        throw new IllegalStateException(exception);
-                                    }
+                            var jar = uri.getScheme().equals(JAR_SCHEME);
+
+                            if (jar) {
+                                try {
+                                    uri = new URI(uri.toString().substring(JAR_SCHEME.length() + 1));
+                                } catch (URISyntaxException exception) {
+                                    throw new IllegalStateException(exception);
                                 }
+                            }
 
-                                uri = uri.resolve(marker);
+                            uri = uri.resolve(marker);
 
-                                if (jar) {
-                                    try {
-                                        uri = new URI(String.format("%s:%s", JAR_SCHEME, uri));
-                                    } catch (URISyntaxException exception) {
-                                        throw new IllegalStateException(exception);
-                                    }
+                            if (jar) {
+                                try {
+                                    uri = new URI(String.format("%s:%s", JAR_SCHEME, uri));
+                                } catch (URISyntaxException exception) {
+                                    throw new IllegalStateException(exception);
                                 }
+                            }
 
-                                try (var inputStream = uri.toURL().openStream()) {
-                                    encode(dictionary, writer, new PagedReader(new InputStreamReader(inputStream)));
-                                }
+                            try (var inputStream = uri.toURL().openStream()) {
+                                encode(dictionary, writer, new PagedReader(new InputStreamReader(inputStream)));
                             }
                         }
                         case COMMENT -> {
                             // No-op
-                        }
-                        case VARIABLE -> {
-                            var value = getMarkerValue(marker);
-
-                            if (value != null) {
-                                for (var modifierName : modifierNames) {
-                                    var modifier = modifiers.get(modifierName);
-
-                                    if (modifier == null) {
-                                        throw new IOException("Invalid modifier.");
-                                    }
-
-                                    value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
-                                }
-
-                                value = defaultModifier.apply(value, null, locale, timeZone);
-
-                                writer.append(value.toString());
-                            }
                         }
                     }
                 } else {
