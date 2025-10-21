@@ -442,6 +442,14 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testEqualTo() {
+        var queryBuilder = QueryBuilder.select(I.class).filterByIndexEqualTo("t", "u");
+
+        assertEquals("select I.h, I.i, I.t, I.u from I where I.t = ? and I.u = ?", queryBuilder.toString());
+        assertEquals(listOf("t", "u"), getParameters(queryBuilder));
+    }
+
+    @Test
     public void testLike() {
         var queryBuilder = QueryBuilder.select(I.class).filterByIndexLike("t", "u");
 

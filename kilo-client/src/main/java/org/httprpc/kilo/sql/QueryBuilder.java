@@ -1013,6 +1013,19 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends one or more "equal to" filters.
+     *
+     * @param keys
+     * The keys of the argument values.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder filterByIndexEqualTo(String... keys) {
+        return filterByIndex("=", keys);
+    }
+
+    /**
      * Appends one or more "like" filters.
      *
      * @param keys
