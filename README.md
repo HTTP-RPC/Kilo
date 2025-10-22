@@ -649,6 +649,8 @@ System.out.println(weather.getHigh()); // 52.1
 System.out.println(weather.getLow()); // 43.5
 ```
 
+Note that concrete types are coerced "eagerly" (before the `coerce()` method returns), while interfaces are coerced "lazily" (when a property is accessed).
+ 
 ### Required Properties
 The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a property must contain a value. For example:
 
