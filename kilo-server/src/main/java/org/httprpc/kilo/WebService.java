@@ -24,10 +24,21 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -1373,9 +1384,32 @@ public abstract class WebService extends HttpServlet {
      * If an error occurs while decoding the content.
      */
     protected Object decodeBody(HttpServletRequest request, Type type) throws IOException {
-        var jsonDecoder = new JSONDecoder(type);
+        if (type == Document.class) {
+            var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-        return jsonDecoder.read(request.getInputStream());
+            documentBuilderFactory.setExpandEntityReferences(false);
+            documentBuilderFactory.setIgnoringComments(true);
+
+            DocumentBuilder documentBuilder;
+            try {
+                documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            } catch (ParserConfigurationException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            Document document;
+            try {
+                document = documentBuilder.parse(request.getInputStream());
+            } catch (SAXException exception) {
+                throw new IOException(exception);
+            }
+
+            return document;
+        } else {
+            var jsonDecoder = new JSONDecoder(type);
+
+            return jsonDecoder.read(request.getInputStream());
+        }
     }
 
     /**
@@ -1394,11 +1428,28 @@ public abstract class WebService extends HttpServlet {
      * If an error occurs while encoding the result.
      */
     protected void encodeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
-        response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
+        if (result instanceof Document document) {
+            response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_XML, StandardCharsets.UTF_8));
 
-        var jsonEncoder = new JSONEncoder(isCompact());
+            Transformer transformer;
+            try {
+                transformer = TransformerFactory.newInstance().newTransformer();
+            } catch (TransformerConfigurationException exception) {
+                throw new RuntimeException(exception);
+            }
 
-        jsonEncoder.write(result, response.getOutputStream());
+            try {
+                transformer.transform(new DOMSource(document), new StreamResult(response.getOutputStream()));
+            } catch (TransformerException exception) {
+                throw new IOException(exception);
+            }
+        } else {
+            response.setContentType(String.format(CONTENT_TYPE_FORMAT, APPLICATION_JSON, StandardCharsets.UTF_8));
+
+            var jsonEncoder = new JSONEncoder(isCompact());
+
+            jsonEncoder.write(result, response.getOutputStream());
+        }
     }
 
     /**

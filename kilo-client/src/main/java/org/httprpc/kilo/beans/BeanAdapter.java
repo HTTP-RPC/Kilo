@@ -16,6 +16,7 @@ package org.httprpc.kilo.beans;
 
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.Required;
+import org.w3c.dom.Node;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -560,6 +561,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link UUID}</li>
      * <li>{@link URI}</li>
      * <li>{@link Path}</li>
+     * <li>{@link Node}</li>
      * </ul>
      *
      * <p>If the value is an array, it is wrapped in a {@link List} that will
@@ -596,7 +598,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             || value instanceof TemporalAmount
             || value instanceof UUID
             || value instanceof URI
-            || value instanceof Path) {
+            || value instanceof Path
+            || value instanceof Node) {
             return value;
         } else if (value.getClass().isArray()) {
             return new ArrayAdapter(value);

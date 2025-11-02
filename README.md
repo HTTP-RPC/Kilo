@@ -113,7 +113,7 @@ The following multi-value types are also supported:
 * `java.util.Set`
 * array/varargs
 
-Additionally, `java.util.Map`, bean, and record types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted as [multi-part form data](https://jakarta.ee/specifications/servlet/5.0/jakarta-servlet-spec-5.0#_MultipartConfig).
+Additionally, `java.util.Map`, bean, record, and `org.w3c.dom.Document` types are supported for [body content](#body-content). Arguments of type `jakarta.servlet.http.Part` may be used with `POST` requests submitted as [multi-part form data](https://jakarta.ee/specifications/servlet/5.0/jakarta-servlet-spec-5.0#_MultipartConfig).
 
 Unspecified values are automatically converted to `0`, `false`, or the null character for primitive types. `Date` values are decoded from a long value representing epoch time in milliseconds. Other values are parsed from their string representations.
 
@@ -184,9 +184,7 @@ public void updateItem(
 ) throws SQLException { ... }
 ```
 
-Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. Subclasses can override the `decodeBody()` method to perform custom conversions.
-
-A body parameter of type `Void` may be used to indicate that the handler will process the input stream directly, as discussed [below](#request-and-repsonse-properties).
+Like path parameters, body parameters are implicitly required. By default, content is assumed to be JSON and is automatically converted to the appropriate type. A body parameter of type `Void` may be used to indicate that the handler will process the input stream [directly](#request-and-repsonse-properties).
 
 ### Return Values
 Return values are converted to JSON as follows:
@@ -208,11 +206,11 @@ Additionally, instances of the following types are automatically converted to th
 * `java.time.TemporalAmount`
 * `java.util.UUID`
 
-By default, an HTTP 200 (OK) response is returned when a service method completes successfully. However, if the method is annotated with `Creates`, HTTP 201 (created) will be returned instead. If the method is annotated with `Accepts`, HTTP 202 (accepted) will be returned. If the handler's return type is `void` or `Void`, HTTP 204 (no content) will be returned.
+A method may return an instance of `org.w3c.dom.Document` to produce an XML response.
+
+By default, HTTP 200 (OK) is returned when a service method completes successfully. However, if the method is annotated with `Creates`, HTTP 201 (created) will be returned instead. If the method is annotated with `Accepts`, HTTP 202 (accepted) will be returned. If the handler's return type is `void` or `Void`, HTTP 204 (no content) will be returned.
 
 If a service method returns `null`, an HTTP 404 (not found) response will be returned.
-
-Although return values are encoded as JSON by default, subclasses can override the `encodeResult()` method of the `WebService` class to support alternative representations. See the method documentation for more information.
 
 ### Exceptions
 If an exception is thrown by a service method and the response has not yet been committed, the exception message (if any) will be returned as plain text in the response body. Error status is determined as follows:
@@ -221,8 +219,6 @@ If an exception is thrown by a service method and the response has not yet been 
 * `NoSuchElementException` - HTTP 404 (not found)
 * `IllegalStateException` - HTTP 409 (conflict)
 * Any other exception - HTTP 500 (internal server error)
-
-Subclasses can override the `reportError()` method to perform custom error handling.
 
 ### Database Connectivity
 For services that require database connectivity, the following method can be used to obtain a JDBC connection object associated with the current invocation:
