@@ -14,5 +14,11 @@
 
 package org.httprpc.kilo.test;
 
-public record Row(String text1, String text2, Integer number1, Double number2, Double number3) {
+public record Row(
+    String text1,
+    String text2,
+    Integer number1,
+    Double number2,
+    Double number3
+) {
 }

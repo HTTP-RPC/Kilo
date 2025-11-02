@@ -131,7 +131,8 @@ public class TestService extends AbstractDatabaseService {
 
     public record TestRecord(
         int number,
-        @Deprecated TestEnum testEnum
+        @Deprecated
+        TestEnum testEnum
     ) {
     }
 

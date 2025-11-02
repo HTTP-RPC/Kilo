@@ -14,16 +14,13 @@
 
 package org.httprpc.kilo.sql;
 
-import org.httprpc.kilo.Name;
 import org.w3c.dom.Document;
 
 @Table("xml_test")
 public record XMLTest(
-    @Name("id")
     @Column("id")
     @PrimaryKey
     Integer id,
-
     @Column("xml")
     Document document
 ) {

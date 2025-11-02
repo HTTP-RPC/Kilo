@@ -22,6 +22,8 @@ import java.time.LocalDate;
 public record TestRecord(
     int i,
     double d,
-    @Name("s") @Required String string,
+    @Name("s")
+    @Required
+    String string,
     LocalDate localDate) {
 }
