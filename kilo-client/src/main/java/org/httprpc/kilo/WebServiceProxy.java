@@ -256,14 +256,11 @@ public class WebServiceProxy {
                 throw new RuntimeException(exception);
             }
 
-            Document document;
             try {
-                document = documentBuilder.parse(inputStream);
+                return documentBuilder.parse(inputStream);
             } catch (SAXException exception) {
                 throw new IOException(exception);
             }
-
-            return document;
         }
     }
 

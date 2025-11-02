@@ -1397,14 +1397,11 @@ public abstract class WebService extends HttpServlet {
                 throw new RuntimeException(exception);
             }
 
-            Document document;
             try {
-                document = documentBuilder.parse(request.getInputStream());
+                return documentBuilder.parse(request.getInputStream());
             } catch (SAXException exception) {
                 throw new IOException(exception);
             }
-
-            return document;
         } else {
             var jsonDecoder = new JSONDecoder(type);
 
