@@ -18,12 +18,13 @@ import org.httprpc.kilo.Name;
 import org.w3c.dom.Document;
 
 @Table("xml_test")
-public interface XMLTest {
+public record XMLTest(
     @Name("id")
     @Column("id")
     @PrimaryKey
-    Integer getID();
+    Integer id,
 
     @Column("xml")
-    Document getDocument();
+    Document document
+) {
 }

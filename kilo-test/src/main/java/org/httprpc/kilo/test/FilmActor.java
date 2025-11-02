@@ -19,7 +19,7 @@ import org.httprpc.kilo.sql.ForeignKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("film_actor")
-public record FilmActor (
+public record FilmActor(
     @Column("film_id")
     @ForeignKey(Film.class)
     Integer filmID,

@@ -55,7 +55,7 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.insert(TemporalAccessorTest.class);
 
         try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection)) {
+             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("date", date),
                 entry("time", time),
@@ -70,10 +70,10 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.select(TemporalAccessorTest.class).filterByPrimaryKey("id");
 
         try (var connection = getConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("id", id)
-            ))) {
+             var statement = queryBuilder.prepare(connection);
+             var results = queryBuilder.executeQuery(statement, mapOf(
+                 entry("id", id)
+             ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, TemporalAccessorTest.class)).orElseThrow();
         }
     }
@@ -148,9 +148,9 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.select(JSONTest.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("id", id)
-            ))) {
+             var results = queryBuilder.executeQuery(statement, mapOf(
+                 entry("id", id)
+             ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class)).orElseThrow();
         }
     }
@@ -171,7 +171,7 @@ public class ResultSetAdapterTest {
 
         var id = insertXMLTest(document1);
 
-        assertTrue(document1.isEqualNode(selectXMLTest(id).getDocument()));
+        assertTrue(document1.isEqualNode(selectXMLTest(id).document()));
 
         Document document2;
         try (var inputStream = getClass().getResourceAsStream("test2.xml")) {
@@ -180,7 +180,7 @@ public class ResultSetAdapterTest {
 
         updateXMLTest(id, document2);
 
-        assertTrue(document2.isEqualNode(selectXMLTest(id).getDocument()));
+        assertTrue(document2.isEqualNode(selectXMLTest(id).document()));
     }
 
     @Test
@@ -194,9 +194,7 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.insert(XMLTest.class);
 
         try (var statement = queryBuilder.prepare(getConnection())) {
-            queryBuilder.executeUpdate(statement, mapOf(
-                entry("document", document)
-            ));
+            queryBuilder.executeUpdate(statement, new BeanAdapter(new XMLTest(null, document)));
         }
 
         return queryBuilder.getGeneratedKey(0, Integer.class);
@@ -206,10 +204,7 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.update(XMLTest.class);
 
         try (var statement = queryBuilder.prepare(getConnection())) {
-            queryBuilder.executeUpdate(statement, mapOf(
-                entry("document", document),
-                entry("id", id)
-            ));
+            queryBuilder.executeUpdate(statement, new BeanAdapter(new XMLTest(id, document)));
         }
     }
 
@@ -217,9 +212,9 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.select(XMLTest.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection());
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("id", id)
-            ))) {
+             var results = queryBuilder.executeQuery(statement, mapOf(
+                 entry("id", id)
+             ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, XMLTest.class)).orElseThrow();
         }
     }
