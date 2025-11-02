@@ -19,7 +19,18 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.util.Collections;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -178,6 +189,34 @@ public class WebServiceProxy {
     }
 
     /**
+     * XML request handler.
+     */
+    public static class XMLRequestHandler implements RequestHandler {
+        @Override
+        public String getContentType() {
+            return "text/xml";
+        }
+
+        @Override
+        public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
+            var document = (Document)body;
+
+            Transformer transformer;
+            try {
+                transformer = TransformerFactory.newInstance().newTransformer();
+            } catch (TransformerConfigurationException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            try {
+                transformer.transform(new DOMSource(document), new StreamResult(outputStream));
+            } catch (TransformerException exception) {
+                throw new IOException(exception);
+            }
+        }
+    }
+
+    /**
      * Represents a response handler.
      */
     public interface ResponseHandler {
@@ -197,6 +236,35 @@ public class WebServiceProxy {
          * If an exception occurs.
          */
         Object decodeResponse(InputStream inputStream, String contentType) throws IOException;
+    }
+
+    /**
+     * XML response handler.
+     */
+    public static class XMLResponseHandler implements ResponseHandler {
+        @Override
+        public Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
+            var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+            documentBuilderFactory.setExpandEntityReferences(false);
+            documentBuilderFactory.setIgnoringComments(true);
+
+            DocumentBuilder documentBuilder;
+            try {
+                documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            } catch (ParserConfigurationException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            Document document;
+            try {
+                document = documentBuilder.parse(inputStream);
+            } catch (SAXException exception) {
+                throw new IOException(exception);
+            }
+
+            return document;
+        }
     }
 
     /**

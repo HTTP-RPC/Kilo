@@ -27,6 +27,7 @@ import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextEncoder;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -346,6 +347,12 @@ public class TestService extends AbstractDatabaseService {
             entry("fileSize", fileSize),
             entry("totalFileSize", totalFileSize)
         );
+    }
+
+    @RequestMethod("POST")
+    @ResourcePath("xml")
+    public Document testPostXML(int a, int b, Document document) {
+        return document;
     }
 
     @RequestMethod("POST")

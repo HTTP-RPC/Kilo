@@ -20,6 +20,7 @@ import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.ServicePath;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.io.TextDecoder;
+import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -100,6 +101,11 @@ public interface TestServiceProxy {
     @ResourcePath("form-data")
     @WebServiceProxy.Configuration(requestHandler = WebServiceProxy.FormDataRequestHandler.class)
     Map<String, Object> testFormDataPost(FormData formData) throws IOException;
+
+    @RequestMethod("POST")
+    @ResourcePath("xml")
+    @WebServiceProxy.Configuration(requestHandler = WebServiceProxy.XMLRequestHandler.class, responseHandler = WebServiceProxy.XMLResponseHandler.class)
+    Document testXMLPost(int a, int b, Document document) throws IOException;
 
     @RequestMethod("POST")
     @ResourcePath("image")

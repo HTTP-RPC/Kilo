@@ -19,9 +19,14 @@ import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.io.TextEncoder;
+import org.httprpc.kilo.xml.ElementAdapter;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
@@ -424,33 +429,39 @@ public class WebServiceProxyTest {
     }
 
     @Test
-    public void testImagePost() throws IOException {
-        var webServiceProxy = new WebServiceProxy("POST", baseURI.resolve("test/image"));
+    @SuppressWarnings("unchecked")
+    public void testXMLPostProxy() throws IOException {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-        webServiceProxy.setBody(getClass().getResource("test.jpg"));
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setIgnoringComments(true);
 
-        webServiceProxy.setRequestHandler(new WebServiceProxy.RequestHandler() {
-            @Override
-            public String getContentType() {
-                return null;
-            }
+        DocumentBuilder documentBuilder;
+        try {
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
 
-            @Override
-            public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
-                try (var inputStream = ((URL)body).openStream()) {
-                    int b;
-                    while ((b = inputStream.read()) != EOF) {
-                        outputStream.write(b);
-                    }
-                }
-            }
-        });
+        Document document;
+        try (var inputStream = getClass().getResourceAsStream("account.xml")) {
+            document = documentBuilder.parse(inputStream);
+        } catch (SAXException exception) {
+            throw new IOException(exception);
+        }
 
-        webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));
+        var testServiceProxy = WebServiceProxy.of(TestServiceProxy.class, baseURI);
 
-        var result = webServiceProxy.invoke();
+        document = testServiceProxy.testXMLPost(1, 2, document);
 
-        assertNotNull(result);
+        var accountAdapter = new ElementAdapter(document.getDocumentElement());
+
+        assertEquals("101", accountAdapter.get("@id"));
+
+        var holder = (Map<String, Object>)accountAdapter.get("holder");
+
+        assertEquals("John", holder.get("firstName").toString());
+        assertEquals("Smith", holder.get("lastName").toString());
     }
 
     @Test

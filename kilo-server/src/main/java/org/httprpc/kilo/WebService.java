@@ -1592,7 +1592,8 @@ public abstract class WebService extends HttpServlet {
             || type == UUID.class
             || type == URI.class
             || type == Path.class
-            || type == Part.class) {
+            || type == Part.class
+            || type == Document.class) {
             return new TypeDescriptor(type, true);
         } else if (type.isArray()) {
             return new IterableTypeDescriptor(describeRawType(type.getComponentType()));
