@@ -55,7 +55,7 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.insert(TemporalAccessorTest.class);
 
         try (var connection = getConnection();
-             var statement = queryBuilder.prepare(connection)) {
+            var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("date", date),
                 entry("time", time),
@@ -70,10 +70,10 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.select(TemporalAccessorTest.class).filterByPrimaryKey("id");
 
         try (var connection = getConnection();
-             var statement = queryBuilder.prepare(connection);
-             var results = queryBuilder.executeQuery(statement, mapOf(
-                 entry("id", id)
-             ))) {
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("id", id)
+            ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, TemporalAccessorTest.class)).orElseThrow();
         }
     }
@@ -148,9 +148,9 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.select(JSONTest.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection());
-             var results = queryBuilder.executeQuery(statement, mapOf(
-                 entry("id", id)
-             ))) {
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("id", id)
+            ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class)).orElseThrow();
         }
     }
@@ -212,9 +212,9 @@ public class ResultSetAdapterTest {
         var queryBuilder = QueryBuilder.select(XMLTest.class).filterByPrimaryKey("id");
 
         try (var statement = queryBuilder.prepare(getConnection());
-             var results = queryBuilder.executeQuery(statement, mapOf(
-                 entry("id", id)
-             ))) {
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("id", id)
+            ))) {
             return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, XMLTest.class)).orElseThrow();
         }
     }
