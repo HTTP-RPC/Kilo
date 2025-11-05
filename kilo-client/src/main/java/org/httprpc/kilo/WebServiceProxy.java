@@ -19,17 +19,11 @@ import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.util.Collections;
+import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
@@ -200,16 +194,11 @@ public class WebServiceProxy {
 
         @Override
         public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
-            var document = (Document)body;
-
-            Transformer transformer;
-            try {
-                transformer = TransformerFactory.newInstance().newTransformer();
-            } catch (TransformerConfigurationException exception) {
-                throw new RuntimeException(exception);
+            if (!(body instanceof Document document)) {
+                throw new UnsupportedOperationException("Unsupported body type.");
             }
 
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            var transformer = ElementAdapter.newTransformer();
 
             try {
                 transformer.transform(new DOMSource(document), new StreamResult(outputStream));
@@ -247,17 +236,7 @@ public class WebServiceProxy {
     public static class XMLResponseHandler implements ResponseHandler {
         @Override
         public Object decodeResponse(InputStream inputStream, String contentType) throws IOException {
-            var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-            documentBuilderFactory.setExpandEntityReferences(false);
-            documentBuilderFactory.setIgnoringComments(true);
-
-            DocumentBuilder documentBuilder;
-            try {
-                documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            } catch (ParserConfigurationException exception) {
-                throw new RuntimeException(exception);
-            }
+            var documentBuilder = ElementAdapter.newDocumentBuilder();
 
             try {
                 return documentBuilder.parse(inputStream);

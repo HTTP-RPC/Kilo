@@ -26,7 +26,6 @@ import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URI;
@@ -280,12 +279,7 @@ public class Examples {
 
     @SuppressWarnings("unchecked")
     public static void elementAdapter() throws ParserConfigurationException, SAXException, IOException {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        documentBuilderFactory.setExpandEntityReferences(false);
-        documentBuilderFactory.setIgnoringComments(true);
-
-        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        var documentBuilder = ElementAdapter.newDocumentBuilder();
 
         Document document;
         try (var inputStream = Examples.class.getResourceAsStream("account.xml")) {

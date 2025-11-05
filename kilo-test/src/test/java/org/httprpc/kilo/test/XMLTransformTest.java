@@ -18,7 +18,6 @@ import org.httprpc.kilo.io.TemplateEncoder;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -60,12 +59,7 @@ public class XMLTransformTest {
     }
 
     private void transformXML2() throws Exception {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        documentBuilderFactory.setExpandEntityReferences(false);
-        documentBuilderFactory.setIgnoringComments(true);
-
-        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        var documentBuilder = ElementAdapter.newDocumentBuilder();
 
         Document document;
         try (var inputStream = getClass().getResourceAsStream("breakfast-menu.xml")) {

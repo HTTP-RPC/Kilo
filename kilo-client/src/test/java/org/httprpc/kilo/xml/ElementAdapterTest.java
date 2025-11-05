@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +31,8 @@ public class ElementAdapterTest {
     private DocumentBuilder documentBuilder;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        documentBuilderFactory.setExpandEntityReferences(false);
-        documentBuilderFactory.setIgnoringComments(true);
-
-        documentBuilder = documentBuilderFactory.newDocumentBuilder();
+    public void setUp() {
+        documentBuilder = ElementAdapter.newDocumentBuilder();
     }
 
     @Test

@@ -15,10 +15,10 @@
 package org.httprpc.kilo.sql;
 
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.xml.ElementAdapter;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -157,12 +157,7 @@ public class ResultSetAdapterTest {
 
     @Test
     public void testXML() throws Exception {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        documentBuilderFactory.setExpandEntityReferences(false);
-        documentBuilderFactory.setIgnoringComments(true);
-
-        var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        var documentBuilder = ElementAdapter.newDocumentBuilder();
 
         Document document1;
         try (var inputStream = getClass().getResourceAsStream("test1.xml")) {

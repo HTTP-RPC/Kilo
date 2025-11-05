@@ -24,9 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
@@ -431,17 +428,7 @@ public class WebServiceProxyTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testXMLPostProxy() throws IOException {
-        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        documentBuilderFactory.setExpandEntityReferences(false);
-        documentBuilderFactory.setIgnoringComments(true);
-
-        DocumentBuilder documentBuilder;
-        try {
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException exception) {
-            throw new RuntimeException(exception);
-        }
+        var documentBuilder = ElementAdapter.newDocumentBuilder();
 
         Document document;
         try (var inputStream = getClass().getResourceAsStream("account.xml")) {

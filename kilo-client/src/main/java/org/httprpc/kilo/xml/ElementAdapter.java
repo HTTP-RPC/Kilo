@@ -17,6 +17,13 @@ package org.httprpc.kilo.xml;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -306,5 +313,43 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     private static String getListTagName(String key) {
         return key.substring(0, key.length() - LIST_SUFFIX.length());
+    }
+
+    /**
+     * Creates a new document builder.
+     *
+     * @return
+     * A new document builder instance.
+     */
+    public static DocumentBuilder newDocumentBuilder() {
+        var documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+        documentBuilderFactory.setExpandEntityReferences(false);
+        documentBuilderFactory.setIgnoringComments(true);
+
+        try {
+            return documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    /**
+     * Creates a new transformer.
+     *
+     * @return
+     * A new transformer instance.
+     */
+    public static Transformer newTransformer() {
+        Transformer transformer;
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } catch (TransformerConfigurationException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+        return transformer;
     }
 }
