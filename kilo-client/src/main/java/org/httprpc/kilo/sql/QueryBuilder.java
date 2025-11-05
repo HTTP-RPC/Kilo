@@ -1416,6 +1416,9 @@ public class QueryBuilder {
     /**
      * Returns a generated key.
      *
+     * @param <T>
+     * The type of the generated key.
+     *
      * @param index
      * The index of the generated key.
      *

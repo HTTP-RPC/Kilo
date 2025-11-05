@@ -56,6 +56,9 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     /**
      * Associates a formatter with a type.
      *
+     * @param <T>
+     * The type to format.
+     *
      * @param type
      * The type to format.
      *
