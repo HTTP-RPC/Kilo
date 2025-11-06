@@ -27,8 +27,7 @@ import java.util.stream.StreamSupport;
 
 /**
  * Provides access to the contents of a JDBC result set via the
- * {@link Iterable} interface. Individual rows are represented by mutable map
- * instances produced by the adapter's iterator.
+ * {@link Iterable} interface.
  */
 public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoCloseable {
     private ResultSet resultSet;
@@ -115,19 +114,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * <p>Returns an iterator over the results.</p>
-     *
-     * <p>Temporal values are converted as follows:</p>
-     *
-     * <ul>
-     * <li>{@link java.sql.Date} - {@link java.time.LocalDate}</li>
-     * <li>{@link java.sql.Time} - {@link java.time.LocalTime}</li>
-     * <li>{@link java.sql.Timestamp} - {@link java.time.Instant}</li>
-     * </ul>
-     *
-     * <p>All other values are returned as is, or transformed as specified by
-     * {@link QueryBuilder#select(Class[])}.</p>
-     *
+     * Returns an iterator over the results.
      * {@inheritDoc}
      */
     @Override
@@ -136,7 +123,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Closes the underlying result set.
+     * Closes the result set.
      * {@inheritDoc}
      */
     @Override
@@ -145,8 +132,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     }
 
     /**
-     * Returns a stream over the results. Closing the returned stream closes
-     * the adapter along with the underlying result set.
+     * Returns a stream over the results.
      *
      * @return
      * A stream over the results.
