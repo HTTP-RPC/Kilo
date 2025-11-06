@@ -58,7 +58,7 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
                 throw new NoSuchElementException();
             }
 
-            Map<String, Object> row = new LinkedHashMap<>();
+            var row = new LinkedHashMap<String, Object>();
 
             try {
                 for (int i = 1, n = resultSetMetaData.getColumnCount(); i <= n; i++) {
