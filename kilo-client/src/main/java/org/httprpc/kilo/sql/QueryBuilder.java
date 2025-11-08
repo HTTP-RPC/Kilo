@@ -621,6 +621,53 @@ public class QueryBuilder {
     }
 
     /**
+     * Appends an "on duplicate key update" clause.
+     *
+     * @return
+     * The {@link QueryBuilder} instance.
+     */
+    public QueryBuilder onDuplicateKeyUpdate() {
+        var type = types.getFirst();
+
+        sqlBuilder.append(" on duplicate key update ");
+
+        var i = 0;
+
+        for (var entry : BeanAdapter.getProperties(type).entrySet()) {
+            var accessor = entry.getValue().getAccessor();
+
+            var column = accessor.getAnnotation(Column.class);
+
+            if (column == null) {
+                continue;
+            }
+
+            if (accessor.getAnnotation(PrimaryKey.class) != null || accessor.getAnnotation(Final.class) != null) {
+                continue;
+            }
+
+            if (i > 0) {
+                sqlBuilder.append(", ");
+            }
+
+            var columnName = column.value();
+
+            sqlBuilder.append(columnName);
+            sqlBuilder.append(" = values(");
+            sqlBuilder.append(columnName);
+            sqlBuilder.append(")");
+
+            i++;
+        }
+
+        if (i == 0) {
+            throw new UnsupportedOperationException("Table does not define any updatable columns.");
+        }
+
+        return this;
+    }
+
+    /**
      * Creates an "update" query.
      *
      * @param type
@@ -681,7 +728,7 @@ public class QueryBuilder {
         }
 
         if (i == 0) {
-            throw new UnsupportedOperationException("Table does not define any columns.");
+            throw new UnsupportedOperationException("Table does not define any updatable columns.");
         }
 
         return new QueryBuilder(sqlBuilder, parameters, transforms, type);

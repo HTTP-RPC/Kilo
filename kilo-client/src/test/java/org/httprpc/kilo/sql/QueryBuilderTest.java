@@ -506,6 +506,14 @@ public class QueryBuilderTest {
     }
 
     @Test
+    public void testOnDuplicateKeyUpdate() {
+        var queryBuilder = QueryBuilder.insert(A.class).onDuplicateKeyUpdate();
+
+        assertEquals("insert into A (b, c, d) values (?, ?, ?) on duplicate key update b = values(b), c = values(c)", queryBuilder.toString());
+        assertEquals(listOf("b", "c", "x"), getParameters(queryBuilder));
+    }
+
+    @Test
     public void testUpdate() {
         var queryBuilder = QueryBuilder.update(A.class).filterByPrimaryKey("a");
 
