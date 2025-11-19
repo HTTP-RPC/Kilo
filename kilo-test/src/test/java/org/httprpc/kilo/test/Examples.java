@@ -26,7 +26,6 @@ import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -278,7 +277,7 @@ public class Examples {
     }
 
     @SuppressWarnings("unchecked")
-    public static void elementAdapter() throws ParserConfigurationException, SAXException, IOException {
+    public static void elementAdapter() throws SAXException, IOException {
         var documentBuilder = ElementAdapter.newDocumentBuilder();
 
         Document document;
