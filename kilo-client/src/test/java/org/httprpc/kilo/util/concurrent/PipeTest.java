@@ -61,7 +61,7 @@ public class PipeTest {
     private void testPipe(Pipe<Integer> pipe) {
         var expectedValues = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
 
-        executorService.submit(() -> pipe.accept(expectedValues.stream()));
+        executorService.submit(() -> pipe.submit(expectedValues.stream()));
 
         assertEquals(expectedValues, StreamSupport.stream(pipe.spliterator(), false).toList());
     }
@@ -83,7 +83,7 @@ public class PipeTest {
 
         var future = executorService.submit(() -> {
             try {
-                pipe.accept(listOf("abc").stream());
+                pipe.submit(listOf("abc").stream());
             } catch (TimeoutException exception) {
                 return true;
             }

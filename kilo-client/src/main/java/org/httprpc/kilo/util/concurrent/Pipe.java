@@ -19,7 +19,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -29,7 +28,7 @@ import java.util.stream.Stream;
  * @param <E>
  * The element type.
  */
-public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
+public class Pipe<E> implements Iterable<E> {
     private BlockingQueue<Object> queue;
     private int timeout;
 
@@ -123,9 +122,11 @@ public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
 
     /**
      * Submits elements to the pipe.
+     *
+     * @param stream
+     * A stream containing the elements to submit.
      */
-    @Override
-    public void accept(Stream<? extends E> stream) {
+    public void submit(Stream<? extends E> stream) {
         if (stream == null) {
             throw new IllegalArgumentException();
         }

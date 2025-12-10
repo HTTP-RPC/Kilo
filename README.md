@@ -1004,7 +1004,7 @@ executorService.submit(() -> {
 
     try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
-        pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+        pipe.submit(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }

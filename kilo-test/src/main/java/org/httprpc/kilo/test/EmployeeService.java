@@ -74,7 +74,7 @@ public class EmployeeService extends WebService {
 
             try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
-                pipe.accept(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+                pipe.submit(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
@@ -117,7 +117,7 @@ public class EmployeeService extends WebService {
                 var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
 
                 try (var stream = query.stream()) {
-                    pipe.accept(stream);
+                    pipe.submit(stream);
                 }
             }
         });
