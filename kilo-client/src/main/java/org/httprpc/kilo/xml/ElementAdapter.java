@@ -102,8 +102,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <li>Otherwise, an adapter for the last matching sub-element (if any)
      * will be returned.</li>
      * </ul>
-     *
-     * {@inheritDoc}
      */
     @Override
     public Object get(Object key) {
@@ -160,8 +158,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * based on the map's contents. For all other types, the element's text
      * content will be set to the string representation of the provided
      * value.</p>
-     *
-     * {@inheritDoc}
      */
     @Override
     public Object put(String key, Object value) {
@@ -226,8 +222,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * </ul>
      *
      * <p>Self reference and multi-element keys are not supported.</p>
-     *
-     * {@inheritDoc}
      */
     @Override
     public Object remove(Object key) {
@@ -260,7 +254,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     /**
      * Determines if the source element contains a given key.
-     * {@inheritDoc}
      */
     @Override
     public boolean containsKey(Object key) {
@@ -283,7 +276,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     /**
      * Throws {@link UnsupportedOperationException}.
-     * {@inheritDoc}
      */
     @Override
     public Set<Entry<String, Object>> entrySet() {
@@ -292,7 +284,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
 
     /**
      * Returns the text content of the element.
-     * {@inheritDoc}
      */
     @Override
     public String toString() {

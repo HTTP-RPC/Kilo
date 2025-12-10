@@ -113,19 +113,11 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         return resultSet;
     }
 
-    /**
-     * Returns an iterator over the results.
-     * {@inheritDoc}
-     */
     @Override
     public Iterator<Map<String, Object>> iterator() {
         return iterator;
     }
 
-    /**
-     * Closes the result set.
-     * {@inheritDoc}
-     */
     @Override
     public void close() throws SQLException {
         resultSet.close();

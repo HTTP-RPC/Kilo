@@ -430,10 +430,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return bean;
     }
 
-    /**
-     * Gets a property value.
-     * {@inheritDoc}
-     */
     @Override
     public Object get(Object key) {
         if (key == null) {
@@ -460,10 +456,6 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return adapt(value);
     }
 
-    /**
-     * Sets a property value.
-     * {@inheritDoc}
-     */
     @Override
     public Object put(String key, Object value) {
         if (key == null) {
@@ -489,19 +481,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         return null;
     }
 
-    /**
-     * Tests for the existence of a property.
-     * {@inheritDoc}
-     */
     @Override
     public boolean containsKey(Object key) {
         return properties.containsKey(key);
     }
 
-    /**
-     * Enumerates property values.
-     * {@inheritDoc}
-     */
     @Override
     public Set<Entry<String, Object>> entrySet() {
         return new AbstractSet<>() {

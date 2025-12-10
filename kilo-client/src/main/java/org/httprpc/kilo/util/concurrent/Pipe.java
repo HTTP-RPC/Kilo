@@ -123,7 +123,6 @@ public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
 
     /**
      * Submits elements to the pipe.
-     * {@inheritDoc}
      */
     @Override
     public void accept(Stream<? extends E> stream) {
@@ -156,10 +155,6 @@ public class Pipe<E> implements Consumer<Stream<? extends E>>, Iterable<E> {
         }
     }
 
-    /**
-     * Returns an iterator over the contents of the pipe.
-     * {@inheritDoc}
-     */
     @Override
     public Iterator<E> iterator() {
         return iterator;
