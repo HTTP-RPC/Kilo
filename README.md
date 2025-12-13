@@ -1028,15 +1028,18 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <E> Set<E> setOf(E... elements) { ... }
 ```
 
-They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable variants are provided as well:
+They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable and sorted variants are provided as well:
 
 ```java
 public static <E> List<E> immutableListOf(E... elements) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
+
+public static <K extends Comparable<K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) { ... }
+public static <E extends Comparable<E>> SortedSet<E> sortedSetOf(E... elements) { ... }
 ```
 
-This method can be used to declare entries for either `mapOf()` or `immutableMapOf()`:
+This method can be used to declare map entries:
 
 ```java
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }

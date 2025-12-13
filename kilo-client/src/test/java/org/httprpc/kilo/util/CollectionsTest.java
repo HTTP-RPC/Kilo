@@ -81,6 +81,17 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testSortedMapOf() {
+        var sortedMap = sortedMapOf(
+            entry("c", 3),
+            entry("b", 2),
+            entry("a", 1)
+        );
+
+        assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedMap.values()));
+    }
+
+    @Test
     public void testSetOf() {
         var expected = new HashSet<Integer>(3);
 
@@ -102,6 +113,14 @@ public class CollectionsTest {
         var set = immutableSetOf(1, 2, 3);
 
         assertThrows(UnsupportedOperationException.class, () -> set.add(4));
+    }
+
+    @Test
+    public void testSortedSetOf() {
+        var sortedSet = sortedSetOf(3, 2, 1);
+
+        assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedSet));
+
     }
 
     @Test

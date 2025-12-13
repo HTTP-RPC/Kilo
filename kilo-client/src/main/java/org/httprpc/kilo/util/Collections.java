@@ -21,6 +21,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Provides static utility methods for working with collections.
@@ -116,6 +120,32 @@ public class Collections {
     }
 
     /**
+     * Creates a sorted map of entries.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param entries
+     * The map entries.
+     *
+     * @return
+     * A map containing the provided entries sorted by key.
+     */
+    @SafeVarargs
+    public static <K extends Comparable<K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) {
+        var map = new TreeMap<K, V>();
+
+        for (var entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
      * Creates an immutable map entry.
      *
      * @param <K>
@@ -173,6 +203,27 @@ public class Collections {
     @SafeVarargs
     public static <E> Set<E> immutableSetOf(E... elements) {
         return java.util.Collections.unmodifiableSet(setOf(elements));
+    }
+
+    /**
+     * Creates a sorted set of elements.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The set elements.
+     *
+     * @return
+     * A sorted set containing the provided elements.
+     */
+    @SafeVarargs
+    public static <E extends Comparable<E>> SortedSet<E> sortedSetOf(E... elements) {
+        var set = new TreeSet<E>();
+
+        java.util.Collections.addAll(set, elements);
+
+        return set;
     }
 
     /**
