@@ -34,7 +34,7 @@ public class Collections {
     }
 
     /**
-     * Creates a list of elements.
+     * Creates a list.
      *
      * @param <E>
      * The element type.
@@ -43,8 +43,8 @@ public class Collections {
      * The list elements.
      *
      * @return
-     * A mutable, random-access list containing the provided elements in the
-     * order given.
+     * A random-access list containing the provided elements in the order
+     * given.
      */
     @SafeVarargs
     public static <E> List<E> listOf(E... elements) {
@@ -56,7 +56,7 @@ public class Collections {
     }
 
     /**
-     * Creates an immutable list of elements.
+     * Creates an immutable list.
      *
      * @param <E>
      * The element type.
@@ -74,7 +74,7 @@ public class Collections {
     }
 
     /**
-     * Creates a map of entries.
+     * Creates a map.
      *
      * @param <K>
      * The key type.
@@ -86,7 +86,7 @@ public class Collections {
      * The map entries.
      *
      * @return
-     * A mutable map containing the provided entries in the order given.
+     * A map containing the provided entries in the order given.
      */
     @SafeVarargs
     public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) {
@@ -100,7 +100,7 @@ public class Collections {
     }
 
     /**
-     * Creates an immutable map of entries.
+     * Creates an immutable map.
      *
      * @param <K>
      * The key type.
@@ -120,7 +120,7 @@ public class Collections {
     }
 
     /**
-     * Creates a sorted map of entries.
+     * Creates a sorted map.
      *
      * @param <K>
      * The key type.
@@ -168,7 +168,7 @@ public class Collections {
     }
 
     /**
-     * Creates a set of elements.
+     * Creates a set.
      *
      * @param <E>
      * The element type.
@@ -177,7 +177,7 @@ public class Collections {
      * The set elements.
      *
      * @return
-     * A mutable set containing the provided elements.
+     * A set containing the provided elements in the order given.
      */
     @SafeVarargs
     public static <E> Set<E> setOf(E... elements) {
@@ -189,7 +189,7 @@ public class Collections {
     }
 
     /**
-     * Creates an immutable set of elements.
+     * Creates an immutable set.
      *
      * @param <E>
      * The element type.
@@ -198,7 +198,7 @@ public class Collections {
      * The set elements.
      *
      * @return
-     * An immutable set containing the provided elements.
+     * An immutable set containing the provided elements in the order given.
      */
     @SafeVarargs
     public static <E> Set<E> immutableSetOf(E... elements) {
@@ -206,7 +206,7 @@ public class Collections {
     }
 
     /**
-     * Creates a sorted set of elements.
+     * Creates a sorted set.
      *
      * @param <E>
      * The element type.
