@@ -330,8 +330,6 @@ public class ElementAdapter extends AbstractMap<String, Object> {
             throw new RuntimeException(exception);
         }
 
-        documentBuilder.setEntityResolver((publicID, systemID) -> null);
-
         return documentBuilder;
     }
 
