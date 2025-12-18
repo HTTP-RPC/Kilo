@@ -64,6 +64,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     private static final String ATTRIBUTE_PREFIX = "@";
     private static final String LIST_SUFFIX = "*";
 
+    private static final String XERCES_FEATURE_PREFIX = "http://apache.org/xml/features";
+
     /**
      * Constructs a new element adapter.
      *
@@ -318,11 +320,19 @@ public class ElementAdapter extends AbstractMap<String, Object> {
         documentBuilderFactory.setExpandEntityReferences(false);
         documentBuilderFactory.setIgnoringComments(true);
 
+        DocumentBuilder documentBuilder;
         try {
-            return documentBuilderFactory.newDocumentBuilder();
+            documentBuilderFactory.setFeature(String.format("%s/nonvalidating/load-dtd-grammar", XERCES_FEATURE_PREFIX), false);
+            documentBuilderFactory.setFeature(String.format("%s/nonvalidating/load-external-dtd", XERCES_FEATURE_PREFIX), false);
+
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException exception) {
             throw new RuntimeException(exception);
         }
+
+        documentBuilder.setEntityResolver((publicID, systemID) -> null);
+
+        return documentBuilder;
     }
 
     /**
