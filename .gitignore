@@ -2,6 +2,7 @@
 .idea/data_source_mapping.xml
 .idea/dataSources
 .idea/dataSources.local.xml
+.idea/sqldialects.xml
 .idea/queries
 **/build
 **/out
