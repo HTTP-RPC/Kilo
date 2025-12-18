@@ -14,9 +14,14 @@
 
 package org.httprpc.kilo.io;
 
+import org.httprpc.kilo.xml.ElementAdapter;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -476,7 +481,7 @@ public class TemplateEncoderTest {
 
     @Test
     public void testDefaultContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "xml.txt");
+        var templateEncoder = new TemplateEncoder(getClass(), "default-content-type.txt");
 
         templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
 
@@ -545,6 +550,30 @@ public class TemplateEncoderTest {
         templateEncoder.write(list, writer);
 
         assertEquals("[]", writer.toString());
+    }
+
+    @Test
+    public void testEmbeddedXML() throws IOException {
+        var xml = "<abc>123</abc>";
+
+        var documentBuilder = ElementAdapter.newDocumentBuilder();
+
+        Document document;
+        try {
+            document = documentBuilder.parse(new InputSource(new StringReader(xml)));
+        } catch (SAXException | IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var templateEncoder = new TemplateEncoder(getClass(), "embedded-xml.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(
+            entry("xml", document)
+        ), writer);
+
+        assertEquals(xml, writer.toString());
     }
 
     @Test

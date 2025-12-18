@@ -15,10 +15,16 @@
 package org.httprpc.kilo.io;
 
 import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.xml.ElementAdapter;
+import org.w3c.dom.Document;
 
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -580,7 +586,21 @@ public class TemplateEncoder extends Encoder<Object> {
                                 value = modifier.apply(value, modifierArguments.get(modifierName), locale, timeZone);
                             }
 
-                            value = defaultModifier.apply(value, null, locale, timeZone);
+                            if (value instanceof Document document) {
+                                var transformer = ElementAdapter.newTransformer();
+
+                                var documentWriter = new StringWriter();
+
+                                try {
+                                    transformer.transform(new DOMSource(document), new StreamResult(documentWriter));
+                                } catch (TransformerException exception) {
+                                    throw new RuntimeException(exception);
+                                }
+
+                                value = documentWriter;
+                            } else {
+                                value = defaultModifier.apply(value, null, locale, timeZone);
+                            }
 
                             writer.append(value.toString());
                         }
