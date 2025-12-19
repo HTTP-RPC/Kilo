@@ -135,7 +135,7 @@ public class Collections {
      * A map containing the provided entries sorted by key.
      */
     @SafeVarargs
-    public static <K extends Comparable<K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) {
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) {
         var map = new TreeMap<K, V>();
 
         for (var entry : entries) {
@@ -218,7 +218,7 @@ public class Collections {
      * A sorted set containing the provided elements.
      */
     @SafeVarargs
-    public static <E extends Comparable<E>> SortedSet<E> sortedSetOf(E... elements) {
+    public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(E... elements) {
         var set = new TreeSet<E>();
 
         java.util.Collections.addAll(set, elements);
