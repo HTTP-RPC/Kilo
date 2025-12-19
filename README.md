@@ -1035,8 +1035,8 @@ public static <E> List<E> immutableListOf(E... elements) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
 
-public static <K extends Comparable<K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) { ... }
-public static <E extends Comparable<E>> SortedSet<E> sortedSetOf(E... elements) { ... }
+public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) { ... }
+public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(E... elements) { ... }
 ```
 
 This method can be used to declare map entries:
