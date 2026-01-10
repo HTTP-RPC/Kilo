@@ -18,6 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +69,10 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
     @SuppressWarnings("unchecked")
     public <T> void format(Class<T> type, Function<? super T, String> formatter) {
         if (type == null || formatter == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (type != Date.class && (type.getModifiers() & Modifier.FINAL) == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -149,18 +154,10 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 var value = map.get(key);
 
                 if (value != null) {
-                    var type = value.getClass();
+                    var formatter = formatters.get(value.getClass());
 
-                    while (type != null) {
-                        var formatter = formatters.get(type);
-
-                        if (formatter != null) {
-                            value = formatter.apply(value);
-
-                            break;
-                        }
-
-                        type = type.getSuperclass();
+                    if (formatter != null) {
+                        value = formatter.apply(value);
                     }
 
                     if (value instanceof Date date) {

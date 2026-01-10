@@ -137,8 +137,7 @@ public class CSVEncoderTest {
     }
 
     @Test
-    public void testFormats() throws IOException {
-        var number = 1000.0;
+    public void testFormat() throws IOException {
         var integer = 1000;
         var flag = true;
         var date = new Date();
@@ -146,21 +145,14 @@ public class CSVEncoderTest {
 
         var rows = listOf(
             mapOf(
-                entry("a", number),
-                entry("b", integer),
-                entry("c", flag),
-                entry("d", date),
-                entry("e", localDateTime)
+                entry("a", integer),
+                entry("b", flag),
+                entry("c", date),
+                entry("d", localDateTime)
             )
         );
 
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d", "e"));
-
-        var numberFormat = NumberFormat.getNumberInstance();
-
-        numberFormat.setMinimumFractionDigits(2);
-
-        csvEncoder.format(Number.class, numberFormat::format);
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d"));
 
         var integerFormat = NumberFormat.getNumberInstance();
 
@@ -194,8 +186,7 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var expected = "\"a\",\"b\",\"c\",\"d\",\"e\"\r\n"
-            + "\"" + numberFormat.format(number) + "\","
+        var expected = "\"a\",\"b\",\"c\",\"d\"\r\n"
             + "\"" + integerFormat.format(integer) + "\","
             + "\"" + booleanFormat.format(flag) + "\","
             + "\"" + dateFormat.format(date) + "\","
