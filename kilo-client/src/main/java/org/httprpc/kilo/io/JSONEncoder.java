@@ -63,6 +63,10 @@ public class JSONEncoder extends Encoder<Object> {
     }
 
     private void encode(Object value, Writer writer) throws IOException {
+        if (value instanceof Date date) {
+            value = date.getTime();
+        }
+
         switch (value) {
             case null -> writer.append(null);
             case CharSequence text -> encode(text, writer);
@@ -82,7 +86,6 @@ public class JSONEncoder extends Encoder<Object> {
             }
             case Number number -> encode(number, writer);
             case Boolean flag -> encode(flag, writer);
-            case Date date -> encode(date, writer);
             case Iterable<?> iterable -> encode(iterable, writer);
             case Map<?, ?> map -> encode(map, writer);
             default -> encode(value.toString(), writer);
@@ -125,10 +128,6 @@ public class JSONEncoder extends Encoder<Object> {
 
     private void encode(Boolean flag, Writer writer) throws IOException {
         writer.write(flag.toString());
-    }
-
-    private void encode(Date date, Writer writer) throws IOException {
-        writer.write(String.valueOf(date.getTime()));
     }
 
     private void encode(Iterable<?> iterable, Writer writer) throws IOException {
@@ -175,8 +174,12 @@ public class JSONEncoder extends Encoder<Object> {
         for (var entry : map.entrySet()) {
             var key = entry.getKey();
 
-            if (!(key instanceof String)) {
+            if (key == null) {
                 throw new IllegalArgumentException("Invalid key.");
+            }
+
+            if (key instanceof Date date) {
+                key = date.getTime();
             }
 
             if (i > 0) {
@@ -189,7 +192,7 @@ public class JSONEncoder extends Encoder<Object> {
                 indent(writer);
             }
 
-            encode(key, writer);
+            encode(key.toString(), writer);
 
             writer.write(":");
 

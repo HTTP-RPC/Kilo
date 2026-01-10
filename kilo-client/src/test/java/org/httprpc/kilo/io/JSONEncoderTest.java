@@ -168,6 +168,35 @@ public class JSONEncoderTest {
     }
 
     @Test
+    public void testKeys() throws IOException {
+        var date = new Date();
+        var instant = date.toInstant();
+        var localDate = LocalDate.now();
+        var localTime = LocalTime.now();
+        var localDateTime = LocalDateTime.now();
+
+        var expected = "{\n"
+            + "  \"" + date.getTime() + "\": 1,\n"
+            + "  \"" + instant + "\": 2,\n"
+            + "  \"" + localDate + "\": 3,\n"
+            + "  \"" + localTime + "\": 4,\n"
+            + "  \"" + localDateTime + "\": 5\n"
+            + "}";
+
+        var map = mapOf(
+            entry(date, 1),
+            entry(instant, 2),
+            entry(localDate, 3),
+            entry(localTime, 4),
+            entry(localDateTime, 5)
+        );
+
+        var actual = encode(map);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testCompact() throws IOException {
         var expected = "{\"a\":1,\"b\":2,\"c\":3}";
 

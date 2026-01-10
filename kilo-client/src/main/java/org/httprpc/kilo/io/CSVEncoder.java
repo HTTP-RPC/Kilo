@@ -149,27 +149,28 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 var value = map.get(key);
 
                 if (value != null) {
-                    if (!formatters.isEmpty()) {
-                        var type = value.getClass();
+                    var type = value.getClass();
 
-                        while (type != null) {
-                            var formatter = formatters.get(type);
+                    while (type != null) {
+                        var formatter = formatters.get(type);
 
-                            if (formatter != null) {
-                                value = formatter.apply(value);
+                        if (formatter != null) {
+                            value = formatter.apply(value);
 
-                                break;
-                            }
-
-                            type = type.getSuperclass();
+                            break;
                         }
+
+                        type = type.getSuperclass();
+                    }
+
+                    if (value instanceof Date date) {
+                        value = date.getTime();
                     }
 
                     switch (value) {
                         case CharSequence text -> encode(text, writer);
                         case Number number -> encode(number, writer);
                         case Boolean flag -> encode(flag, writer);
-                        case Date date -> encode(date, writer);
                         default -> encode(value.toString(), writer);
                     }
                 }
@@ -203,9 +204,5 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
     private void encode(Boolean flag, Writer writer) throws IOException {
         writer.write(flag.toString());
-    }
-
-    private void encode(Date date, Writer writer) throws IOException {
-        writer.write(String.valueOf(date.getTime()));
     }
 }
