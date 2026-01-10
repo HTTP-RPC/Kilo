@@ -18,9 +18,9 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -31,7 +31,7 @@ import static org.httprpc.kilo.util.Optionals.*;
  * Encodes CSV content.
  */
 public class CSVEncoder extends Encoder<Iterable<?>> {
-    private List<String> keys;
+    private Collection<String> keys;
 
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
@@ -45,7 +45,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
      * @param keys
      * The column keys.
      */
-    public CSVEncoder(List<String> keys) {
+    public CSVEncoder(Collection<String> keys) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }
