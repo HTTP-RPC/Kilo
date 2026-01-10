@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.Format;
-import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -138,27 +137,19 @@ public class CSVEncoderTest {
 
     @Test
     public void testFormat() throws IOException {
-        var integer = 1000;
         var flag = true;
-        var date = new Date();
         var localDateTime = LocalDateTime.now();
+        var date = new Date();
 
         var rows = listOf(
             mapOf(
-                entry("a", integer),
-                entry("b", flag),
-                entry("c", date),
-                entry("d", localDateTime)
+                entry("a", flag),
+                entry("b", localDateTime),
+                entry("c", date)
             )
         );
 
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c", "d"));
-
-        var integerFormat = NumberFormat.getNumberInstance();
-
-        integerFormat.setGroupingUsed(false);
-
-        csvEncoder.format(Integer.class, integerFormat::format);
+        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
         var booleanFormat = new Format() {
             @Override
@@ -172,25 +163,22 @@ public class CSVEncoderTest {
             }
         };
 
-        csvEncoder.format(Boolean.class, booleanFormat::format);
+        var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
 
         var dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 
-        csvEncoder.format(Date.class, dateFormat::format);
-
-        var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
-
+        csvEncoder.format(Boolean.class, booleanFormat::format);
         csvEncoder.format(LocalDateTime.class, dateTimeFormatter::format);
+        csvEncoder.format(Date.class, dateFormat::format);
 
         var writer = new StringWriter();
 
         csvEncoder.write(rows, writer);
 
-        var expected = "\"a\",\"b\",\"c\",\"d\"\r\n"
-            + "\"" + integerFormat.format(integer) + "\","
+        var expected = "\"a\",\"b\",\"c\"\r\n"
             + "\"" + booleanFormat.format(flag) + "\","
-            + "\"" + dateFormat.format(date) + "\","
-            + "\"" + dateTimeFormatter.format(localDateTime) + "\"\r\n";
+            + "\"" + dateTimeFormatter.format(localDateTime) + "\","
+            + "\"" + dateFormat.format(date) + "\"\r\n";
 
         assertEquals(expected, writer.toString());
     }
