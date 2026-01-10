@@ -140,7 +140,7 @@ public class JSONEncoderTest {
         assertEquals(expected, actual);
     }
 
-        @Test
+    @Test
     public void testEnum() throws IOException {
         assertEquals("\"MONDAY\"", encode(DayOfWeek.MONDAY));
     }
