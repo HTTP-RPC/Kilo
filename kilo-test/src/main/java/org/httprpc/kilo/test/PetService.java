@@ -72,14 +72,12 @@ public class PetService extends AbstractDatabaseService {
                 var jsonEncoder = new JSONEncoder();
 
                 jsonEncoder.write(results, response.getOutputStream());
-            } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
-                response.setContentType(TEXT_CSV);
+            } else if (accept.equalsIgnoreCase(TEXT_XML)) {
+                response.setContentType(TEXT_XML);
 
-                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
+                var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
 
-                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
-
-                csvEncoder.write(results, response.getOutputStream());
+                templateEncoder.write(results, response.getOutputStream());
             } else if (accept.equalsIgnoreCase(TEXT_HTML)) {
                 response.setContentType(TEXT_HTML);
 
@@ -88,12 +86,14 @@ public class PetService extends AbstractDatabaseService {
                 templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
 
                 templateEncoder.write(results, response.getOutputStream());
-            } else if (accept.equalsIgnoreCase(TEXT_XML)) {
-                response.setContentType(TEXT_XML);
+            } else if (accept.equalsIgnoreCase(TEXT_CSV)) {
+                response.setContentType(TEXT_CSV);
 
-                var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
+                var csvEncoder = new CSVEncoder(listOf("name", "species", "sex", "birth", "death"));
 
-                templateEncoder.write(results, response.getOutputStream());
+                csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getName(), getRequest().getLocale()));
+
+                csvEncoder.write(results, response.getOutputStream());
             } else {
                 throw new UnsupportedOperationException();
             }

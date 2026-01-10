@@ -757,9 +757,9 @@ public abstract class WebService extends HttpServlet {
     protected static final String APPLICATION_JSON = "application/json";
 
     /**
-     * CSV MIME type.
+     * XML MIME type.
      */
-    protected static final String TEXT_CSV = "text/csv";
+    protected static final String TEXT_XML = "text/xml";
 
     /**
      * HTML MIME type.
@@ -767,9 +767,9 @@ public abstract class WebService extends HttpServlet {
     protected static final String TEXT_HTML = "text/html";
 
     /**
-     * XML MIME type.
+     * CSV MIME type.
      */
-    protected static final String TEXT_XML = "text/xml";
+    protected static final String TEXT_CSV = "text/csv";
 
     /**
      * Plain text MIME type.
