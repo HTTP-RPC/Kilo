@@ -278,6 +278,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testListCoercion() {
         assertEquals(listOf(
             1,
@@ -296,6 +297,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testMapCoercion() {
         assertEquals(mapOf(
             entry("a", 1.0),
@@ -324,6 +326,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testSetCoercion() {
         assertEquals(setOf(
             1,
@@ -342,6 +345,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testMutableListCoercion() {
         var strings = new ArrayList<String>();
 
@@ -364,6 +368,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testMutableMapCoercion() {
         var strings = new HashMap<Integer, String>();
 
@@ -400,6 +405,7 @@ public class BeanAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testMutableSetCoercion() {
         var strings = new HashSet<>();
 
