@@ -61,7 +61,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
      * The type to format.
      *
      * @param type
-     * The type to format. The type must be final or {@link Date}.
+     * The type to format. The type must be final.
      *
      * @param formatter
      * The formatter to apply to instances of the given type.
@@ -72,7 +72,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
             throw new IllegalArgumentException();
         }
 
-        if ((type.getModifiers() & Modifier.FINAL) == 0 && type != Date.class) {
+        if ((type.getModifiers() & Modifier.FINAL) == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -154,14 +154,14 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 var value = map.get(key);
 
                 if (value != null) {
+                    if (value instanceof Date date) {
+                        value = date.toInstant();
+                    }
+
                     var formatter = formatters.get(value.getClass());
 
                     if (formatter != null) {
                         value = formatter.apply(value);
-                    }
-
-                    if (value instanceof Date date) {
-                        value = date.getTime();
                     }
 
                     switch (value) {

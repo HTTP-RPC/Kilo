@@ -175,7 +175,7 @@ public class JSONEncoder extends Encoder<Object> {
             var key = entry.getKey();
 
             if (key == null) {
-                throw new IllegalArgumentException("Invalid key.");
+                throw new IllegalArgumentException("Missing key.");
             }
 
             if (key instanceof Date date) {

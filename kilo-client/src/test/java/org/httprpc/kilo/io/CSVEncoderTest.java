@@ -18,10 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -70,8 +67,7 @@ public class CSVEncoderTest {
                 entry("a", "A,B,\"C\" "),
                 entry("b", 1),
                 entry("c", 2.0),
-                entry("d", true),
-                entry("e", new Date(0))
+                entry("d", true)
             ),
             mapOf(
                 entry("a", " D\r\nÉ\r\nF\r\n"),
@@ -89,7 +85,7 @@ public class CSVEncoderTest {
         csvEncoder.write(rows, writer);
 
         var expected = "\"a\",\"b\",\"c\",\"D\",\"É\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,0\r\n"
+            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
             + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,\r\n";
 
         assertEquals(expected, writer.toString());
@@ -137,48 +133,34 @@ public class CSVEncoderTest {
 
     @Test
     public void testFormat() throws IOException {
-        var flag = true;
-        var localDateTime = LocalDateTime.now();
         var date = new Date();
+        var localDateTime = LocalDateTime.now();
 
         var rows = listOf(
             mapOf(
-                entry("a", flag),
-                entry("b", localDateTime),
-                entry("c", date)
+                entry("a", true),
+                entry("b", date),
+                entry("c", localDateTime)
             )
         );
 
         var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
 
-        var booleanFormat = new Format() {
-            @Override
-            public StringBuffer format(Object object, StringBuffer stringBuffer, FieldPosition fieldPosition) {
-                return stringBuffer.append((boolean)object ? "Y" : "N");
-            }
-
-            @Override
-            public Object parseObject(String source, ParsePosition pos) {
-                throw new UnsupportedOperationException();
-            }
-        };
+        csvEncoder.format(Boolean.class, flag -> flag ? "Y" : "N");
+        csvEncoder.format(Instant.class, instant -> String.valueOf(instant.toEpochMilli()));
 
         var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
 
-        var dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-
-        csvEncoder.format(Boolean.class, booleanFormat::format);
         csvEncoder.format(LocalDateTime.class, dateTimeFormatter::format);
-        csvEncoder.format(Date.class, dateFormat::format);
 
         var writer = new StringWriter();
 
         csvEncoder.write(rows, writer);
 
         var expected = "\"a\",\"b\",\"c\"\r\n"
-            + "\"" + booleanFormat.format(flag) + "\","
-            + "\"" + dateTimeFormatter.format(localDateTime) + "\","
-            + "\"" + dateFormat.format(date) + "\"\r\n";
+            + "\"Y\","
+            + "\"" + date.getTime() + "\","
+            + "\"" + dateTimeFormatter.format(localDateTime) + "\"\r\n";
 
         assertEquals(expected, writer.toString());
     }
