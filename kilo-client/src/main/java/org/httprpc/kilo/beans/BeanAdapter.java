@@ -44,9 +44,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -684,7 +683,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced list.
      *
      * @deprecated
-     * This method will be removed in a future release. Use streams instead.
+     * This method will be removed in a future release.
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -729,7 +728,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced map.
      *
      * @deprecated
-     * This method will be removed in a future release. Use streams instead.
+     * This method will be removed in a future release.
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -768,7 +767,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced set.
      *
      * @deprecated
-     * This method will be removed in a future release. Use streams instead.
+     * This method will be removed in a future release.
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -806,8 +805,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     public static Object toGenericType(Object value, Type type) {
         if (type instanceof Class<?> rawType) {
             return toRawType(value, rawType);
-        } else if (type instanceof ParameterizedType parameterizedType) {
-            var rawType = parameterizedType.getRawType();
+        } else if (type instanceof ParameterizedType parameterizedType
+            && parameterizedType.getRawType() instanceof Class<?> rawType) {
             var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
             if (rawType == List.class) {
@@ -833,7 +832,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     var keyType = actualTypeArguments[0];
                     var valueType = actualTypeArguments[1];
 
-                    var genericMap = new LinkedHashMap<>();
+                    var genericMap = new HashMap<>(map.size());
 
                     for (var entry : map.entrySet()) {
                         genericMap.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
@@ -849,7 +848,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 } else if (value instanceof Collection<?> collection) {
                     var elementType = actualTypeArguments[0];
 
-                    var genericSet = new LinkedHashSet<>(collection.size());
+                    var genericSet = new HashSet<>(collection.size());
 
                     for (var element : collection) {
                         genericSet.add(toGenericType(element, elementType));

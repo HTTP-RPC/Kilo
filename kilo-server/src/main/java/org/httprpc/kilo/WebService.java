@@ -1259,27 +1259,25 @@ public abstract class WebService extends HttpServlet {
                         argument = Array.newInstance(componentType, 0);
                     }
                 } else if (Collection.class.isAssignableFrom(type)) {
-                    var elementType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                    var parameterizedType = (ParameterizedType)parameter.getParameterizedType();
+                    var elementType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
 
-                    if (elementType instanceof Class<?>) {
-                        if (type == List.class) {
-                            if (values == null) {
-                                argument = listOf();
-                            } else {
-                                argument = BeanAdapter.coerceList(values, (Class<?>)elementType);
-                            }
-                        } else if (type == Set.class) {
-                            if (values == null) {
-                                argument = setOf();
-                            } else {
-                                argument = BeanAdapter.coerceSet(values, (Class<?>)elementType);
-                            }
-                        } else {
-                            throw new UnsupportedOperationException("Unsupported collection type.");
-                        }
+                    Collection<Object> collection;
+                    if (type == List.class) {
+                        collection = listOf();
+                    } else if (type == Set.class) {
+                        collection = setOf();
                     } else {
-                        throw new UnsupportedOperationException("Unsupported element type.");
+                        throw new UnsupportedOperationException("Unsupported collection type.");
                     }
+
+                    if (values != null) {
+                        for (var element : values) {
+                            collection.add(BeanAdapter.coerce(element, elementType));
+                        }
+                    }
+
+                    argument = collection;
                 } else {
                     Object value;
                     if (values != null) {

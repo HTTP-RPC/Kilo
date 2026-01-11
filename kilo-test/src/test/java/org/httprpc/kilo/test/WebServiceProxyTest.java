@@ -256,9 +256,11 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(body);
 
-        var result = webServiceProxy.invoke();
+        var result = ((List<?>)webServiceProxy.invoke()).stream()
+            .map(element -> BeanAdapter.coerce(element, Integer.class))
+            .toList();
 
-        assertEquals(body, BeanAdapter.coerceList((List<?>)result, Integer.class));
+        assertEquals(body, result);
     }
 
     @Test

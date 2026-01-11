@@ -14,7 +14,6 @@
 
 package org.httprpc.kilo.io;
 
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -28,10 +27,11 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONDecoderTest {
-    public interface Row {
-        String getA();
-        int getB();
-        boolean isC();
+    public record Row (
+        String a,
+        int b,
+        boolean c
+    ) {
     }
 
     private static class ListType implements ParameterizedType {
@@ -115,18 +115,10 @@ public class JSONDecoderTest {
 
     @Test
     public void testRowArray() throws IOException {
-        var expected = BeanAdapter.coerceList(listOf(
-            mapOf(
-                entry("a", "hello"),
-                entry("b", 123),
-                entry("c", true)
-            ),
-            mapOf(
-                entry("a", "goodbye"),
-                entry("b", 456),
-                entry("c", false)
-            )
-        ), Row.class);
+        var expected = listOf(
+            new Row("hello", 123, true),
+            new Row("goodbye", 456, false)
+        );
 
         var text = "[{\"a\": \"hello\", \"b\": 123, \"c\": true}, {\"a\": \"goodbye\", \"b\": 456, \"c\": false}]";
 

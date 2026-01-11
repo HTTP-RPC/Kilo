@@ -93,7 +93,7 @@ public class CollectionsTest {
 
     @Test
     public void testSetOf() {
-        var expected = new HashSet<Integer>(3);
+        var expected = new HashSet<Integer>();
 
         expected.add(1);
         expected.add(2);
