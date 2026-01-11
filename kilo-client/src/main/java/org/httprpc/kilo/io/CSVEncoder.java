@@ -132,7 +132,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
             if (resourceBundle != null) {
                 try {
-                    heading = resourceBundle.getObject(key.toString());
+                    heading = resourceBundle.getObject(heading.toString());
                 } catch (MissingResourceException exception) {
                     // No-op
                 }
