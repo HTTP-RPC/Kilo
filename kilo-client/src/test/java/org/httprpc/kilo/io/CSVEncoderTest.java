@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -127,6 +128,41 @@ public class CSVEncoderTest {
         var expected = "\"a\",\"b\",\"c\"\r\n"
             + "\"hello\",123,true\r\n"
             + "\"goodbye\",456,false\r\n";
+
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    public void testKeys() throws IOException {
+        var date = LocalDate.now();
+
+        var keys = listOf("a", date);
+
+        var csvEncoder = new CSVEncoder(keys);
+
+        var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
+        csvEncoder.format(LocalDate.class, dateFormatter::format);
+        csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
+
+        var rows = listOf(
+            mapOf(
+                entry("a", true),
+                entry(date, 123)
+            ),
+            mapOf(
+                entry("a", false),
+                entry(date, 456)
+            )
+        );
+
+        var writer = new StringWriter();
+
+        csvEncoder.write(rows, writer);
+
+        var expected = "\"a\",\"" + dateFormatter.format(date) + "\"\r\n"
+            + "true,123\r\n"
+            + "false,456\r\n";
 
         assertEquals(expected, writer.toString());
     }

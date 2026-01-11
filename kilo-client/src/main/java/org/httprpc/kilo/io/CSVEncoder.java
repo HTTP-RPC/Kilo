@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -32,7 +33,7 @@ import static org.httprpc.kilo.util.Optionals.*;
  * Encodes CSV content.
  */
 public class CSVEncoder extends Encoder<Iterable<?>> {
-    private Collection<String> keys;
+    private Collection<?> keys;
 
     private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
@@ -46,7 +47,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
      * @param keys
      * The column keys.
      */
-    public CSVEncoder(Collection<String> keys) {
+    public CSVEncoder(Collection<?> keys) {
         if (keys == null) {
             throw new IllegalArgumentException();
         }
@@ -120,18 +121,21 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
         for (var key : keys) {
             if (key == null) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Missing key.");
             }
 
             if (i > 0) {
                 writer.write(DELIMITER);
             }
 
-            String heading;
-            if (resourceBundle == null) {
-                heading = key;
-            } else {
-                heading = resourceBundle.getObject(key).toString();
+            var heading = key;
+
+            if (resourceBundle != null) {
+                try {
+                    heading = resourceBundle.getObject(key.toString());
+                } catch (MissingResourceException exception) {
+                    // No-op
+                }
             }
 
             encode(heading, writer);
@@ -151,31 +155,35 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                     writer.write(DELIMITER);
                 }
 
-                var value = map.get(key);
-
-                if (value != null) {
-                    if (value instanceof Date date) {
-                        value = date.toInstant();
-                    }
-
-                    var formatter = formatters.get(value.getClass());
-
-                    if (formatter != null) {
-                        value = formatter.apply(value);
-                    }
-
-                    switch (value) {
-                        case CharSequence text -> encode(text, writer);
-                        case Number number -> encode(number, writer);
-                        case Boolean flag -> encode(flag, writer);
-                        default -> encode(value.toString(), writer);
-                    }
-                }
+                encode(map.get(key), writer);
 
                 i++;
             }
 
             writer.write("\r\n");
+        }
+    }
+
+    private void encode(Object value, Writer writer) throws IOException {
+        if (value == null) {
+            return;
+        }
+
+        if (value instanceof Date date) {
+            value = date.toInstant();
+        }
+
+        var formatter = formatters.get(value.getClass());
+
+        if (formatter != null) {
+            value = formatter.apply(value);
+        }
+
+        switch (value) {
+            case CharSequence text -> encode(text, writer);
+            case Number number -> encode(number, writer);
+            case Boolean flag -> encode(flag, writer);
+            default -> encode(value.toString(), writer);
         }
     }
 
