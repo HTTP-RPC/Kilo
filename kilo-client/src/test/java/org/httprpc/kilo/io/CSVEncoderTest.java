@@ -136,22 +136,17 @@ public class CSVEncoderTest {
     public void testKeys() throws IOException {
         var date = LocalDate.now();
 
-        var keys = listOf("a", date);
-
-        var csvEncoder = new CSVEncoder(keys);
+        var csvEncoder = new CSVEncoder(setOf(date));
 
         var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
         csvEncoder.format(LocalDate.class, dateFormatter::format);
-        csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
 
         var rows = listOf(
             mapOf(
-                entry("a", true),
                 entry(date, 123)
             ),
             mapOf(
-                entry("a", false),
                 entry(date, 456)
             )
         );
@@ -160,9 +155,9 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var expected = "\"a\",\"" + dateFormatter.format(date) + "\"\r\n"
-            + "true,123\r\n"
-            + "false,456\r\n";
+        var expected = "\"" + dateFormatter.format(date) + "\"\r\n"
+            + "123\r\n"
+            + "456\r\n";
 
         assertEquals(expected, writer.toString());
     }

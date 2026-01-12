@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -35,9 +34,9 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class CSVEncoder extends Encoder<Iterable<?>> {
     private Collection<?> keys;
 
-    private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
-
     private ResourceBundle resourceBundle = null;
+
+    private Map<Class<?>, Function<Object, String>> formatters = new HashMap<>();
 
     private static final char DELIMITER = ',';
 
@@ -53,6 +52,27 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         }
 
         this.keys = keys;
+    }
+
+    /**
+     * Returns the resource bundle.
+     *
+     * @return
+     * The resource bundle, or {@code null} if a resource bundle has not been
+     * set.
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    /**
+     * Sets the resource bundle.
+     *
+     * @param resourceBundle
+     * The resource bundle, or {@code null} for no resource bundle.
+     */
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
     /**
@@ -78,27 +98,6 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         }
 
         formatters.put(type, (Function<Object, String>)formatter);
-    }
-
-    /**
-     * Returns the resource bundle.
-     *
-     * @return
-     * The resource bundle, or {@code null} if a resource bundle has not been
-     * set.
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-
-    /**
-     * Sets the resource bundle.
-     *
-     * @param resourceBundle
-     * The resource bundle, or {@code null} for no resource bundle.
-     */
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
     }
 
     @Override
@@ -128,17 +127,11 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 writer.write(DELIMITER);
             }
 
-            var heading = key;
-
-            if (resourceBundle != null) {
-                try {
-                    heading = resourceBundle.getObject(heading.toString());
-                } catch (MissingResourceException exception) {
-                    // No-op
-                }
+            if (resourceBundle == null) {
+                encode(key, writer);
+            } else {
+                encode(resourceBundle.getObject(key.toString()), writer);
             }
-
-            encode(heading, writer);
 
             i++;
         }
