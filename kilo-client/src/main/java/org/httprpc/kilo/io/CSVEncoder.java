@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-import static org.httprpc.kilo.util.Optionals.*;
-
 /**
  * Encodes CSV content.
  */
@@ -139,7 +137,9 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
         writer.write("\r\n");
 
         for (var row : rows) {
-            var map = coalesce(cast(row, Map.class), () -> new BeanAdapter(row));
+            if (!(BeanAdapter.adapt(row) instanceof Map<?, ?> map)) {
+                throw new IllegalArgumentException("Invalid row.");
+            }
 
             i = 0;
 
