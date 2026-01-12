@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.stream.Streams.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ResultSetAdapterTest {
@@ -74,7 +75,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, TemporalAccessorTest.class)).orElseThrow();
+            return results.stream().findFirst().map(to(TemporalAccessorTest.class)).orElseThrow();
         }
     }
 
@@ -151,7 +152,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, JSONTest.class)).orElseThrow();
+            return results.stream().findFirst().map(to(JSONTest.class)).orElseThrow();
         }
     }
 
@@ -210,7 +211,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, XMLTest.class)).orElseThrow();
+            return results.stream().findFirst().map(to(XMLTest.class)).orElseThrow();
         }
     }
 

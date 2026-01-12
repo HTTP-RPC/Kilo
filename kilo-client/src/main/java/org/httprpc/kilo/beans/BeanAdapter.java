@@ -410,7 +410,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
             var interfaces = type.getInterfaces();
 
             if (interfaces.length == 0) {
-                throw new UnsupportedOperationException("Type does not implement any interfaces.");
+                throw new IllegalArgumentException("Type does not implement any interfaces.");
             }
 
             type = interfaces[0];
@@ -683,8 +683,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced list.
      *
      * @deprecated
-     * This method will be removed in a future release. Use streams and
-     * {@link #coerce(Object, Class)} instead.
+     * This method will be removed in a future release. Use streams instead.
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -729,8 +728,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced map.
      *
      * @deprecated
-     * This method will be removed in a future release. Use streams and
-     * {@link #coerce(Object, Class)} instead.
+     * This method will be removed in a future release. Use streams instead.
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -769,8 +767,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced set.
      *
      * @deprecated
-     * This method will be removed in a future release. Use streams and
-     * {@link #coerce(Object, Class)} instead.
+     * This method will be removed in a future release. Use streams instead.
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -862,10 +859,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     throw new IllegalArgumentException("Value is not a collection.");
                 }
             } else {
-                throw new UnsupportedOperationException("Unsupported parameterized type.");
+                throw new IllegalArgumentException();
             }
         } else {
-            throw new UnsupportedOperationException("Unsupported type.");
+            throw new IllegalArgumentException();
         }
     }
 

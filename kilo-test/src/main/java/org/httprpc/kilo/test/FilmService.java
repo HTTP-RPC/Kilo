@@ -19,7 +19,6 @@ import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.sql.SQLException;
@@ -27,6 +26,7 @@ import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
+import static org.httprpc.kilo.util.stream.Streams.*;
 
 @WebServlet(urlPatterns = {"/films/*"}, loadOnStartup = 1)
 @Description("Film example service.")
@@ -53,7 +53,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("match", map(match, value -> value.replace('*', '%')))
             ))) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, Film.class)).toList();
+            return results.stream().map(to(Film.class)).toList();
         }
     }
 
@@ -70,7 +70,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            film = results.stream().findFirst().map(result -> BeanAdapter.coerce(result, FilmDetail.class)).orElseThrow();
+            film = results.stream().findFirst().map(to(FilmDetail.class)).orElseThrow();
         }
 
         film.setActors(getActors(filmID));
@@ -89,7 +89,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, Actor.class)).toList();
+            return results.stream().map(to(Actor.class)).toList();
         }
     }
 
@@ -103,7 +103,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, Category.class)).toList();
+            return results.stream().map(to(Category.class)).toList();
         }
     }
 }

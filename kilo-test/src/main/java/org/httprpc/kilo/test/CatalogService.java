@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.stream.Streams.*;
 
 @WebServlet(urlPatterns = {"/catalog/*"}, loadOnStartup = 1)
 @Description("Catalog example service.")
@@ -39,7 +40,7 @@ public class CatalogService extends AbstractDatabaseService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, Item.class)).toList();
+            return results.stream().map(to(Item.class)).toList();
         }
     }
 
@@ -55,7 +56,7 @@ public class CatalogService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("itemID", itemID)
             ))) {
-            return results.stream().findFirst().map(result -> BeanAdapter.coerce(result, ItemDetail.class)).orElse(null);
+            return results.stream().findFirst().map(to(ItemDetail.class)).orElse(null);
         }
     }
 

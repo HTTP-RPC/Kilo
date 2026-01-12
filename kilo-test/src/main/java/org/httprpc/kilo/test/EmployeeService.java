@@ -20,7 +20,6 @@ import org.hibernate.cfg.Configuration;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
@@ -28,6 +27,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static org.httprpc.kilo.util.stream.Streams.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
@@ -58,7 +59,7 @@ public class EmployeeService extends WebService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
+            return results.stream().map(to(Employee.class)).toList();
         }
     }
 
@@ -74,7 +75,7 @@ public class EmployeeService extends WebService {
 
             try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
-                pipe.submit(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+                pipe.submit(results.stream().map(to(Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
