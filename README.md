@@ -29,6 +29,7 @@ Classes provided by the Kilo framework include:
 * [ElementAdapter](#elementadapter)
 * [Pipe](#pipe)
 * [Collections and Optionals](#collections-and-optionals)
+* [Streams](#streams)
 
 Each is discussed in more detail below.
 
@@ -790,7 +791,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return results.stream().map(result -> BeanAdapter.coerce(result, Pet.class)).toList();
+return results.stream().map(to(Pet.class)).toList();
 ```
 
 ```java
@@ -990,7 +991,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)).toList();
+    return results.stream().map(to(Employee.class)).toList();
 }
 ```
 
@@ -1006,7 +1007,7 @@ executorService.submit(() -> {
 
     try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
-        pipe.submit(results.stream().map(result -> BeanAdapter.coerce(result, Employee.class)));
+        pipe.submit(results.stream().map(to(Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }
@@ -1111,4 +1112,19 @@ If the given value is an instance of the requested type, the cast will succeed; 
 var text = cast("abc", String.class); // abc
 
 var number = cast("abc", Double.class); // null
+```
+
+## Streams
+The `Streams` class defines a single method:
+
+```java
+public static <T> Function<Object, T> to(Class<T> type) { ... }
+```
+
+It returns a function that coerces a value to a given type and can be used to simplify stream processing code. For example:
+
+```java
+var strings = listOf("1", "2", "3");
+
+var integers = strings.stream().map(to(Integer.class)).toList(); // 1, 2, 3
 ```
