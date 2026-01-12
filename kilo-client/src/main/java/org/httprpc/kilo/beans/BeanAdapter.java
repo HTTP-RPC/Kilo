@@ -803,67 +803,67 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The converted value.
      */
     public static Object toGenericType(Object value, Type type) {
-        if (type instanceof Class<?> rawType) {
-            return toRawType(value, rawType);
-        } else if (type instanceof ParameterizedType parameterizedType
-            && parameterizedType.getRawType() instanceof Class<?> rawType) {
-            var actualTypeArguments = parameterizedType.getActualTypeArguments();
+        return switch (type) {
+            case Class<?> rawType -> toRawType(value, rawType);
+            case ParameterizedType parameterizedType -> {
+                var rawType = (Class<?>)parameterizedType.getRawType();
+                var actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            if (rawType == List.class) {
-                if (value == null) {
-                    return null;
-                } else if (value instanceof Collection<?> collection) {
-                    var elementType = actualTypeArguments[0];
+                if (rawType == List.class) {
+                    if (value == null) {
+                        yield null;
+                    } else if (value instanceof Collection<?> collection) {
+                        var elementType = actualTypeArguments[0];
 
-                    var genericList = new ArrayList<>(collection.size());
+                        var genericList = new ArrayList<>(collection.size());
 
-                    for (var element : collection) {
-                        genericList.add(toGenericType(element, elementType));
+                        for (var element : collection) {
+                            genericList.add(toGenericType(element, elementType));
+                        }
+
+                        yield genericList;
+                    } else {
+                        throw new IllegalArgumentException("Value is not a collection.");
                     }
+                } else if (rawType == Map.class) {
+                    if (value == null) {
+                        yield null;
+                    } else if (value instanceof Map<?, ?> map) {
+                        var keyType = actualTypeArguments[0];
+                        var valueType = actualTypeArguments[1];
 
-                    return genericList;
-                } else {
-                    throw new IllegalArgumentException("Value is not a collection.");
-                }
-            } else if (rawType == Map.class) {
-                if (value == null) {
-                    return null;
-                } else if (value instanceof Map<?, ?> map) {
-                    var keyType = actualTypeArguments[0];
-                    var valueType = actualTypeArguments[1];
+                        var genericMap = new HashMap<>(map.size());
 
-                    var genericMap = new HashMap<>(map.size());
+                        for (var entry : map.entrySet()) {
+                            genericMap.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
+                        }
 
-                    for (var entry : map.entrySet()) {
-                        genericMap.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
+                        yield genericMap;
+                    } else {
+                        throw new IllegalArgumentException("Value is not a map.");
                     }
+                } else if (rawType == Set.class) {
+                    if (value == null) {
+                        yield null;
+                    } else if (value instanceof Collection<?> collection) {
+                        var elementType = actualTypeArguments[0];
 
-                    return genericMap;
-                } else {
-                    throw new IllegalArgumentException("Value is not a map.");
-                }
-            } else if (rawType == Set.class) {
-                if (value == null) {
-                    return null;
-                } else if (value instanceof Collection<?> collection) {
-                    var elementType = actualTypeArguments[0];
+                        var genericSet = new HashSet<>(collection.size());
 
-                    var genericSet = new HashSet<>(collection.size());
+                        for (var element : collection) {
+                            genericSet.add(toGenericType(element, elementType));
+                        }
 
-                    for (var element : collection) {
-                        genericSet.add(toGenericType(element, elementType));
+                        yield genericSet;
+                    } else {
+                        throw new IllegalArgumentException("Value is not a collection.");
                     }
-
-                    return genericSet;
                 } else {
-                    throw new IllegalArgumentException("Value is not a collection.");
+                    throw new IllegalArgumentException("Invalid type.");
                 }
-            } else {
-                throw new IllegalArgumentException();
             }
-        } else {
-            throw new IllegalArgumentException();
-        }
+            case null, default -> throw new IllegalArgumentException();
+        };
     }
 
     private static Object toRawType(Object value, Class<?> type) {
