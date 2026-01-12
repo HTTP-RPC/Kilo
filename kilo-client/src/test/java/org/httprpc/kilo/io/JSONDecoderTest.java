@@ -18,9 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
 import java.util.function.Supplier;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -32,29 +29,6 @@ public class JSONDecoderTest {
         int b,
         boolean c
     ) {
-    }
-
-    private static class ListType implements ParameterizedType {
-        Type[] actualTypeArguments;
-
-        ListType(Type elementType) {
-            actualTypeArguments = new Type[] {elementType};
-        }
-
-        @Override
-        public Type[] getActualTypeArguments() {
-            return actualTypeArguments;
-        }
-
-        @Override
-        public Type getRawType() {
-            return List.class;
-        }
-
-        @Override
-        public Type getOwnerType() {
-            return null;
-        }
     }
 
     @Test
@@ -114,54 +88,9 @@ public class JSONDecoderTest {
     }
 
     @Test
-    public void testRowArray() throws IOException {
-        var expected = listOf(
-            new Row("hello", 123, true),
-            new Row("goodbye", 456, false)
-        );
-
-        var text = "[{\"a\": \"hello\", \"b\": 123, \"c\": true}, {\"a\": \"goodbye\", \"b\": 456, \"c\": false}]";
-
-        var actual = decode(text, () -> new JSONDecoder(new ListType(Row.class)));
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testStringArray() throws IOException {
-        var expected = listOf("1", "2", "3");
-
-        var text = "[1, 2, 3]";
-
-        var actual = decode(text, () -> new JSONDecoder(new ListType(String.class)));
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testNestedArray() throws IOException {
-        var expected = listOf(
-            listOf(1),
-            listOf(2, 3),
-            listOf(4, 5, 6)
-        );
-
-        var text = "[[1], [2, 3], [4, 5, 6]]";
-
-        var actual = decode(text, () -> new JSONDecoder(new ListType(new ListType(Integer.class))));
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void testUnterminatedArray() {
         assertThrows(IOException.class, () -> decode("[1, 2, 3"));
         assertThrows(IOException.class, () -> decode("[1, 2, 3, "));
-    }
-
-    @Test
-    public void testInvalidArray() {
-        assertThrows(UnsupportedOperationException.class, () -> decode("\"abc\"", () -> new JSONDecoder(new ListType(Double.class))));
     }
 
     @Test

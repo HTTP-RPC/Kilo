@@ -1386,9 +1386,9 @@ public abstract class WebService extends HttpServlet {
                 throw new IOException(exception);
             }
         } else {
-            var jsonDecoder = new JSONDecoder(type);
+            var jsonDecoder = new JSONDecoder();
 
-            return jsonDecoder.read(request.getInputStream());
+            return BeanAdapter.toGenericType(jsonDecoder.read(request.getInputStream()), type);
         }
     }
 

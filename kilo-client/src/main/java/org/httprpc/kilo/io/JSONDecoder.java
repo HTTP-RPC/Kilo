@@ -14,12 +14,8 @@
 
 package org.httprpc.kilo.io;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -31,9 +27,6 @@ import java.util.Map;
  * Decodes JSON content.
  */
 public class JSONDecoder extends Decoder<Object> {
-    private Type type;
-    private Type elementType;
-
     private int c = EOF;
 
     private Deque<Object> containers = new LinkedList<>();
@@ -43,33 +36,6 @@ public class JSONDecoder extends Decoder<Object> {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private static final String NULL = "null";
-
-    /**
-     * Constructs a new JSON decoder.
-     */
-    public JSONDecoder() {
-        this(Object.class);
-    }
-
-    /**
-     * Constructs a new JSON decoder.
-     *
-     * @param type
-     * The result type.
-     */
-    public JSONDecoder(Type type) {
-        if (type == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.type = type;
-
-        if (type instanceof ParameterizedType parameterizedType && parameterizedType.getRawType() == List.class) {
-            elementType = parameterizedType.getActualTypeArguments()[0];
-        } else {
-            elementType = null;
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -89,10 +55,6 @@ public class JSONDecoder extends Decoder<Object> {
         while (c != EOF) {
             if (c == ']' || c == '}') {
                 value = containers.pop();
-
-                if (elementType != null && containers.size() == 1 && containers.peek() instanceof List<?> list) {
-                    ((List<Object>)list).set(list.size() - 1, BeanAdapter.toGenericType(value, elementType));
-                }
 
                 c = reader.read();
             } else if (c == ',') {
@@ -160,10 +122,6 @@ public class JSONDecoder extends Decoder<Object> {
                     if (key != null) {
                         ((Map<String, Object>)container).put(key, value);
                     } else {
-                        if (elementType != null && containers.size() == 1) {
-                            value = BeanAdapter.toGenericType(value, elementType);
-                        }
-
                         ((List<Object>)container).add(value);
                     }
                 }
@@ -176,15 +134,7 @@ public class JSONDecoder extends Decoder<Object> {
             throw new IOException("Unterminated container.");
         }
 
-        if (elementType != null) {
-            if (!(value instanceof List<?>)) {
-                throw new UnsupportedOperationException("Value is not a list.");
-            }
-
-            return value;
-        }
-
-        return BeanAdapter.toGenericType(value, type);
+        return value;
     }
 
     private void skipWhitespace(Reader reader) throws IOException {
