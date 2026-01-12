@@ -515,9 +515,11 @@ System.out.println(text); // Hello, World!
 ```
 
 ## CSVEncoder
-The `CSVEncoder` class serializes a sequence of map, bean, or record values to CSV. The list passed to the constructor represents both the names of the columns in the output document and the keys or properties to which those columns correspond. For example:
+The `CSVEncoder` class serializes a sequence of map, bean, or record values to CSV. The collection passed to the constructor represents both the column headings in the output document and the keys or properties to which those columns correspond. For example:
 
 ```java
+var keys = listOf("a", "b", "c");
+
 var rows = listOf(
     mapOf(
         entry("a", "hello"),
@@ -531,7 +533,7 @@ var rows = listOf(
     )
 );
 
-var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+var csvEncoder = new CSVEncoder(keys);
 
 csvEncoder.write(rows, System.out);
 ```

@@ -163,6 +163,8 @@ public class Examples {
     }
 
     public static void csvEncoder() throws IOException {
+        var keys = listOf("a", "b", "c");
+
         var rows = listOf(
             mapOf(
                 entry("a", "hello"),
@@ -176,7 +178,7 @@ public class Examples {
             )
         );
 
-        var csvEncoder = new CSVEncoder(listOf("a", "b", "c"));
+        var csvEncoder = new CSVEncoder(keys);
 
         csvEncoder.write(rows, System.out);
     }
