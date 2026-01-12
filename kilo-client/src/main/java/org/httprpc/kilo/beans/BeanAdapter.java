@@ -683,9 +683,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced list.
      *
      * @deprecated
-     * Use streams and {@link #coerce(Object, Class)} instead.
+     * This method will be removed in a future release. Use streams and
+     * {@link #coerce(Object, Class)} instead.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(Collection<?> collection, Class<E> elementType) {
         return (List<E>)toGenericType(collection, new ParameterizedType() {
@@ -728,9 +729,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced map.
      *
      * @deprecated
-     * Use streams and {@link #coerce(Object, Class)} instead.
+     * This method will be removed in a future release. Use streams and
+     * {@link #coerce(Object, Class)} instead.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<?, ?> map, Class<K> keyType, Class<V> valueType) {
         return (Map<K, V>)toGenericType(map, new ParameterizedType() {
@@ -767,9 +769,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * The coerced set.
      *
      * @deprecated
-     * Use streams and {@link #coerce(Object, Class)} instead.
+     * This method will be removed in a future release. Use streams and
+     * {@link #coerce(Object, Class)} instead.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <E> Set<E> coerceSet(Collection<?> collection, Class<E> elementType) {
         return (Set<E>)toGenericType(collection, new ParameterizedType() {
