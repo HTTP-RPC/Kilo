@@ -65,13 +65,13 @@ public class CSVEncoderTest {
     public void testMaps() throws IOException {
         var rows = listOf(
             mapOf(
-                entry("a", "A,B,\"C\" "),
+                entry("a", "a,b,\"c\" "),
                 entry("b", 1),
                 entry("c", 2.0),
                 entry("d", true)
             ),
             mapOf(
-                entry("a", " D\r\nÉ\r\nF\r\n"),
+                entry("a", " d\r\né\r\nf\r\n"),
                 entry("b", 2),
                 entry("c", 4.0)
             )
@@ -85,9 +85,9 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var expected = "\"a\",\"b\",\"c\",\"D\",\"É\"\r\n"
-            + "\"A,B,\"\"C\"\" \",1,2.0,true,\r\n"
-            + "\" D\r\nÉ\r\nF\r\n\",2,4.0,,\r\n";
+        var expected = "\"A\",\"B\",\"C\",\"D\",\"É\"\r\n"
+            + "\"a,b,\"\"c\"\" \",1,2.0,true,\r\n"
+            + "\" d\r\né\r\nf\r\n\",2,4.0,,\r\n";
 
         assertEquals(expected, writer.toString());
     }
@@ -136,7 +136,9 @@ public class CSVEncoderTest {
     public void testKeys() throws IOException {
         var date = LocalDate.now();
 
-        var csvEncoder = new CSVEncoder(setOf(date));
+        var csvEncoder = new CSVEncoder(setOf("a", date));
+
+        csvEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".csv"));
 
         var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
@@ -144,10 +146,12 @@ public class CSVEncoderTest {
 
         var rows = listOf(
             mapOf(
-                entry(date, 123)
+                entry("a", 123),
+                entry(date, true)
             ),
             mapOf(
-                entry(date, 456)
+                entry("a", 456),
+                entry(date, false)
             )
         );
 
@@ -155,9 +159,9 @@ public class CSVEncoderTest {
 
         csvEncoder.write(rows, writer);
 
-        var expected = "\"" + dateFormatter.format(date) + "\"\r\n"
-            + "123\r\n"
-            + "456\r\n";
+        var expected = "\"A\",\"" + dateFormatter.format(date) + "\"\r\n"
+            + "123,true\r\n"
+            + "456,false\r\n";
 
         assertEquals(expected, writer.toString());
     }

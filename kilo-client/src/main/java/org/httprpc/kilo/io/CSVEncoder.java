@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -125,11 +126,17 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
                 writer.write(DELIMITER);
             }
 
-            if (resourceBundle == null) {
-                encode(key, writer);
-            } else {
-                encode(resourceBundle.getObject(key.toString()), writer);
+            var heading = key;
+
+            if (resourceBundle != null) {
+                try {
+                    heading = resourceBundle.getObject(key.toString());
+                } catch (MissingResourceException exception) {
+                    // No-op
+                }
             }
+
+            encode(heading, writer);
 
             i++;
         }
