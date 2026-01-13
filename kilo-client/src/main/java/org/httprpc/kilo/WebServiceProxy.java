@@ -132,7 +132,7 @@ public class WebServiceProxy {
         @Override
         public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
             if (!(BeanAdapter.adapt(body) instanceof Map<?, ?> map)) {
-                throw new UnsupportedOperationException("Unsupported body type.");
+                throw new IllegalArgumentException("Invalid body type.");
             }
 
             var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -195,7 +195,7 @@ public class WebServiceProxy {
         @Override
         public void encodeRequest(Object body, OutputStream outputStream) throws IOException {
             if (!(body instanceof Document document)) {
-                throw new UnsupportedOperationException("Unsupported body type.");
+                throw new IllegalArgumentException("Invalid body type.");
             }
 
             var transformer = ElementAdapter.newTransformer();

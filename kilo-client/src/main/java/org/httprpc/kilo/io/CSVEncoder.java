@@ -138,7 +138,7 @@ public class CSVEncoder extends Encoder<Iterable<?>> {
 
         for (var row : rows) {
             if (!(BeanAdapter.adapt(row) instanceof Map<?, ?> map)) {
-                throw new IllegalArgumentException("Invalid row.");
+                throw new IllegalArgumentException("Invalid row type.");
             }
 
             i = 0;
