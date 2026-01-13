@@ -24,13 +24,6 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONDecoderTest {
-    public record Row (
-        String a,
-        int b,
-        boolean c
-    ) {
-    }
-
     @Test
     public void testString() throws IOException {
         assertEquals("abcdéfg", decode("\"abcdéfg\""));
