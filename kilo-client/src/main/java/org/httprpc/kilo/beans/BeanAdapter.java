@@ -305,7 +305,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         throw new UndefinedValueException(key, type);
                     }
 
-                    return toGenericType(value, method.getGenericReturnType());
+                    return coerceGeneric(value, method.getGenericReturnType());
                 } else {
                     var accessor = accessors.get(propertyName);
 
@@ -346,8 +346,8 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
                     var type = accessor.getGenericReturnType();
 
-                    var value1 = toGenericType(map.get(key), type);
-                    var value2 = toGenericType(typedInvocationHandler.map.get(key), type);
+                    var value1 = coerceGeneric(map.get(key), type);
+                    var value2 = coerceGeneric(typedInvocationHandler.map.get(key), type);
 
                     if (!Objects.equals(value1, value2)) {
                         return false;
@@ -472,7 +472,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
         }
 
         try {
-            property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
+            property.mutator.invoke(bean, coerceGeneric(value, property.mutator.getGenericParameterTypes()[0]));
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw coalesce(cast(exception.getCause(), RuntimeException.class), () -> new RuntimeException(exception));
         }
@@ -664,7 +664,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public static <T> T coerce(Object value, Class<T> type) {
-        return (T)toGenericType(value, type);
+        return (T)coerceGeneric(value, type);
     }
 
     /**
@@ -688,7 +688,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @Deprecated
     @SuppressWarnings("unchecked")
     public static <E> List<E> coerceList(Collection<?> collection, Class<E> elementType) {
-        return (List<E>)toGenericType(collection, new ParameterizedType() {
+        return (List<E>)coerceGeneric(collection, new ParameterizedType() {
             @Override
             public Type[] getActualTypeArguments() {
                 return new Type[] {elementType};
@@ -733,7 +733,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @Deprecated
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> coerceMap(Map<?, ?> map, Class<K> keyType, Class<V> valueType) {
-        return (Map<K, V>)toGenericType(map, new ParameterizedType() {
+        return (Map<K, V>)coerceGeneric(map, new ParameterizedType() {
             @Override
             public Type[] getActualTypeArguments() {
                 return new Type[] {keyType, valueType};
@@ -772,7 +772,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     @Deprecated
     @SuppressWarnings("unchecked")
     public static <E> Set<E> coerceSet(Collection<?> collection, Class<E> elementType) {
-        return (Set<E>)toGenericType(collection, new ParameterizedType() {
+        return (Set<E>)coerceGeneric(collection, new ParameterizedType() {
             @Override
             public Type[] getActualTypeArguments() {
                 return new Type[] {elementType};
@@ -802,7 +802,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * @return
      * The converted value.
      */
-    public static Object toGenericType(Object value, Type type) {
+    public static Object coerceGeneric(Object value, Type type) {
         return switch (type) {
             case Class<?> rawType -> toRawType(value, rawType);
             case ParameterizedType parameterizedType -> {
@@ -818,7 +818,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         var genericList = new ArrayList<>(collection.size());
 
                         for (var element : collection) {
-                            genericList.add(toGenericType(element, elementType));
+                            genericList.add(coerceGeneric(element, elementType));
                         }
 
                         yield genericList;
@@ -835,7 +835,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         var genericMap = new HashMap<>(map.size());
 
                         for (var entry : map.entrySet()) {
-                            genericMap.put(toGenericType(entry.getKey(), keyType), toGenericType(entry.getValue(), valueType));
+                            genericMap.put(coerceGeneric(entry.getKey(), keyType), coerceGeneric(entry.getValue(), valueType));
                         }
 
                         yield genericMap;
@@ -851,7 +851,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         var genericSet = new HashSet<>(collection.size());
 
                         for (var element : collection) {
-                            genericSet.add(toGenericType(element, elementType));
+                            genericSet.add(coerceGeneric(element, elementType));
                         }
 
                         yield genericSet;
@@ -1054,7 +1054,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 throw new RequiredValueException(key, type);
             }
 
-            arguments[i] = toGenericType(value, recordComponent.getGenericType());
+            arguments[i] = coerceGeneric(value, recordComponent.getGenericType());
         }
 
         Constructor<?> constructor;
@@ -1105,7 +1105,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                 }
 
                 try {
-                    property.mutator.invoke(bean, toGenericType(value, property.mutator.getGenericParameterTypes()[0]));
+                    property.mutator.invoke(bean, coerceGeneric(value, property.mutator.getGenericParameterTypes()[0]));
                 } catch (IllegalAccessException | InvocationTargetException exception) {
                     throw new RuntimeException(exception);
                 }

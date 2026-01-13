@@ -791,7 +791,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return results.stream().map(to(Pet.class)).toList();
+return results.stream().map(toType(Pet.class)).toList();
 ```
 
 ```java
@@ -991,7 +991,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return results.stream().map(to(Employee.class)).toList();
+    return results.stream().map(toType(Employee.class)).toList();
 }
 ```
 
@@ -1007,7 +1007,7 @@ executorService.submit(() -> {
 
     try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
-        pipe.submit(results.stream().map(to(Employee.class)));
+        pipe.submit(results.stream().map(toType(Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }
@@ -1118,7 +1118,7 @@ var number = cast("abc", Double.class); // null
 The `Streams` class defines a single method:
 
 ```java
-public static <T> Function<Object, T> to(Class<T> type) { ... }
+public static <T> Function<Object, T> toType(Class<T> type) { ... }
 ```
 
 It returns a function that coerces a value to a given type and can be used to simplify stream processing code. For example:
@@ -1126,5 +1126,5 @@ It returns a function that coerces a value to a given type and can be used to si
 ```java
 var strings = listOf("1", "2", "3");
 
-var integers = strings.stream().map(to(Integer.class)).toList(); // 1, 2, 3
+var integers = strings.stream().map(toType(Integer.class)).toList(); // 1, 2, 3
 ```

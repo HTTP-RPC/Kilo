@@ -431,7 +431,7 @@ public class WebServiceProxy {
                 webServiceProxy.setResponseHandler((inputStream, contentType) -> {
                     var jsonDecoder = new JSONDecoder();
 
-                    return BeanAdapter.toGenericType(jsonDecoder.read(inputStream), method.getGenericReturnType());
+                    return BeanAdapter.coerceGeneric(jsonDecoder.read(inputStream), method.getGenericReturnType());
                 });
 
                 var configuration = method.getAnnotation(Configuration.class);

@@ -75,7 +75,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(to(TemporalAccessorTest.class)).orElseThrow();
+            return results.stream().findFirst().map(toType(TemporalAccessorTest.class)).orElseThrow();
         }
     }
 
@@ -152,7 +152,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(to(JSONTest.class)).orElseThrow();
+            return results.stream().findFirst().map(toType(JSONTest.class)).orElseThrow();
         }
     }
 
@@ -211,7 +211,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(to(XMLTest.class)).orElseThrow();
+            return results.stream().findFirst().map(toType(XMLTest.class)).orElseThrow();
         }
     }
 

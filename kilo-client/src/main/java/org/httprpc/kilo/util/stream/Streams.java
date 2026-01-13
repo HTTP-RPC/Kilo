@@ -37,7 +37,7 @@ public class Streams {
      * @return
      * The coercion function.
      */
-    public static <T> Function<Object, T> to(Class<T> type) {
+    public static <T> Function<Object, T> toType(Class<T> type) {
         return value -> BeanAdapter.coerce(value, type);
     }
 }

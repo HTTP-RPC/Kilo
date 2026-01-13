@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StreamsTest {
     @Test
-    public void testTo() {
+    public void testToType() {
         var strings = listOf("1", "2", "3");
 
-        var integers = strings.stream().map(to(Integer.class)).toList(); // 1, 2, 3
+        var integers = strings.stream().map(toType(Integer.class)).toList(); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), integers);
     }
