@@ -398,7 +398,7 @@ public class WebServiceProxy {
                     n--;
                 }
 
-                var argumentMap = new LinkedHashMap<String, Object>();
+                var argumentMap = new LinkedHashMap<String, Object>(n);
 
                 for (var i = keyCount; i < n; i++) {
                     var parameter = parameters[i];
