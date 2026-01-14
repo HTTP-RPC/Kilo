@@ -26,8 +26,6 @@ public class EmployeesTest {
 
         logTiming(baseURI, "employees");
         logTiming(baseURI, "employees/stream");
-        logTiming(baseURI, "employees/hibernate");
-        logTiming(baseURI, "employees/hibernate-stream");
     }
 
     private static void logTiming(URI baseURI, String path) throws IOException {

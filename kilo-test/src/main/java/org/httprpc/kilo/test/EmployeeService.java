@@ -16,7 +16,6 @@ package org.httprpc.kilo.test;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import org.hibernate.cfg.Configuration;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
@@ -78,48 +77,6 @@ public class EmployeeService extends WebService {
                 pipe.submit(results.stream().map(toType(Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
-            }
-        });
-
-        return pipe;
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("hibernate")
-    public List<Employee> getEmployeesHibernate() {
-        var configuration = new Configuration();
-
-        configuration.addAnnotatedClass(HibernateEmployee.class);
-
-        try (var sessionFactory = configuration.configure().buildSessionFactory();
-            var session = sessionFactory.withOptions().connection(getConnection()).openSession()) {
-            var criteriaQuery = session.getCriteriaBuilder().createQuery(Employee.class);
-            var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
-
-            return query.list();
-        }
-    }
-
-    @RequestMethod("GET")
-    @ResourcePath("hibernate-stream")
-    public Iterable<Employee> getEmployeesHibernateStream() {
-        var pipe = new Pipe<Employee>(4096, 15000);
-
-        var connection = getConnection();
-
-        executorService.submit(() -> {
-            var configuration = new Configuration();
-
-            configuration.addAnnotatedClass(HibernateEmployee.class);
-
-            try (var sessionFactory = configuration.configure().buildSessionFactory();
-                var session = sessionFactory.withOptions().connection(connection).openSession()) {
-                var criteriaQuery = session.getCriteriaBuilder().createQuery(Employee.class);
-                var query = session.createQuery(criteriaQuery.select(criteriaQuery.from(HibernateEmployee.class)));
-
-                try (var stream = query.stream()) {
-                    pipe.submit(stream);
-                }
             }
         });
 
