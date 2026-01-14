@@ -24,6 +24,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.JSONDecoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
+import org.httprpc.kilo.io.TextEncoder;
 import org.httprpc.kilo.xml.ElementAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -1446,14 +1447,14 @@ public abstract class WebService extends HttpServlet {
      * The cause of the error.
      */
     protected void reportError(HttpServletResponse response, Throwable cause) throws IOException {
-        response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_PLAIN, StandardCharsets.UTF_8));
+        var message = map(cause, Throwable::getMessage);
 
-        if (cause != null) {
-            var message = cause.getMessage();
+        if (message != null) {
+            response.setContentType(String.format(CONTENT_TYPE_FORMAT, TEXT_PLAIN, StandardCharsets.UTF_8));
 
-            if (message != null) {
-                response.getWriter().append(message);
-            }
+            var textEncoder = new TextEncoder();
+
+            textEncoder.write(message, response.getOutputStream());
         }
     }
 
