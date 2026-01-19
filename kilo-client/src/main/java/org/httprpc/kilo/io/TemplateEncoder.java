@@ -609,9 +609,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             var value = getMarkerValue(marker);
 
-                            if (value != null
-                                && (!(value instanceof Iterable<?> iterable) || iterable.iterator().hasNext())
-                                && (!(value instanceof Boolean flag) || flag)) {
+                            if (exists(value)) {
                                 encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);
@@ -680,9 +678,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             var value = getMarkerValue(marker);
 
-                            if (value == null
-                                || (value instanceof Iterable<?> iterable && !iterable.iterator().hasNext())
-                                || (value instanceof Boolean flag && !flag)) {
+                            if (!exists(value)) {
                                 encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);
@@ -764,5 +760,13 @@ public class TemplateEncoder extends Encoder<Object> {
         } else {
             throw new IllegalArgumentException("Value is not a map.");
         }
+    }
+
+    private static boolean exists(Object value) {
+        return (value instanceof Iterable<?> iterable && iterable.iterator().hasNext())
+            || (value instanceof Map<?, ?> map && !map.isEmpty())
+            || (value instanceof CharSequence text && !text.isEmpty())
+            || (value instanceof Number number && number.doubleValue() != 0.0)
+            || (value instanceof Boolean flag && flag);
     }
 }
