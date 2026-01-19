@@ -53,7 +53,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("match", map(match, value -> value.replace('*', '%')))
             ))) {
-            return results.stream().map(toType(Film.class)).toList();
+            return streamOf(results).map(toType(Film.class)).toList();
         }
     }
 
@@ -70,7 +70,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            film = results.stream().findFirst().map(toType(FilmDetail.class)).orElseThrow();
+            film = streamOf(results).findFirst().map(toType(FilmDetail.class)).orElseThrow();
         }
 
         film.setActors(getActors(filmID));
@@ -89,7 +89,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return results.stream().map(toType(Actor.class)).toList();
+            return streamOf(results).map(toType(Actor.class)).toList();
         }
     }
 
@@ -103,7 +103,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return results.stream().map(toType(Category.class)).toList();
+            return streamOf(results).map(toType(Category.class)).toList();
         }
     }
 }

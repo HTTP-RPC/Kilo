@@ -58,7 +58,7 @@ public class EmployeeService extends WebService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return results.stream().map(toType(Employee.class)).toList();
+            return streamOf(results).map(toType(Employee.class)).toList();
         }
     }
 
@@ -74,7 +74,7 @@ public class EmployeeService extends WebService {
 
             try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
-                pipe.submit(results.stream().map(toType(Employee.class)));
+                pipe.submit(streamOf(results).map(toType(Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }

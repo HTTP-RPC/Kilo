@@ -40,7 +40,7 @@ public class CatalogService extends AbstractDatabaseService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return results.stream().map(toType(Item.class)).toList();
+            return streamOf(results).map(toType(Item.class)).toList();
         }
     }
 
@@ -56,7 +56,7 @@ public class CatalogService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("itemID", itemID)
             ))) {
-            return results.stream().findFirst().map(toType(ItemDetail.class)).orElse(null);
+            return streamOf(results).findFirst().map(toType(ItemDetail.class)).orElse(null);
         }
     }
 

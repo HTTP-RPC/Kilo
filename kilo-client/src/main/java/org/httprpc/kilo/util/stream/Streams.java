@@ -16,7 +16,10 @@ package org.httprpc.kilo.util.stream;
 
 import org.httprpc.kilo.beans.BeanAdapter;
 
+import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Provides static utility methods for working with streams.
@@ -39,5 +42,45 @@ public class Streams {
      */
     public static <T> Function<Object, T> toType(Class<T> type) {
         return value -> BeanAdapter.coerce(value, type);
+    }
+
+    /**
+     * Returns a stream over an iterable.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable instance.
+     *
+     * @return
+     * A stream over the iterable.
+     */
+    public static <T> Stream<T> streamOf(Iterable<T> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
+    /**
+     * Returns a stream over a collection.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param collection
+     * The collection instance.
+     *
+     * @return
+     * A stream over the collection.
+     */
+    public static <T> Stream<T> streamOf(Collection<T> collection) {
+        if (collection == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return collection.stream();
     }
 }
