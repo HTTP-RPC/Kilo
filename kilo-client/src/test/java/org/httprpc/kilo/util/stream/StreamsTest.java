@@ -16,16 +16,33 @@ package org.httprpc.kilo.util.stream;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.StreamSupport;
+
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.stream.Streams.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StreamsTest {
     @Test
+    public void testStreamOfIterable() {
+        var iterable = (Iterable<Integer>)listOf(1, 2, 3);
+
+        var a = StreamSupport.stream(iterable.spliterator(), false).findFirst().orElseThrow(); // 1
+        var b = streamOf(iterable).findFirst().orElseThrow(); // 1
+
+        assertEquals(a, b);
+    }
+
+    @Test
+    public void testStreamOfCollection() {
+        assertEquals(1, streamOf(listOf(1, 2, 3)).findFirst().orElseThrow());
+    }
+
+    @Test
     public void testToType() {
         var strings = listOf("1", "2", "3");
 
-        var integers = strings.stream().map(toType(Integer.class)).toList(); // 1, 2, 3
+        var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), integers);
     }

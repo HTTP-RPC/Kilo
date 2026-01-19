@@ -1115,16 +1115,30 @@ var number = cast("abc", Double.class); // null
 ```
 
 ## Streams
-The `Streams` class defines a single method:
+The `Streams` class contains methods for simplifying stream handling code:
 
 ```java
+public static <T> Stream<T> streamOf(Iterable<T> iterable) { ... }
+public static <T> Stream<T> streamOf(Collection<T> collection) { ... }
+
 public static <T> Function<Object, T> toType(Class<T> type) { ... }
 ```
 
-It returns a function that coerces a value to a given type and can be used to simplify stream processing code. For example:
+The first provides a less verbose alternative to the `java.util.stream.StreamSupport.stream()` method:
+
+```java
+var iterable = (Iterable<Integer>)listOf(1, 2, 3);
+
+var a = StreamSupport.stream(iterable.spliterator(), false).findFirst().orElseThrow(); // 1
+var b = streamOf(iterable).findFirst().orElseThrow(); // 1
+```
+
+The second is provided for consistency.
+
+The last method returns a function that coerces a value to a given type:
 
 ```java
 var strings = listOf("1", "2", "3");
 
-var integers = strings.stream().map(toType(Integer.class)).toList(); // 1, 2, 3
+var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
 ```

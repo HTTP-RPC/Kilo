@@ -29,22 +29,6 @@ public class Streams {
     }
 
     /**
-     * Returns a function that coerces a value to a given type.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param type
-     * The target type.
-     *
-     * @return
-     * The coercion function.
-     */
-    public static <T> Function<Object, T> toType(Class<T> type) {
-        return value -> BeanAdapter.coerce(value, type);
-    }
-
-    /**
      * Returns a stream over an iterable.
      *
      * @param <T>
@@ -82,5 +66,21 @@ public class Streams {
         }
 
         return collection.stream();
+    }
+
+    /**
+     * Returns a function that coerces a value to a given type.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param type
+     * The target type.
+     *
+     * @return
+     * The coercion function.
+     */
+    public static <T> Function<Object, T> toType(Class<T> type) {
+        return value -> BeanAdapter.coerce(value, type);
     }
 }
