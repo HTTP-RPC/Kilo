@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.httprpc.kilo.util.stream.Streams.*;
+
 @ServicePath("test")
 public interface TestServiceProxy {
     interface FormData {
@@ -140,6 +142,6 @@ public interface TestServiceProxy {
     List<Number> getFibonacciSequence(int count) throws IOException;
 
     default int getFibonacciSum(int count) throws IOException {
-        return getFibonacciSequence(count).stream().mapToInt(Number::intValue).sum();
+        return streamOf(getFibonacciSequence(count)).mapToInt(Number::intValue).sum();
     }
 }

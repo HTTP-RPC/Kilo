@@ -257,7 +257,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(body);
 
-        var result = ((List<?>)webServiceProxy.invoke()).stream()
+        var result = streamOf((List<?>)webServiceProxy.invoke())
             .map(toType(Integer.class))
             .toList();
 

@@ -71,6 +71,7 @@ import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
+import static org.httprpc.kilo.util.stream.Streams.*;
 
 /**
  * Abstract base class for web services.
@@ -810,7 +811,7 @@ public abstract class WebService extends HttpServlet {
      * A list of active service descriptors.
      */
     public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
-        return instances.values().stream()
+        return streamOf(instances.values())
             .map(WebService::getServiceDescriptor)
             .sorted(Comparator.comparing(WebService.ServiceDescriptor::getPath))
             .toList();

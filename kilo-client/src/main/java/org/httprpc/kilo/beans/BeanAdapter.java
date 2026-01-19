@@ -56,6 +56,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.httprpc.kilo.util.Optionals.*;
+import static org.httprpc.kilo.util.stream.Streams.*;
 
 /**
  * Provides access to Java bean properties and record components via the
@@ -1177,7 +1178,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             Method mutator;
             if (mutatorList != null) {
-                mutator = mutatorList.stream()
+                mutator = streamOf(mutatorList)
                     .filter(method -> method.getParameterTypes()[0] == propertyType)
                     .findFirst().orElse(null);
             } else {
