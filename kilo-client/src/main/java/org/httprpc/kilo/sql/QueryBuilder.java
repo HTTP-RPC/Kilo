@@ -412,11 +412,7 @@ public class QueryBuilder {
      *
      * @return
      * The {@link QueryBuilder} instance.
-     *
-     * @deprecated
-     * Use {@link #join(Class, Class)} instead.
      */
-    @Deprecated
     public QueryBuilder join(Class<?> parentType) {
         return join(parentType, parentType);
     }

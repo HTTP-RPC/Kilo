@@ -335,7 +335,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSelectIHGF() {
         var queryBuilder = QueryBuilder.select(I.class, H.class, G.class)
             .join(H.class)
@@ -404,7 +403,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testInvalidJoin() {
         assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class));
         assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class));
@@ -540,7 +538,6 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testAppendLine() {
         var queryBuilder = new QueryBuilder();
 
