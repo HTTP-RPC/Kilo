@@ -95,7 +95,20 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
         }
     };
 
-    ResultSetAdapter(ResultSet resultSet, Map<String, Function<Object, Object>> transforms) {
+    /**
+     * Constructs a new result set adapter.
+     *
+     * @param resultSet
+     * The result set.
+     *
+     * @param transforms
+     * The transform map.
+     */
+    public ResultSetAdapter(ResultSet resultSet, Map<String, Function<Object, Object>> transforms) {
+        if (resultSet == null || transforms == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.resultSet = resultSet;
         this.transforms = transforms;
 
