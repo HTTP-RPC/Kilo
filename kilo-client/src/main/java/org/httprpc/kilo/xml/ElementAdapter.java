@@ -91,8 +91,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Retrieves a value associated with the source element.</p>
-     *
+     * Retrieves a value associated with the source element.
+     * <p>
      * <ul>
      * <li>If the key is equal to ".", the element's text content will be
      * returned.</li>
@@ -141,8 +141,8 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Updates a value associated with the source element.</p>
-     *
+     * Updates a value associated with the source element.
+     * <p>
      * <ul>
      * <li>If the key is equal to ".", the element's text content will be
      * replaced with the string representation of the provided value.</li>
@@ -155,11 +155,10 @@ public class ElementAdapter extends AbstractMap<String, Object> {
      * <li>Otherwise, any matching sub-elements will be replaced by a single
      * new element corresponding to the provided value.</li>
      * </ul>
-     *
-     * <p>For {@link Map} values, new elements will be recursively populated
-     * based on the map's contents. For all other types, the element's text
-     * content will be set to the string representation of the provided
-     * value.</p>
+     * <p>
+     * For {@link Map} values, new elements will be recursively populated based
+     * on the map's contents. For all other types, the element's text content
+     * will be set to the string representation of the provided value.
      */
     @Override
     public Object put(String key, Object value) {
@@ -215,15 +214,15 @@ public class ElementAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Removes a value associated with the source element.</p>
-     *
+     * Removes a value associated with the source element.
+     * <p>
      * <ul>
      * <li>If the key refers to an attribute, the attribute (if any) will be
      * removed.</li>
      * <li>Otherwise, any matching sub-elements will be removed.</li>
      * </ul>
-     *
-     * <p>Self reference and multi-element keys are not supported.</p>
+     * <p>
+     * Self reference and multi-element keys are not supported.
      */
     @Override
     public Object remove(Object key) {

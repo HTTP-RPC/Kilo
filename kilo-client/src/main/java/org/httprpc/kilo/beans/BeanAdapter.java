@@ -530,9 +530,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Adapts a value for loose typing. If the value is {@code null} or an
-     * instance of one of the following types, it is returned as is:</p>
-     *
+     * Adapts a value for loose typing. If the value is {@code null} or an
+     * instance of one of the following types, it is returned as is:
+     * <p>
      * <ul>
      * <li>{@link Number}</li>
      * <li>{@link Boolean}</li>
@@ -547,22 +547,22 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link Path}</li>
      * <li>{@link Node}</li>
      * </ul>
-     *
-     * <p>If the value is an array, it is wrapped in a {@link List} that will
-     * recursively adapt the array's elements.</p>
-     *
-     * <p>If the value is an {@link Iterable}, it is wrapped in a {@link List}
+     * <p>
+     * If the value is an array, it is wrapped in a {@link List} that will
+     * recursively adapt the array's elements.
+     * <p>
+     * If the value is an {@link Iterable}, it is wrapped in a {@link List}
      * that will recursively adapt the iterable's elements. If the iterable
      * implements {@link Collection}, the adapter will support the
      * {@link Collection#size()} method. If the iterable implements
      * {@link List}, the adapter will support the {@link List#get(int)}
-     * method.</p>
-     *
-     * <p>If the value is a {@link Map}, it is wrapped in a {@link Map} that
-     * will recursively adapt the map's values.</p>
-     *
-     * <p>If none of the previous conditions apply, the value is assumed to be
-     * a bean and is wrapped in a {@link BeanAdapter}.</p>
+     * method.
+     * <p>
+     * If the value is a {@link Map}, it is wrapped in a {@link Map} that will
+     * recursively adapt the map's values.
+     * <p>
+     * If none of the previous conditions apply, the value is assumed to be a
+     * bean and is wrapped in a {@link BeanAdapter}.
      *
      * @param value
      * The value to adapt.
@@ -597,11 +597,11 @@ public class BeanAdapter extends AbstractMap<String, Object> {
     }
 
     /**
-     * <p>Coerces a value to a given type. If the value is already an instance
-     * of the target type, it is returned as is. Otherwise, if the type is one
-     * of the following, the return value is obtained via an appropriate
-     * conversion method:</p>
-     *
+     * Coerces a value to a given type. If the value is already an instance of
+     * the target type, it is returned as is. Otherwise, if the type is one of
+     * the following, the return value is obtained via an appropriate
+     * conversion method:
+     * <p>
      * <ul>
      * <li>{@link Byte} or {@code byte}</li>
      * <li>{@link Short} or {@code short}</li>
@@ -623,21 +623,21 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>{@link URI}</li>
      * <li>{@link Path}</li>
      * </ul>
-     *
-     * <p>If the target type is an array, the provided value must be an array
-     * or {@link Collection}. The return value is an array of the same length
-     * as the provided value whose elements have been coerced to the array's
-     * component type.</p>
-     *
-     * <p>If the target type is an {@link Enum}, the resulting value is the
-     * first constant whose string representation matches the value's string
-     * representation.</p>
-     *
-     * <p>If none of the previous conditions apply, the provided value is
-     * assumed to be a map. If the if the target type is a {@link Record}, the
+     * <p>
+     * If the target type is an array, the provided value must be an array or
+     * {@link Collection}. The return value is an array of the same length as
+     * the provided value whose elements have been coerced to the array's
+     * component type.
+     * <p>
+     * If the target type is an {@link Enum}, the resulting value is the first
+     * constant whose string representation matches the value's string
+     * representation.
+     * <p>
+     * If none of the previous conditions apply, the provided value is assumed
+     * to be a map. If the if the target type is a {@link Record}, the
      * resulting value is instantiated via the type's canonical constructor
-     * using the entries in the map. Otherwise:</p>
-     *
+     * using the entries in the map. Otherwise:
+     * <p>
      * <ul>
      * <li>If the type is an interface, the return value is a proxy that maps
      * accessor and mutator methods to entries in the map. The proxy implements
@@ -646,10 +646,10 @@ public class BeanAdapter extends AbstractMap<String, Object> {
      * <li>If the type is a concrete class, an instance of the type is
      * dynamically created and populated using the entries in the map.</li>
      * </ul>
-     *
-     * <p>For reference types, {@code null} values are returned as is. For
+     * <p>
+     * For reference types, {@code null} values are returned as is. For
      * numeric, boolean, or character primitives, they are converted to 0,
-     * {@code false}, or the null character, respectively.</p>
+     * {@code false}, or the null character, respectively.
      *
      * @param <T>
      * The target type.

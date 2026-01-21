@@ -211,14 +211,14 @@ public class QueryBuilder {
     }
 
     /**
-     * <p>Creates a "select" query.</p>
-     *
-     * <p>{@link Enum} properties will be decoded from either a string or
-     * {@link Numeric#value()}.</p>
-     *
-     * <p>Properties annotated with {@link JSON} will be automatically
+     * Creates a "select" query.
+     * <p>
+     * {@link Enum} properties will be decoded from either a string or
+     * {@link Numeric#value()}.
+     * <p>
+     * Properties annotated with {@link JSON} will be automatically
      * deserialized from a JSON string. Properties of type {@link Document}
-     * will be automatically deserialized from an XML string.</p>
+     * will be automatically deserialized from an XML string.
      *
      * @param types
      * The types representing the tables to select from.
@@ -299,6 +299,10 @@ public class QueryBuilder {
 
     /**
      * Creates a "select all" query.
+     *
+     * This method is typically used with {@link #filterByExists(QueryBuilder)}
+     * or {@link #filterByNotExists(QueryBuilder)}. Aliases and transforms are
+     * not applied.
      *
      * @param type
      * The type representing the table to select from.
@@ -888,6 +892,8 @@ public class QueryBuilder {
 
     /**
      * Filters by a foreign key defined by the first selected type.
+     * <p>
+     * This method is typically used with correlated sub-queries.
      *
      * @param parentType
      * The type that defines the primary key.
@@ -901,6 +907,8 @@ public class QueryBuilder {
 
     /**
      * Filters by a foreign key defined by a joined type.
+     * <p>
+     * This method is typically used with correlated sub-queries.
      *
      * @param type
      * The type that defines the foreign key.
@@ -1380,21 +1388,21 @@ public class QueryBuilder {
     }
 
     /**
-     * <p>Executes a query.</p>
-     *
-     * <p>{@link Enum} values will be encoded to either a string or
+     * Executes a query.
+     * <p>
+     * {@link Enum} values will be encoded to either a string or
      * {@link Numeric#value()}.</p>
-     *
-     * <p>Temporal values are converted as follows:</p>
-     *
+     * <p>
+     * Temporal values are converted as follows:
+     * <p>
      * <ul>
      * <li>{@link Date} - long value representing epoch time in milliseconds</li>
      * <li>{@link LocalDate} - {@link java.sql.Date}</li>
      * <li>{@link LocalTime} - {@link java.sql.Time}</li>
      * <li>{@link Instant} - {@link java.sql.Timestamp}</li>
      * </ul>
-     *
-     * <p>All other arguments are applied as is.</p>
+     * <p>
+     * All other arguments are applied as is.
      *
      * @param statement
      * The statement that will be used to execute the query.
@@ -1419,11 +1427,11 @@ public class QueryBuilder {
     }
 
     /**
-     * <p>Executes a query.</p>
-     *
-     * <p>Arguments are applied as described for
+     * Executes a query.
+     * <p>
+     * Arguments are applied as described for
      * {@link #executeQuery(PreparedStatement, Map)}, or transformed as
-     * specified by {@link #insert(Class)} and {@link #update(Class)}.</p>
+     * specified by {@link #insert(Class)} and {@link #update(Class)}.
      *
      * @param statement
      * The statement that will be used to execute the query.
