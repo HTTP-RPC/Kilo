@@ -404,13 +404,12 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testInvalidJoin() {
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class));
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(String.class, A.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(C.class, String.class));
 
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(Runnable.class));
-        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(Runnable.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(Runnable.class, A.class));
+        assertThrows(UnsupportedOperationException.class, () -> QueryBuilder.select(A.class).join(C.class, Runnable.class));
     }
 
     @Test
@@ -550,7 +549,7 @@ public class QueryBuilderTest {
 
         assertEquals(listOf("x", "y"), getParameters(queryBuilder));
 
-        assertThrows(NoSuchElementException.class, () -> queryBuilder.join(A.class, A.class));
+        assertThrows(NoSuchElementException.class, () -> queryBuilder.join(C.class, A.class));
     }
 
     @Test
