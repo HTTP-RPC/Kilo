@@ -146,8 +146,8 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
      * A stream over the results.
      *
      * @deprecated
-     * Use {@link org.httprpc.kilo.util.stream.Streams#streamOf(Iterable)}
-     * instead.
+     * This method will be removed in a future release. Use
+     * {@link org.httprpc.kilo.util.stream.Streams#streamOf(Iterable)} instead.
      */
     @Deprecated
     public Stream<Map<String, Object>> stream() {

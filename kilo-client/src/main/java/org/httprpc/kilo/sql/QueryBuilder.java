@@ -298,7 +298,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Creates a "select" query.
+     * Creates a "select all" query.
      *
      * @param type
      * The type representing the table to select from.
@@ -412,7 +412,12 @@ public class QueryBuilder {
      *
      * @return
      * The {@link QueryBuilder} instance.
+     *
+     * @deprecated
+     * This method will be removed in a future release. Use
+     * {@link #join(Class, Class)} instead.
      */
+    @Deprecated
     public QueryBuilder join(Class<?> parentType) {
         return join(parentType, parentType);
     }
