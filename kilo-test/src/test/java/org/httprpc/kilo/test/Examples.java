@@ -56,6 +56,7 @@ public class Examples {
         execute("Required Property 2", Examples::requiredProperty2);
         execute("Custom Property Keys", Examples::customPropertyKeys);
         execute("Element Adapter", Examples::elementAdapter);
+        execute("Collections", Examples::collections);
     }
 
     private static void execute(String label, Example example) {
@@ -307,5 +308,23 @@ public class Examples {
             System.out.println(credit.get("amount"));
             System.out.println(credit.get("date"));
         }
+    }
+
+    public static void collections() {
+        var list = listOf(1, 2, 3);
+
+        System.out.println(list.getFirst()); // 1
+
+        var map = mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        System.out.println(map.get("a")); // 1
+
+        var set = setOf("a", "b", "c");
+
+        System.out.println(set.contains("a")); // true
     }
 }

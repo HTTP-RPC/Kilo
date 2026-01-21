@@ -1048,6 +1048,26 @@ This method can be used to declare map entries:
 public static <K, V> Map.Entry<K, V> entry(K key, V value) { ... }
 ```
 
+For example:
+
+```java
+var list = listOf(1, 2, 3);
+
+System.out.println(list.getFirst()); // 1
+
+var map = mapOf(
+    entry("a", 1),
+    entry("b", 2),
+    entry("c", 3)
+);
+
+System.out.println(map.get("a")); // 1
+
+var set = setOf("a", "b", "c");
+
+System.out.println(set.contains("a")); // true
+```
+
 `Collections` also includes support for declaring empty lists, maps, and sets:
 
 ```java
