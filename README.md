@@ -902,15 +902,10 @@ The `ElementAdapter` class provides access to the contents of an XML DOM `Elemen
 This code could be used to load the document and adapt the root element: 
 
 ```java
-var documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-documentBuilderFactory.setExpandEntityReferences(false);
-documentBuilderFactory.setIgnoringComments(true);
-
-var documentBuilder = documentBuilderFactory.newDocumentBuilder();
+var documentBuilder = ElementAdapter.newDocumentBuilder();
 
 Document document;
-try (var inputStream = getClass().getResourceAsStream("account.xml")) {
+try (var inputStream = Examples.class.getResourceAsStream("account.xml")) {
     document = documentBuilder.parse(inputStream);
 }
 
@@ -1031,7 +1026,7 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <E> Set<E> setOf(E... elements) { ... }
 ```
 
-They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable and sorted variants are provided as well:
+They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. Immutable and sorted variants are provided as well:
 
 ```java
 public static <E> List<E> immutableListOf(E... elements) { ... }
