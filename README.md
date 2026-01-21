@@ -800,6 +800,12 @@ var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
 templateEncoder.write(results, response.getOutputStream());
 ```
 
+Temporal values are automatically converted to and from their `java.time` equivalents:
+
+* `java.sql.Date`/`LocalDate`
+* `java.sql.Time`/`LocalTime`
+* `java.sql.Timestamp`/`Instant`
+
 ### Schema Annotations
 `QueryBuilder` also offers a simplified approach to query construction using "schema annotations". For example, given these type definitions:
 
