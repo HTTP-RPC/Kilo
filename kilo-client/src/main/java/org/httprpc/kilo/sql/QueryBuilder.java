@@ -299,7 +299,7 @@ public class QueryBuilder {
 
     /**
      * Creates a "select all" query.
-     *
+     * <p>
      * This method is typically used with {@link #filterByExists(QueryBuilder)}
      * or {@link #filterByNotExists(QueryBuilder)}. Aliases and transforms are
      * not applied.
