@@ -55,7 +55,7 @@ public class BulkUploadTest {
 
         var t0 = System.currentTimeMillis();
 
-        logTiming(baseURI, "upload", 25000, t0);
+        logTiming(baseURI, "upload", 50000, t0);
 
         var t1 = System.currentTimeMillis();
 
