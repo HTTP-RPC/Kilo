@@ -800,7 +800,7 @@ var templateEncoder = new TemplateEncoder(getClass(), "pets.xml");
 templateEncoder.write(results, response.getOutputStream());
 ```
 
-Temporal values are automatically converted to and from their `java.time` equivalents:
+Temporal values (such as "birth" and "death" above) are automatically converted to and from their `java.time` equivalents:
 
 * `java.sql.Date`/`LocalDate`
 * `java.sql.Time`/`LocalTime`
@@ -864,10 +864,10 @@ var queryBuilder = QueryBuilder.select(Actor.class)
     .ordered(true);
 ```
 
-The resulting query is functionally equivalent to the following SQL:
+The resulting query is functionally equivalent to the following:
 
 ```sql
-select actor.* from actor 
+select actor.actor_id as id, actor.first_name as firstName, actor.last_name as lastName from actor
 join film_actor on actor.actor_id = film_actor.actor_id 
 where film_actor.film_id = :filmID
 order by last_name asc, first_name asc
