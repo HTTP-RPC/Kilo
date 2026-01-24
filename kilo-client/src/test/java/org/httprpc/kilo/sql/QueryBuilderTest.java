@@ -335,11 +335,10 @@ public class QueryBuilderTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSelectIHGF() {
         var queryBuilder = QueryBuilder.select(I.class, H.class, G.class)
-            .join(H.class)
-            .join(G.class)
+            .join(H.class, H.class)
+            .join(G.class, G.class)
             .filterByForeignKey(G.class, F.class, "f")
             .ordered(true);
 

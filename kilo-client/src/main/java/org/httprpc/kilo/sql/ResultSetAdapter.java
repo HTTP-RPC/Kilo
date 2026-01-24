@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Provides access to the contents of a JDBC result set via the
@@ -147,26 +145,5 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
     @Override
     public void close() throws SQLException {
         resultSet.close();
-    }
-
-    /**
-     * Returns a stream over the results.
-     *
-     * @return
-     * A stream over the results.
-     *
-     * @deprecated
-     * This method will be removed in a future release. Use
-     * {@link org.httprpc.kilo.util.stream.Streams#streamOf(Iterable)} instead.
-     */
-    @Deprecated
-    public Stream<Map<String, Object>> stream() {
-        return StreamSupport.stream(spliterator(), false).onClose(() -> {
-            try {
-                close();
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-        });
     }
 }

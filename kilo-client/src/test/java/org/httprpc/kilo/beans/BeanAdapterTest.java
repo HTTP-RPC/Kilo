@@ -29,10 +29,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -279,149 +277,21 @@ public class BeanAdapterTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testListCoercion() {
-        assertEquals(listOf(
-            1,
-            2,
-            3
-        ), BeanAdapter.coerceList(listOf(
-            "1",
-            "2",
-            "3"
-        ), Integer.class));
-
-        assertNull(BeanAdapter.coerceList(null, Object.class));
-
         assertInstanceOf(List.class, BeanAdapter.coerce(listOf(), List.class));
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, List.class));
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testMapCoercion() {
-        assertEquals(mapOf(
-            entry("a", 1.0),
-            entry("b", 2.0),
-            entry("c", 3.0)
-        ), BeanAdapter.coerceMap(mapOf(
-            entry("a", "1.0"),
-            entry("b", "2.0"),
-            entry("c", "3.0")
-        ), String.class, Double.class));
-
-        assertEquals(mapOf(
-            entry(1, 1.0),
-            entry(2, 2.0),
-            entry(3, 3.0)
-        ), BeanAdapter.coerceMap(mapOf(
-            entry("1", "1.0"),
-            entry("2", "2.0"),
-            entry("3", "3.0")
-        ), Integer.class, Double.class));
-
-        assertNull(BeanAdapter.coerceMap(null, Object.class, Object.class));
-
         assertInstanceOf(Map.class, BeanAdapter.coerce(mapOf(), Map.class));
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Map.class));
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSetCoercion() {
-        assertEquals(setOf(
-            1,
-            2,
-            3
-        ), BeanAdapter.coerceSet(setOf(
-            "1",
-            "2",
-            "3"
-        ), Integer.class));
-
-        assertNull(BeanAdapter.coerceSet(null, Object.class));
-
         assertInstanceOf(Set.class, BeanAdapter.coerce(setOf(), Set.class));
         assertThrows(IllegalArgumentException.class, () -> BeanAdapter.coerce(123, Set.class));
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testMutableListCoercion() {
-        var strings = new ArrayList<String>();
-
-        strings.add("1");
-        strings.add("2");
-        strings.add("3");
-        strings.add(null);
-
-        var integers = BeanAdapter.coerceList(strings, Integer.class);
-
-        assertEquals(listOf(1, 2, 3, null), integers);
-
-        integers.set(1, 4);
-
-        assertEquals(listOf(1, 4, 3, null), integers);
-
-        integers.remove(1);
-
-        assertEquals(listOf(1, 3, null), integers);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testMutableMapCoercion() {
-        var strings = new HashMap<Integer, String>();
-
-        strings.put(1, "1.0");
-        strings.put(2, "2.0");
-        strings.put(3, "3.0");
-        strings.put(4, null);
-
-        var doubles = BeanAdapter.coerceMap(strings, Integer.class, Double.class);
-
-        assertEquals(mapOf(
-            entry(1, 1.0),
-            entry(2, 2.0),
-            entry(3, 3.0),
-            entry(4, null)
-        ), doubles);
-
-        doubles.put(2, 4.0);
-
-        assertEquals(mapOf(
-            entry(1, 1.0),
-            entry(2, 4.0),
-            entry(3, 3.0),
-            entry(4, null)
-        ), doubles);
-
-        doubles.remove(2);
-
-        assertEquals(mapOf(
-            entry(1, 1.0),
-            entry(3, 3.0),
-            entry(4, null)
-        ), doubles);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testMutableSetCoercion() {
-        var strings = new HashSet<>();
-
-        strings.add("1");
-        strings.add("2");
-        strings.add("3");
-        strings.add(null);
-
-        var integers = BeanAdapter.coerceSet(strings, Integer.class);
-
-        assertEquals(setOf(1, 2, 3, null), integers);
-
-        integers.remove(2);
-
-        assertEquals(setOf(1, 3, null), integers);
     }
 
     @Test

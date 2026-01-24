@@ -410,26 +410,6 @@ public class QueryBuilder {
      * Appends a "join" clause linking the most recently joined type to another
      * type.
      *
-     * @param parentType
-     * The type representing both the table to join and the table that defines
-     * the primary key.
-     *
-     * @return
-     * The {@link QueryBuilder} instance.
-     *
-     * @deprecated
-     * This method will be removed in a future release. Use
-     * {@link #join(Class, Class)} instead.
-     */
-    @Deprecated
-    public QueryBuilder join(Class<?> parentType) {
-        return join(parentType, parentType);
-    }
-
-    /**
-     * Appends a "join" clause linking the most recently joined type to another
-     * type.
-     *
      * @param type
      * The type representing the table to join.
      *

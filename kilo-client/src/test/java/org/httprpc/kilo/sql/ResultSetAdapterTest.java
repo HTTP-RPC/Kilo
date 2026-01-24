@@ -67,7 +67,6 @@ public class ResultSetAdapterTest {
         return queryBuilder.getGeneratedKey(0, Integer.class);
     }
 
-    @SuppressWarnings("deprecation")
     private TemporalAccessorTest selectTemporalAccessorTest(int id) throws SQLException {
         var queryBuilder = QueryBuilder.select(TemporalAccessorTest.class).filterByPrimaryKey("id");
 
@@ -76,7 +75,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(toType(TemporalAccessorTest.class)).orElseThrow();
+            return streamOf(results).findFirst().map(toType(TemporalAccessorTest.class)).orElseThrow();
         }
     }
 
@@ -146,7 +145,6 @@ public class ResultSetAdapterTest {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private JSONTest selectJSONTest(int id) throws SQLException {
         var queryBuilder = QueryBuilder.select(JSONTest.class).filterByPrimaryKey("id");
 
@@ -154,7 +152,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(toType(JSONTest.class)).orElseThrow();
+            return streamOf(results).findFirst().map(toType(JSONTest.class)).orElseThrow();
         }
     }
 
@@ -206,7 +204,6 @@ public class ResultSetAdapterTest {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private XMLTest selectXMLTest(int id) throws SQLException {
         var queryBuilder = QueryBuilder.select(XMLTest.class).filterByPrimaryKey("id");
 
@@ -214,7 +211,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return results.stream().findFirst().map(toType(XMLTest.class)).orElseThrow();
+            return streamOf(results).findFirst().map(toType(XMLTest.class)).orElseThrow();
         }
     }
 
