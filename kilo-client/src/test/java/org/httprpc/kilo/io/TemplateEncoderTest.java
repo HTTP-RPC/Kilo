@@ -408,19 +408,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testResources() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "resource1.txt");
-
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".resource"));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(), writer);
-
-        assertEquals("A1B2c", writer.toString());
-    }
-
-    @Test
     public void testInheritance() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "inheritance.txt");
 
@@ -445,85 +432,16 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testComment() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "comment.txt");
+    public void testResources() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "resource1.txt");
+
+        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".resource"));
 
         var writer = new StringWriter();
 
         templateEncoder.write(mapOf(), writer);
 
-        assertEquals("><", writer.toString());
-    }
-
-    @Test
-    public void testFloatFormatModifier() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "format1.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(4.5, writer);
-
-        assertEquals("4.50", writer.toString());
-    }
-
-    @Test
-    public void testDateFormatModifiers() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "format2.txt");
-
-        var date = new Date();
-        var instant = date.toInstant();
-        var localDate = LocalDate.now();
-        var localTime = LocalTime.now();
-        var localDateTime = LocalDateTime.now();
-
-        var zoneId = ZoneId.systemDefault();
-
-        var zonedLocalDate = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
-        var zonedLocalTime = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
-        var zonedLocalDateTime = ZonedDateTime.of(localDateTime, zoneId);
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(
-            entry("timestamp", date.getTime()),
-            entry("date", date),
-            entry("instant", instant),
-            entry("localDate", localDate),
-            entry("localTime", localTime),
-            entry("localDateTime", localDateTime)
-        ), writer);
-
-        var now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-
-        var lineSeparator = System.lineSeparator();
-
-        assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
-            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
-            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
-            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDateTime.of(localDate, LocalTime.MIDNIGHT)) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(LocalDateTime.of(LocalDate.now(), localTime)) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(zonedLocalDate) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).format(zonedLocalTime) + "," + lineSeparator
-            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(zonedLocalDateTime), writer.toString());
-    }
-
-    @Test
-    public void testDefaultContentType() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "default-content-type.txt");
-
-        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(
-            entry("b", "a<b>c&d\"e")
-        ), writer);
-
-        assertEquals("<?xml version=\"1.0\"?><a b=\"a&lt;b&gt;c&amp;d&quot;e\">f&lt;g&gt;h&amp;i&quot;j</a>", writer.toString());
+        assertEquals("A1B2c", writer.toString());
     }
 
     @Test
@@ -585,6 +503,17 @@ public class TemplateEncoderTest {
     }
 
     @Test
+    public void testComment() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "comment.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(), writer);
+
+        assertEquals("><", writer.toString());
+    }
+
+    @Test
     public void testEmbeddedXML() throws IOException {
         var xml = "<abc>123</abc>";
 
@@ -635,7 +564,63 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testUppercaseModifier() throws IOException {
+    public void testFloatFormatModifier() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "format1.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(4.5, writer);
+
+        assertEquals("4.50", writer.toString());
+    }
+
+    @Test
+    public void testDateFormatModifiers() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "format2.txt");
+
+        var date = new Date();
+        var instant = date.toInstant();
+        var localDate = LocalDate.now();
+        var localTime = LocalTime.now();
+        var localDateTime = LocalDateTime.now();
+
+        var zoneId = ZoneId.systemDefault();
+
+        var zonedLocalDate = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MIDNIGHT), zoneId);
+        var zonedLocalTime = ZonedDateTime.of(LocalDateTime.of(LocalDate.now(), localTime), zoneId);
+        var zonedLocalDateTime = ZonedDateTime.of(localDateTime, zoneId);
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(
+            entry("timestamp", date.getTime()),
+            entry("date", date),
+            entry("instant", instant),
+            entry("localDate", localDate),
+            entry("localTime", localTime),
+            entry("localDateTime", localDateTime)
+        ), writer);
+
+        var now = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+
+        var lineSeparator = System.lineSeparator();
+
+        assertEquals(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(now) + "," + lineSeparator
+            + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDateTime.of(localDate, LocalTime.MIDNIGHT)) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(LocalDateTime.of(LocalDate.now(), localTime)) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(localDateTime) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(zonedLocalDate) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).format(zonedLocalTime) + "," + lineSeparator
+            + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).format(zonedLocalDateTime), writer.toString());
+    }
+
+    @Test
+    public void testCustomModifier() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "upper.txt");
 
         templateEncoder.bind("upper", (value, argument, locale, timeZone) -> value.toString().toUpperCase(locale));
@@ -656,5 +641,20 @@ public class TemplateEncoderTest {
         );
 
         assertThrows(IOException.class, () -> templateEncoder.write(root, new StringWriter()));
+    }
+
+    @Test
+    public void testDefaultContentType() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "default-content-type.txt");
+
+        templateEncoder.setResourceBundle(ResourceBundle.getBundle(getClass().getPackageName() + ".test"));
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(
+            entry("b", "a<b>c&d\"e")
+        ), writer);
+
+        assertEquals("<?xml version=\"1.0\"?><a b=\"a&lt;b&gt;c&amp;d&quot;e\">f&lt;g&gt;h&amp;i&quot;j</a>", writer.toString());
     }
 }
