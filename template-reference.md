@@ -58,7 +58,7 @@ Modifiers are used to transform a variable's representation before it is written
 {{variable:modifier1:modifier2:modifier3=argument:...}}
 ```
 
-All templates support the `format` modifier, which can be used to apply a [format string](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html#syntax) or one of the following named formats:
+All templates support the `format` modifier, which can be used to apply a [format string](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html#syntax) or one of the following standard formats:
 
   * `currency`
   * `percent`
