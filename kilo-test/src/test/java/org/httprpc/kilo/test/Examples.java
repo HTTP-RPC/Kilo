@@ -27,10 +27,13 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 
@@ -57,6 +60,13 @@ public class Examples {
         execute("Custom Property Keys", Examples::customPropertyKeys);
         execute("Element Adapter", Examples::elementAdapter);
         execute("Collections", Examples::collections);
+        execute("Variables", Examples::variables);
+        execute("Repeating Sections", Examples::repeatingSections);
+        execute("Conditional Sections", Examples::conditionalSections);
+        execute("Inverted Sections", Examples::invertedSections);
+        execute("Resources", Examples::resources);
+        execute("Includes", Examples::includes);
+        execute("Comments", Examples::comments);
     }
 
     private static void execute(String label, Example example) {
@@ -326,5 +336,54 @@ public class Examples {
         var set = setOf("a", "b", "c");
 
         System.out.println(set.contains("a")); // true
+    }
+
+    public static void variables() throws IOException {
+        templateExample("variables");
+    }
+
+    public static void repeatingSections() throws IOException {
+        templateExample("repeating-sections");
+    }
+
+    public static void conditionalSections() throws IOException {
+        templateExample("conditional-sections");
+    }
+
+    public static void invertedSections() throws IOException {
+        templateExample("inverted-sections");
+    }
+
+    public static void resources() throws IOException {
+        templateExample("resources");
+    }
+
+    public static void includes() throws IOException {
+        templateExample("includes");
+    }
+
+    public static void comments() throws IOException {
+        templateExample("comments");
+    }
+
+    private static void templateExample(String name) throws IOException {
+        var jsonDecoder = new JSONDecoder();
+
+        Object dictionary;
+        try (var inputStream = Examples.class.getResourceAsStream(String.format("%s.json", name))) {
+            dictionary = jsonDecoder.read(new InputStreamReader(inputStream));
+        }
+
+        var templateEncoder = new TemplateEncoder(Examples.class, String.format("%s.html", name));
+
+        try {
+            var resourceBundle = ResourceBundle.getBundle(String.format("%s.%s", Examples.class.getPackageName(), name));
+
+            templateEncoder.setResourceBundle(resourceBundle);
+        } catch (MissingResourceException exception) {
+            // No-op
+        }
+
+        templateEncoder.write(dictionary, System.out);
     }
 }
