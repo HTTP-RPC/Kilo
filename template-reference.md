@@ -113,7 +113,7 @@ Repeating section markers define a section of content that is repeated once for 
 {{/b}}
 ```
 
-Values are inherited from the parent context:
+Named values are inherited from the parent context:
 
 ```html
 <!-- A1, A2, A3 -->
