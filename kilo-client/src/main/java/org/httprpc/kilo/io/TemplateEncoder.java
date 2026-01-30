@@ -239,7 +239,6 @@ public class TemplateEncoder extends Encoder<Object> {
 
     private static final int EOF = -1;
 
-    private static final String KEY_REFERENCE = "~";
     private static final String SELF_REFERENCE = ".";
 
     /**
