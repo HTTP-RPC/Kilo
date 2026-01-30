@@ -452,8 +452,8 @@ public class TemplateEncoder extends Encoder<Object> {
 
                     var marker = markerBuilder.toString();
 
-                    Deque<String> modifierNames = new LinkedList<>();
-                    Map<String, String> modifierArguments = new HashMap<>();
+                    var modifierNames = new LinkedList<String>();
+                    var modifierArguments = new HashMap<String, String>();
 
                     if (c == ':') {
                         var modifierNameBuilder = new StringBuilder();
