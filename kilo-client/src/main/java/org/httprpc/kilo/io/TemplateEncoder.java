@@ -34,17 +34,14 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.TimeZone;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -213,71 +210,13 @@ public class TemplateEncoder extends Encoder<Object> {
     // Marker type enumeration
     private enum MarkerType {
         VARIABLE,
-        CONDITIONAL_SECTION_START,
         REPEATING_SECTION_START,
+        CONDITIONAL_SECTION_START,
         INVERTED_SECTION_START,
         SECTION_END,
         RESOURCE,
         INCLUDE,
         COMMENT
-    }
-
-    // Map iterator
-    private static class MapIterator implements Iterator<Map<Object, Object>> {
-        Iterator<? extends Map.Entry<?, ?>> iterator;
-
-        MapIterator(Map<?, ?> map) {
-            iterator = map.entrySet().iterator();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public Map<Object, Object> next() {
-            return new AbstractMap<>() {
-                Entry<?, ?> entry = iterator.next();
-
-                @Override
-                public Object get(Object key) {
-                    if (key.equals(KEY_REFERENCE)) {
-                        return entry.getKey();
-                    } else {
-                        var value = entry.getValue();
-
-                        if (value instanceof Map<?, ?> map) {
-                            return map.get(key);
-                        } else if (key.equals(SELF_REFERENCE)) {
-                            return value;
-                        } else {
-                            return null;
-                        }
-                    }
-                }
-
-                @Override
-                public boolean containsKey(Object key) {
-                    if (key.equals(KEY_REFERENCE)) {
-                        return true;
-                    } else {
-                        var value = entry.getValue();
-
-                        if (value instanceof Map<?, ?> map) {
-                            return map.containsKey(key);
-                        } else {
-                            return key.equals(SELF_REFERENCE);
-                        }
-                    }
-                }
-
-                @Override
-                public Set<Entry<Object, Object>> entrySet() {
-                    throw new UnsupportedOperationException();
-                }
-            };
-        }
     }
 
     private Class<?> type;
@@ -478,10 +417,10 @@ public class TemplateEncoder extends Encoder<Object> {
                     c = reader.read();
 
                     MarkerType markerType;
-                    if (c == '?') {
-                        markerType = MarkerType.CONDITIONAL_SECTION_START;
-                    } else if (c == '#') {
+                    if (c == '#') {
                         markerType = MarkerType.REPEATING_SECTION_START;
+                    } else if (c == '?') {
+                        markerType = MarkerType.CONDITIONAL_SECTION_START;
                     } else if (c == '^') {
                         markerType = MarkerType.INVERTED_SECTION_START;
                     } else if (c == '/') {
@@ -604,35 +543,7 @@ public class TemplateEncoder extends Encoder<Object> {
 
                             writer.append(value.toString());
                         }
-                        case CONDITIONAL_SECTION_START -> {
-                            sectionNames.push(marker);
-
-                            var value = getMarkerValue(marker);
-
-                            if (exists(value)) {
-                                encode(value, writer, reader);
-                            } else {
-                                encode(null, new NullWriter(), reader);
-                            }
-
-                            sectionNames.pop();
-
-                        }
                         case REPEATING_SECTION_START -> {
-                            String separator = null;
-
-                            var n = marker.length();
-
-                            if (marker.charAt(n - 1) == ']') {
-                                var i = marker.lastIndexOf('[');
-
-                                if (i != -1) {
-                                    separator = marker.substring(i + 1, n - 1);
-
-                                    marker = marker.substring(0, i);
-                                }
-                            }
-
                             sectionNames.push(marker);
 
                             var value = getMarkerValue(marker);
@@ -640,13 +551,10 @@ public class TemplateEncoder extends Encoder<Object> {
                             var iterator = switch (value) {
                                 case null -> java.util.Collections.emptyIterator();
                                 case Iterable<?> iterable -> iterable.iterator();
-                                case Map<?, ?> map -> new MapIterator(map);
                                 default -> throw new IOException("Invalid section element.");
                             };
 
                             if (iterator.hasNext()) {
-                                var i = 0;
-
                                 while (iterator.hasNext()) {
                                     var element = iterator.next();
 
@@ -654,18 +562,26 @@ public class TemplateEncoder extends Encoder<Object> {
                                         reader.mark(0);
                                     }
 
-                                    if (i > 0 && separator != null) {
-                                        writer.append(separator);
-                                    }
-
                                     encode(element, writer, reader);
 
                                     if (iterator.hasNext()) {
                                         reader.reset();
                                     }
-
-                                    i++;
                                 }
+                            } else {
+                                encode(null, new NullWriter(), reader);
+                            }
+
+                            sectionNames.pop();
+
+                        }
+                        case CONDITIONAL_SECTION_START -> {
+                            sectionNames.push(marker);
+
+                            var value = getMarkerValue(marker);
+
+                            if (exists(value)) {
+                                encode(value, writer, reader);
                             } else {
                                 encode(null, new NullWriter(), reader);
                             }

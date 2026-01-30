@@ -206,6 +206,6 @@ public class ElementAdapterTest {
 
         templateEncoder.write(new ElementAdapter(document.getDocumentElement()), writer);
 
-        assertEquals("1 abc, 2 déf, 3 ghi", writer.toString());
+        assertEquals("1 abc\n2 déf\n3 ghi\n", writer.toString());
     }
 }

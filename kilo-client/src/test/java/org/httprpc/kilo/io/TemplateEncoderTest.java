@@ -90,105 +90,6 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testConditionalSection() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionList() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", listOf(1))), writer);
-
-        assertEquals("found", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionEmptyList() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", listOf())), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionString() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", "abc")), writer);
-
-        assertEquals("found", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionEmptyString() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", "")), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionNonZero() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", 123)), writer);
-
-        assertEquals("found", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionZero() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", 0)), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionTrue() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", true)), writer);
-
-        assertEquals("found", writer.toString());
-    }
-
-    @Test
-    public void testConditionalSectionFalse() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
-
-        var writer = new StringWriter();
-
-        templateEncoder.write(mapOf(entry("a", false)), writer);
-
-        assertEquals("", writer.toString());
-    }
-
-    @Test
     public void testEmptyRepeatingSection() throws IOException {
         var templateEncoder = new TemplateEncoder(getClass(), "repeating1.txt");
 
@@ -309,54 +210,102 @@ public class TemplateEncoderTest {
     }
 
     @Test
-    public void testRepeatingSectionSeparator() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "repeating5.txt");
-
-        var value = listOf("a", "b", "c");
+    public void testConditionalSection() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
-        templateEncoder.write(value, writer);
+        templateEncoder.write(mapOf(), writer);
 
-        assertEquals("a,b,c", writer.toString());
+        assertEquals("", writer.toString());
     }
 
     @Test
-    public void testMapRepeatingSection1() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "repeating6.txt");
-
-        var value = mapOf(
-            entry("entries", mapOf(
-                entry("one", mapOf(entry("value", 1))),
-                entry("two", mapOf(entry("value", 2))),
-                entry("three", mapOf(entry("value", 3)))
-            ))
-        );
+    public void testConditionalSectionList() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
-        templateEncoder.write(value, writer);
+        templateEncoder.write(mapOf(entry("a", listOf(1))), writer);
 
-        assertEquals("one:1,two:2,three:3", writer.toString());
+        assertEquals("found", writer.toString());
     }
 
     @Test
-    public void testMapRepeatingSection2() throws IOException {
-        var templateEncoder = new TemplateEncoder(getClass(), "repeating7.txt");
-
-        var value = mapOf(
-            entry("entries", mapOf(
-                entry("a", "A"),
-                entry("b", "B"),
-                entry("c", "C")
-            ))
-        );
+    public void testConditionalSectionEmptyList() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
 
         var writer = new StringWriter();
 
-        templateEncoder.write(value, writer);
+        templateEncoder.write(mapOf(entry("a", listOf())), writer);
 
-        assertEquals("a:A,b:B,c:C", writer.toString());
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionString() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", "abc")), writer);
+
+        assertEquals("found", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionEmptyString() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", "")), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionNonZero() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", 123)), writer);
+
+        assertEquals("found", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionZero() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", 0)), writer);
+
+        assertEquals("", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionTrue() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", true)), writer);
+
+        assertEquals("found", writer.toString());
+    }
+
+    @Test
+    public void testConditionalSectionFalse() throws IOException {
+        var templateEncoder = new TemplateEncoder(getClass(), "conditional.txt");
+
+        var writer = new StringWriter();
+
+        templateEncoder.write(mapOf(entry("a", false)), writer);
+
+        assertEquals("", writer.toString());
     }
 
     @Test
@@ -483,11 +432,6 @@ public class TemplateEncoderTest {
             entry("d", mapOf(
                 entry("a", "A"),
                 entry("list", listOf(1, 2, 3)),
-                entry("map", mapOf(
-                    entry("x", "one"),
-                    entry("y", "two"),
-                    entry("z", "three")
-                )),
                 entry("e", null)
             )),
             entry("e", "E")
@@ -497,7 +441,7 @@ public class TemplateEncoderTest {
 
         templateEncoder.write(dictionary, writer);
 
-        assertEquals("AC1,AC2,AC3 ACone,ACtwo,ACthree", writer.toString());
+        assertEquals("AC1\nAC2\nAC3\n", writer.toString());
     }
 
     @Test

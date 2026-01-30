@@ -1,1 +1,2 @@
-{{#map/list/item*[, ]}}{{@d}} {{.}}{{/map/list/item*}}
+{{#map/list/item*}}{{@d}} {{.}}
+{{/map/list/item*}}
