@@ -155,6 +155,9 @@
       text-transform: uppercase;
       color: var(--color-neutral);
     }
+    span.supertypes :not(:last-of-type)::after {
+      content: ", "
+    }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -302,7 +305,7 @@
         <h1>{{$structures}}</h1>
         <!-- {{#.}} -->
         <section id="{{name}}">
-            <h2><a id="{{name}}">{{name}}</a>{{?supertypes}} : {{#.[, ]}}{{>type.html}}{{/.}}{{/supertypes}}</h2>
+            <h2><a id="{{name}}">{{name}}</a>{{?supertypes}} : <span class="supertypes">{{#.}}{{>type.html}}{{/.}}{{/supertypes}}</span></h2>
             <!-- {{?description}} -->
             <p>{{.}}</p>
             <!-- {{/description}} -->
