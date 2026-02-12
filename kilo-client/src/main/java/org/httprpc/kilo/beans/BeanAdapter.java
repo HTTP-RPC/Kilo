@@ -44,8 +44,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -710,7 +711,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                         var keyType = actualTypeArguments[0];
                         var valueType = actualTypeArguments[1];
 
-                        var genericMap = new HashMap<>(map.size());
+                        var genericMap = new LinkedHashMap<>(map.size());
 
                         for (var entry : map.entrySet()) {
                             genericMap.put(coerceGeneric(entry.getKey(), keyType), coerceGeneric(entry.getValue(), valueType));
@@ -726,7 +727,7 @@ public class BeanAdapter extends AbstractMap<String, Object> {
                     } else if (value instanceof Collection<?> collection) {
                         var elementType = actualTypeArguments[0];
 
-                        var genericSet = new HashSet<>(collection.size());
+                        var genericSet = new LinkedHashSet<>(collection.size());
 
                         for (var element : collection) {
                             genericSet.add(coerceGeneric(element, elementType));
