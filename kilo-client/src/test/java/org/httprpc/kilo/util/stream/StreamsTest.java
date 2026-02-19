@@ -46,4 +46,17 @@ public class StreamsTest {
 
         assertEquals(listOf(1, 2, 3), integers);
     }
+
+    @Test
+    public void testIndexWhere() {
+        var strings = listOf("a", "bc", "def");
+
+        var i = indexWhere(streamOf(strings), value -> value.length() == 3); // 2
+
+        assertEquals(2, i);
+
+        var j = indexWhere(streamOf(strings), value -> value.length() == 4); // -1
+
+        assertEquals(-1, j);
+    }
 }

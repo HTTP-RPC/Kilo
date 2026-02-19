@@ -18,6 +18,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -82,5 +83,41 @@ public class Streams {
      */
     public static <T> Function<Object, T> toType(Class<T> type) {
         return value -> BeanAdapter.coerce(value, type);
+    }
+
+    /**
+     * Returns the index of the first element that matches a given predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param stream
+     * The stream to traverse.
+     *
+     * @param predicate
+     * The predicate to match.
+     *
+     * @return
+     * The index of the first matching element, or -1 if no match is found.
+     *
+     */
+    public static <T> int indexWhere(Stream<T> stream, Predicate<? super T> predicate) {
+        if (stream == null || predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = stream.iterator();
+
+        var i = 0;
+
+        while (iterator.hasNext()) {
+            if (predicate.test(iterator.next())) {
+                return i;
+            }
+
+            i++;
+        }
+
+        return -1;
     }
 }

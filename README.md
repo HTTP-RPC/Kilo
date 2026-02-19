@@ -1143,6 +1143,8 @@ public static <T> Stream<T> streamOf(Iterable<T> iterable) { ... }
 public static <T> Stream<T> streamOf(Collection<T> collection) { ... }
 
 public static <T> Function<Object, T> toType(Class<T> type) { ... }
+
+public static <T> int indexWhere(Stream<T> stream, Predicate<? super T> predicate) { ... }
 ```
 
 The first provides a less verbose alternative to the `java.util.stream.StreamSupport#stream()` method:
@@ -1156,10 +1158,18 @@ var b = streamOf(iterable).findFirst().orElseThrow(); // 1
 
 The second is provided for consistency and simply delegates to `java.util.Collection#stream()`.
 
-The last method returns a function that coerces a value to a given type:
+The `toType()` method returns a function that coerces a value to a given type:
 
 ```java
 var strings = listOf("1", "2", "3");
 
 var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
+```
+
+The `indexWhere()` method returns the index of the first element that matches a given predicate:
+
+```java
+var strings = listOf("a", "bc", "def");
+
+var i = indexWhere(streamOf(strings), value -> value.length() == 3); // 2
 ```
