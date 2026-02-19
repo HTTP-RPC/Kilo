@@ -39,15 +39,6 @@ public class StreamsTest {
     }
 
     @Test
-    public void testToType() {
-        var strings = listOf("1", "2", "3");
-
-        var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
-
-        assertEquals(listOf(1, 2, 3), integers);
-    }
-
-    @Test
     public void testIndexWhere() {
         var strings = listOf("a", "bc", "def");
 
@@ -58,5 +49,14 @@ public class StreamsTest {
         var j = indexWhere(streamOf(strings), value -> value.length() == 4); // -1
 
         assertEquals(-1, j);
+    }
+
+    @Test
+    public void testToType() {
+        var strings = listOf("1", "2", "3");
+
+        var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), integers);
     }
 }
