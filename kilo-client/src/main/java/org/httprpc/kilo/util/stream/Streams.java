@@ -76,7 +76,7 @@ public class Streams {
      * The element type.
      *
      * @param stream
-     * The stream to traverse.
+     * The stream to search.
      *
      * @param predicate
      * The predicate to match.
