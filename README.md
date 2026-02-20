@@ -28,7 +28,8 @@ Classes provided by the Kilo framework include:
 * [QueryBuilder and ResultSetAdapter](#querybuilder-and-resultsetadapter)
 * [ElementAdapter](#elementadapter)
 * [Pipe](#pipe)
-* [Collections and Optionals](#collections-and-optionals)
+* [Collections](#collections)
+* [Optionals](#optionals)
 * [Streams](#streams)
 
 Each is discussed in more detail below.
@@ -416,7 +417,7 @@ webServiceProxy.setArguments(mapOf(
 System.out.println(webServiceProxy.invoke()); // 6.0
 ```
 
-`POST`, `PUT`, and `DELETE` operations are also supported. The `listOf()` and `mapOf()` methods are discussed in more detail [later](#collections-and-optionals).
+`POST`, `PUT`, and `DELETE` operations are also supported. The `listOf()` and `mapOf()` methods are discussed in more detail [later](#collections).
 
 ### Typed Invocation
 `WebServiceProxy` additionally provides the following methods to facilitate convenient, type-safe access to web APIs:
@@ -1023,7 +1024,7 @@ This implementation is slightly more verbose than the first one. However, becaus
 
 For more information, see the [employee service](kilo-test/src/main/java/org/httprpc/kilo/test/EmployeeService.java) example.
 
-## Collections and Optionals
+## Collections
 The `Collections` class provides a set of static utility methods for declaratively instantiating list, map, and set values:
 
 ```java
@@ -1090,6 +1091,23 @@ var set1 = java.util.Collections.<String>emptySet();
 var set2 = emptySetOf(String.class);
 ```
 
+The `indexWhere()` method can be used to find the index of the first element that matches a given predicate:
+
+```java
+var strings = listOf("a", "bc", "def");
+
+var i = indexWhere(strings, value -> value.length() == 3); // 2
+```
+
+The `countWhere()` method can be used to find the total number of elements that match a given predicate:
+
+```java
+var numbers = setOf(1, 2, 3);
+
+var n = countWhere(numbers, value -> value > 2); // 1
+```
+
+## Optionals
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 
 ```java
@@ -1142,8 +1160,6 @@ The `Streams` class contains methods for simplifying stream handling code:
 public static <T> Stream<T> streamOf(Iterable<T> iterable) { ... }
 public static <T> Stream<T> streamOf(Collection<T> collection) { ... }
 
-public static <T> int indexWhere(Stream<T> stream, Predicate<? super T> predicate) { ... }
-
 public static <T> Function<Object, T> toType(Class<T> type) { ... }
 ```
 
@@ -1158,15 +1174,7 @@ var b = streamOf(iterable).findFirst().orElseThrow(); // 1
 
 The second is provided for consistency and simply delegates to `java.util.Collection#stream()`.
 
-The `indexWhere()` method returns the index of the first element that matches a given predicate:
-
-```java
-var strings = listOf("a", "bc", "def");
-
-var i = indexWhere(streamOf(strings), value -> value.length() == 3); // 2
-```
-
-The `toType()` method returns a function that coerces a value to a given type:
+The last method returns a function that coerces a value to a given type:
 
 ```java
 var strings = listOf("1", "2", "3");

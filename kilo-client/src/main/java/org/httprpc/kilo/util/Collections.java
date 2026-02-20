@@ -25,6 +25,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 /**
  * Provides static utility methods for working with collections.
@@ -290,5 +291,73 @@ public class Collections {
         }
 
         return immutableSetOf();
+    }
+
+    /**
+     * Returns the index of the first element that matches a given predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to search.
+     *
+     * @param predicate
+     * The predicate to match.
+     *
+     * @return
+     * The index of the first matching element, or -1 if no match is found.
+     */
+    public static <T> int indexWhere(Iterable<T> iterable, Predicate<? super T> predicate) {
+        if (iterable == null || predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = iterable.iterator();
+
+        var i = 0;
+
+        while (iterator.hasNext()) {
+            if (predicate.test(iterator.next())) {
+                return i;
+            }
+
+            i++;
+        }
+
+        return -1;
+    }
+
+    /**
+     * Returns the total number of elements that match a given predicate.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to search.
+     *
+     * @param predicate
+     * The predicate to match.
+     *
+     * @return
+     * The total number of matching elements.
+     */
+    public static <T> int countWhere(Iterable<T> iterable, Predicate<? super T> predicate) {
+        if (iterable == null || predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = iterable.iterator();
+
+        var n = 0;
+
+        while (iterator.hasNext()) {
+            if (predicate.test(iterator.next())) {
+                n++;
+            }
+        }
+
+        return n;
     }
 }

@@ -149,4 +149,26 @@ public class CollectionsTest {
         assertTrue(set2.isEmpty());
         assertEquals(set1, set2);
     }
+
+    @Test
+    public void testIndexWhere() {
+        var strings = listOf("a", "bc", "def");
+
+        var i = indexWhere(strings, value -> value.length() == 3); // 2
+
+        assertEquals(2, i);
+
+        var j = indexWhere(strings, value -> value.length() == 4); // -1
+
+        assertEquals(-1, j);
+    }
+
+    @Test
+    public void testCountWhere() {
+        var numbers = setOf(1, 2, 3);
+
+        var n = countWhere(numbers, value -> value > 2); // 1
+
+        assertEquals(1, n);
+    }
 }
