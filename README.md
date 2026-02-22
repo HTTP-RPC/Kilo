@@ -1091,7 +1091,14 @@ var set1 = java.util.Collections.<String>emptySet();
 var set2 = emptySetOf(String.class);
 ```
 
-The `indexWhere()` method can be used to find the index of the first element that matches a given predicate:
+The `indexWhere()` and `lastIndexWhere()` methods can be used to find the index of either the first or last list element that matches a given predicate:
+
+```java
+public static <E> int indexWhere(List<E> list, Predicate<? super E> predicate) { ... }
+public static <E> int lastIndexWhere(List<E> list, Predicate<? super E> predicate) { ... }
+```
+
+For example:
 
 ```java
 var strings = listOf("a", "bc", "def");

@@ -158,17 +158,21 @@ public class CollectionsTest {
 
         assertEquals(2, i);
 
-        var j = indexWhere(strings, value -> value.length() == 4); // -1
+        var j = indexWhere(strings, String::isEmpty); // -1
 
         assertEquals(-1, j);
     }
 
     @Test
-    public void testCountWhere() {
-        var numbers = setOf(1, 2, 3);
+    public void testLastIndexWhere() {
+        var strings = listOf("a", "bc", "def");
 
-        var n = countWhere(numbers, value -> value > 2); // 1
+        var i = lastIndexWhere(strings, value -> value.length() == 1); // 0
 
-        assertEquals(1, n);
+        assertEquals(0, i);
+
+        var j = lastIndexWhere(strings, String::isEmpty); // -1
+
+        assertEquals(-1, j);
     }
 }

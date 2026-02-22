@@ -294,13 +294,14 @@ public class Collections {
     }
 
     /**
-     * Returns the index of the first element that matches a given predicate.
+     * Returns the index of the first list element that matches a given
+     * predicate.
      *
-     * @param <T>
+     * @param <E>
      * The element type.
      *
-     * @param iterable
-     * The iterable to search.
+     * @param list
+     * The list to search.
      *
      * @param predicate
      * The predicate to match.
@@ -308,17 +309,15 @@ public class Collections {
      * @return
      * The index of the first matching element, or -1 if no match is found.
      */
-    public static <T> int indexWhere(Iterable<T> iterable, Predicate<? super T> predicate) {
-        if (iterable == null || predicate == null) {
+    public static <E> int indexWhere(List<E> list, Predicate<? super E> predicate) {
+        if (list == null || predicate == null) {
             throw new IllegalArgumentException();
         }
 
-        var iterator = iterable.iterator();
-
         var i = 0;
 
-        while (iterator.hasNext()) {
-            if (predicate.test(iterator.next())) {
+        for (var element : list) {
+            if (predicate.test(element)) {
                 return i;
             }
 
@@ -329,35 +328,36 @@ public class Collections {
     }
 
     /**
-     * Returns the total number of elements that match a given predicate.
+     * Returns the index of the last list element that matches a given
+     * predicate.
      *
-     * @param <T>
+     * @param <E>
      * The element type.
      *
-     * @param iterable
-     * The iterable to search.
+     * @param list
+     * The list to search.
      *
      * @param predicate
      * The predicate to match.
      *
      * @return
-     * The total number of matching elements.
+     * The index of the last matching element, or -1 if no match is found.
      */
-    public static <T> int countWhere(Iterable<T> iterable, Predicate<? super T> predicate) {
-        if (iterable == null || predicate == null) {
+    public static <E> int lastIndexWhere(List<E> list, Predicate<? super E> predicate) {
+        if (list == null || predicate == null) {
             throw new IllegalArgumentException();
         }
 
-        var iterator = iterable.iterator();
+        var i = list.size() - 1;
 
-        var n = 0;
-
-        while (iterator.hasNext()) {
-            if (predicate.test(iterator.next())) {
-                n++;
+        for (var element : list.reversed()) {
+            if (predicate.test(element)) {
+                break;
             }
+
+            i--;
         }
 
-        return n;
+        return i;
     }
 }
