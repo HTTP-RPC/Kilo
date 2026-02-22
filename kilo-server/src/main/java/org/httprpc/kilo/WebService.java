@@ -814,7 +814,7 @@ public abstract class WebService extends HttpServlet {
         return streamOf(instances.values())
             .map(WebService::getServiceDescriptor)
             .sorted(Comparator.comparing(WebService.ServiceDescriptor::getPath))
-            .toList();
+            .collect(toList());
     }
 
     @Override

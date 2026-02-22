@@ -42,8 +42,17 @@ public class StreamsTest {
     public void testToType() {
         var strings = listOf("1", "2", "3");
 
-        var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
+        var integers = streamOf(strings).map(toType(Integer.class)).collect(toList()); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), integers);
+    }
+
+    @Test
+    public void testToList() {
+        var list1 = listOf(1, 2, 3);
+
+        var list2 = streamOf(list1).collect(toList());
+
+        assertEquals(list1, list2);
     }
 }

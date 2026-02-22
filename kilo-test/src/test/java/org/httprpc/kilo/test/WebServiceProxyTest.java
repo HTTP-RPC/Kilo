@@ -259,7 +259,7 @@ public class WebServiceProxyTest {
 
         var result = streamOf((List<?>)webServiceProxy.invoke())
             .map(toType(Integer.class))
-            .toList();
+            .collect(toList());
 
         assertEquals(body, result);
     }

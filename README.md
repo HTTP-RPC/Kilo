@@ -792,7 +792,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return streamOf(results).map(toType(Pet.class)).toList();
+return streamOf(results).map(toType(Pet.class)).collect(toList());
 ```
 
 ```java
@@ -993,7 +993,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return streamOf(results).map(toType(Employee.class)).toList();
+    return streamOf(results).map(toType(Employee.class)).collect(toList());
 }
 ```
 
@@ -1186,5 +1186,5 @@ The last method returns a function that coerces a value to a given type:
 ```java
 var strings = listOf("1", "2", "3");
 
-var integers = streamOf(strings).map(toType(Integer.class)).toList(); // 1, 2, 3
+var integers = streamOf(strings).map(toType(Integer.class)).collect(toList()); // 1, 2, 3
 ```

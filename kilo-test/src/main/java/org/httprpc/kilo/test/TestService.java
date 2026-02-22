@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.stream.Streams.*;
 
 @WebServlet(urlPatterns = {"/test/*"}, loadOnStartup = 1)
 @MultipartConfig
@@ -244,8 +245,8 @@ public class TestService extends AbstractDatabaseService {
     @ResourcePath("varargs")
     public Map<String, Object> testVarargs(int[] numbers, String... strings) {
         return mapOf(
-            entry("numbers", Arrays.stream(numbers).boxed().toList()),
-            entry("strings", Arrays.stream(strings).toList())
+            entry("numbers", Arrays.stream(numbers).boxed().collect(toList())),
+            entry("strings", Arrays.stream(strings).collect(toList()))
         );
     }
 

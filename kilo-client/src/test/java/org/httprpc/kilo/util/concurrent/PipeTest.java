@@ -63,7 +63,7 @@ public class PipeTest {
 
         executorService.submit(() -> pipe.submit(streamOf(expectedValues)));
 
-        assertEquals(expectedValues, streamOf(pipe).toList());
+        assertEquals(expectedValues, streamOf(pipe).collect(toList()));
     }
 
     @Test
