@@ -182,11 +182,9 @@ public class Streams {
     private static <K, V, T extends Map<K, V>> Collector<Map.Entry<K, V>, ?, T> toMap(Supplier<T> supplier,
         UnaryOperator<T> finisher,
         Collector.Characteristics... characteristics) {
-        return Collector.of(supplier, Streams::accumulate, Streams::combine, finisher, characteristics);
-    }
-
-    private static <K, V> void accumulate(Map<K, V> map, Map.Entry<K, V> entry) {
-        map.put(entry.getKey(), entry.getValue());
+        return Collector.of(supplier,
+            (map, entry) -> map.put(entry.getKey(), entry.getValue()),
+            Streams::combine, finisher, characteristics);
     }
 
     private static <K, V, T extends Map<K, V>> T combine(T map1, T map2) {
