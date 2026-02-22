@@ -239,4 +239,30 @@ public class Streams {
     private static <E, T extends Set<E>> T combine(T set1, T set2) {
         throw new UnsupportedOperationException();
     }
+
+    public static <T, K> Collector<T, ?, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
+        return Collector.of(LinkedHashMap::new,
+            (map, value) -> map.computeIfAbsent(classifier.apply(value), key -> new ArrayList<>()).add(value),
+            Streams::combine);
+    }
+
+    public static <N extends Number> Collector<N, ?, N> toSum() {
+        // TODO
+        return null;
+    }
+
+    public static <N extends Number> Collector<N, ?, N> toMinimum() {
+        // TODO
+        return null;
+    }
+
+    public static <N extends Number> Collector<N, ?, N> toMaximum() {
+        // TODO
+        return null;
+    }
+
+    public static <N extends Number> Collector<N, ?, Double> toAverage() {
+        // TODO
+        return null;
+    }
 }

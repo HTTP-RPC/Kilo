@@ -105,17 +105,14 @@ public class StreamsTest {
 
     @Test
     public void testToSortedMap() {
-        var sortedMap1 = sortedMapOf(
+        var sortedMap = streamOf(listOf(
             entry("c", 3),
             entry("b", 2),
             entry("a", 1)
-        );
+        )).collect(toSortedMap());
 
-        var sortedMap2 = streamOf(sortedMap1.entrySet()).collect(toSortedMap());
-
-        assertEquals(sortedMap1, sortedMap2);
-
-        assertEquals("a", sortedMap2.firstKey());
+        assertEquals("a", sortedMap.firstKey());
+        assertEquals("c", sortedMap.lastKey());
     }
 
     @Test
@@ -144,12 +141,22 @@ public class StreamsTest {
 
     @Test
     public void testToSortedSet() {
-        var sortedSet1 = sortedSetOf(3, 2, 1);
+        var sortedSet = streamOf(listOf(3, 2, 1)).collect(toSortedSet());
 
-        var sortedSet2 = streamOf(sortedSet1).collect(toSortedSet());
+        assertEquals(1, sortedSet.first());
+        assertEquals(3, sortedSet.last());
+    }
 
-        assertEquals(sortedSet1, sortedSet2);
+    @Test
+    public void testGroupingBy() {
+        var strings = listOf("a", "b", "c", "ab", "bc", "abc");
 
-        assertEquals(1, sortedSet2.first());
+        var map = streamOf(strings).collect(groupingBy(String::length));
+
+        assertEquals(mapOf(
+            entry(1, listOf("a", "b", "c")),
+            entry(2, listOf("ab", "bc")),
+            entry(3, listOf("abc"))
+        ), map);
     }
 }
