@@ -28,6 +28,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -105,10 +106,7 @@ public class Streams {
      * The list collector.
      */
     public static <E> Collector<E, ?, List<E>> toList() {
-        return Collector.of(() -> new ArrayList<E>(),
-            List::add,
-            Streams::combine,
-            list -> list);
+        return toList(list -> list);
     }
 
     /**
@@ -121,10 +119,13 @@ public class Streams {
      * The immutable list collector.
      */
     public static <E> Collector<E, ?, List<E>> toImmutableList() {
-        return Collector.of(() -> new ArrayList<E>(),
-            List::add,
-            Streams::combine,
-            java.util.Collections::unmodifiableList);
+        return toList(java.util.Collections::unmodifiableList);
+    }
+
+    private static <E> Collector<E, ?, List<E>> toList(Function<List<E>, List<E>> finisher) {
+        return Collector.of(ArrayList::new, List::add, (list1, list2) -> {
+            throw new UnsupportedOperationException();
+        }, finisher);
     }
 
     /**
@@ -140,10 +141,7 @@ public class Streams {
      * The map collector.
      */
     public static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> toMap() {
-        return Collector.of(() -> new LinkedHashMap<K, V>(),
-            (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-            Streams::combine,
-            map -> map);
+        return toMap(LinkedHashMap::new, map -> map);
     }
 
     /**
@@ -159,10 +157,7 @@ public class Streams {
      * The immutable map collector.
      */
     public static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> toImmutableMap() {
-        return Collector.of(() -> new LinkedHashMap<K, V>(),
-            (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-            Streams::combine,
-            java.util.Collections::unmodifiableMap);
+        return toMap(LinkedHashMap::new, java.util.Collections::unmodifiableMap);
     }
 
     /**
@@ -178,11 +173,18 @@ public class Streams {
      * The sorted map collector.
      */
     public static <K extends Comparable<? super K>, V> Collector<Map.Entry<K, V>, ?, SortedMap<K, V>> toSortedMap() {
-        return Collector.of(() -> new TreeMap<K, V>(),
+        return toMap(TreeMap::new, map -> map, Collector.Characteristics.UNORDERED);
+    }
+
+    private static <K, V, T extends Map<K, V>> Collector<Map.Entry<K, V>, ?, T> toMap(Supplier<T> supplier,
+        Function<T, T> finisher,
+        Collector.Characteristics... characteristics) {
+        return Collector.of(supplier,
             (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-            Streams::combine,
-            map -> map,
-            Collector.Characteristics.UNORDERED);
+            (map1, map2) -> {
+                throw new UnsupportedOperationException();
+            },
+            finisher, characteristics);
     }
 
     /**
@@ -195,10 +197,7 @@ public class Streams {
      * The set collector.
      */
     public static <E> Collector<E, ?, Set<E>> toSet() {
-        return Collector.of(() -> new LinkedHashSet<E>(),
-            Set::add,
-            Streams::combine,
-            set -> set);
+        return toSet(LinkedHashSet::new, set -> set);
     }
 
     /**
@@ -211,10 +210,7 @@ public class Streams {
      * The immutable set collector.
      */
     public static <E> Collector<E, ?, Set<E>> toImmutableSet() {
-        return Collector.of(() -> new LinkedHashSet<E>(),
-            Set::add,
-            Streams::combine,
-            java.util.Collections::unmodifiableSet);
+        return toSet(LinkedHashSet::new, java.util.Collections::unmodifiableSet);
     }
 
     /**
@@ -227,14 +223,18 @@ public class Streams {
      * The sorted set collector.
      */
     public static <E extends Comparable<? super E>> Collector<E, ?, SortedSet<E>> toSortedSet() {
-        return Collector.of(() -> new TreeSet<E>(),
-            Set::add,
-            Streams::combine,
-            set -> set,
-            Collector.Characteristics.UNORDERED);
+        return toSet(TreeSet::new, set -> set, Collector.Characteristics.UNORDERED);
     }
 
-    private static <T> T combine(T t1, T t2) {
-        throw new UnsupportedOperationException();
+    private static <E, T extends Set<E>> Collector<E, ?, T> toSet(Supplier<T> supplier,
+        Function<T, T> finisher,
+        Collector.Characteristics... characteristics) {
+        return Collector.of(supplier,
+            Set::add,
+            (set1, set2) -> {
+                throw new UnsupportedOperationException();
+            },
+            finisher,
+            characteristics);
     }
 }
