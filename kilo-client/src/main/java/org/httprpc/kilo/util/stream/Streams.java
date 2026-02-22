@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -122,10 +123,12 @@ public class Streams {
         return toList(java.util.Collections::unmodifiableList);
     }
 
-    private static <E> Collector<E, ?, List<E>> toList(Function<List<E>, List<E>> finisher) {
-        return Collector.of(ArrayList::new, List::add, (list1, list2) -> {
-            throw new UnsupportedOperationException();
-        }, finisher);
+    private static <E> Collector<E, ?, List<E>> toList(UnaryOperator<List<E>> finisher) {
+        return Collector.of(ArrayList::new, List::add, Streams::combine, finisher);
+    }
+
+    private static <E> List<E> combine(List<E> list1, List<E> list2) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -177,14 +180,17 @@ public class Streams {
     }
 
     private static <K, V, T extends Map<K, V>> Collector<Map.Entry<K, V>, ?, T> toMap(Supplier<T> supplier,
-        Function<T, T> finisher,
+        UnaryOperator<T> finisher,
         Collector.Characteristics... characteristics) {
-        return Collector.of(supplier,
-            (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-            (map1, map2) -> {
-                throw new UnsupportedOperationException();
-            },
-            finisher, characteristics);
+        return Collector.of(supplier, Streams::accumulate, Streams::combine, finisher, characteristics);
+    }
+
+    private static <K, V> void accumulate(Map<K, V> map, Map.Entry<K, V> entry) {
+        map.put(entry.getKey(), entry.getValue());
+    }
+
+    private static <K, V, T extends Map<K, V>> T combine(T map1, T map2) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -227,14 +233,12 @@ public class Streams {
     }
 
     private static <E, T extends Set<E>> Collector<E, ?, T> toSet(Supplier<T> supplier,
-        Function<T, T> finisher,
+        UnaryOperator<T> finisher,
         Collector.Characteristics... characteristics) {
-        return Collector.of(supplier,
-            Set::add,
-            (set1, set2) -> {
-                throw new UnsupportedOperationException();
-            },
-            finisher,
-            characteristics);
+        return Collector.of(supplier, Set::add, Streams::combine, finisher, characteristics);
+    }
+
+    private static <E, T extends Set<E>> T combine(T set1, T set2) {
+        throw new UnsupportedOperationException();
     }
 }
