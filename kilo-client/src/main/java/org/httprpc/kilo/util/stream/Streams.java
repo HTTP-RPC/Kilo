@@ -23,6 +23,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -269,6 +271,23 @@ public class Streams {
     }
 
     /**
+     * Returns a collector that produces a sorted map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The sorted map collector.
+     */
+    public static <K extends Comparable<? super K>, V> Collector<Map.Entry<K, V>, ?, SortedMap<K, V>> toSortedMap() {
+        // TODO
+        return null;
+    }
+
+    /**
      * Returns a collector that produces a set.
      *
      * @param <E>
@@ -292,5 +311,19 @@ public class Streams {
      */
     public static <E> Collector<E, ?, Set<E>> toImmutableSet() {
         return new ImmutableSetCollector<>();
+    }
+
+    /**
+     * Returns a collector that produces a sorted set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The sorted set collector.
+     */
+    public static <E extends Comparable<? super E>> Collector<E, ?, SortedSet<E>> toSortedSet() {
+        // TODO
+        return null;
     }
 }

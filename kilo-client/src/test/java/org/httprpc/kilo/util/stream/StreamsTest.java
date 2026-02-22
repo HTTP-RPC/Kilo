@@ -104,6 +104,21 @@ public class StreamsTest {
     }
 
     @Test
+    public void testToSortedMap() {
+        var sortedMap1 = sortedMapOf(
+            entry("c", 3),
+            entry("b", 2),
+            entry("a", 1)
+        );
+
+        var sortedMap2 = streamOf(sortedMap1.entrySet()).collect(toSortedMap());
+
+        assertEquals(sortedMap1, sortedMap2);
+
+        assertEquals("a", sortedMap2.firstKey());
+    }
+
+    @Test
     public void testToSet() {
         var set1 = setOf(1, 2, 3);
 
@@ -125,5 +140,16 @@ public class StreamsTest {
         assertThrows(UnsupportedOperationException.class, () -> set2.add(4));
 
         assertEquals(set1, set2);
+    }
+
+    @Test
+    public void testToSortedSet() {
+        var sortedSet1 = sortedSetOf(3, 2, 1);
+
+        var sortedSet2 = streamOf(sortedSet1).collect(toSortedSet());
+
+        assertEquals(sortedSet1, sortedSet2);
+
+        assertEquals(1, sortedSet2.first());
     }
 }
