@@ -178,11 +178,11 @@ public class Streams {
      * The sorted map collector.
      */
     public static <K extends Comparable<? super K>, V> Collector<Map.Entry<K, V>, ?, SortedMap<K, V>> toSortedMap() {
-        return Collector.of(TreeMap::new,
+        return Collector.of(() -> new TreeMap<K, V>(),
             (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-            (map1, map2) -> {
-                throw new UnsupportedOperationException();
-            }, Collector.Characteristics.UNORDERED, Collector.Characteristics.IDENTITY_FINISH);
+            Streams::combine,
+            map -> map,
+            Collector.Characteristics.UNORDERED);
     }
 
     /**
@@ -195,10 +195,10 @@ public class Streams {
      * The set collector.
      */
     public static <E> Collector<E, ?, Set<E>> toSet() {
-        return Collector.of(LinkedHashSet::new,
+        return Collector.of(() -> new LinkedHashSet<E>(),
             Set::add,
             Streams::combine,
-            Collector.Characteristics.IDENTITY_FINISH);
+            set -> set);
     }
 
     /**
@@ -227,10 +227,11 @@ public class Streams {
      * The sorted set collector.
      */
     public static <E extends Comparable<? super E>> Collector<E, ?, SortedSet<E>> toSortedSet() {
-        return Collector.of(TreeSet::new,
+        return Collector.of(() -> new TreeSet<E>(),
             Set::add,
             Streams::combine,
-            Collector.Characteristics.UNORDERED, Collector.Characteristics.IDENTITY_FINISH);
+            set -> set,
+            Collector.Characteristics.UNORDERED);
     }
 
     private static <T> T combine(T t1, T t2) {
