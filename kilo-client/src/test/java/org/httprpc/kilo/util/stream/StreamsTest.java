@@ -54,5 +54,76 @@ public class StreamsTest {
         var list2 = streamOf(list1).collect(toList());
 
         assertEquals(list1, list2);
+
+        list2.remove(2);
+
+        assertEquals(2, list2.size());
+    }
+
+    @Test
+    public void testToImmutableList() {
+        var list1 = immutableListOf(1, 2, 3);
+
+        var list2 = streamOf(list1).collect(toImmutableList());
+
+        assertThrows(UnsupportedOperationException.class, () -> list2.add(4));
+
+        assertEquals(list1, list2);
+    }
+
+    @Test
+    public void testToMap() {
+        var map1 = mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        var map2 = streamOf(map1.entrySet()).collect(toMap());
+
+        assertEquals(map1, map2);
+
+        map2.remove("c");
+
+        assertEquals(2, map2.size());
+    }
+
+    @Test
+    public void testToImmutableMap() {
+        var map1 = immutableMapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        var map2 = streamOf(map1.entrySet()).collect(toImmutableMap());
+
+        assertThrows(UnsupportedOperationException.class, () -> map2.put("d", 4));
+
+        assertEquals(map1, map2);
+    }
+
+    @Test
+    public void testToSet() {
+        var set1 = setOf(1, 2, 3);
+
+        var set2 = streamOf(set1).collect(toSet());
+
+        assertEquals(set1, set2);
+
+        set2.remove(2);
+
+        assertEquals(2, set2.size());
+    }
+
+    @Test
+    public void testToImmutableSet() {
+        var set1 = immutableSetOf(1, 2, 3);
+
+        var set2 = streamOf(set1).collect(toImmutableSet());
+
+        assertThrows(UnsupportedOperationException.class, () -> set2.add(4));
+
+        assertEquals(set1, set2);
     }
 }
