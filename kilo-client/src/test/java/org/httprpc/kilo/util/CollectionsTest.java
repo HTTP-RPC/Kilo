@@ -120,7 +120,6 @@ public class CollectionsTest {
         var sortedSet = sortedSetOf(3, 2, 1);
 
         assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedSet));
-
     }
 
     @Test
