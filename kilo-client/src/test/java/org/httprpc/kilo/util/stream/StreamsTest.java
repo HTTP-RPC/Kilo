@@ -44,7 +44,7 @@ public class StreamsTest {
     public void testCollect() {
         var values = listOf(1.0, 2.0, 3.0);
 
-        var a = streamOf(values).collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
+        var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
             DoubleAccumulator::accumulate,
             (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
             DoubleAccumulator::doubleValue)); // 6.0
