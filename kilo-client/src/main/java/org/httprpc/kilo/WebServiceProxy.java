@@ -903,7 +903,7 @@ public class WebServiceProxy {
 
             return list;
         } else if (argument instanceof Collection<?> collection) {
-            return streamOf(collection).map(WebServiceProxy::getParameterValue).collect(toList());
+            return collect(streamOf(collection).map(WebServiceProxy::getParameterValue), toList());
         } else {
             return listOf(getParameterValue(argument));
         }

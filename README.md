@@ -792,7 +792,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return streamOf(results).map(toType(Pet.class)).collect(toList());
+return collect(streamOf(results).map(toType(Pet.class)), toList());
 ```
 
 ```java
@@ -993,7 +993,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return streamOf(results).map(toType(Employee.class)).collect(toList());
+    return collect(streamOf(results).map(toType(Employee.class)), toList());
 }
 ```
 
@@ -1106,14 +1106,6 @@ var strings = listOf("a", "bc", "def");
 var i = indexWhere(strings, value -> value.length() == 3); // 2
 ```
 
-The `countWhere()` method can be used to find the total number of elements that match a given predicate:
-
-```java
-var numbers = setOf(1, 2, 3);
-
-var n = countWhere(numbers, value -> value > 2); // 1
-```
-
 ## Optionals
 The `Optionals` class contains methods for working with optional (or "nullable") values:
 
@@ -1186,5 +1178,5 @@ The last method returns a function that coerces a value to a given type:
 ```java
 var strings = listOf("1", "2", "3");
 
-var integers = streamOf(strings).map(toType(Integer.class)).collect(toList()); // 1, 2, 3
+var integers = collect(streamOf(strings).map(toType(Integer.class)), toList()); // 1, 2, 3
 ```

@@ -58,7 +58,7 @@ public class EmployeeService extends WebService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return streamOf(results).map(toType(Employee.class)).collect(toList());
+            return collect(streamOf(results).map(toType(Employee.class)), toList());
         }
     }
 

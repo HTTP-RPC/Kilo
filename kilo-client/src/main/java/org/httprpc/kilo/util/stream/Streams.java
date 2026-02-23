@@ -28,9 +28,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -82,6 +79,208 @@ public class Streams {
     }
 
     /**
+     * Collects stream contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The result type.
+     *
+     * @param stream
+     * The stream to collect.
+     *
+     * @param collector
+     * The collection function.
+     *
+     * @return
+     * The collection result.
+     */
+    public static <T, R> R collect(Stream<T> stream, Function<Stream<T>, R> collector) {
+        if (stream == null || collector == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return collector.apply(stream);
+    }
+
+    /**
+     * Returns a function that produces an iterable.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <E> Function<Stream<E>, Iterable<E>> toIterable() {
+        return stream -> stream::iterator;
+    }
+
+    /**
+     * Returns a function that produces a list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <E> Function<Stream<E>, List<E>> toList() {
+        return Streams::listOf;
+    }
+
+    /**
+     * Returns a function that produces an immutable list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <E> Function<Stream<E>, List<E>> toImmutableList() {
+        return stream -> java.util.Collections.unmodifiableList(listOf(stream));
+    }
+
+    private static <E> List<E> listOf(Stream<E> stream) {
+        var list = new ArrayList<E>();
+
+        for (var element : collect(stream, toIterable())) {
+            list.add(element);
+        }
+
+        return list;
+    }
+
+    /**
+     * Returns a function that produces a map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() {
+        return Streams::mapOf;
+    }
+
+    /**
+     * Returns a function that produces an immutable map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() {
+        return stream -> java.util.Collections.unmodifiableMap(mapOf(stream));
+    }
+
+    private static <K, V> Map<K, V> mapOf(Stream<Map.Entry<K, V>> stream) {
+        var map = new LinkedHashMap<K, V>();
+
+        for (var entry : collect(stream, toIterable())) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
+     * Returns a function that produces a sorted map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <K extends Comparable<? super K>, V> Function<Stream<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() {
+        return Streams::sortedMapOf;
+    }
+
+    private static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Stream<Map.Entry<K, V>> stream) {
+        var map = new TreeMap<K, V>();
+
+        for (var entry : collect(stream, toIterable())) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
+     * Returns a function that produces a set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <E> Function<Stream<E>, Set<E>> toSet() {
+        return Streams::setOf;
+    }
+
+    /**
+     * Returns a function that produces an immutable set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <E> Function<Stream<E>, Set<E>> toImmutableSet() {
+        return stream -> java.util.Collections.unmodifiableSet(setOf(stream));
+    }
+
+    private static <E> Set<E> setOf(Stream<E> stream) {
+        var set = new LinkedHashSet<E>();
+
+        for (var element : collect(stream, toIterable())) {
+            set.add(element);
+        }
+
+        return set;
+    }
+
+    /**
+     * Returns a function that produces a sorted set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collection function.
+     */
+    public static <E extends Comparable<? super E>> Function<Stream<E>, SortedSet<E>> toSortedSet() {
+        return Streams::sortedSetOf;
+    }
+
+    private static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Stream<E> stream) {
+        var set = new TreeSet<E>();
+
+        for (var element : collect(stream, toIterable())) {
+            set.add(element);
+        }
+
+        return set;
+    }
+
+    /**
      * Returns a function that coerces a value to a given type.
      *
      * @param <T>
@@ -95,174 +294,5 @@ public class Streams {
      */
     public static <T> Function<Object, T> toType(Class<T> type) {
         return value -> BeanAdapter.coerce(value, type);
-    }
-
-    /**
-     * Returns a collector that produces a list.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @return
-     * The list collector.
-     */
-    public static <E> Collector<E, ?, List<E>> toList() {
-        return toList(list -> list);
-    }
-
-    /**
-     * Returns a collector that produces an immutable list.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @return
-     * The immutable list collector.
-     */
-    public static <E> Collector<E, ?, List<E>> toImmutableList() {
-        return toList(java.util.Collections::unmodifiableList);
-    }
-
-    private static <E> Collector<E, ?, List<E>> toList(UnaryOperator<List<E>> finisher) {
-        return Collector.of(ArrayList::new, List::add, Streams::combine, finisher);
-    }
-
-    private static <E> List<E> combine(List<E> list1, List<E> list2) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a collector that produces a map.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <V>
-     * The value type.
-     *
-     * @return
-     * The map collector.
-     */
-    public static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> toMap() {
-        return toMap(LinkedHashMap::new, map -> map);
-    }
-
-    /**
-     * Returns a collector that produces an immutable map.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <V>
-     * The value type.
-     *
-     * @return
-     * The immutable map collector.
-     */
-    public static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> toImmutableMap() {
-        return toMap(LinkedHashMap::new, java.util.Collections::unmodifiableMap);
-    }
-
-    /**
-     * Returns a collector that produces a sorted map.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <V>
-     * The value type.
-     *
-     * @return
-     * The sorted map collector.
-     */
-    public static <K extends Comparable<? super K>, V> Collector<Map.Entry<K, V>, ?, SortedMap<K, V>> toSortedMap() {
-        return toMap(TreeMap::new, map -> map, Collector.Characteristics.UNORDERED);
-    }
-
-    private static <K, V, T extends Map<K, V>> Collector<Map.Entry<K, V>, ?, T> toMap(Supplier<T> supplier,
-        UnaryOperator<T> finisher,
-        Collector.Characteristics... characteristics) {
-        return Collector.of(supplier,
-            (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-            Streams::combine, finisher, characteristics);
-    }
-
-    private static <K, V, T extends Map<K, V>> T combine(T map1, T map2) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a collector that produces a set.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @return
-     * The set collector.
-     */
-    public static <E> Collector<E, ?, Set<E>> toSet() {
-        return toSet(LinkedHashSet::new, set -> set);
-    }
-
-    /**
-     * Returns a collector that produces an immutable set.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @return
-     * The immutable set collector.
-     */
-    public static <E> Collector<E, ?, Set<E>> toImmutableSet() {
-        return toSet(LinkedHashSet::new, java.util.Collections::unmodifiableSet);
-    }
-
-    /**
-     * Returns a collector that produces a sorted set.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @return
-     * The sorted set collector.
-     */
-    public static <E extends Comparable<? super E>> Collector<E, ?, SortedSet<E>> toSortedSet() {
-        return toSet(TreeSet::new, set -> set, Collector.Characteristics.UNORDERED);
-    }
-
-    private static <E, T extends Set<E>> Collector<E, ?, T> toSet(Supplier<T> supplier,
-        UnaryOperator<T> finisher,
-        Collector.Characteristics... characteristics) {
-        return Collector.of(supplier, Set::add, Streams::combine, finisher, characteristics);
-    }
-
-    private static <E, T extends Set<E>> T combine(T set1, T set2) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T, K> Collector<T, ?, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
-        return Collector.of(LinkedHashMap::new,
-            (map, value) -> map.computeIfAbsent(classifier.apply(value), key -> new ArrayList<>()).add(value),
-            Streams::combine);
-    }
-
-    public static <N extends Number> Collector<N, ?, N> toSum() {
-        // TODO
-        return null;
-    }
-
-    public static <N extends Number> Collector<N, ?, N> toMinimum() {
-        // TODO
-        return null;
-    }
-
-    public static <N extends Number> Collector<N, ?, N> toMaximum() {
-        // TODO
-        return null;
-    }
-
-    public static <N extends Number> Collector<N, ?, Double> toAverage() {
-        // TODO
-        return null;
     }
 }

@@ -43,7 +43,7 @@ public class PetService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             ))) {
-            return streamOf(results).map(toType(Pet.class)).collect(toList());
+            return collect(streamOf(results).map(toType(Pet.class)), toList());
         }
     }
 

@@ -39,19 +39,23 @@ public class StreamsTest {
     }
 
     @Test
-    public void testToType() {
-        var strings = listOf("1", "2", "3");
+    public void testToIterable() {
+        var list1 = listOf(1, 2, 3);
 
-        var integers = streamOf(strings).map(toType(Integer.class)).collect(toList()); // 1, 2, 3
+        var list2 = listOf();
 
-        assertEquals(listOf(1, 2, 3), integers);
+        for (var element : collect(streamOf(list1), toIterable())) {
+            list2.add(element);
+        }
+
+        assertEquals(list1, list2);
     }
 
     @Test
     public void testToList() {
         var list1 = listOf(1, 2, 3);
 
-        var list2 = streamOf(list1).collect(toList());
+        var list2 = collect(streamOf(list1), toList());
 
         assertEquals(list1, list2);
 
@@ -64,7 +68,7 @@ public class StreamsTest {
     public void testToImmutableList() {
         var list1 = immutableListOf(1, 2, 3);
 
-        var list2 = streamOf(list1).collect(toImmutableList());
+        var list2 = collect(streamOf(list1), toImmutableList());
 
         assertThrows(UnsupportedOperationException.class, () -> list2.add(4));
 
@@ -79,7 +83,7 @@ public class StreamsTest {
             entry("c", 3)
         );
 
-        var map2 = streamOf(map1.entrySet()).collect(toMap());
+        var map2 = collect(streamOf(map1.entrySet()), toMap());
 
         assertEquals(map1, map2);
 
@@ -96,7 +100,7 @@ public class StreamsTest {
             entry("c", 3)
         );
 
-        var map2 = streamOf(map1.entrySet()).collect(toImmutableMap());
+        var map2 = collect(streamOf(map1.entrySet()), toImmutableMap());
 
         assertThrows(UnsupportedOperationException.class, () -> map2.put("d", 4));
 
@@ -105,11 +109,11 @@ public class StreamsTest {
 
     @Test
     public void testToSortedMap() {
-        var sortedMap = streamOf(listOf(
+        var sortedMap = collect(streamOf(listOf(
             entry("c", 3),
             entry("b", 2),
             entry("a", 1)
-        )).collect(toSortedMap());
+        )), toSortedMap());
 
         assertEquals("a", sortedMap.firstKey());
         assertEquals("c", sortedMap.lastKey());
@@ -119,7 +123,7 @@ public class StreamsTest {
     public void testToSet() {
         var set1 = setOf(1, 2, 3);
 
-        var set2 = streamOf(set1).collect(toSet());
+        var set2 = collect(streamOf(set1), toSet());
 
         assertEquals(set1, set2);
 
@@ -132,7 +136,7 @@ public class StreamsTest {
     public void testToImmutableSet() {
         var set1 = immutableSetOf(1, 2, 3);
 
-        var set2 = streamOf(set1).collect(toImmutableSet());
+        var set2 = collect(streamOf(set1), toImmutableSet());
 
         assertThrows(UnsupportedOperationException.class, () -> set2.add(4));
 
@@ -141,22 +145,18 @@ public class StreamsTest {
 
     @Test
     public void testToSortedSet() {
-        var sortedSet = streamOf(listOf(3, 2, 1)).collect(toSortedSet());
+        var sortedSet = collect(streamOf(listOf(3, 2, 1)), toSortedSet());
 
         assertEquals(1, sortedSet.first());
         assertEquals(3, sortedSet.last());
     }
 
     @Test
-    public void testGroupingBy() {
-        var strings = listOf("a", "b", "c", "ab", "bc", "abc");
+    public void testToType() {
+        var strings = listOf("1", "2", "3");
 
-        var map = streamOf(strings).collect(groupingBy(String::length));
+        var integers = collect(streamOf(strings).map(toType(Integer.class)), toList()); // 1, 2, 3
 
-        assertEquals(mapOf(
-            entry(1, listOf("a", "b", "c")),
-            entry(2, listOf("ab", "bc")),
-            entry(3, listOf("abc"))
-        ), map);
+        assertEquals(listOf(1, 2, 3), integers);
     }
 }

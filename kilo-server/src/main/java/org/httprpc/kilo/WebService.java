@@ -811,10 +811,9 @@ public abstract class WebService extends HttpServlet {
      * A list of active service descriptors.
      */
     public static synchronized List<ServiceDescriptor> getServiceDescriptors() {
-        return streamOf(instances.values())
+        return collect(streamOf(instances.values())
             .map(WebService::getServiceDescriptor)
-            .sorted(Comparator.comparing(WebService.ServiceDescriptor::getPath))
-            .collect(toList());
+            .sorted(Comparator.comparing(WebService.ServiceDescriptor::getPath)), toList());
     }
 
     @Override

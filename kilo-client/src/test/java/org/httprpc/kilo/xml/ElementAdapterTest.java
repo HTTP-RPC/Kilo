@@ -166,7 +166,7 @@ public class ElementAdapterTest {
 
         var items = (List<Object>)elementAdapter.get("item*");
 
-        assertEquals(listOf("4", "5", "6"), streamOf(items).map(Object::toString).collect(toList()));
+        assertEquals(listOf("4", "5", "6"), collect(streamOf(items).map(Object::toString), toList()));
 
         elementAdapter.put("item*", listOf());
 
