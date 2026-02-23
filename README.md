@@ -1160,7 +1160,7 @@ public static <T> Stream<T> streamOf(Iterable<T> iterable) { ... }
 public static <T> Stream<T> streamOf(Collection<T> collection) { ... }
 ```
 
-The first provides a less verbose alternative to the `java.util.stream.StreamSupport#stream()` method:
+The first version provides a less verbose alternative to the `java.util.stream.StreamSupport#stream()` method:
 
 ```java
 var iterable = (Iterable<Integer>)listOf(1, 2, 3);
