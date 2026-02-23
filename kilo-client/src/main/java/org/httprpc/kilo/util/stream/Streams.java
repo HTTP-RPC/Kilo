@@ -91,7 +91,7 @@ public class Streams {
      * The stream to collect.
      *
      * @param collector
-     * The collection function.
+     * The collector function.
      *
      * @return
      * The collection result.
@@ -111,7 +111,7 @@ public class Streams {
      * The element type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <E> Function<Stream<E>, Iterable<E>> toIterable() {
         return stream -> stream::iterator;
@@ -124,7 +124,7 @@ public class Streams {
      * The element type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <E> Function<Stream<E>, List<E>> toList() {
         return Streams::listOf;
@@ -137,7 +137,7 @@ public class Streams {
      * The element type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <E> Function<Stream<E>, List<E>> toImmutableList() {
         return stream -> java.util.Collections.unmodifiableList(listOf(stream));
@@ -163,7 +163,7 @@ public class Streams {
      * The value type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() {
         return Streams::mapOf;
@@ -179,7 +179,7 @@ public class Streams {
      * The value type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() {
         return stream -> java.util.Collections.unmodifiableMap(mapOf(stream));
@@ -205,7 +205,7 @@ public class Streams {
      * The value type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <K extends Comparable<? super K>, V> Function<Stream<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() {
         return Streams::sortedMapOf;
@@ -228,7 +228,7 @@ public class Streams {
      * The element type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <E> Function<Stream<E>, Set<E>> toSet() {
         return Streams::setOf;
@@ -241,7 +241,7 @@ public class Streams {
      * The element type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <E> Function<Stream<E>, Set<E>> toImmutableSet() {
         return stream -> java.util.Collections.unmodifiableSet(setOf(stream));
@@ -264,7 +264,7 @@ public class Streams {
      * The element type.
      *
      * @return
-     * The collection function.
+     * The collector function.
      */
     public static <E extends Comparable<? super E>> Function<Stream<E>, SortedSet<E>> toSortedSet() {
         return Streams::sortedSetOf;

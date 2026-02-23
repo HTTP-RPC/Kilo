@@ -1171,26 +1171,49 @@ var b = streamOf(iterable).findFirst().orElseThrow(); // 1
 
 The second is provided for consistency and simply delegates to `java.util.Collection#stream()`.
 
-The following methods offer a less complex alternative to `java.util.stream.Stream#collect()` and `java.util.stream.Collectors`:
+The `collect()` method offers a less complex alternative to `java.util.stream.Stream#collect()`:
 
 ```java
 public static <T, R> R collect(Stream<T> stream, Function<Stream<T>, R> collector) { ... }
+```
 
+For example:
+
+```java
+var values = listOf(1.0, 2.0, 3.0);
+
+var a = streamOf(values).collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
+    DoubleAccumulator::accumulate,
+    (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
+    DoubleAccumulator::doubleValue)); // 6.0
+
+var b = collect(streamOf(values), stream -> {
+    var total = 0.0;
+
+    for (var value : collect(stream, toIterable())) {
+        total += value;
+    }
+
+    return total;
+}); // 6.0
+```
+
+The following standard collectors are included:
+
+```java
 public static <E> Function<Stream<E>, Iterable<E>> toIterable() { ... }
 
 public static <E> Function<Stream<E>, List<E>> toList() { ... }
-public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() { ... }
-public static <E> Function<Stream<E>, Set<E>> toSet() { ... }
-```
-
-Immutable and sorted variants are provided as well:
-
-```java
 public static <E> Function<Stream<E>, List<E>> toImmutableList() { ... }
+
+public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() { ... }
 public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() { ... }
-public static <E> Function<Stream<E>, Set<E>> toImmutableSet() { ... }
 
 public static <K extends Comparable<? super K>, V> Function<Stream<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() { ... }
+
+public static <E> Function<Stream<E>, Set<E>> toSet() { ... }
+public static <E> Function<Stream<E>, Set<E>> toImmutableSet() { ... }
+
 public static <E extends Comparable<? super E>> Function<Stream<E>, SortedSet<E>> toSortedSet() { ... }
 ```
 

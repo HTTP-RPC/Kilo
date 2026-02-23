@@ -16,6 +16,8 @@ package org.httprpc.kilo.util.stream;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -36,6 +38,28 @@ public class StreamsTest {
     @Test
     public void testStreamOfCollection() {
         assertEquals(1, streamOf(listOf(1, 2, 3)).findFirst().orElseThrow());
+    }
+
+    @Test
+    public void testCollect() {
+        var values = listOf(1.0, 2.0, 3.0);
+
+        var a = streamOf(values).collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
+            DoubleAccumulator::accumulate,
+            (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
+            DoubleAccumulator::doubleValue)); // 6.0
+
+        var b = collect(streamOf(values), stream -> {
+            var total = 0.0;
+
+            for (var value : collect(stream, toIterable())) {
+                total += value;
+            }
+
+            return total;
+        }); // 6.0
+
+        assertEquals(a, b);
     }
 
     @Test
