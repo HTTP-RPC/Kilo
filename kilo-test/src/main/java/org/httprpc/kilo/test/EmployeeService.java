@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
 public class EmployeeService extends WebService {
@@ -58,7 +58,7 @@ public class EmployeeService extends WebService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return collect(streamOf(results).map(toType(Employee.class)), toList());
+            return collect(map(results, toType(Employee.class)), toList());
         }
     }
 
@@ -74,7 +74,7 @@ public class EmployeeService extends WebService {
 
             try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
-                pipe.submit(streamOf(results).map(toType(Employee.class)));
+                pipe.submit(map(results, toType(Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }

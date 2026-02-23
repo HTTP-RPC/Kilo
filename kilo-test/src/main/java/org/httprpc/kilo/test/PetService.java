@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = {"/pets/*"}, loadOnStartup = 1)
 public class PetService extends AbstractDatabaseService {
@@ -43,7 +43,7 @@ public class PetService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             ))) {
-            return collect(streamOf(results).map(toType(Pet.class)), toList());
+            return collect(map(results, toType(Pet.class)), toList());
         }
     }
 

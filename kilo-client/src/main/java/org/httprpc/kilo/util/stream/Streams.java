@@ -33,7 +33,11 @@ import java.util.stream.StreamSupport;
 
 /**
  * Provides static utility methods for working with streams.
+ *
+ * @deprecated
+ * Use {@link org.httprpc.kilo.util.Iterables} instead.
  */
+@Deprecated
 public class Streams {
     private Streams() {
     }

@@ -125,7 +125,11 @@ public class Pipe<E> implements Iterable<E> {
      *
      * @param stream
      * A stream containing the elements to submit.
+     *
+     * @deprecated
+     * Use {@link #submit(Iterable)} instead.
      */
+    @Deprecated
     public void submit(Stream<? extends E> stream) {
         if (stream == null) {
             throw new IllegalArgumentException();
@@ -135,6 +139,24 @@ public class Pipe<E> implements Iterable<E> {
 
         while (iterator.hasNext()) {
             submit(iterator.next());
+        }
+
+        submit(TERMINATOR);
+    }
+
+    /**
+     * Submits elements to the pipe.
+     *
+     * @param iterable
+     * An iterable containing the elements to submit.
+     */
+    public void submit(Iterable<? extends E> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        for (var element : iterable) {
+            submit(element);
         }
 
         submit(TERMINATOR);
