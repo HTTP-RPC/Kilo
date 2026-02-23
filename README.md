@@ -1033,7 +1033,7 @@ public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <E> Set<E> setOf(E... elements) { ... }
 ```
 
-They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable instances and do not permit `null` values. The following immutable and sorted variants are provided as well:
+They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable results and do not permit `null` values. The following immutable and sorted variants are provided as well:
 
 ```java
 public static <E> List<E> immutableListOf(E... elements) { ... }
@@ -1158,8 +1158,6 @@ The `Streams` class contains methods for simplifying stream handling code:
 ```java
 public static <T> Stream<T> streamOf(Iterable<T> iterable) { ... }
 public static <T> Stream<T> streamOf(Collection<T> collection) { ... }
-
-public static <T> Function<Object, T> toType(Class<T> type) { ... }
 ```
 
 The first provides a less verbose alternative to the `java.util.stream.StreamSupport#stream()` method:
@@ -1173,7 +1171,36 @@ var b = streamOf(iterable).findFirst().orElseThrow(); // 1
 
 The second is provided for consistency and simply delegates to `java.util.Collection#stream()`.
 
-The last method returns a function that coerces a value to a given type:
+The following methods offer a less complex alternative to `java.util.stream.Stream#collect()` and `java.util.stream.Collectors`:
+
+```java
+public static <T, R> R collect(Stream<T> stream, Function<Stream<T>, R> collector) { ... }
+
+public static <E> Function<Stream<E>, Iterable<E>> toIterable() { ... }
+
+public static <E> Function<Stream<E>, List<E>> toList() { ... }
+public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() { ... }
+public static <E> Function<Stream<E>, Set<E>> toSet() { ... }
+```
+
+Immutable and sorted variants are provided as well:
+
+```java
+public static <E> Function<Stream<E>, List<E>> toImmutableList() { ... }
+public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() { ... }
+public static <E> Function<Stream<E>, Set<E>> toImmutableSet() { ... }
+
+public static <K extends Comparable<? super K>, V> Function<Stream<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() { ... }
+public static <E extends Comparable<? super E>> Function<Stream<E>, SortedSet<E>> toSortedSet() { ... }
+```
+
+The `toType()` method returns a function that coerces a value to a given type:
+
+```java
+public static <T> Function<Object, T> toType(Class<T> type) { ... }
+```
+
+For example:
 
 ```java
 var strings = listOf("1", "2", "3");
