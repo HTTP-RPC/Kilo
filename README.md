@@ -1153,6 +1153,16 @@ public static <T> T firstOf(Iterable<T> iterable) { ... }
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
 
 ```java
+var values = listOf(1, 2, 3, 4, 5);
+
+var result = listOf(filter(values, value -> value < 3)); // 1, 2
+```
+
+```java
+// TODO
+```
+
+```java
 var values = listOf(1.0, 2.0, 3.0);
 
 var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
@@ -1171,7 +1181,11 @@ var b = collect(values, iterable -> {
 }); // 6.0
 ```
 
-The `toType()` method returns a function that coerces a value to a given type:
+```java
+// TODO
+```
+
+`Iterables` also provides the following method, which coerces a value to a given type:
 
 ```java
 public static <T> Function<Object, T> toType(Class<T> type) { ... }

@@ -28,7 +28,7 @@ public class IterablesTest {
     public void testFilter() {
         var values = listOf(1, 2, 3, 4, 5);
 
-        var result = listOf(filter(values, value -> value < 3));
+        var result = listOf(filter(values, value -> value < 3)); // 1, 2
 
         assertEquals(2, result.size());
 
