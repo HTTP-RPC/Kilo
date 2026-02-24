@@ -26,7 +26,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IterablesTest {
     @Test
     public void testFilter() {
-        // TODO
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = listOf(filter(values, value -> value < 3));
+
+        assertEquals(2, result.size());
+
+        assertEquals(1, result.getFirst());
+        assertEquals(2, result.getLast());
     }
 
     @Test

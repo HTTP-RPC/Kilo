@@ -16,6 +16,8 @@ package org.httprpc.kilo.util;
 
 import org.httprpc.kilo.beans.BeanAdapter;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -42,8 +44,39 @@ public class Iterables {
      * The filtered iterable.
      */
     public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) {
-        // TODO
-        return null;
+        if (iterable == null || predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new Iterator<>() {
+            Iterator<T> iterator = iterable.iterator();
+
+            T next = null;
+
+            @Override
+            public boolean hasNext() {
+                while (iterator.hasNext()) {
+                    next = iterator.next();
+
+                    if (predicate.test(next)) {
+                        return true;
+                    }
+                }
+
+                next = null;
+
+                return false;
+            }
+
+            @Override
+            public T next() {
+                if (next == null) {
+                    throw new NoSuchElementException();
+                }
+
+                return next;
+            }
+        };
     }
 
     /**
