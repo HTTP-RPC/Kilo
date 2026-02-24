@@ -32,6 +32,7 @@ public class Pipe<E> implements Iterable<E> {
     private BlockingQueue<Object> queue;
     private int timeout;
 
+    // TODO
     private Iterator<E> iterator = new Iterator<>() {
         Boolean hasNext = null;
         E next = null;

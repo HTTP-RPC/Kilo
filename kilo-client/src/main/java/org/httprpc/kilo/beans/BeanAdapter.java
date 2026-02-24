@@ -56,8 +56,9 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
 
 /**
  * Provides access to Java bean properties and record components via the
@@ -1052,16 +1053,9 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
             var propertyType = accessor.getReturnType();
 
-            var mutatorList = mutatorMap.get(propertyName);
+            var mutatorList = coalesce(mutatorMap.get(propertyName), () -> emptyListOf(Method.class));
 
-            Method mutator;
-            if (mutatorList != null) {
-                mutator = streamOf(mutatorList)
-                    .filter(method -> method.getParameterTypes()[0] == propertyType)
-                    .findFirst().orElse(null);
-            } else {
-                mutator = null;
-            }
+            var mutator = firstOf(filter(mutatorList, method -> method.getParameterTypes()[0] == propertyType));
 
             var key = getKey(accessor, propertyName);
 

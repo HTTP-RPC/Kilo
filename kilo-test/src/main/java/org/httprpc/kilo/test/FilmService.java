@@ -25,8 +25,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
 
 @WebServlet(urlPatterns = {"/films/*"}, loadOnStartup = 1)
 @Description("Film example service.")
@@ -53,7 +53,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("match", map(match, value -> value.replace('*', '%')))
             ))) {
-            return collect(streamOf(results).map(toType(Film.class)), toList());
+            return collect(mapAll(results, toType(Film.class)), toList());
         }
     }
 
@@ -70,7 +70,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            film = streamOf(results).findFirst().map(toType(FilmDetail.class)).orElseThrow();
+            film = map(firstOf(results), toType(FilmDetail.class));
         }
 
         film.setActors(getActors(filmID));
@@ -89,7 +89,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return collect(streamOf(results).map(toType(Actor.class)), toList());
+            return collect(mapAll(results, toType(Actor.class)), toList());
         }
     }
 
@@ -103,7 +103,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return collect(streamOf(results).map(toType(Category.class)), toList());
+            return collect(mapAll(results, toType(Category.class)), toList());
         }
     }
 }

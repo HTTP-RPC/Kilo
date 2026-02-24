@@ -74,7 +74,7 @@ public class Iterables {
      * @return
      * The transformed iterable.
      */
-    public static <T, R> Iterable<R> map(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
+    public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
         // TODO
         return null;
     }
@@ -103,6 +103,28 @@ public class Iterables {
         }
 
         return collector.apply(iterable);
+    }
+
+    /**
+     * Retrieves the first element from an iterable.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable.
+     *
+     * @return
+     * The iterable's first element, or {@code null} if the iterable is empty.
+     */
+    public static <T> T firstOf(Iterable<T> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var iterator = iterable.iterator();
+
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     /**

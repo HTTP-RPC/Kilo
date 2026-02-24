@@ -30,7 +30,7 @@ public class IterablesTest {
     }
 
     @Test
-    public void testMap() {
+    public void testMapAll() {
         // TODO
     }
 
@@ -160,7 +160,7 @@ public class IterablesTest {
     public void testToType() {
         var strings = listOf("1", "2", "3");
 
-        var integers = collect(map(strings, toType(Integer.class)), toList()); // 1, 2, 3
+        var integers = collect(mapAll(strings, toType(Integer.class)), toList()); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), integers);
     }

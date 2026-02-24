@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PipeTest {
@@ -61,9 +61,9 @@ public class PipeTest {
     private void testPipe(Pipe<Integer> pipe) {
         var expectedValues = listOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89);
 
-        executorService.submit(() -> pipe.submit(streamOf(expectedValues)));
+        executorService.submit(() -> pipe.submit(expectedValues));
 
-        assertEquals(expectedValues, collect(streamOf(pipe), toList()));
+        assertEquals(expectedValues, collect(pipe, toList()));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class PipeTest {
 
         var future = executorService.submit(() -> {
             try {
-                pipe.submit(streamOf(listOf("abc")));
+                pipe.submit(listOf("abc"));
             } catch (TimeoutException exception) {
                 return true;
             }
