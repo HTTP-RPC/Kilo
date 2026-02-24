@@ -57,6 +57,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 /**
@@ -902,7 +903,7 @@ public class WebServiceProxy {
 
             return list;
         } else if (argument instanceof Collection<?> collection) {
-            return listOf(map(collection, WebServiceProxy::getParameterValue));
+            return listOf(mapAll(collection, WebServiceProxy::getParameterValue));
         } else {
             return listOf(getParameterValue(argument));
         }
