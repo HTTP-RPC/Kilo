@@ -33,7 +33,6 @@ public class ResultSetAdapter implements Iterable<Map<String, Object>>, AutoClos
 
     private ResultSetMetaData resultSetMetaData;
 
-    // TODO
     private Iterator<Map<String, Object>> iterator = new Iterator<>() {
         Boolean hasNext = null;
 
