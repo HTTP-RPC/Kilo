@@ -40,6 +40,8 @@ public class Pipe<E> implements Iterable<E> {
         @SuppressWarnings("unchecked")
         public boolean hasNext() {
             if (hasNext == null) {
+                hasNext = Boolean.FALSE;
+
                 Object next;
                 try {
                     if (timeout == 0) {
@@ -55,11 +57,7 @@ public class Pipe<E> implements Iterable<E> {
                     throw new RuntimeException(exception);
                 }
 
-                if (next == TERMINATOR) {
-                    hasNext = Boolean.FALSE;
-
-                    this.next = null;
-                } else {
+                if (next != TERMINATOR) {
                     hasNext = Boolean.TRUE;
 
                     this.next = (E)next;

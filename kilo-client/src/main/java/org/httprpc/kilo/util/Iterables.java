@@ -29,6 +29,7 @@ public class Iterables {
         Iterator<T> iterator;
         Predicate<? super T> predicate;
 
+        Boolean hasNext = null;
         T next = null;
 
         FilterIterator(Iterator<T> iterator, Predicate<? super T> predicate) {
@@ -38,24 +39,30 @@ public class Iterables {
 
         @Override
         public boolean hasNext() {
-            while (iterator.hasNext()) {
-                next = iterator.next();
+            if (hasNext == null) {
+                hasNext = Boolean.FALSE;
 
-                if (predicate.test(next)) {
-                    return true;
+                while (iterator.hasNext()) {
+                    next = iterator.next();
+
+                    if (predicate.test(next)) {
+                        hasNext = Boolean.TRUE;
+
+                        break;
+                    }
                 }
             }
 
-            next = null;
-
-            return false;
+            return hasNext;
         }
 
         @Override
         public T next() {
-            if (next == null) {
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             }
+
+            hasNext = null;
 
             return next;
         }
