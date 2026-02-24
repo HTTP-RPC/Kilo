@@ -138,52 +138,46 @@ public class TestService extends AbstractDatabaseService {
     ) {
     }
 
-    // TODO
-    private static class FibonacciSequence implements Iterable<Number> {
-        private int count;
+    private static class FibonacciIterator implements Iterator<Number> {
+        int count;
 
-        FibonacciSequence(int count) {
+        int i = 0;
+
+        BigInteger a = BigInteger.valueOf(0);
+        BigInteger b = BigInteger.valueOf(1);
+
+        FibonacciIterator(int count) {
             this.count = count;
         }
 
         @Override
-        public Iterator<Number> iterator() {
-            return new Iterator<>() {
-                int i = 0;
+        public boolean hasNext() {
+            return i < count;
+        }
 
-                BigInteger a = BigInteger.valueOf(0);
-                BigInteger b = BigInteger.valueOf(1);
+        @Override
+        public Number next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
 
-                @Override
-                public boolean hasNext() {
-                    return i < count;
+            BigInteger next;
+            if (i == 0) {
+                next = a;
+            } else {
+                if (i > 1) {
+                    var c = a.add(b);
+
+                    a = b;
+                    b = c;
                 }
 
-                @Override
-                public BigInteger next() {
-                    if (!hasNext()) {
-                        throw new NoSuchElementException();
-                    }
+                next = b;
+            }
 
-                    BigInteger next;
-                    if (i == 0) {
-                        next = a;
-                    } else {
-                        if (i > 1) {
-                            var c = a.add(b);
+            i++;
 
-                            a = b;
-                            b = c;
-                        }
-
-                        next = b;
-                    }
-
-                    i++;
-
-                    return next;
-                }
-            };
+            return next;
         }
     }
 
@@ -254,7 +248,7 @@ public class TestService extends AbstractDatabaseService {
     @RequestMethod("GET")
     @ResourcePath("fibonacci")
     public Iterable<Number> testGetFibonacci(int count) {
-        return new FibonacciSequence(count);
+        return () -> new FibonacciIterator(count);
     }
 
     @RequestMethod("GET")
