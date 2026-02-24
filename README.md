@@ -1153,6 +1153,8 @@ public static <T> T firstOf(Iterable<T> iterable) { ... }
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
 
 ```java
+var values = listOf(1.0, 2.0, 3.0);
+
 var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
     DoubleAccumulator::accumulate,
     (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
