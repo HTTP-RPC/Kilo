@@ -1079,7 +1079,7 @@ var set = setOf("a", "b", "c");
 System.out.println(set.contains("a")); // true
 ```
 
-The `indexWhere()` and `lastIndexWhere()` methods can be used to find the index of either the first or last list element that matches a given predicate:
+`Collections` also provides the `indexWhere()` and `lastIndexWhere()` methods, which can be used to find the index of either the first or last list element that matches a given predicate:
 
 ```java
 public static <E> int indexWhere(List<E> list, Predicate<? super E> predicate) { ... }
