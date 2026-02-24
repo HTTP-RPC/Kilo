@@ -41,15 +41,16 @@ public class Pipe<E> implements Iterable<E> {
         public boolean hasNext() {
             if (hasNext == null) {
                 hasNext = Boolean.FALSE;
+                next = null;
 
-                Object next;
+                Object value;
                 try {
                     if (timeout == 0) {
-                        next = queue.take();
+                        value = queue.take();
                     } else {
-                        next = queue.poll(timeout, TimeUnit.MILLISECONDS);
+                        value = queue.poll(timeout, TimeUnit.MILLISECONDS);
 
-                        if (next == null) {
+                        if (value == null) {
                             throw new TimeoutException("Poll timed out.");
                         }
                     }
@@ -57,10 +58,9 @@ public class Pipe<E> implements Iterable<E> {
                     throw new RuntimeException(exception);
                 }
 
-                if (next != TERMINATOR) {
+                if (value != TERMINATOR) {
                     hasNext = Boolean.TRUE;
-
-                    this.next = (E)next;
+                    next = (E)value;
                 }
             }
 

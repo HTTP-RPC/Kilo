@@ -41,12 +41,14 @@ public class Iterables {
         public boolean hasNext() {
             if (hasNext == null) {
                 hasNext = Boolean.FALSE;
+                next = null;
 
                 while (iterator.hasNext()) {
-                    next = iterator.next();
+                    var element = iterator.next();
 
-                    if (predicate.test(next)) {
+                    if (predicate.test(element)) {
                         hasNext = Boolean.TRUE;
+                        next = element;
 
                         break;
                     }
