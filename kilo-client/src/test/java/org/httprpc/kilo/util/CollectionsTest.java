@@ -58,7 +58,9 @@ public class CollectionsTest {
 
     @Test
     public void testImmutableListOfIterable() {
-        // TODO
+        var list = immutableListOf(listOf(1, 2, 3));
+
+        assertThrows(UnsupportedOperationException.class, () -> list.add(4));
     }
 
     @Test
@@ -93,7 +95,15 @@ public class CollectionsTest {
 
     @Test
     public void testMapOfIterable() {
-        // TODO
+        var expected = mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        var actual = mapOf(expected.entrySet());
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -109,7 +119,13 @@ public class CollectionsTest {
 
     @Test
     public void testImmutableMapOfIterable() {
-        // TODO
+        var map = immutableMapOf(mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        ).entrySet());
+
+        assertThrows(UnsupportedOperationException.class, () -> map.put("d", 4));
     }
 
     @Test
@@ -134,7 +150,13 @@ public class CollectionsTest {
 
     @Test
     public void testSortedMapOfIterable() {
-        // TODO
+        var sortedMap = sortedMapOf(mapOf(
+            entry("c", 3),
+            entry("b", 2),
+            entry("a", 1)
+        ).entrySet());
+
+        assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedMap.values()));
     }
 
     @Test
@@ -156,7 +178,10 @@ public class CollectionsTest {
 
     @Test
     public void testSetOfIterable() {
-        // TODO
+        var expected = setOf(1, 2, 3);
+        var actual = setOf(setOf(1, 2, 3));
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -168,7 +193,9 @@ public class CollectionsTest {
 
     @Test
     public void testImmutableSetOfIterable() {
-        // TODO
+        var set = immutableSetOf(setOf(1, 2, 3));
+
+        assertThrows(UnsupportedOperationException.class, () -> set.add(4));
     }
 
     @Test
@@ -189,7 +216,9 @@ public class CollectionsTest {
 
     @Test
     public void testSortedSetOfIterable() {
-        // TODO
+        var sortedSet = sortedSetOf(setOf(3, 2, 1));
+
+        assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedSet));
     }
 
     @Test
