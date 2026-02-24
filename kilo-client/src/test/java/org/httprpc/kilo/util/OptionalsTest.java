@@ -16,39 +16,30 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.httprpc.kilo.util.Optionals.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class OptionalsTest {
     @Test
     public void testCoalesce() {
-        var value = 123;
+        var result = coalesce(null, () -> 123); // 123
 
-        var a = Optional.ofNullable(null).orElse(value); // 123
-        var b = coalesce(null, () -> value); // 123
-
-        assertEquals(a, b);
+        assertEquals(123, result);
     }
 
     @Test
     public void testMap() {
-        var value = "hello";
+        var result = map("hello", String::length); // 5
 
-        var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
-        var b = map(value, String::length); // 5
-
-        assertEquals(a, b);
+        assertEquals(5, result);
 
         assertNull(map(null, String::length));
     }
 
     @Test
     public void testPerform() {
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder("abc");
 
-        Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
         perform("def", stringBuilder::append); // abcdef
 
         perform(null, stringBuilder::append);

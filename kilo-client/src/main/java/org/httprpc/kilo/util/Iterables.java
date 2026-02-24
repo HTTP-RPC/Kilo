@@ -98,8 +98,23 @@ public class Iterables {
      * The transformed iterable.
      */
     public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
-        // TODO
-        return null;
+        if (iterable == null || transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new Iterator<>() {
+            Iterator<T> iterator = iterable.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public R next() {
+                return transform.apply(iterator.next());
+            }
+        };
     }
 
     /**

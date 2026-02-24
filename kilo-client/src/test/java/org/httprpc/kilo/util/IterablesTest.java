@@ -16,9 +16,6 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.atomic.DoubleAccumulator;
-import java.util.stream.Collector;
-
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IterablesTest {
     @Test
     public void testFilter() {
-        var values = listOf(1, 2, 3, 4, 5);
+        var values = listOf(1, 2, 3);
 
         var result = listOf(filter(values, value -> value < 3)); // 1, 2
 
@@ -38,34 +35,39 @@ public class IterablesTest {
 
     @Test
     public void testMapAll() {
-        // TODO
+        var values = listOf("1", "2", "3");
+
+        var result = listOf(mapAll(values, Integer::valueOf)); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), result);
     }
 
     @Test
     public void testCollect() {
-        var values = listOf(1.0, 2.0, 3.0);
+        var values = listOf(1, 2, 3);
 
-        var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
-            DoubleAccumulator::accumulate,
-            (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
-            DoubleAccumulator::doubleValue)); // 6.0
-
-        var b = collect(values, iterable -> {
-            var total = 0.0;
+        var result = collect(values, iterable -> {
+            var total = 0;
 
             for (var value : iterable) {
                 total += value;
             }
 
             return total;
-        }); // 6.0
+        }); // 6
 
-        assertEquals(a, b);
+        assertEquals(6, result);
     }
 
     @Test
     public void testFirstOf() {
-        // TODO
+        var values = listOf(1, 2, 3);
+
+        var result = firstOf(values); // 1
+
+        assertEquals(1, result);
+
+        assertNull(firstOf(emptyListOf(Integer.class)));
     }
 
     @Test

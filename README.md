@@ -1106,23 +1106,16 @@ public static <T> void perform(T value, Consumer<? super T> action) { ... }
 These are provided as a less verbose alternative to similar methods defined by the `java.util.Optional` class:
 
 ```java
-var value = 123;
-
-var a = Optional.ofNullable(null).orElse(value); // 123
-var b = coalesce(null, () -> value); // 123
+var result = coalesce(null, () -> 123); // 123
 ```
 
 ```java
-var value = "hello";
-
-var a = Optional.ofNullable(value).map(String::length).orElse(null); // 5
-var b = map(value, String::length); // 5
+var result = map("hello", String::length); // 5
 ```
 
 ```java
-var stringBuilder = new StringBuilder();
+var stringBuilder = new StringBuilder("abc");
 
-Optional.ofNullable("abc").ifPresent(stringBuilder::append); // abc
 perform("def", stringBuilder::append); // abcdef
 ```
 
@@ -1153,36 +1146,35 @@ public static <T> T firstOf(Iterable<T> iterable) { ... }
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
 
 ```java
-var values = listOf(1, 2, 3, 4, 5);
+var values = listOf(1, 2, 3);
 
 var result = listOf(filter(values, value -> value < 3)); // 1, 2
 ```
 
 ```java
-// TODO
+var values = listOf("1", "2", "3");
+
+var result = listOf(mapAll(values, Integer::valueOf)); // 1, 2, 3
 ```
 
 ```java
-var values = listOf(1.0, 2.0, 3.0);
+var values = listOf(1, 2, 3);
 
-var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
-    DoubleAccumulator::accumulate,
-    (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
-    DoubleAccumulator::doubleValue)); // 6.0
-
-var b = collect(values, iterable -> {
-    var total = 0.0;
+var result = collect(values, iterable -> {
+    var total = 0;
 
     for (var value : iterable) {
         total += value;
     }
 
     return total;
-}); // 6.0
+}); // 6
 ```
 
 ```java
-// TODO
+var values = listOf(1, 2, 3);
+
+var result = firstOf(values); // 1
 ```
 
 `Iterables` also provides the following method, which coerces a value to a given type:

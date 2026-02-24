@@ -43,7 +43,10 @@ public class CollectionsTest {
 
     @Test
     public void testListOfIterable() {
-        // TODO
+        var expected = listOf(1, 2, 3);
+        var actual = listOf(listOf(1, 2, 3));
+
+        assertEquals(expected, actual);
     }
 
     @Test
