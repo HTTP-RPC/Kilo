@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PipeTest {
@@ -63,7 +62,7 @@ public class PipeTest {
 
         executorService.submit(() -> pipe.submit(expectedValues));
 
-        assertEquals(expectedValues, collect(pipe, toList()));
+        assertEquals(expectedValues, listOf(pipe));
     }
 
     @Test

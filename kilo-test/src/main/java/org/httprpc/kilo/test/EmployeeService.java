@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
 @WebServlet(urlPatterns = {"/employees/*"}, loadOnStartup = 1)
@@ -58,7 +59,7 @@ public class EmployeeService extends WebService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return collect(mapAll(results, toType(Employee.class)), toList());
+            return listOf(mapAll(results, toType(Employee.class)));
         }
     }
 

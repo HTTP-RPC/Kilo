@@ -792,7 +792,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return collect(map(results, toType(Pet.class)), toList());
+return listOf(mapAll(results, toType(Pet.class)));
 ```
 
 ```java
@@ -993,7 +993,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return collect(map(results, toType(Employee.class)), toList());
+    return listOf(mapAll(results, toType(Employee.class)));
 }
 ```
 
@@ -1009,7 +1009,7 @@ executorService.submit(() -> {
 
     try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
-        pipe.submit(map(results, toType(Employee.class)));
+        pipe.submit(mapAll(results, toType(Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }
@@ -1029,19 +1029,28 @@ The `Collections` class provides a set of static utility methods for declarative
 
 ```java
 public static <E> List<E> listOf(E... elements) { ... }
-public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
-public static <E> Set<E> setOf(E... elements) { ... }
-```
-
-They offer an alternative to similar methods defined by the `List`, `Map`, and `Set` interfaces, which produce immutable results and do not permit `null` values. The following immutable and sorted variants are provided as well:
-
-```java
+public static <E> List<E> listOf(Iterable<E> elements) { ... }
 public static <E> List<E> immutableListOf(E... elements) { ... }
+public static <E> List<E> immutableListOf(Iterable<E> elements) { ... }
+public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
+
+public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
+public static <K, V> Map<K, V> mapOf(Iterable<Map.Entry<K, V>> entries) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
-public static <E> Set<E> immutableSetOf(E... elements) { ... }
+public static <K, V> Map<K, V> immutableMapOf(Iterable<Map.Entry<K, V>> entries) { ... }
+public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
 
 public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) { ... }
+public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Iterable<Map.Entry<K, V>> entries) { ... }
+
+public static <E> Set<E> setOf(E... elements) { ... }
+public static <E> Set<E> setOf(Iterable<E> elements) { ... }
+public static <E> Set<E> immutableSetOf(E... elements) { ... }
+public static <E> Set<E> immutableSetOf(Iterable<E> elements) { ... }
+public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
+
 public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(E... elements) { ... }
+public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Iterable<E> elements) { ... }
 ```
 
 This method can be used to declare map entries:
@@ -1068,27 +1077,6 @@ System.out.println(map.get("a")); // 1
 var set = setOf("a", "b", "c");
 
 System.out.println(set.contains("a")); // true
-```
-
-`Collections` also includes support for declaring empty lists, maps, and sets:
-
-```java
-public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
-public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
-public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
-```
-
-These methods can be used in place of similar methods defined by the `java.util.Collections` class:
-
-```java
-var list1 = java.util.Collections.<Integer>emptyList();
-var list2 = emptyListOf(Integer.class);
-
-var map1 = java.util.Collections.<String, Integer>emptyMap();
-var map2 = emptyMapOf(String.class, Integer.class);
-
-var set1 = java.util.Collections.<String>emptySet();
-var set2 = emptySetOf(String.class);
 ```
 
 The `indexWhere()` and `lastIndexWhere()` methods can be used to find the index of either the first or last list element that matches a given predicate:
@@ -1157,54 +1145,14 @@ The `Iterables` class contains methods for working with iterable types:
 
 ```java
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
-public static <T, R> Iterable<R> map(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
-public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) { ... }
+public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T> T firstOf(Iterable<T> iterable) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
 
 ```java
 // TODO
-```
-
-```java
-// TODO
-```
-
-```java
-var values = listOf(1.0, 2.0, 3.0);
-
-var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
-    DoubleAccumulator::accumulate,
-    (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
-    DoubleAccumulator::doubleValue)); // 6.0
-
-var b = collect(values, iterable -> {
-    var total = 0.0;
-
-    for (var value : iterable) {
-        total += value;
-    }
-
-    return total;
-}); // 6.0
-```
-
-The following standard collectors are included:
-
-```java
-public static <E> Function<Iterable<E>, List<E>> toList() { ... }
-public static <E> Function<Iterable<E>, List<E>> toImmutableList() { ... }
-
-public static <K, V> Function<Iterable<Map.Entry<K, V>>, Map<K, V>> toMap() { ... }
-public static <K, V> Function<Iterable<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() { ... }
-
-public static <K extends Comparable<? super K>, V> Function<Iterable<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() { ... }
-
-public static <E> Function<Iterable<E>, Set<E>> toSet() { ... }
-public static <E> Function<Iterable<E>, Set<E>> toImmutableSet() { ... }
-
-public static <E extends Comparable<? super E>> Function<Iterable<E>, SortedSet<E>> toSortedSet() { ... }
 ```
 
 The `toType()` method returns a function that coerces a value to a given type:
@@ -1218,5 +1166,5 @@ For example:
 ```java
 var strings = listOf("1", "2", "3");
 
-var integers = collect(map(strings, toType(Integer.class)), toList()); // 1, 2, 3
+var integers = listOf(mapAll(strings, toType(Integer.class))); // 1, 2, 3
 ```

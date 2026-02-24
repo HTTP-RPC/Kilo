@@ -57,6 +57,33 @@ public class Collections {
     }
 
     /**
+     * Creates a list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The list elements.
+     *
+     * @return
+     * A random-access list containing the provided elements in the order
+     * given.
+     */
+    public static <E> List<E> listOf(Iterable<E> elements) {
+        if (elements == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var list = new ArrayList<E>();
+
+        for (var element : elements) {
+            list.add(element);
+        }
+
+        return list;
+    }
+
+    /**
      * Creates an immutable list.
      *
      * @param <E>
@@ -72,6 +99,43 @@ public class Collections {
     @SafeVarargs
     public static <E> List<E> immutableListOf(E... elements) {
         return java.util.Collections.unmodifiableList(listOf(elements));
+    }
+
+    /**
+     * Creates an immutable list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The list elements.
+     *
+     * @return
+     * An immutable, random-access list containing the provided elements in the
+     * order given.
+     */
+    public static <E> List<E> immutableListOf(Iterable<E> elements) {
+        return java.util.Collections.unmodifiableList(listOf(elements));
+    }
+
+    /**
+     * Returns an empty list.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * An empty list.
+     */
+    public static <E> List<E> emptyListOf(Class<E> elementType) {
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return immutableListOf();
     }
 
     /**
@@ -101,6 +165,35 @@ public class Collections {
     }
 
     /**
+     * Creates a map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param entries
+     * The map entries.
+     *
+     * @return
+     * A map containing the provided entries in the order given.
+     */
+    public static <K, V> Map<K, V> mapOf(Iterable<Map.Entry<K, V>> entries) {
+        if (entries == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var map = new LinkedHashMap<K, V>();
+
+        for (var entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
      * Creates an immutable map.
      *
      * @param <K>
@@ -121,6 +214,51 @@ public class Collections {
     }
 
     /**
+     * Creates an immutable map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param entries
+     * The map entries.
+     *
+     * @return
+     * An immutable map containing the provided entries in the order given.
+     */
+    public static <K, V> Map<K, V> immutableMapOf(Iterable<Map.Entry<K, V>> entries) {
+        return java.util.Collections.unmodifiableMap(mapOf(entries));
+    }
+
+    /**
+     * Returns an empty map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param keyType
+     * The key type.
+     *
+     * @param valueType
+     * The value type.
+     *
+     * @return
+     * An empty map.
+     */
+    public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) {
+        if (keyType == null || valueType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return immutableMapOf();
+    }
+
+    /**
      * Creates a sorted map.
      *
      * @param <K>
@@ -137,6 +275,35 @@ public class Collections {
      */
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) {
+        var map = new TreeMap<K, V>();
+
+        for (var entry : entries) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
+     * Creates a sorted map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @param entries
+     * The map entries.
+     *
+     * @return
+     * A map containing the provided entries sorted by key.
+     */
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Iterable<Map.Entry<K, V>> entries) {
+        if (entries == null) {
+            throw new IllegalArgumentException();
+        }
+
         var map = new TreeMap<K, V>();
 
         for (var entry : entries) {
@@ -190,6 +357,32 @@ public class Collections {
     }
 
     /**
+     * Creates a set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The set elements.
+     *
+     * @return
+     * A set containing the provided elements in the order given.
+     */
+    public static <E> Set<E> setOf(Iterable<E> elements) {
+        if (elements == null) {
+            throw new IllegalArgumentException();
+        }
+
+        var set = new LinkedHashSet<E>();
+
+        for (var element : elements) {
+            set.add(element);
+        }
+
+        return set;
+    }
+
+    /**
      * Creates an immutable set.
      *
      * @param <E>
@@ -204,6 +397,42 @@ public class Collections {
     @SafeVarargs
     public static <E> Set<E> immutableSetOf(E... elements) {
         return java.util.Collections.unmodifiableSet(setOf(elements));
+    }
+
+    /**
+     * Creates an immutable set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elements
+     * The set elements.
+     *
+     * @return
+     * An immutable set containing the provided elements in the order given.
+     */
+    public static <E> Set<E> immutableSetOf(Iterable<E> elements) {
+        return java.util.Collections.unmodifiableSet(setOf(elements));
+    }
+
+    /**
+     * Returns an empty set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @param elementType
+     * The element type.
+     *
+     * @return
+     * An empty set.
+     */
+    public static <E> Set<E> emptySetOf(Class<E> elementType) {
+        if (elementType == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return immutableSetOf();
     }
 
     /**
@@ -228,69 +457,29 @@ public class Collections {
     }
 
     /**
-     * Returns an empty list.
+     * Creates a sorted set.
      *
      * @param <E>
      * The element type.
      *
-     * @param elementType
-     * The element type.
+     * @param elements
+     * The set elements.
      *
      * @return
-     * An empty list.
+     * A sorted set containing the provided elements.
      */
-    public static <E> List<E> emptyListOf(Class<E> elementType) {
-        if (elementType == null) {
+    public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Iterable<E> elements) {
+        if (elements == null) {
             throw new IllegalArgumentException();
         }
 
-        return immutableListOf();
-    }
+        var set = new TreeSet<E>();
 
-    /**
-     * Returns an empty map.
-     *
-     * @param <K>
-     * The key type.
-     *
-     * @param <V>
-     * The value type.
-     *
-     * @param keyType
-     * The key type.
-     *
-     * @param valueType
-     * The value type.
-     *
-     * @return
-     * An empty map.
-     */
-    public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) {
-        if (keyType == null || valueType == null) {
-            throw new IllegalArgumentException();
+        for (var element : elements) {
+            set.add(element);
         }
 
-        return immutableMapOf();
-    }
-
-    /**
-     * Returns an empty set.
-     *
-     * @param <E>
-     * The element type.
-     *
-     * @param elementType
-     * The element type.
-     *
-     * @return
-     * An empty set.
-     */
-    public static <E> Set<E> emptySetOf(Class<E> elementType) {
-        if (elementType == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return immutableSetOf();
+        return set;
     }
 
     /**

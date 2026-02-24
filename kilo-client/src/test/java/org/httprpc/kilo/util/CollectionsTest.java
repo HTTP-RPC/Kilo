@@ -42,10 +42,29 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testListOfIterable() {
+        // TODO
+    }
+
+    @Test
     public void testImmutableListOf() {
         var list = immutableListOf(1, 2, 3);
 
         assertThrows(UnsupportedOperationException.class, () -> list.add(4));
+    }
+
+    @Test
+    public void testImmutableListOfIterable() {
+        // TODO
+    }
+
+    @Test
+    public void testEmptyListOf() {
+        var list1 = java.util.Collections.<Integer>emptyList();
+        var list2 = emptyListOf(Integer.class);
+
+        assertTrue(list2.isEmpty());
+        assertEquals(list1, list2);
     }
 
     @Test
@@ -70,6 +89,11 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testMapOfIterable() {
+        // TODO
+    }
+
+    @Test
     public void testImmutableMapOf() {
         var map = immutableMapOf(
             entry("a", 1),
@@ -81,6 +105,20 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testImmutableMapOfIterable() {
+        // TODO
+    }
+
+    @Test
+    public void testEmptyMapOf() {
+        var map1 = java.util.Collections.<String, Integer>emptyMap();
+        var map2 = emptyMapOf(String.class, Integer.class);
+
+        assertTrue(map2.isEmpty());
+        assertEquals(map1, map2);
+    }
+
+    @Test
     public void testSortedMapOf() {
         var sortedMap = sortedMapOf(
             entry("c", 3),
@@ -89,6 +127,11 @@ public class CollectionsTest {
         );
 
         assertEquals(listOf(1, 2, 3), new ArrayList<>(sortedMap.values()));
+    }
+
+    @Test
+    public void testSortedMapOfIterable() {
+        // TODO
     }
 
     @Test
@@ -109,10 +152,29 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testSetOfIterable() {
+        // TODO
+    }
+
+    @Test
     public void testImmutableSetOf() {
         var set = immutableSetOf(1, 2, 3);
 
         assertThrows(UnsupportedOperationException.class, () -> set.add(4));
+    }
+
+    @Test
+    public void testImmutableSetOfIterable() {
+        // TODO
+    }
+
+    @Test
+    public void testEmptySetOf() {
+        var set1 = java.util.Collections.<String>emptySet();
+        var set2 = emptySetOf(String.class);
+
+        assertTrue(set2.isEmpty());
+        assertEquals(set1, set2);
     }
 
     @Test
@@ -123,30 +185,8 @@ public class CollectionsTest {
     }
 
     @Test
-    public void testEmptyListOf() {
-        var list1 = java.util.Collections.<Integer>emptyList();
-        var list2 = emptyListOf(Integer.class);
-
-        assertTrue(list2.isEmpty());
-        assertEquals(list1, list2);
-    }
-
-    @Test
-    public void testEmptyMapOf() {
-        var map1 = java.util.Collections.<String, Integer>emptyMap();
-        var map2 = emptyMapOf(String.class, Integer.class);
-
-        assertTrue(map2.isEmpty());
-        assertEquals(map1, map2);
-    }
-
-    @Test
-    public void testEmptySetOf() {
-        var set1 = java.util.Collections.<String>emptySet();
-        var set2 = emptySetOf(String.class);
-
-        assertTrue(set2.isEmpty());
-        assertEquals(set1, set2);
+    public void testSortedSetOfIterable() {
+        // TODO
     }
 
     @Test
