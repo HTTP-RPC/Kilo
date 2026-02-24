@@ -57,7 +57,7 @@ public class Optionals {
      * The value type.
      *
      * @param <U>
-     * The type produced by the mapping function.
+     * The target type.
      *
      * @param value
      * The optional value.

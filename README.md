@@ -30,7 +30,7 @@ Classes provided by the Kilo framework include:
 * [Pipe](#pipe)
 * [Collections](#collections)
 * [Optionals](#optionals)
-* [Streams](#streams)
+* [Iterables](#iterables)
 
 Each is discussed in more detail below.
 
@@ -792,7 +792,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return collect(streamOf(results).map(toType(Pet.class)), toList());
+return collect(map(results, toType(Pet.class)), toList());
 ```
 
 ```java
@@ -993,7 +993,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return collect(streamOf(results).map(toType(Employee.class)), toList());
+    return collect(map(results, toType(Employee.class)), toList());
 }
 ```
 
@@ -1009,7 +1009,7 @@ executorService.submit(() -> {
 
     try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
-        pipe.submit(streamOf(results).map(toType(Employee.class)));
+        pipe.submit(map(results, toType(Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }
@@ -1152,32 +1152,24 @@ var text = cast("abc", String.class); // abc
 var number = cast("abc", Double.class); // null
 ```
 
-## Streams
-The `Streams` class contains methods for simplifying stream handling code:
+## Iterables
+The `Iterables` class contains methods for working with iterable types:
 
 ```java
-public static <T> Stream<T> streamOf(Iterable<T> iterable) { ... }
-public static <T> Stream<T> streamOf(Collection<T> collection) { ... }
+public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
+public static <T, R> Iterable<R> map(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) { ... }
 ```
 
-The first version provides a less verbose alternative to the `java.util.stream.StreamSupport#stream()` method:
+These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
 
 ```java
-var iterable = (Iterable<Integer>)listOf(1, 2, 3);
-
-var a = StreamSupport.stream(iterable.spliterator(), false).findFirst().orElseThrow(); // 1
-var b = streamOf(iterable).findFirst().orElseThrow(); // 1
+// TODO
 ```
-
-The second is provided for consistency and simply delegates to `java.util.Collection#stream()`.
-
-The `collect()` method offers a less complex alternative to `java.util.stream.Stream#collect()`:
 
 ```java
-public static <T, R> R collect(Stream<T> stream, Function<Stream<T>, R> collector) { ... }
+// TODO
 ```
-
-For example:
 
 ```java
 var values = listOf(1.0, 2.0, 3.0);
@@ -1187,10 +1179,10 @@ var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double:
     (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
     DoubleAccumulator::doubleValue)); // 6.0
 
-var b = collect(streamOf(values), stream -> {
+var b = collect(values, iterable -> {
     var total = 0.0;
 
-    for (var value : collect(stream, toIterable())) {
+    for (var value : iterable) {
         total += value;
     }
 
@@ -1201,20 +1193,18 @@ var b = collect(streamOf(values), stream -> {
 The following standard collectors are included:
 
 ```java
-public static <E> Function<Stream<E>, Iterable<E>> toIterable() { ... }
+public static <E> Function<Iterable<E>, List<E>> toList() { ... }
+public static <E> Function<Iterable<E>, List<E>> toImmutableList() { ... }
 
-public static <E> Function<Stream<E>, List<E>> toList() { ... }
-public static <E> Function<Stream<E>, List<E>> toImmutableList() { ... }
+public static <K, V> Function<Iterable<Map.Entry<K, V>>, Map<K, V>> toMap() { ... }
+public static <K, V> Function<Iterable<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() { ... }
 
-public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toMap() { ... }
-public static <K, V> Function<Stream<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() { ... }
+public static <K extends Comparable<? super K>, V> Function<Iterable<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() { ... }
 
-public static <K extends Comparable<? super K>, V> Function<Stream<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() { ... }
+public static <E> Function<Iterable<E>, Set<E>> toSet() { ... }
+public static <E> Function<Iterable<E>, Set<E>> toImmutableSet() { ... }
 
-public static <E> Function<Stream<E>, Set<E>> toSet() { ... }
-public static <E> Function<Stream<E>, Set<E>> toImmutableSet() { ... }
-
-public static <E extends Comparable<? super E>> Function<Stream<E>, SortedSet<E>> toSortedSet() { ... }
+public static <E extends Comparable<? super E>> Function<Iterable<E>, SortedSet<E>> toSortedSet() { ... }
 ```
 
 The `toType()` method returns a function that coerces a value to a given type:
@@ -1228,5 +1218,5 @@ For example:
 ```java
 var strings = listOf("1", "2", "3");
 
-var integers = collect(streamOf(strings).map(toType(Integer.class)), toList()); // 1, 2, 3
+var integers = collect(map(strings, toType(Integer.class)), toList()); // 1, 2, 3
 ```

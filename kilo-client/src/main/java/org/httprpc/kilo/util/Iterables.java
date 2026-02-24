@@ -17,7 +17,15 @@ package org.httprpc.kilo.util;
 import org.httprpc.kilo.beans.BeanAdapter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -28,11 +36,44 @@ public class Iterables {
     private Iterables() {
     }
 
+    /**
+     * Filters iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to filter.
+     *
+     * @param predicate
+     * The predicate function.
+     *
+     * @return
+     * The filtered iterable.
+     */
     public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) {
         // TODO
         return null;
     }
 
+    /**
+     * Transforms iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The target type.
+     *
+     * @param iterable
+     * The iterable to transform.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The transformed iterable.
+     */
     public static <T, R> Iterable<R> map(Iterable<T> iterable, Function<? super T, ? extends R> transform) {
         // TODO
         return null;
@@ -98,6 +139,133 @@ public class Iterables {
         }
 
         return list;
+    }
+
+    /**
+     * Returns a function that produces a map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The collector function.
+     */
+    public static <K, V> Function<Iterable<Map.Entry<K, V>>, Map<K, V>> toMap() {
+        return Iterables::mapOf;
+    }
+
+    /**
+     * Returns a function that produces an immutable map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The collector function.
+     */
+    public static <K, V> Function<Iterable<Map.Entry<K, V>>, Map<K, V>> toImmutableMap() {
+        return iterable -> java.util.Collections.unmodifiableMap(mapOf(iterable));
+    }
+
+    private static <K, V> Map<K, V> mapOf(Iterable<Map.Entry<K, V>> iterable) {
+        var map = new LinkedHashMap<K, V>();
+
+        for (var entry : iterable) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
+     * Returns a function that produces a sorted map.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <V>
+     * The value type.
+     *
+     * @return
+     * The collector function.
+     */
+    public static <K extends Comparable<? super K>, V> Function<Iterable<Map.Entry<K, V>>, SortedMap<K, V>> toSortedMap() {
+        return Iterables::sortedMapOf;
+    }
+
+    private static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Iterable<Map.Entry<K, V>> iterable) {
+        var map = new TreeMap<K, V>();
+
+        for (var entry : iterable) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
+    }
+
+    /**
+     * Returns a function that produces a set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collector function.
+     */
+    public static <E> Function<Iterable<E>, Set<E>> toSet() {
+        return Iterables::setOf;
+    }
+
+    /**
+     * Returns a function that produces an immutable set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collector function.
+     */
+    public static <E> Function<Iterable<E>, Set<E>> toImmutableSet() {
+        return iterable -> java.util.Collections.unmodifiableSet(setOf(iterable));
+    }
+
+    private static <E> Set<E> setOf(Iterable<E> iterable) {
+        var set = new LinkedHashSet<E>();
+
+        for (var element : iterable) {
+            set.add(element);
+        }
+
+        return set;
+    }
+
+    /**
+     * Returns a function that produces a sorted set.
+     *
+     * @param <E>
+     * The element type.
+     *
+     * @return
+     * The collector function.
+     */
+    public static <E extends Comparable<? super E>> Function<Iterable<E>, SortedSet<E>> toSortedSet() {
+        return Iterables::sortedSetOf;
+    }
+
+    private static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Iterable<E> iterable) {
+        var set = new TreeSet<E>();
+
+        for (var element : iterable) {
+            set.add(element);
+        }
+
+        return set;
     }
 
     /**

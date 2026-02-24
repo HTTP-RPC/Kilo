@@ -79,4 +79,89 @@ public class IterablesTest {
 
         assertEquals(list1, list2);
     }
+
+    @Test
+    public void testToMap() {
+        var map1 = mapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        var map2 = collect(map1.entrySet(), toMap());
+
+        assertEquals(map1, map2);
+
+        map2.remove("c");
+
+        assertEquals(2, map2.size());
+    }
+
+    @Test
+    public void testToImmutableMap() {
+        var map1 = immutableMapOf(
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3)
+        );
+
+        var map2 = collect(map1.entrySet(), toImmutableMap());
+
+        assertThrows(UnsupportedOperationException.class, () -> map2.put("d", 4));
+
+        assertEquals(map1, map2);
+    }
+
+    @Test
+    public void testToSortedMap() {
+        var sortedMap = collect(listOf(
+            entry("c", 3),
+            entry("b", 2),
+            entry("a", 1)
+        ), toSortedMap());
+
+        assertEquals("a", sortedMap.firstKey());
+        assertEquals("c", sortedMap.lastKey());
+    }
+
+    @Test
+    public void testToSet() {
+        var set1 = setOf(1, 2, 3);
+
+        var set2 = collect(set1, toSet());
+
+        assertEquals(set1, set2);
+
+        set2.remove(2);
+
+        assertEquals(2, set2.size());
+    }
+
+    @Test
+    public void testToImmutableSet() {
+        var set1 = immutableSetOf(1, 2, 3);
+
+        var set2 = collect(set1, toImmutableSet());
+
+        assertThrows(UnsupportedOperationException.class, () -> set2.add(4));
+
+        assertEquals(set1, set2);
+    }
+
+    @Test
+    public void testToSortedSet() {
+        var sortedSet = collect(listOf(3, 2, 1), toSortedSet());
+
+        assertEquals(1, sortedSet.first());
+        assertEquals(3, sortedSet.last());
+    }
+
+    @Test
+    public void testToType() {
+        var strings = listOf("1", "2", "3");
+
+        var integers = collect(map(strings, toType(Integer.class)), toList()); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), integers);
+    }
 }
