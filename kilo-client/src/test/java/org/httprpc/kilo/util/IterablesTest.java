@@ -16,6 +16,9 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.stream.Collector;
+
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +32,28 @@ public class IterablesTest {
     @Test
     public void testMapAll() {
         // TODO
+    }
+
+    @Test
+    public void testCollect() {
+        var values = listOf(1.0, 2.0, 3.0);
+
+        var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
+            DoubleAccumulator::accumulate,
+            (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
+            DoubleAccumulator::doubleValue)); // 6.0
+
+        var b = collect(values, iterable -> {
+            var total = 0.0;
+
+            for (var value : iterable) {
+                total += value;
+            }
+
+            return total;
+        }); // 6.0
+
+        assertEquals(a, b);
     }
 
     @Test

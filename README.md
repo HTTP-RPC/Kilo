@@ -1146,13 +1146,27 @@ The `Iterables` class contains methods for working with iterable types:
 ```java
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
+public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) { ... }
 public static <T> T firstOf(Iterable<T> iterable) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
 
 ```java
-// TODO
+var a = values.stream().collect(Collector.of(() -> new DoubleAccumulator(Double::sum, 0.0),
+    DoubleAccumulator::accumulate,
+    (left, right) -> new DoubleAccumulator(Double::sum, left.doubleValue() + right.doubleValue()),
+    DoubleAccumulator::doubleValue)); // 6.0
+
+var b = collect(values, iterable -> {
+    var total = 0.0;
+
+    for (var value : iterable) {
+        total += value;
+    }
+
+    return total;
+}); // 6.0
 ```
 
 The `toType()` method returns a function that coerces a value to a given type:

@@ -70,6 +70,32 @@ public class Iterables {
     }
 
     /**
+     * Collects iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param <R>
+     * The result type.
+     *
+     * @param iterable
+     * The iterable to collect.
+     *
+     * @param collector
+     * The collector function.
+     *
+     * @return
+     * The collection result.
+     */
+    public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) {
+        if (iterable == null || collector == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return collector.apply(iterable);
+    }
+
+    /**
      * Retrieves the first element from an iterable.
      *
      * @param <T>
