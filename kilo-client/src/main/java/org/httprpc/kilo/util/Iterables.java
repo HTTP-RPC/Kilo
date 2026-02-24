@@ -25,6 +25,62 @@ import java.util.function.Predicate;
  * Provides static utility methods for working with iterables.
  */
 public class Iterables {
+    private static class FilterIterator<T> implements Iterator<T> {
+        Iterator<T> iterator;
+        Predicate<? super T> predicate;
+
+        T next = null;
+
+        FilterIterator(Iterator<T> iterator, Predicate<? super T> predicate) {
+            this.iterator = iterator;
+            this.predicate = predicate;
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (iterator.hasNext()) {
+                next = iterator.next();
+
+                if (predicate.test(next)) {
+                    return true;
+                }
+            }
+
+            next = null;
+
+            return false;
+        }
+
+        @Override
+        public T next() {
+            if (next == null) {
+                throw new NoSuchElementException();
+            }
+
+            return next;
+        }
+    }
+
+    private static class MapAllIterator<T, R> implements Iterator<R> {
+        Iterator<T> iterator;
+        Function<? super T, ? extends R> transform;
+
+        MapAllIterator(Iterator<T> iterator, Function<? super T, ? extends R> transform) {
+            this.iterator = iterator;
+            this.transform = transform;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public R next() {
+            return transform.apply(iterator.next());
+        }
+    }
+
     private Iterables() {
     }
 
@@ -48,35 +104,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return () -> new Iterator<>() {
-            Iterator<T> iterator = iterable.iterator();
-
-            T next = null;
-
-            @Override
-            public boolean hasNext() {
-                while (iterator.hasNext()) {
-                    next = iterator.next();
-
-                    if (predicate.test(next)) {
-                        return true;
-                    }
-                }
-
-                next = null;
-
-                return false;
-            }
-
-            @Override
-            public T next() {
-                if (next == null) {
-                    throw new NoSuchElementException();
-                }
-
-                return next;
-            }
-        };
+        return () -> new FilterIterator<>(iterable.iterator(), predicate);
     }
 
     /**
@@ -102,19 +130,7 @@ public class Iterables {
             throw new IllegalArgumentException();
         }
 
-        return () -> new Iterator<>() {
-            Iterator<T> iterator = iterable.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public R next() {
-                return transform.apply(iterator.next());
-            }
-        };
+        return () -> new MapAllIterator<>(iterable.iterator(), transform);
     }
 
     /**
