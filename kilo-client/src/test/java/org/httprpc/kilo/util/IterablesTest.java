@@ -43,23 +43,6 @@ public class IterablesTest {
     }
 
     @Test
-    public void testCollect() {
-        var values = listOf(1, 2, 3);
-
-        var result = collect(values, iterable -> {
-            var total = 0;
-
-            for (var value : iterable) {
-                total += value;
-            }
-
-            return total;
-        }); // 6
-
-        assertEquals(6, result);
-    }
-
-    @Test
     public void testFirstOf() {
         var values = listOf(1, 2, 3);
 

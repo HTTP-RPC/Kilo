@@ -58,7 +58,6 @@ import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
 
 /**
  * Client-side invocation proxy for web services.
@@ -903,7 +902,7 @@ public class WebServiceProxy {
 
             return list;
         } else if (argument instanceof Collection<?> collection) {
-            return collect(streamOf(collection).map(WebServiceProxy::getParameterValue), toList());
+            return listOf(map(collection, WebServiceProxy::getParameterValue));
         } else {
             return listOf(getParameterValue(argument));
         }

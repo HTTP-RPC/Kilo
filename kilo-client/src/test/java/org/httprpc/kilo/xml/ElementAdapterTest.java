@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ElementAdapterTest {
@@ -166,7 +166,7 @@ public class ElementAdapterTest {
 
         var items = (List<Object>)elementAdapter.get("item*");
 
-        assertEquals(listOf("4", "5", "6"), collect(streamOf(items).map(Object::toString), toList()));
+        assertEquals(listOf("4", "5", "6"), listOf(mapAll(items, Object::toString)));
 
         elementAdapter.put("item*", listOf());
 

@@ -1139,7 +1139,6 @@ The `Iterables` class contains methods for working with iterable types:
 ```java
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
-public static <T, R> R collect(Iterable<T> iterable, Function<Iterable<T>, R> collector) { ... }
 public static <T> T firstOf(Iterable<T> iterable) { ... }
 ```
 
@@ -1155,20 +1154,6 @@ var result = listOf(filter(values, value -> value < 3)); // 1, 2
 var values = listOf("1", "2", "3");
 
 var result = listOf(mapAll(values, Integer::valueOf)); // 1, 2, 3
-```
-
-```java
-var values = listOf(1, 2, 3);
-
-var result = collect(values, iterable -> {
-    var total = 0;
-
-    for (var value : iterable) {
-        total += value;
-    }
-
-    return total;
-}); // 6
 ```
 
 ```java

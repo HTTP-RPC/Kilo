@@ -35,10 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BeanAdapterTest {
@@ -419,7 +418,7 @@ public class BeanAdapterTest {
     public void testGetProperties() {
         var properties = BeanAdapter.getProperties(TestBean.class);
 
-        var propertyTypes = streamOf(properties.entrySet()).collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getAccessor().getGenericReturnType()));
+        var propertyTypes = mapOf(mapAll(properties.entrySet(), entry -> entry(entry.getKey(), entry.getValue().getAccessor().getGenericReturnType())));
 
         assertEquals(Integer.TYPE, propertyTypes.get("i"));
         assertEquals(Long.TYPE, propertyTypes.get("long"));

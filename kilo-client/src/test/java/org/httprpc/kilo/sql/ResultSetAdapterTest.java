@@ -32,7 +32,6 @@ import java.util.Map;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
-import static org.httprpc.kilo.util.stream.Streams.toType;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ResultSetAdapterTest {

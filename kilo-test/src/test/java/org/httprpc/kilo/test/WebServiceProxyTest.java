@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WebServiceProxyTest {
@@ -257,7 +257,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(body);
 
-        var result = collect(streamOf((List<?>)webServiceProxy.invoke()).map(toType(Integer.class)), toList());
+        var result = listOf(mapAll((List<?>)webServiceProxy.invoke(), toType(Integer.class)));
 
         assertEquals(body, result);
     }

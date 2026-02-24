@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.stream.Streams.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CatalogTest {
@@ -82,14 +82,10 @@ public class CatalogTest {
         assertEquals("blue", item.getColor());
         assertEquals(10.0, item.getWeight());
 
-        assertNotNull(streamOf(catalogServiceProxy.getItems())
-            .filter(result -> result.getID().equals(itemID))
-            .findAny().orElse(null));
+        assertNotNull(firstOf(filter(catalogServiceProxy.getItems(), result -> result.getID().equals(itemID))));
 
         catalogServiceProxy.deleteItem(item.getID());
 
-        assertNull(streamOf(catalogServiceProxy.getItems())
-            .filter(result -> result.getID().equals(itemID))
-            .findAny().orElse(null));
+        assertNull(firstOf(filter(catalogServiceProxy.getItems(), result -> result.getID().equals(itemID))));
     }
 }
