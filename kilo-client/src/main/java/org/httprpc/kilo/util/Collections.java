@@ -119,7 +119,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty list.
+     * Creates an empty list.
      *
      * @param <E>
      * The element type.
@@ -233,7 +233,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty map.
+     * Creates an empty map.
      *
      * @param <K>
      * The key type.
@@ -416,7 +416,7 @@ public class Collections {
     }
 
     /**
-     * Returns an empty set.
+     * Creates an empty set.
      *
      * @param <E>
      * The element type.
