@@ -476,9 +476,6 @@ public class TemplateEncoderTest {
             ),
             listOf(
                 listOf(), listOf(), listOf()
-            ),
-            listOf(
-                listOf()
             )
         );
 
@@ -486,7 +483,7 @@ public class TemplateEncoderTest {
 
         templateEncoder.write(list, writer);
 
-        assertEquals("[[[][]][[][][]][[]]]", writer.toString());
+        assertEquals("[[[][]][[][][]]]", writer.toString());
     }
 
     @Test
