@@ -955,7 +955,7 @@ for (var credit : credits) {
 `ElementAdapter` also supports `put()` and `remove()` for modifying an element's contents.
 
 ## Pipe
-The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of elements for retrieval by a consumer thread. It implements the `Iterable` interface and returns values as they become available, blocking if necessary.
+The `Pipe` class provides a vehicle by which a producer thread can submit a sequence of values for retrieval by a consumer thread. It implements the `Iterable` interface and returns elements as they become available, blocking if necessary.
 
 For example, the following code executes a SQL query that retrieves all rows from an `employees` table:
 
@@ -1134,7 +1134,7 @@ var number = cast("abc", Double.class); // null
 ```
 
 ## Iterables
-The `Iterables` class contains methods for working with iterable types:
+The `Iterables` class contains methods for processing a sequence of values:
 
 ```java
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
