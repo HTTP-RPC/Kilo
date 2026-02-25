@@ -172,15 +172,7 @@ public class Collections {
      * A sorted list of the provided elements.
      */
     public static <E extends Comparable<? super E>> List<E> sortedListOf(Iterable<? extends E> elements) {
-        if (elements == null) {
-            throw new IllegalArgumentException();
-        }
-
-        var list = new ArrayList<E>();
-
-        for (var element : elements) {
-            list.add(element);
-        }
+        List<E> list = listOf(elements);
 
         java.util.Collections.sort(list);
 
