@@ -69,7 +69,7 @@ public class Collections {
      * A random-access list containing the provided elements in the order
      * given.
      */
-    public static <E> List<E> listOf(Iterable<E> elements) {
+    public static <E> List<E> listOf(Iterable<? extends E> elements) {
         if (elements == null) {
             throw new IllegalArgumentException();
         }
@@ -114,7 +114,7 @@ public class Collections {
      * An immutable, random-access list containing the provided elements in the
      * order given.
      */
-    public static <E> List<E> immutableListOf(Iterable<E> elements) {
+    public static <E> List<E> immutableListOf(Iterable<? extends E> elements) {
         return java.util.Collections.unmodifiableList(listOf(elements));
     }
 
@@ -171,8 +171,12 @@ public class Collections {
      * @return
      * A sorted list of the provided elements.
      */
-    public static <E extends Comparable<? super E>> List<E> sortedListOf(Iterable<E> elements) {
-        var list = listOf(elements);
+    public static <E extends Comparable<? super E>> List<E> sortedListOf(Iterable<? extends E> elements) {
+        var list = new ArrayList<E>();
+
+        for (var element : elements) {
+            list.add(element);
+        }
 
         java.util.Collections.sort(list);
 
@@ -220,7 +224,7 @@ public class Collections {
      * @return
      * A map containing the provided entries in the order given.
      */
-    public static <K, V> Map<K, V> mapOf(Iterable<Map.Entry<K, V>> entries) {
+    public static <K, V> Map<K, V> mapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) {
         if (entries == null) {
             throw new IllegalArgumentException();
         }
@@ -269,7 +273,7 @@ public class Collections {
      * @return
      * An immutable map containing the provided entries in the order given.
      */
-    public static <K, V> Map<K, V> immutableMapOf(Iterable<Map.Entry<K, V>> entries) {
+    public static <K, V> Map<K, V> immutableMapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) {
         return java.util.Collections.unmodifiableMap(mapOf(entries));
     }
 
@@ -340,7 +344,7 @@ public class Collections {
      * @return
      * A map containing the provided entries sorted by key.
      */
-    public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Iterable<Map.Entry<K, V>> entries) {
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) {
         if (entries == null) {
             throw new IllegalArgumentException();
         }
@@ -409,7 +413,7 @@ public class Collections {
      * @return
      * A set containing the provided elements in the order given.
      */
-    public static <E> Set<E> setOf(Iterable<E> elements) {
+    public static <E> Set<E> setOf(Iterable<? extends E> elements) {
         if (elements == null) {
             throw new IllegalArgumentException();
         }
@@ -452,7 +456,7 @@ public class Collections {
      * @return
      * An immutable set containing the provided elements in the order given.
      */
-    public static <E> Set<E> immutableSetOf(Iterable<E> elements) {
+    public static <E> Set<E> immutableSetOf(Iterable<? extends E> elements) {
         return java.util.Collections.unmodifiableSet(setOf(elements));
     }
 
@@ -509,7 +513,7 @@ public class Collections {
      * @return
      * A sorted set containing the provided elements.
      */
-    public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Iterable<E> elements) {
+    public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Iterable<? extends E> elements) {
         if (elements == null) {
             throw new IllegalArgumentException();
         }
