@@ -1029,39 +1029,29 @@ The `Collections` class provides a set of static utility methods for declarative
 
 ```java
 public static <E> List<E> listOf(E... elements) { ... }
-public static <E> List<E> listOf(Iterable<? extends E> elements) { ... }
 public static <E> List<E> immutableListOf(E... elements) { ... }
-public static <E> List<E> immutableListOf(Iterable<? extends E> elements) { ... }
-
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
 
 public static <E extends Comparable<? super E>> List<E> sortedListOf(E... elements) { ... }
-public static <E extends Comparable<? super E>> List<E> sortedListOf(Iterable<? extends E> elements) { ... }
 ```
 
 ```java
 public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
-public static <K, V> Map<K, V> mapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
-public static <K, V> Map<K, V> immutableMapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) { ... }
-
 public static <K, V> Map<K, V> emptyMapOf(Class<K> keyType, Class<V> valueType) { ... }
 
 public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Map.Entry<K, V>... entries) { ... }
-public static <K extends Comparable<? super K>, V> SortedMap<K, V> sortedMapOf(Iterable<? extends Map.Entry<? extends K, ? extends V>> entries) { ... }
 ```
 
 ```java
 public static <E> Set<E> setOf(E... elements) { ... }
-public static <E> Set<E> setOf(Iterable<? extends E> elements) { ... }
 public static <E> Set<E> immutableSetOf(E... elements) { ... }
-public static <E> Set<E> immutableSetOf(Iterable<? extends E> elements) { ... }
-
 public static <E> Set<E> emptySetOf(Class<E> elementType) { ... }
 
 public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(E... elements) { ... }
-public static <E extends Comparable<? super E>> SortedSet<E> sortedSetOf(Iterable<? extends E> elements) { ... }
 ```
+
+Variants that accept an `Iterable` are also provided.
 
 This method can be used to declare map entries:
 
