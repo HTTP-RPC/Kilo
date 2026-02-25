@@ -73,6 +73,20 @@ public class CollectionsTest {
     }
 
     @Test
+    public void testSortedListOf() {
+        var sortedList = sortedListOf(3, 2, 1);
+
+        assertEquals(listOf(1, 2, 3), sortedList);
+    }
+
+    @Test
+    public void testSortedListOfIterable() {
+        var sortedList = sortedListOf(listOf(3, 2, 1));
+
+        assertEquals(listOf(1, 2, 3), sortedList);
+    }
+
+    @Test
     public void testMapOf() {
         var expected = new HashMap<String, Integer>();
 

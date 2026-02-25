@@ -1034,6 +1034,9 @@ public static <E> List<E> immutableListOf(E... elements) { ... }
 public static <E> List<E> immutableListOf(Iterable<E> elements) { ... }
 public static <E> List<E> emptyListOf(Class<E> elementType) { ... }
 
+public static <E extends Comparable<? super E>> List<E> sortedListOf(E... elements) { ... }
+public static <E extends Comparable<? super E>> List<E> sortedListOf(Iterable<E> elements) { ... }
+
 public static <K, V> Map<K, V> mapOf(Map.Entry<K, V>... entries) { ... }
 public static <K, V> Map<K, V> mapOf(Iterable<Map.Entry<K, V>> entries) { ... }
 public static <K, V> Map<K, V> immutableMapOf(Map.Entry<K, V>... entries) { ... }
