@@ -50,7 +50,18 @@ public class IterablesTest {
 
         assertEquals(1, result);
 
-        assertNull(firstOf(emptyListOf(Integer.class)));
+        assertNull(firstOf(listOf()));
+    }
+
+    @Test
+    public void testIsEmpty() {
+        var values = listOf();
+
+        var result = isEmpty(values); // true
+
+        assertTrue(result);
+
+        assertFalse(isEmpty(listOf(1, 2, 3)));
     }
 
     @Test

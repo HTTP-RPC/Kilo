@@ -165,6 +165,23 @@ public class Iterables {
     }
 
     /**
+     * Determines if an iterable is empty.
+     *
+     * @param iterable
+     * The iterable.
+     *
+     * @return
+     * {@code true} if the iterable is empty; {@code false}, otherwise.
+     */
+    public static boolean isEmpty(Iterable<?> iterable) {
+        if (iterable == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return !iterable.iterator().hasNext();
+    }
+
+    /**
      * Returns a function that coerces a value to a given type.
      *
      * @param <T>

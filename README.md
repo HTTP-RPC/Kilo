@@ -1140,6 +1140,7 @@ The `Iterables` class contains methods for processing a sequence of values:
 public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) { ... }
 public static <T, R> Iterable<R> mapAll(Iterable<T> iterable, Function<? super T, ? extends R> transform) { ... }
 public static <T> T firstOf(Iterable<T> iterable) { ... }
+public static boolean isEmpty(Iterable<?> iterable) { ... }
 ```
 
 These are provided as a less complex alternative to similar methods defined by the `java.util.stream.Stream` class:
@@ -1160,6 +1161,12 @@ var result = listOf(mapAll(values, Integer::valueOf)); // 1, 2, 3
 var values = listOf(1, 2, 3);
 
 var result = firstOf(values); // 1
+```
+
+```java
+var values = listOf();
+
+var result = isEmpty(values); // true
 ```
 
 `Iterables` also provides the following method, which coerces a value to a given type:
