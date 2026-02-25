@@ -16,7 +16,11 @@ package org.httprpc.kilo.util;
 
 import org.httprpc.kilo.beans.BeanAdapter;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -179,6 +183,37 @@ public class Iterables {
         }
 
         return !iterable.iterator().hasNext();
+    }
+
+    /**
+     * Returns a function that groups elements by a classification function.
+     *
+     * @param <K>
+     * The key type.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param classifier
+     * The classification function.
+     *
+     * @return
+     * The grouping function.
+     */
+    public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
+        if (classifier == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var map = new LinkedHashMap<K, List<T>>();
+
+            for (var element : iterable) {
+                map.computeIfAbsent(classifier.apply(element), key -> new ArrayList<>()).add(element);
+            }
+
+            return map;
+        };
     }
 
     /**

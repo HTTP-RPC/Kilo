@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IterablesTest {
@@ -62,6 +63,19 @@ public class IterablesTest {
         assertTrue(result);
 
         assertFalse(isEmpty(listOf(1, 2, 3)));
+    }
+
+    @Test
+    public void testGroupingBy() {
+        var values = listOf("a", "b", "ab", "bc", "abc");
+
+        var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
+
+        assertEquals(mapOf(
+            entry(1, listOf("a", "b")),
+            entry(2, listOf("ab", "bc")),
+            entry(3, listOf("abc"))
+        ), result);
     }
 
     @Test
