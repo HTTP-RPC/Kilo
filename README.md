@@ -1188,6 +1188,14 @@ public static <T> Function<Iterable<T>, Double> toAverage(ToIntFunction<T> trans
 public static <T> Function<Iterable<T>, Double> toAverage(ToLongFunction<T> transform) { ... }
 public static <T> Function<Iterable<T>, Double> toAverage(ToDoubleFunction<T> transform) { ... }
 
+public static <T> Function<Iterable<T>, Integer> toMinimum(ToIntFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Long> toMinimum(ToLongFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Double> toMinimum(ToDoubleFunction<T> transform) { ... }
+
+public static <T> Function<Iterable<T>, Integer> toMaximum(ToIntFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Long> toMaximum(ToLongFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Double> toMaximum(ToDoubleFunction<T> transform) { ... }
+
 public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() { ... }
 public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() { ... }
 ```
@@ -1201,21 +1209,9 @@ var result = map(values, toSum(Integer::intValue)); // 15
 ```
 
 ```java
-var values = listOf(1, 2, 3, 4, 5);
-
-var result = map(values, toAverage(Integer::intValue)); // 3.0
-```
-
-```java
 var values = listOf("a", "b", "c", "d", "e");
 
 var result = map(values, toMinimum()); // a
-```
-
-```java
-var values = listOf("a", "b", "c", "d", "e");
-
-var result = map(values, toMaximum()); // e
 ```
 
 Finally, `Iterables` provides this method, which coerces a value to a given type:

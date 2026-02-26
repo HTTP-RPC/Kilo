@@ -402,6 +402,192 @@ public class Iterables {
      * @param <T>
      * The element type.
      *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Integer> toMinimum(ToIntFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var minimum = Integer.MAX_VALUE;
+            var n = 0;
+
+            for (var element : iterable) {
+                minimum = Math.min(transform.applyAsInt(element), minimum);
+
+                n++;
+            }
+
+            return n > 0 ? minimum : null;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Long> toMinimum(ToLongFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var minimum = Long.MAX_VALUE;
+            var n = 0;
+
+            for (var element : iterable) {
+                minimum = Math.min(transform.applyAsLong(element), minimum);
+
+                n++;
+            }
+
+            return n > 0 ? minimum : null;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Double> toMinimum(ToDoubleFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var minimum = Double.POSITIVE_INFINITY;
+            var n = 0;
+
+            for (var element : iterable) {
+                minimum = Math.min(transform.applyAsDouble(element), minimum);
+
+                n++;
+            }
+
+            return n > 0 ? minimum : null;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Integer> toMaximum(ToIntFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var maximum = Integer.MIN_VALUE;
+            var n = 0;
+
+            for (var element : iterable) {
+                maximum = Math.max(transform.applyAsInt(element), maximum);
+
+                n++;
+            }
+
+            return n > 0 ? maximum : null;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Long> toMaximum(ToLongFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var maximum = Long.MIN_VALUE;
+            var n = 0;
+
+            for (var element : iterable) {
+                maximum = Math.max(transform.applyAsLong(element), maximum);
+
+                n++;
+            }
+
+            return n > 0 ? maximum : null;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Double> toMaximum(ToDoubleFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var maximum = Double.NEGATIVE_INFINITY;
+            var n = 0;
+
+            for (var element : iterable) {
+                maximum = Math.max(transform.applyAsDouble(element), maximum);
+
+                n++;
+            }
+
+            return n > 0 ? maximum : null;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
      * @return
      * The reduction function.
      */

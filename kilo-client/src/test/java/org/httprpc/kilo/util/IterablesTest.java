@@ -163,6 +163,84 @@ public class IterablesTest {
     }
 
     @Test
+    public void testToMinimumInt() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toMinimum(Integer::intValue)); // 1
+
+        assertEquals(1, result);
+
+        assertEquals(result, values.stream().mapToInt(Integer::intValue).min().orElseThrow());
+
+        assertNull(map(emptyListOf(Integer.class), toMinimum(Integer::intValue)));
+    }
+
+    @Test
+    public void testToMinimumLong() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toMinimum(Integer::longValue)); // 1L
+
+        assertEquals(1L, result);
+
+        assertEquals(result, values.stream().mapToLong(Integer::longValue).min().orElseThrow());
+
+        assertNull(map(emptyListOf(Integer.class), toMinimum(Integer::longValue)));
+    }
+
+    @Test
+    public void testToMinimumDouble() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toMinimum(Integer::doubleValue)); // 1.0
+
+        assertEquals(1.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).min().orElseThrow());
+
+        assertNull(map(emptyListOf(Integer.class), toMinimum(Integer::doubleValue)));
+    }
+
+    @Test
+    public void testToMaximumInt() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toMaximum(Integer::intValue)); // 5
+
+        assertEquals(5, result);
+
+        assertEquals(result, values.stream().mapToInt(Integer::intValue).max().orElseThrow());
+
+        assertNull(map(emptyListOf(Integer.class), toMaximum(Integer::intValue)));
+    }
+
+    @Test
+    public void testToMaximumLong() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toMaximum(Integer::longValue)); // 5L
+
+        assertEquals(5L, result);
+
+        assertEquals(result, values.stream().mapToLong(Integer::longValue).max().orElseThrow());
+
+        assertNull(map(emptyListOf(Integer.class), toMaximum(Integer::longValue)));
+    }
+
+    @Test
+    public void testToMaximumDouble() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toMaximum(Integer::doubleValue)); // 5.0
+
+        assertEquals(5.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).max().orElseThrow());
+
+        assertNull(map(emptyListOf(Integer.class), toMaximum(Integer::doubleValue)));
+    }
+
+    @Test
     public void testToMinimum() {
         var values = listOf("a", "b", "c", "d", "e");
 
