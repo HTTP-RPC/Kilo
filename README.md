@@ -1116,7 +1116,7 @@ var result = map("hello", String::length); // 5
 ```java
 var stringBuilder = new StringBuilder("abc");
 
-perform("def", stringBuilder::append); // abcdef
+perform("d", stringBuilder::append); // abcd
 ```
 
 `Optionals` also provides the following method, which performs a "safe" cast:

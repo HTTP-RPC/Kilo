@@ -16,6 +16,8 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.httprpc.kilo.util.Optionals.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,6 +27,10 @@ public class OptionalsTest {
         var result = coalesce(null, () -> 123); // 123
 
         assertEquals(123, result);
+
+        assertEquals(result, Optional.ofNullable(null).orElse(123));
+
+        assertNull(coalesce(null, () -> null));
     }
 
     @Test
@@ -33,6 +39,8 @@ public class OptionalsTest {
 
         assertEquals(5, result);
 
+        assertEquals(result, Optional.ofNullable("hello").map(String::length).orElse(null));
+
         assertNull(map(null, String::length));
     }
 
@@ -40,11 +48,15 @@ public class OptionalsTest {
     public void testPerform() {
         var stringBuilder = new StringBuilder("abc");
 
-        perform("def", stringBuilder::append); // abcdef
+        perform("d", stringBuilder::append); // abcd
+
+        assertEquals("abcd", stringBuilder.toString());
+
+        Optional.ofNullable("e").ifPresent(stringBuilder::append);
 
         perform(null, stringBuilder::append);
 
-        assertEquals("abcdef", stringBuilder.toString());
+        assertEquals("abcde", stringBuilder.toString());
     }
 
     @Test
