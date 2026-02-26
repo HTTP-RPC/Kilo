@@ -34,6 +34,8 @@ public class IterablesTest {
 
         assertEquals(1, result.getFirst());
         assertEquals(2, result.getLast());
+
+        assertEquals(result, values.stream().filter(value -> value < 3).collect(Collectors.toList()));
     }
 
     @Test
@@ -43,6 +45,8 @@ public class IterablesTest {
         var result = listOf(mapAll(values, String::length)); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), result);
+
+        assertEquals(result, values.stream().map(String::length).collect(Collectors.toList()));
     }
 
     @Test
@@ -52,6 +56,8 @@ public class IterablesTest {
         var result = firstOf(values); // 1
 
         assertEquals(1, result);
+
+        assertEquals(result, values.stream().findFirst().orElse(null));
 
         assertNull(firstOf(listOf()));
     }
@@ -63,6 +69,8 @@ public class IterablesTest {
         var result = isEmpty(values); // true
 
         assertTrue(result);
+
+        assertEquals(result, values.stream().findFirst().isEmpty());
 
         assertFalse(isEmpty(listOf(1, 2, 3)));
     }
