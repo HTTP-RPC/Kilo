@@ -93,7 +93,19 @@ public class IterablesTest {
 
     @Test
     public void testCollect() {
-        // TODO Concatenate strings
+        var values = listOf("a", "bc", "def");
+
+        var result = collect(values, iterable -> {
+            var stringBuilder = new StringBuilder();
+
+            for (var element : iterable) {
+                stringBuilder.append(element);
+            }
+
+            return stringBuilder.toString();
+        }); // abcdef
+
+        assertEquals("abcdef", result);
     }
 
     @Test

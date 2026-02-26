@@ -1181,7 +1181,17 @@ var result = exists(values, value -> value < 3); // true
 ```
 
 ```java
-TODO
+var values = listOf("a", "bc", "def");
+
+var result = collect(values, iterable -> {
+    var stringBuilder = new StringBuilder();
+
+    for (var element : iterable) {
+        stringBuilder.append(element);
+    }
+
+    return stringBuilder.toString();
+}); // abcdef
 ```
 
 The following standard collection functions are also provided:
