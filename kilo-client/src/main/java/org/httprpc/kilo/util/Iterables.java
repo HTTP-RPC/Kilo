@@ -102,29 +102,6 @@ public class Iterables {
     }
 
     /**
-     * Filters iterable contents.
-     *
-     * @param <T>
-     * The element type.
-     *
-     * @param iterable
-     * The iterable to filter.
-     *
-     * @param predicate
-     * The predicate function.
-     *
-     * @return
-     * The filtered iterable.
-     */
-    public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) {
-        if (iterable == null || predicate == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return () -> new FilterIterator<>(iterable.iterator(), predicate);
-    }
-
-    /**
      * Transforms iterable contents.
      *
      * @param <T>
@@ -148,6 +125,29 @@ public class Iterables {
         }
 
         return () -> new MapAllIterator<>(iterable.iterator(), transform);
+    }
+
+    /**
+     * Filters iterable contents.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param iterable
+     * The iterable to filter.
+     *
+     * @param predicate
+     * The predicate function.
+     *
+     * @return
+     * The filtered iterable.
+     */
+    public static <T> Iterable<T> filter(Iterable<T> iterable, Predicate<? super T> predicate) {
+        if (iterable == null || predicate == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return () -> new FilterIterator<>(iterable.iterator(), predicate);
     }
 
     /**

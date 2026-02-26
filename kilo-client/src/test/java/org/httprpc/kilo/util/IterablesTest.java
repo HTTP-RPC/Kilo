@@ -27,20 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class IterablesTest {
     @Test
-    public void testFilter() {
-        var values = listOf(1, 2, 3);
-
-        var result = listOf(filter(values, value -> value < 3)); // 1, 2
-
-        assertEquals(2, result.size());
-
-        assertEquals(1, result.getFirst());
-        assertEquals(2, result.getLast());
-
-        assertEquals(result, values.stream().filter(value -> value < 3).collect(Collectors.toList()));
-    }
-
-    @Test
     public void testMapAllToList() {
         var values = listOf("a", "ab", "abc");
 
@@ -62,6 +48,20 @@ public class IterablesTest {
         assertEquals(0, i);
 
         assertEquals(result, values.stream().collect(Collectors.toMap(value -> value, Enum::ordinal)));
+    }
+
+    @Test
+    public void testFilter() {
+        var values = listOf(1, 2, 3);
+
+        var result = listOf(filter(values, value -> value < 3)); // 1, 2
+
+        assertEquals(2, result.size());
+
+        assertEquals(1, result.getFirst());
+        assertEquals(2, result.getLast());
+
+        assertEquals(result, values.stream().filter(value -> value < 3).collect(Collectors.toList()));
     }
 
     @Test
