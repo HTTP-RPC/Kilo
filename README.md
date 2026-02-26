@@ -1079,7 +1079,7 @@ var set = setOf("a", "b", "c");
 System.out.println(set.contains("a")); // true
 ```
 
-`Collections` also provides the `indexWhere()` and `lastIndexWhere()` methods, which can be used to find the index of either the first or last list element that matches a given predicate:
+`Collections` additionally provides the `indexWhere()` and `lastIndexWhere()` methods, which can be used to find the index of either the first or last list element that matches a given predicate:
 
 ```java
 public static <E> int indexWhere(List<E> list, Predicate<? super E> predicate) { ... }
@@ -1194,7 +1194,7 @@ var result = collect(values, iterable -> {
 }); // abcdef
 ```
 
-The following standard collection functions are also provided:
+The following standard collection functions are included:
 
 ```java
 public static <T> Function<Iterable<T>, Integer> toSum(ToIntFunction<T> transform) { ... }
