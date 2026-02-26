@@ -330,7 +330,7 @@ public class Iterables {
                 n++;
             }
 
-            return n > 0 ? (double)total / n : Double.NaN;
+            return (double)total / n;
         };
     }
 
@@ -361,7 +361,7 @@ public class Iterables {
                 n++;
             }
 
-            return n > 0 ? (double)total / n : Double.NaN;
+            return (double)total / n;
         };
     }
 
@@ -392,7 +392,7 @@ public class Iterables {
                 n++;
             }
 
-            return n > 0 ? total / n : Double.NaN;
+            return total / n;
         };
     }
 
