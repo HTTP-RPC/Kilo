@@ -120,6 +120,8 @@ public class IterablesTest {
         assertEquals(3.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::intValue).average().orElse(Double.NaN));
+
+        assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::intValue)));
     }
 
     @Test
@@ -131,6 +133,8 @@ public class IterablesTest {
         assertEquals(3.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::longValue).average().orElse(Double.NaN));
+
+        assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::longValue)));
     }
 
     @Test
@@ -142,6 +146,8 @@ public class IterablesTest {
         assertEquals(3.0, result);
 
         assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).average().orElse(Double.NaN));
+
+        assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::doubleValue)));
     }
 
     @Test

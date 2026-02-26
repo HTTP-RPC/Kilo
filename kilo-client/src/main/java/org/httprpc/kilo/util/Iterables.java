@@ -330,7 +330,7 @@ public class Iterables {
                 n++;
             }
 
-            return (double)total / n;
+            return n > 0 ? (double)total / n : Double.NaN;
         };
     }
 
@@ -361,7 +361,7 @@ public class Iterables {
                 n++;
             }
 
-            return (double)total / n;
+            return n > 0 ? (double)total / n : Double.NaN;
         };
     }
 
@@ -392,8 +392,18 @@ public class Iterables {
                 n++;
             }
 
-            return total / n;
+            return n > 0 ? total / n : Double.NaN;
         };
+    }
+
+    public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() {
+        // TODO
+        return null;
+    }
+
+    public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() {
+        // TODO
+        return null;
     }
 
     /**
