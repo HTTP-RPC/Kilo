@@ -16,6 +16,8 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Collectors;
+
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
@@ -76,6 +78,8 @@ public class IterablesTest {
             entry(2, listOf("ab", "bc")),
             entry(3, listOf("abc"))
         ), result);
+
+        assertEquals(result, values.stream().collect(Collectors.groupingBy(String::length)));
     }
 
     @Test
@@ -148,6 +152,32 @@ public class IterablesTest {
         assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).average().orElse(Double.NaN));
 
         assertEquals(Double.NaN, map(emptyListOf(Integer.class), toAverage(Integer::doubleValue)));
+    }
+
+    @Test
+    public void testToMinimum() {
+        var values = listOf("a", "b", "c", "d", "e");
+
+        var result = map(values, toMinimum()); // a
+
+        assertEquals("a", result);
+
+        assertEquals(result, values.stream().min(String::compareTo).orElse(null));
+
+        assertNull(map(emptyListOf(String.class), toMinimum()));
+    }
+
+    @Test
+    public void testToMaximum() {
+        var values = listOf("a", "b", "c", "d", "e");
+
+        var result = map(values, toMaximum()); // e
+
+        assertEquals("e", result);
+
+        assertEquals(result, values.stream().max(String::compareTo).orElse(null));
+
+        assertNull(map(emptyListOf(String.class), toMaximum()));
     }
 
     @Test

@@ -396,14 +396,50 @@ public class Iterables {
         };
     }
 
+    /**
+     * Returns a function that calculates a minimum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @return
+     * The reduction function.
+     */
     public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() {
-        // TODO
-        return null;
+        return iterable -> {
+            T minimum = null;
+
+            for (var element : iterable) {
+                if (minimum == null || element.compareTo(minimum) < 0) {
+                    minimum = element;
+                }
+            }
+
+            return minimum;
+        };
     }
 
+    /**
+     * Returns a function that calculates a maximum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @return
+     * The reduction function.
+     */
     public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() {
-        // TODO
-        return null;
+        return iterable -> {
+            T maximum = null;
+
+            for (var element : iterable) {
+                if (maximum == null || element.compareTo(maximum) > 0) {
+                    maximum = element;
+                }
+            }
+
+            return maximum;
+        };
     }
 
     /**
