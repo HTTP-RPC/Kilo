@@ -600,11 +600,11 @@ public class Iterables {
     /**
      * Returns a function that groups elements by a classification function.
      *
-     * @param <K>
-     * The key type.
-     *
      * @param <T>
      * The element type.
+     *
+     * @param <K>
+     * The key type.
      *
      * @param classifier
      * The classification function.
@@ -612,7 +612,7 @@ public class Iterables {
      * @return
      * The grouping function.
      */
-    public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
+    public static <T, K> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) {
         if (classifier == null) {
             throw new IllegalArgumentException();
         }

@@ -1191,7 +1191,7 @@ public static <T> Function<Iterable<T>, Double> toMaximum(ToDoubleFunction<T> tr
 public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMinimum() { ... }
 public static <T extends Comparable<? super T>> Function<Iterable<T>, T> toMaximum() { ... }
 
-public static <K, T> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) { ... }
+public static <T, K> Function<Iterable<T>, Map<K, List<T>>> groupingBy(Function<? super T, ? extends K> classifier) { ... }
 ```
 
 For example:
