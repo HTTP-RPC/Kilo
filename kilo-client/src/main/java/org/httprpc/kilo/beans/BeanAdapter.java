@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -1111,5 +1112,21 @@ public class BeanAdapter extends AbstractMap<String, Object> {
 
     private static String getKey(Method accessor, String propertyName) {
         return coalesce(map(accessor.getAnnotation(Name.class), Name::value), () -> propertyName);
+    }
+
+    /**
+     * Returns a function that coerces a value to a given type.
+     *
+     * @param <T>
+     * The target type.
+     *
+     * @param type
+     * The target type.
+     *
+     * @return
+     * The coercion function.
+     */
+    public static <T> Function<Object, T> toType(Class<T> type) {
+        return value -> coerce(value, type);
     }
 }

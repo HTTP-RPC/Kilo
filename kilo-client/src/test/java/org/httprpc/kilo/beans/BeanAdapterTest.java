@@ -495,4 +495,13 @@ public class BeanAdapterTest {
 
         assertEquals(2, beanAdapter.get("z"));
     }
+
+    @Test
+    public void testToType() {
+        var strings = listOf("1", "2", "3");
+
+        var integers = listOf(mapAll(strings, BeanAdapter.toType(Integer.class))); // 1, 2, 3
+
+        assertEquals(listOf(1, 2, 3), integers);
+    }
 }

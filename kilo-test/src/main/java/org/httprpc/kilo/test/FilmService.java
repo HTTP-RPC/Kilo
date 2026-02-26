@@ -19,6 +19,7 @@ import org.httprpc.kilo.Description;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 
 import java.sql.SQLException;
@@ -53,7 +54,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("match", map(match, value -> value.replace('*', '%')))
             ))) {
-            return listOf(mapAll(results, toType(Film.class)));
+            return listOf(mapAll(results, BeanAdapter.toType(Film.class)));
         }
     }
 
@@ -70,7 +71,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            film = map(firstOf(results), toType(FilmDetail.class));
+            film = map(firstOf(results), BeanAdapter.toType(FilmDetail.class));
         }
 
         film.setActors(getActors(filmID));
@@ -89,7 +90,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return listOf(mapAll(results, toType(Actor.class)));
+            return listOf(mapAll(results, BeanAdapter.toType(Actor.class)));
         }
     }
 
@@ -103,7 +104,7 @@ public class FilmService extends WebService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("filmID", filmID)
             ))) {
-            return listOf(mapAll(results, toType(Category.class)));
+            return listOf(mapAll(results, BeanAdapter.toType(Category.class)));
         }
     }
 }

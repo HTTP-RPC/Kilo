@@ -19,6 +19,7 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.ResourcePath;
 import org.httprpc.kilo.WebService;
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.kilo.util.concurrent.Pipe;
 
@@ -59,7 +60,7 @@ public class EmployeeService extends WebService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return listOf(mapAll(results, toType(Employee.class)));
+            return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
         }
     }
 
@@ -75,7 +76,7 @@ public class EmployeeService extends WebService {
 
             try (var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement)) {
-                pipe.submit(mapAll(results, toType(Employee.class)));
+                pipe.submit(mapAll(results, BeanAdapter.toType(Employee.class)));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }

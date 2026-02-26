@@ -76,7 +76,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return map(firstOf(results), toType(TemporalAccessorTest.class));
+            return map(firstOf(results), BeanAdapter.toType(TemporalAccessorTest.class));
         }
     }
 
@@ -153,7 +153,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return map(firstOf(results), toType(JSONTest.class));
+            return map(firstOf(results), BeanAdapter.toType(JSONTest.class));
         }
     }
 
@@ -212,7 +212,7 @@ public class ResultSetAdapterTest {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("id", id)
             ))) {
-            return map(firstOf(results), toType(XMLTest.class));
+            return map(firstOf(results), BeanAdapter.toType(XMLTest.class));
         }
     }
 

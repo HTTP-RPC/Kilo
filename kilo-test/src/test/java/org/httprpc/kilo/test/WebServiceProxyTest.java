@@ -257,7 +257,7 @@ public class WebServiceProxyTest {
 
         webServiceProxy.setBody(body);
 
-        var result = listOf(mapAll((List<?>)webServiceProxy.invoke(), toType(Integer.class)));
+        var result = listOf(mapAll((List<?>)webServiceProxy.invoke(), BeanAdapter.toType(Integer.class)));
 
         assertEquals(body, result);
     }

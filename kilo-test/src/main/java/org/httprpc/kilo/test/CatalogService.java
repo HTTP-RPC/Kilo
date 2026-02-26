@@ -41,7 +41,7 @@ public class CatalogService extends AbstractDatabaseService {
 
         try (var statement = queryBuilder.prepare(getConnection());
             var results = queryBuilder.executeQuery(statement)) {
-            return listOf(mapAll(results, toType(Item.class)));
+            return listOf(mapAll(results, BeanAdapter.toType(Item.class)));
         }
     }
 
@@ -57,7 +57,7 @@ public class CatalogService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("itemID", itemID)
             ))) {
-            return map(firstOf(results), toType(ItemDetail.class));
+            return map(firstOf(results), BeanAdapter.toType(ItemDetail.class));
         }
     }
 

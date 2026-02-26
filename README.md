@@ -650,7 +650,7 @@ System.out.println(weather.getLow()); // 43.5
 ```
 
 Note that concrete types are coerced "eagerly" (before the `coerce()` method returns), while interfaces are coerced "lazily" (when a property is accessed).
- 
+
 ### Required Properties
 The `Required` annotation introduced [previously](#required-parameters) can also be used to indicate that a property must contain a value. For example:
 
@@ -792,7 +792,7 @@ try (var statement = queryBuilder.prepare(getConnection());
 The `ResultSetAdapter` type returned by `executeQuery()` provides access to the contents of a JDBC result set via the `Iterable` interface. Individual rows are represented by `Map` instances produced by the adapter's iterator. The results could be coerced to a list of `Pet` instances and returned to the caller, or used as the data dictionary for a template document:
 
 ```java
-return listOf(mapAll(results, toType(Pet.class)));
+return listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
 ```
 
 ```java
@@ -993,7 +993,7 @@ var queryBuilder = QueryBuilder.select(Employee.class);
 
 try (var statement = queryBuilder.prepare(getConnection());
     var results = queryBuilder.executeQuery(statement)) {
-    return listOf(mapAll(results, toType(Employee.class)));
+    return listOf(mapAll(results, BeanAdapter.toType(Employee.class)));
 }
 ```
 
@@ -1009,7 +1009,7 @@ executorService.submit(() -> {
 
     try (var statement = queryBuilder.prepare(connection);
         var results = queryBuilder.executeQuery(statement)) {
-        pipe.submit(mapAll(results, toType(Employee.class)));
+        pipe.submit(mapAll(results, BeanAdapter.toType(Employee.class)));
     } catch (SQLException exception) {
         throw new RuntimeException(exception);
     }
@@ -1240,18 +1240,4 @@ var result = collect(values, toMinimum()); // a
 var values = listOf("a", "b", "ab", "bc", "abc");
 
 var result = collect(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
-```
-
-Finally, `Iterables` provides this method, which coerces a value to a given type:
-
-```java
-public static <T> Function<Object, T> toType(Class<T> type) { ... }
-```
-
-For example:
-
-```java
-var strings = listOf("1", "2", "3");
-
-var integers = listOf(mapAll(strings, toType(Integer.class))); // 1, 2, 3
 ```

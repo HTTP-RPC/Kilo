@@ -18,6 +18,7 @@ import jakarta.servlet.annotation.WebServlet;
 import org.httprpc.kilo.RequestMethod;
 import org.httprpc.kilo.Required;
 import org.httprpc.kilo.ResourcePath;
+import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.CSVEncoder;
 import org.httprpc.kilo.io.JSONEncoder;
 import org.httprpc.kilo.io.TemplateEncoder;
@@ -43,7 +44,7 @@ public class PetService extends AbstractDatabaseService {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("owner", owner)
             ))) {
-            return listOf(mapAll(results, toType(Pet.class)));
+            return listOf(mapAll(results, BeanAdapter.toType(Pet.class)));
         }
     }
 

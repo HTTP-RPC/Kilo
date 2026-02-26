@@ -298,13 +298,4 @@ public class IterablesTest {
 
         assertEquals(result, values.stream().collect(Collectors.groupingBy(String::length)));
     }
-
-    @Test
-    public void testToType() {
-        var strings = listOf("1", "2", "3");
-
-        var integers = listOf(mapAll(strings, toType(Integer.class))); // 1, 2, 3
-
-        assertEquals(listOf(1, 2, 3), integers);
-    }
 }

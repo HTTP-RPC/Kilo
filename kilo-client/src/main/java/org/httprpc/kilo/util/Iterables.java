@@ -14,8 +14,6 @@
 
 package org.httprpc.kilo.util;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -695,21 +693,5 @@ public class Iterables {
 
             return map;
         };
-    }
-
-    /**
-     * Returns a function that coerces a value to a given type.
-     *
-     * @param <T>
-     * The target type.
-     *
-     * @param type
-     * The target type.
-     *
-     * @return
-     * The coercion function.
-     */
-    public static <T> Function<Object, T> toType(Class<T> type) {
-        return value -> BeanAdapter.coerce(value, type);
     }
 }
