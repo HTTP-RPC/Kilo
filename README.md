@@ -1154,9 +1154,9 @@ var result = listOf(filter(values, value -> value < 3)); // 1, 2
 ```
 
 ```java
-var values = listOf("1", "2", "3");
+var values = listOf("a", "ab", "abc");
 
-var result = listOf(mapAll(values, Integer::valueOf)); // 1, 2, 3
+var result = listOf(mapAll(values, String::length)); // 1, 2, 3
 ```
 
 ```java
@@ -1177,7 +1177,33 @@ var values = listOf("a", "b", "ab", "bc", "abc");
 var result = map(values, groupingBy(String::length)); // 1: a, b; 2: ab, bc; 3: abc
 ```
 
-`Iterables` also provides the following method, which coerces a value to a given type:
+The following reduction functions are also provided:
+
+```java
+public static <T> Function<Iterable<T>, Integer> toSum(ToIntFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Long> toSum(ToLongFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Double> toSum(ToDoubleFunction<T> transform) { ... }
+
+public static <T> Function<Iterable<T>, Double> toAverage(ToIntFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Double> toAverage(ToLongFunction<T> transform) { ... }
+public static <T> Function<Iterable<T>, Double> toAverage(ToDoubleFunction<T> transform) { ... }
+```
+
+For example:
+
+```java
+var values = listOf(1, 2, 3, 4, 5);
+
+var result = map(values, toSum(Integer::intValue)); // 15
+```
+
+```java
+var values = listOf(1, 2, 3, 4, 5);
+
+var result = map(values, toAverage(Integer::intValue)); // 3.0
+```
+
+Finally, `Iterables` provides this method, which coerces a value to a given type:
 
 ```java
 public static <T> Function<Object, T> toType(Class<T> type) { ... }

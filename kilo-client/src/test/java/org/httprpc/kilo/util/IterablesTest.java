@@ -36,9 +36,9 @@ public class IterablesTest {
 
     @Test
     public void testMapAll() {
-        var values = listOf("1", "2", "3");
+        var values = listOf("a", "ab", "abc");
 
-        var result = listOf(mapAll(values, Integer::valueOf)); // 1, 2, 3
+        var result = listOf(mapAll(values, String::length)); // 1, 2, 3
 
         assertEquals(listOf(1, 2, 3), result);
     }
@@ -76,6 +76,72 @@ public class IterablesTest {
             entry(2, listOf("ab", "bc")),
             entry(3, listOf("abc"))
         ), result);
+    }
+
+    @Test
+    public void testToSumInt() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toSum(Integer::intValue)); // 15
+
+        assertEquals(15, result);
+
+        assertEquals(result, values.stream().mapToInt(Integer::intValue).sum());
+    }
+
+    @Test
+    public void testToSumLong() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toSum(Integer::longValue)); // 15L
+
+        assertEquals(15L, result);
+
+        assertEquals(result, values.stream().mapToLong(Integer::longValue).sum());
+    }
+
+    @Test
+    public void testToSumDouble() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toSum(Integer::doubleValue)); // 15.0
+
+        assertEquals(15.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).sum());
+    }
+
+    @Test
+    public void testToAverageInt() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toAverage(Integer::intValue)); // 3.0
+
+        assertEquals(3.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::intValue).average().orElse(Double.NaN));
+    }
+
+    @Test
+    public void testToAverageLong() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toAverage(Integer::longValue)); // 3.0
+
+        assertEquals(3.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::longValue).average().orElse(Double.NaN));
+    }
+
+    @Test
+    public void testToAverageDouble() {
+        var values = listOf(1, 2, 3, 4, 5);
+
+        var result = map(values, toAverage(Integer::doubleValue)); // 3.0
+
+        assertEquals(3.0, result);
+
+        assertEquals(result, values.stream().mapToDouble(Integer::doubleValue).average().orElse(Double.NaN));
     }
 
     @Test

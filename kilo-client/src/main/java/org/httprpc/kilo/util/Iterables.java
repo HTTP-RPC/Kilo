@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 
 /**
  * Provides static utility methods for working with iterables.
@@ -213,6 +216,183 @@ public class Iterables {
             }
 
             return map;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a sum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Integer> toSum(ToIntFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var total = 0;
+
+            for (var element : iterable) {
+                total += transform.applyAsInt(element);
+            }
+
+            return total;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a sum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Long> toSum(ToLongFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var total = 0L;
+
+            for (var element : iterable) {
+                total += transform.applyAsLong(element);
+            }
+
+            return total;
+        };
+    }
+
+    /**
+     * Returns a function that calculates a sum.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Double> toSum(ToDoubleFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var total = 0.0;
+
+            for (var element : iterable) {
+                total += transform.applyAsDouble(element);
+            }
+
+            return total;
+        };
+    }
+
+    /**
+     * Returns a function that calculates an average.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Double> toAverage(ToIntFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var total = 0;
+            var n = 0;
+
+            for (var element : iterable) {
+                total += transform.applyAsInt(element);
+
+                n++;
+            }
+
+            return (double)total / n;
+        };
+    }
+
+    /**
+     * Returns a function that calculates an average.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Double> toAverage(ToLongFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var total = 0L;
+            var n = 0;
+
+            for (var element : iterable) {
+                total += transform.applyAsLong(element);
+
+                n++;
+            }
+
+            return (double)total / n;
+        };
+    }
+
+    /**
+     * Returns a function that calculates an average.
+     *
+     * @param <T>
+     * The element type.
+     *
+     * @param transform
+     * The transform function.
+     *
+     * @return
+     * The reduction function.
+     */
+    public static <T> Function<Iterable<T>, Double> toAverage(ToDoubleFunction<T> transform) {
+        if (transform == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return iterable -> {
+            var total = 0.0;
+            var n = 0;
+
+            for (var element : iterable) {
+                total += transform.applyAsDouble(element);
+
+                n++;
+            }
+
+            return total / n;
         };
     }
 
