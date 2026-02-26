@@ -62,6 +62,8 @@ public class IterablesTest {
         assertEquals(2, result.getLast());
 
         assertEquals(result, values.stream().filter(value -> value < 3).collect(Collectors.toList()));
+
+        assertEquals(listOf(), listOf(filter(values, value -> value > 3)));
     }
 
     @Test
@@ -81,13 +83,13 @@ public class IterablesTest {
     public void testExists() {
         var values = listOf(1, 2, 3);
 
-        var result = exists(values, value -> value.equals(2)); // true
+        var result = exists(values, value -> value < 3); // true
 
         assertTrue(result);
 
-        assertEquals(result, values.stream().anyMatch(value -> value.equals(2)));
+        assertEquals(result, values.stream().anyMatch(value -> value < 3));
 
-        assertFalse(exists(values, value -> value.equals(4)));
+        assertFalse(exists(values, value -> value > 3));
     }
 
     @Test

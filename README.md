@@ -1175,7 +1175,7 @@ var result = firstOf(values); // 1
 ```java
 var values = listOf(1, 2, 3);
 
-var result = exists(values, value -> value.equals(2)); // true
+var result = exists(values, value -> value < 3); // true
 ```
 
 The following reduction functions are also provided:
