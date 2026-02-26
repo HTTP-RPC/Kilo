@@ -1158,6 +1158,14 @@ var result = listOf(mapAll(values, String::length)); // 1, 2, 3
 ```
 
 ```java
+var values = Arrays.asList(DayOfWeek.values());
+
+var result = mapOf(mapAll(values, value -> entry(value, value.ordinal())));
+
+var i = result.get(DayOfWeek.MONDAY); // 0
+```
+
+```java
 var values = listOf(1, 2, 3);
 
 var result = firstOf(values); // 1

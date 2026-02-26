@@ -16,6 +16,8 @@ package org.httprpc.kilo.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -39,7 +41,7 @@ public class IterablesTest {
     }
 
     @Test
-    public void testMapAll() {
+    public void testMapAllToList() {
         var values = listOf("a", "ab", "abc");
 
         var result = listOf(mapAll(values, String::length)); // 1, 2, 3
@@ -47,6 +49,19 @@ public class IterablesTest {
         assertEquals(listOf(1, 2, 3), result);
 
         assertEquals(result, values.stream().map(String::length).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void testMapAllToMap() {
+        var values = Arrays.asList(DayOfWeek.values());
+
+        var result = mapOf(mapAll(values, value -> entry(value, value.ordinal())));
+
+        var i = result.get(DayOfWeek.MONDAY); // 0
+
+        assertEquals(0, i);
+
+        assertEquals(result, values.stream().collect(Collectors.toMap(value -> value, Enum::ordinal)));
     }
 
     @Test
